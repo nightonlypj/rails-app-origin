@@ -37,6 +37,8 @@ group :development, :test do
   # Use RuboCop
   gem 'rubocop'
   gem 'rubocop-rails'
+  # Use Brakeman
+  gem 'brakeman'
 end
 
 group :development do
