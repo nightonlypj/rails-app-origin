@@ -34,3 +34,11 @@
 /yarn-error.log
 yarn-debug.log*
 .yarn-integrity
+
+desktop.ini
+Thumbs.db
+.DS_Store
+.idea/**/workspace.xml
+.idea/**/tasks.xml
+/nbproject/private/
+/doc/*
