@@ -34,6 +34,9 @@ group :development, :test do
   # Use RSpec
   gem 'rspec-rails'
   gem 'spring-commands-rspec'
+  # Use RuboCop
+  gem 'rubocop'
+  gem 'rubocop-rails'
 end
 
 group :development do
