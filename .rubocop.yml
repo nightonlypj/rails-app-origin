@@ -1,1 +1,5 @@
 inherit_from: .rubocop_todo.yml
+
+# C: Style/Documentation: Missing top-level class documentation comment.
+Style/Documentation:
+  Enabled: false
