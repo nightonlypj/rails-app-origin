@@ -3,3 +3,7 @@ inherit_from: .rubocop_todo.yml
 # C: Style/Documentation: Missing top-level class documentation comment.
 Style/Documentation:
   Enabled: false
+
+# C: Style/ClassAndModuleChildren: Use nested module/class definitions instead of compact style.
+ClassAndModuleChildren:
+  Enabled: false
