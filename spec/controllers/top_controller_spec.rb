@@ -1,16 +1,32 @@
 require 'rails_helper'
 
 RSpec.describe TopController, type: :controller do
-  render_views
+  let!(:user) { create(:user) }
 
-  describe 'GET #index/トップページにアクセス' do
-    it 'returns http success/HTTPステータスコードが200' do
-      get :index
-      expect(response).to have_http_status(:success)
+  describe 'GET #index' do
+    context '未ログイン' do
+      it 'returns a success response' do
+        get :index
+        expect(response).to be_successful
+      end
+      it 'use index template' do
+        get :index
+        should render_template('index')
+      end
     end
-    it 'ページ中にHello World!が含まれる' do
-      get :index
-      expect(response.body).to match(/Hello World!/)
+
+    context 'ログイン中' do
+      before do
+        login_user user
+      end
+      it 'returns a success response' do
+        get :index
+        expect(response).to be_successful
+      end
+      it 'use index template' do
+        get :index
+        should render_template('index')
+      end
     end
   end
 end
