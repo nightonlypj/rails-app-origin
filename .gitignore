@@ -42,3 +42,4 @@ Thumbs.db
 .idea/**/tasks.xml
 /nbproject/private/
 /doc/*
+/.yardoc/*
