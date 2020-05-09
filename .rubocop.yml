@@ -5,5 +5,14 @@ Style/Documentation:
   Enabled: false
 
 # C: Style/ClassAndModuleChildren: Use nested module/class definitions instead of compact style.
-ClassAndModuleChildren:
+Style/ClassAndModuleChildren:
   Enabled: false
+
+# C: Style/AsciiComments: Use only ascii symbols in comments.
+Style/AsciiComments:
+  Enabled: false
+
+# C: Metrics/BlockLength: Block has too many lines.
+Metrics/BlockLength:
+  Exclude:
+    - 'spec/**/*'

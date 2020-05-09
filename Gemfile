@@ -32,8 +32,11 @@ group :development, :test do
   # Call 'byebug' anywhere in the code to stop execution and get a debugger console
   gem 'byebug', platforms: [:mri, :mingw, :x64_mingw]
   # Use RSpec
-  gem 'rspec-rails'
+  gem 'rspec-rails', '>= 4.0.0' # Tips: https://qiita.com/amatsukix/items/578f85cf4565ca2a797c
   gem 'spring-commands-rspec'
+  gem 'rails-controller-testing'
+  gem 'factory_bot_rails'
+  gem 'faker'
   # Use RuboCop
   gem 'rubocop'
   gem 'rubocop-rails'

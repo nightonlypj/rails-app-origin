@@ -24,6 +24,10 @@ require 'rspec/rails'
 #
 # Dir[Rails.root.join('spec', 'support', '**', '*.rb')].each { |f| require f }
 
+# Use devise
+require 'devise'
+require File.expand_path('spec/support/controller_macros.rb')
+
 # Checks for pending migrations and applies them before tests are run.
 # If you are not using ActiveRecord, you can remove these lines.
 begin
@@ -60,4 +64,11 @@ RSpec.configure do |config|
   config.filter_rails_from_backtrace!
   # arbitrary gems may also be filtered via:
   # config.filter_gems_from_backtrace("gem name")
+
+  # Use devise
+  config.include Devise::Test::ControllerHelpers, type: :controller
+  config.include Devise::Test::ControllerHelpers, type: :view
+  config.include ControllerMacros, type: :controller
+  config.include ControllerMacros, type: :view
+  config.include FactoryBot::Syntax::Methods
 end
