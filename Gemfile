@@ -76,3 +76,6 @@ gem 'devise-i18n-views'
 # Use RailsAdmin
 gem 'rails_admin'
 gem 'rails_admin-i18n'
+
+# Use PaperTrail
+gem 'paper_trail'

@@ -169,6 +169,9 @@ GEM
       nenv (~> 0.1)
       shellany (~> 0.0)
     orm_adapter (0.5.0)
+    paper_trail (10.3.1)
+      activerecord (>= 4.2)
+      request_store (~> 1.1)
     parallel (1.19.1)
     parser (2.6.5.0)
       ast (~> 2.4.0)
@@ -237,6 +240,8 @@ GEM
     redcarpet (3.5.0)
     regexp_parser (1.6.0)
     remotipart (1.4.4)
+    request_store (1.5.0)
+      rack (>= 1.4)
     responders (3.0.0)
       actionpack (>= 5.0)
       railties (>= 5.0)
@@ -347,6 +352,7 @@ DEPENDENCIES
   guard-yard
   jbuilder (~> 2.7)
   listen (>= 3.0.5, < 3.2)
+  paper_trail
   puma (~> 4.1)
   rails (~> 6.0.1)
   rails-controller-testing
