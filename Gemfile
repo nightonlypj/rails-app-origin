@@ -72,3 +72,7 @@ gem 'tzinfo-data', platforms: [:mingw, :mswin, :x64_mingw, :jruby]
 gem 'devise'
 gem 'devise-i18n'
 gem 'devise-i18n-views'
+
+# Use RailsAdmin
+gem 'rails_admin'
+gem 'rails_admin-i18n'
