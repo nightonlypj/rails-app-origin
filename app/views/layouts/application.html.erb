@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>RailsAppOrigin</title>
+    <title><%= t('app_name') %></title>
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
 
@@ -10,6 +10,20 @@
   </head>
 
   <body>
+    <h1><%= link_to t('app_name'), root_path %></h1>
+    <ul>
+<% if user_signed_in? %>
+      <li><%= current_user.email %></li>
+      <li><%= link_to t('edit_user'), edit_user_registration_path %></li>
+      <li><%= link_to t('log_out'), destroy_user_session_path, method: :delete %></li>
+<% else %>
+      <li><%= link_to t('log_in'), new_user_session_path %></li>
+      <li><%= link_to t('sign_up'), new_user_registration_path %></li>
+<% end %>
+    </ul>
+    <hr/>
+    <p class="notice"><%= notice %></p>
+    <p class="alert"><%= alert %></p>
     <%= yield %>
   </body>
 </html>

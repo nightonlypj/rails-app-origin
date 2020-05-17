@@ -1,5 +1,25 @@
 inherit_from: .rubocop_todo.yml
 
+AllCops:
+  Exclude:
+    - 'bin/*'
+    - 'test/**/*'
+    - 'db/schema.rb'
+    - 'node_modules/**/*'
+
 # C: Style/Documentation: Missing top-level class documentation comment.
 Style/Documentation:
   Enabled: false
+
+# C: Style/ClassAndModuleChildren: Use nested module/class definitions instead of compact style.
+Style/ClassAndModuleChildren:
+  Enabled: false
+
+# C: Style/AsciiComments: Use only ascii symbols in comments.
+Style/AsciiComments:
+  Enabled: false
+
+# C: Metrics/BlockLength: Block has too many lines.
+Metrics/BlockLength:
+  Exclude:
+    - 'spec/**/*'
