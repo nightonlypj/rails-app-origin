@@ -1,0 +1,14 @@
+<p id="notice"><%= notice %></p>
+
+<p>
+  <strong>Subdomain:</strong>
+  <%= @space.subdomain %>
+</p>
+
+<p>
+  <strong>Name:</strong>
+  <%= @space.name %>
+</p>
+
+<%= link_to 'Edit', edit_space_path(@space) %> |
+<%= link_to 'Back', spaces_path %>
