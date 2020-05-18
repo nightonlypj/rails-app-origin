@@ -9,8 +9,7 @@ class SpacesController < ApplicationController
 
   # GET /spaces/1
   # GET /spaces/1.json
-  def show
-  end
+  def show; end
 
   # GET /spaces/new
   def new
@@ -18,8 +17,7 @@ class SpacesController < ApplicationController
   end
 
   # GET /spaces/1/edit
-  def edit
-  end
+  def edit; end
 
   # POST /spaces
   # POST /spaces.json
@@ -62,13 +60,14 @@ class SpacesController < ApplicationController
   end
 
   private
-    # Use callbacks to share common setup or constraints between actions.
-    def set_space
-      @space = Space.find(params[:id])
-    end
 
-    # Never trust parameters from the scary internet, only allow the white list through.
-    def space_params
-      params.require(:space).permit(:subdomain, :name)
-    end
+  # Use callbacks to share common setup or constraints between actions.
+  def set_space
+    @space = Space.find(params[:id])
+  end
+
+  # Never trust parameters from the scary internet, only allow the white list through.
+  def space_params
+    params.require(:space).permit(:subdomain, :name)
+  end
 end
