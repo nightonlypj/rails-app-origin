@@ -4,6 +4,28 @@ ja:
   log_in: "ログイン"
   log_out: "ログアウト"
   edit_user: "ユーザ編集"
+  activerecord:
+    attributes:
+      space:
+        subdomain: "サブドメイン"
+        name: "スペース名"
+        created_at: "作成日"
+        updated_at: "更新日"
+    models:
+      space: "スペース"
+    errors:
+      models:
+        space:
+          attributes:
+            subdomain:
+              taken: "既に使用されています。"
+              blank: "入力してください。"
+              too_short: "%{count}文字以上で入力してください。"
+              too_long: "%{count}文字以下で入力してください。"
+              invalid: "アルファベット(小文字)・数字・ハイフン(先頭不可)のみで入力してください。"
+            name:
+              blank: "入力してください。"
+              too_long: "%{count}文字以下で入力してください。"
   datetime:
     distance_in_words:
       half_a_minute: "30秒前後"

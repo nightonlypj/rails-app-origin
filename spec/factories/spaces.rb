@@ -1,6 +1,6 @@
 FactoryBot.define do
   factory :space do
-    subdomain { 'MyString' }
-    name { 'MyString' }
+    subdomain { 'myspace' }
+    name      { 'マイスペース' }
   end
 end
