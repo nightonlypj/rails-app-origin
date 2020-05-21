@@ -5,9 +5,9 @@ RSpec.describe 'Admin', type: :request do
 
   describe 'GET /admin' do
     context '未ログイン' do
-      it 'returns a 302 response' do
+      it 'renders a redirect response' do
         get '/admin'
-        expect(response).to have_http_status(302)
+        expect(response).to be_redirect
       end
     end
 
@@ -15,9 +15,9 @@ RSpec.describe 'Admin', type: :request do
       before do
         sign_in admin_user
       end
-      it 'returns a 200 response' do
+      it 'renders a successful response' do
         get '/admin'
-        expect(response).to have_http_status(200)
+        expect(response).to be_successful
       end
     end
   end
