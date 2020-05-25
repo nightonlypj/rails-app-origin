@@ -1,7 +1,7 @@
 require 'rails_helper'
 
 RSpec.describe 'Top', type: :request do
-  let!(:user) { create(:user) }
+  let!(:user) { FactoryBot.create(:user) }
 
   describe 'GET #index' do
     context '未ログイン' do

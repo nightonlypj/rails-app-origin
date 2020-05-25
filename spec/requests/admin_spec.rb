@@ -1,7 +1,7 @@
 require 'rails_helper'
 
 RSpec.describe 'Admin', type: :request do
-  let!(:admin_user) { create(:admin_user) }
+  let!(:admin_user) { FactoryBot.create(:admin_user) }
 
   describe 'GET /admin' do
     context '未ログイン' do
