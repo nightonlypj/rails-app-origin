@@ -5,36 +5,34 @@ ja:
         user:
           attributes:
             email:
-              taken: "は既に使用されています。"
-              blank: "が入力されていません。"
-              too_short: "は%{count}文字以上に設定してください。"
-              too_long: "は%{count}文字以下に設定してください。"
-              invalid: "は有効でありません。"
+              taken: "既に使用されています。"
+              blank: "入力してください。"
+              too_short: "%{count}文字以上で入力してください。"
+              too_long: "%{count}文字以下で入力してください。"
+              invalid: "形式が正しくありません。"
             password:
-              blank: "が入力されていません。"
-              too_short: "は%{count}文字以上に設定してください。"
-              too_long: "は%{count}文字以下に設定してください。"
-              invalid: "は有効でありません。"
+              blank: "入力してください。"
+              too_short: "%{count}文字以上で入力してください。"
+              too_long: "%{count}文字以下で入力してください。"
             password_confirmation:
-              confirmation: "が%{attribute}と一致しません。"
+              confirmation: "%{attribute}と一致しません。"
             current_password:
-              blank: "が入力されていません。"
-              invalid: "が違います。"
+              blank: "入力してください。"
+              invalid: "違います。"
         admin_user:
           attributes:
             email:
-              taken: "は既に使用されています。"
-              blank: "が入力されていません。"
-              too_short: "は%{count}文字以上に設定してください。"
-              too_long: "は%{count}文字以下に設定してください。"
-              invalid: "は有効でありません。"
+              taken: "既に使用されています。"
+              blank: "入力してください。"
+              too_short: "%{count}文字以上で入力してください。"
+              too_long: "%{count}文字以下で入力してください。"
+              invalid: "形式が正しくありません。"
             password:
-              blank: "が入力されていません。"
-              too_short: "は%{count}文字以上に設定してください。"
-              too_long: "は%{count}文字以下に設定してください。"
-              invalid: "は有効でありません。"
+              blank: "入力してください。"
+              too_short: "%{count}文字以上で入力してください。"
+              too_long: "%{count}文字以下で入力してください。"
             password_confirmation:
-              confirmation: "が%{attribute}と一致しません。"
+              confirmation: "%{attribute}と一致しません。"
             current_password:
-              blank: "が入力されていません。"
-              invalid: "が違います。"
+              blank: "入力してください。"
+              invalid: "違います。"

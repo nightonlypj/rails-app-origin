@@ -1,7 +1,7 @@
 require 'rails_helper'
 
-RSpec.describe 'layouts/application.html.erb', type: :view do
-  let!(:user) { create(:user) }
+RSpec.describe 'layouts/application', type: :view do
+  let!(:user) { FactoryBot.create(:user) }
 
   context '未ログイン' do
     it 'Log inのパスが含まれる' do
