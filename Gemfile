@@ -79,3 +79,6 @@ gem 'rails_admin-i18n'
 
 # Use PaperTrail
 gem 'paper_trail'
+
+# Use Config
+gem 'config'
