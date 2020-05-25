@@ -82,3 +82,7 @@ gem 'paper_trail'
 
 # Use Config
 gem 'config'
+
+# Use kaminari
+gem 'kaminari'
+gem 'kaminari-i18n'
