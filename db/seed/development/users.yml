@@ -1,0 +1,6 @@
+- id: 1
+  email: user1@mydomain
+  password: changepassword
+- id: 2
+  email: user2@mydomain
+  password: changepassword

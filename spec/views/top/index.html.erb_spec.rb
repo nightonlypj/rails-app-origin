@@ -1,7 +1,7 @@
 require 'rails_helper'
 
-RSpec.describe 'top/index.html.erb', type: :view do
-  let!(:user) { create(:user) }
+RSpec.describe 'top/index', type: :view do
+  let!(:user) { FactoryBot.create(:user) }
 
   context '未ログイン' do
     it 'Hello World!が含まれる' do
