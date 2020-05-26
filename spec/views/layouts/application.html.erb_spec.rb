@@ -31,4 +31,18 @@ RSpec.describe 'layouts/application', type: :view do
       expect(rendered).to match(destroy_user_session_path)
     end
   end
+
+  context 'サブドメイン' do
+    before do
+      @use_space = FactoryBot.create(:space)
+    end
+    it 'スペース名が含まれる' do
+      render
+      expect(rendered).to match(@use_space.name)
+    end
+    it 'スペース編集のパスが含まれる' do
+      render
+      expect(rendered).to match(edit_space_path(@use_space))
+    end
+  end
 end

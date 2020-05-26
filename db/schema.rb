@@ -25,8 +25,8 @@ ActiveRecord::Schema.define(version: 2020_05_18_002450) do
   end
 
   create_table "spaces", force: :cascade do |t|
-    t.string "subdomain"
-    t.string "name"
+    t.string "subdomain", null: false
+    t.string "name", null: false
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.index ["subdomain"], name: "index_spaces_on_subdomain", unique: true

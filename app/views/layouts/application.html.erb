@@ -10,7 +10,7 @@
   </head>
 
   <body>
-    <h1><%= link_to t('app_name'), root_path %></h1>
+    <h1><%= link_to t('app_name'), "//#{Settings['base_domain_link']}" %></h1>
     <ul>
 <% if user_signed_in? %>
       <li><%= current_user.email %></li>
@@ -22,6 +22,15 @@
 <% end %>
     </ul>
     <hr/>
+
+<% if @use_space %>
+    <h2><%= link_to @use_space.name, root_path %></h2>
+    <ul>
+      <li><%= link_to 'スペース編集', edit_space_path(@use_space) %></li>
+    </ul>
+    <hr/>
+<% end %>
+
     <p class="notice"><%= notice %></p>
     <p class="alert"><%= alert %></p>
     <%= yield %>
