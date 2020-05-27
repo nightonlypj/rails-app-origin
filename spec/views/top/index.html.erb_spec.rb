@@ -6,14 +6,6 @@ RSpec.describe 'top/index', type: :view do
     before { login_user user }
   end
 
-  space_limit = 10
-  shared_context 'create_spaces' do
-    before do
-      @create_spaces = FactoryBot.create_list(:space, space_limit + 1)
-      @new_spaces = Space.all.order(id: 'DESC').limit(space_limit)
-    end
-  end
-
   shared_examples_for 'スペースが0件' do
     it 'もっと見るのパスが含まれない' do
       render
@@ -32,6 +24,14 @@ RSpec.describe 'top/index', type: :view do
   context 'ログイン中' do
     include_context 'login'
     it_behaves_like 'スペースが0件'
+  end
+
+  space_limit = 10
+  shared_context 'create_spaces' do
+    before do
+      @create_spaces = FactoryBot.create_list(:space, space_limit + 1)
+      @new_spaces = Space.all.order(id: 'DESC').limit(space_limit)
+    end
   end
 
   shared_examples_for "スペースが#{space_limit + 1}件" do

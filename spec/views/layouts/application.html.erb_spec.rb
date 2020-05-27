@@ -2,47 +2,62 @@ require 'rails_helper'
 
 RSpec.describe 'layouts/application', type: :view do
   let!(:user) { FactoryBot.create(:user) }
+  shared_context 'login' do
+    before { login_user user }
+  end
 
   context '未ログイン' do
-    it 'Log inのパスが含まれる' do
+    it 'ログインのパスが含まれる' do
       render
-      expect(rendered).to match(new_user_session_path)
+      expect(rendered).to match("\"#{Regexp.escape(new_user_session_path)}\"")
     end
-    it 'Sign upのパスが含まれる' do
+    it 'アカウント登録のパスが含まれる' do
       render
-      expect(rendered).to match(new_user_registration_path)
+      expect(rendered).to match("\"#{Regexp.escape(new_user_registration_path)}\"")
     end
   end
 
   context 'ログイン中' do
-    before do
-      login_user user
-    end
+    include_context 'login'
     it 'ログインユーザーのメールアドレスが含まれる' do
       render
       expect(rendered).to match(user.email)
     end
-    it 'Edit Userのパスが含まれる' do
+    it 'ユーザー編集のパスが含まれる' do
       render
-      expect(rendered).to match(edit_user_registration_path)
+      expect(rendered).to match("\"#{Regexp.escape(edit_user_registration_path)}\"")
     end
-    it 'Log outのパスが含まれる' do
+    it 'ログアウトのパスが含まれる' do
       render
-      expect(rendered).to match(destroy_user_session_path)
+      expect(rendered).to match("\"#{Regexp.escape(destroy_user_session_path)}\"")
     end
   end
 
-  context 'サブドメイン' do
+  shared_context 'subdomain' do
     before do
       @use_space = FactoryBot.create(:space)
     end
+  end
+
+  shared_examples_for 'サブドメイン' do
     it 'スペース名が含まれる' do
       render
-      expect(rendered).to match(@use_space.name)
+      expect(rendered).to match(Regexp.escape(@use_space.name))
     end
     it 'スペース編集のパスが含まれる' do
       render
-      expect(rendered).to match(edit_space_path(@use_space))
+      expect(rendered).to match("\"#{Regexp.escape(edit_space_path(@use_space))}\"")
     end
+  end
+
+  context '未ログイン' do
+    include_context 'subdomain'
+    it_behaves_like 'サブドメイン'
+  end
+
+  context 'ログイン中' do
+    include_context 'login'
+    include_context 'subdomain'
+    it_behaves_like 'サブドメイン'
   end
 end

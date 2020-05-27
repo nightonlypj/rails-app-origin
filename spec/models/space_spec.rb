@@ -61,8 +61,7 @@ RSpec.describe Space, type: :model do
     end
     context '重複' do
       it 'NG' do
-        space1 = FactoryBot.build(:space)
-        space1.save
+        space1 = FactoryBot.create(:space)
         space2 = FactoryBot.build(:space)
         space2.subdomain = space1.subdomain
         expect(space2).not_to be_valid
