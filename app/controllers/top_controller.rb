@@ -6,5 +6,7 @@ class TopController < ApplicationController
   def index
     return head :not_found if !equal_base_domain && @use_space.blank?
     return render :index_subdomain unless equal_base_domain
+
+    @new_spaces = Space.all.order(id: 'DESC').limit(10)
   end
 end
