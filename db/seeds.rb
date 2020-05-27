@@ -9,10 +9,10 @@
 paths = ['', "#{Rails.env}/"]
 paths.each do |path|
   Dir.glob("#{Rails.root}/db/seed/#{path}*.yml").each do |filename|
-    puts 'filename: ' + filename
+    puts "filename: #{filename}"
 
     target_model = File.basename(filename, '.yml').classify.constantize
-    puts 'model: ' + target_model.to_s
+    puts "model: #{target_model}"
 
     File.open(filename) do |file_contents|
       yaml_contents = YAML.safe_load(file_contents)
@@ -20,11 +20,11 @@ paths.each do |path|
         id = yaml_record['id']
 
         if target_model.find_by(id: id)
-          puts 'id: ' + id.to_s + ' ... Skip create'
+          puts "id: #{id} ... Skip create"
           next
         end
 
-        puts 'id: ' + id.to_s + ' ... Create'
+        puts "id: #{id} ... Create"
         target_model.create(yaml_record)
       end
     end

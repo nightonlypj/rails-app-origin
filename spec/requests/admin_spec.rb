@@ -2,6 +2,9 @@ require 'rails_helper'
 
 RSpec.describe 'Admin', type: :request do
   let!(:admin_user) { FactoryBot.create(:admin_user) }
+  shared_context 'sign_in' do
+    before { sign_in admin_user }
+  end
 
   describe 'GET /admin' do
     context '未ログイン' do
@@ -12,9 +15,7 @@ RSpec.describe 'Admin', type: :request do
     end
 
     context 'ログイン中' do
-      before do
-        sign_in admin_user
-      end
+      include_context 'sign_in'
       it 'renders a successful response' do
         get '/admin'
         expect(response).to be_successful
