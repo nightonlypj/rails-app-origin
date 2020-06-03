@@ -1,10 +1,13 @@
 class SpacesController < ApplicationController
   before_action :set_space, only: [:show, :edit, :update, :destroy]
 
-  # GET /spaces
+  # GET /spaces スペース一覧（ベースドメイン）
   # GET /spaces.json
   def index
-    @spaces = Space.all
+    return head :not_found if !equal_base_domain && request.format.json?
+    return redirect_to "//#{Settings['base_domain_link']}#{spaces_path}" unless equal_base_domain
+
+    @spaces = Space.order(created_at: 'DESC', id: 'DESC').page(params[:page]).per(Settings['default_spaces_limit'])
   end
 
   # GET /spaces/1

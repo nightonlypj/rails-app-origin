@@ -1,6 +1,6 @@
 FactoryBot.define do
   factory :space do
     sequence(:subdomain) { |n| "myspace#{n}" }
-    name                 { "マイスペース#{subdomain}" }
+    name                 { "マイスペース(#{subdomain})" }
   end
 end
