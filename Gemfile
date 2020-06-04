@@ -34,7 +34,6 @@ group :development, :test do
   # Use RSpec
   gem 'rspec-rails', '>= 4.0.0' # Tips: https://qiita.com/amatsukix/items/578f85cf4565ca2a797c
   gem 'spring-commands-rspec'
-  gem 'rails-controller-testing'
   gem 'factory_bot_rails'
   gem 'faker'
   # Use RuboCop
