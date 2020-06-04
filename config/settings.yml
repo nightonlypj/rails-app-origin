@@ -1,1 +1,6 @@
+subdomain_minimum: 1
+subdomain_maximum: 32
+space_name_minimum: 1
+space_name_maximum: 32
+new_spaces_limit: 10
 default_spaces_limit: 25
