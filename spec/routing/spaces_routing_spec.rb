@@ -11,7 +11,7 @@ RSpec.describe SpacesController, type: :routing do
     end
 
     it 'routes to #show' do
-      expect(get: '/spaces/1').to route_to('spaces#show', id: '1')
+      expect(get: '/spaces/1').to_not be_routable
     end
 
     it 'routes to #edit' do
@@ -31,7 +31,7 @@ RSpec.describe SpacesController, type: :routing do
     end
 
     it 'routes to #destroy' do
-      expect(delete: '/spaces/1').to route_to('spaces#destroy', id: '1')
+      expect(delete: '/spaces/1').to_not be_routable
     end
   end
 end

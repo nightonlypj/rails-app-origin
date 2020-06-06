@@ -1,5 +1,5 @@
 class SpacesController < ApplicationController
-  before_action :set_space, only: [:show, :edit, :update, :destroy]
+  before_action :set_space, only: [:edit, :update]
 
   # GET /spaces スペース一覧（ベースドメイン）
   # GET /spaces.json
@@ -9,10 +9,6 @@ class SpacesController < ApplicationController
 
     @spaces = Space.order(created_at: 'DESC', id: 'DESC').page(params[:page]).per(Settings['default_spaces_limit'])
   end
-
-  # GET /spaces/1
-  # GET /spaces/1.json
-  def show; end
 
   # GET /spaces/new
   def new
@@ -49,16 +45,6 @@ class SpacesController < ApplicationController
         format.html { render :edit }
         format.json { render json: @space.errors, status: :unprocessable_entity }
       end
-    end
-  end
-
-  # DELETE /spaces/1
-  # DELETE /spaces/1.json
-  def destroy
-    @space.destroy
-    respond_to do |format|
-      format.html { redirect_to spaces_url, notice: 'Space was successfully destroyed.' }
-      format.json { head :no_content }
     end
   end
 

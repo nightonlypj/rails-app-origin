@@ -233,14 +233,6 @@ RSpec.describe '/spaces', type: :request do
     end
   end
 
-  describe 'GET /show' do
-    it 'renders a successful response' do
-      space = Space.create! valid_attributes
-      get space_url(space)
-      expect(response).to be_successful
-    end
-  end
-
   describe 'GET /new' do
     it 'renders a successful response' do
       get new_space_url
@@ -311,21 +303,6 @@ RSpec.describe '/spaces', type: :request do
         patch space_url(space), params: { space: invalid_attributes }
         expect(response).to be_successful
       end
-    end
-  end
-
-  describe 'DELETE /destroy' do
-    it 'destroys the requested space' do
-      space = Space.create! valid_attributes
-      expect do
-        delete space_url(space)
-      end.to change(Space, :count).by(-1)
-    end
-
-    it 'redirects to the spaces list' do
-      space = Space.create! valid_attributes
-      delete space_url(space)
-      expect(response).to redirect_to(spaces_url)
     end
   end
 end
