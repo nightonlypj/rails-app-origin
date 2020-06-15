@@ -1,10 +1,13 @@
 Rails.application.routes.draw do
   mount RailsAdmin::Engine => '/admin', as: 'rails_admin'
   devise_for :admin_users, controllers: {
-    sessions: 'admin_users/sessions'
+    sessions: 'admin_users/sessions',
+    passwords: 'admin_users/passwords'
   }
   devise_for :users, controllers: {
-    sessions: 'users/sessions'
+    registrations: 'users/registrations',
+    sessions: 'users/sessions',
+    passwords: 'users/passwords'
   }
   root 'top#index'
 end

@@ -15,7 +15,7 @@ RSpec.describe 'layouts/application', type: :view do
       render
       expect(rendered).to include("\"#{new_user_registration_path}\"")
     end
-    it 'ユーザー編集のパスが含まない' do
+    it '登録情報変更のパスが含まない' do
       render
       expect(rendered).not_to include("\"#{edit_user_registration_path}\"")
     end
@@ -38,7 +38,7 @@ RSpec.describe 'layouts/application', type: :view do
       render
       expect(rendered).to include(user.email)
     end
-    it 'ユーザー編集のパスが含まれる' do
+    it '登録情報変更のパスが含まれる' do
       render
       expect(rendered).to include("\"#{edit_user_registration_path}\"")
     end

@@ -1,22 +1,22 @@
 # frozen_string_literal: true
 
 class AdminUsers::PasswordsController < Devise::PasswordsController
-  # GET /resource/password/new
+  # GET /admin_users/password/new パスワードをお忘れですか？
   # def new
   #   super
   # end
 
-  # POST /resource/password
+  # POST /admin_users/password パスワードをお忘れですか？(処理)
   # def create
   #   super
   # end
 
-  # GET /resource/password/edit?reset_password_token=abcdef
+  # GET /admin_users/password/edit パスワード再設定
   # def edit
   #   super
   # end
 
-  # PUT /resource/password
+  # PUT /admin_users/password パスワード再設定(処理)
   # def update
   #   super
   # end
