@@ -1,5 +1,7 @@
 ja:
   app_name: "RailsAppOrigin"
+  my_name: "My name"
+  my_url: "https://mydomain"
   datetime:
     distance_in_words:
       half_a_minute: "30秒前後"

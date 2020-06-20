@@ -1,17 +1,19 @@
 # frozen_string_literal: true
 
 class AdminUsers::UnlocksController < Devise::UnlocksController
-  # GET /resource/unlock/new
+  layout 'admin_users'
+
+  # GET /admin_users/unlock/new アカウントロック解除メール再送
   # def new
   #   super
   # end
 
-  # POST /resource/unlock
+  # POST /admin_users/unlock アカウントロック解除メール再送(処理)
   # def create
   #   super
   # end
 
-  # GET /resource/unlock?unlock_token=abcdef
+  # GET /admin_users/unlock アカウントロック解除(処理)
   # def show
   #   super
   # end

@@ -5,21 +5,51 @@ ja:
       admin_user: "管理者"
     attributes:
       user:
-        current_password: "現在のパスワード"
         email: "メールアドレス"
         password: "パスワード"
         password_confirmation: "パスワード(確認)"
-        remember_me: "ログインを記憶"
+        current_password: "現在のパスワード"
+        reset_password_token: "パスワードリセットトークン"
+        reset_password_sent_at: "パスワードリセット送信日時"
+        remember_me: "ログイン状態を維持する"
+        remember_created_at: "ログイン状態維持開始日時"
+        sign_in_count: "ログイン回数"
+        current_sign_in_at: "現在のログイン日時"
+        last_sign_in_at: "最終ログイン日時"
+        current_sign_in_ip: "現在のログインIPアドレス"
+        last_sign_in_ip: "最終ログインIPアドレス"
+        confirmation_token: "パスワード確認トークン"
+        confirmed_at: "パスワード確認日時"
+        confirmation_sent_at: "パスワード確認送信日時"
+        unconfirmed_email: "確認待ちメールアドレス"
+        failed_attempts: "連続ログイン失敗回数"
+        unlock_token: "アカウントロック解除トークン"
+        locked_at: "アカウントロック日時"
+        created_at: "作成日時"
+        updated_at: "更新日時"
       admin_user:
-        current_password: "現在のパスワード"
         email: "メールアドレス"
         password: "パスワード"
         password_confirmation: "パスワード(確認)"
-        remember_me: "ログインを記憶"
-        reset_password_sent_at: "パスワードリセット送信時刻"
-        remember_created_at: "ログイン記憶時刻"
-        created_at: "作成日"
-        updated_at: "更新日"
+        current_password: "現在のパスワード"
+        reset_password_token: "パスワードリセットトークン"
+        reset_password_sent_at: "パスワードリセット送信日時"
+        remember_me: "ログイン状態を維持する"
+        remember_created_at: "ログイン状態維持開始日時"
+        sign_in_count: "ログイン回数"
+        current_sign_in_at: "現在のログイン日時"
+        last_sign_in_at: "最終ログイン日時"
+        current_sign_in_ip: "現在のログインIPアドレス"
+        last_sign_in_ip: "最終ログインIPアドレス"
+        confirmation_token: "パスワード確認トークン"
+        confirmed_at: "パスワード確認日時"
+        confirmation_sent_at: "パスワード確認送信日時"
+        unconfirmed_email: "確認待ちメールアドレス"
+        failed_attempts: "連続ログイン失敗回数"
+        unlock_token: "アカウントロック解除トークン"
+        locked_at: "アカウントロック日時"
+        created_at: "作成日時"
+        updated_at: "更新日時"
     errors:
       models:
         user:
@@ -39,6 +69,12 @@ ja:
             current_password:
               blank: "入力してください。"
               invalid: "違います。"
+            confirmation_token:
+              blank: "URLが正しくありません。最初からやり直してください。"
+              invalid: "URLが正しくありません。最初からやり直してください。"
+            unlock_token:
+              blank: "URLが正しくありません。最初からやり直してください。"
+              invalid: "URLが正しくありません。最初からやり直してください。"
         admin_user:
           attributes:
             email:
@@ -56,3 +92,69 @@ ja:
             current_password:
               blank: "入力してください。"
               invalid: "違います。"
+            confirmation_token:
+              blank: "URLが正しくありません。最初からやり直してください。"
+              invalid: "URLが正しくありません。最初からやり直してください。"
+            unlock_token:
+              blank: "URLが正しくありません。最初からやり直してください。"
+              invalid: "URLが正しくありません。最初からやり直してください。"
+  errors:
+    messages:
+      already_confirmed: "既に登録済みです。ログインしてください。"
+      confirmation_period_expired: "有効期限が切れました。最初からやり直してください。"
+      expired: "有効期限が切れました。最初からやり直してください。"
+      not_found: "見つかりません。"
+      not_locked: "ロックされていません。"
+      not_saved:
+        one: "入力内容を確認してください。"
+        other: "入力内容を確認してください。"
+  devise:
+    registrations:
+      signed_up: "アカウント登録が完了しました。"
+      signed_up_but_unconfirmed: "メールアドレス確認のメールを送信しました。メールを確認してください。"
+      updated: "登録情報を変更しました。"
+      updated_but_not_signed_in: "登録情報を変更しました。ログインし直してください。"
+      update_needs_confirmation: "メールアドレス確認のメールを送信しました。メールを確認してください。"
+      destroyed: "アカウントを削除しました。またのご利用をお待ちしております。"
+    confirmations:
+      send_instructions: "メールアドレスの確認メールを送信しました。メールを確認してください。"
+      send_paranoid_instructions: "メールアドレスの確認メールを送信しました。メールを確認してください。"
+      confirmed: "メールアドレスの確認が完了しました。"
+    sessions:
+      signed_in: "ログインしました。"
+      signed_out: "ログアウトしました。"
+      already_signed_out: "既にログアウト済みです。"
+    unlocks:
+      send_instructions: "アカウントロック解除のメールを送信しました。メールを確認してください。"
+      send_paranoid_instructions: "アカウントロック解除のメールを送信しました。メールを確認してください。"
+      unlocked: "アカウントロックを解除しました。"
+    passwords:
+      no_token: "URLが正しくありません。最初からやり直してください。"
+      send_instructions: "パスワード再設定のメールを送信しました。メールを確認してください。"
+      send_paranoid_instructions: "パスワード再設定のメールを送信しました。メールを確認してください。"
+      updated: "パスワードを変更しました。"
+      updated_not_active: "パスワードを変更しました。"
+    omniauth_callbacks:
+      failure: "%{kind} アカウントによる認証に失敗しました。理由：（%{reason}）"
+      success: "%{kind} アカウントによる認証に成功しました。"
+    failure:
+      already_authenticated: "既にログインしています。"
+      inactive: "メールアドレスが確認されていません。メールが届いていない場合は[メールアドレス確認メール再送]をしてください。"
+      invalid: "%{authentication_keys}またはパスワードが違います。"
+      last_attempt: "注意：もう一回間違えるとアカウントがロックされます。"
+      locked: "アカウントがロックされています。メールが届いていない場合は[アカウントロック解除メール再送]をしてください。"
+      not_found_in_database: "%{authentication_keys}またはパスワードが違います。"
+      timeout: "セッションがタイムアウトしました。ログインし直してください。"
+      unauthenticated: "ログインしてください。"
+      unconfirmed: "メールアドレスの確認が必要です。メールが届いていない場合は[メールアドレス確認メール再送]をしてください。"
+    mailer:
+      confirmation_instructions:
+        subject: "[RailsAppOrigin] メールアドレス確認"
+      email_changed:
+        subject: "[RailsAppOrigin] メールアドレス変更完了"
+      reset_password_instructions:
+        subject: "[RailsAppOrigin] パスワード再設定"
+      password_change:
+        subject: "[RailsAppOrigin] パスワード再設定完了"
+      unlock_instructions:
+        subject: "[RailsAppOrigin] アカウントロック解除"

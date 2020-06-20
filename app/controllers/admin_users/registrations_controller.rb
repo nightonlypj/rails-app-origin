@@ -1,35 +1,37 @@
 # frozen_string_literal: true
 
 class AdminUsers::RegistrationsController < Devise::RegistrationsController
+  layout 'admin_users'
+
   # before_action :configure_sign_up_params, only: [:create]
   # before_action :configure_account_update_params, only: [:update]
 
-  # GET /resource/sign_up
+  # GET /admin_users/sign_up アカウント登録
   # def new
   #   super
   # end
 
-  # POST /resource
+  # POST /admin_users アカウント登録(処理)
   # def create
   #   super
   # end
 
-  # GET /resource/edit
+  # GET /admin_users/edit 登録情報変更
   # def edit
   #   super
   # end
 
-  # PUT /resource
+  # PUT /admin_users 登録情報変更(処理)
   # def update
   #   super
   # end
 
-  # DELETE /resource
+  # DELETE /admin_users アカウント削除(処理)
   # def destroy
   #   super
   # end
 
-  # GET /resource/cancel
+  # GET /admin_users/cancel
   # Forces the session data which is usually expired after sign
   # in to be expired now. This is useful if the user wants to
   # cancel oauth signing in/up in the middle of the process,

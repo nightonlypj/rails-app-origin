@@ -1,12 +1,12 @@
 # frozen_string_literal: true
 
 class Users::PasswordsController < Devise::PasswordsController
-  # GET /users/password/new パスワードをお忘れですか？
+  # GET /users/password/new パスワード再設定メール送信
   # def new
   #   super
   # end
 
-  # POST /users/password パスワードをお忘れですか？(処理)
+  # POST /users/password パスワード再設定メール送信(処理)
   # def create
   #   super
   # end

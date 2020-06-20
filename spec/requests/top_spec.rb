@@ -6,6 +6,7 @@ RSpec.describe 'Top', type: :request do
     before { sign_in user }
   end
 
+  # GET / トップページ
   describe 'GET #index' do
     shared_examples_for 'レスポンス' do
       it 'renders a successful response' do

@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
 class AdminUsers::OmniauthCallbacksController < Devise::OmniauthCallbacksController
+  layout 'admin_users'
+
   # You should configure your model like this:
   # devise :omniauthable, omniauth_providers: [:twitter]
 
@@ -11,12 +13,12 @@ class AdminUsers::OmniauthCallbacksController < Devise::OmniauthCallbacksControl
   # More info at:
   # https://github.com/heartcombo/devise#omniauth
 
-  # GET|POST /resource/auth/twitter
+  # GET|POST /admin_users/auth/twitter
   # def passthru
   #   super
   # end
 
-  # GET|POST /users/auth/twitter/callback
+  # GET|POST /admin_users/auth/twitter/callback
   # def failure
   #   super
   # end
