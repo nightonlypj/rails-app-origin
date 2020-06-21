@@ -8,6 +8,13 @@
   </head>
 
   <body>
-    <%= yield %>
+
+<%= yield %>
+
+    <hr/>
+    <p>このメールアドレスは送信専用です。</p>
+
+    <p><%= link_to t('app_name'), root_url %></p>
+    <p><%= link_to t('my_name'), t('my_url') %></p>
   </body>
 </html>
