@@ -149,17 +149,17 @@ ja:
       unconfirmed: "メールアドレスの確認が必要です。メールが届いていない場合は[メールアドレス確認メール再送]をしてください。"
     mailer:
       confirmation_instructions:
-        subject: "[RailsAppOrigin] メールアドレス確認のお願い"
-        admin_user_subject: "[RailsAppOrigin Admin] メールアドレス確認のお願い"
+        subject: "【%{app_name}】メールアドレス確認のお願い"
+        admin_user_subject: "【%{app_name} Admin】メールアドレス確認のお願い"
       email_changed:
-        subject: "[RailsAppOrigin] メールアドレス変更完了のお知らせ"
-        admin_user_subject: "[RailsAppOrigin Admin] メールアドレス変更完了のお知らせ"
+        subject: "【%{app_name}】メールアドレス変更完了のお知らせ"
+        admin_user_subject: "【%{app_name} Admin】メールアドレス変更完了のお知らせ"
       reset_password_instructions:
-        subject: "[RailsAppOrigin] パスワード再設定方法のお知らせ"
-        admin_user_subject: "[RailsAppOrigin Admin] パスワード再設定方法のお知らせ"
+        subject: "【%{app_name}】パスワード再設定方法のお知らせ"
+        admin_user_subject: "【%{app_name} Admin】パスワード再設定方法のお知らせ"
       password_change:
-        subject: "[RailsAppOrigin] パスワード変更完了のお知らせ"
-        admin_user_subject: "[RailsAppOrigin Admin] パスワード変更完了のお知らせ"
+        subject: "【%{app_name}】パスワード変更完了のお知らせ"
+        admin_user_subject: "【%{app_name} Admin】パスワード変更完了のお知らせ"
       unlock_instructions:
-        subject: "[RailsAppOrigin] アカウントロックのお知らせ"
-        admin_user_subject: "[RailsAppOrigin Admin] アカウントロックのお知らせ"
+        subject: "【%{app_name}】アカウントロックのお知らせ"
+        admin_user_subject: "【%{app_name} Admin】アカウントロックのお知らせ"
