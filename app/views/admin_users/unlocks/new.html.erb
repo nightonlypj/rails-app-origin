@@ -1,11 +1,14 @@
+<%= render "admin_users/shared/alert_messages", messages: resource.errors[:unlock_token] %>
+
 <h2>アカウントロック解除メール再送</h2>
 
 <%= form_for(resource, as: resource_name, url: unlock_path(resource_name), html: { method: :post }) do |f| %>
-  <%= render "admin_users/shared/error_messages", resource: resource %>
+  <%= render "admin_users/shared/error_messages", resource: resource unless resource.errors[:unlock_token].any? %>
 
   <div class="field">
     <%= f.label :email %>
     <%= f.email_field :email, autofocus: true, autocomplete: "email" %>
+    <%= render "admin_users/shared/field_error_messages", messages: resource.errors[:email] %>
   </div>
 
   <div class="actions">

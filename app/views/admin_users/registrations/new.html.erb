@@ -6,6 +6,7 @@
   <div class="field">
     <%= f.label :email %> <em>(必須)</em><br/>
     <%= f.email_field :email, autofocus: true, autocomplete: "email" %>
+    <%= render "admin_users/shared/field_error_messages", messages: resource.errors[:email] %>
   </div>
 
   <div class="field">
@@ -14,11 +15,13 @@
     <em>(必須、<%= @minimum_password_length %>文字以上)</em><br/>
     <% end %>
     <%= f.password_field :password, autocomplete: "new-password" %>
+    <%= render "admin_users/shared/field_error_messages", messages: resource.errors[:password] %>
   </div>
 
   <div class="field">
     <%= f.label :password_confirmation %> <em>(必須)</em><br/>
     <%= f.password_field :password_confirmation, autocomplete: "new-password" %>
+    <%= render "admin_users/shared/field_error_messages", messages: resource.errors[:password_confirmation] %>
   </div>
 
   <div class="actions">

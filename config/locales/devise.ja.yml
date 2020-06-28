@@ -69,12 +69,15 @@ ja:
             current_password:
               blank: "入力してください。"
               invalid: "違います。"
+            reset_password_token:
+              blank: "URLが正しくありません。最初からやり直してください。"
+              invalid: "URLが正しくないか、有効期限が切れています。最初からやり直してください。"
             confirmation_token:
               blank: "URLが正しくありません。最初からやり直してください。"
-              invalid: "URLが正しくありません。最初からやり直してください。"
+              invalid: "URLが正しくないか、有効期限が切れています。最初からやり直してください。"
             unlock_token:
               blank: "URLが正しくありません。最初からやり直してください。"
-              invalid: "URLが正しくありません。最初からやり直してください。"
+              invalid: "URLが正しくないか、有効期限が切れています。最初からやり直してください。"
         admin_user:
           attributes:
             email:
@@ -92,17 +95,20 @@ ja:
             current_password:
               blank: "入力してください。"
               invalid: "違います。"
+            reset_password_token:
+              blank: "URLが正しくありません。最初からやり直してください。"
+              invalid: "URLが正しくないか、有効期限が切れています。最初からやり直してください。"
             confirmation_token:
               blank: "URLが正しくありません。最初からやり直してください。"
-              invalid: "URLが正しくありません。最初からやり直してください。"
+              invalid: "URLが正しくないか、有効期限が切れています。最初からやり直してください。"
             unlock_token:
               blank: "URLが正しくありません。最初からやり直してください。"
-              invalid: "URLが正しくありません。最初からやり直してください。"
+              invalid: "URLが正しくないか、有効期限が切れています。最初からやり直してください。"
   errors:
     messages:
       already_confirmed: "既に登録済みです。ログインしてください。"
-      confirmation_period_expired: "有効期限が切れました。最初からやり直してください。"
-      expired: "有効期限が切れました。最初からやり直してください。"
+      confirmation_period_expired: "有効期限が切れています。"
+      expired: "有効期限が切れています。最初からやり直してください。"
       not_found: "見つかりません。"
       not_locked: "ロックされていません。"
       not_saved:

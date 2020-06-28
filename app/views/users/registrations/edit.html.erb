@@ -6,6 +6,7 @@
   <div class="field">
     <%= f.label :email %> <em>(必須)</em><br/>
     <%= f.email_field :email, autofocus: true, autocomplete: "email" %>
+    <%= render "users/shared/field_error_messages", messages: resource.errors[:email] %>
   </div>
 
   <% if devise_mapping.confirmable? && resource.pending_reconfirmation? %>
@@ -15,20 +16,25 @@
   <div class="field">
     <%= f.label :password %> <em>(変更する場合のみ入力)</em><br/>
     <%= f.password_field :password, autocomplete: "new-password" %>
-    <% if @minimum_password_length %>
-      <br/>
-      <em><%= @minimum_password_length %>文字以上</em>
+    <% if resource.errors[:password].any? %>
+      <%= render "users/shared/field_error_messages", messages: resource.errors[:password] %>
+    <% else %>
+      <% if @minimum_password_length %>
+        <br/><em><%= @minimum_password_length %>文字以上</em>
+      <% end %>
     <% end %>
   </div>
 
   <div class="field">
     <%= f.label :password_confirmation %> <em>(変更する場合のみ入力)</em><br/>
     <%= f.password_field :password_confirmation, autocomplete: "new-password" %>
+    <%= render "users/shared/field_error_messages", messages: resource.errors[:password_confirmation] %>
   </div>
 
   <div class="field">
     <%= f.label :current_password %> <em>(必須)</em><br/>
     <%= f.password_field :current_password, autocomplete: "current-password" %>
+    <%= render "users/shared/field_error_messages", messages: resource.errors[:current_password] %>
   </div>
 
   <div class="actions">
