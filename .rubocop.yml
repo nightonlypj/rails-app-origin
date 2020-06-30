@@ -48,6 +48,7 @@ AllCops:
     - 'db/schema.rb'
     - 'db/migrate/*'
     - 'node_modules/**/*'
+    - 'Gemfile'
 
 # C: Style/Documentation: Missing top-level class documentation comment.
 Style/Documentation:
