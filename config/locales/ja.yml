@@ -1,9 +1,7 @@
 ja:
   app_name: "RailsAppOrigin"
-  sign_up: "アカウント登録"
-  log_in: "ログイン"
-  log_out: "ログアウト"
-  edit_user: "ユーザー編集"
+  my_name: "My name"
+  my_url: "https://mydomain"
   datetime:
     distance_in_words:
       half_a_minute: "30秒前後"

@@ -1,11 +1,54 @@
 inherit_from: .rubocop_todo.yml
 
+# The following cops were added to RuboCop, but are not configured. Please set Enabled to either `true` or `false` in your `.rubocop.yml` file:
+# - Layout/EmptyLinesAroundAttributeAccessor (0.83)
+Layout/EmptyLinesAroundAttributeAccessor:
+  Enabled: true
+# - Layout/SpaceAroundMethodCallOperator (0.82)
+Layout/SpaceAroundMethodCallOperator:
+  Enabled: true
+# - Lint/DeprecatedOpenSSLConstant (0.84)
+Lint/DeprecatedOpenSSLConstant:
+  Enabled: true
+# - Lint/MixedRegexpCaptureTypes (0.85)
+Lint/MixedRegexpCaptureTypes:
+  Enabled: true
+# - Lint/RaiseException (0.81)
+Lint/RaiseException:
+  Enabled: true
+# - Lint/StructNewOverride (0.81)
+Lint/StructNewOverride:
+  Enabled: true
+# - Style/ExponentialNotation (0.82)
+Style/ExponentialNotation:
+  Enabled: true
+# - Style/HashEachMethods (0.80)
+Style/HashEachMethods:
+  Enabled: true
+# - Style/HashTransformKeys (0.80)
+Style/HashTransformKeys:
+  Enabled: true
+# - Style/HashTransformValues (0.80)
+Style/HashTransformValues:
+  Enabled: true
+# - Style/RedundantRegexpCharacterClass (0.85)
+Style/RedundantRegexpCharacterClass:
+  Enabled: true
+# - Style/RedundantRegexpEscape (0.85)
+Style/RedundantRegexpEscape:
+  Enabled: true
+# - Style/SlicingWithRange (0.83)
+Style/SlicingWithRange:
+  Enabled: true
+
 AllCops:
   Exclude:
     - 'bin/*'
     - 'test/**/*'
     - 'db/schema.rb'
+    - 'db/migrate/*'
     - 'node_modules/**/*'
+    - 'Gemfile'
 
 # C: Style/Documentation: Missing top-level class documentation comment.
 Style/Documentation:
@@ -23,3 +66,7 @@ Style/AsciiComments:
 Metrics/BlockLength:
   Exclude:
     - 'spec/**/*'
+
+# C: Style/FrozenStringLiteralComment: Missing frozen string literal comment.
+Style/FrozenStringLiteralComment:
+  Enabled: false

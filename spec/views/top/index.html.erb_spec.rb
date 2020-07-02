@@ -2,21 +2,22 @@ require 'rails_helper'
 
 RSpec.describe 'top/index', type: :view do
   let!(:user) { FactoryBot.create(:user) }
+  shared_context 'ログイン処理' do
+    before { login_user user }
+  end
 
-  context '未ログイン' do
+  shared_examples_for 'レスポンス' do
     it 'Hello World!が含まれる' do
       render
-      expect(rendered).to match('Hello World!')
+      expect(rendered).to include('Hello World!')
     end
   end
 
+  context '未ログイン' do
+    it_behaves_like 'レスポンス'
+  end
   context 'ログイン中' do
-    before do
-      login_user user
-    end
-    it 'Hello World!が含まれる' do
-      render
-      expect(rendered).to match('Hello World!')
-    end
+    include_context 'ログイン処理'
+    it_behaves_like 'レスポンス'
   end
 end
