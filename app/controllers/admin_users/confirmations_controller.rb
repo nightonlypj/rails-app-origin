@@ -1,17 +1,19 @@
 # frozen_string_literal: true
 
 class AdminUsers::ConfirmationsController < Devise::ConfirmationsController
-  # GET /resource/confirmation/new
+  layout 'admin_users'
+
+  # GET /admin_users/confirmation/new メールアドレス確認メール再送
   # def new
   #   super
   # end
 
-  # POST /resource/confirmation
+  # POST /admin_users/confirmation メールアドレス確認メール再送(処理)
   # def create
   #   super
   # end
 
-  # GET /resource/confirmation?confirmation_token=abcdef
+  # GET /admin_users/confirmation メールアドレス確認(処理)
   # def show
   #   super
   # end

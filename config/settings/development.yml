@@ -1,2 +1,3 @@
+mailer_sender: noreply@localhost
 base_domain: localhost
 base_domain_link: localhost:3000

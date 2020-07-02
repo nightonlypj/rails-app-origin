@@ -1,43 +1,49 @@
-<h2>Edit <%= resource_name.to_s.humanize %></h2>
+<h2>登録情報変更</h2>
 
 <%= form_for(resource, as: resource_name, url: registration_path(resource_name), html: { method: :put }) do |f| %>
-  <%= render "devise/shared/error_messages", resource: resource %>
+  <%= render "users/shared/error_messages", resource: resource %>
 
   <div class="field">
-    <%= f.label :email %><br />
+    <%= f.label :email %> <em>(必須)</em><br/>
     <%= f.email_field :email, autofocus: true, autocomplete: "email" %>
+    <%= render "users/shared/field_error_messages", messages: resource.errors[:email] %>
   </div>
 
   <% if devise_mapping.confirmable? && resource.pending_reconfirmation? %>
-    <div>Currently waiting confirmation for: <%= resource.unconfirmed_email %></div>
+    <div>確認待ち：<%= resource.unconfirmed_email %></div>
   <% end %>
 
   <div class="field">
-    <%= f.label :password %> <i>(leave blank if you don't want to change it)</i><br />
+    <%= f.label :password %> <em>(変更する場合のみ入力)</em><br/>
     <%= f.password_field :password, autocomplete: "new-password" %>
-    <% if @minimum_password_length %>
-      <br />
-      <em><%= @minimum_password_length %> characters minimum</em>
+    <% if resource.errors[:password].any? %>
+      <%= render "users/shared/field_error_messages", messages: resource.errors[:password] %>
+    <% else %>
+      <% if @minimum_password_length %>
+        <br/><em><%= @minimum_password_length %>文字以上</em>
+      <% end %>
     <% end %>
   </div>
 
   <div class="field">
-    <%= f.label :password_confirmation %><br />
+    <%= f.label :password_confirmation %> <em>(変更する場合のみ入力)</em><br/>
     <%= f.password_field :password_confirmation, autocomplete: "new-password" %>
+    <%= render "users/shared/field_error_messages", messages: resource.errors[:password_confirmation] %>
   </div>
 
   <div class="field">
-    <%= f.label :current_password %> <i>(we need your current password to confirm your changes)</i><br />
+    <%= f.label :current_password %> <em>(必須)</em><br/>
     <%= f.password_field :current_password, autocomplete: "current-password" %>
+    <%= render "users/shared/field_error_messages", messages: resource.errors[:current_password] %>
   </div>
 
   <div class="actions">
-    <%= f.submit "Update" %>
+    <%= f.submit "変更" %>
   </div>
 <% end %>
 
-<h3>Cancel my account</h3>
+<hr/>
 
-<p>Unhappy? <%= button_to "Cancel my account", registration_path(resource_name), data: { confirm: "Are you sure?" }, method: :delete %></p>
+<h2>アカウント削除</h2>
 
-<%= link_to "Back", :back %>
+<p><%= button_to "削除確認", registration_path(resource_name), data: { confirm: "アカウント削除：本当に削除しますか？（ログイン出来なくなります）" }, method: :delete %></p>

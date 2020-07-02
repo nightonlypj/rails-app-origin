@@ -3,17 +3,17 @@
 class Users::SessionsController < Devise::SessionsController
   # before_action :configure_sign_in_params, only: [:create]
 
-  # GET /resource/sign_in
+  # GET /users/sign_in ログイン
   # def new
   #   super
   # end
 
-  # POST /resource/sign_in
+  # POST /users/sign_in ログイン(処理)
   # def create
   #   super
   # end
 
-  # DELETE /resource/sign_out
+  # DELETE /users/sign_out ログアウト(処理)
   # def destroy
   #   super
   # end

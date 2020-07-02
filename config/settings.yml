@@ -1,3 +1,5 @@
+confirm_within_hours: 24
+reset_password_within_hours: 24
 subdomain_minimum: 1
 subdomain_maximum: 32
 space_name_minimum: 1

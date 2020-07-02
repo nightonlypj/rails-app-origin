@@ -1,0 +1,7 @@
+<% if messages.any? %>
+  <p class="alert">
+    <% messages.each do |message| %>
+      <%= message %><br/>
+    <% end %>
+  </p>
+<% end %>

@@ -67,10 +67,9 @@ end
 # Windows does not include zoneinfo files, so bundle the tzinfo-data gem
 gem 'tzinfo-data', platforms: [:mingw, :mswin, :x64_mingw, :jruby]
 
-# Use devise
+# Use Devise
 gem 'devise'
 gem 'devise-i18n'
-gem 'devise-i18n-views'
 
 # Use RailsAdmin
 gem 'rails_admin'
