@@ -143,7 +143,7 @@ Devise.setup do |config|
   # Default is nil, meaning there is no restriction on how long a user can take
   # before confirming their account.
   # config.confirm_within = 3.days
-  config.confirm_within = 1.day
+  config.confirm_within = Settings['confirm_within_hours'].to_i.hours
 
   # If true, requires any email changes to be confirmed (exactly the same way as
   # initial account confirmation) to be applied. Requires additional unconfirmed_email
@@ -220,7 +220,7 @@ Devise.setup do |config|
   # Don't put a too small interval or your users won't have the time to
   # change their passwords.
   # config.reset_password_within = 6.hours
-  config.reset_password_within = 1.day
+  config.reset_password_within = Settings['reset_password_within_hours'].to_i.hours
 
   # When set to false, does not sign a user in automatically after their password is
   # reset. Defaults to true, so a user is signed in automatically after a reset.

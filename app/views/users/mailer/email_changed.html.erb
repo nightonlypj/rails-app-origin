@@ -1,10 +1,10 @@
-<p><%= @email %> 様</p>
-<p><%= t('app_name') %> をご利用頂きありがとうございます。</p>
-
-<p>メールアドレスの変更が完了しました。</p>
+<%= @email %> 様<br/>
+<%= t('app_name') %> をご利用頂きありがとうございます。<br/>
+<br/>
+メールアドレスの変更が完了しました。<br/>
 <% if @resource.try(:unconfirmed_email?) %>
-<p>変更前のメールアドレス: <%= @resource.email %></p>
-<p>変更後のメールアドレス: <%= @resource.unconfirmed_email %></p>
+変更前のメールアドレス: <%= @resource.email %><br/>
+変更後のメールアドレス: <%= @resource.unconfirmed_email %>
 <% else %>
-<p>メールアドレス: <%= @resource.email %></p>
+メールアドレス: <%= @resource.email %>
 <% end %>

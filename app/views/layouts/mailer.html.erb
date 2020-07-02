@@ -2,19 +2,15 @@
 <html>
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <style>
-      /* Email styles need to be inline */
-    </style>
   </head>
-
   <body>
 
 <%= yield %>
 
     <hr/>
-    <p>このメールアドレスは送信専用です。</p>
-
-    <p><%= link_to t('app_name'), root_url %></p>
-    <p><%= link_to t('my_name'), t('my_url') %></p>
+    このメールアドレスは送信専用です。<br/>
+    <br/>
+    <%= link_to t('app_name'), root_url %><br/>
+    <%= link_to t('my_name'), t('my_url') %>
   </body>
 </html>
