@@ -1,35 +1,39 @@
 class SpacesController < ApplicationController
-  before_action :set_space, only: [:edit, :update]
+  before_action :set_space, only: %i[edit update]
 
-  # GET /spaces スペース一覧（ベースドメイン）
-  # GET /spaces.json
+  # GET /spaces（ベースドメイン） スペース一覧
+  # GET /spaces.json（ベースドメイン） スペース一覧API
   def index
-    return head :not_found if !equal_base_domain && request.format.json?
-    return redirect_to "//#{Settings['base_domain_link']}#{spaces_path}" unless equal_base_domain
+    return head :not_found if json_request? && !base_domain_request?
+    return redirect_to "//#{Settings['base_domain_link']}#{spaces_path}" unless base_domain_request?
 
     @spaces = Space.order(created_at: 'DESC', id: 'DESC').page(params[:page]).per(Settings['default_spaces_limit'])
   end
 
-  # GET /spaces/new
+  # GET /spaces/new（ベースドメイン） スペース作成
   def new
+    return redirect_to "//#{Settings['base_domain_link']}#{new_space_path}" unless base_domain_request?
+
     @space = Space.new
   end
 
   # GET /spaces/1/edit
   def edit; end
 
-  # POST /spaces
-  # POST /spaces.json
+  # POST /spaces（ベースドメイン） スペース作成(処理)
+  # POST /spaces.json（ベースドメイン） スペース作成処理API
   def create
-    @space = Space.new(space_params)
+    return head :not_found if json_request? && !base_domain_request?
+    return redirect_to "//#{Settings['base_domain_link']}#{new_space_path}" unless base_domain_request?
 
+    @space = Space.new(space_params)
     respond_to do |format|
       if @space.save
-        format.html { redirect_to @space, notice: 'Space was successfully created.' }
-        format.json { render :show, status: :created, location: @space }
+        format.html { redirect_to "//#{Space.last.subdomain}.#{Settings['base_domain_link']}", notice: t('notice.space.create') }
+        format.json { render :create, status: :created }
       else
         format.html { render :new }
-        format.json { render json: @space.errors, status: :unprocessable_entity }
+        format.json { render :create, status: :unprocessable_entity }
       end
     end
   end

@@ -1,5 +1,5 @@
 Rails.application.routes.draw do
-  resources :spaces, only: [:index, :new, :edit, :create, :update]
+  resources :spaces, only: %i[index new edit create update]
   mount RailsAdmin::Engine => '/admin', as: 'rails_admin'
   devise_for :admin_users, controllers: {
     registrations: 'admin_users/registrations',

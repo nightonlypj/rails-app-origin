@@ -1,24 +1,16 @@
 <%= form_with(model: space, local: true) do |form| %>
-  <% if space.errors.any? %>
-    <div id="error_explanation">
-      <h2><%= pluralize(space.errors.count, "error") %> prohibited this space from being saved:</h2>
-
-      <ul>
-        <% space.errors.full_messages.each do |message| %>
-          <li><%= message %></li>
-        <% end %>
-      </ul>
-    </div>
-  <% end %>
+  <%= render "users/shared/error_messages", resource: space %>
 
   <div class="field">
     <%= form.label :subdomain %>
     <%= form.text_field :subdomain %>
+    <%= render "users/shared/field_error_messages", messages: space.errors[:subdomain] %>
   </div>
 
   <div class="field">
     <%= form.label :name %>
     <%= form.text_field :name %>
+    <%= render "users/shared/field_error_messages", messages: space.errors[:name] %>
   </div>
 
   <div class="actions">

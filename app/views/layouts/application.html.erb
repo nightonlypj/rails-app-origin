@@ -23,10 +23,10 @@
     </ul>
     <hr/>
 
-<% if @use_space %>
-    <h2><%= link_to @use_space.name, root_path %></h2>
+<% if @request_space %>
+    <h2><%= link_to @request_space.name, root_path %></h2>
     <ul>
-      <li><%= link_to 'スペース編集', edit_space_path(@use_space) %></li>
+      <li><%= link_to 'スペース編集', edit_space_path(@request_space) %></li>
     </ul>
     <hr/>
 <% end %>

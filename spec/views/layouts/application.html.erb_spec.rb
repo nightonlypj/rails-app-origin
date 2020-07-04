@@ -7,7 +7,7 @@ RSpec.describe 'layouts/application', type: :view do
   end
 
   shared_context 'スペース情報作成' do
-    before { @use_space = FactoryBot.create(:space) }
+    before { @request_space = FactoryBot.create(:space) }
   end
 
   shared_examples_for '未ログインのレスポンス' do
@@ -54,11 +54,11 @@ RSpec.describe 'layouts/application', type: :view do
   shared_examples_for 'スペース情報あり' do
     it 'スペース名が含まれる' do
       render
-      expect(rendered).to include(@use_space.name)
+      expect(rendered).to include(@request_space.name)
     end
     it 'スペース編集のパスが含まれる' do
       render
-      expect(rendered).to include("\"#{edit_space_path(@use_space)}\"")
+      expect(rendered).to include("\"#{edit_space_path(@request_space)}\"")
     end
   end
 

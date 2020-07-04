@@ -7,7 +7,8 @@ RSpec.describe 'Top', type: :request do
     before { sign_in user }
   end
 
-  # GET / トップページ
+  # GET /（ベースドメイン） トップページ
+  # GET /（サブドメイン） スペーストップ
   describe 'GET #index' do
     shared_examples_for 'ベースドメイン' do
       it 'renders a successful response' do
@@ -17,8 +18,8 @@ RSpec.describe 'Top', type: :request do
     end
     shared_examples_for 'サブドメイン' do
       it 'renders a successful response' do
-        use_space = FactoryBot.create(:space)
-        space_headers = { 'Host' => "#{use_space.subdomain}.#{Settings['base_domain']}" }
+        request_space = FactoryBot.create(:space)
+        space_headers = { 'Host' => "#{request_space.subdomain}.#{Settings['base_domain']}" }
         get root_path, headers: space_headers
         expect(response).to be_successful
       end

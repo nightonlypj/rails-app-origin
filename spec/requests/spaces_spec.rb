@@ -1,16 +1,8 @@
 require 'rails_helper'
 
-RSpec.describe '/spaces', type: :request do
-  # Space. As you add validations to Space, be sure to
-  # adjust the attributes here as well.
-  let(:valid_attributes) do
-    skip('Add a hash of attributes valid for your model')
-  end
-
-  let(:invalid_attributes) do
-    skip('Add a hash of attributes invalid for your model')
-  end
-
+RSpec.describe 'Spaces', type: :request do
+  let!(:valid_attributes) { FactoryBot.attributes_for(:space) }
+  let!(:invalid_attributes) { FactoryBot.attributes_for(:space, subdomain: nil) }
   let!(:base_headers) { { 'Host' => Settings['base_domain'] } }
   let!(:json_headers) { { 'Content-Type' => 'application/json', 'Accept' => 'application/json' } }
   let!(:user) { FactoryBot.create(:user) }
@@ -18,6 +10,18 @@ RSpec.describe '/spaces', type: :request do
     before { sign_in user }
   end
 
+  shared_context '存在するサブドメイン作成' do
+    before do
+      request_space = FactoryBot.create(:space)
+      @space_headers = { 'Host' => "#{request_space.subdomain}.#{Settings['base_domain']}" }
+    end
+  end
+  shared_context '存在しないサブドメイン作成' do
+    before { @space_headers = { 'Host' => "not.#{Settings['base_domain']}" } }
+  end
+
+  # GET /spaces（ベースドメイン） スペース一覧
+  # GET /spaces.json（ベースドメイン） スペース一覧API
   describe 'GET /index' do
     shared_examples_for 'ベースドメイン' do
       it 'renders a successful response' do
@@ -30,26 +34,9 @@ RSpec.describe '/spaces', type: :request do
       end
     end
     shared_examples_for 'サブドメイン' do
-      before do
-        use_space = FactoryBot.create(:space)
-        @space_headers = { 'Host' => "#{use_space.subdomain}.#{Settings['base_domain']}" }
-      end
-      it 'renders a redirect base_domain' do
+      it 'スペース一覧（ベースドメイン）にリダイレクト' do
         get spaces_url, headers: @space_headers
-        expect(response).to redirect_to("//#{Settings['base_domain_link']}/spaces")
-      end
-      it '(json)renders a not found response' do
-        get spaces_url, headers: @space_headers.merge(json_headers)
-        expect(response).to be_not_found
-      end
-    end
-    shared_examples_for '存在しないサブドメイン' do
-      before do
-        @space_headers = { 'Host' => "not.#{Settings['base_domain']}" }
-      end
-      it 'renders a redirect base_domain' do
-        get spaces_url, headers: @space_headers
-        expect(response).to redirect_to("//#{Settings['base_domain_link']}/spaces")
+        expect(response).to redirect_to("//#{Settings['base_domain_link']}#{spaces_path}")
       end
       it '(json)renders a not found response' do
         get spaces_url, headers: @space_headers.merge(json_headers)
@@ -57,15 +44,24 @@ RSpec.describe '/spaces', type: :request do
       end
     end
 
+    shared_examples_for '存在するサブドメイン' do
+      include_context '存在するサブドメイン作成'
+      it_behaves_like 'サブドメイン'
+    end
+    shared_examples_for '存在しないサブドメイン' do
+      include_context '存在しないサブドメイン作成'
+      it_behaves_like 'サブドメイン'
+    end
+
     context '未ログイン' do
       it_behaves_like 'ベースドメイン'
-      it_behaves_like 'サブドメイン'
+      it_behaves_like '存在するサブドメイン'
       it_behaves_like '存在しないサブドメイン'
     end
     context 'ログイン中' do
       include_context 'ログイン処理'
       it_behaves_like 'ベースドメイン'
-      it_behaves_like 'サブドメイン'
+      it_behaves_like '存在するサブドメイン'
       it_behaves_like '存在しないサブドメイン'
     end
   end
@@ -164,23 +160,23 @@ RSpec.describe '/spaces', type: :request do
         get spaces_url, headers: base_headers
         expect(response.body).to include("\"#{new_space_path}\"")
       end
-      it '(json)total_countが一致する' do
+      it '(json)全件数が一致する' do
         get spaces_url, headers: base_headers.merge(json_headers)
         expect(JSON.parse(response.body)['total_count']).to eq(@create_spaces.count)
       end
-      it '(json)1ページ、current_pageが一致する' do
+      it '(json)1ページ、現在ページが一致する' do
         get spaces_url, headers: base_headers.merge(json_headers)
         expect(JSON.parse(response.body)['current_page']).to eq(1)
       end
-      it '(json)2ページ、current_pageが一致する' do
+      it '(json)2ページ、現在ページが一致する' do
         get spaces_url(page: 2), headers: base_headers.merge(json_headers)
         expect(JSON.parse(response.body)['current_page']).to eq(2)
       end
-      it '(json)total_pagesが一致する' do
+      it '(json)全ページ数が一致する' do
         get spaces_url, headers: base_headers.merge(json_headers)
         expect(JSON.parse(response.body)['total_pages']).to eq((@create_spaces.count - 1).div(Settings['default_spaces_limit']) + 1)
       end
-      it '(json)limit_valueが一致する' do
+      it '(json)最大表示件数が一致する' do
         get spaces_url, headers: base_headers.merge(json_headers)
         expect(JSON.parse(response.body)['limit_value']).to eq(Settings['default_spaces_limit'])
       end
@@ -233,10 +229,39 @@ RSpec.describe '/spaces', type: :request do
     end
   end
 
+  # GET /spaces/new（ベースドメイン） スペース作成
   describe 'GET /new' do
-    it 'renders a successful response' do
-      get new_space_url
-      expect(response).to be_successful
+    shared_examples_for 'ベースドメイン' do
+      it 'renders a successful response' do
+        get new_space_url, headers: base_headers
+        expect(response).to be_successful
+      end
+    end
+    shared_examples_for '存在するサブドメイン' do
+      include_context '存在するサブドメイン作成'
+      it 'スペース作成（ベースドメイン）にリダイレクト' do
+        get new_space_url, headers: @space_headers
+        expect(response).to redirect_to("//#{Settings['base_domain_link']}#{new_space_path}")
+      end
+    end
+    shared_examples_for '存在しないサブドメイン' do
+      include_context '存在しないサブドメイン作成'
+      it 'スペース作成（ベースドメイン）にリダイレクト' do
+        get new_space_url, headers: @space_headers
+        expect(response).to redirect_to("//#{Settings['base_domain_link']}#{new_space_path}")
+      end
+    end
+
+    context '未ログイン' do
+      it_behaves_like 'ベースドメイン'
+      it_behaves_like '存在するサブドメイン'
+      it_behaves_like '存在しないサブドメイン'
+    end
+    context 'ログイン中' do
+      include_context 'ログイン処理'
+      it_behaves_like 'ベースドメイン'
+      it_behaves_like '存在するサブドメイン'
+      it_behaves_like '存在しないサブドメイン'
     end
   end
 
@@ -248,31 +273,91 @@ RSpec.describe '/spaces', type: :request do
     end
   end
 
+  # POST /spaces（ベースドメイン） スペース作成(処理)
+  # POST /spaces.json（ベースドメイン） スペース作成処理API
   describe 'POST /create' do
-    context 'with valid parameters' do
-      it 'creates a new Space' do
+    shared_examples_for '有効なパラメータ' do
+      it '作成に成功' do
         expect do
-          post spaces_url, params: { space: valid_attributes }
+          post spaces_url, params: { space: valid_attributes }, headers: base_headers
         end.to change(Space, :count).by(1)
       end
-
-      it 'redirects to the created space' do
-        post spaces_url, params: { space: valid_attributes }
-        expect(response).to redirect_to(space_url(Space.last))
+      it '作成したスペースのトップページ（サブドメイン）にリダイレクト' do
+        post spaces_url, params: { space: valid_attributes }, headers: base_headers
+        expect(response).to redirect_to("//#{Space.last.subdomain}.#{Settings['base_domain_link']}")
+      end
+      it '(json)renders a created(201) response' do
+        post spaces_url, params: valid_attributes, as: :json, headers: base_headers.merge(json_headers)
+        expect(response).to be_created
+      end
+      it '(json)エラー件数が0と一致' do
+        post spaces_url, params: valid_attributes, as: :json, headers: base_headers.merge(json_headers)
+        expect(JSON.parse(response.body)['error_count']).to eq(0)
+      end
+      it '(json)エラーメッセージの項目が存在しない' do
+        post spaces_url, params: valid_attributes, as: :json, headers: base_headers.merge(json_headers)
+        expect(JSON.parse(response.body)['errors'].present?).to eq(false)
+      end
+    end
+    shared_examples_for '無効なパラメータ' do
+      it '作成に失敗' do
+        expect do
+          post spaces_url, params: { space: invalid_attributes }, headers: base_headers
+        end.to change(Space, :count).by(0)
+      end
+      it 'renders a successful response' do
+        post spaces_url, params: { space: invalid_attributes }, headers: base_headers
+        expect(response).to be_successful
+      end
+      # TODO: スペース作成（ベースドメイン）を再表示、パラメータ復元、エラーメッセージ表示
+      it '(json)renders a unprocessable(422) response' do
+        post spaces_url, params: invalid_attributes, as: :json, headers: base_headers.merge(json_headers)
+        expect(response).to be_unprocessable
+      end
+      it '(json)エラー件数が1と一致' do
+        post spaces_url, params: invalid_attributes, as: :json, headers: base_headers.merge(json_headers)
+        expect(JSON.parse(response.body)['error_count']).to eq(1)
+      end
+      it '(json)エラーメッセージの項目が存在する' do
+        post spaces_url, params: invalid_attributes, as: :json, headers: base_headers.merge(json_headers)
+        expect(JSON.parse(response.body)['errors'].present?).to eq(true)
       end
     end
 
-    context 'with invalid parameters' do
-      it 'does not create a new Space' do
-        expect do
-          post spaces_url, params: { space: invalid_attributes }
-        end.to change(Space, :count).by(0)
+    shared_examples_for 'ベースドメイン' do
+      it_behaves_like '有効なパラメータ'
+      it_behaves_like '無効なパラメータ'
+    end
+    shared_examples_for 'サブドメイン' do
+      it 'スペース作成（ベースドメイン）にリダイレクト' do
+        post spaces_url, params: { space: valid_attributes }, headers: @space_headers
+        expect(response).to redirect_to("//#{Settings['base_domain_link']}#{new_space_path}")
       end
+      it '(json)renders a not found response' do
+        post spaces_url, params: valid_attributes, as: :json, headers: @space_headers.merge(json_headers)
+        expect(response).to be_not_found
+      end
+    end
 
-      it "renders a successful response (i.e. to display the 'new' template)" do
-        post spaces_url, params: { space: invalid_attributes }
-        expect(response).to be_successful
-      end
+    shared_examples_for '存在するサブドメイン' do
+      include_context '存在するサブドメイン作成'
+      it_behaves_like 'サブドメイン'
+    end
+    shared_examples_for '存在しないサブドメイン' do
+      include_context '存在しないサブドメイン作成'
+      it_behaves_like 'サブドメイン'
+    end
+
+    context '未ログイン' do
+      it_behaves_like 'ベースドメイン'
+      it_behaves_like '存在するサブドメイン'
+      it_behaves_like '存在しないサブドメイン'
+    end
+    context 'ログイン中' do
+      include_context 'ログイン処理'
+      it_behaves_like 'ベースドメイン'
+      it_behaves_like '存在するサブドメイン'
+      it_behaves_like '存在しないサブドメイン'
     end
   end
 

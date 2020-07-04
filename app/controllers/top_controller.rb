@@ -1,10 +1,11 @@
 class TopController < ApplicationController
-  before_action :set_use_space
+  before_action :set_request_space
 
-  # GET / トップページ（ベースドメイン、サブドメイン）
+  # GET /（ベースドメイン） トップページ
+  # GET /（サブドメイン） スペーストップ
   def index
-    return head :not_found if !equal_base_domain && @use_space.blank?
-    return render :index_subdomain unless equal_base_domain
+    return head :not_found if !base_domain_request? && @request_space.blank?
+    return render :index_subdomain unless base_domain_request?
 
     @new_spaces = Space.all.order(id: 'DESC').limit(Settings['new_spaces_limit'])
   end
