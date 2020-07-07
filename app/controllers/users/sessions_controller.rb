@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
 class Users::SessionsController < Devise::SessionsController
+  before_action :redirect_base_domain_response, only: [:new]
+  before_action :allow_base_domain_response, only: %i[create destroy]
   # before_action :configure_sign_in_params, only: [:create]
 
   # GET /users/sign_in ログイン

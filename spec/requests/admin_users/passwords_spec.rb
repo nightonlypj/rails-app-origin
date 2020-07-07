@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-RSpec.describe 'AdminUsers::Password', type: :request do
+RSpec.describe 'AdminUsers::Passwords', type: :request do
   shared_context '期限内のtoken作成' do
     before do
       @token = Faker::Internet.password

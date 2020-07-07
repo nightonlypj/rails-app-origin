@@ -1,6 +1,9 @@
 # frozen_string_literal: true
 
 class Users::PasswordsController < Devise::PasswordsController
+  before_action :redirect_base_domain_response, only: %i[new edit]
+  before_action :allow_base_domain_response, only: %i[create update]
+
   # GET /users/password/new パスワード再設定メール送信
   # def new
   #   super

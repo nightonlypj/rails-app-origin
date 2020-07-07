@@ -1,3 +1,3 @@
-mailer_sender: noreply@test-mydomain
-base_domain: test-mydomain
-base_domain_link: test-mydomain
+mailer_sender: noreply@localhost.test
+base_domain: base.localhost.test
+base_domain_link: base.localhost.test

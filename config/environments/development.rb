@@ -1,5 +1,6 @@
 Rails.application.configure do
   # Settings specified here will take precedence over those in config/application.rb.
+  config.hosts.clear
 
   # In the development environment your application's code is reloaded on
   # every request. This slows down response time but is perfect for development
@@ -36,7 +37,7 @@ Rails.application.configure do
 
   config.action_mailer.perform_caching = false
 
-  config.action_mailer.default_url_options = { host: 'localhost', port: 3000 }
+  config.action_mailer.default_url_options = { host: Settings['base_domain'], port: 3000 }
 
   # Print deprecation notices to the Rails logger.
   config.active_support.deprecation = :log

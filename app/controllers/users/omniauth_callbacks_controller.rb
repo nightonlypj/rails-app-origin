@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
 class Users::OmniauthCallbacksController < Devise::OmniauthCallbacksController
+  before_action :allow_base_domain_response
+
   # You should configure your model like this:
   # devise :omniauthable, omniauth_providers: [:twitter]
 

@@ -10,13 +10,23 @@ class ApplicationController < ActionController::Base
   # ベースドメインでリクエストされているかを返却
   # @return true: ベースドメイン, false: ベースドメイン以外（サブドメイン含む）
   def base_domain_request?
-    request.domain.eql?(Settings['base_domain'])
+    request.host.eql?(Settings['base_domain'])
+  end
+
+  # ベースドメインにリダイレクト
+  def redirect_base_domain_response
+    redirect_to "//#{Settings['base_domain_link']}#{request.fullpath}" unless base_domain_request?
+  end
+
+  # ベースドメインのみ許可
+  def allow_base_domain_response
+    head :not_found unless base_domain_request?
   end
 
   # リクエストされたサブドメインの情報を返却
   # @return Spaceモデル
   def set_request_space
-    subdomain = request.domain[/^(.*)\.#{Settings['base_domain']}$/, 1]
+    subdomain = request.host[/^(.*)\.#{Settings['base_domain']}$/, 1]
     return if subdomain.blank?
 
     @request_space = Space.find_by(subdomain: subdomain)

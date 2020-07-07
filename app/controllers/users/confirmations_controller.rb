@@ -1,6 +1,9 @@
 # frozen_string_literal: true
 
 class Users::ConfirmationsController < Devise::ConfirmationsController
+  before_action :redirect_base_domain_response, only: %i[new show]
+  before_action :allow_base_domain_response, only: [:create]
+
   # GET /users/confirmation/new メールアドレス確認メール再送
   # def new
   #   super
