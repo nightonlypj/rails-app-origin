@@ -4,11 +4,9 @@
     <title><%= t('app_name') %> Admin</title>
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
-
     <%= stylesheet_link_tag 'application', media: 'all', 'data-turbolinks-track': 'reload' %>
     <%= javascript_pack_tag 'application', 'data-turbolinks-track': 'reload' %>
   </head>
-
   <body>
     <h1><%= link_to "#{t('app_name')} Admin", new_admin_user_session_path %></h1>
     <hr/>
