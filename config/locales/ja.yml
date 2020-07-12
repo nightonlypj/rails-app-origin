@@ -27,10 +27,12 @@ ja:
               too_long: "%{count}文字以下で入力してください。"
   helpers:
     submit:
-      create: 登録
+      create: "登録"
+      update: "更新"
   notice:
     space:
-      create: スペースを作成しました。
+      create: "スペースを作成しました。"
+      update: "スペースを更新しました。"
   datetime:
     distance_in_words:
       half_a_minute: "30秒前後"

@@ -15,19 +15,23 @@ RSpec.describe SpacesController, type: :routing do
     end
 
     it 'routes to #edit' do
-      expect(get: '/spaces/1/edit').to route_to('spaces#edit', id: '1')
+      expect(get: '/spaces/1/edit').not_to be_routable
+      expect(get: '/spaces/edit').to route_to('spaces#edit')
     end
 
     it 'routes to #create' do
-      expect(post: '/spaces').to route_to('spaces#create')
+      expect(post: '/spaces').not_to be_routable
+      expect(post: '/spaces/create').to route_to('spaces#create')
     end
 
     it 'routes to #update via PUT' do
-      expect(put: '/spaces/1').to route_to('spaces#update', id: '1')
+      expect(put: '/spaces/1').not_to be_routable
+      expect(put: '/spaces/update').to route_to('spaces#update')
     end
 
     it 'routes to #update via PATCH' do
-      expect(patch: '/spaces/1').to route_to('spaces#update', id: '1')
+      expect(patch: '/spaces/1').not_to be_routable
+      expect(patch: '/spaces/update').to route_to('spaces#update')
     end
 
     it 'routes to #destroy' do

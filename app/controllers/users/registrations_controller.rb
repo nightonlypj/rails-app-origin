@@ -2,7 +2,7 @@
 
 class Users::RegistrationsController < Devise::RegistrationsController
   before_action :redirect_base_domain_response, only: %i[new edit]
-  before_action :allow_base_domain_response, only: %i[create update destroy]
+  before_action :not_found_sub_domain_response, only: %i[create update destroy]
   # before_action :configure_sign_up_params, only: [:create]
   # before_action :configure_account_update_params, only: [:update]
 

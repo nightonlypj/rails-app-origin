@@ -1,6 +1,3 @@
-<h1>Editing Space</h1>
+<h1>スペース編集</h1>
 
-<%= render 'form', space: @space %>
-
-<%= link_to 'Show', @space %> |
-<%= link_to 'Back', spaces_path %>
+<%= render 'form', space: @space, path: update_space_path %>

@@ -18,18 +18,33 @@ class ApplicationController < ActionController::Base
     redirect_to "//#{Settings['base_domain_link']}#{request.fullpath}" unless base_domain_request?
   end
 
-  # ベースドメインのみ許可
-  def allow_base_domain_response
+  # ベースドメイン禁止
+  def not_found_base_domain_response
+    head :not_found if base_domain_request?
+  end
+
+  # サブドメイン禁止
+  def not_found_sub_domain_response
     head :not_found unless base_domain_request?
+  end
+
+  # JSONの場合、サブドメイン禁止
+  def not_found_json_sub_domain_response
+    head :not_found if json_request? && !base_domain_request?
   end
 
   # リクエストされたサブドメインの情報を返却
   # @return Spaceモデル
-  def set_request_space
+  def request_space
     subdomain = request.host[/^(.*)\.#{Settings['base_domain']}$/, 1]
     return if subdomain.blank?
 
-    @request_space = Space.find_by(subdomain: subdomain)
+    Space.find_by(subdomain: subdomain)
+  end
+
+  # リクエストされたサブドメインの情報をセット
+  def set_request_space
+    @request_space = request_space
   end
 
   private
