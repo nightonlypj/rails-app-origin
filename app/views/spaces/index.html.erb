@@ -15,7 +15,7 @@
 <% @spaces.each do |space| %>
     <tr>
       <td><%= space.subdomain %></td>
-      <td><%= link_to space.name, "//#{space.subdomain}.#{Settings['base_domain_link']}" %></td>
+      <td><%= link_to space.name, "//#{space.subdomain}.#{Settings['base_domain']}" %></td>
       <td><%= l(space.created_at.to_date, format: :default) %></td>
     </tr>
 <% end %>

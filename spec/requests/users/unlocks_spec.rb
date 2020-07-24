@@ -8,14 +8,14 @@ RSpec.describe 'Users::Unlocks', type: :request do
   describe 'GET /users/unlock/new' do
     context 'ベースドメイン' do
       it 'renders a successful response' do
-        get '/users/unlock/new', headers: base_headers
+        get new_user_unlock_path, headers: base_headers
         expect(response).to be_successful
       end
     end
     context 'サブドメイン' do
       it 'ベースドメインにリダイレクト' do
-        get '/users/unlock/new', headers: space_headers
-        expect(response).to redirect_to("//#{Settings['base_domain_link']}#{new_user_unlock_path}")
+        get new_user_unlock_path, headers: space_headers
+        expect(response).to redirect_to("//#{Settings['base_domain']}#{new_user_unlock_path}")
       end
     end
   end
@@ -24,13 +24,13 @@ RSpec.describe 'Users::Unlocks', type: :request do
   describe 'POST /users/unlock' do
     context 'ベースドメイン' do
       it 'renders a successful response' do
-        post '/users/unlock', headers: base_headers
+        post user_unlock_path, headers: base_headers
         expect(response).to be_successful
       end
     end
     context 'サブドメイン' do
       it 'renders a not found response' do
-        post '/users/unlock', headers: space_headers
+        post user_unlock_path, headers: space_headers
         expect(response).to be_not_found
       end
     end
@@ -40,14 +40,14 @@ RSpec.describe 'Users::Unlocks', type: :request do
   describe 'GET /users/unlock' do
     context 'ベースドメイン' do
       it 'renders a successful response' do
-        get '/users/unlock', headers: base_headers
+        get user_unlock_path, headers: base_headers
         expect(response).to be_successful
       end
     end
     context 'サブドメイン' do
       it 'ベースドメインにリダイレクト' do
-        get '/users/unlock', headers: space_headers
-        expect(response).to redirect_to("//#{Settings['base_domain_link']}#{user_unlock_path}")
+        get user_unlock_path, headers: space_headers
+        expect(response).to redirect_to("//#{Settings['base_domain']}#{user_unlock_path}")
       end
     end
   end

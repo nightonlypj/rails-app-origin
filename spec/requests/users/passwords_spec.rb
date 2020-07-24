@@ -34,7 +34,7 @@ RSpec.describe 'Users::Passwords', type: :request do
     context 'サブドメイン' do
       it 'ベースドメインにリダイレクト' do
         get '/users/password/new', headers: space_headers
-        expect(response).to redirect_to("//#{Settings['base_domain_link']}#{new_user_password_path}")
+        expect(response).to redirect_to("//#{Settings['base_domain']}#{new_user_password_path}")
       end
     end
   end
@@ -69,7 +69,7 @@ RSpec.describe 'Users::Passwords', type: :request do
       it 'ベースドメインにリダイレクト' do
         fullpath = "/users/password/edit?reset_password_token=#{@token}"
         get fullpath, headers: space_headers
-        expect(response).to redirect_to("//#{Settings['base_domain_link']}#{fullpath}")
+        expect(response).to redirect_to("//#{Settings['base_domain']}#{fullpath}")
       end
     end
     context 'ベースドメイン、期限切れのtoken' do

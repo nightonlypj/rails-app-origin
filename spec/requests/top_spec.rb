@@ -45,7 +45,7 @@ RSpec.describe 'Top', type: :request do
     end
   end
 
-  describe 'GET #index @new_spaces' do
+  describe 'GET / @new_spaces' do
     shared_context 'スペース作成' do |limit|
       before { @create_spaces = FactoryBot.create_list(:space, limit) }
     end
@@ -57,7 +57,7 @@ RSpec.describe 'Top', type: :request do
       end
       it 'パスが含まれる' do
         get root_path, headers: base_headers
-        expect(response.body).to include("//#{@create_spaces[@create_spaces.count - 1].subdomain}.#{Settings['base_domain_link']}")
+        expect(response.body).to include("//#{@create_spaces[@create_spaces.count - 1].subdomain}.#{Settings['base_domain']}")
       end
     end
     shared_examples_for "ベースドメイン、#{Settings['new_spaces_limit']}番目に新しいスペース" do
@@ -67,7 +67,7 @@ RSpec.describe 'Top', type: :request do
       end
       it 'パスが含まれる' do
         get root_path, headers: base_headers
-        expect(response.body).to include("//#{@create_spaces[@create_spaces.count - Settings['new_spaces_limit']].subdomain}.#{Settings['base_domain_link']}")
+        expect(response.body).to include("//#{@create_spaces[@create_spaces.count - Settings['new_spaces_limit']].subdomain}.#{Settings['base_domain']}")
       end
     end
     shared_examples_for "ベースドメイン、#{Settings['new_spaces_limit'] + 1}番目に新しいスペース" do
@@ -77,7 +77,7 @@ RSpec.describe 'Top', type: :request do
       end
       it 'パスが含まれない' do
         get root_path, headers: base_headers
-        expect(response.body).not_to include("//#{@create_spaces[@create_spaces.count - (Settings['new_spaces_limit'] + 1)].subdomain}.#{Settings['base_domain_link']}")
+        expect(response.body).not_to include("//#{@create_spaces[@create_spaces.count - (Settings['new_spaces_limit'] + 1)].subdomain}.#{Settings['base_domain']}")
       end
     end
 

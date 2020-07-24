@@ -8,7 +8,7 @@
     <%= javascript_pack_tag 'application', 'data-turbolinks-track': 'reload' %>
   </head>
   <body>
-    <h1><%= link_to t('app_name'), "//#{Settings['base_domain_link']}" %></h1>
+    <h1><%= link_to t('app_name'), "//#{Settings['base_domain']}" %></h1>
     <ul>
 <% if user_signed_in? %>
       <li><%= current_user.email %></li>

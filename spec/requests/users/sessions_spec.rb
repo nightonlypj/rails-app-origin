@@ -12,14 +12,14 @@ RSpec.describe 'Users::Sessions', type: :request do
   describe 'GET /users/sign_in' do
     context 'ベースドメイン' do
       it 'renders a successful response' do
-        get '/users/sign_in', headers: base_headers
+        get new_user_session_path, headers: base_headers
         expect(response).to be_successful
       end
     end
     context 'サブドメイン' do
       it 'ベースドメインにリダイレクト' do
-        get '/users/sign_in', headers: space_headers
-        expect(response).to redirect_to("//#{Settings['base_domain_link']}#{new_user_session_path}")
+        get new_user_session_path, headers: space_headers
+        expect(response).to redirect_to("//#{Settings['base_domain']}#{new_user_session_path}")
       end
     end
   end
@@ -28,13 +28,13 @@ RSpec.describe 'Users::Sessions', type: :request do
   describe 'POST /users/sign_in' do
     context 'ベースドメイン' do
       it 'renders a successful response' do
-        post '/users/sign_in', headers: base_headers
+        post user_session_path, headers: base_headers
         expect(response).to be_successful
       end
     end
     context 'サブドメイン' do
       it 'renders a not found response' do
-        post '/users/sign_in', headers: space_headers
+        post user_session_path, headers: space_headers
         expect(response).to be_not_found
       end
     end
@@ -45,13 +45,13 @@ RSpec.describe 'Users::Sessions', type: :request do
     include_context 'ログイン処理'
     context 'ベースドメイン' do
       it 'ログインにリダイレクト' do
-        delete '/users/sign_out', headers: base_headers
+        delete destroy_user_session_path, headers: base_headers
         expect(response).to redirect_to(new_user_session_path)
       end
     end
     context 'サブドメイン' do
       it 'renders a not found response' do
-        delete '/users/sign_out', headers: space_headers
+        delete destroy_user_session_path, headers: space_headers
         expect(response).to be_not_found
       end
     end

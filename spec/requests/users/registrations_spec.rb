@@ -12,14 +12,14 @@ RSpec.describe 'Users::Registrations', type: :request do
   describe 'GET /users/sign_up' do
     context 'ベースドメイン' do
       it 'renders a successful response' do
-        get '/users/sign_up', headers: base_headers
+        get new_user_registration_path, headers: base_headers
         expect(response).to be_successful
       end
     end
     context 'サブドメイン' do
       it 'ベースドメインにリダイレクト' do
-        get '/users/sign_up', headers: space_headers
-        expect(response).to redirect_to("//#{Settings['base_domain_link']}#{new_user_registration_path}")
+        get new_user_registration_path, headers: space_headers
+        expect(response).to redirect_to("//#{Settings['base_domain']}#{new_user_registration_path}")
       end
     end
   end
@@ -28,13 +28,13 @@ RSpec.describe 'Users::Registrations', type: :request do
   describe 'POST /users' do
     context 'ベースドメイン' do
       it 'renders a successful response' do
-        post '/users', headers: base_headers
+        post user_registration_path, headers: base_headers
         expect(response).to be_successful
       end
     end
     context 'サブドメイン' do
       it 'renders a not found response' do
-        post '/users', headers: space_headers
+        post user_registration_path, headers: space_headers
         expect(response).to be_not_found
       end
     end
@@ -45,14 +45,14 @@ RSpec.describe 'Users::Registrations', type: :request do
     include_context 'ログイン処理'
     context 'ベースドメイン' do
       it 'renders a successful response' do
-        get '/users/edit', headers: base_headers
+        get edit_user_registration_path, headers: base_headers
         expect(response).to be_successful
       end
     end
     context 'サブドメイン' do
       it 'ベースドメインにリダイレクト' do
-        get '/users/edit', headers: space_headers
-        expect(response).to redirect_to("//#{Settings['base_domain_link']}#{edit_user_registration_path}")
+        get edit_user_registration_path, headers: space_headers
+        expect(response).to redirect_to("//#{Settings['base_domain']}#{edit_user_registration_path}")
       end
     end
   end
@@ -62,13 +62,13 @@ RSpec.describe 'Users::Registrations', type: :request do
     include_context 'ログイン処理'
     context 'ベースドメイン' do
       it 'renders a successful response' do
-        put '/users', headers: base_headers
+        put user_registration_path, headers: base_headers
         expect(response).to be_successful
       end
     end
     context 'サブドメイン' do
       it 'renders a not found response' do
-        put '/users', headers: space_headers
+        put user_registration_path, headers: space_headers
         expect(response).to be_not_found
       end
     end
@@ -79,13 +79,13 @@ RSpec.describe 'Users::Registrations', type: :request do
     include_context 'ログイン処理'
     context 'ベースドメイン' do
       it 'ログインにリダイレクト' do
-        delete '/users', headers: base_headers
+        delete user_registration_path, headers: base_headers
         expect(response).to redirect_to(new_user_session_path)
       end
     end
     context 'サブドメイン' do
       it 'renders a not found response' do
-        delete '/users', headers: space_headers
+        delete user_registration_path, headers: space_headers
         expect(response).to be_not_found
       end
     end

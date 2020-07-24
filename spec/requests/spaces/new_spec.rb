@@ -21,22 +21,22 @@ RSpec.describe 'Spaces', type: :request do
   describe 'GET /new' do
     shared_examples_for 'ベースドメイン' do
       it 'renders a successful response' do
-        get new_space_url, headers: base_headers
+        get new_space_path, headers: base_headers
         expect(response).to be_successful
       end
     end
     shared_examples_for '存在するサブドメイン' do
       include_context '存在するサブドメイン作成'
       it 'スペース作成（ベースドメイン）にリダイレクト' do
-        get new_space_url, headers: @space_headers
-        expect(response).to redirect_to("//#{Settings['base_domain_link']}#{new_space_path}")
+        get new_space_path, headers: @space_headers
+        expect(response).to redirect_to("//#{Settings['base_domain']}#{new_space_path}")
       end
     end
     shared_examples_for '存在しないサブドメイン' do
       include_context '存在しないサブドメイン作成'
       it 'スペース作成（ベースドメイン）にリダイレクト' do
-        get new_space_url, headers: @space_headers
-        expect(response).to redirect_to("//#{Settings['base_domain_link']}#{new_space_path}")
+        get new_space_path, headers: @space_headers
+        expect(response).to redirect_to("//#{Settings['base_domain']}#{new_space_path}")
       end
     end
 

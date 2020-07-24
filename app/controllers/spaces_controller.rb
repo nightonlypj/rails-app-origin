@@ -23,12 +23,12 @@ class SpacesController < ApplicationController
   # POST /spaces/create（ベースドメイン） スペース登録(処理)
   # POST /spaces/create.json（ベースドメイン） スペース登録API
   def create
-    return redirect_to "//#{Settings['base_domain_link']}#{new_space_path}" unless base_domain_request?
+    return redirect_to "//#{Settings['base_domain']}#{new_space_path}" unless base_domain_request?
 
     @space = Space.new(space_params)
     respond_to do |format|
       if @space.save
-        format.html { redirect_to "//#{Space.last.subdomain}.#{Settings['base_domain_link']}", notice: t('notice.space.create') }
+        format.html { redirect_to "//#{Space.last.subdomain}.#{Settings['base_domain']}", notice: t('notice.space.create') }
         format.json { render :create, status: :created }
       else
         format.html { render :new }
@@ -45,7 +45,7 @@ class SpacesController < ApplicationController
 
     respond_to do |format|
       if @space.update(space_params)
-        format.html { redirect_to "//#{@space.subdomain}.#{Settings['base_domain_link']}", notice: t('notice.space.update') }
+        format.html { redirect_to "//#{@space.subdomain}.#{Settings['base_domain']}", notice: t('notice.space.update') }
         format.json { render :update, status: :ok }
       else
         format.html { render :edit }

@@ -8,14 +8,14 @@ RSpec.describe 'Users::Confirmations', type: :request do
   describe 'GET /users/confirmation/new' do
     context 'ベースドメイン' do
       it 'renders a successful response' do
-        get '/users/confirmation/new', headers: base_headers
+        get new_user_confirmation_path, headers: base_headers
         expect(response).to be_successful
       end
     end
     context 'サブドメイン' do
       it 'ベースドメインにリダイレクト' do
-        get '/users/confirmation/new', headers: space_headers
-        expect(response).to redirect_to("//#{Settings['base_domain_link']}#{new_user_confirmation_path}")
+        get new_user_confirmation_path, headers: space_headers
+        expect(response).to redirect_to("//#{Settings['base_domain']}#{new_user_confirmation_path}")
       end
     end
   end
@@ -24,13 +24,13 @@ RSpec.describe 'Users::Confirmations', type: :request do
   describe 'POST /users/confirmation' do
     context 'ベースドメイン' do
       it 'renders a successful response' do
-        post '/users/confirmation', headers: base_headers
+        post user_confirmation_path, headers: base_headers
         expect(response).to be_successful
       end
     end
     context 'サブドメイン' do
       it 'renders a not found response' do
-        post '/users/confirmation', headers: space_headers
+        post user_confirmation_path, headers: space_headers
         expect(response).to be_not_found
       end
     end
@@ -40,14 +40,14 @@ RSpec.describe 'Users::Confirmations', type: :request do
   describe 'GET /users/confirmation' do
     context 'ベースドメイン' do
       it 'renders a successful response' do
-        get '/users/confirmation', headers: base_headers
+        get user_confirmation_path, headers: base_headers
         expect(response).to be_successful
       end
     end
     context 'サブドメイン' do
       it 'ベースドメインにリダイレクト' do
-        get '/users/confirmation', headers: space_headers
-        expect(response).to redirect_to("//#{Settings['base_domain_link']}#{user_confirmation_path}")
+        get user_confirmation_path, headers: space_headers
+        expect(response).to redirect_to("//#{Settings['base_domain']}#{user_confirmation_path}")
       end
     end
   end

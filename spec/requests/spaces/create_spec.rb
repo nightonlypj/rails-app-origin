@@ -26,46 +26,46 @@ RSpec.describe 'Spaces', type: :request do
     shared_examples_for '有効なパラメータ' do
       it '作成に成功' do
         expect do
-          post create_space_url, params: { space: valid_attributes }, headers: base_headers
+          post create_space_path, params: { space: valid_attributes }, headers: base_headers
         end.to change(Space, :count).by(1)
       end
       it '作成したスペースのトップページ（サブドメイン）にリダイレクト' do
-        post create_space_url, params: { space: valid_attributes }, headers: base_headers
-        expect(response).to redirect_to("//#{Space.last.subdomain}.#{Settings['base_domain_link']}")
+        post create_space_path, params: { space: valid_attributes }, headers: base_headers
+        expect(response).to redirect_to("//#{Space.last.subdomain}.#{Settings['base_domain']}")
       end
       it '(json)renders a created(201) response' do
-        post create_space_url, params: valid_attributes, as: :json, headers: base_headers.merge(json_headers)
+        post create_space_path, params: valid_attributes, as: :json, headers: base_headers.merge(json_headers)
         expect(response).to be_created
       end
       it '(json)エラー件数が0と一致' do
-        post create_space_url, params: valid_attributes, as: :json, headers: base_headers.merge(json_headers)
+        post create_space_path, params: valid_attributes, as: :json, headers: base_headers.merge(json_headers)
         expect(JSON.parse(response.body)['error_count']).to eq(0)
       end
       it '(json)エラーメッセージの項目が存在しない' do
-        post create_space_url, params: valid_attributes, as: :json, headers: base_headers.merge(json_headers)
+        post create_space_path, params: valid_attributes, as: :json, headers: base_headers.merge(json_headers)
         expect(JSON.parse(response.body)['errors'].present?).to eq(false)
       end
     end
     shared_examples_for '無効なパラメータ' do
       it '作成に失敗' do
         expect do
-          post create_space_url, params: { space: invalid_attributes }, headers: base_headers
+          post create_space_path, params: { space: invalid_attributes }, headers: base_headers
         end.to change(Space, :count).by(0)
       end
       it 'renders a successful response' do
-        post create_space_url, params: { space: invalid_attributes }, headers: base_headers
+        post create_space_path, params: { space: invalid_attributes }, headers: base_headers
         expect(response).to be_successful
       end
       it '(json)renders a unprocessable(422) response' do
-        post create_space_url, params: invalid_attributes, as: :json, headers: base_headers.merge(json_headers)
+        post create_space_path, params: invalid_attributes, as: :json, headers: base_headers.merge(json_headers)
         expect(response).to be_unprocessable
       end
       it '(json)エラー件数が1と一致' do
-        post create_space_url, params: invalid_attributes, as: :json, headers: base_headers.merge(json_headers)
+        post create_space_path, params: invalid_attributes, as: :json, headers: base_headers.merge(json_headers)
         expect(JSON.parse(response.body)['error_count']).to eq(1)
       end
       it '(json)エラーメッセージの項目が存在する' do
-        post create_space_url, params: invalid_attributes, as: :json, headers: base_headers.merge(json_headers)
+        post create_space_path, params: invalid_attributes, as: :json, headers: base_headers.merge(json_headers)
         expect(JSON.parse(response.body)['errors'].present?).to eq(true)
       end
     end
@@ -76,11 +76,11 @@ RSpec.describe 'Spaces', type: :request do
     end
     shared_examples_for 'サブドメイン' do
       it 'スペース作成（ベースドメイン）にリダイレクト' do
-        post create_space_url, params: { space: valid_attributes }, headers: @space_headers
-        expect(response).to redirect_to("//#{Settings['base_domain_link']}#{new_space_path}")
+        post create_space_path, params: { space: valid_attributes }, headers: @space_headers
+        expect(response).to redirect_to("//#{Settings['base_domain']}#{new_space_path}")
       end
       it '(json)renders a not found response' do
-        post create_space_url, params: valid_attributes, as: :json, headers: @space_headers.merge(json_headers)
+        post create_space_path, params: valid_attributes, as: :json, headers: @space_headers.merge(json_headers)
         expect(response).to be_not_found
       end
     end

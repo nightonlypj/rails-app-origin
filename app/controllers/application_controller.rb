@@ -1,5 +1,6 @@
 class ApplicationController < ActionController::Base
   skip_before_action :verify_authenticity_token, if: :json_request?
+  before_action :set_request_space
 
   # JSONでリクエストされているかを返却
   # @return true: JSON, false: JSON以外
@@ -10,12 +11,26 @@ class ApplicationController < ActionController::Base
   # ベースドメインでリクエストされているかを返却
   # @return true: ベースドメイン, false: ベースドメイン以外（サブドメイン含む）
   def base_domain_request?
-    request.host.eql?(Settings['base_domain'])
+    request.host_with_port.eql?(Settings['base_domain'])
+  end
+
+  # リクエストされたドメインのスペース情報を返却
+  # @return Spaceモデル
+  def request_space
+    subdomain = request.host_with_port[/^(.*)\.#{Settings['base_domain']}$/, 1]
+    return if subdomain.blank?
+
+    Space.find_by(subdomain: subdomain)
+  end
+
+  # リクエストされたドメインのスペース情報をセット
+  def set_request_space
+    @request_space = request_space
   end
 
   # ベースドメインにリダイレクト
   def redirect_base_domain_response
-    redirect_to "//#{Settings['base_domain_link']}#{request.fullpath}" unless base_domain_request?
+    redirect_to "//#{Settings['base_domain']}#{request.fullpath}" unless base_domain_request?
   end
 
   # ベースドメイン禁止
@@ -31,20 +46,6 @@ class ApplicationController < ActionController::Base
   # JSONの場合、サブドメイン禁止
   def not_found_json_sub_domain_response
     head :not_found if json_request? && !base_domain_request?
-  end
-
-  # リクエストされたサブドメインの情報を返却
-  # @return Spaceモデル
-  def request_space
-    subdomain = request.host[/^(.*)\.#{Settings['base_domain']}$/, 1]
-    return if subdomain.blank?
-
-    Space.find_by(subdomain: subdomain)
-  end
-
-  # リクエストされたサブドメインの情報をセット
-  def set_request_space
-    @request_space = request_space
   end
 
   private

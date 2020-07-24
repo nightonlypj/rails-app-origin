@@ -1,6 +1,4 @@
 class TopController < ApplicationController
-  before_action :set_request_space
-
   # GET /（ベースドメイン） トップページ
   # GET /（サブドメイン） スペーストップ
   def index

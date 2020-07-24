@@ -5,7 +5,7 @@
 <% else %>
 <ul>
 <% @new_spaces.each do |new_space| %>
-  <li><%= link_to new_space.name, "//#{new_space.subdomain}.#{Settings['base_domain_link']}" %></li>
+  <li><%= link_to new_space.name, "//#{new_space.subdomain}.#{Settings['base_domain']}" %></li>
 <% end %>
 </ul>
 <p><%= link_to 'もっと見る', spaces_path %></p>

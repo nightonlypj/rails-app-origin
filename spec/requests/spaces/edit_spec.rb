@@ -21,21 +21,21 @@ RSpec.describe 'Spaces', type: :request do
   describe 'GET /edit' do
     shared_examples_for 'ベースドメイン' do
       it 'renders a not found response' do
-        get edit_space_url, headers: base_headers
+        get edit_space_path, headers: base_headers
         expect(response).to be_not_found
       end
     end
     shared_examples_for '存在するサブドメイン' do
       include_context '存在するサブドメイン作成'
       it 'renders a successful response' do
-        get edit_space_url, headers: @space_headers
+        get edit_space_path, headers: @space_headers
         expect(response).to be_successful
       end
     end
     shared_examples_for '存在しないサブドメイン' do
       include_context '存在しないサブドメイン作成'
       it 'renders a not found response' do
-        get edit_space_url, headers: @space_headers
+        get edit_space_path, headers: @space_headers
         expect(response).to be_not_found
       end
     end
