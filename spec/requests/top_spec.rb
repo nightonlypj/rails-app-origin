@@ -7,7 +7,7 @@ RSpec.describe 'Top', type: :request do
   end
 
   # GET / トップページ
-  describe 'GET #index' do
+  describe 'GET /' do
     shared_examples_for 'レスポンス' do
       it 'renders a successful response' do
         get root_path

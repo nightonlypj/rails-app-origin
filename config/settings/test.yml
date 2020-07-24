@@ -1,1 +1,2 @@
 mailer_sender: noreply@localhost.test
+base_domain: localhost.test

@@ -26,6 +26,6 @@
 <%= yield %>
 
     <hr/>
-    <p>Copyright &copy; <%= link_to t('my_name'), t('my_url'), target: :_blank %> All Rights Reserved.</p>
+    <p>Copyright &copy; <%= link_to t('my_name'), t('my_url'), target: :_blank, rel: [:noopener, :noreferrer] %> All Rights Reserved.</p>
   </body>
 </html>

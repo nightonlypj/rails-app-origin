@@ -3,7 +3,7 @@ require 'rails_helper'
 RSpec.describe 'layouts/application', type: :view do
   let!(:user) { FactoryBot.create(:user) }
   shared_context 'ログイン処理' do
-    before { login_user user }
+    before { sign_in user }
   end
 
   context '未ログイン' do

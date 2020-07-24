@@ -1,1 +1,2 @@
 mailer_sender: noreply@localhost
+base_domain: localhost:3000
