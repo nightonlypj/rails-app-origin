@@ -25,20 +25,20 @@ RSpec.describe 'AdminUsers::Passwords', type: :request do
     context '期限内のtoken' do
       include_context '期限内のtoken作成'
       it 'renders a successful response' do
-        get "/admin_users/password/edit?reset_password_token=#{@token}"
+        get "#{edit_admin_user_password_path}?reset_password_token=#{@token}"
         expect(response).to be_successful
       end
     end
     context '期限切れのtoken' do
       include_context '期限切れのtoken作成'
       it 'パスワード再設定メール送信にリダイレクト' do
-        get "/admin_users/password/edit?reset_password_token=#{@token}"
+        get "#{edit_admin_user_password_path}?reset_password_token=#{@token}"
         expect(response).to redirect_to(new_admin_user_password_path)
       end
     end
     context '存在しないtoken' do
       it 'パスワード再設定メール送信にリダイレクト' do
-        get '/admin_users/password/edit?reset_password_token=not'
+        get "#{edit_admin_user_password_path}?reset_password_token=not"
         expect(response).to redirect_to(new_admin_user_password_path)
       end
     end
@@ -49,20 +49,20 @@ RSpec.describe 'AdminUsers::Passwords', type: :request do
     context '期限内のtoken' do
       include_context '期限内のtoken作成'
       it 'renders a successful response' do
-        put '/admin_users/password', params: { admin_user: { reset_password_token: @token } }
+        put admin_user_password_path, params: { admin_user: { reset_password_token: @token } }
         expect(response).to be_successful
       end
     end
     context '期限切れのtoken' do
       include_context '期限切れのtoken作成'
       it 'パスワード再設定メール送信にリダイレクト' do
-        put '/admin_users/password', params: { admin_user: { reset_password_token: @token } }
+        put admin_user_password_path, params: { admin_user: { reset_password_token: @token } }
         expect(response).to redirect_to(new_admin_user_password_path)
       end
     end
     context '存在しないtoken' do
       it 'パスワード再設定メール送信にリダイレクト' do
-        put '/admin_users/password', params: { admin_user: { reset_password_token: 'not' } }
+        put admin_user_password_path, params: { admin_user: { reset_password_token: 'not' } }
         expect(response).to redirect_to(new_admin_user_password_path)
       end
     end

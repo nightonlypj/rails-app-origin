@@ -9,7 +9,7 @@ RSpec.describe 'Top', type: :request do
 
   # GET /（ベースドメイン） トップページ
   # GET /（サブドメイン） スペーストップ
-  describe 'GET #index' do
+  describe 'GET /' do
     shared_examples_for 'ベースドメイン' do
       it 'renders a successful response' do
         get root_path, headers: base_headers

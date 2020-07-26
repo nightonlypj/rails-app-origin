@@ -3,6 +3,7 @@ require 'rails_helper'
 RSpec.describe 'Users::Registrations', type: :request do
   let!(:base_headers) { { 'Host' => Settings['base_domain'] } }
   let!(:space_headers) { { 'Host' => "space.#{Settings['base_domain']}" } }
+  let!(:valid_attributes) { FactoryBot.attributes_for(:user) }
   let!(:user) { FactoryBot.create(:user) }
   shared_context 'ログイン処理' do
     before { sign_in user }
@@ -27,9 +28,9 @@ RSpec.describe 'Users::Registrations', type: :request do
   # POST /users アカウント登録(処理)
   describe 'POST /users' do
     context 'ベースドメイン' do
-      it 'renders a successful response' do
-        post user_registration_path, headers: base_headers
-        expect(response).to be_successful
+      it 'ログインにリダイレクト' do
+        post user_registration_path, params: { user: valid_attributes }, headers: base_headers
+        expect(response).to redirect_to(new_user_session_path)
       end
     end
     context 'サブドメイン' do

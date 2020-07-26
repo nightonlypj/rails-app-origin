@@ -27,13 +27,13 @@ RSpec.describe 'Users::Passwords', type: :request do
   describe 'GET /users/password/new' do
     context 'ベースドメイン' do
       it 'renders a successful response' do
-        get '/users/password/new', headers: base_headers
+        get new_user_password_path, headers: base_headers
         expect(response).to be_successful
       end
     end
     context 'サブドメイン' do
       it 'ベースドメインにリダイレクト' do
-        get '/users/password/new', headers: space_headers
+        get new_user_password_path, headers: space_headers
         expect(response).to redirect_to("//#{Settings['base_domain']}#{new_user_password_path}")
       end
     end
@@ -43,13 +43,13 @@ RSpec.describe 'Users::Passwords', type: :request do
   describe 'POST /users/password' do
     context 'ベースドメイン' do
       it 'renders a successful response' do
-        post '/users/password', headers: base_headers
+        post user_password_path, headers: base_headers
         expect(response).to be_successful
       end
     end
     context 'サブドメイン' do
       it 'renders a not found response' do
-        post '/users/password', headers: space_headers
+        post user_password_path, headers: space_headers
         expect(response).to be_not_found
       end
     end
@@ -60,14 +60,14 @@ RSpec.describe 'Users::Passwords', type: :request do
     context 'ベースドメイン、期限内のtoken' do
       include_context '期限内のtoken作成'
       it 'renders a successful response' do
-        get "/users/password/edit?reset_password_token=#{@token}", headers: base_headers
+        get "#{edit_user_password_path}?reset_password_token=#{@token}", headers: base_headers
         expect(response).to be_successful
       end
     end
     context 'サブドメイン、期限内のtoken' do
       include_context '期限内のtoken作成'
       it 'ベースドメインにリダイレクト' do
-        fullpath = "/users/password/edit?reset_password_token=#{@token}"
+        fullpath = "#{edit_user_password_path}?reset_password_token=#{@token}"
         get fullpath, headers: space_headers
         expect(response).to redirect_to("//#{Settings['base_domain']}#{fullpath}")
       end
@@ -75,13 +75,13 @@ RSpec.describe 'Users::Passwords', type: :request do
     context 'ベースドメイン、期限切れのtoken' do
       include_context '期限切れのtoken作成'
       it 'パスワード再設定メール送信にリダイレクト' do
-        get "/users/password/edit?reset_password_token=#{@token}", headers: base_headers
+        get "#{edit_user_password_path}?reset_password_token=#{@token}", headers: base_headers
         expect(response).to redirect_to(new_user_password_path)
       end
     end
     context 'ベースドメイン、存在しないtoken' do
       it 'パスワード再設定メール送信にリダイレクト' do
-        get '/users/password/edit?reset_password_token=not', headers: base_headers
+        get "#{edit_user_password_path}?reset_password_token=not", headers: base_headers
         expect(response).to redirect_to(new_user_password_path)
       end
     end
@@ -92,27 +92,27 @@ RSpec.describe 'Users::Passwords', type: :request do
     context 'ベースドメイン、期限内のtoken' do
       include_context '期限内のtoken作成'
       it 'renders a successful response' do
-        put '/users/password', params: { user: { reset_password_token: @token } }, headers: base_headers
+        put user_password_path, params: { user: { reset_password_token: @token } }, headers: base_headers
         expect(response).to be_successful
       end
     end
     context 'サブドメイン、期限内のtoken' do
       include_context '期限内のtoken作成'
       it 'renders a not found response' do
-        put '/users/password', params: { user: { reset_password_token: @token } }, headers: space_headers
+        put user_password_path, params: { user: { reset_password_token: @token } }, headers: space_headers
         expect(response).to be_not_found
       end
     end
     context 'ベースドメイン、期限切れのtoken' do
       include_context '期限切れのtoken作成'
       it 'パスワード再設定メール送信にリダイレクト' do
-        put '/users/password', params: { user: { reset_password_token: @token } }, headers: base_headers
+        put user_password_path, params: { user: { reset_password_token: @token } }, headers: base_headers
         expect(response).to redirect_to(new_user_password_path)
       end
     end
     context 'ベースドメイン、存在しないtoken' do
       it 'パスワード再設定メール送信にリダイレクト' do
-        put '/users/password', params: { user: { reset_password_token: 'not' } }, headers: base_headers
+        put user_password_path, params: { user: { reset_password_token: 'not' } }, headers: base_headers
         expect(response).to redirect_to(new_user_password_path)
       end
     end
