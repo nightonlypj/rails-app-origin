@@ -67,6 +67,5 @@ RSpec.configure do |config|
   # Use devise
   config.include Devise::Test::IntegrationHelpers, type: :request
   config.include Devise::Test::ControllerHelpers, type: :view
-  config.include ControllerMacros, type: :view
   config.include FactoryBot::Syntax::Methods
 end
