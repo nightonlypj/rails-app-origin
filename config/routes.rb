@@ -14,5 +14,8 @@ Rails.application.routes.draw do
     unlocks: 'users/unlocks',
     passwords: 'users/passwords'
   }
+  devise_scope :user do
+    get 'users/delete', to: 'users/registrations#delete'
+  end
   root 'top#index'
 end

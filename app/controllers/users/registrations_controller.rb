@@ -3,6 +3,7 @@
 class Users::RegistrationsController < Devise::RegistrationsController
   # before_action :configure_sign_up_params, only: [:create]
   # before_action :configure_account_update_params, only: [:update]
+  prepend_before_action :authenticate_scope!, only: [:edit, :update, :destroy, :delete]
 
   # GET /users/sign_up アカウント登録
   # def new
@@ -22,6 +23,10 @@ class Users::RegistrationsController < Devise::RegistrationsController
   # PUT /users 登録情報変更(処理)
   # def update
   #   super
+  # end
+
+  # GET /users/delete アカウント削除
+  # def delete
   # end
 
   # DELETE /users アカウント削除(処理)
