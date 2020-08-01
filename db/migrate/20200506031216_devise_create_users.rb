@@ -32,6 +32,10 @@ class DeviseCreateUsers < ActiveRecord::Migration[6.0]
       t.string   :unlock_token # Only if unlock strategy is :email or :both
       t.datetime :locked_at
 
+      ## 削除予約・予定日時
+      t.datetime :delete_reserved_at
+      t.datetime :delete_schedule_at
+
       t.timestamps null: false
     end
 

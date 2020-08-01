@@ -1,6 +1,9 @@
 <h2>アカウント削除</h2>
 
-<p><%= button_to "削除確認", registration_path(resource_name), data: { confirm: "アカウント削除：本当に削除しますか？（ログイン出来なくなります）" }, method: :delete %></p>
+アカウントは<%= Settings['delete_schedule_days'] %>日後以降に削除されます。それまでは取り消し可能です。<br/>
+削除されるまではログインできますが、一部機能が制限されます。<br/>
+
+<p><%= button_to "削除確認", registration_path(resource_name), data: { confirm: "本当に削除しますか？" }, method: :delete %></p>
 
 <ul>
   <li><%= link_to "登録情報変更", edit_user_registration_path %></li>

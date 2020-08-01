@@ -56,6 +56,8 @@ ActiveRecord::Schema.define(version: 2020_05_16_020351) do
     t.integer "failed_attempts", default: 0, null: false
     t.string "unlock_token"
     t.datetime "locked_at"
+    t.datetime "delete_reserved_at"
+    t.datetime "delete_schedule_at"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.index ["confirmation_token"], name: "index_users_on_confirmation_token", unique: true

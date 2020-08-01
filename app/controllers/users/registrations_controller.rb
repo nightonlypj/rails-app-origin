@@ -3,7 +3,7 @@
 class Users::RegistrationsController < Devise::RegistrationsController
   # before_action :configure_sign_up_params, only: [:create]
   # before_action :configure_account_update_params, only: [:update]
-  prepend_before_action :authenticate_scope!, only: [:edit, :update, :destroy, :delete]
+  prepend_before_action :authenticate_scope!, only: %i[edit update destroy delete]
 
   # GET /users/sign_up アカウント登録
   # def new
@@ -30,9 +30,13 @@ class Users::RegistrationsController < Devise::RegistrationsController
   # end
 
   # DELETE /users アカウント削除(処理)
-  # def destroy
-  #   super
-  # end
+  def destroy
+    resource.delete_reserved
+    Devise.sign_out_all_scopes ? sign_out : sign_out(resource_name)
+    set_flash_message! :notice, :destroyed_reserved
+    yield resource if block_given?
+    respond_with_navigational(resource) { redirect_to after_sign_out_path_for(resource_name) }
+  end
 
   # GET /users/cancel
   # Forces the session data which is usually expired after sign
