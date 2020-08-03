@@ -51,7 +51,7 @@ RSpec.describe 'Users::Registrations', type: :request do
 
   # POST /users アカウント登録(処理)
   describe 'POST /users' do
-    context '有効なパラメータ' do
+    context '未ログイン、有効なパラメータ' do
       it 'ログインにリダイレクト' do
         post user_registration_path, params: { user: valid_attributes }
         expect(response).to redirect_to(new_user_session_path)
