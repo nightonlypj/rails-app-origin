@@ -25,8 +25,8 @@ ja:
         failed_attempts: "連続ログイン失敗回数"
         unlock_token: "アカウントロック解除トークン"
         locked_at: "アカウントロック日時"
-        delete_reserved_at: "削除予約日時"
-        delete_schedule_at: "削除予定日時"
+        destroy_requested_at: "削除依頼日時"
+        destroy_schedule_at: "削除予定日時"
         created_at: "作成日時"
         updated_at: "更新日時"
       admin_user:
@@ -124,7 +124,8 @@ ja:
       updated_but_not_signed_in: "登録情報を変更しました。ログインし直してください。"
       update_needs_confirmation: "メールアドレス確認のメールを送信しました。メールを確認してください。"
       destroyed: "アカウントを削除しました。またのご利用をお待ちしております。"
-      destroyed_reserved: "アカウント削除を受け付けました。またのご利用をお待ちしております。"
+      destroy_reserved: "アカウント削除を受け付けました。またのご利用をお待ちしております。"
+      undo_destroy_reserved: "アカウント削除を取り消しました。"
     confirmations:
       send_instructions: "メールアドレスの確認メールを送信しました。メールを確認してください。"
       send_paranoid_instructions: "メールアドレスの確認メールを送信しました。メールを確認してください。"

@@ -16,6 +16,8 @@ Rails.application.routes.draw do
   }
   devise_scope :user do
     get 'users/delete', to: 'users/registrations#delete'
+    get 'users/undo_delete', to: 'users/registrations#undo_delete'
+    put 'users/undo_destroy', to: 'users/registrations#undo_destroy'
   end
   root 'top#index'
 end

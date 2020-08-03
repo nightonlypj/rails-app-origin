@@ -2,6 +2,10 @@ ja:
   app_name: "RailsAppOrigin"
   my_name: "My name"
   my_url: "https://mydomain"
+  notice:
+    user:
+      destroy_reserved: "アカウント削除予定の為、この操作はできません。"
+      not_destroy_reserved: "既に取り消し済みか、アカウント削除操作をしていません。"
   datetime:
     distance_in_words:
       half_a_minute: "30秒前後"

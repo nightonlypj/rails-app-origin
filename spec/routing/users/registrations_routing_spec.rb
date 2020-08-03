@@ -20,6 +20,12 @@ RSpec.describe Users::RegistrationsController, type: :routing do
     it 'routes to #destroy' do
       expect(delete: '/users').to route_to('users/registrations#destroy')
     end
+    it 'routes to #undo_delete' do
+      expect(get: '/users/undo_delete').to route_to('users/registrations#undo_delete')
+    end
+    it 'routes to #undo_destroy' do
+      expect(put: '/users/undo_destroy').to route_to('users/registrations#undo_destroy')
+    end
     it 'routes to #cancel' do
       expect(get: '/users/cancel').to route_to('users/registrations#cancel')
     end

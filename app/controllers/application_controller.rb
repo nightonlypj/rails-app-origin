@@ -1,4 +1,9 @@
 class ApplicationController < ActionController::Base
+  # 削除予約済みの場合、リダイレクトしてメッセージを表示
+  def redirect_response_destroy_reserved
+    redirect_to root_path, notice: t('notice.user.destroy_reserved') if current_user.destroy_reserved?
+  end
+
   private
 
   # ログイン後の遷移先

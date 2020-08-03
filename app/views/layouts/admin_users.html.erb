@@ -10,8 +10,12 @@
   <body>
     <h1><%= link_to "#{t('app_name')} Admin", new_admin_user_session_path %></h1>
     <hr/>
-    <p class="notice"><%= notice %></p>
+<% if alert.present? %>
     <p class="alert"><%= alert %></p>
+<% end %>
+<% if notice.present? %>
+    <p class="notice"><%= notice %></p>
+<% end %>
 
 <%= yield %>
 
