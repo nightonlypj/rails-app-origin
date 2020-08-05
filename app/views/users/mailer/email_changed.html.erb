@@ -4,7 +4,7 @@
 メールアドレスの変更が完了しました。<br/>
 <% if @resource.try(:unconfirmed_email?) %>
 変更前のメールアドレス: <%= @resource.email %><br/>
-変更後のメールアドレス: <%= @resource.unconfirmed_email %>
+変更後のメールアドレス: <%= @resource.unconfirmed_email %><br/>
 <% else %>
-メールアドレス: <%= @resource.email %>
+メールアドレス: <%= @resource.email %><br/>
 <% end %>
