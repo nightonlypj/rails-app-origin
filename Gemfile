@@ -54,6 +54,8 @@ group :development do
   gem 'guard-yard'
   gem 'redcarpet'
   gem 'yard'
+  # Use letter_opener_web
+  gem 'letter_opener_web'
 end
 
 group :test do

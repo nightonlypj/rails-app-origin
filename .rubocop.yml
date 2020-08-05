@@ -66,6 +66,7 @@ Style/AsciiComments:
 Metrics/BlockLength:
   Exclude:
     - 'spec/**/*'
+    - 'config/environments/*'
 
 # C: Style/FrozenStringLiteralComment: Missing frozen string literal comment.
 Style/FrozenStringLiteralComment:

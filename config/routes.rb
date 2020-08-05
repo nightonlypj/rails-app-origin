@@ -20,4 +20,5 @@ Rails.application.routes.draw do
     put 'users/undo_destroy', to: 'users/registrations#undo_destroy'
   end
   root 'top#index'
+  mount LetterOpenerWeb::Engine, at: '/letter_opener' if Rails.env.development?
 end
