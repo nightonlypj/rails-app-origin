@@ -1,2 +1,4 @@
-mailer_sender: noreply@localhost.test
-base_domain: localhost.test
+base_domain: 'localhost.test'
+mailer_from:
+  name: '%{app_name}'
+  email: 'noreply@localhost.test'

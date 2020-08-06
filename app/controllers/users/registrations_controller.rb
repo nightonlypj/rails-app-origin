@@ -34,6 +34,8 @@ class Users::RegistrationsController < Devise::RegistrationsController
   # DELETE /users アカウント削除(処理)
   def destroy
     resource.set_destroy_reserve
+    UserMailer.with(user: current_user).destroy_reserved.deliver_now
+
     Devise.sign_out_all_scopes ? sign_out : sign_out(resource_name)
     set_flash_message! :notice, :destroy_reserved
     yield resource if block_given?
@@ -47,6 +49,8 @@ class Users::RegistrationsController < Devise::RegistrationsController
   # PUT /users/undo_destroy アカウント削除取り消し(処理)
   def undo_destroy
     resource.set_undo_destroy_reserve
+    UserMailer.with(user: current_user).undo_destroy_reserved.deliver_now
+
     set_flash_message! :notice, :undo_destroy_reserved
     redirect_to root_path
   end

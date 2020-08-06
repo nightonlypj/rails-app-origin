@@ -1,28 +1,36 @@
 class DeviseMailer < Devise::Mailer
+  layout 'mailer'
+
+  # メールアドレス確認のお願い
   def confirmation_instructions(record, token, opts = {})
-    update_mail_subject(super)
+    send_mail(super)
   end
 
+  # パスワード再設定方法のお知らせ
   def reset_password_instructions(record, token, opts = {})
-    update_mail_subject(super)
+    send_mail(super)
   end
 
+  # アカウントロックのお知らせ
   def unlock_instructions(record, token, opts = {})
-    update_mail_subject(super)
+    send_mail(super)
   end
 
+  # メールアドレス変更完了のお知らせ
   def email_changed(record, opts = {})
-    update_mail_subject(super)
+    send_mail(super)
   end
 
+  # パスワード変更完了のお知らせ
   def password_change(record, opts = {})
-    update_mail_subject(super)
+    send_mail(super)
   end
 
   private
 
-  # メールタイトルにアプリ名を追加
-  def update_mail_subject(mail)
+  # メール送信
+  def send_mail(mail)
+    mail.from = "\"#{Settings['mailer_from']['name'].gsub(/%{app_name}/, t('app_name'))}\" <#{Settings['mailer_from']['email']}>"
     mail.subject = mail.subject.gsub(/%{app_name}/, t('app_name'))
     mail
   end

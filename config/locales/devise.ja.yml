@@ -125,7 +125,7 @@ ja:
       update_needs_confirmation: "メールアドレス確認のメールを送信しました。メールを確認してください。"
       destroyed: "アカウントを削除しました。またのご利用をお待ちしております。"
       destroy_reserved: "アカウント削除を受け付けました。またのご利用をお待ちしております。"
-      undo_destroy_reserved: "アカウント削除を取り消しました。"
+      undo_destroy_reserved: "アカウント削除の取り消しが完了しました。"
     confirmations:
       send_instructions: "メールアドレスの確認メールを送信しました。メールを確認してください。"
       send_paranoid_instructions: "メールアドレスの確認メールを送信しました。メールを確認してください。"
