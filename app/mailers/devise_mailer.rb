@@ -16,7 +16,7 @@ class DeviseMailer < Devise::Mailer
     send_mail(super)
   end
 
-  # メールアドレス変更完了のお知らせ
+  # メールアドレス変更受け付けのお知らせ
   def email_changed(record, opts = {})
     send_mail(super)
   end

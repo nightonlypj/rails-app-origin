@@ -10,7 +10,7 @@
   </div>
 
   <% if devise_mapping.confirmable? && resource.pending_reconfirmation? %>
-    <div>確認待ち：<%= resource.unconfirmed_email %></div>
+    <div>確認待ち：<%= resource.unconfirmed_email %></div><br/>
   <% end %>
 
   <div class="field">

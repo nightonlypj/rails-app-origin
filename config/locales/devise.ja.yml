@@ -162,8 +162,8 @@ ja:
         subject: "【%{app_name}】メールアドレス確認のお願い"
         admin_user_subject: "【%{app_name} Admin】メールアドレス確認のお願い"
       email_changed:
-        subject: "【%{app_name}】メールアドレス変更完了のお知らせ"
-        admin_user_subject: "【%{app_name} Admin】メールアドレス変更完了のお知らせ"
+        subject: "【%{app_name}】メールアドレス変更受け付けのお知らせ"
+        admin_user_subject: "【%{app_name} Admin】メールアドレス変更受け付けのお知らせ"
       reset_password_instructions:
         subject: "【%{app_name}】パスワード再設定方法のお知らせ"
         admin_user_subject: "【%{app_name} Admin】パスワード再設定方法のお知らせ"

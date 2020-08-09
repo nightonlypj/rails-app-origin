@@ -3,7 +3,7 @@ require 'rails_helper'
 RSpec.describe 'Users::Passwords', type: :request do
   shared_context 'token作成' do |valid_flag|
     before do
-      @token = Faker::Internet.password
+      @token = Faker::Internet.password(min_length: 20, max_length: 20)
       user = FactoryBot.build(:user)
       user.reset_password_token = Devise.token_generator.digest(self, :reset_password_token, @token)
       user.reset_password_sent_at = valid_flag ? Time.now : '0000-01-01'
