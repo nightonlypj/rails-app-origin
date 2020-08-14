@@ -11,4 +11,10 @@ class UserMailerPreview < ActionMailer::Preview
     user = FactoryBot.create(:user)
     UserMailer.with(user: user).undo_destroy_reserved
   end
+
+  # アカウント削除完了のお知らせ
+  def destroy_completed
+    user = FactoryBot.create(:user)
+    UserMailer.with(user: user).destroy_completed
+  end
 end

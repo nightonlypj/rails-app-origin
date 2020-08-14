@@ -29,7 +29,10 @@ namespace :user do
         next
       end
 
-      # TODO: メール送信
+      if Settings['sendmail_destroy_completed']
+        logger_info_and_puts(dry_run, logger, "#{target} ... Send mail")
+        UserMailer.with(user: user).destroy_completed.deliver_now
+      end
     end
 
     logger.info('=== END ===')

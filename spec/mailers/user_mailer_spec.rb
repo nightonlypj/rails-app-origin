@@ -30,4 +30,16 @@ RSpec.describe UserMailer, type: :mailer do
       expect(mail.to).to eq([user.email])
     end
   end
+
+  # アカウント削除完了のお知らせ
+  describe 'destroy_completed' do
+    let(:user) { FactoryBot.create(:user) }
+    let(:mail) { UserMailer.with(user: user).destroy_completed }
+    it '送信者のメールアドレスが設定と一致' do
+      expect(mail.from).to eq([Settings['mailer_from']['email']])
+    end
+    it '宛先がユーザーのメールアドレスと一致' do
+      expect(mail.to).to eq([user.email])
+    end
+  end
 end

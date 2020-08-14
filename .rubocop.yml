@@ -67,6 +67,7 @@ Metrics/BlockLength:
   Exclude:
     - 'spec/**/*'
     - 'config/environments/*'
+    - 'lib/tasks/*'
 
 # C: Style/FrozenStringLiteralComment: Missing frozen string literal comment.
 Style/FrozenStringLiteralComment:
