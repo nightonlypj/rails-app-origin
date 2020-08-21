@@ -21,7 +21,7 @@ class ApplicationController < ActionController::Base
     resource.present? && resource.confirmed_at.present? && resource.confirmation_sent_at.present? && (resource.confirmed_at > resource.confirmation_sent_at)
   end
 
-  # 有効なパスワード確認トークンかを返却
+  # 有効なメールアドレス確認トークンかを返却
   # @return true: 有効期限内か、制限なし, false: 存在しないか、期限切れ
   def valid_confirmation_token?(token)
     true if resource_class.confirm_within.blank?

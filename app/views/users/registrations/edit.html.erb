@@ -9,7 +9,7 @@
     <%= render "users/shared/field_error_messages", messages: resource.errors[:email] %>
   </div>
 
-  <% if devise_mapping.confirmable? && resource.pending_reconfirmation? %>
+  <% if devise_mapping.confirmable? && resource.pending_reconfirmation? && valid_confirmation_token? %>
     <div>確認待ち：<%= resource.unconfirmed_email %></div><br/>
   <% end %>
 
