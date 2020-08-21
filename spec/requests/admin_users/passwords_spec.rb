@@ -6,7 +6,7 @@ RSpec.describe 'AdminUsers::Passwords', type: :request do
       @token = Faker::Internet.password(min_length: 20, max_length: 20)
       admin_user = FactoryBot.build(:admin_user)
       admin_user.reset_password_token = Devise.token_generator.digest(self, :reset_password_token, @token)
-      admin_user.reset_password_sent_at = valid_flag ? Time.now : '0000-01-01'
+      admin_user.reset_password_sent_at = valid_flag ? Time.now.utc : '0000-01-01'
       admin_user.save!
     end
   end
