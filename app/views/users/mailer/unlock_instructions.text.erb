@@ -1,0 +1,7 @@
+<%= @resource.email %> 様
+
+<%= t('app_name') %> をご利用頂きありがとうございます。
+
+ログイン失敗が繰り返された為、アカウントがロックされました。
+アカウントロックを解除するには、下記のURLをクリックしてください。
+<%= unlock_url(@resource, unlock_token: @token) %>

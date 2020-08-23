@@ -1,0 +1,5 @@
+<%= @resource.email %> 様
+
+ログイン失敗が繰り返された為、アカウントがロックされました。
+アカウントロックを解除するには、下記のURLをクリックしてください。
+<%= unlock_url(@resource, unlock_token: @token) %>

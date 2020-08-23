@@ -14,5 +14,11 @@ Rails.application.routes.draw do
     unlocks: 'users/unlocks',
     passwords: 'users/passwords'
   }
+  devise_scope :user do
+    get 'users/delete', to: 'users/registrations#delete'
+    get 'users/undo_delete', to: 'users/registrations#undo_delete'
+    put 'users/undo_destroy', to: 'users/registrations#undo_destroy'
+  end
   root 'top#index'
+  mount LetterOpenerWeb::Engine, at: '/letter_opener' if Rails.env.development?
 end

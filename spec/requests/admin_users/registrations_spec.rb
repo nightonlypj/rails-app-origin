@@ -5,7 +5,7 @@ RSpec.describe 'AdminUsers::Registrations', type: :request do
 
   # POST /admin_users アカウント登録(処理)
   # describe 'POST /admin_users' do
-  #   context '有効なパラメータ' do
+  #   context '未ログイン、有効なパラメータ' do
   #     it 'ログインにリダイレクト' do
   #       post admin_user_registration_path, params: { admin_user: valid_attributes }
   #       expect(response).to redirect_to(new_admin_user_session_path)

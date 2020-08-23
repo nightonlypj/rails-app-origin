@@ -15,14 +15,14 @@ class AdminUsers::PasswordsController < Devise::PasswordsController
 
   # GET /admin_users/password/edit パスワード再設定
   def edit
-    return redirect_to new_admin_user_password_path, alert: invalid_token_message unless valid_token?(params[:reset_password_token])
+    return redirect_to new_admin_user_password_path, alert: invalid_token_message unless valid_reset_password_token?(params[:reset_password_token])
 
     super
   end
 
   # PUT /admin_users/password パスワード再設定(処理)
   def update
-    return redirect_to new_admin_user_password_path, alert: invalid_token_message unless valid_token?(resource_params[:reset_password_token])
+    return redirect_to new_admin_user_password_path, alert: invalid_token_message unless valid_reset_password_token?(resource_params[:reset_password_token])
 
     super
   end
@@ -40,15 +40,7 @@ class AdminUsers::PasswordsController < Devise::PasswordsController
 
   private
 
-  # 有効なtokenかを返却
-  # @return true: 有効期限内, false: 存在しないか、期限切れ
-  def valid_token?(token)
-    reset_password_token = Devise.token_generator.digest(self, :reset_password_token, token)
-    resource = resource_class.find_by(reset_password_token: reset_password_token)
-    resource.present? && resource.reset_password_period_valid?
-  end
-
-  # tokenエラーメッセージを返却
+  # トークンエラーメッセージを返却
   def invalid_token_message
     t('activerecord.errors.models.admin_user.attributes.reset_password_token.invalid')
   end

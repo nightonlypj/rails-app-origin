@@ -12,9 +12,12 @@ class Users::ConfirmationsController < Devise::ConfirmationsController
   # end
 
   # GET /users/confirmation メールアドレス確認(処理)
-  # def show
-  #   super
-  # end
+  def show
+    return redirect_to new_user_session_path, alert: already_confirmed_message if already_confirmed?(params[:confirmation_token])
+    return redirect_to new_user_confirmation_path, alert: invalid_token_message unless valid_confirmation_token?(params[:confirmation_token])
+
+    super
+  end
 
   # protected
 
@@ -27,4 +30,16 @@ class Users::ConfirmationsController < Devise::ConfirmationsController
   # def after_confirmation_path_for(resource_name, resource)
   #   super(resource_name, resource)
   # end
+
+  private
+
+  # メールアドレス確認済みメッセージを返却
+  def already_confirmed_message
+    t('errors.messages.already_confirmed')
+  end
+
+  # トークンエラーメッセージを返却
+  def invalid_token_message
+    t('activerecord.errors.models.user.attributes.confirmation_token.invalid')
+  end
 end

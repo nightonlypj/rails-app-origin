@@ -1,2 +1,8 @@
+# メールアドレス確認URLの有効期限（単位：時間）
 confirm_within_hours: 24
+# パスワード再設定URLの有効期限（単位：時間）
 reset_password_within_hours: 24
+# アカウント削除の猶予期間（単位：日）
+destroy_schedule_days: 7
+# アカウント削除完了メール送信(true or false)  Tips:「rails user:destroy[false]」をcronで実行（メール送信する場合、夜間は避けた方が良い）
+sendmail_destroy_completed: true

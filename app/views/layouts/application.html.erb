@@ -12,7 +12,9 @@
     <ul>
 <% if user_signed_in? %>
       <li><%= current_user.email %></li>
+<% unless destroy_reserved? %>
       <li><%= link_to "登録情報変更", edit_user_registration_path %></li>
+<% end %>
       <li><%= link_to "ログアウト", destroy_user_session_path, method: :delete %></li>
 <% else %>
       <li><%= link_to "ログイン", new_user_session_path %></li>
@@ -20,12 +22,25 @@
 <% end %>
     </ul>
     <hr/>
-    <p class="notice"><%= notice %></p>
+<% if destroy_reserved_message? %>
+    <p class="alert">このアカウントは<%= l(current_user.destroy_schedule_at.to_date) %>以降に削除されます。<%= link_to '取り消しはこちら', users_undo_delete_path %></p>
+<% end %>
+<% if alert.present? %>
     <p class="alert"><%= alert %></p>
+<% end %>
+<% if notice.present? %>
+    <p class="notice"><%= notice %></p>
+<% end %>
 
 <%= yield %>
 
     <hr/>
     <p>Copyright &copy; <%= link_to t('my_name'), t('my_url'), target: :_blank, rel: [:noopener, :noreferrer] %> All Rights Reserved.</p>
+<% if Rails.env.development? %>
+    <ul>
+      <li><%= link_to '[LetterOpenerWeb]', letter_opener_web_path, target: :_blank, rel: [:noopener, :noreferrer] %></li>
+      <li><%= link_to '[ActionMailer Preview]', '/rails/mailers', target: :_blank, rel: [:noopener, :noreferrer] %></li>
+    </ul>
+<% end %>
   </body>
 </html>

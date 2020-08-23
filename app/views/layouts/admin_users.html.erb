@@ -10,10 +10,20 @@
   <body>
     <h1><%= link_to "#{t('app_name')} Admin", new_admin_user_session_path %></h1>
     <hr/>
-    <p class="notice"><%= notice %></p>
+<% if alert.present? %>
     <p class="alert"><%= alert %></p>
+<% end %>
+<% if notice.present? %>
+    <p class="notice"><%= notice %></p>
+<% end %>
 
 <%= yield %>
 
+<% if Rails.env.development? %>
+    <ul>
+      <li><%= link_to '[LetterOpenerWeb]', letter_opener_web_path, target: :_blank, rel: [:noopener, :noreferrer] %></li>
+      <li><%= link_to '[ActionMailer Preview]', '/rails/mailers', target: :_blank, rel: [:noopener, :noreferrer] %></li>
+    </ul>
+<% end %>
   </body>
 </html>
