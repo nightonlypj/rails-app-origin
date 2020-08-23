@@ -1,10 +1,12 @@
 <%= @email %> 様<br/>
+<br/>
 <%= t('app_name') %> をご利用頂きありがとうございます。<br/>
 <br/>
-メールアドレスの変更が完了しました。<br/>
 <% if @resource.try(:unconfirmed_email?) %>
-変更前のメールアドレス: <%= @resource.email %><br/>
-変更後のメールアドレス: <%= @resource.unconfirmed_email %>
+メールアドレスの変更を受け付けました。<br/>
+下記の新しいメールアドレスにお送りしたメールを確認してください。<br/>
+<%= @resource.unconfirmed_email %><br/>
 <% else %>
-メールアドレス: <%= @resource.email %>
+下記のメールアドレスへの変更が完了しました。<br/>
+<%= @resource.email %><br/>
 <% end %>
