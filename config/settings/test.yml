@@ -1,3 +1,4 @@
+cookie_domain: 'base.localhost.test'
 base_domain: 'base.localhost.test'
 mailer_from:
   name: '%{app_name}'
