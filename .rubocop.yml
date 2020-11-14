@@ -68,6 +68,7 @@ Metrics/BlockLength:
     - 'spec/**/*'
     - 'config/environments/*'
     - 'lib/tasks/*'
+    - 'config/routes.rb'
 
 # C: Style/FrozenStringLiteralComment: Missing frozen string literal comment.
 Style/FrozenStringLiteralComment:

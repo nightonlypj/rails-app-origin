@@ -13,6 +13,16 @@ RSpec.describe 'Users::Registrations', type: :request do
     end
   end
 
+  # POST /users アカウント登録(処理)
+  describe 'POST /users' do
+    context '未ログイン、有効なパラメータ' do
+      it 'ログインにリダイレクト' do
+        post user_registration_path, params: { user: valid_attributes }
+        expect(response).to redirect_to(new_user_session_path)
+      end
+    end
+  end
+
   # GET /users/edit 登録情報変更
   describe 'GET /users/edit' do
     context 'ログイン中' do
@@ -45,16 +55,6 @@ RSpec.describe 'Users::Registrations', type: :request do
       it 'トップページにリダイレクト' do
         put user_registration_path, params: { user: user }
         expect(response).to redirect_to(root_path)
-      end
-    end
-  end
-
-  # POST /users アカウント登録(処理)
-  describe 'POST /users' do
-    context '未ログイン、有効なパラメータ' do
-      it 'ログインにリダイレクト' do
-        post user_registration_path, params: { user: valid_attributes }
-        expect(response).to redirect_to(new_user_session_path)
       end
     end
   end
