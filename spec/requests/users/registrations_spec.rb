@@ -2,16 +2,6 @@ require 'rails_helper'
 
 RSpec.describe 'Users::Registrations', type: :request do
   let!(:valid_attributes) { FactoryBot.attributes_for(:user) }
-  let!(:user) { FactoryBot.create(:user) }
-  shared_context 'ログイン処理' do |destroy_reserved_flag|
-    before do
-      if destroy_reserved_flag
-        user.destroy_requested_at = Time.now.utc
-        user.destroy_schedule_at = Time.now.utc + Settings['destroy_schedule_days'].days
-      end
-      sign_in user
-    end
-  end
 
   # POST /users アカウント登録(処理)
   describe 'POST /users' do
@@ -26,8 +16,8 @@ RSpec.describe 'Users::Registrations', type: :request do
   # GET /users/edit 登録情報変更
   describe 'GET /users/edit' do
     context 'ログイン中' do
-      include_context 'ログイン処理', false
-      it 'renders a successful response' do
+      include_context 'ログイン処理'
+      it '成功ステータス' do
         get edit_user_registration_path
         expect(response).to be_successful
       end
@@ -44,8 +34,8 @@ RSpec.describe 'Users::Registrations', type: :request do
   # PUT /users 登録情報変更(処理)
   describe 'PUT /users' do
     context 'ログイン中' do
-      include_context 'ログイン処理', false
-      it 'renders a successful response' do
+      include_context 'ログイン処理'
+      it '成功ステータス' do
         put user_registration_path, params: { user: user }
         expect(response).to be_successful
       end
@@ -68,8 +58,8 @@ RSpec.describe 'Users::Registrations', type: :request do
       end
     end
     context 'ログイン中' do
-      include_context 'ログイン処理', false
-      it 'renders a successful response' do
+      include_context 'ログイン処理'
+      it '成功ステータス' do
         get users_delete_path
         expect(response).to be_successful
       end
@@ -79,7 +69,7 @@ RSpec.describe 'Users::Registrations', type: :request do
   # DELETE /users アカウント削除(処理)
   describe 'DELETE /users' do
     context 'ログイン中' do
-      include_context 'ログイン処理', false
+      include_context 'ログイン処理'
       it '削除依頼日時が現在日時と一致' do
         start_time = Time.current
         delete user_registration_path
@@ -110,7 +100,7 @@ RSpec.describe 'Users::Registrations', type: :request do
       end
     end
     context 'ログイン中' do
-      include_context 'ログイン処理', false
+      include_context 'ログイン処理'
       it 'トップページにリダイレクト' do
         get users_undo_delete_path
         expect(response).to redirect_to(root_path)
@@ -118,7 +108,7 @@ RSpec.describe 'Users::Registrations', type: :request do
     end
     context 'ログイン中（削除予約済み）' do
       include_context 'ログイン処理', true
-      it 'renders a successful response' do
+      it '成功ステータス' do
         get users_undo_delete_path
         expect(response).to be_successful
       end
@@ -134,7 +124,7 @@ RSpec.describe 'Users::Registrations', type: :request do
       end
     end
     context 'ログイン中' do
-      include_context 'ログイン処理', false
+      include_context 'ログイン処理'
       it 'トップページにリダイレクト' do
         put users_undo_destroy_path
         expect(response).to redirect_to(root_path)

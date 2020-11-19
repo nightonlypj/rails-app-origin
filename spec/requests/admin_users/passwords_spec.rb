@@ -15,7 +15,7 @@ RSpec.describe 'AdminUsers::Passwords', type: :request do
   describe 'GET /admin_users/password/edit' do
     context '期限内のtoken' do
       include_context 'token作成', true
-      it 'renders a successful response' do
+      it '成功ステータス' do
         get "#{edit_admin_user_password_path}?reset_password_token=#{@token}"
         expect(response).to be_successful
       end
@@ -39,7 +39,7 @@ RSpec.describe 'AdminUsers::Passwords', type: :request do
   describe 'PUT /admin_users/password' do
     context '期限内のtoken' do
       include_context 'token作成', true
-      it 'renders a successful response' do
+      it '成功ステータス' do
         put admin_user_password_path, params: { admin_user: { reset_password_token: @token } }
         expect(response).to be_successful
       end
