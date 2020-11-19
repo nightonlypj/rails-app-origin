@@ -32,10 +32,10 @@ ActiveRecord::Schema.define(version: 2020_05_16_020351) do
     t.datetime "locked_at"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
-    t.index ["confirmation_token"], name: "index_admin_users_on_confirmation_token", unique: true
-    t.index ["email"], name: "index_admin_users_on_email", unique: true
-    t.index ["reset_password_token"], name: "index_admin_users_on_reset_password_token", unique: true
-    t.index ["unlock_token"], name: "index_admin_users_on_unlock_token", unique: true
+    t.index ["confirmation_token"], name: "index_admin_users3", unique: true
+    t.index ["email"], name: "index_admin_users1", unique: true
+    t.index ["reset_password_token"], name: "index_admin_users2", unique: true
+    t.index ["unlock_token"], name: "index_admin_users4", unique: true
   end
 
   create_table "users", force: :cascade do |t|
@@ -60,10 +60,10 @@ ActiveRecord::Schema.define(version: 2020_05_16_020351) do
     t.datetime "destroy_schedule_at"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
-    t.index ["confirmation_token"], name: "index_users_on_confirmation_token", unique: true
-    t.index ["email"], name: "index_users_on_email", unique: true
-    t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
-    t.index ["unlock_token"], name: "index_users_on_unlock_token", unique: true
+    t.index ["confirmation_token"], name: "index_users3", unique: true
+    t.index ["email"], name: "index_users1", unique: true
+    t.index ["reset_password_token"], name: "index_users2", unique: true
+    t.index ["unlock_token"], name: "index_users4", unique: true
   end
 
   create_table "versions", force: :cascade do |t|
@@ -73,7 +73,7 @@ ActiveRecord::Schema.define(version: 2020_05_16_020351) do
     t.string "whodunnit"
     t.text "object", limit: 1073741823
     t.datetime "created_at"
-    t.index ["item_type", "item_id"], name: "index_versions_on_item_type_and_item_id"
+    t.index ["item_type", "item_id"], name: "index_versions1"
   end
 
 end

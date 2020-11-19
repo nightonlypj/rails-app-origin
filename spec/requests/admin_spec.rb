@@ -1,21 +1,24 @@
 require 'rails_helper'
 
 RSpec.describe 'Admin', type: :request do
-  let!(:admin_user) { FactoryBot.create(:admin_user) }
-  shared_context 'ログイン処理' do
-    before { sign_in admin_user }
-  end
-
+  # GET / RailsAdmin
   describe 'GET /admin' do
     context '未ログイン' do
-      it 'renders a redirect response' do
+      it 'ログインにリダイレクト' do
         get '/admin'
-        expect(response).to be_redirect
+        expect(response).to redirect_to(new_admin_user_session_path)
       end
     end
     context 'ログイン中' do
       include_context 'ログイン処理'
-      it 'renders a successful response' do
+      it 'ログインにリダイレクト' do
+        get '/admin'
+        expect(response).to redirect_to(new_admin_user_session_path)
+      end
+    end
+    context 'ログイン中（管理者）' do
+      include_context 'ログイン処理（管理者）'
+      it '成功ステータス' do
         get '/admin'
         expect(response).to be_successful
       end

@@ -1,11 +1,7 @@
 require 'rails_helper'
 
 RSpec.describe 'top/index', type: :view do
-  let!(:user) { FactoryBot.create(:user) }
-  shared_context 'ログイン処理' do
-    before { sign_in user }
-  end
-
+  # テスト内容
   shared_examples_for 'レスポンス' do
     it 'Hello World!が含まれる' do
       render
@@ -13,6 +9,7 @@ RSpec.describe 'top/index', type: :view do
     end
   end
 
+  # テストケース
   context '未ログイン' do
     it_behaves_like 'レスポンス'
   end

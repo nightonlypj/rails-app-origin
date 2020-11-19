@@ -1,11 +1,6 @@
 require 'rails_helper'
 
 RSpec.describe 'layouts/application', type: :view do
-  let!(:user) { FactoryBot.create(:user) }
-  shared_context 'ログイン処理' do
-    before { sign_in user }
-  end
-
   context '未ログイン' do
     it 'ログインのパスが含まれる' do
       render
@@ -24,6 +19,7 @@ RSpec.describe 'layouts/application', type: :view do
       expect(rendered).not_to include("\"#{destroy_user_session_path}\"")
     end
   end
+
   context 'ログイン中' do
     include_context 'ログイン処理'
     it 'ログインのパスが含まれない' do

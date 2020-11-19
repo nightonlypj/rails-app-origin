@@ -5,6 +5,7 @@ ja:
       admin_user: "管理者"
     attributes:
       user:
+        id: "ID"
         email: "メールアドレス"
         password: "パスワード"
         password_confirmation: "パスワード(確認)"
@@ -30,6 +31,7 @@ ja:
         created_at: "作成日時"
         updated_at: "更新日時"
       admin_user:
+        id: "ID"
         email: "メールアドレス"
         password: "パスワード"
         password_confirmation: "パスワード(確認)"

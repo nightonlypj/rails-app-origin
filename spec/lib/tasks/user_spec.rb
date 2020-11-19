@@ -17,6 +17,7 @@ RSpec.describe User do
         end.to change(User, :count).by(0)
       end
     end
+
     context '3件（削除予約1件、削除対象1件）' do
       before(:each) do
         FactoryBot.create(:user)
@@ -29,6 +30,7 @@ RSpec.describe User do
         end.to change(User, :count).by(-1)
       end
     end
+
     context '4件（削除予約1件、削除対象2件）' do
       before(:each) do
         FactoryBot.create(:user)

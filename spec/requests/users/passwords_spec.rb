@@ -15,7 +15,7 @@ RSpec.describe 'Users::Passwords', type: :request do
   describe 'GET /users/password/edit' do
     context '期限内のtoken' do
       include_context 'token作成', true
-      it 'renders a successful response' do
+      it '成功ステータス' do
         get "#{edit_user_password_path}?reset_password_token=#{@token}"
         expect(response).to be_successful
       end
@@ -39,7 +39,7 @@ RSpec.describe 'Users::Passwords', type: :request do
   describe 'PUT /users/password' do
     context '期限内のtoken' do
       include_context 'token作成', true
-      it 'renders a successful response' do
+      it '成功ステータス' do
         put user_password_path, params: { user: { reset_password_token: @token } }
         expect(response).to be_successful
       end

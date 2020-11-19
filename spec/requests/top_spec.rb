@@ -1,20 +1,17 @@
 require 'rails_helper'
 
 RSpec.describe 'Top', type: :request do
-  let!(:user) { FactoryBot.create(:user) }
-  shared_context 'ログイン処理' do
-    before { sign_in user }
-  end
-
   # GET / トップページ
   describe 'GET /' do
+    # テスト内容
     shared_examples_for 'レスポンス' do
-      it 'renders a successful response' do
+      it '成功ステータス' do
         get root_path
         expect(response).to be_successful
       end
     end
 
+    # テストケース
     context '未ログイン' do
       it_behaves_like 'レスポンス'
     end
