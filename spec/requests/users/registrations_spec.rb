@@ -36,14 +36,14 @@ RSpec.describe 'Users::Registrations', type: :request do
     context 'ログイン中' do
       include_context 'ログイン処理'
       it '成功ステータス' do
-        put user_registration_path, params: { user: user }
+        put user_registration_path, params: { user: valid_attributes }
         expect(response).to be_successful
       end
     end
     context 'ログイン中（削除予約済み）' do
       include_context 'ログイン処理', true
       it 'トップページにリダイレクト' do
-        put user_registration_path, params: { user: user }
+        put user_registration_path, params: { user: valid_attributes }
         expect(response).to redirect_to(root_path)
       end
     end
@@ -73,13 +73,13 @@ RSpec.describe 'Users::Registrations', type: :request do
       it '削除依頼日時が現在日時と一致' do
         start_time = Time.current
         delete user_registration_path
-        expect(User.last.destroy_requested_at).to be_between(start_time, Time.current)
+        expect(User.find(user.id).destroy_requested_at).to be_between(start_time, Time.current)
       end
       it "削除予定日時が#{Settings['destroy_schedule_days']}日後と一致" do
         start_time = Time.current
         delete user_registration_path
-        expect(User.last.destroy_schedule_at).to be_between(start_time + Settings['destroy_schedule_days'].days,
-                                                            Time.current + Settings['destroy_schedule_days'].days)
+        expect(User.find(user.id).destroy_schedule_at).to be_between(start_time + Settings['destroy_schedule_days'].days,
+                                                                     Time.current + Settings['destroy_schedule_days'].days)
       end
     end
     context 'ログイン中（削除予約済み）' do
@@ -134,11 +134,11 @@ RSpec.describe 'Users::Registrations', type: :request do
       include_context 'ログイン処理', true
       it '削除依頼日時がない' do
         put users_undo_destroy_path
-        expect(User.last.destroy_requested_at).to be_nil
+        expect(User.find(user.id).destroy_requested_at).to be_nil
       end
       it '削除予定日時がない' do
         put users_undo_destroy_path
-        expect(User.last.destroy_schedule_at).to be_nil
+        expect(User.find(user.id).destroy_schedule_at).to be_nil
       end
     end
   end
