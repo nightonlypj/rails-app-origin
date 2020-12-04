@@ -6,6 +6,7 @@ ja:
     attributes:
       user:
         id: "ID"
+        name: "名前"
         email: "メールアドレス"
         password: "パスワード"
         password_confirmation: "パスワード(確認)"
@@ -32,6 +33,7 @@ ja:
         updated_at: "更新日時"
       admin_user:
         id: "ID"
+        name: "名前"
         email: "メールアドレス"
         password: "パスワード"
         password_confirmation: "パスワード(確認)"
@@ -58,6 +60,10 @@ ja:
       models:
         user:
           attributes:
+            name:
+              blank: "入力してください。"
+              too_short: "%{count}文字以上で入力してください。"
+              too_long: "%{count}文字以下で入力してください。"
             email:
               taken: "既に使用されています。"
               blank: "入力してください。"
@@ -84,6 +90,10 @@ ja:
               invalid: "URLが正しくないか、有効期限が切れています。最初からやり直してください。"
         admin_user:
           attributes:
+            name:
+              blank: "入力してください。"
+              too_short: "%{count}文字以上で入力してください。"
+              too_long: "%{count}文字以下で入力してください。"
             email:
               taken: "既に使用されています。"
               blank: "入力してください。"

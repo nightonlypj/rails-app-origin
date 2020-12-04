@@ -4,7 +4,7 @@ RSpec.describe 'Top', type: :request do
   # GET / トップページ
   describe 'GET /' do
     # テスト内容
-    shared_examples_for 'レスポンス' do
+    shared_examples_for 'ToOK' do
       it '成功ステータス' do
         get root_path
         expect(response).to be_successful
@@ -13,11 +13,15 @@ RSpec.describe 'Top', type: :request do
 
     # テストケース
     context '未ログイン' do
-      it_behaves_like 'レスポンス'
+      it_behaves_like 'ToOK'
     end
     context 'ログイン中' do
       include_context 'ログイン処理'
-      it_behaves_like 'レスポンス'
+      it_behaves_like 'ToOK'
+    end
+    context 'ログイン中（削除予約済み）' do
+      include_context 'ログイン処理', true
+      it_behaves_like 'ToOK'
     end
   end
 end

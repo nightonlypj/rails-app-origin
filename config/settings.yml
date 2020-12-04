@@ -6,3 +6,7 @@ reset_password_within_hours: 24
 destroy_schedule_days: 7
 # アカウント削除完了メール送信(true or false)  Tips:「rails user:destroy[false]」をcronで実行（メール送信する場合、夜間は避けた方が良い）
 sendmail_destroy_completed: true
+# ユーザー名の最小文字数
+user_name_minimum: 1
+# ユーザー名の最大文字数
+user_name_maximum: 32

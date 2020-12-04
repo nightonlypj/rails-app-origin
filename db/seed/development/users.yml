@@ -1,8 +1,10 @@
 - id: 1
+  name: user1
   email: user1@mydomain
   password: changepassword
   confirmed_at: '0000-01-01'
 - id: 2
+  name: user2
   email: user2@mydomain
   password: changepassword
   confirmed_at: '0000-01-01'
