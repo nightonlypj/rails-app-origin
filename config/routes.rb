@@ -17,9 +17,11 @@ Rails.application.routes.draw do
     passwords: 'users/passwords'
   }
   devise_scope :user do
-    get 'users/delete',       to: 'users/registrations#delete'
-    get 'users/undo_delete',  to: 'users/registrations#undo_delete'
-    put 'users/undo_destroy', to: 'users/registrations#undo_destroy'
+    put    'users/image',       to: 'users/registrations#image_update'
+    delete 'users/image',       to: 'users/registrations#image_destroy'
+    get    'users/delete',      to: 'users/registrations#delete'
+    get    'users/undo_delete', to: 'users/registrations#undo_delete'
+    delete 'users/undo_delete', to: 'users/registrations#undo_destroy'
   end
 
   # トップ

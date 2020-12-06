@@ -8,3 +8,8 @@
   email: user2@mydomain
   password: changepassword
   confirmed_at: '0000-01-01'
+- id: 3
+  name: user3
+  email: user3@mydomain
+  password: changepassword
+  confirmed_at: '0000-01-01'

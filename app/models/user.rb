@@ -1,4 +1,6 @@
 class User < ApplicationRecord
+  mount_uploader :image, ImageUploader
+
   validates :name, presence: true
   validates :name, length: { in: Settings['user_name_minimum']..Settings['user_name_maximum'] }, if: proc { |user| user.name.present? }
 

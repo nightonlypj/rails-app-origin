@@ -6,6 +6,7 @@ ja:
     attributes:
       user:
         id: "ID"
+        image: "画像"
         name: "名前"
         email: "メールアドレス"
         password: "パスワード"

@@ -102,10 +102,9 @@ RSpec.describe 'Users::Unlocks', type: :request do
       end
     end
     shared_examples_for 'NG' do
-      let!(:before_user) { send_user }
       it 'アカウントロック日時が変更されない' do
         get "#{user_unlock_path}?unlock_token=#{token}"
-        expect(User.find(send_user.id).locked_at).to eq(before_user.locked_at)
+        expect(User.find(send_user.id).locked_at).to eq(send_user.locked_at)
       end
     end
 

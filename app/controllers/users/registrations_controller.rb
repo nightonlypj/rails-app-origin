@@ -1,10 +1,10 @@
 # frozen_string_literal: true
 
 class Users::RegistrationsController < Devise::RegistrationsController
-  # before_action :configure_sign_up_params, only: [:create]
-  # before_action :configure_account_update_params, only: [:update]
-  prepend_before_action :authenticate_scope!, only: %i[edit update delete destroy undo_delete undo_destroy]
-  before_action :redirect_response_destroy_reserved, only: %i[edit update delete destroy]
+  before_action :configure_sign_up_params, only: [:create]
+  before_action :configure_account_update_params, only: [:update]
+  prepend_before_action :authenticate_scope!, only: %i[edit update image_update image_destroy delete destroy undo_delete undo_destroy]
+  before_action :redirect_response_destroy_reserved, only: %i[edit update image_update image_destroy delete destroy]
   before_action :redirect_response_not_destroy_reserved, only: %i[undo_delete undo_destroy]
 
   # GET /users/sign_up アカウント登録
@@ -27,6 +27,30 @@ class Users::RegistrationsController < Devise::RegistrationsController
   #   super
   # end
 
+  # PUT /users/image 画像変更(処理)
+  def image_update
+    if params.blank? || params[:user].blank?
+      resource.errors.add(:image, t('errors.messages.image_update.blank'))
+      return render :edit
+    end
+
+    @user = User.find(current_user.id)
+    return render :edit unless @user.update(params.require(:user).permit(:image))
+
+    redirect_to edit_user_registration_path, notice: t('notice.user.image_update')
+  end
+
+  # DELETE /users/image 画像削除(処理)
+  def image_destroy
+    @user = User.find(current_user.id)
+    @user.remove_image!
+    if @user.save
+      redirect_to edit_user_registration_path, notice: t('notice.user.image_destroy')
+    else
+      redirect_to edit_user_registration_path, notice: t('errors.messages.image_destroy.error')
+    end
+  end
+
   # GET /users/delete アカウント削除
   # def delete
   # end
@@ -46,7 +70,7 @@ class Users::RegistrationsController < Devise::RegistrationsController
   # def undo_delete
   # end
 
-  # PUT /users/undo_destroy アカウント削除取り消し(処理)
+  # DELETE /users/undo_delete アカウント削除取り消し(処理)
   def undo_destroy
     resource.set_undo_destroy_reserve
     UserMailer.with(user: current_user).undo_destroy_reserved.deliver_now
@@ -64,17 +88,17 @@ class Users::RegistrationsController < Devise::RegistrationsController
   #   super
   # end
 
-  # protected
+  protected
 
   # If you have extra params to permit, append them to the sanitizer.
-  # def configure_sign_up_params
-  #   devise_parameter_sanitizer.permit(:sign_up, keys: [:attribute])
-  # end
+  def configure_sign_up_params
+    devise_parameter_sanitizer.permit(:sign_up, keys: [:name])
+  end
 
   # If you have extra params to permit, append them to the sanitizer.
-  # def configure_account_update_params
-  #   devise_parameter_sanitizer.permit(:account_update, keys: [:attribute])
-  # end
+  def configure_account_update_params
+    devise_parameter_sanitizer.permit(:account_update, keys: [:name])
+  end
 
   # The path used after sign up.
   # def after_sign_up_path_for(resource)

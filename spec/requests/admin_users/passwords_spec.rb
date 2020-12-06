@@ -177,10 +177,9 @@ RSpec.describe 'AdminUsers::Passwords', type: :request do
       end
     end
     shared_examples_for 'NG' do
-      let!(:before_admin_user) { send_admin_user }
       it 'パスワードリセット送信日時が変更されない' do
         put admin_user_password_path, params: { admin_user: attributes.merge({ reset_password_token: token }) }
-        expect(AdminUser.find(send_admin_user.id).reset_password_sent_at).to eq(before_admin_user.reset_password_sent_at)
+        expect(AdminUser.find(send_admin_user.id).reset_password_sent_at).to eq(send_admin_user.reset_password_sent_at)
       end
     end
 

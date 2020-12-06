@@ -93,10 +93,9 @@ RSpec.describe 'AdminUsers::Unlocks', type: :request do
       end
     end
     shared_examples_for 'NG' do
-      let!(:before_admin_user) { send_admin_user }
       it 'アカウントロック日時が変更されない' do
         get "#{admin_user_unlock_path}?unlock_token=#{token}"
-        expect(AdminUser.find(send_admin_user.id).locked_at).to eq(before_admin_user.locked_at)
+        expect(AdminUser.find(send_admin_user.id).locked_at).to eq(send_admin_user.locked_at)
       end
     end
 

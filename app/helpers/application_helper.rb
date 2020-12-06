@@ -14,4 +14,23 @@ module ApplicationHelper
   def destroy_reserved_message?
     controller_name != 'registrations' && action_name != 'undo_delete' && destroy_reserved?
   end
+
+  # ログインユーザーの画像URLを返却
+  def current_user_image_url(version)
+    return "/images/user/#{version}_noimage.jpg" unless current_user.image?
+
+    case version
+    when :mini
+      current_user.image.mini.url
+    when :small
+      current_user.image.small.url
+    when :medium
+      current_user.image.medium.url
+    when :large
+      current_user.image.large.url
+    else
+      logger.warn("[WARN]Not found: ApplicationHelper.current_user_image_url(#{version})")
+      ''
+    end
+  end
 end

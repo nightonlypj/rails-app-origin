@@ -130,37 +130,67 @@ RSpec.describe 'AdminUsers::Registrations', type: :request do
   #   describe 'PUT /admin_users' do
   #     # テスト内容
   #     shared_examples_for 'OK' do
-  #       it 'メールアドレスが変更される' do
-  #         after_admin_user = admin_user
-  #         after_admin_user.email = "a#{admin_user.email}"
-  #         put admin_user_registration_path, params: { admin_user: after_admin_user }
-  #         expect(admin_user.email).to eq(after_admin_user.email)
+  #       it '名前が変更される' do
+  #         put admin_user_registration_path, params: { admin_user: attributes.merge(current_password: current_password) }
+  #         expect(AdminUser.find(admin_user.id).name).to eq(attributes[:name])
+  #       end
+  #     end
+  #     shared_examples_for 'NG' do
+  #       it '名前が変更されない' do
+  #         put admin_user_registration_path, params: { admin_user: attributes.merge(current_password: current_password) }
+  #         expect(AdminUser.find(admin_user.id).name).to eq(admin_user.name)
   #       end
   #     end
   #
   #     shared_examples_for 'ToOK' do
   #       it '成功ステータス' do
-  #         after_admin_user = admin_user
-  #         after_admin_user.email = "a#{admin_user.email}"
-  #         put admin_user_registration_path, params: { admin_user: after_admin_user }
+  #         put admin_user_registration_path, params: { admin_user: attributes.merge(current_password: current_password) }
   #         expect(response).to be_successful
+  #       end
+  #     end
+  #     shared_examples_for 'ToTop' do
+  #       it 'トップページにリダイレクト' do
+  #         put admin_user_registration_path, params: { admin_user: attributes.merge(current_password: current_password) }
+  #         expect(response).to redirect_to(root_path)
   #       end
   #     end
   #     shared_examples_for 'ToLogin' do
   #       it 'ログインにリダイレクト' do
-  #         put admin_user_registration_path, params: { admin_user: nil }
+  #         put admin_user_registration_path, params: { admin_user: attributes.merge(current_password: current_password) }
   #         expect(response).to redirect_to(new_admin_user_session_path)
   #       end
   #     end
   #
   #     # テストケース
-  #     context '未ログイン' do
+  #     shared_examples_for '[未ログイン]有効なパラメータ' do
+  #       let!(:attributes) { valid_attributes }
   #       it_behaves_like 'ToLogin'
+  #     end
+  #     shared_examples_for '[未ログイン]無効なパラメータ' do
+  #       let!(:attributes) { invalid_attributes }
+  #       it_behaves_like 'ToLogin'
+  #     end
+  #     shared_examples_for '[ログイン中]有効なパラメータ' do
+  #       let!(:attributes) { valid_attributes }
+  #       it_behaves_like 'OK'
+  #       it_behaves_like 'ToTop'
+  #     end
+  #     shared_examples_for '[ログイン中]無効なパラメータ' do
+  #       let!(:attributes) { invalid_attributes }
+  #       it_behaves_like 'NG'
+  #       it_behaves_like 'ToOK' # Tips: 再入力の為
+  #     end
+  #
+  #     context '未ログイン' do
+  #       let!(:current_password) { nil }
+  #       it_behaves_like '[未ログイン]有効なパラメータ'
+  #       it_behaves_like '[未ログイン]無効なパラメータ'
   #     end
   #     context 'ログイン中' do
   #       include_context 'ログイン処理（管理者）'
-  #       it_behaves_like 'OK'
-  #       it_behaves_like 'ToOK'
+  #       let!(:current_password) { admin_user.password }
+  #       it_behaves_like '[ログイン中]有効なパラメータ'
+  #       it_behaves_like '[ログイン中]無効なパラメータ'
   #     end
   #   end
   #

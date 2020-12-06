@@ -194,10 +194,9 @@ RSpec.describe 'Users::Passwords', type: :request do
       end
     end
     shared_examples_for 'NG' do
-      let!(:before_user) { send_user }
       it 'パスワードリセット送信日時が変更されない' do
         put user_password_path, params: { user: attributes.merge({ reset_password_token: token }) }
-        expect(User.find(send_user.id).reset_password_sent_at).to eq(before_user.reset_password_sent_at)
+        expect(User.find(send_user.id).reset_password_sent_at).to eq(send_user.reset_password_sent_at)
       end
     end
 
