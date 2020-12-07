@@ -2,22 +2,19 @@ require 'rails_helper'
 
 RSpec.describe 'Top', type: :request do
   let!(:base_headers) { { 'Host' => Settings['base_domain'] } }
-  let!(:user) { FactoryBot.create(:user) }
-  shared_context 'ログイン処理' do
-    before { sign_in user }
-  end
 
   # GET /（ベースドメイン） トップページ
   # GET /（サブドメイン） スペーストップ
   describe 'GET /' do
+    # テスト内容
     shared_examples_for 'ベースドメイン' do
-      it 'renders a successful response' do
+      it '成功ステータス' do
         get root_path, headers: base_headers
         expect(response).to be_successful
       end
     end
     shared_examples_for 'サブドメイン' do
-      it 'renders a successful response' do
+      it '成功ステータス' do
         request_space = FactoryBot.create(:space)
         space_headers = { 'Host' => "#{request_space.subdomain}.#{Settings['base_domain']}" }
         get root_path, headers: space_headers
@@ -25,13 +22,14 @@ RSpec.describe 'Top', type: :request do
       end
     end
     shared_examples_for '存在しないサブドメイン' do
-      it 'renders a not found response' do
+      it '存在しないステータス' do
         space_headers = { 'Host' => "not.#{Settings['base_domain']}" }
         get root_path, headers: space_headers
         expect(response).to be_not_found
       end
     end
 
+    # テストケース
     context '未ログイン' do
       it_behaves_like 'ベースドメイン'
       it_behaves_like 'サブドメイン'
@@ -43,6 +41,12 @@ RSpec.describe 'Top', type: :request do
       it_behaves_like 'サブドメイン'
       it_behaves_like '存在しないサブドメイン'
     end
+    context 'ログイン中（削除予約済み）' do
+      include_context 'ログイン処理', true
+      it_behaves_like 'ベースドメイン'
+      it_behaves_like 'サブドメイン'
+      it_behaves_like '存在しないサブドメイン'
+    end
   end
 
   describe 'GET / @new_spaces' do
@@ -50,6 +54,7 @@ RSpec.describe 'Top', type: :request do
       before { @create_spaces = FactoryBot.create_list(:space, limit) }
     end
 
+    # テスト内容
     shared_examples_for 'ベースドメイン、1番新しいスペース' do
       it '名前が含まれる' do
         get root_path, headers: base_headers
@@ -101,6 +106,7 @@ RSpec.describe 'Top', type: :request do
       end
     end
 
+    # テストケース
     shared_examples_for 'スペースが0件' do
       it_behaves_like 'ベースドメイン、スペースがない'
       it_behaves_like 'ベースドメイン'
@@ -128,6 +134,10 @@ RSpec.describe 'Top', type: :request do
       include_context 'ログイン処理'
       it_behaves_like 'スペースが0件'
     end
+    context 'ログイン中（削除予約済み）' do
+      include_context 'ログイン処理', true
+      it_behaves_like 'スペースが0件'
+    end
 
     context '未ログイン' do
       it_behaves_like 'スペースが最大表示数と同じ'
@@ -142,6 +152,10 @@ RSpec.describe 'Top', type: :request do
     end
     context 'ログイン中' do
       include_context 'ログイン処理'
+      it_behaves_like 'スペースが最大表示数より多い'
+    end
+    context 'ログイン中（削除予約済み）' do
+      include_context 'ログイン処理', true
       it_behaves_like 'スペースが最大表示数より多い'
     end
   end

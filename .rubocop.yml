@@ -68,7 +68,16 @@ Metrics/BlockLength:
     - 'spec/**/*'
     - 'config/environments/*'
     - 'lib/tasks/*'
+    - 'config/routes.rb'
 
 # C: Style/FrozenStringLiteralComment: Missing frozen string literal comment.
 Style/FrozenStringLiteralComment:
   Enabled: false
+
+# C: Layout/LineLength: Line is too long.
+Layout/LineLength:
+  Max: 160
+
+# C: Metrics/MethodLength: Method has too many lines.
+Metrics/MethodLength:
+  Max: 20

@@ -14,6 +14,12 @@ RSpec.describe Users::RegistrationsController, type: :routing do
     it 'routes to #update' do
       expect(put: '/users').to route_to('users/registrations#update')
     end
+    it 'routes to #image_update' do
+      expect(put: '/users/image').to route_to('users/registrations#image_update')
+    end
+    it 'routes to #image_destroy' do
+      expect(delete: '/users/image').to route_to('users/registrations#image_destroy')
+    end
     it 'routes to #delete' do
       expect(get: '/users/delete').to route_to('users/registrations#delete')
     end
@@ -24,7 +30,7 @@ RSpec.describe Users::RegistrationsController, type: :routing do
       expect(get: '/users/undo_delete').to route_to('users/registrations#undo_delete')
     end
     it 'routes to #undo_destroy' do
-      expect(put: '/users/undo_destroy').to route_to('users/registrations#undo_destroy')
+      expect(delete: '/users/undo_delete').to route_to('users/registrations#undo_destroy')
     end
     it 'routes to #cancel' do
       expect(get: '/users/cancel').to route_to('users/registrations#cancel')

@@ -20,9 +20,10 @@
 <%= yield %>
 
 <% if Rails.env.development? %>
+    <hr/>
     <ul>
-      <li><%= link_to '[LetterOpenerWeb]', letter_opener_web_path, target: :_blank, rel: [:noopener, :noreferrer] %></li>
-      <li><%= link_to '[ActionMailer Preview]', '/rails/mailers', target: :_blank, rel: [:noopener, :noreferrer] %></li>
+      <li><%= link_to '[LetterOpenerWeb]', letter_opener_web_path %></li>
+      <li><%= link_to '[ActionMailer Preview]', '/rails/mailers' %></li>
     </ul>
 <% end %>
   </body>

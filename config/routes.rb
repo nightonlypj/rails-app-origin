@@ -1,4 +1,5 @@
 Rails.application.routes.draw do
+  # スペース
   get 'spaces', to: 'spaces#index'
   post 'spaces/create', to: 'spaces#create', as: 'create_space'
   get 'spaces/new', to: 'spaces#new', as: 'new_space'
@@ -6,7 +7,7 @@ Rails.application.routes.draw do
   patch 'spaces/update', to: 'spaces#update', as: 'update_space'
   put 'spaces/update', to: 'spaces#update', as: nil
 
-  mount RailsAdmin::Engine => '/admin', as: 'rails_admin'
+  # 管理ユーザー
   devise_for :admin_users, controllers: {
     registrations: 'admin_users/registrations',
     confirmations: 'admin_users/confirmations',
@@ -14,6 +15,8 @@ Rails.application.routes.draw do
     unlocks: 'admin_users/unlocks',
     passwords: 'admin_users/passwords'
   }
+
+  # ユーザー
   devise_for :users, controllers: {
     registrations: 'users/registrations',
     confirmations: 'users/confirmations',
@@ -22,10 +25,17 @@ Rails.application.routes.draw do
     passwords: 'users/passwords'
   }
   devise_scope :user do
-    get 'users/delete', to: 'users/registrations#delete'
-    get 'users/undo_delete', to: 'users/registrations#undo_delete'
-    put 'users/undo_destroy', to: 'users/registrations#undo_destroy'
+    put    'users/image',       to: 'users/registrations#image_update'
+    delete 'users/image',       to: 'users/registrations#image_destroy'
+    get    'users/delete',      to: 'users/registrations#delete'
+    get    'users/undo_delete', to: 'users/registrations#undo_delete'
+    delete 'users/undo_delete', to: 'users/registrations#undo_destroy'
   end
+
+  # トップ
   root 'top#index'
-  mount LetterOpenerWeb::Engine, at: '/letter_opener' if Rails.env.development?
+
+  # 管理・デバッグ用
+  mount RailsAdmin::Engine => '/admin', as: 'rails_admin'
+  mount LetterOpenerWeb::Engine => '/letter_opener' if Rails.env.development?
 end
