@@ -86,3 +86,7 @@ gem 'config'
 # Use kaminari
 gem 'kaminari'
 gem 'kaminari-i18n'
+
+# Use CarrierWave/MiniMagick
+gem 'carrierwave'
+gem 'mini_magick'

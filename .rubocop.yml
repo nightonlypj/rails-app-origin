@@ -73,3 +73,11 @@ Metrics/BlockLength:
 # C: Style/FrozenStringLiteralComment: Missing frozen string literal comment.
 Style/FrozenStringLiteralComment:
   Enabled: false
+
+# C: Layout/LineLength: Line is too long.
+Layout/LineLength:
+  Max: 160
+
+# C: Metrics/MethodLength: Method has too many lines.
+Metrics/MethodLength:
+  Max: 20

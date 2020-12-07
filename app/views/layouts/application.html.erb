@@ -11,9 +11,10 @@
     <h1><%= link_to t('app_name'), root_path %></h1>
     <ul>
 <% if user_signed_in? %>
-      <li><%= current_user.email %></li>
-<% unless destroy_reserved? %>
-      <li><%= link_to "登録情報変更", edit_user_registration_path %></li>
+<% if destroy_reserved? %>
+      <li><%= image_tag current_user_image_url(:small) %> <%= current_user.name %></li>
+<% else %>
+      <li><%= image_tag current_user_image_url(:small) %> <%= link_to current_user.name, edit_user_registration_path %></li>
 <% end %>
       <li><%= link_to "ログアウト", destroy_user_session_path, method: :delete %></li>
 <% else %>
@@ -37,9 +38,10 @@
     <hr/>
     <p>Copyright &copy; <%= link_to t('my_name'), t('my_url'), target: :_blank, rel: [:noopener, :noreferrer] %> All Rights Reserved.</p>
 <% if Rails.env.development? %>
+    <hr/>
     <ul>
-      <li><%= link_to '[LetterOpenerWeb]', letter_opener_web_path, target: :_blank, rel: [:noopener, :noreferrer] %></li>
-      <li><%= link_to '[ActionMailer Preview]', '/rails/mailers', target: :_blank, rel: [:noopener, :noreferrer] %></li>
+      <li><%= link_to '[LetterOpenerWeb]', letter_opener_web_path %></li>
+      <li><%= link_to '[ActionMailer Preview]', '/rails/mailers' %></li>
     </ul>
 <% end %>
   </body>
