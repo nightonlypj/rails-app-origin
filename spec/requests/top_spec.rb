@@ -2,7 +2,7 @@ require 'rails_helper'
 
 RSpec.describe 'Top', type: :request do
   # GET / トップページ
-  describe 'GET /' do
+  describe 'GET /index' do
     # テスト内容
     shared_examples_for 'ToOK' do
       it '成功ステータス' do

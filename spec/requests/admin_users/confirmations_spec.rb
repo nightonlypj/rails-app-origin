@@ -18,7 +18,7 @@ RSpec.describe 'AdminUsers::Confirmations', type: :request do
   #   end
   #
   #   # GET /admin_users/confirmation/new メールアドレス確認メール再送
-  #   describe 'GET /admin_users/confirmation/new' do
+  #   describe 'GET /new' do
   #     # テスト内容
   #     shared_examples_for 'ToOK' do
   #       it '成功ステータス' do
@@ -38,7 +38,7 @@ RSpec.describe 'AdminUsers::Confirmations', type: :request do
   #   end
   #
   #   # POST /admin_users/confirmation メールアドレス確認メール再送(処理)
-  #   describe 'POST /admin_users/confirmation' do
+  #   describe 'POST /create' do
   #     # テスト内容
   #     shared_examples_for 'ToOK' do
   #       it '成功ステータス' do
@@ -75,7 +75,7 @@ RSpec.describe 'AdminUsers::Confirmations', type: :request do
   #   end
   #
   #   # GET /admin_users/confirmation メールアドレス確認(処理)
-  #   describe 'GET /admin_users/confirmation' do
+  #   describe 'GET /show' do
   #     # テスト内容
   #     shared_examples_for 'OK' do
   #       let!(:start_time) { Time.now.utc }
@@ -160,7 +160,9 @@ RSpec.describe 'AdminUsers::Confirmations', type: :request do
   #       it_behaves_like 'ToNew'
   #     end
   #
-  #     shared_examples_for '[共通]' do
+  #     context '未ログイン' do
+  #       it_behaves_like '[未ログイン]期限内のtoken、未確認（確認日時がない）'
+  #       it_behaves_like '[未ログイン]期限内のtoken、未確認（確認日時が確認送信日時より前）'
   #       it_behaves_like '期限内のtoken、確認済み（確認日時が確認送信日時より後）'
   #       it_behaves_like '期限切れのtoken、未確認（確認日時がない）'
   #       it_behaves_like '期限切れのtoken、未確認（確認日時が確認送信日時より前）'
@@ -168,17 +170,16 @@ RSpec.describe 'AdminUsers::Confirmations', type: :request do
   #       it_behaves_like '存在しないtoken'
   #       it_behaves_like 'tokenなし'
   #     end
-  #
-  #     context '未ログイン' do
-  #       it_behaves_like '[未ログイン]期限内のtoken、未確認（確認日時がない）'
-  #       it_behaves_like '[未ログイン]期限内のtoken、未確認（確認日時が確認送信日時より前）'
-  #       it_behaves_like '[共通]'
-  #     end
   #     context 'ログイン中' do
   #       include_context 'ログイン処理（管理者）'
   #       it_behaves_like '[ログイン中]期限内のtoken、未確認（確認日時がない）'
   #       it_behaves_like '[ログイン中]期限内のtoken、未確認（確認日時が確認送信日時より前）'
-  #       it_behaves_like '[共通]'
+  #       it_behaves_like '期限内のtoken、確認済み（確認日時が確認送信日時より後）'
+  #       it_behaves_like '期限切れのtoken、未確認（確認日時がない）'
+  #       it_behaves_like '期限切れのtoken、未確認（確認日時が確認送信日時より前）'
+  #       it_behaves_like '期限切れのtoken、確認済み（確認日時が確認送信日時より後）'
+  #       it_behaves_like '存在しないtoken'
+  #       it_behaves_like 'tokenなし'
   #     end
   #   end
 end

@@ -6,7 +6,7 @@ RSpec.describe 'AdminUsers::Sessions', type: :request do
   let!(:invalid_attributes) { FactoryBot.attributes_for(:admin_user, email: login_admin_user.email, password: nil) }
 
   # GET /admin_users/sign_in ログイン
-  describe 'GET /admin_users/sign_in' do
+  describe 'GET /new' do
     # テスト内容
     shared_examples_for 'ToOK' do
       it '成功ステータス' do
@@ -32,7 +32,7 @@ RSpec.describe 'AdminUsers::Sessions', type: :request do
   end
 
   # POST /admin_users/sign_in ログイン(処理)
-  describe 'POST /admin_users/sign_in' do
+  describe 'POST /create' do
     # テスト内容
     shared_examples_for 'ToOK' do
       it '成功ステータス' do
@@ -77,7 +77,7 @@ RSpec.describe 'AdminUsers::Sessions', type: :request do
   end
 
   # DELETE /admin_users/sign_out ログアウト(処理)
-  describe 'DELETE /admin_users/sign_out' do
+  describe 'DELETE /destroy' do
     # テスト内容
     shared_examples_for 'ToLogin' do
       it 'ログインにリダイレクト' do

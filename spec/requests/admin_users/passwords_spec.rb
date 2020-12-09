@@ -14,7 +14,7 @@ RSpec.describe 'AdminUsers::Passwords', type: :request do
   end
 
   # GET /admin_users/password/new パスワード再設定メール送信
-  describe 'GET /admin_users/password/new' do
+  describe 'GET /new' do
     # テスト内容
     shared_examples_for 'ToOK' do
       it '成功ステータス' do
@@ -40,7 +40,7 @@ RSpec.describe 'AdminUsers::Passwords', type: :request do
   end
 
   # POST /admin_users/password パスワード再設定メール送信(処理)
-  describe 'POST /admin_users/password' do
+  describe 'POST /create' do
     # テスト内容
     shared_examples_for 'ToOK' do
       it '成功ステータス' do
@@ -91,7 +91,7 @@ RSpec.describe 'AdminUsers::Passwords', type: :request do
   end
 
   # GET /admin_users/password/edit パスワード再設定
-  describe 'GET /admin_users/password/edit' do
+  describe 'GET /edit' do
     # テスト内容
     shared_examples_for 'ToOK' do
       it '成功ステータス' do
@@ -168,7 +168,7 @@ RSpec.describe 'AdminUsers::Passwords', type: :request do
   end
 
   # PUT /admin_users/password パスワード再設定(処理)
-  describe 'PUT /admin_users/password' do
+  describe 'PUT /update' do
     # テスト内容
     shared_examples_for 'OK' do
       it 'パスワードリセット送信日時が空に変更される' do
@@ -193,12 +193,6 @@ RSpec.describe 'AdminUsers::Passwords', type: :request do
       it 'RailsAdminにリダイレクト' do
         put admin_user_password_path, params: { admin_user: attributes.merge({ reset_password_token: token }) }
         expect(response).to redirect_to(rails_admin_path)
-      end
-    end
-    shared_examples_for 'ToLogin' do
-      it 'ログインにリダイレクト' do
-        put admin_user_password_path, params: { admin_user: attributes.merge({ reset_password_token: token }) }
-        expect(response).to redirect_to(new_admin_user_session_path)
       end
     end
     shared_examples_for 'ToNew' do

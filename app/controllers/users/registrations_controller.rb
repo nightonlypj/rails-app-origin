@@ -30,7 +30,7 @@ class Users::RegistrationsController < Devise::RegistrationsController
   # PUT /users/image 画像変更(処理)
   def image_update
     if params.blank? || params[:user].blank?
-      resource.errors.add(:image, t('errors.messages.image_update.blank'))
+      resource.errors.add(:image, t('errors.messages.image_update_blank'))
       return render :edit
     end
 
@@ -47,7 +47,7 @@ class Users::RegistrationsController < Devise::RegistrationsController
     if @user.save
       redirect_to edit_user_registration_path, notice: t('notice.user.image_destroy')
     else
-      redirect_to edit_user_registration_path, notice: t('errors.messages.image_destroy.error')
+      redirect_to edit_user_registration_path, notice: t('errors.messages.image_destroy_error')
     end
   end
 
@@ -111,6 +111,11 @@ class Users::RegistrationsController < Devise::RegistrationsController
   end
 
   private
+
+  # 削除予約済みの場合、リダイレクトしてメッセージを表示
+  def redirect_response_destroy_reserved
+    redirect_to root_path, notice: t('notice.user.destroy_reserved') if current_user.destroy_reserved?
+  end
 
   # 削除予約済みでない場合、リダイレクトしてメッセージを表示
   def redirect_response_not_destroy_reserved

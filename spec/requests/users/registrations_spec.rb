@@ -6,7 +6,7 @@ RSpec.describe 'Users::Registrations', type: :request do
   let!(:valid_image) { fixture_file_upload(TEST_IMAGE_FILE, TEST_IMAGE_TYPE) }
 
   # GET /users/sign_up アカウント登録
-  describe 'GET /users/sign_up' do
+  describe 'GET /new' do
     # テスト内容
     shared_examples_for 'ToOK' do
       it '成功ステータス' do
@@ -36,7 +36,7 @@ RSpec.describe 'Users::Registrations', type: :request do
   end
 
   # POST /users アカウント登録(処理)
-  describe 'POST /users' do
+  describe 'POST /create' do
     # テスト内容
     shared_examples_for 'OK' do
       it '作成される' do
@@ -111,7 +111,7 @@ RSpec.describe 'Users::Registrations', type: :request do
   end
 
   # GET /users/edit 登録情報変更
-  describe 'GET /users/edit' do
+  describe 'GET /edit' do
     # テスト内容
     shared_examples_for 'ToOK' do
       it '成功ステータス' do
@@ -147,7 +147,7 @@ RSpec.describe 'Users::Registrations', type: :request do
   end
 
   # PUT /users 登録情報変更(処理)
-  describe 'PUT /users' do
+  describe 'PUT /update' do
     # テスト内容
     shared_examples_for 'OK' do
       it '名前が変更される' do
@@ -235,7 +235,7 @@ RSpec.describe 'Users::Registrations', type: :request do
   end
 
   # PUT /users/image 画像変更(処理)
-  describe 'PUT /users/image' do
+  describe 'PUT /image_update' do
     # テスト内容
     shared_examples_for 'OK' do
       it '画像が変更される' do
@@ -328,7 +328,7 @@ RSpec.describe 'Users::Registrations', type: :request do
   end
 
   # DELETE /users/image 画像削除(処理)
-  describe 'DELETE /users/image' do
+  describe 'DELETE /image_destroy' do
     # テスト内容
     shared_examples_for 'OK' do
       it '画像が削除される' do
@@ -389,7 +389,7 @@ RSpec.describe 'Users::Registrations', type: :request do
   end
 
   # GET /users/delete アカウント削除
-  describe 'GET /users/delete' do
+  describe 'GET /delete' do
     # テスト内容
     shared_examples_for 'ToOK' do
       it '成功ステータス' do
@@ -425,7 +425,7 @@ RSpec.describe 'Users::Registrations', type: :request do
   end
 
   # DELETE /users アカウント削除(処理)
-  describe 'DELETE /users' do
+  describe 'DELETE /destroy' do
     # テスト内容
     shared_examples_for 'OK' do
       let!(:start_time) { Time.current }
@@ -481,7 +481,7 @@ RSpec.describe 'Users::Registrations', type: :request do
   end
 
   # GET /users/undo_delete アカウント削除取り消し
-  describe 'GET /users/undo_delete' do
+  describe 'GET /undo_delete' do
     # テスト内容
     shared_examples_for 'ToOK' do
       it '成功ステータス' do
@@ -517,7 +517,7 @@ RSpec.describe 'Users::Registrations', type: :request do
   end
 
   # DELETE /users/undo_delete アカウント削除取り消し(処理)
-  describe 'DELETE /users/undo_delete' do
+  describe 'DELETE /undo_destroy' do
     # テスト内容
     shared_examples_for 'OK' do
       it '削除依頼日時が空に変更される' do

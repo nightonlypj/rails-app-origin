@@ -14,7 +14,7 @@ RSpec.describe 'Users::Passwords', type: :request do
   end
 
   # GET /users/password/new パスワード再設定メール送信
-  describe 'GET /users/password/new' do
+  describe 'GET /new' do
     # テスト内容
     shared_examples_for 'ToOK' do
       it '成功ステータス' do
@@ -44,7 +44,7 @@ RSpec.describe 'Users::Passwords', type: :request do
   end
 
   # POST /users/password パスワード再設定メール送信(処理)
-  describe 'POST /users/password' do
+  describe 'POST /create' do
     # テスト内容
     shared_examples_for 'ToOK' do
       it '成功ステータス' do
@@ -100,7 +100,7 @@ RSpec.describe 'Users::Passwords', type: :request do
   end
 
   # GET /users/password/edit パスワード再設定
-  describe 'GET /users/password/edit' do
+  describe 'GET /edit' do
     # テスト内容
     shared_examples_for 'ToOK' do
       it '成功ステータス' do
@@ -161,13 +161,6 @@ RSpec.describe 'Users::Passwords', type: :request do
       it_behaves_like 'ToTop'
     end
 
-    shared_examples_for '[共通]' do
-      it_behaves_like '[ログイン中]期限内のtoken'
-      it_behaves_like '[ログイン中]期限切れのtoken'
-      it_behaves_like '[ログイン中]存在しないtoken'
-      it_behaves_like '[ログイン中]tokenなし'
-    end
-
     context '未ログイン' do
       it_behaves_like '[未ログイン]期限内のtoken'
       it_behaves_like '[未ログイン]期限切れのtoken'
@@ -176,16 +169,22 @@ RSpec.describe 'Users::Passwords', type: :request do
     end
     context 'ログイン中' do
       include_context 'ログイン処理'
-      it_behaves_like '[共通]'
+      it_behaves_like '[ログイン中]期限内のtoken'
+      it_behaves_like '[ログイン中]期限切れのtoken'
+      it_behaves_like '[ログイン中]存在しないtoken'
+      it_behaves_like '[ログイン中]tokenなし'
     end
     context 'ログイン中（削除予約済み）' do
       include_context 'ログイン処理', true
-      it_behaves_like '[共通]'
+      it_behaves_like '[ログイン中]期限内のtoken'
+      it_behaves_like '[ログイン中]期限切れのtoken'
+      it_behaves_like '[ログイン中]存在しないtoken'
+      it_behaves_like '[ログイン中]tokenなし'
     end
   end
 
   # PUT /users/password パスワード再設定(処理)
-  describe 'PUT /users/password' do
+  describe 'PUT /update' do
     # テスト内容
     shared_examples_for 'OK' do
       it 'パスワードリセット送信日時が空に変更される' do
@@ -210,12 +209,6 @@ RSpec.describe 'Users::Passwords', type: :request do
       it 'トップページにリダイレクト' do
         put user_password_path, params: { user: attributes.merge({ reset_password_token: token }) }
         expect(response).to redirect_to(root_path)
-      end
-    end
-    shared_examples_for 'ToLogin' do
-      it 'ログインにリダイレクト' do
-        put user_password_path, params: { user: attributes.merge({ reset_password_token: token }) }
-        expect(response).to redirect_to(new_user_session_path)
       end
     end
     shared_examples_for 'ToNew' do
@@ -315,17 +308,6 @@ RSpec.describe 'Users::Passwords', type: :request do
       it_behaves_like 'ToTop'
     end
 
-    shared_examples_for '[共通]' do
-      it_behaves_like '[ログイン中]期限内のtoken、有効なパラメータ'
-      it_behaves_like '[ログイン中]期限内のtoken、無効なパラメータ'
-      it_behaves_like '[ログイン中]期限切れのtoken、有効なパラメータ'
-      it_behaves_like '[ログイン中]期限切れのtoken、無効なパラメータ'
-      it_behaves_like '[ログイン中]存在しないtoken、有効なパラメータ'
-      it_behaves_like '[ログイン中]存在しないtoken、無効なパラメータ'
-      it_behaves_like '[ログイン中]tokenなし、有効なパラメータ'
-      it_behaves_like '[ログイン中]tokenなし、無効なパラメータ'
-    end
-
     context '未ログイン' do
       it_behaves_like '[未ログイン]期限内のtoken、有効なパラメータ'
       it_behaves_like '[未ログイン]期限内のtoken、無効なパラメータ'
@@ -338,11 +320,25 @@ RSpec.describe 'Users::Passwords', type: :request do
     end
     context 'ログイン中' do
       include_context 'ログイン処理'
-      it_behaves_like '[共通]'
+      it_behaves_like '[ログイン中]期限内のtoken、有効なパラメータ'
+      it_behaves_like '[ログイン中]期限内のtoken、無効なパラメータ'
+      it_behaves_like '[ログイン中]期限切れのtoken、有効なパラメータ'
+      it_behaves_like '[ログイン中]期限切れのtoken、無効なパラメータ'
+      it_behaves_like '[ログイン中]存在しないtoken、有効なパラメータ'
+      it_behaves_like '[ログイン中]存在しないtoken、無効なパラメータ'
+      it_behaves_like '[ログイン中]tokenなし、有効なパラメータ'
+      it_behaves_like '[ログイン中]tokenなし、無効なパラメータ'
     end
     context 'ログイン中（削除予約済み）' do
       include_context 'ログイン処理', true
-      it_behaves_like '[共通]'
+      it_behaves_like '[ログイン中]期限内のtoken、有効なパラメータ'
+      it_behaves_like '[ログイン中]期限内のtoken、無効なパラメータ'
+      it_behaves_like '[ログイン中]期限切れのtoken、有効なパラメータ'
+      it_behaves_like '[ログイン中]期限切れのtoken、無効なパラメータ'
+      it_behaves_like '[ログイン中]存在しないtoken、有効なパラメータ'
+      it_behaves_like '[ログイン中]存在しないtoken、無効なパラメータ'
+      it_behaves_like '[ログイン中]tokenなし、有効なパラメータ'
+      it_behaves_like '[ログイン中]tokenなし、無効なパラメータ'
     end
   end
 end

@@ -18,7 +18,7 @@ RSpec.describe 'Users::Confirmations', type: :request do
   end
 
   # GET /users/confirmation/new メールアドレス確認メール再送
-  describe 'GET /users/confirmation/new' do
+  describe 'GET /new' do
     # テスト内容
     shared_examples_for 'ToOK' do
       it '成功ステータス' do
@@ -42,7 +42,7 @@ RSpec.describe 'Users::Confirmations', type: :request do
   end
 
   # POST /users/confirmation メールアドレス確認メール再送(処理)
-  describe 'POST /users/confirmation' do
+  describe 'POST /create' do
     # テスト内容
     shared_examples_for 'ToOK' do
       it '成功ステータス' do
@@ -84,7 +84,7 @@ RSpec.describe 'Users::Confirmations', type: :request do
   end
 
   # GET /users/confirmation メールアドレス確認(処理)
-  describe 'GET /users/confirmation' do
+  describe 'GET /show' do
     # テスト内容
     shared_examples_for 'OK' do
       let!(:start_time) { Time.now.utc }
@@ -169,7 +169,9 @@ RSpec.describe 'Users::Confirmations', type: :request do
       it_behaves_like 'ToNew'
     end
 
-    shared_examples_for '[共通]' do
+    context '未ログイン' do
+      it_behaves_like '[未ログイン]期限内のtoken、未確認（確認日時がない）'
+      it_behaves_like '[未ログイン]期限内のtoken、未確認（確認日時が確認送信日時より前）'
       it_behaves_like '期限内のtoken、確認済み（確認日時が確認送信日時より後）'
       it_behaves_like '期限切れのtoken、未確認（確認日時がない）'
       it_behaves_like '期限切れのtoken、未確認（確認日時が確認送信日時より前）'
@@ -177,23 +179,27 @@ RSpec.describe 'Users::Confirmations', type: :request do
       it_behaves_like '存在しないtoken'
       it_behaves_like 'tokenなし'
     end
-
-    context '未ログイン' do
-      it_behaves_like '[未ログイン]期限内のtoken、未確認（確認日時がない）'
-      it_behaves_like '[未ログイン]期限内のtoken、未確認（確認日時が確認送信日時より前）'
-      it_behaves_like '[共通]'
-    end
     context 'ログイン中' do
       include_context 'ログイン処理'
       it_behaves_like '[ログイン中]期限内のtoken、未確認（確認日時がない）'
       it_behaves_like '[ログイン中]期限内のtoken、未確認（確認日時が確認送信日時より前）'
-      it_behaves_like '[共通]'
+      it_behaves_like '期限内のtoken、確認済み（確認日時が確認送信日時より後）'
+      it_behaves_like '期限切れのtoken、未確認（確認日時がない）'
+      it_behaves_like '期限切れのtoken、未確認（確認日時が確認送信日時より前）'
+      it_behaves_like '期限切れのtoken、確認済み（確認日時が確認送信日時より後）'
+      it_behaves_like '存在しないtoken'
+      it_behaves_like 'tokenなし'
     end
     context 'ログイン中（削除予約済み）' do
       include_context 'ログイン処理', true
       it_behaves_like '[ログイン中]期限内のtoken、未確認（確認日時がない）'
       it_behaves_like '[ログイン中]期限内のtoken、未確認（確認日時が確認送信日時より前）'
-      it_behaves_like '[共通]'
+      it_behaves_like '期限内のtoken、確認済み（確認日時が確認送信日時より後）'
+      it_behaves_like '期限切れのtoken、未確認（確認日時がない）'
+      it_behaves_like '期限切れのtoken、未確認（確認日時が確認送信日時より前）'
+      it_behaves_like '期限切れのtoken、確認済み（確認日時が確認送信日時より後）'
+      it_behaves_like '存在しないtoken'
+      it_behaves_like 'tokenなし'
     end
   end
 end
