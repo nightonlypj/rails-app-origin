@@ -1,4 +1,5 @@
 Rails.application.routes.draw do
+  resources :customer_users
   resources :customers
   # スペース
   get 'spaces', to: 'spaces#index'

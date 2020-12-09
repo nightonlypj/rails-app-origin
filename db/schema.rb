@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_12_09_114058) do
+ActiveRecord::Schema.define(version: 2020_12_09_114237) do
 
   create_table "admin_users", force: :cascade do |t|
     t.string "name", null: false
@@ -37,6 +37,16 @@ ActiveRecord::Schema.define(version: 2020_12_09_114058) do
     t.index ["email"], name: "index_admin_users1", unique: true
     t.index ["reset_password_token"], name: "index_admin_users2", unique: true
     t.index ["unlock_token"], name: "index_admin_users4", unique: true
+  end
+
+  create_table "customer_users", force: :cascade do |t|
+    t.integer "customer_id", null: false
+    t.integer "user_id", null: false
+    t.integer "power"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["customer_id"], name: "index_customer_users_on_customer_id"
+    t.index ["user_id"], name: "index_customer_users_on_user_id"
   end
 
   create_table "customers", force: :cascade do |t|
@@ -93,4 +103,6 @@ ActiveRecord::Schema.define(version: 2020_12_09_114058) do
     t.index ["item_type", "item_id"], name: "index_versions1"
   end
 
+  add_foreign_key "customer_users", "customers"
+  add_foreign_key "customer_users", "users"
 end
