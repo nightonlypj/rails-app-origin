@@ -1,4 +1,5 @@
 Rails.application.routes.draw do
+  resources :customers
   # スペース
   get 'spaces', to: 'spaces#index'
   post 'spaces/create', to: 'spaces#create', as: 'create_space'
