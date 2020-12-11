@@ -5,7 +5,7 @@ ja:
   activerecord:
     models:
       customer: "顧客"
-      customer_user: "顧客ユーザー"
+      customer_user: "メンバー"
       space: "スペース"
     attributes:
       customer:

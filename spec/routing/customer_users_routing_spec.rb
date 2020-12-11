@@ -11,7 +11,7 @@ RSpec.describe CustomerUsersController, type: :routing do
     end
 
     it 'routes to #show' do
-      expect(get: '/customer_users/1').to route_to('customer_users#show', id: '1')
+      expect(get: '/customer_users/1').not_to be_routable
     end
 
     it 'routes to #edit' do
@@ -28,6 +28,10 @@ RSpec.describe CustomerUsersController, type: :routing do
 
     it 'routes to #update via PATCH' do
       expect(patch: '/customer_users/1').to route_to('customer_users#update', id: '1')
+    end
+
+    it 'routes to #delete' do
+      expect(get: '/customer_users/1/delete').to route_to('customer_users#delete', id: '1')
     end
 
     it 'routes to #destroy' do

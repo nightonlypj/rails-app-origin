@@ -25,7 +25,8 @@ class SpacesController < ApplicationController
   def create
     return redirect_to "//#{Settings['base_domain']}#{new_space_path}" unless base_domain_request?
 
-    @space = Space.new(space_params)
+    # TODO: 仮対応
+    @space = Space.new(space_params.merge(customer_id: 1))
     respond_to do |format|
       if @space.save
         format.html { redirect_to "//#{Space.last.subdomain}.#{Settings['base_domain']}", notice: t('notice.space.create') }

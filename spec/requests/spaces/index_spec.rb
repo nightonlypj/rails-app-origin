@@ -7,10 +7,11 @@ RSpec.describe 'Spaces', type: :request do
   shared_context 'ログイン処理' do
     before { sign_in user }
   end
+  let!(:customer) { FactoryBot.create(:customer) }
 
   shared_context '存在するサブドメイン作成' do
     before do
-      request_space = FactoryBot.create(:space)
+      request_space = FactoryBot.create(:space, customer_id: customer.id)
       @space_headers = { 'Host' => "#{request_space.subdomain}.#{Settings['base_domain']}" }
     end
   end
@@ -66,7 +67,7 @@ RSpec.describe 'Spaces', type: :request do
 
   describe 'GET /index @spaces' do
     shared_context 'スペース作成' do |limit|
-      before { @create_spaces = FactoryBot.create_list(:space, limit) }
+      before { @create_spaces = FactoryBot.create_list(:space, limit, customer_id: customer.id) }
     end
 
     shared_examples_for 'ベースドメイン、1ページ、1番新しいスペース' do

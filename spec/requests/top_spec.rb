@@ -2,6 +2,7 @@ require 'rails_helper'
 
 RSpec.describe 'Top', type: :request do
   let!(:base_headers) { { 'Host' => Settings['base_domain'] } }
+  let!(:customer) { FactoryBot.create(:customer) }
 
   # GET /（ベースドメイン） トップページ
   # GET /（サブドメイン） スペーストップ
@@ -15,7 +16,7 @@ RSpec.describe 'Top', type: :request do
     end
     shared_examples_for 'サブドメイン' do
       it '成功ステータス' do
-        request_space = FactoryBot.create(:space)
+        request_space = FactoryBot.create(:space, customer_id: customer.id)
         space_headers = { 'Host' => "#{request_space.subdomain}.#{Settings['base_domain']}" }
         get root_path, headers: space_headers
         expect(response).to be_successful
@@ -51,7 +52,7 @@ RSpec.describe 'Top', type: :request do
 
   describe 'GET / @new_spaces' do
     shared_context 'スペース作成' do |limit|
-      before { @create_spaces = FactoryBot.create_list(:space, limit) }
+      before { @create_spaces = FactoryBot.create_list(:space, limit, customer_id: customer.id) }
     end
 
     # テスト内容

@@ -1,13 +1,18 @@
 Rails.application.routes.draw do
-  resources :customer_users
-  resources :customers
   # スペース
-  get 'spaces', to: 'spaces#index'
-  post 'spaces/create', to: 'spaces#create', as: 'create_space'
-  get 'spaces/new', to: 'spaces#new', as: 'new_space'
-  get 'spaces/edit', to: 'spaces#edit', as: 'edit_space'
-  patch 'spaces/update', to: 'spaces#update', as: 'update_space'
-  put 'spaces/update', to: 'spaces#update', as: nil
+  get   'spaces',      to: 'spaces#index', as: 'spaces'
+  post  'spaces',      to: 'spaces#create'
+  get   'spaces/new',  to: 'spaces#new',    as: 'new_space'
+  get   'spaces/edit', to: 'spaces#edit',   as: 'edit_space'
+  patch 'spaces',      to: 'spaces#update', as: 'space'
+  put   'spaces',      to: 'spaces#update'
+
+  # メンバー
+  resources :customer_users, only: %i[index new create edit update destroy]
+  get 'customer_users/:id/delete', to: 'customer_users#delete'
+
+  # 顧客
+  resources :customers, only: %i[index show]
 
   # 管理ユーザー
   devise_for :admin_users, controllers: {

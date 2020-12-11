@@ -9,10 +9,11 @@ RSpec.describe 'Spaces', type: :request do
   shared_context 'ログイン処理' do
     before { sign_in user }
   end
+  let!(:customer) { FactoryBot.create(:customer) }
 
   shared_context '存在するサブドメイン作成' do
     before do
-      @request_space = FactoryBot.create(:space)
+      @request_space = FactoryBot.create(:space, customer_id: customer.id)
       @space_headers = { 'Host' => "#{@request_space.subdomain}.#{Settings['base_domain']}" }
     end
   end
@@ -25,56 +26,56 @@ RSpec.describe 'Spaces', type: :request do
   describe 'PATCH /update' do
     shared_examples_for '有効なパラメータ' do
       it '更新に成功' do
-        patch update_space_path, params: { space: valid_attributes }, headers: @space_headers
+        patch space_path, params: { space: valid_attributes }, headers: @space_headers
         expect(Space.last.subdomain).to eq(valid_attributes[:subdomain])
       end
       it '更新したスペースのトップページ（サブドメイン）にリダイレクト' do
-        patch update_space_path, params: { space: valid_attributes }, headers: @space_headers
+        patch space_path, params: { space: valid_attributes }, headers: @space_headers
         expect(response).to redirect_to("//#{Space.last.subdomain}.#{Settings['base_domain']}")
       end
       it '(json)renders a ok(200) response' do
-        patch update_space_path, params: valid_attributes, as: :json, headers: @space_headers.merge(json_headers)
+        patch space_path, params: valid_attributes, as: :json, headers: @space_headers.merge(json_headers)
         expect(response).to be_ok
       end
       it '(json)エラー件数が0と一致' do
-        patch update_space_path, params: valid_attributes, as: :json, headers: @space_headers.merge(json_headers)
+        patch space_path, params: valid_attributes, as: :json, headers: @space_headers.merge(json_headers)
         expect(JSON.parse(response.body)['error_count']).to eq(0)
       end
       it '(json)エラーメッセージの項目が存在しない' do
-        patch update_space_path, params: valid_attributes, as: :json, headers: @space_headers.merge(json_headers)
+        patch space_path, params: valid_attributes, as: :json, headers: @space_headers.merge(json_headers)
         expect(JSON.parse(response.body)['errors'].present?).to eq(false)
       end
     end
     shared_examples_for '無効なパラメータ' do
       it '更新に失敗' do
-        patch update_space_path, params: { space: invalid_attributes }, headers: @space_headers
+        patch space_path, params: { space: invalid_attributes }, headers: @space_headers
         expect(Space.find(@request_space.id).subdomain).not_to be_nil
       end
       it 'renders a successful response' do
-        patch update_space_path, params: { space: invalid_attributes }, headers: @space_headers
+        patch space_path, params: { space: invalid_attributes }, headers: @space_headers
         expect(response).to be_successful
       end
       it '(json)renders a unprocessable(422) response' do
-        patch update_space_path, params: invalid_attributes, as: :json, headers: @space_headers.merge(json_headers)
+        patch space_path, params: invalid_attributes, as: :json, headers: @space_headers.merge(json_headers)
         expect(response).to be_unprocessable
       end
       it '(json)エラー件数が1と一致' do
-        patch update_space_path, params: invalid_attributes, as: :json, headers: @space_headers.merge(json_headers)
+        patch space_path, params: invalid_attributes, as: :json, headers: @space_headers.merge(json_headers)
         expect(JSON.parse(response.body)['error_count']).to eq(1)
       end
       it '(json)エラーメッセージの項目が存在する' do
-        patch update_space_path, params: invalid_attributes, as: :json, headers: @space_headers.merge(json_headers)
+        patch space_path, params: invalid_attributes, as: :json, headers: @space_headers.merge(json_headers)
         expect(JSON.parse(response.body)['errors'].present?).to eq(true)
       end
     end
 
     shared_examples_for 'ベースドメイン' do
       it 'renders a not found response' do
-        patch update_space_path, headers: base_headers
+        patch space_path, headers: base_headers
         expect(response).to be_not_found
       end
       it '(json)renders a not found response' do
-        patch update_space_path, as: :json, headers: base_headers.merge(json_headers)
+        patch space_path, as: :json, headers: base_headers.merge(json_headers)
         expect(response).to be_not_found
       end
     end
@@ -86,11 +87,11 @@ RSpec.describe 'Spaces', type: :request do
     shared_examples_for '存在しないサブドメイン' do
       include_context '存在しないサブドメイン作成'
       it 'renders a not found response' do
-        patch update_space_path, headers: @space_headers
+        patch space_path, headers: @space_headers
         expect(response).to be_not_found
       end
       it '(json)renders a not found response' do
-        patch update_space_path, as: :json, headers: @space_headers.merge(json_headers)
+        patch space_path, as: :json, headers: @space_headers.merge(json_headers)
         expect(response).to be_not_found
       end
     end

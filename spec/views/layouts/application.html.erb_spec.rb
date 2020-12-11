@@ -1,8 +1,9 @@
 require 'rails_helper'
 
 RSpec.describe 'layouts/application', type: :view do
+  let!(:customer) { FactoryBot.create(:customer) }
   shared_context 'スペース情報作成' do
-    before { @request_space = FactoryBot.create(:space) }
+    before { @request_space = FactoryBot.create(:space, customer_id: customer.id) }
   end
 
   # テスト内容

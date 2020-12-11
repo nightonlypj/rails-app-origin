@@ -7,7 +7,7 @@ RSpec.describe CustomersController, type: :routing do
     end
 
     it 'routes to #new' do
-      expect(get: '/customers/new').to route_to('customers#new')
+      # expect(get: '/customers/new').not_to be_routable # Tips: customers#show
     end
 
     it 'routes to #show' do
@@ -15,23 +15,23 @@ RSpec.describe CustomersController, type: :routing do
     end
 
     it 'routes to #edit' do
-      expect(get: '/customers/1/edit').to route_to('customers#edit', id: '1')
+      expect(get: '/customers/1/edit').not_to be_routable
     end
 
     it 'routes to #create' do
-      expect(post: '/customers').to route_to('customers#create')
+      expect(post: '/customers').not_to be_routable
     end
 
     it 'routes to #update via PUT' do
-      expect(put: '/customers/1').to route_to('customers#update', id: '1')
+      expect(put: '/customers/1').not_to be_routable
     end
 
     it 'routes to #update via PATCH' do
-      expect(patch: '/customers/1').to route_to('customers#update', id: '1')
+      expect(patch: '/customers/1').not_to be_routable
     end
 
     it 'routes to #destroy' do
-      expect(delete: '/customers/1').to route_to('customers#destroy', id: '1')
+      expect(delete: '/customers/1').not_to be_routable
     end
   end
 end
