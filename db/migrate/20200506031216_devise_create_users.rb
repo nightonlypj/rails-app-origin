@@ -39,6 +39,10 @@ class DeviseCreateUsers < ActiveRecord::Migration[6.0]
       t.datetime :destroy_requested_at
       t.datetime :destroy_schedule_at
 
+      ## 招待
+      t.datetime :invitation_requested_at
+      t.datetime :invitation_completed_at
+
       t.timestamps null: false
     end
 

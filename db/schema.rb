@@ -40,11 +40,12 @@ ActiveRecord::Schema.define(version: 2020_12_09_114237) do
   end
 
   create_table "customer_users", force: :cascade do |t|
-    t.integer "customer_id", null: false
-    t.integer "user_id", null: false
-    t.integer "power"
+    t.bigint "customer_id", null: false
+    t.bigint "user_id", null: false
+    t.integer "power", null: false
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
+    t.index ["customer_id", "user_id"], name: "index_customer_users1", unique: true
     t.index ["customer_id"], name: "index_customer_users_on_customer_id"
     t.index ["user_id"], name: "index_customer_users_on_user_id"
   end
@@ -53,14 +54,20 @@ ActiveRecord::Schema.define(version: 2020_12_09_114237) do
     t.string "name"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
+    t.index ["name"], name: "index_customers1", unique: true
   end
 
   create_table "spaces", force: :cascade do |t|
+    t.bigint "customer_id", null: false
     t.string "subdomain", null: false
     t.string "name", null: false
+    t.integer "sort_key", default: 0, null: false
+    t.boolean "public_flag", default: false, null: false
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
-    t.index ["subdomain"], name: "index_spaces_on_subdomain", unique: true
+    t.index ["created_at", "id"], name: "index_spaces2"
+    t.index ["customer_id"], name: "index_spaces_on_customer_id"
+    t.index ["subdomain"], name: "index_spaces1", unique: true
   end
 
   create_table "users", force: :cascade do |t|
@@ -85,6 +92,8 @@ ActiveRecord::Schema.define(version: 2020_12_09_114237) do
     t.datetime "locked_at"
     t.datetime "destroy_requested_at"
     t.datetime "destroy_schedule_at"
+    t.datetime "invitation_requested_at"
+    t.datetime "invitation_completed_at"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.index ["confirmation_token"], name: "index_users3", unique: true
@@ -105,4 +114,5 @@ ActiveRecord::Schema.define(version: 2020_12_09_114237) do
 
   add_foreign_key "customer_users", "customers"
   add_foreign_key "customer_users", "users"
+  add_foreign_key "spaces", "customers"
 end

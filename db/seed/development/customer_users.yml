@@ -1,0 +1,48 @@
+# Tips: id = customer_id & user_id
+# 顧客1
+- id: 111
+  customer_id: 1
+  user_id: 11 # 顧客1のOwner
+  power: 1
+- id: 112
+  customer_id: 1
+  user_id: 12 # 顧客1のAdmin
+  power: 2
+- id: 113
+  customer_id: 1
+  user_id: 13 # 顧客1のMember
+  power: 3
+
+# 顧客2
+- id: 221
+  customer_id: 2
+  user_id: 21 # 顧客2のOwner
+  power: 1
+- id: 223
+  customer_id: 2
+  user_id: 23 # 顧客2のMember
+  power: 3
+
+# 顧客3
+- id: 331
+  customer_id: 3
+  user_id: 31 # 顧客3のOwner/顧客2のMember
+  power: 1
+- id: 231
+  customer_id: 2
+  user_id: 31 # 顧客3のOwner/顧客2のMember
+  power: 3
+
+# その他
+- id: 11
+  customer_id: 1
+  user_id: 1 # 顧客1のMember
+  power: 3
+- id: 13
+  customer_id: 1
+  user_id: 3 # 顧客1・2のMember
+  power: 3
+- id: 23
+  customer_id: 2
+  user_id: 3 # 顧客1・2のMember
+  power: 3

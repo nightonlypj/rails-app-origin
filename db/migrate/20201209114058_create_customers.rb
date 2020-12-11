@@ -5,5 +5,6 @@ class CreateCustomers < ActiveRecord::Migration[6.0]
 
       t.timestamps
     end
+    add_index :customers, :name, unique: true, name: 'index_customers1'
   end
 end

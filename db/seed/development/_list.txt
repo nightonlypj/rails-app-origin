@@ -1,1 +1,4 @@
 users
+customers
+customer_users
+spaces

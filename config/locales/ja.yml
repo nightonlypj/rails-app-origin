@@ -4,13 +4,31 @@ ja:
   my_url: "https://mydomain"
   activerecord:
     models:
+      customer: "顧客"
+      customer_user: "顧客ユーザー"
       space: "スペース"
     attributes:
+      customer:
+        id: "ID"
+        name: "顧客名"
+        created_at: "作成日時"
+        updated_at: "更新日時"
+      customer_user:
+        id: "ID"
+        customer: "顧客"
+        user: "ユーザー"
+        power: "権限"
+        created_at: "作成日時"
+        updated_at: "更新日時"
       space:
+        id: "ID"
+        customer: "顧客"
         subdomain: "サブドメイン"
         name: "スペース名"
-        created_at: "作成日"
-        updated_at: "更新日"
+        sort_key: "並び順"
+        public_flag: "公開"
+        created_at: "作成日時"
+        updated_at: "更新日時"
     errors:
       models:
         space:

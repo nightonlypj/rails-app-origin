@@ -1,15 +1,54 @@
+# Tips: id = customer.id & customer_users.power
+# 顧客1
+- id: 11
+  name: 顧客1のOwner
+  email: owner@customer1
+  password: changepassword
+  confirmed_at: '0000-01-01'
+- id: 12
+  name: 顧客1のAdmin
+  email: admin@customer1
+  password: changepassword
+  confirmed_at: '0000-01-01'
+- id: 13
+  name: 顧客1のMember
+  email: member@customer1
+  password: changepassword
+  confirmed_at: '0000-01-01'
+
+# 顧客2
+- id: 21
+  name: 顧客2のOwner
+  email: owner@customer2
+  password: changepassword
+  confirmed_at: '0000-01-01'
+- id: 23
+  name: 顧客2のMember
+  email: member@customer2
+  password: changepassword
+  confirmed_at: '0000-01-01'
+
+# 顧客3
+- id: 31
+  name: 顧客3のOwner/顧客2のMember
+  email: owner@customer3
+  password: changepassword
+  confirmed_at: '0000-01-01'
+
+# Tips: id = 連番
+# その他
 - id: 1
-  name: user1
+  name: 未所属
   email: user1@mydomain
   password: changepassword
   confirmed_at: '0000-01-01'
 - id: 2
-  name: user2
+  name: 顧客1のMember
   email: user2@mydomain
   password: changepassword
   confirmed_at: '0000-01-01'
 - id: 3
-  name: user3
+  name: 顧客1・2のMember
   email: user3@mydomain
   password: changepassword
   confirmed_at: '0000-01-01'

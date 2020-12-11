@@ -1,5 +1,5 @@
 class Space < ApplicationRecord
-  has_paper_trail
+  belongs_to :customer
 
   validates :subdomain, presence: true
   validates :subdomain, length: { in: Settings['subdomain_minimum']..Settings['subdomain_maximum'] }, if: proc { |space| space.subdomain.present? }
