@@ -1,4 +1,5 @@
 class TopController < ApplicationController
   # GET / トップページ
-  def index; end
+  # def index
+  # end
 end

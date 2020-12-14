@@ -2,7 +2,7 @@ require 'rails_helper'
 
 RSpec.describe 'Admin', type: :request do
   # GET / RailsAdmin
-  describe 'GET /admin' do
+  describe 'GET /' do
     # テスト内容
     shared_examples_for 'ToOK' do
       it '成功ステータス' do

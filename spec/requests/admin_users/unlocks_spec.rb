@@ -2,12 +2,13 @@ require 'rails_helper'
 
 RSpec.describe 'AdminUsers::Unlocks', type: :request do
   let!(:token) { Faker::Internet.password(min_length: 20, max_length: 20) }
-  let!(:send_admin_user) { FactoryBot.create(:admin_user, locked_at: Time.now.utc, unlock_token: Devise.token_generator.digest(self, :unlock_token, token)) }
+  let!(:unlock_token) { Devise.token_generator.digest(self, :unlock_token, token) }
+  let!(:send_admin_user) { FactoryBot.create(:admin_user, locked_at: Time.now.utc, unlock_token: unlock_token) }
   let!(:valid_attributes) { FactoryBot.attributes_for(:admin_user, email: send_admin_user.email) }
   let!(:invalid_attributes) { FactoryBot.attributes_for(:admin_user, email: nil) }
 
   # GET /admin_users/unlock/new アカウントロック解除メール再送
-  describe 'GET /admin_users/unlock/new' do
+  describe 'GET /new' do
     # テスト内容
     shared_examples_for 'ToOK' do
       it '成功ステータス' do
@@ -33,7 +34,7 @@ RSpec.describe 'AdminUsers::Unlocks', type: :request do
   end
 
   # POST /admin_users/unlock アカウントロック解除メール再送(処理)
-  describe 'POST /admin_users/unlock' do
+  describe 'POST /create' do
     # テスト内容
     shared_examples_for 'ToOK' do
       it '成功ステータス' do
@@ -84,7 +85,7 @@ RSpec.describe 'AdminUsers::Unlocks', type: :request do
   end
 
   # GET /admin_users/unlock アカウントロック解除(処理)
-  describe 'GET /admin_users/unlock' do
+  describe 'GET /show' do
     # テスト内容
     shared_examples_for 'OK' do
       it 'アカウントロック日時が空に変更される' do

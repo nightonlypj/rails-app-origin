@@ -6,7 +6,7 @@ RSpec.describe 'Users::Sessions', type: :request do
   let!(:invalid_attributes) { FactoryBot.attributes_for(:user, email: login_user.email, password: nil) }
 
   # GET /users/sign_in ログイン
-  describe 'GET /users/sign_in' do
+  describe 'GET /new' do
     # テスト内容
     shared_examples_for 'ToOK' do
       it '成功ステータス' do
@@ -36,7 +36,7 @@ RSpec.describe 'Users::Sessions', type: :request do
   end
 
   # POST /users/sign_in ログイン(処理)
-  describe 'POST /users/sign_in' do
+  describe 'POST /create' do
     # テスト内容
     shared_examples_for 'ToOK' do
       it '成功ステータス' do
@@ -86,7 +86,7 @@ RSpec.describe 'Users::Sessions', type: :request do
   end
 
   # DELETE /users/sign_out ログアウト(処理)
-  describe 'DELETE /users/sign_out' do
+  describe 'DELETE /destroy' do
     # テスト内容
     shared_examples_for 'ToLogin' do
       it 'ログインにリダイレクト' do

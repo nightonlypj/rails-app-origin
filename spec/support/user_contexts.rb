@@ -4,13 +4,12 @@ shared_context 'ログイン処理' do |destroy_reserved_flag = false|
     if destroy_reserved_flag
       user.destroy_requested_at = Time.now.utc
       user.destroy_schedule_at = Time.now.utc + Settings['destroy_schedule_days'].days
+      user.save!
     end
     sign_in user
   end
 end
 
-TEST_IMAGE_FILE = 'public/images/user/noimage.jpg'.freeze
-TEST_IMAGE_TYPE = 'image/jpeg'.freeze
 shared_context '画像登録処理' do
   before do
     user.image = fixture_file_upload(TEST_IMAGE_FILE, TEST_IMAGE_TYPE)

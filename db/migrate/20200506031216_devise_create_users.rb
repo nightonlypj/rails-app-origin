@@ -46,5 +46,6 @@ class DeviseCreateUsers < ActiveRecord::Migration[6.0]
     add_index :users, :reset_password_token, unique: true, name: 'index_users2'
     add_index :users, :confirmation_token,   unique: true, name: 'index_users3'
     add_index :users, :unlock_token,         unique: true, name: 'index_users4'
+    add_index :users, :destroy_schedule_at,                name: 'index_users5'
   end
 end
