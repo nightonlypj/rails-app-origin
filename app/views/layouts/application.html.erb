@@ -15,6 +15,7 @@
       <li><%= image_tag current_user_image_url(:small) %> <%= current_user.name %></li>
 <% else %>
       <li><%= image_tag current_user_image_url(:small) %> <%= link_to current_user.name, edit_user_registration_path %></li>
+      <li><%= link_to "所属一覧", customers_path %></li>
 <% end %>
       <li><%= link_to "ログアウト", destroy_user_session_path, method: :delete %></li>
 <% else %>
@@ -26,7 +27,7 @@
 <% if @request_space %>
     <h2><%= link_to @request_space.name, root_path %></h2>
     <ul>
-      <li><%= link_to 'スペース編集', edit_space_path %></li>
+      <li><%= link_to '編集', edit_space_path %></li>
     </ul>
     <hr/>
 <% end %>

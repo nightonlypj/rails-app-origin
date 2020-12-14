@@ -1,23 +1,4 @@
 require 'rails_helper'
 
 RSpec.describe 'top/index_subdomain', type: :view do
-  let!(:user) { FactoryBot.create(:user) }
-  shared_context 'ログイン処理' do
-    before { sign_in user }
-  end
-
-  shared_examples_for 'レスポンス' do
-    it 'Welcome!が含まれる' do
-      render
-      expect(rendered).to include('Welcome!')
-    end
-  end
-
-  context '未ログイン' do
-    it_behaves_like 'レスポンス'
-  end
-  context 'ログイン中' do
-    include_context 'ログイン処理'
-    it_behaves_like 'レスポンス'
-  end
 end

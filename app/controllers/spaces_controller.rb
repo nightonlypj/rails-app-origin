@@ -20,8 +20,8 @@ class SpacesController < ApplicationController
     head :not_found if @space.blank?
   end
 
-  # POST /spaces/create（ベースドメイン） スペース登録(処理)
-  # POST /spaces/create.json（ベースドメイン） スペース登録API
+  # POST /spaces（ベースドメイン） スペース登録(処理)
+  # POST /spaces.json（ベースドメイン） スペース登録API
   def create
     return redirect_to "//#{Settings['base_domain']}#{new_space_path}" unless base_domain_request?
 
@@ -38,8 +38,8 @@ class SpacesController < ApplicationController
     end
   end
 
-  # PATCH/PUT /spaces/update（サブドメイン） スペース更新(処理)
-  # PATCH/PUT /spaces/update.json（サブドメイン） スペース更新API
+  # PATCH/PUT /spaces（サブドメイン） スペース更新(処理)
+  # PATCH/PUT /spaces.json（サブドメイン） スペース更新API
   def update
     @space = request_space
     return head :not_found if @space.blank?

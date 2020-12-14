@@ -1,13 +1,12 @@
 class CustomersController < ApplicationController
-  # GET /customers
-  # GET /customers.json
-  def index
-    @customers = Customer.all
-  end
+  before_action :not_found_json_sub_domain_response
+  before_action :redirect_base_domain_response
+  before_action :authenticate_user!
 
-  # GET /customers/1
-  # GET /customers/1.json
-  def show
-    @customer = Customer.find(params[:id])
+  # GET /customers（ベースドメイン） 所属一覧
+  # GET /customers.json（ベースドメイン） 所属一覧API
+  def index
+    @customers = Customer.order(created_at: 'ASC', id: 'ASC').page(params[:page]).per(Settings['default_customers_limit'])
+                         .includes(:customer_user).where(customer_users: { user_id: current_user.id })
   end
 end

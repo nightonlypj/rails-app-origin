@@ -20,5 +20,7 @@ space_name_minimum: 1
 space_name_maximum: 32
 # 新しいスペースの最大表示件数
 new_spaces_limit: 10
+# 顧客一覧のデフォルト最大表示件数
+default_customers_limit: 25
 # スペース一覧のデフォルト最大表示件数
 default_spaces_limit: 25

@@ -6,8 +6,8 @@ class Users::RegistrationsController < Devise::RegistrationsController
   prepend_before_action :authenticate_scope!, only: %i[edit update image_update image_destroy delete destroy undo_delete undo_destroy]
   before_action :redirect_response_destroy_reserved, only: %i[edit update image_update image_destroy delete destroy]
   before_action :redirect_response_not_destroy_reserved, only: %i[undo_delete undo_destroy]
-  before_action :redirect_base_domain_response, only: %i[new edit]
-  before_action :not_found_sub_domain_response, only: %i[create update delete destroy undo_delete undo_destroy]
+  before_action :redirect_base_domain_response, only: %i[new edit delete undo_delete]
+  before_action :not_found_sub_domain_response, only: %i[create update image_update image_destroy destroy undo_destroy]
 
   # GET /users/sign_up アカウント登録
   # def new

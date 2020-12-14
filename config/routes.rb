@@ -11,8 +11,8 @@ Rails.application.routes.draw do
   resources :customer_users, only: %i[index new create edit update destroy]
   get 'customer_users/:id/delete', to: 'customer_users#delete'
 
-  # 顧客
-  resources :customers, only: %i[index show]
+  # 所属（顧客）
+  resources :customers, only: %i[index]
 
   # 管理ユーザー
   devise_for :admin_users, controllers: {

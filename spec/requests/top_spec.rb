@@ -1,107 +1,108 @@
 require 'rails_helper'
 
+# TODO: private未対応
 RSpec.describe 'Top', type: :request do
-  let!(:base_headers) { { 'Host' => Settings['base_domain'] } }
-  let!(:customer) { FactoryBot.create(:customer) }
+  include_context '共通ヘッダー'
 
   # GET /（ベースドメイン） トップページ
   # GET /（サブドメイン） スペーストップ
   describe 'GET /' do
+    include_context 'リクエストスペース作成'
+
     # テスト内容
-    shared_examples_for 'ベースドメイン' do
+    shared_examples_for 'ToOK' do
       it '成功ステータス' do
-        get root_path, headers: base_headers
+        get root_path, headers: headers
         expect(response).to be_successful
       end
     end
-    shared_examples_for 'サブドメイン' do
-      it '成功ステータス' do
-        request_space = FactoryBot.create(:space, customer_id: customer.id)
-        space_headers = { 'Host' => "#{request_space.subdomain}.#{Settings['base_domain']}" }
-        get root_path, headers: space_headers
-        expect(response).to be_successful
-      end
-    end
-    shared_examples_for '存在しないサブドメイン' do
+    shared_examples_for 'ToNG' do
       it '存在しないステータス' do
-        space_headers = { 'Host' => "not.#{Settings['base_domain']}" }
-        get root_path, headers: space_headers
+        get root_path, headers: headers
         expect(response).to be_not_found
       end
     end
 
     # テストケース
+    shared_examples_for 'ベースドメイン' do
+      let!(:headers) { base_headers }
+      it_behaves_like 'ToOK'
+    end
+    shared_examples_for '存在するサブドメイン' do
+      let!(:headers) { @space_headers }
+      it_behaves_like 'ToOK'
+    end
+    shared_examples_for '存在しないサブドメイン' do
+      let!(:headers) { not_space_headers }
+      it_behaves_like 'ToNG'
+    end
+
     context '未ログイン' do
       it_behaves_like 'ベースドメイン'
-      it_behaves_like 'サブドメイン'
+      it_behaves_like '存在するサブドメイン'
       it_behaves_like '存在しないサブドメイン'
     end
     context 'ログイン中' do
       include_context 'ログイン処理'
       it_behaves_like 'ベースドメイン'
-      it_behaves_like 'サブドメイン'
+      it_behaves_like '存在するサブドメイン'
       it_behaves_like '存在しないサブドメイン'
     end
     context 'ログイン中（削除予約済み）' do
       include_context 'ログイン処理', true
       it_behaves_like 'ベースドメイン'
-      it_behaves_like 'サブドメイン'
+      it_behaves_like '存在するサブドメイン'
       it_behaves_like '存在しないサブドメイン'
     end
   end
 
+  # GET /（ベースドメイン） トップページ：新しいスペース一覧
   describe 'GET / @new_spaces' do
-    shared_context 'スペース作成' do |limit|
-      before { @create_spaces = FactoryBot.create_list(:space, limit, customer_id: customer.id) }
-    end
-
     # テスト内容
-    shared_examples_for 'ベースドメイン、1番新しいスペース' do
+    shared_examples_for '対象のリスト表示' do
       it '名前が含まれる' do
         get root_path, headers: base_headers
-        expect(response.body).to include(@create_spaces[@create_spaces.count - 1].name)
+        (1..[@create_spaces.count, Settings['new_spaces_limit']].min).each do |n|
+          expect(response.body).to include(@create_spaces[@create_spaces.count - n].name)
+        end
       end
       it 'パスが含まれる' do
         get root_path, headers: base_headers
-        expect(response.body).to include("//#{@create_spaces[@create_spaces.count - 1].subdomain}.#{Settings['base_domain']}")
+        (1..[@create_spaces.count, Settings['new_spaces_limit']].min).each do |n|
+          expect(response.body).to include("//#{@create_spaces[@create_spaces.count - n].subdomain}.#{Settings['base_domain']}")
+        end
       end
     end
-    shared_examples_for "ベースドメイン、#{Settings['new_spaces_limit']}番目に新しいスペース" do
-      it '名前が含まれる' do
-        get root_path, headers: base_headers
-        expect(response.body).to include(@create_spaces[@create_spaces.count - Settings['new_spaces_limit']].name)
-      end
-      it 'パスが含まれる' do
-        get root_path, headers: base_headers
-        expect(response.body).to include("//#{@create_spaces[@create_spaces.count - Settings['new_spaces_limit']].subdomain}.#{Settings['base_domain']}")
-      end
-    end
-    shared_examples_for "ベースドメイン、#{Settings['new_spaces_limit'] + 1}番目に新しいスペース" do
+    shared_examples_for '対象外のリスト非表示' do
       it '名前が含まれない' do
         get root_path, headers: base_headers
-        expect(response.body).not_to include(@create_spaces[@create_spaces.count - (Settings['new_spaces_limit'] + 1)].name)
+        ((Settings['new_spaces_limit'] + 1)..@create_spaces.count).each do |n|
+          expect(response.body).not_to include(@create_spaces[@create_spaces.count - n].name)
+        end
       end
       it 'パスが含まれない' do
         get root_path, headers: base_headers
-        expect(response.body).not_to include("//#{@create_spaces[@create_spaces.count - (Settings['new_spaces_limit'] + 1)].subdomain}.#{Settings['base_domain']}")
+        ((Settings['new_spaces_limit'] + 1)..@create_spaces.count).each do |n|
+          expect(response.body).not_to include("//#{@create_spaces[@create_spaces.count - n].subdomain}.#{Settings['base_domain']}")
+        end
       end
     end
 
-    shared_examples_for 'ベースドメイン、スペースがない' do
-      it 'ベースドメイン、もっと見るのパスが含まれない' do
-        get root_path, headers: base_headers
-        expect(response.body).not_to include("\"#{spaces_path}\"")
-      end
-    end
-    shared_examples_for 'ベースドメイン、スペースがある' do
-      it 'ベースドメイン、もっと見るのパスが含まれる' do
+    shared_examples_for 'スペース一覧リンク表示' do
+      it 'パスが含まれる' do
         get root_path, headers: base_headers
         expect(response.body).to include("\"#{spaces_path}\"")
       end
     end
+    shared_examples_for 'スペース一覧リンク非表示' do
+      it 'パスが含まれない' do
+        get root_path, headers: base_headers
+        expect(response.body).not_to include("\"#{spaces_path}\"")
+      end
+    end
 
-    shared_examples_for 'ベースドメイン' do
-      it 'スペース作成のパスが含まれる' do
+    shared_examples_for 'スペース作成リンク表示' do
+      it 'パスが含まれる' do
         get root_path, headers: base_headers
         expect(response.body).to include("\"#{new_space_path}\"")
       end
@@ -109,54 +110,33 @@ RSpec.describe 'Top', type: :request do
 
     # テストケース
     shared_examples_for 'スペースが0件' do
-      it_behaves_like 'ベースドメイン、スペースがない'
-      it_behaves_like 'ベースドメイン'
+      include_context 'スペース作成', 0
+      it_behaves_like 'スペース一覧リンク非表示'
+      it_behaves_like 'スペース作成リンク表示'
     end
     shared_examples_for 'スペースが最大表示数と同じ' do
       include_context 'スペース作成', Settings['new_spaces_limit']
-      it_behaves_like 'ベースドメイン、1番新しいスペース'
-      it_behaves_like "ベースドメイン、#{Settings['new_spaces_limit']}番目に新しいスペース"
-      it_behaves_like 'ベースドメイン、スペースがある'
-      it_behaves_like 'ベースドメイン'
+      it_behaves_like '対象のリスト表示'
+      it_behaves_like 'スペース一覧リンク表示'
+      it_behaves_like 'スペース作成リンク表示'
     end
     shared_examples_for 'スペースが最大表示数より多い' do
       include_context 'スペース作成', Settings['new_spaces_limit'] + 1
-      it_behaves_like 'ベースドメイン、1番新しいスペース'
-      it_behaves_like "ベースドメイン、#{Settings['new_spaces_limit']}番目に新しいスペース"
-      it_behaves_like "ベースドメイン、#{Settings['new_spaces_limit'] + 1}番目に新しいスペース"
-      it_behaves_like 'ベースドメイン、スペースがある'
-      it_behaves_like 'ベースドメイン'
+      it_behaves_like '対象のリスト表示'
+      it_behaves_like '対象外のリスト非表示'
+      it_behaves_like 'スペース一覧リンク表示'
+      it_behaves_like 'スペース作成リンク表示'
     end
 
     context '未ログイン' do
       it_behaves_like 'スペースが0件'
-    end
-    context 'ログイン中' do
-      include_context 'ログイン処理'
-      it_behaves_like 'スペースが0件'
-    end
-    context 'ログイン中（削除予約済み）' do
-      include_context 'ログイン処理', true
-      it_behaves_like 'スペースが0件'
-    end
-
-    context '未ログイン' do
       it_behaves_like 'スペースが最大表示数と同じ'
-    end
-    context 'ログイン中' do
-      include_context 'ログイン処理'
-      it_behaves_like 'スペースが最大表示数と同じ'
-    end
-
-    context '未ログイン' do
       it_behaves_like 'スペースが最大表示数より多い'
     end
     context 'ログイン中' do
       include_context 'ログイン処理'
-      it_behaves_like 'スペースが最大表示数より多い'
-    end
-    context 'ログイン中（削除予約済み）' do
-      include_context 'ログイン処理', true
+      it_behaves_like 'スペースが0件'
+      it_behaves_like 'スペースが最大表示数と同じ'
       it_behaves_like 'スペースが最大表示数より多い'
     end
   end

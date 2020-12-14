@@ -1,40 +1,27 @@
 require 'rails_helper'
 
+# TODO: private未対応
 RSpec.describe 'Spaces', type: :request do
-  let!(:valid_attributes) { FactoryBot.attributes_for(:space) }
-  let!(:invalid_attributes) { FactoryBot.attributes_for(:space, subdomain: nil) }
-  let!(:base_headers) { { 'Host' => Settings['base_domain'] } }
-  let!(:json_headers) { { 'Content-Type' => 'application/json', 'Accept' => 'application/json' } }
-  let!(:user) { FactoryBot.create(:user) }
-  shared_context 'ログイン処理' do
-    before { sign_in user }
-  end
+  include_context '共通ヘッダー'
   let!(:customer) { FactoryBot.create(:customer) }
+  let!(:valid_attributes) { FactoryBot.attributes_for(:space, customer_id: customer.id) }
+  let!(:invalid_attributes) { FactoryBot.attributes_for(:space, customer_id: customer.id, name: nil) }
 
-  shared_context '存在するサブドメイン作成' do
-    before do
-      request_space = FactoryBot.create(:space, customer_id: customer.id)
-      @space_headers = { 'Host' => "#{request_space.subdomain}.#{Settings['base_domain']}" }
-    end
-  end
-  shared_context '存在しないサブドメイン作成' do
-    before { @space_headers = { 'Host' => "not.#{Settings['base_domain']}" } }
-  end
-
-  # POST /spaces/create（ベースドメイン） スペース登録(処理)
-  # POST /spaces/create.json（ベースドメイン） スペース登録API
+  # POST /spaces（ベースドメイン） スペース登録(処理)
+  # POST /spaces.json（ベースドメイン） スペース登録API
   describe 'POST /create' do
+    # テスト内容
     shared_examples_for '有効なパラメータ' do
-      it '作成に成功' do
+      it '作成される' do
         expect do
           post space_path, params: { space: valid_attributes }, headers: base_headers
         end.to change(Space, :count).by(1)
       end
       it '作成したスペースのトップページ（サブドメイン）にリダイレクト' do
         post space_path, params: { space: valid_attributes }, headers: base_headers
-        expect(response).to redirect_to("//#{Space.last.subdomain}.#{Settings['base_domain']}")
+        expect(response).to redirect_to("//#{valid_attributes[:subdomain]}.#{Settings['base_domain']}")
       end
-      it '(json)renders a created(201) response' do
+      it '(json)created(201)ステータス' do
         post space_path, params: valid_attributes, as: :json, headers: base_headers.merge(json_headers)
         expect(response).to be_created
       end
@@ -48,16 +35,16 @@ RSpec.describe 'Spaces', type: :request do
       end
     end
     shared_examples_for '無効なパラメータ' do
-      it '作成に失敗' do
+      it '作成されない' do
         expect do
           post space_path, params: { space: invalid_attributes }, headers: base_headers
         end.to change(Space, :count).by(0)
       end
-      it 'renders a successful response' do
+      it '成功ステータス' do # Tips: 再入力の為
         post space_path, params: { space: invalid_attributes }, headers: base_headers
         expect(response).to be_successful
       end
-      it '(json)renders a unprocessable(422) response' do
+      it '(json)unprocessable(422)ステータス' do
         post space_path, params: invalid_attributes, as: :json, headers: base_headers.merge(json_headers)
         expect(response).to be_unprocessable
       end
@@ -71,30 +58,32 @@ RSpec.describe 'Spaces', type: :request do
       end
     end
 
-    shared_examples_for 'ベースドメイン' do
-      it_behaves_like '有効なパラメータ'
-      it_behaves_like '無効なパラメータ'
-    end
     shared_examples_for 'サブドメイン' do
       it 'スペース作成（ベースドメイン）にリダイレクト' do
         post space_path, params: { space: valid_attributes }, headers: @space_headers
         expect(response).to redirect_to("//#{Settings['base_domain']}#{new_space_path}")
       end
-      it '(json)renders a not found response' do
+      it '(json)存在しないステータス' do
         post space_path, params: valid_attributes, as: :json, headers: @space_headers.merge(json_headers)
         expect(response).to be_not_found
       end
     end
 
+    # 子テストケース
+    shared_examples_for 'ベースドメイン' do
+      it_behaves_like '有効なパラメータ'
+      it_behaves_like '無効なパラメータ'
+    end
     shared_examples_for '存在するサブドメイン' do
-      include_context '存在するサブドメイン作成'
+      include_context 'リクエストスペース作成'
       it_behaves_like 'サブドメイン'
     end
     shared_examples_for '存在しないサブドメイン' do
-      include_context '存在しないサブドメイン作成'
+      include_context '存在しないリクエストスペース'
       it_behaves_like 'サブドメイン'
     end
 
+    # テストケース
     context '未ログイン' do
       it_behaves_like 'ベースドメイン'
       it_behaves_like '存在するサブドメイン'
