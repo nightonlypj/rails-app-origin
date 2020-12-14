@@ -16,7 +16,7 @@ RSpec.describe 'Users::Passwords', type: :request do
   end
 
   # GET /users/password/new パスワード再設定メール送信
-  describe 'GET /users/password/new' do
+  describe 'GET /new' do
     # テスト内容
     shared_examples_for 'ToOK' do
       it '成功ステータス' do
@@ -83,7 +83,7 @@ RSpec.describe 'Users::Passwords', type: :request do
   end
 
   # POST /users/password パスワード再設定メール送信(処理)
-  describe 'POST /users/password' do
+  describe 'POST /create' do
     # テスト内容
     shared_examples_for 'ToOK' do
       it '成功ステータス' do
@@ -187,7 +187,7 @@ RSpec.describe 'Users::Passwords', type: :request do
   end
 
   # GET /users/password/edit パスワード再設定
-  describe 'GET /users/password/edit' do
+  describe 'GET /edit' do
     # テスト内容
     shared_examples_for 'ToOK' do
       it '成功ステータス' do
@@ -329,7 +329,7 @@ RSpec.describe 'Users::Passwords', type: :request do
   end
 
   # PUT /users/password パスワード再設定(処理)
-  describe 'PUT /users/password' do
+  describe 'PUT /update' do
     # テスト内容
     shared_examples_for 'OK' do
       it 'パスワードリセット送信日時が空に変更される' do

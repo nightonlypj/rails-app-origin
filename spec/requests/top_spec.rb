@@ -6,9 +6,8 @@ RSpec.describe 'Top', type: :request do
 
   # GET /（ベースドメイン） トップページ
   # GET /（サブドメイン） スペーストップ
-  describe 'GET /' do
+  describe 'GET /index' do
     include_context 'リクエストスペース作成'
-
     # テスト内容
     shared_examples_for 'ToOK' do
       it '成功ステータス' do

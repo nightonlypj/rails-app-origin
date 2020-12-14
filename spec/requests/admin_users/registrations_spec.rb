@@ -5,7 +5,7 @@ RSpec.describe 'AdminUsers::Registrations', type: :request do
   #   let!(:invalid_attributes) { FactoryBot.attributes_for(:admin_user, email: nil) }
   #
   #   # GET /admin_users/sign_up アカウント登録
-  #   describe 'GET /admin_users/sign_up' do
+  #   describe 'GET /new' do
   #     # テスト内容
   #     shared_examples_for 'ToOK' do
   #       it '成功ステータス' do
@@ -31,7 +31,7 @@ RSpec.describe 'AdminUsers::Registrations', type: :request do
   #   end
   #
   #   # POST /admin_users アカウント登録(処理)
-  #   describe 'POST /admin_users' do
+  #   describe 'POST /create' do
   #     # テスト内容
   #     shared_examples_for 'OK' do
   #       it '作成される' do
@@ -101,7 +101,7 @@ RSpec.describe 'AdminUsers::Registrations', type: :request do
   #   end
   #
   #   # GET /admin_users/edit 登録情報変更
-  #   describe 'GET /admin_users/edit' do
+  #   describe 'GET /edit' do
   #     # テスト内容
   #     shared_examples_for 'ToOK' do
   #       it '成功ステータス' do
@@ -127,7 +127,7 @@ RSpec.describe 'AdminUsers::Registrations', type: :request do
   #   end
   #
   #   # PUT /admin_users 登録情報変更(処理)
-  #   describe 'PUT /admin_users' do
+  #   describe 'PUT /update' do
   #     # テスト内容
   #     shared_examples_for 'OK' do
   #       it '名前が変更される' do
@@ -195,7 +195,7 @@ RSpec.describe 'AdminUsers::Registrations', type: :request do
   #   end
   #
   #   # DELETE /admin_users アカウント削除(処理)
-  #   describe 'DELETE /admin_users' do
+  #   describe 'DELETE /destroy' do
   #     # テスト内容
   #     shared_examples_for 'OK' do
   #       it '削除される' do

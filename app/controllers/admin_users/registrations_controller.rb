@@ -5,6 +5,7 @@ class AdminUsers::RegistrationsController < Devise::RegistrationsController
 
   before_action :configure_sign_up_params, only: [:create]
   before_action :configure_account_update_params, only: [:update]
+  prepend_before_action :authenticate_scope!, only: %i[edit update destroy]
 
   # GET /admin_users/sign_up アカウント登録
   # def new

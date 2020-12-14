@@ -20,7 +20,7 @@ RSpec.describe 'Users::Confirmations', type: :request do
   end
 
   # GET /users/confirmation/new メールアドレス確認メール再送
-  describe 'GET /users/confirmation/new' do
+  describe 'GET /new' do
     # テスト内容
     shared_examples_for 'ToOK' do
       it '成功ステータス' do
@@ -69,7 +69,7 @@ RSpec.describe 'Users::Confirmations', type: :request do
   end
 
   # POST /users/confirmation メールアドレス確認メール再送(処理)
-  describe 'POST /users/confirmation' do
+  describe 'POST /create' do
     # テスト内容
     shared_examples_for 'ToOK' do
       it '成功ステータス' do
@@ -144,7 +144,7 @@ RSpec.describe 'Users::Confirmations', type: :request do
   end
 
   # GET /users/confirmation メールアドレス確認(処理)
-  describe 'GET /users/confirmation' do
+  describe 'GET /show' do
     # テスト内容
     shared_examples_for 'OK' do
       let!(:start_time) { Time.now.utc }

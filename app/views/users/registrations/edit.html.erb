@@ -5,7 +5,7 @@
 
   <div class="field">
     <%= f.label :image %>
-    <%= image_tag current_user_image_url(:large) %><br/>
+    <%= image_tag user_image_url(current_user, :large) %><br/>
     <%= f.file_field :image %>
     <%= render "users/shared/field_error_messages", messages: resource.errors[:image] %>
   </div>
