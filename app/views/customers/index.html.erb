@@ -10,19 +10,23 @@
 <table>
   <thead>
     <tr>
-      <th>名前</th>
+      <th>顧客コード</th>
+      <th>顧客名</th>
       <th>あなたの権限</th>
+      <th>メンバー</th>
     </tr>
   </thead>
   <tbody>
 <% @customers.each do |customer| %>
     <tr>
+      <td><%= customer.code %></td>
       <td><%= customer.name %></td>
       <td>
 <% customer.customer_user.each do |customer_user| %>
       <%= customer_user.power %><br/>
 <% end %>
       </td>
+      <td><%= link_to "一覧", customer_users_path(customer.code) %></td>
     </tr>
 <% end %>
   </tbody>

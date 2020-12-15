@@ -8,8 +8,14 @@ Rails.application.routes.draw do
   put   'spaces',      to: 'spaces#update'
 
   # メンバー
-  resources :customer_users, only: %i[index new create edit update destroy]
-  get 'customer_users/:id/delete', to: 'customer_users#delete'
+  get    'customer_users/:customer_code',            to: 'customer_users#index', as: 'customer_users'
+  post   'customer_users/:customer_code',            to: 'customer_users#create'
+  get    'customer_users/:customer_code/new',        to: 'customer_users#new',    as: 'new_customer_user'
+  get    'customer_users/:customer_code/:id/edit',   to: 'customer_users#edit',   as: 'edit_customer_user'
+  patch  'customer_users/:customer_code/:id',        to: 'customer_users#update', as: 'customer_user'
+  put    'customer_users/:customer_code/:id',        to: 'customer_users#update'
+  get    'customer_users/:customer_code/:id/delete', to: 'customer_users#delete'
+  delete 'customer_users/:customer_code/:id',        to: 'customer_users#destroy'
 
   # 所属（顧客）
   resources :customers, only: %i[index]

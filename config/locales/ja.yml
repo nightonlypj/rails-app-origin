@@ -10,7 +10,8 @@ ja:
     attributes:
       customer:
         id: "ID"
-        name: "名前"
+        code: "顧客コード"
+        name: "顧客名"
         created_at: "作成日時"
         updated_at: "更新日時"
       customer_user:
@@ -24,7 +25,7 @@ ja:
         id: "ID"
         customer: "顧客"
         subdomain: "サブドメイン"
-        name: "名前"
+        name: "スペース名"
         sort_key: "並び順"
         public_flag: "公開"
         created_at: "作成日時"

@@ -1,6 +1,9 @@
 - id: 1
+  code: customer1
   name: 顧客1
 - id: 2
+  code: customer2
   name: 顧客2
 - id: 3
+  code: customer3
   name: 顧客3

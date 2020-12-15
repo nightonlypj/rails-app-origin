@@ -130,10 +130,29 @@ RSpec.describe '/customers', type: :request do
     shared_examples_for '対象のリスト表示' do |page|
       let!(:start_no) { Settings['default_customers_limit'] * (page - 1) + 1 }
       let!(:end_no) { [@inside_customers.count, Settings['default_customers_limit'] * page].min }
+      it 'コードが含まれる' do
+        get customers_path(page: page), headers: headers
+        (start_no..end_no).each do |no|
+          expect(response.body).to include(@inside_customers[no - 1].code)
+        end
+      end
       it '名前が含まれる' do
         get customers_path(page: page), headers: headers
         (start_no..end_no).each do |no|
           expect(response.body).to include(@inside_customers[no - 1].name)
+        end
+      end
+      it 'メンバー一覧のパスが含まれる' do
+        get customers_path(page: page), headers: headers
+        (start_no..end_no).each do |no|
+          expect(response.body).to include("\"#{customer_users_path(@inside_customers[no - 1].code)}\"")
+        end
+      end
+      it '(json)コードが一致する' do
+        get customers_path(page: page), headers: headers.merge(json_headers)
+        response_customers = JSON.parse(response.body)['customers']
+        (start_no..end_no).each do |no|
+          expect(response_customers[no - start_no]['code']).to eq(@inside_customers[no - 1].code)
         end
       end
       it '(json)名前が一致する' do
@@ -154,10 +173,29 @@ RSpec.describe '/customers', type: :request do
     shared_examples_for 'ページ外のリスト非表示' do |page, outside_page|
       let!(:start_no) { Settings['default_customers_limit'] * (outside_page - 1) + 1 }
       let!(:end_no) { [@inside_customers.count, Settings['default_customers_limit'] * outside_page].min }
+      it 'コードが含まれない' do
+        get customers_path(page: page), headers: headers
+        (start_no..end_no).each do |no|
+          expect(response.body).not_to include(@inside_customers[no - 1].code)
+        end
+      end
       it '名前が含まれない' do
         get customers_path(page: page), headers: headers
         (start_no..end_no).each do |no|
           expect(response.body).not_to include(@inside_customers[no - 1].name)
+        end
+      end
+      it 'メンバー一覧のパスが含まれない' do
+        get customers_path(page: page), headers: headers
+        (start_no..end_no).each do |no|
+          expect(response.body).not_to include("\"#{customer_users_path(@inside_customers[no - 1].code)}\"")
+        end
+      end
+      it '(json)コードが含まれない' do
+        get customers_path(page: page), headers: headers.merge(json_headers)
+        response_customers = JSON.parse(response.body)['customers'].map { |response| [response['code'], response] }.to_h
+        (start_no..end_no).each do |no|
+          expect(response_customers[@inside_customers[no - 1].code]).to be_nil
         end
       end
       it '(json)名前が含まれない' do
@@ -169,10 +207,29 @@ RSpec.describe '/customers', type: :request do
       end
     end
     shared_examples_for '対象外のリスト非表示' do |page|
+      it 'コードが含まれない' do
+        get customers_path(page: page), headers: headers
+        (1..@outside_customers.count).each do |no|
+          expect(response.body).not_to include(@outside_customers[no - 1].code)
+        end
+      end
       it '名前が含まれない' do
         get customers_path(page: page), headers: headers
         (1..@outside_customers.count).each do |no|
           expect(response.body).not_to include(@outside_customers[no - 1].name)
+        end
+      end
+      it 'メンバー一覧のパスが含まれない' do
+        get customers_path(page: page), headers: headers
+        (1..@outside_customers.count).each do |no|
+          expect(response.body).not_to include("\"#{customer_users_path(@outside_customers[no - 1].code)}\"")
+        end
+      end
+      it '(json)コードが含まれない' do
+        get customers_path(page: page), headers: headers.merge(json_headers)
+        response_customers = JSON.parse(response.body)['customers'].map { |response| [response['code'], response] }.to_h
+        (1..@outside_customers.count).each do |no|
+          expect(response_customers[@outside_customers[no - 1].code]).to be_nil
         end
       end
       it '(json)名前が含まれない' do

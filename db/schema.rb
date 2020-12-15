@@ -51,10 +51,12 @@ ActiveRecord::Schema.define(version: 2020_12_09_114237) do
   end
 
   create_table "customers", force: :cascade do |t|
+    t.string "code", null: false
     t.string "name"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
-    t.index ["name"], name: "index_customers1", unique: true
+    t.index ["code"], name: "index_customers1", unique: true
+    t.index ["created_at", "id"], name: "index_customers2"
   end
 
   create_table "spaces", force: :cascade do |t|
@@ -97,6 +99,7 @@ ActiveRecord::Schema.define(version: 2020_12_09_114237) do
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.index ["confirmation_token"], name: "index_users3", unique: true
+    t.index ["destroy_schedule_at"], name: "index_users5"
     t.index ["email"], name: "index_users1", unique: true
     t.index ["reset_password_token"], name: "index_users2", unique: true
     t.index ["unlock_token"], name: "index_users4", unique: true

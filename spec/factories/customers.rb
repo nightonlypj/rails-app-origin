@@ -1,5 +1,6 @@
 FactoryBot.define do
   factory :customer do
-    sequence(:name) { |n| "顧客(#{n})" }
+    sequence(:code) { |n| "c#{n}test" }
+    name            { "顧客(#{code})" }
   end
 end
