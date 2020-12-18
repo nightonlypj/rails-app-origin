@@ -48,19 +48,35 @@ RSpec.describe 'layouts/application', type: :view do
     end
   end
 
+  shared_examples_for '削除予約表示' do
+    it 'アカウント削除取り消しのパスが含まれる' do
+      render
+      expect(rendered).to include("\"#{users_undo_delete_path}\"")
+    end
+  end
+  shared_examples_for '削除予約非表示' do
+    it 'アカウント削除取り消しのパスが含まれない' do
+      render
+      expect(rendered).not_to include("\"#{users_undo_delete_path}\"")
+    end
+  end
+
   # テストケース
   context '未ログイン' do
     it_behaves_like '未ログイン表示'
     it_behaves_like '機能制限あり'
+    it_behaves_like '削除予約非表示'
   end
   context 'ログイン中' do
     include_context 'ログイン処理'
     it_behaves_like 'ログイン中表示'
     it_behaves_like '機能制限なし'
+    it_behaves_like '削除予約非表示'
   end
   context 'ログイン中（削除予約済み）' do
     include_context 'ログイン処理', true
     it_behaves_like 'ログイン中表示'
     it_behaves_like '機能制限あり'
+    it_behaves_like '削除予約表示'
   end
 end
