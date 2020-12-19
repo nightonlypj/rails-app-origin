@@ -1,46 +1,49 @@
-shared_context 'メンバー作成' do |owner_count, admin_count, member_count, other_owner_count, other_admin_count, other_member_count|
-  let!(:other_user) { FactoryBot.create(:user) }
+shared_context '顧客・ログインユーザー紐付け' do |invitationed_at, power|
+  before { FactoryBot.create(:customer_user, customer_id: customer.id, user_id: user.id, invitationed_at: invitationed_at, power: power) }
+end
+
+shared_context '対象のメンバー作成' do |owner_count, admin_count, member_count, before_count|
   before do
+    count = owner_count + admin_count + member_count
+    users = FactoryBot.create_list(:user, count)
     index = 0
     (1..owner_count).each do
-      FactoryBot.create(:customer_user, customer_id: @create_customers[index].id, user_id: user.id, power: :Owner)
+      FactoryBot.create(:customer_user, customer_id: customer.id, user_id: users[index].id, power: :Owner)
       index += 1
     end
     (1..admin_count).each do
-      FactoryBot.create(:customer_user, customer_id: @create_customers[index].id, user_id: user.id, power: :Admin)
+      FactoryBot.create(:customer_user, customer_id: customer.id, user_id: users[index].id, power: :Admin)
       index += 1
     end
     (1..member_count).each do
-      FactoryBot.create(:customer_user, customer_id: @create_customers[index].id, user_id: user.id, power: :Member)
+      FactoryBot.create(:customer_user, customer_id: customer.id, user_id: users[index].id, power: :Member)
       index += 1
     end
-
-    (1..other_owner_count).each do
-      FactoryBot.create(:customer_user, customer_id: @create_customers[index].id, user_id: other_user.id, power: :Owner)
-      index += 1
-    end
-    (1..other_admin_count).each do
-      FactoryBot.create(:customer_user, customer_id: @create_customers[index].id, user_id: other_user.id, power: :Admin)
-      index += 1
-    end
-    (1..other_member_count).each do
-      FactoryBot.create(:customer_user, customer_id: @create_customers[index].id, user_id: other_user.id, power: :Member)
-      index += 1
-    end
+    @inside_customer_users = CustomerUser.where(customer_id: customer.id).order(created_at: 'DESC', id: 'DESC')
+                                         .includes(:user)
+    raise "#{@inside_customer_users.count} != #{count} + #{before_count}" if @inside_customer_users.count != count + before_count
   end
 end
 
-shared_context '所属顧客取得' do |check_count|
+shared_context '対象外のメンバー作成' do |owner_count, admin_count, member_count|
+  let!(:other_customer) { FactoryBot.create(:customer) }
   before do
-    @inside_customers = Customer.order(created_at: 'ASC', id: 'ASC')
-                                .includes(:customer_user).where(customer_users: { user_id: user.id })
-    raise "所属顧客取得: #{@inside_customers.count} != #{check_count}" unless @inside_customers.count == check_count
-  end
-end
-shared_context '未所属顧客取得' do |check_count|
-  before do
-    @outside_customers = Customer.order(created_at: 'ASC', id: 'ASC')
-                                 .includes(:customer_user).where(customer_users: { user_id: other_user.id })
-    raise "未所属顧客取得: #{@outside_customers.count} != #{check_count}" unless @outside_customers.count == check_count
+    count = owner_count + admin_count + member_count
+    users = FactoryBot.create_list(:user, count)
+    index = 0
+    (1..owner_count).each do
+      FactoryBot.create(:customer_user, customer_id: other_customer.id, user_id: users[index].id, power: :Owner)
+      index += 1
+    end
+    (1..admin_count).each do
+      FactoryBot.create(:customer_user, customer_id: other_customer.id, user_id: users[index].id, power: :Admin)
+      index += 1
+    end
+    (1..member_count).each do
+      FactoryBot.create(:customer_user, customer_id: other_customer.id, user_id: users[index].id, power: :Member)
+      index += 1
+    end
+    @outside_customer_users = CustomerUser.where(customer_id: other_customer.id).order(created_at: 'DESC', id: 'DESC')
+    raise "#{@outside_customer_users.count} != #{count}" if @outside_customer_users.count != count
   end
 end

@@ -85,32 +85,33 @@ RSpec.describe '/customers', type: :request do
     end
   end
 
-  # GET /customers（ベースドメイン） 所属一覧：所属一覧リスト
-  # GET /customers.json（ベースドメイン） 所属一覧API：所属一覧リスト
+  # GET /customers（ベースドメイン） 所属一覧：顧客情報
+  # GET /customers.json（ベースドメイン） 所属一覧API：顧客情報
   describe 'GET /index @customers' do
     let!(:headers) { base_headers }
+    include_context '対象外の顧客作成', 1, 1, 1
 
     # テスト内容
     shared_examples_for 'ヘッダ情報' do
       it '(json)全件数が一致する' do
         get customers_path, headers: headers.merge(json_headers)
-        expect(JSON.parse(response.body)['total_count']).to eq(@inside_customers.count)
+        expect(JSON.parse(response.body)['customer']['total_count']).to eq(@inside_customers.count)
       end
       it '(json)1ページ、現在ページが一致する' do
         get customers_path, headers: headers.merge(json_headers)
-        expect(JSON.parse(response.body)['current_page']).to eq(1)
+        expect(JSON.parse(response.body)['customer']['current_page']).to eq(1)
       end
       it '(json)2ページ、現在ページが一致する' do
         get customers_path(page: 2), headers: headers.merge(json_headers)
-        expect(JSON.parse(response.body)['current_page']).to eq(2)
+        expect(JSON.parse(response.body)['customer']['current_page']).to eq(2)
       end
       it '(json)全ページ数が一致する' do
         get customers_path, headers: headers.merge(json_headers)
-        expect(JSON.parse(response.body)['total_pages']).to eq((@inside_customers.count - 1).div(Settings['default_customers_limit']) + 1)
+        expect(JSON.parse(response.body)['customer']['total_pages']).to eq((@inside_customers.count - 1).div(Settings['default_customers_limit']) + 1)
       end
       it '(json)最大表示件数が一致する' do
         get customers_path, headers: headers.merge(json_headers)
-        expect(JSON.parse(response.body)['limit_value']).to eq(Settings['default_customers_limit'])
+        expect(JSON.parse(response.body)['customer']['limit_value']).to eq(Settings['default_customers_limit'])
       end
     end
 
@@ -130,13 +131,13 @@ RSpec.describe '/customers', type: :request do
     shared_examples_for '対象のリスト表示' do |page|
       let!(:start_no) { Settings['default_customers_limit'] * (page - 1) + 1 }
       let!(:end_no) { [@inside_customers.count, Settings['default_customers_limit'] * page].min }
-      it 'コードが含まれる' do
+      it '顧客コードが含まれる' do
         get customers_path(page: page), headers: headers
         (start_no..end_no).each do |no|
           expect(response.body).to include(@inside_customers[no - 1].code)
         end
       end
-      it '名前が含まれる' do
+      it '顧客名が含まれる' do
         get customers_path(page: page), headers: headers
         (start_no..end_no).each do |no|
           expect(response.body).to include(@inside_customers[no - 1].name)
@@ -148,38 +149,38 @@ RSpec.describe '/customers', type: :request do
           expect(response.body).to include("\"#{customer_users_path(@inside_customers[no - 1].code)}\"")
         end
       end
-      it '(json)コードが一致する' do
+      it '(json)顧客コードが一致する' do
         get customers_path(page: page), headers: headers.merge(json_headers)
-        response_customers = JSON.parse(response.body)['customers']
+        parse_response = JSON.parse(response.body)['customers']
         (start_no..end_no).each do |no|
-          expect(response_customers[no - start_no]['code']).to eq(@inside_customers[no - 1].code)
+          expect(parse_response[no - start_no]['code']).to eq(@inside_customers[no - 1].code)
         end
       end
-      it '(json)名前が一致する' do
+      it '(json)顧客名が一致する' do
         get customers_path(page: page), headers: headers.merge(json_headers)
-        response_customers = JSON.parse(response.body)['customers']
+        parse_response = JSON.parse(response.body)['customers']
         (start_no..end_no).each do |no|
-          expect(response_customers[no - start_no]['name']).to eq(@inside_customers[no - 1].name)
+          expect(parse_response[no - start_no]['name']).to eq(@inside_customers[no - 1].name)
         end
       end
       it '(json)ユーザーの権限が一致する' do
         get customers_path(page: page), headers: headers.merge(json_headers)
-        response_customers = JSON.parse(response.body)['customers']
+        parse_response = JSON.parse(response.body)['customers']
         (start_no..end_no).each do |no|
-          expect(response_customers[no - start_no]['current_user'][0]['power']).to eq(@inside_customers[no - 1].customer_user[0].power)
+          expect(parse_response[no - start_no]['current_user']['power']).to eq(@inside_customers[no - 1].customer_user[0].power)
         end
       end
     end
     shared_examples_for 'ページ外のリスト非表示' do |page, outside_page|
       let!(:start_no) { Settings['default_customers_limit'] * (outside_page - 1) + 1 }
       let!(:end_no) { [@inside_customers.count, Settings['default_customers_limit'] * outside_page].min }
-      it 'コードが含まれない' do
+      it '顧客コードが含まれない' do
         get customers_path(page: page), headers: headers
         (start_no..end_no).each do |no|
           expect(response.body).not_to include(@inside_customers[no - 1].code)
         end
       end
-      it '名前が含まれない' do
+      it '顧客名が含まれない' do
         get customers_path(page: page), headers: headers
         (start_no..end_no).each do |no|
           expect(response.body).not_to include(@inside_customers[no - 1].name)
@@ -191,29 +192,29 @@ RSpec.describe '/customers', type: :request do
           expect(response.body).not_to include("\"#{customer_users_path(@inside_customers[no - 1].code)}\"")
         end
       end
-      it '(json)コードが含まれない' do
+      it '(json)顧客コードが含まれない' do
         get customers_path(page: page), headers: headers.merge(json_headers)
-        response_customers = JSON.parse(response.body)['customers'].map { |response| [response['code'], response] }.to_h
+        hash_responses = JSON.parse(response.body)['customers'].map { |response| [response['code'], response] }.to_h
         (start_no..end_no).each do |no|
-          expect(response_customers[@inside_customers[no - 1].code]).to be_nil
+          expect(hash_responses[@inside_customers[no - 1].code]).to be_nil
         end
       end
-      it '(json)名前が含まれない' do
+      it '(json)顧客名が含まれない' do
         get customers_path(page: page), headers: headers.merge(json_headers)
-        response_customers = JSON.parse(response.body)['customers'].map { |response| [response['name'], response] }.to_h
+        hash_responses = JSON.parse(response.body)['customers'].map { |response| [response['name'], response] }.to_h
         (start_no..end_no).each do |no|
-          expect(response_customers[@inside_customers[no - 1].name]).to be_nil
+          expect(hash_responses[@inside_customers[no - 1].name]).to be_nil
         end
       end
     end
     shared_examples_for '対象外のリスト非表示' do |page|
-      it 'コードが含まれない' do
+      it '顧客コードが含まれない' do
         get customers_path(page: page), headers: headers
         (1..@outside_customers.count).each do |no|
           expect(response.body).not_to include(@outside_customers[no - 1].code)
         end
       end
-      it '名前が含まれない' do
+      it '顧客名が含まれない' do
         get customers_path(page: page), headers: headers
         (1..@outside_customers.count).each do |no|
           expect(response.body).not_to include(@outside_customers[no - 1].name)
@@ -225,53 +226,38 @@ RSpec.describe '/customers', type: :request do
           expect(response.body).not_to include("\"#{customer_users_path(@outside_customers[no - 1].code)}\"")
         end
       end
-      it '(json)コードが含まれない' do
+      it '(json)顧客コードが含まれない' do
         get customers_path(page: page), headers: headers.merge(json_headers)
-        response_customers = JSON.parse(response.body)['customers'].map { |response| [response['code'], response] }.to_h
+        hash_responses = JSON.parse(response.body)['customers'].map { |response| [response['code'], response] }.to_h
         (1..@outside_customers.count).each do |no|
-          expect(response_customers[@outside_customers[no - 1].code]).to be_nil
+          expect(hash_responses[@outside_customers[no - 1].code]).to be_nil
         end
       end
-      it '(json)名前が含まれない' do
+      it '(json)顧客名が含まれない' do
         get customers_path(page: page), headers: headers.merge(json_headers)
-        response_customers = JSON.parse(response.body)['customers'].map { |response| [response['name'], response] }.to_h
+        hash_responses = JSON.parse(response.body)['customers'].map { |response| [response['name'], response] }.to_h
         (1..@outside_customers.count).each do |no|
-          expect(response_customers[@outside_customers[no - 1].name]).to be_nil
+          expect(hash_responses[@outside_customers[no - 1].name]).to be_nil
         end
       end
     end
 
     # テストケース
     shared_examples_for '所属する顧客が0件' do
-      include_context '顧客作成', 3
-      include_context 'メンバー作成', 0, 0, 0, 1, 1, 1
-      include_context '所属顧客取得', 0
-      include_context '未所属顧客取得', 3
+      include_context '対象の顧客作成', 0, 0, 0
       it_behaves_like 'ヘッダ情報'
       it_behaves_like '2ページ目リンク非表示'
       it_behaves_like '対象外のリスト非表示', 1
     end
     shared_examples_for '所属する顧客が最大表示数と同じ' do
-      owner_count = (Settings['default_customers_limit'] / 3).ceil
-      admin_count = owner_count
-      member_count = Settings['default_customers_limit'] - owner_count - admin_count
-      include_context '顧客作成', owner_count + admin_count + member_count + 3
-      include_context 'メンバー作成', owner_count, admin_count, member_count, 1, 1, 1
-      include_context '所属顧客取得', owner_count + admin_count + member_count
-      include_context '未所属顧客取得', 3
+      include_context '対象の顧客作成', Settings['test_customers_owner'], Settings['test_customers_admin'], Settings['test_customers_member']
       it_behaves_like 'ヘッダ情報'
       it_behaves_like '2ページ目リンク非表示'
       it_behaves_like '対象のリスト表示', 1
       it_behaves_like '対象外のリスト非表示', 1
     end
     shared_examples_for '所属する顧客が最大表示数より多い' do
-      owner_count = (Settings['default_customers_limit'] / 3).ceil
-      admin_count = owner_count
-      member_count = Settings['default_customers_limit'] - owner_count - admin_count + 1
-      include_context '顧客作成', owner_count + admin_count + member_count + 3
-      include_context 'メンバー作成', owner_count, admin_count, member_count, 1, 1, 1
-      include_context '所属顧客取得', owner_count + admin_count + member_count
-      include_context '未所属顧客取得', 3
+      include_context '対象の顧客作成', Settings['test_customers_owner'], Settings['test_customers_admin'], Settings['test_customers_member'] + 1
       it_behaves_like 'ヘッダ情報'
       it_behaves_like '2ページ目リンク表示'
       it_behaves_like '対象のリスト表示', 1

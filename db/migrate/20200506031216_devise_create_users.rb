@@ -40,6 +40,7 @@ class DeviseCreateUsers < ActiveRecord::Migration[6.0]
       t.datetime :destroy_schedule_at
 
       ## 招待
+      t.bigint :invitation_customer_id
       t.datetime :invitation_requested_at
       t.datetime :invitation_completed_at
 

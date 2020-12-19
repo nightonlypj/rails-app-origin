@@ -14,7 +14,7 @@ Rails.application.routes.draw do
   get    'customer_users/:customer_code/:id/edit',   to: 'customer_users#edit',   as: 'edit_customer_user'
   patch  'customer_users/:customer_code/:id',        to: 'customer_users#update', as: 'customer_user'
   put    'customer_users/:customer_code/:id',        to: 'customer_users#update'
-  get    'customer_users/:customer_code/:id/delete', to: 'customer_users#delete'
+  get    'customer_users/:customer_code/:id/delete', to: 'customer_users#delete', as: 'delete_customer_user'
   delete 'customer_users/:customer_code/:id',        to: 'customer_users#destroy'
 
   # 所属（顧客）

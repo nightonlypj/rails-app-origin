@@ -23,7 +23,7 @@
       <td><%= customer.name %></td>
       <td>
 <% customer.customer_user.each do |customer_user| %>
-      <%= customer_user.power %><br/>
+      <%= customer_user.power_i18n %><br/>
 <% end %>
       </td>
       <td><%= link_to "一覧", customer_users_path(customer.code) %></td>

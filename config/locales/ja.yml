@@ -19,6 +19,7 @@ ja:
         customer: "顧客"
         user: "ユーザー"
         power: "権限"
+        invitationed_at: "招待日時"
         created_at: "作成日時"
         updated_at: "更新日時"
       space:
@@ -44,6 +45,12 @@ ja:
               blank: "入力してください。"
               too_short: "%{count}文字以上で入力してください。"
               too_long: "%{count}文字以下で入力してください。"
+  enums:
+    customer_user:
+      power:
+        Owner: "所有者"
+        Admin: "管理者"
+        Member: "メンバー"
   helpers:
     submit:
       create: "登録"

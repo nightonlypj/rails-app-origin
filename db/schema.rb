@@ -43,8 +43,10 @@ ActiveRecord::Schema.define(version: 2020_12_09_114237) do
     t.bigint "customer_id", null: false
     t.bigint "user_id", null: false
     t.integer "power", null: false
+    t.datetime "invitationed_at"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
+    t.index ["created_at", "id"], name: "index_customer_users2"
     t.index ["customer_id", "user_id"], name: "index_customer_users1", unique: true
     t.index ["customer_id"], name: "index_customer_users_on_customer_id"
     t.index ["user_id"], name: "index_customer_users_on_user_id"
@@ -94,6 +96,7 @@ ActiveRecord::Schema.define(version: 2020_12_09_114237) do
     t.datetime "locked_at"
     t.datetime "destroy_requested_at"
     t.datetime "destroy_schedule_at"
+    t.bigint "invitation_customer_id"
     t.datetime "invitation_requested_at"
     t.datetime "invitation_completed_at"
     t.datetime "created_at", precision: 6, null: false

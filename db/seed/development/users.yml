@@ -5,16 +5,25 @@
   email: owner@customer1
   password: changepassword
   confirmed_at: '0000-01-01'
+  invitation_customer_id: nil
+  invitation_requested_at: nil
+  invitation_completed_at: nil
 - id: 12
   name: 顧客1のAdmin
   email: admin@customer1
   password: changepassword
   confirmed_at: '0000-01-01'
+  invitation_customer_id: 1
+  invitation_requested_at: '2020-01-01'
+  invitation_completed_at: '2020-01-02'
 - id: 13
   name: 顧客1のMember
   email: member@customer1
   password: changepassword
-  confirmed_at: '0000-01-01'
+  confirmed_at: nil
+  invitation_customer_id: 1
+  invitation_requested_at: '2020-01-03'
+  invitation_completed_at: nil
 
 # 顧客2
 - id: 21
@@ -22,11 +31,17 @@
   email: owner@customer2
   password: changepassword
   confirmed_at: '0000-01-01'
+  invitation_customer_id: nil
+  invitation_requested_at: nil
+  invitation_completed_at: nil
 - id: 23
   name: 顧客2のMember
   email: member@customer2
   password: changepassword
   confirmed_at: '0000-01-01'
+  invitation_customer_id: 2
+  invitation_requested_at: '2020-02-01'
+  invitation_completed_at: '2020-02-02'
 
 # 顧客3
 - id: 31
@@ -34,6 +49,9 @@
   email: owner@customer3
   password: changepassword
   confirmed_at: '0000-01-01'
+  invitation_customer_id: 2
+  invitation_requested_at: '2020-02-03'
+  invitation_completed_at: '2020-02-04'
 
 # Tips: id = 連番
 # その他
@@ -42,13 +60,22 @@
   email: user1@mydomain
   password: changepassword
   confirmed_at: '0000-01-01'
+  invitation_customer_id: nil
+  invitation_requested_at: nil
+  invitation_completed_at: nil
 - id: 2
-  name: 顧客1のMember
+  name: 顧客1の外部Member
   email: user2@mydomain
   password: changepassword
-  confirmed_at: '0000-01-01'
+  confirmed_at: nil
+  invitation_customer_id: 1
+  invitation_requested_at: '2020-01-04'
+  invitation_completed_at: nil
 - id: 3
-  name: 顧客1・2のMember
+  name: 顧客1・2の外部Member
   email: user3@mydomain
   password: changepassword
   confirmed_at: '0000-01-01'
+  invitation_customer_id: nil
+  invitation_requested_at: nil
+  invitation_completed_at: nil

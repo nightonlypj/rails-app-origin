@@ -1,4 +1,3 @@
-## ユーザー
 # メールアドレス確認URLの有効期限（単位：時間）
 confirm_within_hours: 24
 # パスワード再設定URLの有効期限（単位：時間）
@@ -14,12 +13,16 @@ user_name_maximum: 32
 ## 顧客
 # 一覧のデフォルト最大表示件数
 default_customers_limit: 25
-# コードの最小・最大文字数
+# 顧客コードの最小・最大文字数
 customer_code_minimum: 1
 customer_code_maximum: 32
-# 名前の最小・最大文字数
+# 顧客名の最小・最大文字数
 customer_name_minimum: 1
 customer_name_maximum: 32
+
+## メンバー
+# 一覧のデフォルト最大表示件数
+default_customer_users_limit: 25
 
 ## スペース
 # 新しいスペースの最大表示件数
@@ -29,6 +32,6 @@ default_spaces_limit: 25
 # サブドメインの最小・最大文字数
 subdomain_minimum: 1
 subdomain_maximum: 32
-# 名前の最小・最大文字数
+# スペース名の最小・最大文字数
 space_name_minimum: 1
 space_name_maximum: 32

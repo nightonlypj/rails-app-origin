@@ -1,3 +1,4 @@
+TEST_JSON_TIME_FORMAT = '%FT%T%:z'.freeze # Tips: ISO 8601 拡張形式(YYYY-MM-DDThh:mm:ss+09:00)
 TEST_IMAGE_FILE = 'public/images/user/noimage.jpg'.freeze
 TEST_IMAGE_TYPE = 'image/jpeg'.freeze
 

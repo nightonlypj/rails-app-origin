@@ -1,8 +1,15 @@
 class CustomerUsersController < ApplicationController
-  # GET /customer_users
-  # GET /customer_users.json
+  before_action :not_found_json_sub_domain_response
+  before_action :redirect_base_domain_response
+  before_action :authenticate_user!
+  before_action :not_found_outside_customer
+
+  # GET /customer_users/:customer_code（ベースドメイン） メンバー一覧
+  # GET /customer_users/:customer_code.json（ベースドメイン） メンバー一覧API
   def index
-    @customer_users = CustomerUser.all
+    @customer_users = CustomerUser.order(created_at: 'DESC', id: 'DESC').page(params[:page]).per(Settings['default_customer_users_limit'])
+                                  .where(customer_id: @customer.id)
+                                  .includes(:user)
   end
 
   # GET /customer_users/new
@@ -57,6 +64,13 @@ class CustomerUsersController < ApplicationController
   end
 
   private
+
+  # 所属していない顧客へのアクセス禁止
+  def not_found_outside_customer
+    @customer = Customer.where(code: params[:customer_code])
+                        .includes(:customer_user).where(customer_users: { user_id: current_user.id }).first
+    head :not_found if @customer.blank?
+  end
 
   # Only allow a list of trusted parameters through.
   def customer_user_params
