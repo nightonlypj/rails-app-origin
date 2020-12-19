@@ -11,10 +11,10 @@
     <h1><%= link_to t('app_name'), root_path %></h1>
     <ul>
 <% if user_signed_in? %>
-<% if destroy_reserved? %>
-      <li><%= image_tag user_image_url(current_user, :small) %> <%= current_user.name %></li>
+<% if current_user.destroy_reserved? %>
+      <li><%= image_tag current_user.image_url(:small) %> <%= current_user.name %></li>
 <% else %>
-      <li><%= image_tag user_image_url(current_user, :small) %> <%= link_to current_user.name, edit_user_registration_path %></li>
+      <li><%= image_tag current_user.image_url(:small) %> <%= link_to current_user.name, edit_user_registration_path %></li>
 <% end %>
       <li><%= link_to "ログアウト", destroy_user_session_path, method: :delete %></li>
 <% else %>

@@ -2,3 +2,8 @@ base_domain: 'localhost.test'
 mailer_from:
   name: '%{app_name}'
   email: 'noreply@localhost.test'
+
+## ユーザー
+# ユーザー名の最小・最大文字数
+user_name_minimum: 1  # Tips: (14+5?)以下 = "admin_user#{n}test"
+user_name_maximum: 19 # Tips: (14+5?)以上
