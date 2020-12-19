@@ -90,3 +90,6 @@ gem 'kaminari-i18n'
 # Use CarrierWave/MiniMagick
 gem 'carrierwave'
 gem 'mini_magick'
+
+# Use EnumHelp
+gem 'enum_help'

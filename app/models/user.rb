@@ -26,4 +26,23 @@ class User < ApplicationRecord
     update!(destroy_requested_at: nil,
             destroy_schedule_at: nil)
   end
+
+  # ユーザーの画像URLを返却
+  def image_url(version)
+    return "/images/user/#{version}_noimage.jpg" unless image?
+
+    case version
+    when :mini
+      image.mini.url
+    when :small
+      image.small.url
+    when :medium
+      image.medium.url
+    when :large
+      image.large.url
+    else
+      logger.warn("[WARN]Not found: User.image_url(#{version})")
+      ''
+    end
+  end
 end
