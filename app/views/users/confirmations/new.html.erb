@@ -1,19 +1,19 @@
-<%= render "users/shared/alert_messages", messages: resource.errors[:confirmation_token] %>
+<%= render 'users/shared/alert_messages', messages: resource.errors[:confirmation_token] %>
 
 <h2>メールアドレス確認メール再送</h2>
 
 <%= form_for(resource, as: resource_name, url: confirmation_path(resource_name), html: { method: :post }) do |f| %>
-  <%= render "users/shared/error_messages", resource: resource unless resource.errors[:confirmation_token].any? %>
+  <%= render 'users/shared/error_messages', resource: resource unless resource.errors[:confirmation_token].any? %>
 
   <div class="field">
     <%= f.label :email %>
-    <%= f.email_field :email, autofocus: true, autocomplete: "email", value: (resource.pending_reconfirmation? ? resource.unconfirmed_email : resource.email) %>
-    <%= render "users/shared/field_error_messages", messages: resource.errors[:email] %>
+    <%= f.email_field :email, autofocus: true, autocomplete: 'email', value: (resource.pending_reconfirmation? ? resource.unconfirmed_email : resource.email) %>
+    <%= render 'users/shared/field_error_messages', messages: resource.errors[:email] %>
   </div>
 
   <div class="actions">
-    <%= f.submit "送信" %>
+    <%= f.submit '送信' %>
   </div>
 <% end %>
 
-<%= render "users/shared/links" %>
+<%= render 'users/shared/links' %>

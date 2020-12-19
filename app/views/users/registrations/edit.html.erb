@@ -1,21 +1,21 @@
 <h2>登録情報変更</h2>
 
 <%= form_for(resource, as: resource_name, url: users_image_path, html: { method: :put }) do |f| %>
-  <%= render "users/shared/error_messages", resource: resource %>
+  <%= render 'users/shared/error_messages', resource: resource %>
 
   <div class="field">
     <%= image_tag current_user.image_url(:large) %><br/>
     <%= f.file_field :image %>
-    <%= render "users/shared/field_error_messages", messages: resource.errors[:image] %>
+    <%= render 'users/shared/field_error_messages', messages: resource.errors[:image] %>
   </div>
 
   <div class="actions">
-    <%= f.submit "変更" %>
+    <%= f.submit '変更' %>
   </div>
 <% end %>
 
 <% if current_user.image? %>
-  <p><%= button_to "削除", users_image_path, data: { confirm: "本当に削除しますか？" }, method: :delete %></p>
+  <p><%= button_to '削除', users_image_path, data: { confirm: '本当に削除しますか？' }, method: :delete %></p>
 <% end %>
 
 <hr/>
@@ -23,14 +23,14 @@
 <%= form_for(resource, as: resource_name, url: registration_path(resource_name), html: { method: :put }) do |f| %>
   <div class="field">
     <%= f.label :name %> <em>(必須)</em><br/>
-    <%= f.text_field :name, autofocus: true, autocomplete: "name" %>
-    <%= render "users/shared/field_error_messages", messages: resource.errors[:name] %>
+    <%= f.text_field :name, autofocus: true, autocomplete: 'name' %>
+    <%= render 'users/shared/field_error_messages', messages: resource.errors[:name] %>
   </div>
 
   <div class="field">
     <%= f.label :email %> <em>(必須)</em><br/>
-    <%= f.email_field :email, autofocus: true, autocomplete: "email" %>
-    <%= render "users/shared/field_error_messages", messages: resource.errors[:email] %>
+    <%= f.email_field :email, autofocus: true, autocomplete: 'email' %>
+    <%= render 'users/shared/field_error_messages', messages: resource.errors[:email] %>
   </div>
 
   <% if devise_mapping.confirmable? && resource.pending_reconfirmation? && valid_confirmation_token? %>
@@ -39,9 +39,9 @@
 
   <div class="field">
     <%= f.label :password %> <em>(変更する場合のみ入力)</em><br/>
-    <%= f.password_field :password, autocomplete: "new-password" %>
+    <%= f.password_field :password, autocomplete: 'new-password' %>
     <% if resource.errors[:password].any? %>
-      <%= render "users/shared/field_error_messages", messages: resource.errors[:password] %>
+      <%= render 'users/shared/field_error_messages', messages: resource.errors[:password] %>
     <% else %>
       <% if @minimum_password_length %>
         <br/><em><%= @minimum_password_length %>文字以上</em>
@@ -51,21 +51,21 @@
 
   <div class="field">
     <%= f.label :password_confirmation %> <em>(変更する場合のみ入力)</em><br/>
-    <%= f.password_field :password_confirmation, autocomplete: "new-password" %>
-    <%= render "users/shared/field_error_messages", messages: resource.errors[:password_confirmation] %>
+    <%= f.password_field :password_confirmation, autocomplete: 'new-password' %>
+    <%= render 'users/shared/field_error_messages', messages: resource.errors[:password_confirmation] %>
   </div>
 
   <div class="field">
     <%= f.label :current_password %> <em>(必須)</em><br/>
-    <%= f.password_field :current_password, autocomplete: "current-password" %>
-    <%= render "users/shared/field_error_messages", messages: resource.errors[:current_password] %>
+    <%= f.password_field :current_password, autocomplete: 'current-password' %>
+    <%= render 'users/shared/field_error_messages', messages: resource.errors[:current_password] %>
   </div>
 
   <div class="actions">
-    <%= f.submit "変更" %>
+    <%= f.submit '変更' %>
   </div>
 <% end %>
 
 <ul>
-  <li><%= link_to "アカウント削除", users_delete_path %></li>
+  <li><%= link_to 'アカウント削除', users_delete_path %></li>
 </ul>
