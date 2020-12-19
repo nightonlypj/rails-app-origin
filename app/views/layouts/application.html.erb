@@ -15,7 +15,7 @@
       <li><%= image_tag current_user.image_url(:small) %> <%= current_user.name %></li>
 <% else %>
       <li><%= image_tag current_user.image_url(:small) %> <%= link_to current_user.name, edit_user_registration_path %></li>
-      <li><%= link_to "所属一覧", customers_path %></li>
+      <li><%= link_to '所属一覧', customers_path %></li>
 <% end %>
       <li><%= link_to "ログアウト", destroy_user_session_path, method: :delete %></li>
 <% else %>

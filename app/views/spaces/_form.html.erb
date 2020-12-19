@@ -1,16 +1,16 @@
 <%= form_with(model: space, local: true) do |form| %>
-  <%= render "users/shared/error_messages", resource: space %>
+  <%= render 'users/shared/error_messages', resource: space %>
 
   <div class="field">
     <%= form.label :subdomain %>
     <%= form.text_field :subdomain %>
-    <%= render "users/shared/field_error_messages", messages: space.errors[:subdomain] %>
+    <%= render 'users/shared/field_error_messages', messages: space.errors[:subdomain] %>
   </div>
 
   <div class="field">
     <%= form.label :name %>
     <%= form.text_field :name %>
-    <%= render "users/shared/field_error_messages", messages: space.errors[:name] %>
+    <%= render 'users/shared/field_error_messages', messages: space.errors[:name] %>
   </div>
 
   <div class="actions">
