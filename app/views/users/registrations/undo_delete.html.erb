@@ -5,4 +5,4 @@
   ※<%= l(current_user.destroy_requested_at) %>にアカウント削除依頼を受け付けています。<br/>
 <% end %>
 
-<p><%= button_to "取り消し確認", users_undo_delete_path, data: { confirm: "本当に取り消しますか？" }, method: :delete %></p>
+<p><%= button_to '取り消し確認', users_undo_delete_path, data: { confirm: '本当に取り消しますか？' }, method: :delete %></p>

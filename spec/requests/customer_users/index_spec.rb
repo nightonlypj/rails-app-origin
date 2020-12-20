@@ -179,7 +179,7 @@ RSpec.describe '/customer_users', type: :request do
     shared_examples_for '対象のリスト表示' do |page|
       let!(:start_no) { Settings['default_customer_users_limit'] * (page - 1) + 1 }
       let!(:end_no) { [@inside_customer_users.count, Settings['default_customer_users_limit'] * page].min }
-      it '名前が含まれる' do
+      it '表示名が含まれる' do
         get customer_users_path(customer_code: customer.code, page: page), headers: headers
         (start_no..end_no).each do |no|
           expect(response.body).to include(@inside_customer_users[no - 1].user.name)
@@ -216,7 +216,7 @@ RSpec.describe '/customer_users', type: :request do
           expect(parse_response[no - start_no]['image_url']).to eq("https://#{Settings['base_domain']}#{@inside_customer_users[no - 1].user.image_url(:small)}")
         end
       end
-      it '(json)名前が一致する' do
+      it '(json)表示名が一致する' do
         get customer_users_path(customer_code: customer.code, page: page), headers: headers.merge(json_headers)
         parse_response = JSON.parse(response.body)['customer_users']
         (start_no..end_no).each do |no|
@@ -263,7 +263,7 @@ RSpec.describe '/customer_users', type: :request do
     shared_examples_for 'ページ外のリスト非表示' do |page, outside_page|
       let!(:start_no) { Settings['default_customer_users_limit'] * (outside_page - 1) + 1 }
       let!(:end_no) { [@inside_customer_users.count, Settings['default_customer_users_limit'] * outside_page].min }
-      it '名前が含まれない' do
+      it '表示名が含まれない' do
         get customer_users_path(customer_code: customer.code, page: page), headers: headers
         (start_no..end_no).each do |no|
           expect(response.body).not_to include(@inside_customer_users[no - 1].user.name) if @inside_customer_users[no - 1].user != user
@@ -287,7 +287,7 @@ RSpec.describe '/customer_users', type: :request do
           expect(response.body).not_to include("\"#{delete_customer_user_path(customer_code: customer.code, id: @inside_customer_users[no - 1].id)}\"")
         end
       end
-      it '(json)名前が含まれない' do
+      it '(json)表示名が含まれない' do
         get customer_users_path(customer_code: customer.code, page: page), headers: headers.merge(json_headers)
         hash_responses = JSON.parse(response.body)['customer_users'].map { |response| [response['name'], response] }.to_h
         (start_no..end_no).each do |no|
@@ -303,7 +303,7 @@ RSpec.describe '/customer_users', type: :request do
       end
     end
     shared_examples_for '対象外のリスト非表示' do |page|
-      it '名前が含まれない' do
+      it '表示名が含まれない' do
         get customer_users_path(customer_code: customer.code, page: page), headers: headers
         (1..@outside_customer_users.count).each do |no|
           expect(response.body).not_to include(@outside_customer_users[no - 1].user.name)
@@ -327,7 +327,7 @@ RSpec.describe '/customer_users', type: :request do
           expect(response.body).not_to include("\"#{delete_customer_user_path(customer_code: customer.code, id: @outside_customer_users[no - 1].id)}\"")
         end
       end
-      it '(json)名前が含まれない' do
+      it '(json)表示名が含まれない' do
         get customer_users_path(customer_code: customer.code, page: page), headers: headers.merge(json_headers)
         hash_responses = JSON.parse(response.body)['customer_users'].map { |response| [response['name'], response] }.to_h
         (1..@outside_customer_users.count).each do |no|
