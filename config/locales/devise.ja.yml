@@ -6,8 +6,9 @@ ja:
     attributes:
       user:
         id: "ID"
+        code: "ユーザーコード"
         image: "画像"
-        name: "名前"
+        name: "表示名"
         email: "メールアドレス"
         password: "パスワード"
         password_confirmation: "パスワード(確認)"
@@ -34,7 +35,7 @@ ja:
         updated_at: "更新日時"
       admin_user:
         id: "ID"
-        name: "名前"
+        name: "表示名"
         email: "メールアドレス"
         password: "パスワード"
         password_confirmation: "パスワード(確認)"
@@ -61,16 +62,19 @@ ja:
       models:
         user:
           attributes:
+            code:
+              blank: "お問い合わせ頂くか、最初からやり直してください。"
+              taken: "既に使用されています。やり直してください。"
             name:
               blank: "入力してください。"
               too_short: "%{count}文字以上で入力してください。"
               too_long: "%{count}文字以下で入力してください。"
             email:
-              taken: "既に使用されています。"
               blank: "入力してください。"
               too_short: "%{count}文字以上で入力してください。"
               too_long: "%{count}文字以下で入力してください。"
               invalid: "形式が正しくありません。"
+              taken: "既に使用されています。"
             password:
               blank: "入力してください。"
               too_short: "%{count}文字以上で入力してください。"
@@ -96,11 +100,11 @@ ja:
               too_short: "%{count}文字以上で入力してください。"
               too_long: "%{count}文字以下で入力してください。"
             email:
-              taken: "既に使用されています。"
               blank: "入力してください。"
               too_short: "%{count}文字以上で入力してください。"
               too_long: "%{count}文字以下で入力してください。"
               invalid: "形式が正しくありません。"
+              taken: "既に使用されています。"
             password:
               blank: "入力してください。"
               too_short: "%{count}文字以上で入力してください。"

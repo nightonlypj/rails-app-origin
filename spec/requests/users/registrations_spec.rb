@@ -150,13 +150,13 @@ RSpec.describe 'Users::Registrations', type: :request do
   describe 'PUT /update' do
     # テスト内容
     shared_examples_for 'OK' do
-      it '名前が変更される' do
+      it '表示名が変更される' do
         put user_registration_path, params: { user: attributes.merge(current_password: current_password) }
         expect(User.find(user.id).name).to eq(attributes[:name])
       end
     end
     shared_examples_for 'NG' do
-      it '名前が変更されない' do
+      it '表示名が変更されない' do
         put user_registration_path, params: { user: attributes.merge(current_password: current_password) }
         expect(User.find(user.id).name).to eq(user.name)
       end

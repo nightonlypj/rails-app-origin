@@ -40,6 +40,7 @@ ActiveRecord::Schema.define(version: 2020_05_16_020351) do
   end
 
   create_table "users", force: :cascade do |t|
+    t.string "code", null: false
     t.json "image"
     t.string "name", null: false
     t.string "email", default: "", null: false
@@ -63,7 +64,9 @@ ActiveRecord::Schema.define(version: 2020_05_16_020351) do
     t.datetime "destroy_schedule_at"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
+    t.index ["code"], name: "index_users5", unique: true
     t.index ["confirmation_token"], name: "index_users3", unique: true
+    t.index ["destroy_schedule_at"], name: "index_users6"
     t.index ["email"], name: "index_users1", unique: true
     t.index ["reset_password_token"], name: "index_users2", unique: true
     t.index ["unlock_token"], name: "index_users4", unique: true

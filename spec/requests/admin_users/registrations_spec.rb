@@ -130,13 +130,13 @@ RSpec.describe 'AdminUsers::Registrations', type: :request do
   #   describe 'PUT /update' do
   #     # テスト内容
   #     shared_examples_for 'OK' do
-  #       it '名前が変更される' do
+  #       it '表示名が変更される' do
   #         put admin_user_registration_path, params: { admin_user: attributes.merge(current_password: current_password) }
   #         expect(AdminUser.find(admin_user.id).name).to eq(attributes[:name])
   #       end
   #     end
   #     shared_examples_for 'NG' do
-  #       it '名前が変更されない' do
+  #       it '表示名が変更されない' do
   #         put admin_user_registration_path, params: { admin_user: attributes.merge(current_password: current_password) }
   #         expect(AdminUser.find(admin_user.id).name).to eq(admin_user.name)
   #       end
