@@ -13,9 +13,24 @@ class Users::RegistrationsController < Devise::RegistrationsController
   # end
 
   # POST /users アカウント登録(処理)
-  # def create
-  #   super
-  # end
+  def create
+    # ユーザーコード作成
+    try_count = 1
+    loop do
+      params[:user][:code] = Digest::MD5.hexdigest(SecureRandom.uuid)
+      break if User.find_by(code: params[:user][:code]).blank?
+
+      if try_count < 10
+        logger.warn("[WARN](#{try_count})Not unique code: Users::RegistrationsController.create #{params[:user]}")
+      elsif try_count >= 10
+        logger.error("[ERROR](#{try_count})Not unique code: Users::RegistrationsController.create #{params[:user]}")
+        break
+      end
+      try_count += 1
+    end
+
+    super
+  end
 
   # GET /users/edit 登録情報変更
   # def edit
@@ -92,7 +107,7 @@ class Users::RegistrationsController < Devise::RegistrationsController
 
   # If you have extra params to permit, append them to the sanitizer.
   def configure_sign_up_params
-    devise_parameter_sanitizer.permit(:sign_up, keys: [:name])
+    devise_parameter_sanitizer.permit(:sign_up, keys: %i[code name])
   end
 
   # If you have extra params to permit, append them to the sanitizer.

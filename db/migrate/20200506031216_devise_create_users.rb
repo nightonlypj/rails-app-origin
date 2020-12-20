@@ -3,6 +3,7 @@
 class DeviseCreateUsers < ActiveRecord::Migration[6.0]
   def change
     create_table :users do |t|
+      t.string :code, null: false
       t.json :image
       t.string :name, null: false
 
@@ -46,6 +47,7 @@ class DeviseCreateUsers < ActiveRecord::Migration[6.0]
     add_index :users, :reset_password_token, unique: true, name: 'index_users2'
     add_index :users, :confirmation_token,   unique: true, name: 'index_users3'
     add_index :users, :unlock_token,         unique: true, name: 'index_users4'
-    add_index :users, :destroy_schedule_at,                name: 'index_users5'
+    add_index :users, :code,                 unique: true, name: 'index_users5'
+    add_index :users, :destroy_schedule_at,                name: 'index_users6'
   end
 end

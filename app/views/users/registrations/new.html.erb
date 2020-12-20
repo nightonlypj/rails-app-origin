@@ -1,18 +1,18 @@
 <h2>アカウント登録</h2>
 
 <%= form_for(resource, as: resource_name, url: registration_path(resource_name)) do |f| %>
-  <%= render "users/shared/error_messages", resource: resource %>
+  <%= render 'users/shared/error_messages', resource: resource %>
 
   <div class="field">
     <%= f.label :name %> <em>(必須)</em><br/>
-    <%= f.text_field :name, autofocus: true, autocomplete: "name" %>
-    <%= render "users/shared/field_error_messages", messages: resource.errors[:name] %>
+    <%= f.text_field :name, autofocus: true, autocomplete: 'name' %>
+    <%= render 'users/shared/field_error_messages', messages: resource.errors[:name] %>
   </div>
 
   <div class="field">
     <%= f.label :email %> <em>(必須)</em><br/>
-    <%= f.email_field :email, autofocus: true, autocomplete: "email" %>
-    <%= render "users/shared/field_error_messages", messages: resource.errors[:email] %>
+    <%= f.email_field :email, autofocus: true, autocomplete: 'email' %>
+    <%= render 'users/shared/field_error_messages', messages: resource.errors[:email] %>
   </div>
 
   <div class="field">
@@ -20,19 +20,19 @@
     <% if @minimum_password_length %>
       <em>(必須、<%= @minimum_password_length %>文字以上)</em><br/>
     <% end %>
-    <%= f.password_field :password, autocomplete: "new-password" %>
-    <%= render "users/shared/field_error_messages", messages: resource.errors[:password] %>
+    <%= f.password_field :password, autocomplete: 'new-password' %>
+    <%= render 'users/shared/field_error_messages', messages: resource.errors[:password] %>
   </div>
 
   <div class="field">
     <%= f.label :password_confirmation %> <em>(必須)</em><br/>
-    <%= f.password_field :password_confirmation, autocomplete: "new-password" %>
-    <%= render "users/shared/field_error_messages", messages: resource.errors[:password_confirmation] %>
+    <%= f.password_field :password_confirmation, autocomplete: 'new-password' %>
+    <%= render 'users/shared/field_error_messages', messages: resource.errors[:password_confirmation] %>
   </div>
 
   <div class="actions">
-    <%= f.submit "登録" %>
+    <%= f.submit '登録' %>
   </div>
 <% end %>
 
-<%= render "users/shared/links" %>
+<%= render 'users/shared/links' %>
