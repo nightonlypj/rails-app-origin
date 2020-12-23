@@ -2,17 +2,17 @@
 
 <h2>メールアドレス確認メール再送</h2>
 
-<%= form_for(resource, as: resource_name, url: confirmation_path(resource_name), html: { method: :post }) do |f| %>
+<%= form_for(resource, as: resource_name, url: confirmation_path(resource_name), html: { method: :post }, local: true) do |form| %>
   <%= render 'admin_users/shared/error_messages', resource: resource unless resource.errors[:confirmation_token].any? %>
 
   <div class="field">
-    <%= f.label :email %>
-    <%= f.email_field :email, autofocus: true, autocomplete: 'email', value: (resource.pending_reconfirmation? ? resource.unconfirmed_email : resource.email) %>
+    <%= form.label :email %>
+    <%= form.email_field :email, autofocus: true, autocomplete: 'email', value: (resource.pending_reconfirmation? ? resource.unconfirmed_email : resource.email) %>
     <%= render 'admin_users/shared/field_error_messages', messages: resource.errors[:email] %>
   </div>
 
   <div class="actions">
-    <%= f.submit "送信" %>
+    <%= form.submit "送信" %>
   </div>
 <% end %>
 

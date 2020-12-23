@@ -2,6 +2,10 @@ require 'rails_helper'
 
 RSpec.describe 'Top', type: :request do
   # GET / トップページ
+  # 前提条件
+  #   なし
+  # テストパターン
+  #   未ログイン, ログイン中, ログイン中（削除予約済み） → データ＆状態作成
   describe 'GET /index' do
     # テスト内容
     shared_examples_for 'ToOK' do
