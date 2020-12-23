@@ -3,11 +3,13 @@ require 'rails_helper'
 RSpec.describe 'Users::Sessions', type: :request do
   include_context '共通ヘッダー'
   include_context 'リクエストスペース作成'
-  let!(:login_user) { FactoryBot.create(:user) }
-  let!(:valid_attributes) { FactoryBot.attributes_for(:user, email: login_user.email, password: login_user.password) }
-  let!(:invalid_attributes) { FactoryBot.attributes_for(:user, email: login_user.email, password: nil) }
 
   # GET /users/sign_in ログイン
+  # 前提条件
+  #   なし
+  # テストパターン
+  #   未ログイン, ログイン中, ログイン中（削除予約済み） → データ＆状態作成
+  #   ベースドメイン, 存在するサブドメイン, 存在しないサブドメイン → 事前にデータ作成
   describe 'GET /new' do
     # テスト内容
     shared_examples_for 'ToOK' do
@@ -75,7 +77,17 @@ RSpec.describe 'Users::Sessions', type: :request do
   end
 
   # POST /users/sign_in ログイン(処理)
+  # 前提条件
+  #   なし
+  # テストパターン
+  #   未ログイン, ログイン中, ログイン中（削除予約済み） → データ＆状態作成
+  #   有効なパラメータ, 無効なパラメータ → 事前にデータ作成
+  #   ベースドメイン, 存在するサブドメイン, 存在しないサブドメイン → 事前にデータ作成
   describe 'POST /create' do
+    let!(:login_user) { FactoryBot.create(:user) }
+    let!(:valid_attributes) { FactoryBot.attributes_for(:user, email: login_user.email, password: login_user.password) }
+    let!(:invalid_attributes) { FactoryBot.attributes_for(:user, email: login_user.email, password: nil) }
+
     # テスト内容
     shared_examples_for 'ToOK' do
       it '成功ステータス' do
@@ -97,82 +109,86 @@ RSpec.describe 'Users::Sessions', type: :request do
     end
 
     # テストケース
-    shared_examples_for '[未ログイン][ベースドメイン]有効なパラメータ' do
-      let!(:attributes) { valid_attributes }
-      it_behaves_like 'ToTop'
+    shared_examples_for '[未ログイン][有効なパラメータ]ベースドメイン' do
+      let!(:headers) { base_headers }
+      it_behaves_like 'ToTop' # Tips: OK
     end
-    shared_examples_for '[未ログイン][サブドメイン]有効なパラメータ' do
-      let!(:attributes) { valid_attributes }
-      it_behaves_like 'ToNG'
+    shared_examples_for '[ログイン中][有効なパラメータ]ベースドメイン' do
+      let!(:headers) { base_headers }
+      it_behaves_like 'ToTop' # Tips: NG
     end
-    shared_examples_for '[未ログイン][ベースドメイン]無効なパラメータ' do
-      let!(:attributes) { invalid_attributes }
+    shared_examples_for '[未ログイン][無効なパラメータ]ベースドメイン' do
+      let!(:headers) { base_headers }
       it_behaves_like 'ToOK' # Tips: 再入力の為
     end
-    shared_examples_for '[未ログイン][サブドメイン]無効なパラメータ' do
-      let!(:attributes) { invalid_attributes }
-      it_behaves_like 'ToNG'
-    end
-    shared_examples_for '[ログイン中]有効なパラメータ' do
-      let!(:attributes) { valid_attributes }
-      it_behaves_like 'ToTop'
-    end
-    shared_examples_for '[ログイン中]無効なパラメータ' do
-      let!(:attributes) { invalid_attributes }
-      it_behaves_like 'ToTop'
-    end
-
-    shared_examples_for '[未ログイン]ベースドメイン' do
+    shared_examples_for '[ログイン中][無効なパラメータ]ベースドメイン' do
       let!(:headers) { base_headers }
-      it_behaves_like '[未ログイン][ベースドメイン]有効なパラメータ'
-      it_behaves_like '[未ログイン][ベースドメイン]無効なパラメータ'
-    end
-    shared_examples_for '[ログイン中]ベースドメイン' do
-      let!(:headers) { base_headers }
-      it_behaves_like '[ログイン中]有効なパラメータ'
-      it_behaves_like '[ログイン中]無効なパラメータ'
+      it_behaves_like 'ToTop'
     end
     shared_examples_for '[未ログイン]存在するサブドメイン' do
       let!(:headers) { @space_headers }
-      it_behaves_like '[未ログイン][サブドメイン]有効なパラメータ'
-      it_behaves_like '[未ログイン][サブドメイン]無効なパラメータ'
+      it_behaves_like 'ToNG'
     end
     shared_examples_for '[ログイン中]存在するサブドメイン' do
       let!(:headers) { @space_headers }
-      it_behaves_like '[ログイン中]有効なパラメータ'
-      it_behaves_like '[ログイン中]無効なパラメータ'
+      it_behaves_like 'ToTop'
     end
     shared_examples_for '[未ログイン]存在しないサブドメイン' do
       let!(:headers) { not_space_headers }
-      it_behaves_like '[未ログイン][サブドメイン]有効なパラメータ'
-      it_behaves_like '[未ログイン][サブドメイン]無効なパラメータ'
+      it_behaves_like 'ToNG'
     end
     shared_examples_for '[ログイン中]存在しないサブドメイン' do
       let!(:headers) { not_space_headers }
-      it_behaves_like '[ログイン中]有効なパラメータ'
-      it_behaves_like '[ログイン中]無効なパラメータ'
+      it_behaves_like 'ToTop'
     end
 
-    context '未ログイン' do
-      it_behaves_like '[未ログイン]ベースドメイン'
+    shared_examples_for '[未ログイン]有効なパラメータ' do
+      let!(:attributes) { valid_attributes }
+      it_behaves_like '[未ログイン][有効なパラメータ]ベースドメイン'
       it_behaves_like '[未ログイン]存在するサブドメイン'
       it_behaves_like '[未ログイン]存在しないサブドメイン'
     end
-    context 'ログイン中' do
-      include_context 'ログイン処理'
-      it_behaves_like '[ログイン中]ベースドメイン'
+    shared_examples_for '[ログイン中]有効なパラメータ' do
+      let!(:attributes) { valid_attributes }
+      it_behaves_like '[ログイン中][有効なパラメータ]ベースドメイン'
       it_behaves_like '[ログイン中]存在するサブドメイン'
       it_behaves_like '[ログイン中]存在しないサブドメイン'
     end
-    context 'ログイン中（削除予約済み）' do
-      include_context 'ログイン処理', true
-      it_behaves_like '[ログイン中]ベースドメイン'
+    shared_examples_for '[未ログイン]無効なパラメータ' do
+      let!(:attributes) { invalid_attributes }
+      it_behaves_like '[未ログイン][無効なパラメータ]ベースドメイン'
+      it_behaves_like '[未ログイン]存在するサブドメイン'
+      it_behaves_like '[未ログイン]存在しないサブドメイン'
+    end
+    shared_examples_for '[ログイン中]無効なパラメータ' do
+      let!(:attributes) { invalid_attributes }
+      it_behaves_like '[ログイン中][無効なパラメータ]ベースドメイン'
       it_behaves_like '[ログイン中]存在するサブドメイン'
       it_behaves_like '[ログイン中]存在しないサブドメイン'
+    end
+
+    context '未ログイン' do
+      it_behaves_like '[未ログイン]有効なパラメータ'
+      it_behaves_like '[未ログイン]無効なパラメータ'
+    end
+    context 'ログイン中' do
+      include_context 'ログイン処理'
+      it_behaves_like '[ログイン中]有効なパラメータ'
+      it_behaves_like '[ログイン中]無効なパラメータ'
+    end
+    context 'ログイン中（削除予約済み）' do
+      include_context 'ログイン処理', true
+      it_behaves_like '[ログイン中]有効なパラメータ'
+      it_behaves_like '[ログイン中]無効なパラメータ'
     end
   end
 
   # DELETE /users/sign_out ログアウト(処理)
+  # 前提条件
+  #   なし
+  # テストパターン
+  #   未ログイン, ログイン中, ログイン中（削除予約済み） → データ＆状態作成
+  #   ベースドメイン, 存在するサブドメイン, 存在しないサブドメイン → 事前にデータ作成
   describe 'DELETE /destroy' do
     # テスト内容
     shared_examples_for 'ToNG' do
@@ -191,7 +207,7 @@ RSpec.describe 'Users::Sessions', type: :request do
     # テストケース
     shared_examples_for 'ベースドメイン' do
       let!(:headers) { base_headers }
-      it_behaves_like 'ToLogin'
+      it_behaves_like 'ToLogin' # Tips: OK
     end
     shared_examples_for '[未ログイン]存在するサブドメイン' do
       let!(:headers) { @space_headers }

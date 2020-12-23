@@ -2,6 +2,10 @@ require 'rails_helper'
 
 RSpec.describe 'Admin', type: :request do
   # GET / RailsAdmin
+  # 前提条件
+  #   なし
+  # テストパターン
+  #   未ログイン, ログイン中, ログイン中（削除予約済み）, ログイン中（管理者） → データ＆状態作成
   describe 'GET /' do
     # テスト内容
     shared_examples_for 'ToOK' do

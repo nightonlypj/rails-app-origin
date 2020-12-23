@@ -6,6 +6,10 @@ RSpec.describe 'Top', type: :request do
 
   # GET /（ベースドメイン） トップページ
   # GET /（サブドメイン） スペーストップ
+  # 前提条件
+  #   なし
+  # テストパターン
+  #   未ログイン, ログイン中, ログイン中（削除予約済み） → データ＆状態作成
   describe 'GET /index' do
     include_context 'リクエストスペース作成'
     # テスト内容
