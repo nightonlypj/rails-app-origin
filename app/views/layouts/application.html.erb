@@ -11,11 +11,7 @@
     <h1><%= link_to t('app_name'), root_path %></h1>
     <ul>
 <% if user_signed_in? %>
-<% if current_user.destroy_reserved? %>
-      <li><%= image_tag current_user.image_url(:small) %> <%= current_user.name %></li>
-<% else %>
       <li><%= image_tag current_user.image_url(:small) %> <%= link_to current_user.name, edit_user_registration_path %></li>
-<% end %>
       <li><%= link_to 'ログアウト', destroy_user_session_path, method: :delete %></li>
 <% else %>
       <li><%= link_to 'ログイン', new_user_session_path %></li>

@@ -1,11 +1,11 @@
 require 'rails_helper'
 
 RSpec.describe 'Users::Registrations', type: :request do
-  let!(:valid_attributes) { FactoryBot.attributes_for(:user) }
-  let!(:invalid_attributes) { FactoryBot.attributes_for(:user, email: nil) }
-  let!(:valid_image) { fixture_file_upload(TEST_IMAGE_FILE, TEST_IMAGE_TYPE) }
-
   # GET /users/sign_up アカウント登録
+  # 前提条件
+  #   なし
+  # テストパターン
+  #   未ログイン, ログイン中, ログイン中（削除予約済み） → データ＆状態作成
   describe 'GET /new' do
     # テスト内容
     shared_examples_for 'ToOK' do
@@ -36,7 +36,15 @@ RSpec.describe 'Users::Registrations', type: :request do
   end
 
   # POST /users アカウント登録(処理)
+  # 前提条件
+  #   なし
+  # テストパターン
+  #   未ログイン, ログイン中, ログイン中（削除予約済み） → データ＆状態作成
+  #   有効なパラメータ, 無効なパラメータ → 事前にデータ作成
   describe 'POST /create' do
+    let!(:valid_attributes) { FactoryBot.attributes_for(:user) }
+    let!(:invalid_attributes) { FactoryBot.attributes_for(:user, email: nil) }
+
     # テスト内容
     shared_examples_for 'OK' do
       it '作成される' do
@@ -78,15 +86,15 @@ RSpec.describe 'Users::Registrations', type: :request do
       it_behaves_like 'OK'
       it_behaves_like 'ToLogin'
     end
-    shared_examples_for '[未ログイン]無効なパラメータ' do
-      let!(:attributes) { invalid_attributes }
-      it_behaves_like 'NG'
-      it_behaves_like 'ToOK' # Tips: 再入力の為
-    end
     shared_examples_for '[ログイン中]有効なパラメータ' do
       let!(:attributes) { valid_attributes }
       it_behaves_like 'NG'
       it_behaves_like 'ToTop'
+    end
+    shared_examples_for '[未ログイン]無効なパラメータ' do
+      let!(:attributes) { invalid_attributes }
+      it_behaves_like 'NG'
+      it_behaves_like 'ToOK' # Tips: 再入力の為
     end
     shared_examples_for '[ログイン中]無効なパラメータ' do
       let!(:attributes) { invalid_attributes }
@@ -111,6 +119,10 @@ RSpec.describe 'Users::Registrations', type: :request do
   end
 
   # GET /users/edit 登録情報変更
+  # 前提条件
+  #   なし
+  # テストパターン
+  #   未ログイン, ログイン中, ログイン中（削除予約済み） → データ＆状態作成
   describe 'GET /edit' do
     # テスト内容
     shared_examples_for 'ToOK' do
@@ -147,7 +159,15 @@ RSpec.describe 'Users::Registrations', type: :request do
   end
 
   # PUT /users 登録情報変更(処理)
+  # 前提条件
+  #   なし
+  # テストパターン
+  #   未ログイン, ログイン中, ログイン中（削除予約済み） → データ＆状態作成
+  #   有効なパラメータ, 無効なパラメータ → 事前にデータ作成
   describe 'PUT /update' do
+    let!(:valid_attributes) { FactoryBot.attributes_for(:user) }
+    let!(:invalid_attributes) { FactoryBot.attributes_for(:user, email: nil) }
+
     # テスト内容
     shared_examples_for 'OK' do
       it '表示名が変更される' do
@@ -184,10 +204,7 @@ RSpec.describe 'Users::Registrations', type: :request do
     # テストケース
     shared_examples_for '[未ログイン]有効なパラメータ' do
       let!(:attributes) { valid_attributes }
-      it_behaves_like 'ToLogin'
-    end
-    shared_examples_for '[未ログイン]無効なパラメータ' do
-      let!(:attributes) { invalid_attributes }
+      # it_behaves_like 'NG' # Tips: 未ログインの為、対象がない
       it_behaves_like 'ToLogin'
     end
     shared_examples_for '[ログイン中]有効なパラメータ' do
@@ -195,15 +212,20 @@ RSpec.describe 'Users::Registrations', type: :request do
       it_behaves_like 'OK'
       it_behaves_like 'ToTop'
     end
-    shared_examples_for '[ログイン中]無効なパラメータ' do
-      let!(:attributes) { invalid_attributes }
-      it_behaves_like 'NG'
-      it_behaves_like 'ToOK' # Tips: 再入力の為
-    end
     shared_examples_for '[削除予約済み]有効なパラメータ' do
       let!(:attributes) { valid_attributes }
       it_behaves_like 'NG'
       it_behaves_like 'ToTop'
+    end
+    shared_examples_for '[未ログイン]無効なパラメータ' do
+      let!(:attributes) { invalid_attributes }
+      # it_behaves_like 'NG' # Tips: 未ログインの為、対象がない
+      it_behaves_like 'ToLogin'
+    end
+    shared_examples_for '[ログイン中]無効なパラメータ' do
+      let!(:attributes) { invalid_attributes }
+      it_behaves_like 'NG'
+      it_behaves_like 'ToOK' # Tips: 再入力の為
     end
     shared_examples_for '[削除予約済み]無効なパラメータ' do
       let!(:attributes) { invalid_attributes }
@@ -235,7 +257,15 @@ RSpec.describe 'Users::Registrations', type: :request do
   end
 
   # PUT /users/image 画像変更(処理)
+  # 前提条件
+  #   なし
+  # テストパターン
+  #   未ログイン, ログイン中, ログイン中（削除予約済み） → データ＆状態作成
+  #   有効なパラメータ, 無効なパラメータ → 事前にデータ作成
   describe 'PUT /image_update' do
+    let!(:valid_attributes) { { image: fixture_file_upload(TEST_IMAGE_FILE, TEST_IMAGE_TYPE) } }
+    let!(:invalid_attributes) { nil }
+
     # テスト内容
     shared_examples_for 'OK' do
       it '画像が変更される' do
@@ -283,30 +313,32 @@ RSpec.describe 'Users::Registrations', type: :request do
 
     # テストケース
     shared_examples_for '[未ログイン]有効なパラメータ' do
-      let!(:attributes) { { image: valid_image } }
-      it_behaves_like 'ToLogin'
-    end
-    shared_examples_for '[未ログイン]無効なパラメータ' do
-      let!(:attributes) { nil }
+      let!(:attributes) { valid_attributes }
+      # it_behaves_like 'NG' # Tips: 未ログインの為、対象がない
       it_behaves_like 'ToLogin'
     end
     shared_examples_for '[ログイン中]有効なパラメータ' do
-      let!(:attributes) { { image: valid_image } }
+      let!(:attributes) { valid_attributes }
       it_behaves_like 'OK'
       it_behaves_like 'ToEdit'
     end
-    shared_examples_for '[ログイン中]無効なパラメータ' do
-      let!(:attributes) { nil }
-      it_behaves_like 'NG'
-      it_behaves_like 'ToOK' # Tips: 再入力の為
-    end
     shared_examples_for '[削除予約済み]有効なパラメータ' do
-      let!(:attributes) { { image: valid_image } }
+      let!(:attributes) { valid_attributes }
       it_behaves_like 'NG'
       it_behaves_like 'ToTop'
     end
+    shared_examples_for '[未ログイン]無効なパラメータ' do
+      let!(:attributes) { invalid_attributes }
+      # it_behaves_like 'NG' # Tips: 未ログインの為、対象がない
+      it_behaves_like 'ToLogin'
+    end
+    shared_examples_for '[ログイン中]無効なパラメータ' do
+      let!(:attributes) { invalid_attributes }
+      it_behaves_like 'NG'
+      it_behaves_like 'ToOK' # Tips: 再入力の為
+    end
     shared_examples_for '[削除予約済み]無効なパラメータ' do
-      let!(:attributes) { nil }
+      let!(:attributes) { invalid_attributes }
       it_behaves_like 'NG'
       it_behaves_like 'ToTop'
     end
@@ -328,6 +360,10 @@ RSpec.describe 'Users::Registrations', type: :request do
   end
 
   # DELETE /users/image 画像削除(処理)
+  # 前提条件
+  #   なし
+  # テストパターン
+  #   未ログイン, ログイン中, ログイン中（削除予約済み） → データ＆状態作成
   describe 'DELETE /image_destroy' do
     # テスト内容
     shared_examples_for 'OK' do
@@ -343,12 +379,6 @@ RSpec.describe 'Users::Registrations', type: :request do
       end
     end
 
-    shared_examples_for 'ToOK' do
-      it '成功ステータス' do
-        delete users_image_path
-        expect(response).to be_successful
-      end
-    end
     shared_examples_for 'ToTop' do
       it 'トップページにリダイレクト' do
         delete users_image_path
@@ -370,6 +400,7 @@ RSpec.describe 'Users::Registrations', type: :request do
 
     # テストケース
     context '未ログイン' do
+      # it_behaves_like 'NG' # Tips: 未ログインの為、対象がない
       it_behaves_like 'ToLogin'
     end
     context 'ログイン中' do
@@ -389,6 +420,10 @@ RSpec.describe 'Users::Registrations', type: :request do
   end
 
   # GET /users/delete アカウント削除
+  # 前提条件
+  #   なし
+  # テストパターン
+  #   未ログイン, ログイン中, ログイン中（削除予約済み） → データ＆状態作成
   describe 'GET /delete' do
     # テスト内容
     shared_examples_for 'ToOK' do
@@ -425,6 +460,10 @@ RSpec.describe 'Users::Registrations', type: :request do
   end
 
   # DELETE /users アカウント削除(処理)
+  # 前提条件
+  #   なし
+  # テストパターン
+  #   未ログイン, ログイン中, ログイン中（削除予約済み） → データ＆状態作成
   describe 'DELETE /destroy' do
     # テスト内容
     shared_examples_for 'OK' do
@@ -466,6 +505,7 @@ RSpec.describe 'Users::Registrations', type: :request do
 
     # テストケース
     context '未ログイン' do
+      # it_behaves_like 'NG' # Tips: 未ログインの為、対象がない
       it_behaves_like 'ToLogin'
     end
     context 'ログイン中' do
@@ -481,6 +521,10 @@ RSpec.describe 'Users::Registrations', type: :request do
   end
 
   # GET /users/undo_delete アカウント削除取り消し
+  # 前提条件
+  #   なし
+  # テストパターン
+  #   未ログイン, ログイン中, ログイン中（削除予約済み） → データ＆状態作成
   describe 'GET /undo_delete' do
     # テスト内容
     shared_examples_for 'ToOK' do
@@ -517,6 +561,10 @@ RSpec.describe 'Users::Registrations', type: :request do
   end
 
   # DELETE /users/undo_delete アカウント削除取り消し(処理)
+  # 前提条件
+  #   なし
+  # テストパターン
+  #   未ログイン, ログイン中, ログイン中（削除予約済み） → データ＆状態作成
   describe 'DELETE /undo_destroy' do
     # テスト内容
     shared_examples_for 'OK' do
@@ -556,6 +604,7 @@ RSpec.describe 'Users::Registrations', type: :request do
 
     # テストケース
     context '未ログイン' do
+      # it_behaves_like 'NG' # Tips: 未ログインの為、対象がない
       it_behaves_like 'ToLogin'
     end
     context 'ログイン中' do
