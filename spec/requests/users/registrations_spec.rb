@@ -14,10 +14,12 @@ RSpec.describe 'Users::Registrations', type: :request do
         expect(response).to be_successful
       end
     end
-    shared_examples_for 'ToTop' do
+    shared_examples_for 'ToTop' do |alert, notice|
       it 'トップページにリダイレクト' do
         get new_user_registration_path
         expect(response).to redirect_to(root_path)
+        expect(flash[:alert]).to alert.present? ? eq(I18n.t(alert)) : be_nil
+        expect(flash[:notice]).to notice.present? ? eq(I18n.t(notice)) : be_nil
       end
     end
 
@@ -27,11 +29,11 @@ RSpec.describe 'Users::Registrations', type: :request do
     end
     context 'ログイン中' do
       include_context 'ログイン処理'
-      it_behaves_like 'ToTop'
+      it_behaves_like 'ToTop', 'devise.failure.already_authenticated', nil
     end
     context 'ログイン中（削除予約済み）' do
       include_context 'ログイン処理', true
-      it_behaves_like 'ToTop'
+      it_behaves_like 'ToTop', 'devise.failure.already_authenticated', nil
     end
   end
 
@@ -67,16 +69,20 @@ RSpec.describe 'Users::Registrations', type: :request do
         expect(response).to be_successful
       end
     end
-    shared_examples_for 'ToTop' do
+    shared_examples_for 'ToTop' do |alert, notice|
       it 'トップページにリダイレクト' do
         post user_registration_path, params: { user: attributes }
         expect(response).to redirect_to(root_path)
+        expect(flash[:alert]).to alert.present? ? eq(I18n.t(alert)) : be_nil
+        expect(flash[:notice]).to notice.present? ? eq(I18n.t(notice)) : be_nil
       end
     end
-    shared_examples_for 'ToLogin' do
+    shared_examples_for 'ToLogin' do |alert, notice|
       it 'ログインにリダイレクト' do
         post user_registration_path, params: { user: attributes }
         expect(response).to redirect_to(new_user_session_path)
+        expect(flash[:alert]).to alert.present? ? eq(I18n.t(alert)) : be_nil
+        expect(flash[:notice]).to notice.present? ? eq(I18n.t(notice)) : be_nil
       end
     end
 
@@ -84,22 +90,22 @@ RSpec.describe 'Users::Registrations', type: :request do
     shared_examples_for '[未ログイン]有効なパラメータ' do
       let!(:attributes) { valid_attributes }
       it_behaves_like 'OK'
-      it_behaves_like 'ToLogin'
+      it_behaves_like 'ToLogin', nil, 'devise.registrations.signed_up_but_unconfirmed'
     end
     shared_examples_for '[ログイン中]有効なパラメータ' do
       let!(:attributes) { valid_attributes }
       it_behaves_like 'NG'
-      it_behaves_like 'ToTop'
+      it_behaves_like 'ToTop', 'devise.failure.already_authenticated', nil
     end
     shared_examples_for '[未ログイン]無効なパラメータ' do
       let!(:attributes) { invalid_attributes }
       it_behaves_like 'NG'
-      it_behaves_like 'ToOK' # Tips: 再入力の為
+      it_behaves_like 'ToOK' # Tips: 再入力
     end
     shared_examples_for '[ログイン中]無効なパラメータ' do
       let!(:attributes) { invalid_attributes }
       it_behaves_like 'NG'
-      it_behaves_like 'ToTop'
+      it_behaves_like 'ToTop', 'devise.failure.already_authenticated', nil
     end
 
     context '未ログイン' do
@@ -131,22 +137,26 @@ RSpec.describe 'Users::Registrations', type: :request do
         expect(response).to be_successful
       end
     end
-    shared_examples_for 'ToTop' do
+    shared_examples_for 'ToTop' do |alert, notice|
       it 'トップページにリダイレクト' do
         get edit_user_registration_path
         expect(response).to redirect_to(root_path)
+        expect(flash[:alert]).to alert.present? ? eq(I18n.t(alert)) : be_nil
+        expect(flash[:notice]).to notice.present? ? eq(I18n.t(notice)) : be_nil
       end
     end
-    shared_examples_for 'ToLogin' do
+    shared_examples_for 'ToLogin' do |alert, notice|
       it 'ログインにリダイレクト' do
         get edit_user_registration_path
         expect(response).to redirect_to(new_user_session_path)
+        expect(flash[:alert]).to alert.present? ? eq(I18n.t(alert)) : be_nil
+        expect(flash[:notice]).to notice.present? ? eq(I18n.t(notice)) : be_nil
       end
     end
 
     # テストケース
     context '未ログイン' do
-      it_behaves_like 'ToLogin'
+      it_behaves_like 'ToLogin', 'devise.failure.unauthenticated', nil
     end
     context 'ログイン中' do
       include_context 'ログイン処理'
@@ -154,7 +164,7 @@ RSpec.describe 'Users::Registrations', type: :request do
     end
     context 'ログイン中（削除予約済み）' do
       include_context 'ログイン処理', true
-      it_behaves_like 'ToTop'
+      it_behaves_like 'ToTop', 'alert.user.destroy_reserved', nil
     end
   end
 
@@ -188,16 +198,20 @@ RSpec.describe 'Users::Registrations', type: :request do
         expect(response).to be_successful
       end
     end
-    shared_examples_for 'ToTop' do
+    shared_examples_for 'ToTop' do |alert, notice|
       it 'トップページにリダイレクト' do
         put user_registration_path, params: { user: attributes.merge(current_password: current_password) }
         expect(response).to redirect_to(root_path)
+        expect(flash[:alert]).to alert.present? ? eq(I18n.t(alert)) : be_nil
+        expect(flash[:notice]).to notice.present? ? eq(I18n.t(notice)) : be_nil
       end
     end
-    shared_examples_for 'ToLogin' do
+    shared_examples_for 'ToLogin' do |alert, notice|
       it 'ログインにリダイレクト' do
         put user_registration_path, params: { user: attributes.merge(current_password: current_password) }
         expect(response).to redirect_to(new_user_session_path)
+        expect(flash[:alert]).to alert.present? ? eq(I18n.t(alert)) : be_nil
+        expect(flash[:notice]).to notice.present? ? eq(I18n.t(notice)) : be_nil
       end
     end
 
@@ -205,32 +219,32 @@ RSpec.describe 'Users::Registrations', type: :request do
     shared_examples_for '[未ログイン]有効なパラメータ' do
       let!(:attributes) { valid_attributes }
       # it_behaves_like 'NG' # Tips: 未ログインの為、対象がない
-      it_behaves_like 'ToLogin'
+      it_behaves_like 'ToLogin', 'devise.failure.unauthenticated', nil
     end
     shared_examples_for '[ログイン中]有効なパラメータ' do
       let!(:attributes) { valid_attributes }
       it_behaves_like 'OK'
-      it_behaves_like 'ToTop'
+      it_behaves_like 'ToTop', nil, 'devise.registrations.update_needs_confirmation'
     end
     shared_examples_for '[削除予約済み]有効なパラメータ' do
       let!(:attributes) { valid_attributes }
       it_behaves_like 'NG'
-      it_behaves_like 'ToTop'
+      it_behaves_like 'ToTop', 'alert.user.destroy_reserved', nil
     end
     shared_examples_for '[未ログイン]無効なパラメータ' do
       let!(:attributes) { invalid_attributes }
       # it_behaves_like 'NG' # Tips: 未ログインの為、対象がない
-      it_behaves_like 'ToLogin'
+      it_behaves_like 'ToLogin', 'devise.failure.unauthenticated', nil
     end
     shared_examples_for '[ログイン中]無効なパラメータ' do
       let!(:attributes) { invalid_attributes }
       it_behaves_like 'NG'
-      it_behaves_like 'ToOK' # Tips: 再入力の為
+      it_behaves_like 'ToOK' # Tips: 再入力
     end
     shared_examples_for '[削除予約済み]無効なパラメータ' do
       let!(:attributes) { invalid_attributes }
       it_behaves_like 'NG'
-      it_behaves_like 'ToTop'
+      it_behaves_like 'ToTop', 'alert.user.destroy_reserved', nil
     end
 
     context '未ログイン' do
@@ -289,25 +303,31 @@ RSpec.describe 'Users::Registrations', type: :request do
         expect(response).to be_successful
       end
     end
-    shared_examples_for 'ToTop' do
+    shared_examples_for 'ToTop' do |alert, notice|
       it 'トップページにリダイレクト' do
         put users_image_path, params: { user: attributes }
         expect(response).to redirect_to(root_path)
+        expect(flash[:alert]).to alert.present? ? eq(I18n.t(alert)) : be_nil
+        expect(flash[:notice]).to notice.present? ? eq(I18n.t(notice)) : be_nil
       end
     end
-    shared_examples_for 'ToLogin' do
+    shared_examples_for 'ToLogin' do |alert, notice|
       it 'ログインにリダイレクト' do
         put users_image_path, params: { user: attributes }
         expect(response).to redirect_to(new_user_session_path)
+        expect(flash[:alert]).to alert.present? ? eq(I18n.t(alert)) : be_nil
+        expect(flash[:notice]).to notice.present? ? eq(I18n.t(notice)) : be_nil
       end
     end
-    shared_examples_for 'ToEdit' do
+    shared_examples_for 'ToEdit' do |alert, notice|
       it '登録情報変更にリダイレクト' do
         put users_image_path, params: { user: attributes }
         expect(response).to redirect_to(edit_user_registration_path)
         after_user = User.find(user.id)
         after_user.remove_image!
         after_user.save!
+        expect(flash[:alert]).to alert.present? ? eq(I18n.t(alert)) : be_nil
+        expect(flash[:notice]).to notice.present? ? eq(I18n.t(notice)) : be_nil
       end
     end
 
@@ -315,32 +335,32 @@ RSpec.describe 'Users::Registrations', type: :request do
     shared_examples_for '[未ログイン]有効なパラメータ' do
       let!(:attributes) { valid_attributes }
       # it_behaves_like 'NG' # Tips: 未ログインの為、対象がない
-      it_behaves_like 'ToLogin'
+      it_behaves_like 'ToLogin', 'devise.failure.unauthenticated', nil
     end
     shared_examples_for '[ログイン中]有効なパラメータ' do
       let!(:attributes) { valid_attributes }
       it_behaves_like 'OK'
-      it_behaves_like 'ToEdit'
+      it_behaves_like 'ToEdit', nil, 'notice.user.image_update'
     end
     shared_examples_for '[削除予約済み]有効なパラメータ' do
       let!(:attributes) { valid_attributes }
       it_behaves_like 'NG'
-      it_behaves_like 'ToTop'
+      it_behaves_like 'ToTop', 'alert.user.destroy_reserved', nil
     end
     shared_examples_for '[未ログイン]無効なパラメータ' do
       let!(:attributes) { invalid_attributes }
       # it_behaves_like 'NG' # Tips: 未ログインの為、対象がない
-      it_behaves_like 'ToLogin'
+      it_behaves_like 'ToLogin', 'devise.failure.unauthenticated', nil
     end
     shared_examples_for '[ログイン中]無効なパラメータ' do
       let!(:attributes) { invalid_attributes }
       it_behaves_like 'NG'
-      it_behaves_like 'ToOK' # Tips: 再入力の為
+      it_behaves_like 'ToOK' # Tips: 再入力
     end
     shared_examples_for '[削除予約済み]無効なパラメータ' do
       let!(:attributes) { invalid_attributes }
       it_behaves_like 'NG'
-      it_behaves_like 'ToTop'
+      it_behaves_like 'ToTop', 'alert.user.destroy_reserved', nil
     end
 
     context '未ログイン' do
@@ -379,42 +399,48 @@ RSpec.describe 'Users::Registrations', type: :request do
       end
     end
 
-    shared_examples_for 'ToTop' do
+    shared_examples_for 'ToTop' do |alert, notice|
       it 'トップページにリダイレクト' do
         delete users_image_path
         expect(response).to redirect_to(root_path)
+        expect(flash[:alert]).to alert.present? ? eq(I18n.t(alert)) : be_nil
+        expect(flash[:notice]).to notice.present? ? eq(I18n.t(notice)) : be_nil
       end
     end
-    shared_examples_for 'ToLogin' do
+    shared_examples_for 'ToLogin' do |alert, notice|
       it 'ログインにリダイレクト' do
         delete users_image_path
         expect(response).to redirect_to(new_user_session_path)
+        expect(flash[:alert]).to alert.present? ? eq(I18n.t(alert)) : be_nil
+        expect(flash[:notice]).to notice.present? ? eq(I18n.t(notice)) : be_nil
       end
     end
-    shared_examples_for 'ToEdit' do
+    shared_examples_for 'ToEdit' do |alert, notice|
       it '登録情報変更にリダイレクト' do
         delete users_image_path
         expect(response).to redirect_to(edit_user_registration_path)
+        expect(flash[:alert]).to alert.present? ? eq(I18n.t(alert)) : be_nil
+        expect(flash[:notice]).to notice.present? ? eq(I18n.t(notice)) : be_nil
       end
     end
 
     # テストケース
     context '未ログイン' do
       # it_behaves_like 'NG' # Tips: 未ログインの為、対象がない
-      it_behaves_like 'ToLogin'
+      it_behaves_like 'ToLogin', 'devise.failure.unauthenticated', nil
     end
     context 'ログイン中' do
       include_context 'ログイン処理'
       include_context '画像登録処理'
       it_behaves_like 'OK'
-      it_behaves_like 'ToEdit'
+      it_behaves_like 'ToEdit', nil, 'notice.user.image_destroy'
       include_context '画像削除処理'
     end
     context 'ログイン中（削除予約済み）' do
       include_context 'ログイン処理', true
       include_context '画像登録処理'
       it_behaves_like 'NG'
-      it_behaves_like 'ToTop'
+      it_behaves_like 'ToTop', 'alert.user.destroy_reserved', nil
       include_context '画像削除処理'
     end
   end
@@ -432,22 +458,26 @@ RSpec.describe 'Users::Registrations', type: :request do
         expect(response).to be_successful
       end
     end
-    shared_examples_for 'ToTop' do
+    shared_examples_for 'ToTop' do |alert, notice|
       it 'トップページにリダイレクト' do
         get users_delete_path
         expect(response).to redirect_to(root_path)
+        expect(flash[:alert]).to alert.present? ? eq(I18n.t(alert)) : be_nil
+        expect(flash[:notice]).to notice.present? ? eq(I18n.t(notice)) : be_nil
       end
     end
-    shared_examples_for 'ToLogin' do
+    shared_examples_for 'ToLogin' do |alert, notice|
       it 'ログインにリダイレクト' do
         get users_delete_path
         expect(response).to redirect_to(new_user_session_path)
+        expect(flash[:alert]).to alert.present? ? eq(I18n.t(alert)) : be_nil
+        expect(flash[:notice]).to notice.present? ? eq(I18n.t(notice)) : be_nil
       end
     end
 
     # テストケース
     context '未ログイン' do
-      it_behaves_like 'ToLogin'
+      it_behaves_like 'ToLogin', 'devise.failure.unauthenticated', nil
     end
     context 'ログイン中' do
       include_context 'ログイン処理'
@@ -455,7 +485,7 @@ RSpec.describe 'Users::Registrations', type: :request do
     end
     context 'ログイン中（削除予約済み）' do
       include_context 'ログイン処理', true
-      it_behaves_like 'ToTop'
+      it_behaves_like 'ToTop', 'alert.user.destroy_reserved', nil
     end
   end
 
@@ -490,33 +520,37 @@ RSpec.describe 'Users::Registrations', type: :request do
       end
     end
 
-    shared_examples_for 'ToTop' do
+    shared_examples_for 'ToTop' do |alert, notice|
       it 'トップページにリダイレクト' do
         delete user_registration_path
         expect(response).to redirect_to(root_path)
+        expect(flash[:alert]).to alert.present? ? eq(I18n.t(alert)) : be_nil
+        expect(flash[:notice]).to notice.present? ? eq(I18n.t(notice)) : be_nil
       end
     end
-    shared_examples_for 'ToLogin' do
+    shared_examples_for 'ToLogin' do |alert, notice|
       it 'ログインにリダイレクト' do
         delete user_registration_path
         expect(response).to redirect_to(new_user_session_path)
+        expect(flash[:alert]).to alert.present? ? eq(I18n.t(alert)) : be_nil
+        expect(flash[:notice]).to notice.present? ? eq(I18n.t(notice)) : be_nil
       end
     end
 
     # テストケース
     context '未ログイン' do
       # it_behaves_like 'NG' # Tips: 未ログインの為、対象がない
-      it_behaves_like 'ToLogin'
+      it_behaves_like 'ToLogin', 'devise.failure.unauthenticated', nil
     end
     context 'ログイン中' do
       include_context 'ログイン処理'
       it_behaves_like 'OK'
-      it_behaves_like 'ToLogin'
+      it_behaves_like 'ToLogin', nil, 'devise.registrations.destroy_reserved'
     end
     context 'ログイン中（削除予約済み）' do
       include_context 'ログイン処理', true
       it_behaves_like 'NG'
-      it_behaves_like 'ToTop'
+      it_behaves_like 'ToTop', 'alert.user.destroy_reserved', nil
     end
   end
 
@@ -533,26 +567,30 @@ RSpec.describe 'Users::Registrations', type: :request do
         expect(response).to be_successful
       end
     end
-    shared_examples_for 'ToTop' do
+    shared_examples_for 'ToTop' do |alert, notice|
       it 'トップページにリダイレクト' do
         get users_undo_delete_path
         expect(response).to redirect_to(root_path)
+        expect(flash[:alert]).to alert.present? ? eq(I18n.t(alert)) : be_nil
+        expect(flash[:notice]).to notice.present? ? eq(I18n.t(notice)) : be_nil
       end
     end
-    shared_examples_for 'ToLogin' do
+    shared_examples_for 'ToLogin' do |alert, notice|
       it 'ログインにリダイレクト' do
         get users_undo_delete_path
         expect(response).to redirect_to(new_user_session_path)
+        expect(flash[:alert]).to alert.present? ? eq(I18n.t(alert)) : be_nil
+        expect(flash[:notice]).to notice.present? ? eq(I18n.t(notice)) : be_nil
       end
     end
 
     # テストケース
     context '未ログイン' do
-      it_behaves_like 'ToLogin'
+      it_behaves_like 'ToLogin', 'devise.failure.unauthenticated', nil
     end
     context 'ログイン中' do
       include_context 'ログイン処理'
-      it_behaves_like 'ToTop'
+      it_behaves_like 'ToTop', 'alert.user.not_destroy_reserved', nil
     end
     context 'ログイン中（削除予約済み）' do
       include_context 'ログイン処理', true
@@ -589,33 +627,37 @@ RSpec.describe 'Users::Registrations', type: :request do
       end
     end
 
-    shared_examples_for 'ToTop' do
+    shared_examples_for 'ToTop' do |alert, notice|
       it 'トップページにリダイレクト' do
         delete users_undo_delete_path
         expect(response).to redirect_to(root_path)
+        expect(flash[:alert]).to alert.present? ? eq(I18n.t(alert)) : be_nil
+        expect(flash[:notice]).to notice.present? ? eq(I18n.t(notice)) : be_nil
       end
     end
-    shared_examples_for 'ToLogin' do
+    shared_examples_for 'ToLogin' do |alert, notice|
       it 'ログインにリダイレクト' do
         delete users_undo_delete_path
         expect(response).to redirect_to(new_user_session_path)
+        expect(flash[:alert]).to alert.present? ? eq(I18n.t(alert)) : be_nil
+        expect(flash[:notice]).to notice.present? ? eq(I18n.t(notice)) : be_nil
       end
     end
 
     # テストケース
     context '未ログイン' do
       # it_behaves_like 'NG' # Tips: 未ログインの為、対象がない
-      it_behaves_like 'ToLogin'
+      it_behaves_like 'ToLogin', 'devise.failure.unauthenticated', nil
     end
     context 'ログイン中' do
       include_context 'ログイン処理'
       it_behaves_like 'NG'
-      it_behaves_like 'ToTop'
+      it_behaves_like 'ToTop', 'alert.user.not_destroy_reserved', nil
     end
     context 'ログイン中（削除予約済み）' do
       include_context 'ログイン処理', true
       it_behaves_like 'OK'
-      it_behaves_like 'ToTop'
+      it_behaves_like 'ToTop', nil, 'devise.registrations.undo_destroy_reserved'
     end
   end
 end
