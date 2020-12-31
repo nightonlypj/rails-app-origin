@@ -13,4 +13,9 @@ class CustomerUser < ApplicationRecord
       created_at
     end
   end
+
+  # 変更権限があるかを返却
+  def update_power?(taget_user_power = nil)
+    (power == 'Owner') || (power == 'Admin' && (taget_user_power.blank? || taget_user_power != 'Owner'))
+  end
 end

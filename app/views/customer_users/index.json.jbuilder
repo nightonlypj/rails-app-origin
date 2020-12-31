@@ -9,6 +9,7 @@ json.customer_user do
 end
 json.customer_users do
   json.array! @customer_users do |customer_user|
+    json.code customer_user.user.code
     json.image_url "https://#{Settings['base_domain']}#{customer_user.user.image_url(:small)}"
     json.name customer_user.user.name
     json.email customer_user.user.email

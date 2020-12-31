@@ -1,375 +1,429 @@
 require 'rails_helper'
 
-RSpec.describe '/customer_users', type: :request do
-  include_context '共通ヘッダー'
+RSpec.describe 'CustomerUsers', type: :request do
   include_context 'リクエストスペース作成'
 
   # GET /customer_users/:customer_code（ベースドメイン） メンバー一覧
   # GET /customer_users/:customer_code.json（ベースドメイン） メンバー一覧API
+  # 前提条件
+  #   なし
+  # テストパターン
+  #   未ログイン, ログイン中, ログイン中（削除予約済み） → データ＆状態作成
+  #   権限なし, Owner権限, Admin権限, Member権限 → データ作成
+  #   所属顧客, 未所属顧客, 存在しない顧客, 顧客なし → 事前にデータ作成
+  #   ベースドメイン, 存在するサブドメイン, 存在しないサブドメイン → 事前にデータ作成
   describe 'GET /index' do
+    let!(:outside_customer) { FactoryBot.create(:customer) }
+
     # テスト内容
     shared_examples_for 'ToOK' do
       it '成功ステータス' do
-        get customer_users_path(customer_code: customer.code), headers: headers
+        get customer_users_path(customer_code: customer_code), headers: headers
         expect(response).to be_successful
       end
       it '(json)成功ステータス' do
-        get customer_users_path(customer_code: customer.code), headers: headers.merge(json_headers)
+        get customer_users_path(customer_code: customer_code, format: :json), headers: headers
         expect(response).to be_successful
       end
     end
-    shared_examples_for 'ToNG' do
+    shared_examples_for 'ToNG' do |error|
       it '存在しないステータス' do
-        get customer_users_path(customer_code: customer.code), headers: headers
+        get customer_users_path(customer_code: customer_code), headers: headers
         expect(response).to be_not_found
       end
-      it '(json)存在しないステータス' do
-        get customer_users_path(customer_code: customer.code), headers: headers.merge(json_headers)
+      it '(json)存在しないエラー' do
+        get customer_users_path(customer_code: customer_code, format: :json), headers: headers
         expect(response).to be_not_found
+        expect(JSON.parse(response.body)['error']).to error.present? ? eq(I18n.t(error)) : be_nil
       end
     end
-    shared_examples_for 'ToLogin' do
+    shared_examples_for 'ToLogin' do |alert, notice, error|
       it 'ログインにリダイレクト' do
-        get customer_users_path(customer_code: customer.code), headers: headers
+        get customer_users_path(customer_code: customer_code), headers: headers
         expect(response).to redirect_to(new_user_session_path)
+        expect(flash[:alert]).to alert.present? ? eq(I18n.t(alert)) : be_nil
+        expect(flash[:notice]).to notice.present? ? eq(I18n.t(notice)) : be_nil
       end
-      it '(json)認証エラーステータス' do
-        get customer_users_path(customer_code: customer.code), headers: headers.merge(json_headers)
+      it '(json)認証エラー' do
+        get customer_users_path(customer_code: customer_code, format: :json), headers: headers
         expect(response).to be_unauthorized
+        expect(JSON.parse(response.body)['error']).to error.present? ? eq(I18n.t(error)) : be_nil
       end
     end
-    shared_examples_for 'ToBase' do
+    shared_examples_for 'ToBase' do |alert, notice, error|
       it 'ベースドメインにリダイレクト' do
-        get customer_users_path(customer_code: customer.code), headers: headers
-        expect(response).to redirect_to("//#{Settings['base_domain']}#{customer_users_path(customer_code: customer.code)}")
+        get customer_users_path(customer_code: customer_code), headers: headers
+        expect(response).to redirect_to("//#{Settings['base_domain']}#{customer_users_path(customer_code: customer_code)}")
+        expect(flash[:alert]).to alert.present? ? eq(I18n.t(alert)) : be_nil
+        expect(flash[:notice]).to notice.present? ? eq(I18n.t(notice)) : be_nil
       end
-      it '(json)存在しないステータス' do
-        get customer_users_path(customer_code: customer.code), headers: headers.merge(json_headers)
+      it '(json)存在しないエラー' do
+        get customer_users_path(customer_code: customer_code, format: :json), headers: headers
         expect(response).to be_not_found
+        expect(JSON.parse(response.body)['error']).to error.present? ? eq(I18n.t(error)) : be_nil
       end
     end
 
     # テストケース
-    shared_examples_for '[未ログイン]ベースドメイン' do
-      let!(:headers) { base_headers }
-      it_behaves_like 'ToLogin'
-    end
-    shared_examples_for '[ログイン中][権限あり]ベースドメイン' do
-      let!(:headers) { base_headers }
+    shared_examples_for '[ログイン中][権限あり][所属顧客]ベースドメイン' do
+      let!(:headers) { BASE_HEADER }
       it_behaves_like 'ToOK'
     end
-    shared_examples_for '[ログイン中][権限なし]ベースドメイン' do
-      let!(:headers) { base_headers }
-      it_behaves_like 'ToNG'
+    shared_examples_for '[未ログイン][権限なし][未所属/存在しない顧客]ベースドメイン' do
+      let!(:headers) { BASE_HEADER }
+      it_behaves_like 'ToLogin', 'devise.failure.unauthenticated', nil, 'devise.failure.unauthenticated'
+    end
+    shared_examples_for '[ログイン中][権限なし][未所属/存在しない顧客]ベースドメイン' do
+      let!(:headers) { BASE_HEADER }
+      it_behaves_like 'ToNG', 'errors.messages.customer_code_error'
+    end
+    shared_examples_for '[ログイン中][権限あり][未所属/存在しない顧客]ベースドメイン' do
+      let!(:headers) { BASE_HEADER }
+      it_behaves_like 'ToNG', 'errors.messages.customer_code_error'
     end
     shared_examples_for '存在するサブドメイン' do
-      let!(:headers) { @space_headers }
-      it_behaves_like 'ToBase'
+      let!(:headers) { @space_header }
+      it_behaves_like 'ToBase', nil, nil, 'errors.messages.domain_error'
     end
     shared_examples_for '存在しないサブドメイン' do
-      let!(:headers) { not_space_headers }
-      it_behaves_like 'ToBase'
+      let!(:headers) { NOT_SPACE_HEADER }
+      it_behaves_like 'ToBase', nil, nil, 'errors.messages.domain_error'
     end
 
-    shared_examples_for '権限あり' do |power|
-      include_context '顧客・ログインユーザー紐付け', Time.current, power
-      it_behaves_like '[ログイン中][権限あり]ベースドメイン'
+    shared_examples_for '[ログイン中][権限あり]所属顧客' do
+      let!(:customer_code) { customer.code }
+      it_behaves_like '[ログイン中][権限あり][所属顧客]ベースドメイン'
       it_behaves_like '存在するサブドメイン'
       it_behaves_like '存在しないサブドメイン'
     end
-    shared_examples_for '権限なし' do
-      it_behaves_like '[ログイン中][権限なし]ベースドメイン'
+    shared_examples_for '[未ログイン][権限なし]未所属顧客' do
+      let!(:customer_code) { outside_customer.code }
+      it_behaves_like '[未ログイン][権限なし][未所属/存在しない顧客]ベースドメイン'
       it_behaves_like '存在するサブドメイン'
       it_behaves_like '存在しないサブドメイン'
+    end
+    shared_examples_for '[ログイン中][権限なし]未所属顧客' do
+      let!(:customer_code) { outside_customer.code }
+      it_behaves_like '[ログイン中][権限なし][未所属/存在しない顧客]ベースドメイン'
+      it_behaves_like '存在するサブドメイン'
+      it_behaves_like '存在しないサブドメイン'
+    end
+    shared_examples_for '[ログイン中][権限あり]未所属顧客' do
+      let!(:customer_code) { outside_customer.code }
+      it_behaves_like '[ログイン中][権限あり][未所属/存在しない顧客]ベースドメイン'
+      it_behaves_like '存在するサブドメイン'
+      it_behaves_like '存在しないサブドメイン'
+    end
+    shared_examples_for '[未ログイン][権限なし]存在しない顧客' do
+      let!(:customer_code) { NOT_CUSTOMER_CODE }
+      it_behaves_like '[未ログイン][権限なし][未所属/存在しない顧客]ベースドメイン'
+      it_behaves_like '存在するサブドメイン'
+      it_behaves_like '存在しないサブドメイン'
+    end
+    shared_examples_for '[ログイン中][権限なし]存在しない顧客' do
+      let!(:customer_code) { NOT_CUSTOMER_CODE }
+      it_behaves_like '[ログイン中][権限なし][未所属/存在しない顧客]ベースドメイン'
+      it_behaves_like '存在するサブドメイン'
+      it_behaves_like '存在しないサブドメイン'
+    end
+    shared_examples_for '[ログイン中][権限あり]存在しない顧客' do
+      let!(:customer_code) { NOT_CUSTOMER_CODE }
+      it_behaves_like '[ログイン中][権限あり][未所属/存在しない顧客]ベースドメイン'
+      it_behaves_like '存在するサブドメイン'
+      it_behaves_like '存在しないサブドメイン'
+    end
+
+    shared_examples_for '[未ログイン]権限なし' do
+      # it_behaves_like '[未ログイン][権限なし]所属顧客' # Tips: 権限なしの為、所属顧客なし
+      it_behaves_like '[未ログイン][権限なし]未所属顧客'
+      it_behaves_like '[未ログイン][権限なし]存在しない顧客'
+      # it_behaves_like '[未ログイン][権限なし]顧客なし' # Tips: 先にRoutingErrorになる
+    end
+    shared_examples_for '[ログイン中]権限なし' do
+      # it_behaves_like '[ログイン中][権限なし]所属顧客' # Tips: 権限なしの為、所属顧客なし
+      it_behaves_like '[ログイン中][権限なし]未所属顧客'
+      it_behaves_like '[ログイン中][権限なし]存在しない顧客'
+      # it_behaves_like '[ログイン中][権限なし]顧客なし' # Tips: 先にRoutingErrorになる
+    end
+    shared_examples_for '[ログイン中]権限あり' do |power|
+      include_context '顧客・ユーザー紐付け', Time.current, power
+      it_behaves_like '[ログイン中][権限あり]所属顧客'
+      it_behaves_like '[ログイン中][権限あり]未所属顧客'
+      it_behaves_like '[ログイン中][権限あり]存在しない顧客'
+      # it_behaves_like '[ログイン中][権限あり]顧客なし' # Tips: 先にRoutingErrorになる
     end
 
     context '未ログイン' do
-      it_behaves_like '[未ログイン]ベースドメイン'
-      it_behaves_like '存在するサブドメイン'
-      it_behaves_like '存在しないサブドメイン'
+      it_behaves_like '[未ログイン]権限なし'
+      # it_behaves_like '[未ログイン]権限あり', :Owner # Tips: 未ログインの為、権限なし
+      # it_behaves_like '[未ログイン]権限あり', :Admin # Tips: 未ログインの為、権限なし
+      # it_behaves_like '[未ログイン]権限あり', :Member # Tips: 未ログインの為、権限なし
     end
     context 'ログイン中' do
       include_context 'ログイン処理'
-      it_behaves_like '権限あり', :Owner
-      it_behaves_like '権限あり', :Admin
-      it_behaves_like '権限あり', :Member
-      it_behaves_like '権限なし'
+      it_behaves_like '[ログイン中]権限なし'
+      it_behaves_like '[ログイン中]権限あり', :Owner
+      it_behaves_like '[ログイン中]権限あり', :Admin
+      it_behaves_like '[ログイン中]権限あり', :Member
     end
     context 'ログイン中（削除予約済み）' do
       include_context 'ログイン処理', true
-      it_behaves_like '権限あり', :Owner
-      it_behaves_like '権限あり', :Admin
-      it_behaves_like '権限あり', :Member
-      it_behaves_like '権限なし'
+      it_behaves_like '[ログイン中]権限なし'
+      it_behaves_like '[ログイン中]権限あり', :Owner
+      it_behaves_like '[ログイン中]権限あり', :Admin
+      it_behaves_like '[ログイン中]権限あり', :Member
     end
   end
 
   # GET /customer_users/:customer_code（ベースドメイン） メンバー一覧：メンバー情報
   # GET /customer_users/:customer_code.json（ベースドメイン） メンバー一覧API：メンバー情報
+  # 前提条件
+  #   ベースドメイン, 所属顧客, ログイン中, 権限あり
+  # テストパターン
+  #   ログイン中, ログイン中（削除予約済み） → データ＆状態作成
+  #   Owner権限, Admin権限, Member権限 → データ作成
+  #   所属メンバーが最大表示数と同じ, 最大表示数より多い → データ作成
   describe 'GET /index @customer @customer_users' do
-    let!(:headers) { base_headers }
-    include_context '対象外のメンバー作成', 1, 1, 1
+    let!(:headers) { BASE_HEADER }
+    let!(:customer_code) { customer.code }
 
     # テスト内容
-    shared_examples_for '対象の顧客' do
+    shared_examples_for 'ページ情報' do |page|
       it '顧客名が含まれる' do
-        get customer_users_path(customer_code: customer.code), headers: headers
+        get customer_users_path(customer_code: customer_code, page: page), headers: headers
         expect(response.body).to include(customer.name)
       end
       it '(json)顧客名が一致する' do
-        get customer_users_path(customer_code: customer.code), headers: headers.merge(json_headers)
+        get customer_users_path(customer_code: customer_code, page: page, format: :json), headers: headers
         expect(JSON.parse(response.body)['customer']['name']).to eq(customer.name)
       end
-    end
-    shared_examples_for '対象外の顧客' do
-      it '顧客名が含まれない' do
-        get customer_users_path(customer_code: customer.code), headers: headers
-        expect(response.body).not_to include(other_customer.name)
-      end
-      it '(json)顧客名が一致しない' do
-        get customer_users_path(customer_code: customer.code), headers: headers.merge(json_headers)
-        expect(JSON.parse(response.body)['customer']['name']).not_to eq(other_customer.name)
-      end
-    end
-
-    shared_examples_for '招待表示' do
-      it 'パスが含まれる' do
-        get customer_users_path(customer_code: customer.code), headers: headers
-        expect(response.body).to include("\"#{new_customer_user_path(customer_code: customer.code)}\"")
-      end
-    end
-
-    shared_examples_for 'ヘッダ情報' do
       it '(json)全件数が一致する' do
-        get customer_users_path(customer_code: customer.code), headers: headers.merge(json_headers)
-        expect(JSON.parse(response.body)['customer_user']['total_count']).to eq(@inside_customer_users.count)
+        get customer_users_path(customer_code: customer_code, page: page, format: :json), headers: headers
+        expect(JSON.parse(response.body)['customer_user']['total_count']).to eq(@create_customer_users.count)
       end
-      it '(json)1ページ、現在ページが一致する' do
-        get customer_users_path(customer_code: customer.code), headers: headers.merge(json_headers)
-        expect(JSON.parse(response.body)['customer_user']['current_page']).to eq(1)
-      end
-      it '(json)2ページ、現在ページが一致する' do
-        get customer_users_path(customer_code: customer.code, page: 2), headers: headers.merge(json_headers)
-        expect(JSON.parse(response.body)['customer_user']['current_page']).to eq(2)
+      it '(json)現在ページが一致する' do
+        get customer_users_path(customer_code: customer_code, page: page, format: :json), headers: headers
+        expect(JSON.parse(response.body)['customer_user']['current_page']).to eq(page)
       end
       it '(json)全ページ数が一致する' do
-        get customer_users_path(customer_code: customer.code), headers: headers.merge(json_headers)
-        total_pages = (@inside_customer_users.count - 1).div(Settings['default_customer_users_limit']) + 1
+        get customer_users_path(customer_code: customer_code, page: page, format: :json), headers: headers
+        total_pages = (@create_customer_users.count - 1).div(Settings['default_customer_users_limit']) + 1
         expect(JSON.parse(response.body)['customer_user']['total_pages']).to eq(total_pages)
       end
       it '(json)最大表示件数が一致する' do
-        get customer_users_path(customer_code: customer.code), headers: headers.merge(json_headers)
+        get customer_users_path(customer_code: customer_code, page: page, format: :json), headers: headers
         expect(JSON.parse(response.body)['customer_user']['limit_value']).to eq(Settings['default_customer_users_limit'])
       end
+      it '招待のパスが含まれる' do
+        get customer_users_path(customer_code: customer_code, page: page), headers: headers
+        expect(response.body).to include("\"#{new_customer_user_path(customer_code: customer_code)}\"")
+      end
     end
 
-    shared_examples_for '2ページ目リンク表示' do
+    shared_examples_for 'ページネーション表示' do |page, link_page|
       it 'パスが含まれる' do
-        get customer_users_path(customer_code: customer.code), headers: headers
-        expect(response.body).to include("\"#{customer_users_path(customer_code: customer.code, page: 2)}\"")
+        get customer_users_path(customer_code: customer_code, page: page), headers: headers
+        if link_page == 1
+          expect(response.body).to include("\"#{customer_users_path(customer_code: customer_code)}\"")
+        else
+          expect(response.body).to include("\"#{customer_users_path(customer_code: customer_code, page: link_page)}\"")
+        end
       end
     end
-    shared_examples_for '2ページ目リンク非表示' do
+    shared_examples_for 'ページネーション非表示' do |page, link_page|
       it 'パスが含まれない' do
-        get customer_users_path(customer_code: customer.code), headers: headers
-        expect(response.body).not_to include("\"#{customer_users_path(customer_code: customer.code, page: 2)}\"")
+        get customer_users_path(customer_code: customer_code, page: page), headers: headers
+        if link_page == 1
+          expect(response.body).not_to include("\"#{customer_users_path(customer_code: customer_code)}\"")
+        else
+          expect(response.body).not_to include("\"#{customer_users_path(customer_code: customer_code, page: link_page)}\"")
+        end
       end
     end
 
-    shared_examples_for '対象のリスト表示' do |page|
+    shared_examples_for 'リスト表示' do |page|
       let!(:start_no) { Settings['default_customer_users_limit'] * (page - 1) + 1 }
-      let!(:end_no) { [@inside_customer_users.count, Settings['default_customer_users_limit'] * page].min }
-      it '表示名が含まれる' do
-        get customer_users_path(customer_code: customer.code, page: page), headers: headers
+      let!(:end_no) { [@create_customer_users.count, Settings['default_customer_users_limit'] * page].min }
+      it '(json)配列の件数が一致する' do
+        get customer_users_path(customer_code: customer_code, page: page, format: :json), headers: headers
+        expect(JSON.parse(response.body)['customer_users'].count).to eq(end_no - start_no + 1)
+      end
+      it '(json)ユーザーコードが一致する' do
+        get customer_users_path(customer_code: customer_code, page: page, format: :json), headers: headers
+        parse_response = JSON.parse(response.body)['customer_users']
         (start_no..end_no).each do |no|
-          expect(response.body).to include(@inside_customer_users[no - 1].user.name)
+          expect(parse_response[no - start_no]['code']).to eq(@create_customer_users[no - 1].user.code)
         end
       end
-      it 'メールアドレスが含まれる' do
-        get customer_users_path(customer_code: customer.code, page: page), headers: headers
+      it '画像URLが含まれる' do # Tips: ユニークではない為、正確ではない
+        get customer_users_path(customer_code: customer_code, page: page), headers: headers
         (start_no..end_no).each do |no|
-          expect(response.body).to include(@inside_customer_users[no - 1].user.email)
-        end
-      end
-      it '権限が含まれる' do
-        get customer_users_path(customer_code: customer.code, page: page), headers: headers
-        (start_no..end_no).each do |no|
-          expect(response.body).to include(@inside_customer_users[no - 1].power_i18n)
-        end
-      end
-      it '変更のパスが含まれる' do
-        get customer_users_path(customer_code: customer.code, page: page), headers: headers
-        (start_no..end_no).each do |no|
-          expect(response.body).to include("\"#{edit_customer_user_path(customer_code: customer.code, id: @inside_customer_users[no - 1].id)}\"")
-        end
-      end
-      it '解除のパスが含まれる' do
-        get customer_users_path(customer_code: customer.code, page: page), headers: headers
-        (start_no..end_no).each do |no|
-          expect(response.body).to include("\"#{delete_customer_user_path(customer_code: customer.code, id: @inside_customer_users[no - 1].id)}\"")
+          expect(response.body).to include("\"#{@create_customer_users[no - 1].user.image_url(:small)}\"")
         end
       end
       it '(json)画像URLが一致する' do
-        get customer_users_path(customer_code: customer.code, page: page), headers: headers.merge(json_headers)
+        get customer_users_path(customer_code: customer_code, page: page, format: :json), headers: headers
         parse_response = JSON.parse(response.body)['customer_users']
         (start_no..end_no).each do |no|
-          expect(parse_response[no - start_no]['image_url']).to eq("https://#{Settings['base_domain']}#{@inside_customer_users[no - 1].user.image_url(:small)}")
+          expect(parse_response[no - start_no]['image_url']).to eq("https://#{Settings['base_domain']}#{@create_customer_users[no - 1].user.image_url(:small)}")
+        end
+      end
+      it '表示名が含まれる' do
+        get customer_users_path(customer_code: customer_code, page: page), headers: headers
+        (start_no..end_no).each do |no|
+          expect(response.body).to include(@create_customer_users[no - 1].user.name)
         end
       end
       it '(json)表示名が一致する' do
-        get customer_users_path(customer_code: customer.code, page: page), headers: headers.merge(json_headers)
+        get customer_users_path(customer_code: customer_code, page: page, format: :json), headers: headers
         parse_response = JSON.parse(response.body)['customer_users']
         (start_no..end_no).each do |no|
-          expect(parse_response[no - start_no]['name']).to eq(@inside_customer_users[no - 1].user.name)
+          expect(parse_response[no - start_no]['name']).to eq(@create_customer_users[no - 1].user.name)
+        end
+      end
+      it 'メールアドレスが含まれる' do
+        get customer_users_path(customer_code: customer_code, page: page), headers: headers
+        (start_no..end_no).each do |no|
+          expect(response.body).to include(@create_customer_users[no - 1].user.email)
         end
       end
       it '(json)メールアドレスが一致する' do
-        get customer_users_path(customer_code: customer.code, page: page), headers: headers.merge(json_headers)
+        get customer_users_path(customer_code: customer_code, page: page, format: :json), headers: headers
         parse_response = JSON.parse(response.body)['customer_users']
         (start_no..end_no).each do |no|
-          expect(parse_response[no - start_no]['email']).to eq(@inside_customer_users[no - 1].user.email)
+          expect(parse_response[no - start_no]['email']).to eq(@create_customer_users[no - 1].user.email)
+        end
+      end
+      it '権限が含まれる' do # Tips: ユニークではない為、正確ではない
+        get customer_users_path(customer_code: customer_code, page: page), headers: headers
+        (start_no..end_no).each do |no|
+          expect(response.body).to include(@create_customer_users[no - 1].power_i18n)
         end
       end
       it '(json)権限が一致する' do
-        get customer_users_path(customer_code: customer.code, page: page), headers: headers.merge(json_headers)
+        get customer_users_path(customer_code: customer_code, page: page, format: :json), headers: headers
         parse_response = JSON.parse(response.body)['customer_users']
         (start_no..end_no).each do |no|
-          expect(parse_response[no - start_no]['power']).to eq(@inside_customer_users[no - 1].power)
+          expect(parse_response[no - start_no]['power']).to eq(@create_customer_users[no - 1].power)
+        end
+      end
+      it '招待日が含まれる' do # Tips: ユニークではない為、正確ではない
+        get customer_users_path(customer_code: customer_code, page: page), headers: headers
+        (start_no..end_no).each do |no|
+          if @create_customer_users[no - 1].invitationed_at.present?
+            expect(response.body).to include(I18n.l(@create_customer_users[no - 1].invitationed_at.to_date))
+          else
+            expect(response.body).to include(I18n.t('blank_word.customer_user.invitationed_at'))
+          end
         end
       end
       it '(json)招待日が一致する' do
-        get customer_users_path(customer_code: customer.code, page: page), headers: headers.merge(json_headers)
+        get customer_users_path(customer_code: customer_code, page: page, format: :json), headers: headers
         parse_response = JSON.parse(response.body)['customer_users']
         (start_no..end_no).each do |no|
-          if @inside_customer_users[no - 1].invitationed_at.present?
-            expect(parse_response[no - start_no]['invitationed_at']).to eq(@inside_customer_users[no - 1].invitationed_at.strftime(TEST_JSON_TIME_FORMAT))
+          if @create_customer_users[no - 1].invitationed_at.present?
+            expect(parse_response[no - start_no]['invitationed_at']).to eq(@create_customer_users[no - 1].invitationed_at.strftime(JSON_TIME_FORMAT))
           else
             expect(parse_response[no - start_no]['invitationed_at']).to be_nil
           end
         end
       end
+      it '登録日が含まれる' do # Tips: ユニークではない為、正確ではない
+        get customer_users_path(customer_code: customer_code, page: page), headers: headers
+        (start_no..end_no).each do |no|
+          if @create_customer_users[no - 1].registrationed_at.present?
+            expect(response.body).to include(I18n.l(@create_customer_users[no - 1].registrationed_at.to_date))
+          else
+            expect(response.body).to include(I18n.t('blank_word.customer_user.registrationed_at'))
+          end
+        end
+      end
       it '(json)登録日が一致する' do
-        get customer_users_path(customer_code: customer.code, page: page), headers: headers.merge(json_headers)
+        get customer_users_path(customer_code: customer_code, page: page, format: :json), headers: headers
         parse_response = JSON.parse(response.body)['customer_users']
         (start_no..end_no).each do |no|
-          if @inside_customer_users[no - 1].registrationed_at.present?
-            expect(parse_response[no - start_no]['registrationed_at']).to eq(@inside_customer_users[no - 1].registrationed_at.strftime(TEST_JSON_TIME_FORMAT))
+          if @create_customer_users[no - 1].registrationed_at.present?
+            expect(parse_response[no - start_no]['registrationed_at']).to eq(@create_customer_users[no - 1].registrationed_at.strftime(JSON_TIME_FORMAT))
           else
             expect(parse_response[no - start_no]['registrationed_at']).to be_nil
           end
         end
       end
     end
-    shared_examples_for 'ページ外のリスト非表示' do |page, outside_page|
-      let!(:start_no) { Settings['default_customer_users_limit'] * (outside_page - 1) + 1 }
-      let!(:end_no) { [@inside_customer_users.count, Settings['default_customer_users_limit'] * outside_page].min }
-      it '表示名が含まれない' do
-        get customer_users_path(customer_code: customer.code, page: page), headers: headers
+
+    shared_examples_for 'リストリンク表示' do |page, power|
+      let!(:start_no) { Settings['default_customer_users_limit'] * (page - 1) + 1 }
+      let!(:end_no) { [@create_customer_users.count, Settings['default_customer_users_limit'] * page].min }
+      it '変更のパスが含まれる' do
+        get customer_users_path(customer_code: customer_code, page: page), headers: headers
         (start_no..end_no).each do |no|
-          expect(response.body).not_to include(@inside_customer_users[no - 1].user.name) if @inside_customer_users[no - 1].user != user
+          if (power == :Owner) || (power == :Admin && @create_customer_users[no - 1].power != :Owner)
+            edit_path = edit_customer_user_path(customer_code: customer_code, user_code: @create_customer_users[no - 1].user.code)
+            expect(response.body).to include("\"#{edit_path}\"")
+          end
         end
       end
-      it 'メールアドレスが含まれない' do
-        get customer_users_path(customer_code: customer.code, page: page), headers: headers
+      it '解除のパスが含まれる' do
+        get customer_users_path(customer_code: customer_code, page: page), headers: headers
         (start_no..end_no).each do |no|
-          expect(response.body).not_to include(@inside_customer_users[no - 1].user.email) if @inside_customer_users[no - 1].user != user
-        end
-      end
-      it '変更のパスが含まれない' do
-        get customer_users_path(customer_code: customer.code, page: page), headers: headers
-        (start_no..end_no).each do |no|
-          expect(response.body).not_to include("\"#{edit_customer_user_path(customer_code: customer.code, id: @inside_customer_users[no - 1].id)}\"")
-        end
-      end
-      it '解除のパスが含まれない' do
-        get customer_users_path(customer_code: customer.code, page: page), headers: headers
-        (start_no..end_no).each do |no|
-          expect(response.body).not_to include("\"#{delete_customer_user_path(customer_code: customer.code, id: @inside_customer_users[no - 1].id)}\"")
-        end
-      end
-      it '(json)表示名が含まれない' do
-        get customer_users_path(customer_code: customer.code, page: page), headers: headers.merge(json_headers)
-        hash_responses = JSON.parse(response.body)['customer_users'].map { |response| [response['name'], response] }.to_h
-        (start_no..end_no).each do |no|
-          expect(hash_responses[@inside_customer_users[no - 1].user.name]).to be_nil
-        end
-      end
-      it '(json)メールアドレスが含まれない' do
-        get customer_users_path(customer_code: customer.code, page: page), headers: headers.merge(json_headers)
-        hash_responses = JSON.parse(response.body)['customer_users'].map { |response| [response['email'], response] }.to_h
-        (start_no..end_no).each do |no|
-          expect(hash_responses[@inside_customer_users[no - 1].user.email]).to be_nil
+          if (power == :Owner) || (power == :Admin && @create_customer_users[no - 1].power != :Owner)
+            delete_path = delete_customer_user_path(customer_code: customer_code, user_code: @create_customer_users[no - 1].user.code)
+            expect(response.body).to include("\"#{delete_path}\"")
+          end
         end
       end
     end
-    shared_examples_for '対象外のリスト非表示' do |page|
-      it '表示名が含まれない' do
-        get customer_users_path(customer_code: customer.code, page: page), headers: headers
-        (1..@outside_customer_users.count).each do |no|
-          expect(response.body).not_to include(@outside_customer_users[no - 1].user.name)
-        end
-      end
-      it 'メールアドレスが含まれない' do
-        get customer_users_path(customer_code: customer.code, page: page), headers: headers
-        (1..@outside_customer_users.count).each do |no|
-          expect(response.body).not_to include(@outside_customer_users[no - 1].user.email)
-        end
-      end
+    shared_examples_for 'リストリンク非表示' do |page, power|
+      let!(:start_no) { Settings['default_customer_users_limit'] * (page - 1) + 1 }
+      let!(:end_no) { [@create_customer_users.count, Settings['default_customer_users_limit'] * page].min }
       it '変更のパスが含まれない' do
-        get customer_users_path(customer_code: customer.code, page: page), headers: headers
-        (1..@outside_customer_users.count).each do |no|
-          expect(response.body).not_to include("\"#{edit_customer_user_path(customer_code: customer.code, id: @outside_customer_users[no - 1].id)}\"")
+        get customer_users_path(customer_code: customer_code, page: page), headers: headers
+        (start_no..end_no).each do |no|
+          unless (power == :Owner) || (power == :Admin && @create_customer_users[no - 1].power != :Owner)
+            edit_path = edit_customer_user_path(customer_code: customer_code, user_code: @create_customer_users[no - 1].user.code)
+            expect(response.body).not_to include("\"#{edit_path}\"")
+          end
         end
       end
       it '解除のパスが含まれない' do
-        get customer_users_path(customer_code: customer.code, page: page), headers: headers
-        (1..@outside_customer_users.count).each do |no|
-          expect(response.body).not_to include("\"#{delete_customer_user_path(customer_code: customer.code, id: @outside_customer_users[no - 1].id)}\"")
-        end
-      end
-      it '(json)表示名が含まれない' do
-        get customer_users_path(customer_code: customer.code, page: page), headers: headers.merge(json_headers)
-        hash_responses = JSON.parse(response.body)['customer_users'].map { |response| [response['name'], response] }.to_h
-        (1..@outside_customer_users.count).each do |no|
-          expect(hash_responses[@outside_customer_users[no - 1].user.name]).to be_nil
-        end
-      end
-      it '(json)メールアドレスが含まれない' do
-        get customer_users_path(customer_code: customer.code, page: page), headers: headers.merge(json_headers)
-        hash_responses = JSON.parse(response.body)['customer_users'].map { |response| [response['email'], response] }.to_h
-        (1..@outside_customer_users.count).each do |no|
-          expect(hash_responses[@outside_customer_users[no - 1].user.email]).to be_nil
+        get customer_users_path(customer_code: customer_code, page: page), headers: headers
+        (start_no..end_no).each do |no|
+          unless (power == :Owner) || (power == :Admin && @create_customer_users[no - 1].power != :Owner)
+            delete_path = delete_customer_user_path(customer_code: customer_code, user_code: @create_customer_users[no - 1].user.code)
+            expect(response.body).not_to include("\"#{delete_path}\"")
+          end
         end
       end
     end
 
     # テストケース
-    shared_examples_for '所属メンバーが最大表示数と同じ' do
-      include_context '対象のメンバー作成', Settings['test_customers_owner'], Settings['test_customers_admin'], Settings['test_customers_member'], 1
-      it_behaves_like 'ヘッダ情報'
-      it_behaves_like '2ページ目リンク非表示'
-      it_behaves_like '対象のリスト表示', 1
-      it_behaves_like '対象外のリスト非表示', 1
+    shared_examples_for '所属メンバーが最大表示数と同じ' do |power|
+      include_context 'メンバー作成', Settings['test_customers_owner'], Settings['test_customers_admin'], Settings['test_customers_member'], 1
+      it_behaves_like 'ページ情報', 1
+      it_behaves_like 'ページネーション非表示', 1, 2
+      it_behaves_like 'リスト表示', 1
+      it_behaves_like 'リストリンク表示', 1, power
+      it_behaves_like 'リストリンク非表示', 1, power
     end
-    shared_examples_for '所属メンバーが最大表示数より多い' do
-      include_context '対象のメンバー作成', Settings['test_customers_owner'], Settings['test_customers_admin'], Settings['test_customers_member'] + 1, 1
-      it_behaves_like 'ヘッダ情報'
-      it_behaves_like '2ページ目リンク表示'
-      it_behaves_like '対象のリスト表示', 1
-      it_behaves_like '対象のリスト表示', 2
-      it_behaves_like 'ページ外のリスト非表示', 1, 2
-      it_behaves_like 'ページ外のリスト非表示', 2, 1
-      it_behaves_like '対象外のリスト非表示', 1
-      it_behaves_like '対象外のリスト非表示', 2
+    shared_examples_for '所属メンバーが最大表示数より多い' do |power|
+      include_context 'メンバー作成', Settings['test_customers_owner'], Settings['test_customers_admin'], Settings['test_customers_member'] + 1, 1
+      it_behaves_like 'ページ情報', 1
+      it_behaves_like 'ページ情報', 2
+      it_behaves_like 'ページネーション表示', 1, 2
+      it_behaves_like 'ページネーション表示', 2, 1
+      it_behaves_like 'リスト表示', 1
+      it_behaves_like 'リスト表示', 2
+      it_behaves_like 'リストリンク表示', 1, power
+      it_behaves_like 'リストリンク表示', 2, power
+      it_behaves_like 'リストリンク非表示', 1, power
+      it_behaves_like 'リストリンク非表示', 2, power
     end
 
     shared_examples_for '権限あり' do |power|
-      include_context '顧客・ログインユーザー紐付け', Time.current, power
-      it_behaves_like '対象の顧客'
-      it_behaves_like '対象外の顧客'
-      it_behaves_like '招待表示'
-      it_behaves_like '所属メンバーが最大表示数と同じ'
-      it_behaves_like '所属メンバーが最大表示数より多い'
+      include_context '顧客・ユーザー紐付け', Time.current, power
+      # it_behaves_like '所属メンバーが0件' # Tips: 自分が所属している為、1件以上
+      it_behaves_like '所属メンバーが最大表示数と同じ', power
+      it_behaves_like '所属メンバーが最大表示数より多い', power
     end
 
     context 'ログイン中' do

@@ -1,7 +1,6 @@
 require 'rails_helper'
 
 RSpec.describe 'Users::Registrations', type: :request do
-  include_context '共通ヘッダー'
   include_context 'リクエストスペース作成'
 
   # GET /users/sign_up アカウント登録
@@ -33,27 +32,27 @@ RSpec.describe 'Users::Registrations', type: :request do
 
     # テストケース
     shared_examples_for '[未ログイン]ベースドメイン' do
-      let!(:headers) { base_headers }
+      let!(:headers) { BASE_HEADER }
       it_behaves_like 'ToOK'
     end
     shared_examples_for '[ログイン中]ベースドメイン' do
-      let!(:headers) { base_headers }
+      let!(:headers) { BASE_HEADER }
       it_behaves_like 'ToTop'
     end
     shared_examples_for '[未ログイン]存在するサブドメイン' do
-      let!(:headers) { @space_headers }
+      let!(:headers) { @space_header }
       it_behaves_like 'ToBase'
     end
     shared_examples_for '[ログイン中]存在するサブドメイン' do
-      let!(:headers) { @space_headers }
+      let!(:headers) { @space_header }
       it_behaves_like 'ToTop'
     end
     shared_examples_for '[未ログイン]存在しないサブドメイン' do
-      let!(:headers) { not_space_headers }
+      let!(:headers) { NOT_SPACE_HEADER }
       it_behaves_like 'ToBase'
     end
     shared_examples_for '[ログイン中]存在しないサブドメイン' do
-      let!(:headers) { not_space_headers }
+      let!(:headers) { NOT_SPACE_HEADER }
       it_behaves_like 'ToTop'
     end
 
@@ -130,42 +129,42 @@ RSpec.describe 'Users::Registrations', type: :request do
 
     # テストケース
     shared_examples_for '[未ログイン][有効なパラメータ]ベースドメイン' do
-      let!(:headers) { base_headers }
+      let!(:headers) { BASE_HEADER }
       it_behaves_like 'OK'
       it_behaves_like 'ToLogin'
     end
     shared_examples_for '[ログイン中][有効なパラメータ]ベースドメイン' do
-      let!(:headers) { base_headers }
+      let!(:headers) { BASE_HEADER }
       it_behaves_like 'NG'
       it_behaves_like 'ToTop'
     end
     shared_examples_for '[未ログイン][無効なパラメータ]ベースドメイン' do
-      let!(:headers) { base_headers }
+      let!(:headers) { BASE_HEADER }
       it_behaves_like 'NG'
-      it_behaves_like 'ToOK' # Tips: 再入力の為
+      it_behaves_like 'ToOK' # Tips: 再入力
     end
     shared_examples_for '[ログイン中][無効なパラメータ]ベースドメイン' do
-      let!(:headers) { base_headers }
+      let!(:headers) { BASE_HEADER }
       it_behaves_like 'NG'
       it_behaves_like 'ToTop'
     end
     shared_examples_for '[未ログイン]存在するサブドメイン' do
-      let!(:headers) { @space_headers }
+      let!(:headers) { @space_header }
       it_behaves_like 'NG'
       it_behaves_like 'ToNG'
     end
     shared_examples_for '[ログイン中]存在するサブドメイン' do
-      let!(:headers) { @space_headers }
+      let!(:headers) { @space_header }
       it_behaves_like 'NG'
       it_behaves_like 'ToTop'
     end
     shared_examples_for '[未ログイン]存在しないサブドメイン' do
-      let!(:headers) { not_space_headers }
+      let!(:headers) { NOT_SPACE_HEADER }
       it_behaves_like 'NG'
       it_behaves_like 'ToNG'
     end
     shared_examples_for '[ログイン中]存在しないサブドメイン' do
-      let!(:headers) { not_space_headers }
+      let!(:headers) { NOT_SPACE_HEADER }
       it_behaves_like 'NG'
       it_behaves_like 'ToTop'
     end
@@ -246,39 +245,39 @@ RSpec.describe 'Users::Registrations', type: :request do
 
     # テストケース
     shared_examples_for '[未ログイン]ベースドメイン' do
-      let!(:headers) { base_headers }
+      let!(:headers) { BASE_HEADER }
       it_behaves_like 'ToLogin'
     end
     shared_examples_for '[ログイン中]ベースドメイン' do
-      let!(:headers) { base_headers }
+      let!(:headers) { BASE_HEADER }
       it_behaves_like 'ToOK'
     end
     shared_examples_for '[削除予約済み]ベースドメイン' do
-      let!(:headers) { base_headers }
+      let!(:headers) { BASE_HEADER }
       it_behaves_like 'ToTop'
     end
     shared_examples_for '[未ログイン]存在するサブドメイン' do
-      let!(:headers) { @space_headers }
+      let!(:headers) { @space_header }
       it_behaves_like 'ToLogin'
     end
     shared_examples_for '[ログイン中]存在するサブドメイン' do
-      let!(:headers) { @space_headers }
+      let!(:headers) { @space_header }
       it_behaves_like 'ToBase'
     end
     shared_examples_for '[削除予約済み]存在するサブドメイン' do
-      let!(:headers) { @space_headers }
+      let!(:headers) { @space_header }
       it_behaves_like 'ToTop'
     end
     shared_examples_for '[未ログイン]存在しないサブドメイン' do
-      let!(:headers) { not_space_headers }
+      let!(:headers) { NOT_SPACE_HEADER }
       it_behaves_like 'ToLogin'
     end
     shared_examples_for '[ログイン中]存在しないサブドメイン' do
-      let!(:headers) { not_space_headers }
+      let!(:headers) { NOT_SPACE_HEADER }
       it_behaves_like 'ToBase'
     end
     shared_examples_for '[削除予約済み]存在しないサブドメイン' do
-      let!(:headers) { not_space_headers }
+      let!(:headers) { NOT_SPACE_HEADER }
       it_behaves_like 'ToTop'
     end
 
@@ -353,62 +352,62 @@ RSpec.describe 'Users::Registrations', type: :request do
 
     # テストケース
     shared_examples_for '[未ログイン][有効なパラメータ]ベースドメイン' do
-      let!(:headers) { base_headers }
+      let!(:headers) { BASE_HEADER }
       # it_behaves_like 'NG' # Tips: 未ログインの為、対象がない
       it_behaves_like 'ToLogin'
     end
     shared_examples_for '[ログイン中][有効なパラメータ]ベースドメイン' do
-      let!(:headers) { base_headers }
+      let!(:headers) { BASE_HEADER }
       it_behaves_like 'OK'
       it_behaves_like 'ToTop'
     end
     shared_examples_for '[削除予約済み][有効なパラメータ]ベースドメイン' do
-      let!(:headers) { base_headers }
+      let!(:headers) { BASE_HEADER }
       it_behaves_like 'NG'
       it_behaves_like 'ToTop'
     end
     shared_examples_for '[未ログイン][無効なパラメータ]ベースドメイン' do
-      let!(:headers) { base_headers }
+      let!(:headers) { BASE_HEADER }
       # it_behaves_like 'NG' # Tips: 未ログインの為、対象がない
       it_behaves_like 'ToLogin'
     end
     shared_examples_for '[ログイン中][無効なパラメータ]ベースドメイン' do
-      let!(:headers) { base_headers }
+      let!(:headers) { BASE_HEADER }
       it_behaves_like 'NG'
-      it_behaves_like 'ToOK'
+      it_behaves_like 'ToOK' # Tips: 再入力
     end
     shared_examples_for '[削除予約済み][無効なパラメータ]ベースドメイン' do
-      let!(:headers) { base_headers }
+      let!(:headers) { BASE_HEADER }
       it_behaves_like 'NG'
       it_behaves_like 'ToTop'
     end
     shared_examples_for '[未ログイン]存在するサブドメイン' do
-      let!(:headers) { @space_headers }
+      let!(:headers) { @space_header }
       # it_behaves_like 'NG' # Tips: 未ログインの為、対象がない
       it_behaves_like 'ToLogin'
     end
     shared_examples_for '[ログイン中]存在するサブドメイン' do
-      let!(:headers) { @space_headers }
+      let!(:headers) { @space_header }
       it_behaves_like 'NG'
       it_behaves_like 'ToNG'
     end
     shared_examples_for '[削除予約済み]存在するサブドメイン' do
-      let!(:headers) { @space_headers }
+      let!(:headers) { @space_header }
       it_behaves_like 'NG'
       it_behaves_like 'ToTop'
     end
     shared_examples_for '[未ログイン]存在しないサブドメイン' do
-      let!(:headers) { not_space_headers }
+      let!(:headers) { NOT_SPACE_HEADER }
       # it_behaves_like 'NG' # Tips: 未ログインの為、対象がない
       it_behaves_like 'ToLogin'
     end
     shared_examples_for '[ログイン中]存在しないサブドメイン' do
-      let!(:headers) { not_space_headers }
+      let!(:headers) { NOT_SPACE_HEADER }
       it_behaves_like 'NG'
       it_behaves_like 'ToNG'
     end
     shared_examples_for '[削除予約済み]存在しないサブドメイン' do
-      let!(:headers) { not_space_headers }
+      let!(:headers) { NOT_SPACE_HEADER }
       it_behaves_like 'NG'
       it_behaves_like 'ToTop'
     end
@@ -537,62 +536,62 @@ RSpec.describe 'Users::Registrations', type: :request do
 
     # テストケース
     shared_examples_for '[未ログイン][有効なパラメータ]ベースドメイン' do
-      let!(:headers) { base_headers }
+      let!(:headers) { BASE_HEADER }
       # it_behaves_like 'NG' # Tips: 未ログインの為、対象がない
       it_behaves_like 'ToLogin'
     end
     shared_examples_for '[ログイン中][有効なパラメータ]ベースドメイン' do
-      let!(:headers) { base_headers }
+      let!(:headers) { BASE_HEADER }
       it_behaves_like 'OK'
       it_behaves_like 'ToEdit'
     end
     shared_examples_for '[削除予約済み][有効なパラメータ]ベースドメイン' do
-      let!(:headers) { base_headers }
+      let!(:headers) { BASE_HEADER }
       it_behaves_like 'NG'
       it_behaves_like 'ToTop'
     end
     shared_examples_for '[未ログイン][無効なパラメータ]ベースドメイン' do
-      let!(:headers) { base_headers }
+      let!(:headers) { BASE_HEADER }
       # it_behaves_like 'NG' # Tips: 未ログインの為、対象がない
       it_behaves_like 'ToLogin'
     end
     shared_examples_for '[ログイン中][無効なパラメータ]ベースドメイン' do
-      let!(:headers) { base_headers }
+      let!(:headers) { BASE_HEADER }
       it_behaves_like 'NG'
-      it_behaves_like 'ToOK' # Tips: 再入力の為
+      it_behaves_like 'ToOK' # Tips: 再入力
     end
     shared_examples_for '[削除予約済み][無効なパラメータ]ベースドメイン' do
-      let!(:headers) { base_headers }
+      let!(:headers) { BASE_HEADER }
       it_behaves_like 'NG'
       it_behaves_like 'ToTop'
     end
     shared_examples_for '[未ログイン]存在するサブドメイン' do
-      let!(:headers) { @space_headers }
+      let!(:headers) { @space_header }
       # it_behaves_like 'NG' # Tips: 未ログインの為、対象がない
       it_behaves_like 'ToLogin'
     end
     shared_examples_for '[ログイン中]存在するサブドメイン' do
-      let!(:headers) { @space_headers }
+      let!(:headers) { @space_header }
       it_behaves_like 'NG'
       it_behaves_like 'ToNG'
     end
     shared_examples_for '[削除予約済み]存在するサブドメイン' do
-      let!(:headers) { @space_headers }
+      let!(:headers) { @space_header }
       it_behaves_like 'NG'
       it_behaves_like 'ToTop'
     end
     shared_examples_for '[未ログイン]存在しないサブドメイン' do
-      let!(:headers) { not_space_headers }
+      let!(:headers) { NOT_SPACE_HEADER }
       # it_behaves_like 'NG' # Tips: 未ログインの為、対象がない
       it_behaves_like 'ToLogin'
     end
     shared_examples_for '[ログイン中]存在しないサブドメイン' do
-      let!(:headers) { not_space_headers }
+      let!(:headers) { NOT_SPACE_HEADER }
       it_behaves_like 'NG'
       it_behaves_like 'ToNG'
     end
     shared_examples_for '[削除予約済み]存在しないサブドメイン' do
-      let!(:headers) { not_space_headers }
+      let!(:headers) { NOT_SPACE_HEADER }
       it_behaves_like 'NG'
       it_behaves_like 'ToTop'
     end
@@ -698,47 +697,47 @@ RSpec.describe 'Users::Registrations', type: :request do
 
     # テストケース
     shared_examples_for '[未ログイン]ベースドメイン' do
-      let!(:headers) { base_headers }
+      let!(:headers) { BASE_HEADER }
       # it_behaves_like 'NG' # Tips: 未ログインの為、対象がない
       it_behaves_like 'ToLogin'
     end
     shared_examples_for '[ログイン中]ベースドメイン' do
-      let!(:headers) { base_headers }
+      let!(:headers) { BASE_HEADER }
       it_behaves_like 'OK'
       it_behaves_like 'ToEdit'
     end
     shared_examples_for '[削除予約済み]ベースドメイン' do
-      let!(:headers) { base_headers }
+      let!(:headers) { BASE_HEADER }
       it_behaves_like 'NG'
       it_behaves_like 'ToTop'
     end
     shared_examples_for '[未ログイン]存在するサブドメイン' do
-      let!(:headers) { @space_headers }
+      let!(:headers) { @space_header }
       # it_behaves_like 'NG' # Tips: 未ログインの為、対象がない
       it_behaves_like 'ToLogin'
     end
     shared_examples_for '[ログイン中]存在するサブドメイン' do
-      let!(:headers) { @space_headers }
+      let!(:headers) { @space_header }
       it_behaves_like 'NG'
       it_behaves_like 'ToNG'
     end
     shared_examples_for '[削除予約済み]存在するサブドメイン' do
-      let!(:headers) { @space_headers }
+      let!(:headers) { @space_header }
       it_behaves_like 'NG'
       it_behaves_like 'ToTop'
     end
     shared_examples_for '[未ログイン]存在しないサブドメイン' do
-      let!(:headers) { not_space_headers }
+      let!(:headers) { NOT_SPACE_HEADER }
       # it_behaves_like 'NG' # Tips: 未ログインの為、対象がない
       it_behaves_like 'ToLogin'
     end
     shared_examples_for '[ログイン中]存在しないサブドメイン' do
-      let!(:headers) { not_space_headers }
+      let!(:headers) { NOT_SPACE_HEADER }
       it_behaves_like 'NG'
       it_behaves_like 'ToNG'
     end
     shared_examples_for '[削除予約済み]存在しないサブドメイン' do
-      let!(:headers) { not_space_headers }
+      let!(:headers) { NOT_SPACE_HEADER }
       it_behaves_like 'NG'
       it_behaves_like 'ToTop'
     end
@@ -801,39 +800,39 @@ RSpec.describe 'Users::Registrations', type: :request do
 
     # テストケース
     shared_examples_for '[未ログイン]ベースドメイン' do
-      let!(:headers) { base_headers }
+      let!(:headers) { BASE_HEADER }
       it_behaves_like 'ToLogin'
     end
     shared_examples_for '[ログイン中]ベースドメイン' do
-      let!(:headers) { base_headers }
+      let!(:headers) { BASE_HEADER }
       it_behaves_like 'ToOK'
     end
     shared_examples_for '[削除予約済み]ベースドメイン' do
-      let!(:headers) { base_headers }
+      let!(:headers) { BASE_HEADER }
       it_behaves_like 'ToTop'
     end
     shared_examples_for '[未ログイン]存在するサブドメイン' do
-      let!(:headers) { @space_headers }
+      let!(:headers) { @space_header }
       it_behaves_like 'ToLogin'
     end
     shared_examples_for '[ログイン中]存在するサブドメイン' do
-      let!(:headers) { @space_headers }
+      let!(:headers) { @space_header }
       it_behaves_like 'ToBase'
     end
     shared_examples_for '[削除予約済み]存在するサブドメイン' do
-      let!(:headers) { @space_headers }
+      let!(:headers) { @space_header }
       it_behaves_like 'ToTop'
     end
     shared_examples_for '[未ログイン]存在しないサブドメイン' do
-      let!(:headers) { not_space_headers }
+      let!(:headers) { NOT_SPACE_HEADER }
       it_behaves_like 'ToLogin'
     end
     shared_examples_for '[ログイン中]存在しないサブドメイン' do
-      let!(:headers) { not_space_headers }
+      let!(:headers) { NOT_SPACE_HEADER }
       it_behaves_like 'ToBase'
     end
     shared_examples_for '[削除予約済み]存在しないサブドメイン' do
-      let!(:headers) { not_space_headers }
+      let!(:headers) { NOT_SPACE_HEADER }
       it_behaves_like 'ToTop'
     end
 
@@ -909,47 +908,47 @@ RSpec.describe 'Users::Registrations', type: :request do
 
     # テストケース
     shared_examples_for '[未ログイン]ベースドメイン' do
-      let!(:headers) { base_headers }
+      let!(:headers) { BASE_HEADER }
       # it_behaves_like 'NG' # Tips: 未ログインの為、対象がない
       it_behaves_like 'ToLogin'
     end
     shared_examples_for '[ログイン中]ベースドメイン' do
-      let!(:headers) { base_headers }
+      let!(:headers) { BASE_HEADER }
       it_behaves_like 'OK'
       it_behaves_like 'ToLogin'
     end
     shared_examples_for '[削除予約済み]ベースドメイン' do
-      let!(:headers) { base_headers }
+      let!(:headers) { BASE_HEADER }
       it_behaves_like 'NG'
       it_behaves_like 'ToTop'
     end
     shared_examples_for '[未ログイン]存在するサブドメイン' do
-      let!(:headers) { @space_headers }
+      let!(:headers) { @space_header }
       # it_behaves_like 'NG' # Tips: 未ログインの為、対象がない
       it_behaves_like 'ToLogin'
     end
     shared_examples_for '[ログイン中]存在するサブドメイン' do
-      let!(:headers) { @space_headers }
+      let!(:headers) { @space_header }
       it_behaves_like 'NG'
       it_behaves_like 'ToNG'
     end
     shared_examples_for '[削除予約済み]存在するサブドメイン' do
-      let!(:headers) { @space_headers }
+      let!(:headers) { @space_header }
       it_behaves_like 'NG'
       it_behaves_like 'ToTop'
     end
     shared_examples_for '[未ログイン]存在しないサブドメイン' do
-      let!(:headers) { not_space_headers }
+      let!(:headers) { NOT_SPACE_HEADER }
       # it_behaves_like 'NG' # Tips: 未ログインの為、対象がない
       it_behaves_like 'ToLogin'
     end
     shared_examples_for '[ログイン中]存在しないサブドメイン' do
-      let!(:headers) { not_space_headers }
+      let!(:headers) { NOT_SPACE_HEADER }
       it_behaves_like 'NG'
       it_behaves_like 'ToNG'
     end
     shared_examples_for '[削除予約済み]存在しないサブドメイン' do
-      let!(:headers) { not_space_headers }
+      let!(:headers) { NOT_SPACE_HEADER }
       it_behaves_like 'NG'
       it_behaves_like 'ToTop'
     end
@@ -1008,39 +1007,39 @@ RSpec.describe 'Users::Registrations', type: :request do
 
     # テストケース
     shared_examples_for '[未ログイン]ベースドメイン' do
-      let!(:headers) { base_headers }
+      let!(:headers) { BASE_HEADER }
       it_behaves_like 'ToLogin'
     end
     shared_examples_for '[ログイン中]ベースドメイン' do
-      let!(:headers) { base_headers }
+      let!(:headers) { BASE_HEADER }
       it_behaves_like 'ToTop'
     end
     shared_examples_for '[削除予約済み]ベースドメイン' do
-      let!(:headers) { base_headers }
+      let!(:headers) { BASE_HEADER }
       it_behaves_like 'ToOK'
     end
     shared_examples_for '[未ログイン]存在するサブドメイン' do
-      let!(:headers) { @space_headers }
+      let!(:headers) { @space_header }
       it_behaves_like 'ToLogin'
     end
     shared_examples_for '[ログイン中]存在するサブドメイン' do
-      let!(:headers) { @space_headers }
+      let!(:headers) { @space_header }
       it_behaves_like 'ToTop'
     end
     shared_examples_for '[削除予約済み]存在するサブドメイン' do
-      let!(:headers) { @space_headers }
+      let!(:headers) { @space_header }
       it_behaves_like 'ToBase'
     end
     shared_examples_for '[未ログイン]存在しないサブドメイン' do
-      let!(:headers) { not_space_headers }
+      let!(:headers) { NOT_SPACE_HEADER }
       it_behaves_like 'ToLogin'
     end
     shared_examples_for '[ログイン中]存在しないサブドメイン' do
-      let!(:headers) { not_space_headers }
+      let!(:headers) { NOT_SPACE_HEADER }
       it_behaves_like 'ToTop'
     end
     shared_examples_for '[削除予約済み]存在しないサブドメイン' do
-      let!(:headers) { not_space_headers }
+      let!(:headers) { NOT_SPACE_HEADER }
       it_behaves_like 'ToBase'
     end
 
@@ -1114,47 +1113,47 @@ RSpec.describe 'Users::Registrations', type: :request do
 
     # テストケース
     shared_examples_for '[未ログイン]ベースドメイン' do
-      let!(:headers) { base_headers }
+      let!(:headers) { BASE_HEADER }
       # it_behaves_like 'NG' # Tips: 未ログインの為、対象がない
       it_behaves_like 'ToLogin'
     end
     shared_examples_for '[ログイン中]ベースドメイン' do
-      let!(:headers) { base_headers }
+      let!(:headers) { BASE_HEADER }
       it_behaves_like 'NG'
       it_behaves_like 'ToTop'
     end
     shared_examples_for '[削除予約済み]ベースドメイン' do
-      let!(:headers) { base_headers }
+      let!(:headers) { BASE_HEADER }
       it_behaves_like 'OK'
       it_behaves_like 'ToTop'
     end
     shared_examples_for '[未ログイン]存在するサブドメイン' do
-      let!(:headers) { @space_headers }
+      let!(:headers) { @space_header }
       # it_behaves_like 'NG' # Tips: 未ログインの為、対象がない
       it_behaves_like 'ToLogin'
     end
     shared_examples_for '[ログイン中]存在するサブドメイン' do
-      let!(:headers) { @space_headers }
+      let!(:headers) { @space_header }
       it_behaves_like 'NG'
       it_behaves_like 'ToTop'
     end
     shared_examples_for '[削除予約済み]存在するサブドメイン' do
-      let!(:headers) { @space_headers }
+      let!(:headers) { @space_header }
       it_behaves_like 'NG'
       it_behaves_like 'ToNG'
     end
     shared_examples_for '[未ログイン]存在しないサブドメイン' do
-      let!(:headers) { not_space_headers }
+      let!(:headers) { NOT_SPACE_HEADER }
       # it_behaves_like 'NG' # Tips: 未ログインの為、対象がない
       it_behaves_like 'ToLogin'
     end
     shared_examples_for '[ログイン中]存在しないサブドメイン' do
-      let!(:headers) { not_space_headers }
+      let!(:headers) { NOT_SPACE_HEADER }
       it_behaves_like 'NG'
       it_behaves_like 'ToTop'
     end
     shared_examples_for '[削除予約済み]存在しないサブドメイン' do
-      let!(:headers) { not_space_headers }
+      let!(:headers) { NOT_SPACE_HEADER }
       it_behaves_like 'NG'
       it_behaves_like 'ToNG'
     end

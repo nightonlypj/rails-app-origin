@@ -33,6 +33,11 @@ ja:
         updated_at: "更新日時"
     errors:
       models:
+        customer_user:
+          attributes:
+            power:
+              blank: "選択してください。"
+              invalid: "この値は使用できません。"
         space:
           attributes:
             subdomain:
@@ -51,6 +56,10 @@ ja:
         Owner: "所有者"
         Admin: "管理者"
         Member: "メンバー"
+  blank_word:
+    customer_user:
+      invitationed_at: "なし"
+      registrationed_at: "登録待ち"
   helpers:
     submit:
       create: "登録"
@@ -61,9 +70,20 @@ ja:
       image_destroy: "画像を削除しました。"
       destroy_reserved: "アカウント削除予定の為、この操作はできません。"
       not_destroy_reserved: "既に取り消し済みか、アカウント削除していません。"
+    customer_user:
+      update: "メンバーの権限を変更しました。"
     space:
       create: "スペースを作成しました。"
       update: "スペースを更新しました。"
+  alert:
+    user:
+      destroy_reserved: "アカウント削除予定の為、この操作はできません。"
+      not_update_power:
+        owner: "変更権限がありません。所属の所有者に依頼してください。"
+        admin: "変更権限がありません。所属の管理者または所有者に依頼してください。"
+      own_update_power:
+        owner: "自分の権限は変更できません。所属の他の所有者に依頼してください。"
+        admin: "自分の権限は変更できません。所属の他の管理者または所有者に依頼してください。"
   errors:
     messages:
       image_update_blank: "選択してください。"
@@ -77,6 +97,9 @@ ja:
       mini_magick_processing_error: "画像変換に失敗しました。別のファイルを使用してください。"
       min_size_error: "%{min_size}以上のファイルを使用してください。"
       max_size_error: "%{max_size}以下のファイルを使用してください。"
+      domain_error: "このドメインでは利用できません。"
+      customer_code_error: "顧客コードが存在しないか、所属していません。"
+      user_code_error: "ユーザーコードが存在しないか、所属していません。"
   mailer:
     user:
       destroy_reserved:

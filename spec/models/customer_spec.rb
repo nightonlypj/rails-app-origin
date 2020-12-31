@@ -1,7 +1,12 @@
 require 'rails_helper'
 
 RSpec.describe Customer, type: :model do
-  describe 'validates code' do
+  # 顧客コード
+  # 前提条件
+  #   なし
+  # テストパターン
+  #   最小文字数よりも少ない, 最小文字数, 最大文字数, 最大文字数よりも多い, アルファベット(小文字)・数字, アルファベット(大文字), 重複 → データ作成
+  describe 'validates :code' do
     shared_context 'データ作成' do |code|
       let!(:customer) { FactoryBot.build(:customer, code: code, name: 'test') }
     end
@@ -23,19 +28,19 @@ RSpec.describe Customer, type: :model do
     end
 
     # テストケース
-    context "#{Settings['customer_code_minimum'] - 1}文字" do
+    context '最小文字数よりも少ない' do
       include_context 'データ作成', 'a' * (Settings['customer_code_minimum'] - 1)
       it_behaves_like 'ToNG'
     end
-    context "#{Settings['customer_code_minimum']}文字" do
+    context '最小文字数' do
       include_context 'データ作成', 'a' * Settings['customer_code_minimum']
       it_behaves_like 'ToOK'
     end
-    context "#{Settings['customer_code_maximum']}文字" do
+    context '最大文字数' do
       include_context 'データ作成', 'a' * Settings['customer_code_maximum']
       it_behaves_like 'ToOK'
     end
-    context "#{Settings['customer_code_maximum'] + 1}文字" do
+    context '最大文字数よりも多い' do
       include_context 'データ作成', 'a' * (Settings['customer_code_maximum'] + 1)
       it_behaves_like 'ToNG'
     end
@@ -53,7 +58,12 @@ RSpec.describe Customer, type: :model do
     end
   end
 
-  describe 'validates name' do
+  # 顧客名
+  # 前提条件
+  #   なし
+  # テストパターン
+  #   最小文字数よりも少ない, 最小文字数, 最大文字数, 最大文字数よりも多い → データ作成
+  describe 'validates :name' do
     shared_context 'データ作成' do |name|
       let!(:customer) { FactoryBot.build(:customer, name: name) }
     end
@@ -71,19 +81,19 @@ RSpec.describe Customer, type: :model do
     end
 
     # テストケース
-    context "#{Settings['customer_name_minimum'] - 1}文字" do
+    context '最小文字数よりも少ない' do
       include_context 'データ作成', 'a' * (Settings['customer_name_minimum'] - 1)
       it_behaves_like 'ToNG'
     end
-    context "#{Settings['customer_name_minimum']}文字" do
+    context '最小文字数' do
       include_context 'データ作成', 'a' * Settings['customer_name_minimum']
       it_behaves_like 'ToOK'
     end
-    context "#{Settings['customer_name_maximum']}文字" do
+    context '最大文字数' do
       include_context 'データ作成', 'a' * Settings['customer_name_maximum']
       it_behaves_like 'ToOK'
     end
-    context "#{Settings['customer_name_maximum'] + 1}文字" do
+    context '最大文字数よりも多い' do
       include_context 'データ作成', 'a' * (Settings['customer_name_maximum'] + 1)
       it_behaves_like 'ToNG'
     end

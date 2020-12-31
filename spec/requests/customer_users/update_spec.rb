@@ -1,0 +1,575 @@
+require 'rails_helper'
+
+RSpec.describe 'CustomerUsers', type: :request do
+  include_context 'リクエストスペース作成'
+
+  # PATCH/PUT /customer_users/:customer_code/:user_code（ベースドメイン） メンバー権限変更(処理)
+  # PATCH/PUT /customer_users/:customer_code/:user_code.json（ベースドメイン） メンバー権限変更API
+  # 前提条件
+  #   なし
+  # テストパターン
+  #   未ログイン, ログイン中, ログイン中（削除予約済み） → データ＆状態作成
+  #   権限なし, Owner権限, Admin権限, Member権限 → データ作成
+  #   所属顧客, 未所属顧客, 存在しない顧客, 顧客なし → 事前にデータ作成
+  #   対象なし, 対象自分, 対象Owner, 対象Admin, 対象Member → 事前にデータ作成
+  #   有効なパラメータ, 無効なパラメータ → 事前にデータ作成
+  #   ベースドメイン, 存在するサブドメイン, 存在しないサブドメイン → 事前にデータ作成
+  describe 'PATCH /update' do
+    include_context 'メンバー作成', 1, 1, 1, 0, 'ASC'
+    include_context '対象外メンバー作成', 'ASC'
+    let!(:valid_attributes) { { power: 'Member' } }
+    let!(:invalid_attributes) { { power: nil } }
+
+    # テスト内容
+    shared_examples_for 'OK' do
+      it '権限が変更される' do
+        patch customer_user_path(customer_code: customer_code, user_code: user_code), params: { customer_user: attributes }, headers: headers
+        expect(CustomerUser.find(target_customer_user.id).power).to eq(attributes[:power])
+      end
+      it '(json)権限が変更される' do
+        patch customer_user_path(customer_code: customer_code, user_code: user_code, format: :json), params: { customer_user: attributes }, headers: headers
+        expect(CustomerUser.find(target_customer_user.id).power).to eq(attributes[:power])
+      end
+    end
+    shared_examples_for 'NG' do
+      it '権限が変更されない' do
+        if target_customer_user.present?
+          patch customer_user_path(customer_code: customer_code, user_code: user_code), params: { customer_user: attributes }, headers: headers
+          expect(CustomerUser.find(target_customer_user.id).power).to eq(target_customer_user.power)
+        end
+      end
+      it '(json)権限が変更されない' do
+        if target_customer_user.present?
+          patch customer_user_path(customer_code: customer_code, user_code: user_code, format: :json), params: { customer_user: attributes }, headers: headers
+          expect(CustomerUser.find(target_customer_user.id).power).to eq(target_customer_user.power)
+        end
+      end
+    end
+
+    shared_examples_for 'ToOK' do
+      it '成功ステータス' do
+        patch customer_user_path(customer_code: customer_code, user_code: user_code), params: { customer_user: attributes }, headers: headers
+        expect(response).to be_successful
+      end
+    end
+    shared_examples_for 'ToNG' do |error|
+      it '存在しないステータス' do
+        patch customer_user_path(customer_code: customer_code, user_code: user_code), params: { customer_user: attributes }, headers: headers
+        expect(response).to be_not_found
+      end
+      it '(json)存在しないエラー' do
+        patch customer_user_path(customer_code: customer_code, user_code: user_code, format: :json), params: { customer_user: attributes }, headers: headers
+        expect(response).to be_not_found
+        expect(JSON.parse(response.body)['error']).to error.present? ? eq(I18n.t(error)) : be_nil
+      end
+    end
+    shared_examples_for 'ToIndexOK' do |alert, notice|
+      it '一覧にリダイレクト' do
+        patch customer_user_path(customer_code: customer_code, user_code: user_code), params: { customer_user: attributes }, headers: headers
+        expect(response).to redirect_to(customer_users_path(customer_code: customer_code))
+        expect(flash[:alert]).to alert.present? ? eq(I18n.t(alert)) : be_nil
+        expect(flash[:notice]).to notice.present? ? eq(I18n.t(notice)) : be_nil
+      end
+      it '(json)成功レスポンス' do
+        patch customer_user_path(customer_code: customer_code, user_code: user_code, format: :json), params: { customer_user: attributes }, headers: headers
+        expect(response).to be_ok
+        expect(JSON.parse(response.body)['status']).to eq('OK')
+        expect(JSON.parse(response.body)['notice']).to notice.present? ? eq(I18n.t(notice)) : be_nil
+      end
+    end
+    shared_examples_for 'ToIndexNG' do |alert, notice, error|
+      it '一覧にリダイレクト' do
+        patch customer_user_path(customer_code: customer_code, user_code: user_code), params: { customer_user: attributes }, headers: headers
+        expect(response).to redirect_to(customer_users_path(customer_code: customer_code))
+        expect(flash[:alert]).to alert.present? ? eq(I18n.t(alert)) : be_nil
+        expect(flash[:notice]).to notice.present? ? eq(I18n.t(notice)) : be_nil
+      end
+      it '(json)権限エラー' do
+        patch customer_user_path(customer_code: customer_code, user_code: user_code, format: :json), params: { customer_user: attributes }, headers: headers
+        expect(response).to be_forbidden
+        expect(JSON.parse(response.body)['error']).to error.present? ? eq(I18n.t(error)) : be_nil
+      end
+    end
+    shared_examples_for 'ToLogin' do |alert, notice, error|
+      it 'ログインにリダイレクト' do
+        patch customer_user_path(customer_code: customer_code, user_code: user_code), params: { customer_user: attributes }, headers: headers
+        expect(response).to redirect_to(new_user_session_path)
+        expect(flash[:alert]).to alert.present? ? eq(I18n.t(alert)) : be_nil
+        expect(flash[:notice]).to notice.present? ? eq(I18n.t(notice)) : be_nil
+      end
+      it '(json)認証エラー' do
+        patch customer_user_path(customer_code: customer_code, user_code: user_code, format: :json), params: { customer_user: attributes }, headers: headers
+        expect(response).to be_unauthorized
+        expect(JSON.parse(response.body)['error']).to error.present? ? eq(I18n.t(error)) : be_nil
+      end
+    end
+
+    # テストケース
+    shared_examples_for '[ログイン中/削除予約済み][Owner権限][所属顧客][対象自分]ベースドメイン' do
+      let!(:headers) { BASE_HEADER }
+      it_behaves_like 'NG'
+      it_behaves_like 'ToIndexNG', 'alert.user.own_update_power.owner', nil, 'alert.user.own_update_power.owner'
+    end
+    shared_examples_for '[ログイン中/削除予約済み][Admin権限][所属顧客][対象自分]ベースドメイン' do
+      let!(:headers) { BASE_HEADER }
+      it_behaves_like 'NG'
+      it_behaves_like 'ToIndexNG', 'alert.user.own_update_power.admin', nil, 'alert.user.own_update_power.admin'
+    end
+    shared_examples_for '[ログイン中/削除予約済み][Member権限][所属顧客][対象自分/Admin/Member]ベースドメイン' do
+      let!(:headers) { BASE_HEADER }
+      it_behaves_like 'NG'
+      it_behaves_like 'ToIndexNG', 'alert.user.not_update_power.admin', nil, 'alert.user.not_update_power.admin'
+    end
+    shared_examples_for '[ログイン中][Owner権限][所属顧客][対象Owner][有効なパラメータ]ベースドメイン' do
+      let!(:headers) { BASE_HEADER }
+      it_behaves_like 'OK'
+      it_behaves_like 'ToIndexOK', nil, 'notice.customer_user.update', 'notice.customer_user.update'
+    end
+    shared_examples_for '[ログイン中][Owner権限][所属顧客][対象Owner][無効なパラメータ]ベースドメイン' do
+      let!(:headers) { BASE_HEADER }
+      it_behaves_like 'NG'
+      it_behaves_like 'ToOK' # Tips: 再入力
+    end
+    shared_examples_for '[削除予約済み][Owner権限][所属顧客][対象Owner]ベースドメイン' do
+      let!(:headers) { BASE_HEADER }
+      it_behaves_like 'NG'
+      it_behaves_like 'ToIndexNG', 'alert.user.destroy_reserved', nil, 'alert.user.destroy_reserved'
+    end
+    shared_examples_for '[ログイン中/削除予約済み][Admin権限/Member][所属顧客][対象Owner]ベースドメイン' do
+      let!(:headers) { BASE_HEADER }
+      it_behaves_like 'NG'
+      it_behaves_like 'ToIndexNG', 'alert.user.not_update_power.owner', nil, 'alert.user.not_update_power.owner'
+    end
+    shared_examples_for '[ログイン中][Owner権限/Admin][所属顧客][対象Admin/Member][有効なパラメータ]ベースドメイン' do
+      let!(:headers) { BASE_HEADER }
+      it_behaves_like 'OK'
+      it_behaves_like 'ToIndexOK', nil, 'notice.customer_user.update', 'notice.customer_user.update'
+    end
+    shared_examples_for '[ログイン中][Owner権限/Admin][所属顧客][対象Admin/Member][無効なパラメータ]ベースドメイン' do
+      let!(:headers) { BASE_HEADER }
+      it_behaves_like 'NG'
+      it_behaves_like 'ToOK' # Tips: 再入力
+    end
+    shared_examples_for '[削除予約済み][Owner権限/Admin][所属顧客][対象Admin/Member]ベースドメイン' do
+      let!(:headers) { BASE_HEADER }
+      it_behaves_like 'NG'
+      it_behaves_like 'ToIndexNG', 'alert.user.destroy_reserved', nil, 'alert.user.destroy_reserved'
+    end
+    shared_examples_for '[未ログイン][未所属顧客/存在しない顧客]ベースドメイン' do
+      let!(:headers) { BASE_HEADER }
+      it_behaves_like 'NG'
+      it_behaves_like 'ToLogin', 'devise.failure.unauthenticated', nil, 'devise.failure.unauthenticated'
+    end
+    shared_examples_for '[ログイン中/削除予約済み][未所属顧客/存在しない顧客]ベースドメイン' do
+      let!(:headers) { BASE_HEADER }
+      it_behaves_like 'NG'
+      it_behaves_like 'ToNG', 'errors.messages.customer_code_error'
+    end
+    shared_examples_for '存在するサブドメイン' do
+      let!(:headers) { @space_header }
+      it_behaves_like 'NG'
+      it_behaves_like 'ToNG', 'errors.messages.domain_error'
+    end
+    shared_examples_for '存在しないサブドメイン' do
+      let!(:headers) { NOT_SPACE_HEADER }
+      it_behaves_like 'NG'
+      it_behaves_like 'ToNG', 'errors.messages.domain_error'
+    end
+
+    shared_examples_for '[ログイン中/削除予約済み][Owner権限][所属顧客][対象自分]有効なパラメータ' do
+      let!(:attributes) { valid_attributes }
+      it_behaves_like '[ログイン中/削除予約済み][Owner権限][所属顧客][対象自分]ベースドメイン'
+      it_behaves_like '存在するサブドメイン'
+      it_behaves_like '存在しないサブドメイン'
+    end
+    shared_examples_for '[ログイン中/削除予約済み][Admin権限][所属顧客][対象自分]有効なパラメータ' do
+      let!(:attributes) { valid_attributes }
+      it_behaves_like '[ログイン中/削除予約済み][Admin権限][所属顧客][対象自分]ベースドメイン'
+      it_behaves_like '存在するサブドメイン'
+      it_behaves_like '存在しないサブドメイン'
+    end
+    shared_examples_for '[ログイン中/削除予約済み][Member権限][所属顧客][対象自分/Admin/Member]有効なパラメータ' do
+      let!(:attributes) { valid_attributes }
+      it_behaves_like '[ログイン中/削除予約済み][Member権限][所属顧客][対象自分/Admin/Member]ベースドメイン'
+      it_behaves_like '存在するサブドメイン'
+      it_behaves_like '存在しないサブドメイン'
+    end
+    shared_examples_for '[ログイン中][Owner権限][所属顧客][対象Owner]有効なパラメータ' do
+      let!(:attributes) { valid_attributes }
+      it_behaves_like '[ログイン中][Owner権限][所属顧客][対象Owner][有効なパラメータ]ベースドメイン'
+      it_behaves_like '存在するサブドメイン'
+      it_behaves_like '存在しないサブドメイン'
+    end
+    shared_examples_for '[削除予約済み][Owner権限][所属顧客][対象Owner]有効なパラメータ' do
+      let!(:attributes) { valid_attributes }
+      it_behaves_like '[削除予約済み][Owner権限][所属顧客][対象Owner]ベースドメイン'
+      it_behaves_like '存在するサブドメイン'
+      it_behaves_like '存在しないサブドメイン'
+    end
+    shared_examples_for '[ログイン中/削除予約済み][Admin権限/Member][所属顧客][対象Owner]有効なパラメータ' do
+      let!(:attributes) { valid_attributes }
+      it_behaves_like '[ログイン中/削除予約済み][Admin権限/Member][所属顧客][対象Owner]ベースドメイン'
+      it_behaves_like '存在するサブドメイン'
+      it_behaves_like '存在しないサブドメイン'
+    end
+    shared_examples_for '[ログイン中][Owner権限/Admin][所属顧客][対象Admin/Member]有効なパラメータ' do
+      let!(:attributes) { valid_attributes }
+      it_behaves_like '[ログイン中][Owner権限/Admin][所属顧客][対象Admin/Member][有効なパラメータ]ベースドメイン'
+      it_behaves_like '存在するサブドメイン'
+      it_behaves_like '存在しないサブドメイン'
+    end
+    shared_examples_for '[削除予約済み][Owner権限/Admin][所属顧客][対象Admin/Member]有効なパラメータ' do
+      let!(:attributes) { valid_attributes }
+      it_behaves_like '[削除予約済み][Owner権限/Admin][所属顧客][対象Admin/Member]ベースドメイン'
+      it_behaves_like '存在するサブドメイン'
+      it_behaves_like '存在しないサブドメイン'
+    end
+    shared_examples_for '[未ログイン][未所属顧客/存在しない顧客]有効なパラメータ' do
+      let!(:attributes) { valid_attributes }
+      it_behaves_like '[未ログイン][未所属顧客/存在しない顧客]ベースドメイン'
+      it_behaves_like '存在するサブドメイン'
+      it_behaves_like '存在しないサブドメイン'
+    end
+    shared_examples_for '[ログイン中/削除予約済み][未所属顧客/存在しない顧客]有効なパラメータ' do
+      let!(:attributes) { valid_attributes }
+      it_behaves_like '[ログイン中/削除予約済み][未所属顧客/存在しない顧客]ベースドメイン'
+      it_behaves_like '存在するサブドメイン'
+      it_behaves_like '存在しないサブドメイン'
+    end
+    shared_examples_for '[ログイン中/削除予約済み][Owner権限][所属顧客][対象自分]無効なパラメータ' do
+      let!(:attributes) { invalid_attributes }
+      it_behaves_like '[ログイン中/削除予約済み][Owner権限][所属顧客][対象自分]ベースドメイン'
+      it_behaves_like '存在するサブドメイン'
+      it_behaves_like '存在しないサブドメイン'
+    end
+    shared_examples_for '[ログイン中/削除予約済み][Admin権限][所属顧客][対象自分]無効なパラメータ' do
+      let!(:attributes) { invalid_attributes }
+      it_behaves_like '[ログイン中/削除予約済み][Admin権限][所属顧客][対象自分]ベースドメイン'
+      it_behaves_like '存在するサブドメイン'
+      it_behaves_like '存在しないサブドメイン'
+    end
+    shared_examples_for '[ログイン中/削除予約済み][Member権限][所属顧客][対象自分/Admin/Member]無効なパラメータ' do
+      let!(:attributes) { invalid_attributes }
+      it_behaves_like '[ログイン中/削除予約済み][Member権限][所属顧客][対象自分/Admin/Member]ベースドメイン'
+      it_behaves_like '存在するサブドメイン'
+      it_behaves_like '存在しないサブドメイン'
+    end
+    shared_examples_for '[ログイン中][Owner権限][所属顧客][対象Owner]無効なパラメータ' do
+      let!(:attributes) { invalid_attributes }
+      it_behaves_like '[ログイン中][Owner権限][所属顧客][対象Owner][無効なパラメータ]ベースドメイン'
+      it_behaves_like '存在するサブドメイン'
+      it_behaves_like '存在しないサブドメイン'
+    end
+    shared_examples_for '[削除予約済み][Owner権限][所属顧客][対象Owner]無効なパラメータ' do
+      let!(:attributes) { invalid_attributes }
+      it_behaves_like '[削除予約済み][Owner権限][所属顧客][対象Owner]ベースドメイン'
+      it_behaves_like '存在するサブドメイン'
+      it_behaves_like '存在しないサブドメイン'
+    end
+    shared_examples_for '[ログイン中/削除予約済み][Admin権限/Member][所属顧客][対象Owner]無効なパラメータ' do
+      let!(:attributes) { invalid_attributes }
+      it_behaves_like '[ログイン中/削除予約済み][Admin権限/Member][所属顧客][対象Owner]ベースドメイン'
+      it_behaves_like '存在するサブドメイン'
+      it_behaves_like '存在しないサブドメイン'
+    end
+    shared_examples_for '[ログイン中][Owner権限/Admin][所属顧客][対象Admin/Member]無効なパラメータ' do
+      let!(:attributes) { invalid_attributes }
+      it_behaves_like '[ログイン中][Owner権限/Admin][所属顧客][対象Admin/Member][無効なパラメータ]ベースドメイン'
+      it_behaves_like '存在するサブドメイン'
+      it_behaves_like '存在しないサブドメイン'
+    end
+    shared_examples_for '[削除予約済み][Owner権限/Admin][所属顧客][対象Admin/Member]無効なパラメータ' do
+      let!(:attributes) { invalid_attributes }
+      it_behaves_like '[削除予約済み][Owner権限/Admin][所属顧客][対象Admin/Member]ベースドメイン'
+      it_behaves_like '存在するサブドメイン'
+      it_behaves_like '存在しないサブドメイン'
+    end
+    shared_examples_for '[未ログイン][未所属顧客/存在しない顧客]無効なパラメータ' do
+      let!(:attributes) { invalid_attributes }
+      it_behaves_like '[未ログイン][未所属顧客/存在しない顧客]ベースドメイン'
+      it_behaves_like '存在するサブドメイン'
+      it_behaves_like '存在しないサブドメイン'
+    end
+    shared_examples_for '[ログイン中/削除予約済み][未所属顧客/存在しない顧客]無効なパラメータ' do
+      let!(:attributes) { invalid_attributes }
+      it_behaves_like '[ログイン中/削除予約済み][未所属顧客/存在しない顧客]ベースドメイン'
+      it_behaves_like '存在するサブドメイン'
+      it_behaves_like '存在しないサブドメイン'
+    end
+
+    shared_examples_for '[ログイン中/削除予約済み][Owner権限][所属顧客]対象自分' do
+      let!(:user_code) { user.code }
+      let!(:target_customer_user) { customer_user }
+      it_behaves_like '[ログイン中/削除予約済み][Owner権限][所属顧客][対象自分]有効なパラメータ'
+      it_behaves_like '[ログイン中/削除予約済み][Owner権限][所属顧客][対象自分]無効なパラメータ'
+    end
+    shared_examples_for '[ログイン中/削除予約済み][Admin権限][所属顧客]対象自分' do
+      let!(:user_code) { user.code }
+      let!(:target_customer_user) { customer_user }
+      it_behaves_like '[ログイン中/削除予約済み][Admin権限][所属顧客][対象自分]有効なパラメータ'
+      it_behaves_like '[ログイン中/削除予約済み][Admin権限][所属顧客][対象自分]無効なパラメータ'
+    end
+    shared_examples_for '[ログイン中/削除予約済み][Member権限][所属顧客]対象自分' do
+      let!(:user_code) { user.code }
+      let!(:target_customer_user) { customer_user }
+      it_behaves_like '[ログイン中/削除予約済み][Member権限][所属顧客][対象自分/Admin/Member]有効なパラメータ'
+      it_behaves_like '[ログイン中/削除予約済み][Member権限][所属顧客][対象自分/Admin/Member]無効なパラメータ'
+    end
+    shared_examples_for '[ログイン中/削除予約済み][未所属顧客/存在しない顧客]対象自分' do
+      let!(:user_code) { user.code }
+      let!(:target_customer_user) { nil } # Tips: 権限がない為、紐付かない
+      it_behaves_like '[ログイン中/削除予約済み][未所属顧客/存在しない顧客]有効なパラメータ'
+      it_behaves_like '[ログイン中/削除予約済み][未所属顧客/存在しない顧客]無効なパラメータ'
+    end
+    shared_examples_for '[ログイン中][Owner権限][所属顧客]対象Owner' do
+      let!(:user_code) { @create_users[0].code }
+      let!(:target_customer_user) { @create_customer_users[0] }
+      it_behaves_like '[ログイン中][Owner権限][所属顧客][対象Owner]有効なパラメータ'
+      it_behaves_like '[ログイン中][Owner権限][所属顧客][対象Owner]無効なパラメータ'
+    end
+    shared_examples_for '[削除予約済み][Owner権限][所属顧客]対象Owner' do
+      let!(:user_code) { @create_users[0].code }
+      let!(:target_customer_user) { @create_customer_users[0] }
+      it_behaves_like '[削除予約済み][Owner権限][所属顧客][対象Owner]有効なパラメータ'
+      it_behaves_like '[削除予約済み][Owner権限][所属顧客][対象Owner]無効なパラメータ'
+    end
+    shared_examples_for '[ログイン中/削除予約済み][Admin権限/Member][所属顧客]対象Owner' do
+      let!(:user_code) { @create_users[0].code }
+      let!(:target_customer_user) { @create_customer_users[0] }
+      it_behaves_like '[ログイン中/削除予約済み][Admin権限/Member][所属顧客][対象Owner]有効なパラメータ'
+      it_behaves_like '[ログイン中/削除予約済み][Admin権限/Member][所属顧客][対象Owner]無効なパラメータ'
+    end
+    shared_examples_for '[ログイン中][Owner権限/Admin][所属顧客]対象Admin' do
+      let!(:user_code) { @create_users[1].code }
+      let!(:target_customer_user) { @create_customer_users[1] }
+      it_behaves_like '[ログイン中][Owner権限/Admin][所属顧客][対象Admin/Member]有効なパラメータ'
+      it_behaves_like '[ログイン中][Owner権限/Admin][所属顧客][対象Admin/Member]無効なパラメータ'
+    end
+    shared_examples_for '[削除予約済み][Owner権限/Admin][所属顧客]対象Admin' do
+      let!(:user_code) { @create_users[1].code }
+      let!(:target_customer_user) { @create_customer_users[1] }
+      it_behaves_like '[削除予約済み][Owner権限/Admin][所属顧客][対象Admin/Member]有効なパラメータ'
+      it_behaves_like '[削除予約済み][Owner権限/Admin][所属顧客][対象Admin/Member]無効なパラメータ'
+    end
+    shared_examples_for '[ログイン中/削除予約済み][Member権限][所属顧客]対象Admin' do
+      let!(:user_code) { @create_users[1].code }
+      let!(:target_customer_user) { @create_customer_users[1] }
+      it_behaves_like '[ログイン中/削除予約済み][Member権限][所属顧客][対象自分/Admin/Member]有効なパラメータ'
+      it_behaves_like '[ログイン中/削除予約済み][Member権限][所属顧客][対象自分/Admin/Member]無効なパラメータ'
+    end
+    shared_examples_for '[ログイン中][Owner権限/Admin][所属顧客]対象Member' do
+      let!(:user_code) { @create_users[2].code }
+      let!(:target_customer_user) { @create_customer_users[2] }
+      it_behaves_like '[ログイン中][Owner権限/Admin][所属顧客][対象Admin/Member]有効なパラメータ'
+      it_behaves_like '[ログイン中][Owner権限/Admin][所属顧客][対象Admin/Member]無効なパラメータ'
+    end
+    shared_examples_for '[削除予約済み][Owner権限/Admin][所属顧客]対象Member' do
+      let!(:user_code) { @create_users[2].code }
+      let!(:target_customer_user) { @create_customer_users[2] }
+      it_behaves_like '[削除予約済み][Owner権限/Admin][所属顧客][対象Admin/Member]有効なパラメータ'
+      it_behaves_like '[削除予約済み][Owner権限/Admin][所属顧客][対象Admin/Member]無効なパラメータ'
+    end
+    shared_examples_for '[ログイン中/削除予約済み][Member権限][所属顧客]対象Member' do
+      let!(:user_code) { @create_users[2].code }
+      let!(:target_customer_user) { @create_customer_users[2] }
+      it_behaves_like '[ログイン中/削除予約済み][Member権限][所属顧客][対象自分/Admin/Member]有効なパラメータ'
+      it_behaves_like '[ログイン中/削除予約済み][Member権限][所属顧客][対象自分/Admin/Member]無効なパラメータ'
+    end
+    shared_examples_for '[未ログイン][未所属顧客]対象Owner' do
+      let!(:user_code) { @create_outside_users[0].code }
+      let!(:target_customer_user) { @create_outside_customer_users[0] }
+      it_behaves_like '[未ログイン][未所属顧客/存在しない顧客]有効なパラメータ'
+      it_behaves_like '[未ログイン][未所属顧客/存在しない顧客]無効なパラメータ'
+    end
+    shared_examples_for '[未ログイン][存在しない顧客]対象Owner' do
+      let!(:user_code) { @create_outside_users[0].code }
+      let!(:target_customer_user) { @create_outside_customer_users[0] }
+      it_behaves_like '[未ログイン][未所属顧客/存在しない顧客]有効なパラメータ'
+      it_behaves_like '[未ログイン][未所属顧客/存在しない顧客]無効なパラメータ'
+    end
+    shared_examples_for '[ログイン中/削除予約済み][未所属顧客/存在しない顧客]対象Owner' do
+      let!(:user_code) { @create_outside_users[0].code }
+      let!(:target_customer_user) { @create_outside_customer_users[0] }
+      it_behaves_like '[ログイン中/削除予約済み][未所属顧客/存在しない顧客]有効なパラメータ'
+      it_behaves_like '[ログイン中/削除予約済み][未所属顧客/存在しない顧客]無効なパラメータ'
+    end
+    shared_examples_for '[未ログイン][未所属顧客]対象Admin' do
+      let!(:user_code) { @create_outside_users[1].code }
+      let!(:target_customer_user) { @create_outside_customer_users[1] }
+      it_behaves_like '[未ログイン][未所属顧客/存在しない顧客]有効なパラメータ'
+      it_behaves_like '[未ログイン][未所属顧客/存在しない顧客]無効なパラメータ'
+    end
+    shared_examples_for '[未ログイン][存在しない顧客]対象Admin' do
+      let!(:user_code) { @create_outside_users[1].code }
+      let!(:target_customer_user) { @create_outside_customer_users[1] }
+      it_behaves_like '[未ログイン][未所属顧客/存在しない顧客]有効なパラメータ'
+      it_behaves_like '[未ログイン][未所属顧客/存在しない顧客]無効なパラメータ'
+    end
+    shared_examples_for '[ログイン中/削除予約済み][未所属顧客/存在しない顧客]対象Admin' do
+      let!(:user_code) { @create_outside_users[1].code }
+      let!(:target_customer_user) { @create_outside_customer_users[1] }
+      it_behaves_like '[ログイン中/削除予約済み][未所属顧客/存在しない顧客]有効なパラメータ'
+      it_behaves_like '[ログイン中/削除予約済み][未所属顧客/存在しない顧客]無効なパラメータ'
+    end
+    shared_examples_for '[未ログイン][未所属顧客]対象Member' do
+      let!(:user_code) { @create_outside_users[2].code }
+      let!(:target_customer_user) { @create_outside_customer_users[2] }
+      it_behaves_like '[未ログイン][未所属顧客/存在しない顧客]有効なパラメータ'
+      it_behaves_like '[未ログイン][未所属顧客/存在しない顧客]無効なパラメータ'
+    end
+    shared_examples_for '[未ログイン][存在しない顧客]対象Member' do
+      let!(:user_code) { @create_outside_users[2].code }
+      let!(:target_customer_user) { @create_outside_customer_users[2] }
+      it_behaves_like '[未ログイン][未所属顧客/存在しない顧客]有効なパラメータ'
+      it_behaves_like '[未ログイン][未所属顧客/存在しない顧客]無効なパラメータ'
+    end
+    shared_examples_for '[ログイン中/削除予約済み][未所属顧客/存在しない顧客]対象Member' do
+      let!(:user_code) { @create_outside_users[2].code }
+      let!(:target_customer_user) { @create_outside_customer_users[2] }
+      it_behaves_like '[ログイン中/削除予約済み][未所属顧客/存在しない顧客]有効なパラメータ'
+      it_behaves_like '[ログイン中/削除予約済み][未所属顧客/存在しない顧客]無効なパラメータ'
+    end
+
+    shared_examples_for '[ログイン中][Owner権限]所属顧客' do
+      let!(:customer_code) { customer.code }
+      # it_behaves_like '[ログイン中][Owner権限][所属顧客]対象なし' # Tips: 先にRoutingErrorになる
+      it_behaves_like '[ログイン中/削除予約済み][Owner権限][所属顧客]対象自分'
+      it_behaves_like '[ログイン中][Owner権限][所属顧客]対象Owner'
+      it_behaves_like '[ログイン中][Owner権限/Admin][所属顧客]対象Admin'
+      it_behaves_like '[ログイン中][Owner権限/Admin][所属顧客]対象Member'
+    end
+    shared_examples_for '[削除予約済み][Owner権限]所属顧客' do
+      let!(:customer_code) { customer.code }
+      # it_behaves_like '[削除予約済み][Owner権限][所属顧客]対象なし' # Tips: 先にRoutingErrorになる
+      it_behaves_like '[ログイン中/削除予約済み][Owner権限][所属顧客]対象自分'
+      it_behaves_like '[削除予約済み][Owner権限][所属顧客]対象Owner'
+      it_behaves_like '[削除予約済み][Owner権限/Admin][所属顧客]対象Admin'
+      it_behaves_like '[削除予約済み][Owner権限/Admin][所属顧客]対象Member'
+    end
+    shared_examples_for '[ログイン中][Admin権限]所属顧客' do
+      let!(:customer_code) { customer.code }
+      # it_behaves_like '[ログイン中][Admin権限][所属顧客]対象なし' # Tips: 先にRoutingErrorになる
+      it_behaves_like '[ログイン中/削除予約済み][Admin権限][所属顧客]対象自分'
+      it_behaves_like '[ログイン中/削除予約済み][Admin権限/Member][所属顧客]対象Owner'
+      it_behaves_like '[ログイン中][Owner権限/Admin][所属顧客]対象Admin'
+      it_behaves_like '[ログイン中][Owner権限/Admin][所属顧客]対象Member'
+    end
+    shared_examples_for '[削除予約済み][Admin権限]所属顧客' do
+      let!(:customer_code) { customer.code }
+      # it_behaves_like '[削除予約済み][Admin権限][所属顧客]対象なし' # Tips: 先にRoutingErrorになる
+      it_behaves_like '[ログイン中/削除予約済み][Admin権限][所属顧客]対象自分'
+      it_behaves_like '[ログイン中/削除予約済み][Admin権限/Member][所属顧客]対象Owner'
+      it_behaves_like '[削除予約済み][Owner権限/Admin][所属顧客]対象Admin'
+      it_behaves_like '[削除予約済み][Owner権限/Admin][所属顧客]対象Member'
+    end
+    shared_examples_for '[ログイン中/削除予約済み][Member権限]所属顧客' do
+      let!(:customer_code) { customer.code }
+      # it_behaves_like '[ログイン中/削除予約済み][Member権限][所属顧客]対象なし' # Tips: 先にRoutingErrorになる
+      it_behaves_like '[ログイン中/削除予約済み][Member権限][所属顧客]対象自分'
+      it_behaves_like '[ログイン中/削除予約済み][Admin権限/Member][所属顧客]対象Owner'
+      it_behaves_like '[ログイン中/削除予約済み][Member権限][所属顧客]対象Admin'
+      it_behaves_like '[ログイン中/削除予約済み][Member権限][所属顧客]対象Member'
+    end
+    shared_examples_for '[未ログイン]未所属顧客' do
+      let!(:customer_code) { outside_customer.code }
+      # it_behaves_like '[未ログイン][未所属顧客]対象なし' # Tips: 先にRoutingErrorになる
+      # it_behaves_like '[未ログイン][未所属顧客]対象自分' # Tips: 未ログインの為、対象自分なし
+      it_behaves_like '[未ログイン][未所属顧客]対象Owner'
+      it_behaves_like '[未ログイン][未所属顧客]対象Admin'
+      it_behaves_like '[未ログイン][未所属顧客]対象Member'
+    end
+    shared_examples_for '[ログイン中/削除予約済み]未所属顧客' do
+      let!(:customer_code) { outside_customer.code }
+      # it_behaves_like '[ログイン中/削除予約済み][未所属顧客]対象なし' # Tips: 先にRoutingErrorになる
+      it_behaves_like '[ログイン中/削除予約済み][未所属顧客/存在しない顧客]対象自分'
+      it_behaves_like '[ログイン中/削除予約済み][未所属顧客/存在しない顧客]対象Owner'
+      it_behaves_like '[ログイン中/削除予約済み][未所属顧客/存在しない顧客]対象Admin'
+      it_behaves_like '[ログイン中/削除予約済み][未所属顧客/存在しない顧客]対象Member'
+    end
+    shared_examples_for '[未ログイン]存在しない顧客' do
+      let!(:customer_code) { NOT_CUSTOMER_CODE }
+      # it_behaves_like '[未ログイン][未所属顧客]対象なし' # Tips: 先にRoutingErrorになる
+      # it_behaves_like '[未ログイン][未所属顧客]対象自分' # Tips: 未ログインの為、対象自分なし
+      it_behaves_like '[未ログイン][存在しない顧客]対象Owner'
+      it_behaves_like '[未ログイン][存在しない顧客]対象Admin'
+      it_behaves_like '[未ログイン][存在しない顧客]対象Member'
+    end
+    shared_examples_for '[ログイン中/削除予約済み]存在しない顧客' do
+      let!(:customer_code) { NOT_CUSTOMER_CODE }
+      # it_behaves_like '[ログイン中/削除予約済み][存在しない顧客]対象なし' # Tips: 先にRoutingErrorになる
+      it_behaves_like '[ログイン中/削除予約済み][未所属顧客/存在しない顧客]対象自分'
+      it_behaves_like '[ログイン中/削除予約済み][未所属顧客/存在しない顧客]対象Owner'
+      it_behaves_like '[ログイン中/削除予約済み][未所属顧客/存在しない顧客]対象Admin'
+      it_behaves_like '[ログイン中/削除予約済み][未所属顧客/存在しない顧客]対象Member'
+    end
+
+    shared_examples_for '[未ログイン]権限なし' do
+      # it_behaves_like '[未ログイン][権限なし]所属顧客' # Tips: 権限なしの為、所属顧客なし
+      it_behaves_like '[未ログイン]未所属顧客'
+      it_behaves_like '[未ログイン]存在しない顧客'
+      # it_behaves_like '[未ログイン][権限なし]顧客なし' # Tips: 先にRoutingErrorになる
+    end
+    shared_examples_for '[ログイン中/削除予約済み]権限なし' do
+      # it_behaves_like '[ログイン中/削除予約済み][権限なし]所属顧客' # Tips: 権限なしの為、所属顧客なし
+      it_behaves_like '[ログイン中/削除予約済み]未所属顧客'
+      it_behaves_like '[ログイン中/削除予約済み]存在しない顧客'
+      # it_behaves_like '[ログイン中/削除予約済み][権限なし]顧客なし' # Tips: 先にRoutingErrorになる
+    end
+    shared_examples_for '[ログイン中]Owner権限' do
+      include_context '顧客・ユーザー紐付け', Time.current, :Owner
+      it_behaves_like '[ログイン中][Owner権限]所属顧客'
+      it_behaves_like '[ログイン中/削除予約済み]未所属顧客'
+      it_behaves_like '[ログイン中/削除予約済み]存在しない顧客'
+      # it_behaves_like '[ログイン中][Owner権限]顧客なし' # Tips: 先にRoutingErrorになる
+    end
+    shared_examples_for '[削除予約済み]Owner権限' do
+      include_context '顧客・ユーザー紐付け', Time.current, :Owner
+      it_behaves_like '[削除予約済み][Owner権限]所属顧客'
+      it_behaves_like '[ログイン中/削除予約済み]未所属顧客'
+      it_behaves_like '[ログイン中/削除予約済み]存在しない顧客'
+      # it_behaves_like '[削除予約済み][Owner権限]顧客なし' # Tips: 先にRoutingErrorになる
+    end
+    shared_examples_for '[ログイン中]Admin権限' do
+      include_context '顧客・ユーザー紐付け', Time.current, :Admin
+      it_behaves_like '[ログイン中][Admin権限]所属顧客'
+      it_behaves_like '[ログイン中/削除予約済み]未所属顧客'
+      it_behaves_like '[ログイン中/削除予約済み]存在しない顧客'
+      # it_behaves_like '[ログイン中][Admin権限]顧客なし' # Tips: 先にRoutingErrorになる
+    end
+    shared_examples_for '[削除予約済み]Admin権限' do
+      include_context '顧客・ユーザー紐付け', Time.current, :Admin
+      it_behaves_like '[削除予約済み][Admin権限]所属顧客'
+      it_behaves_like '[ログイン中/削除予約済み]未所属顧客'
+      it_behaves_like '[ログイン中/削除予約済み]存在しない顧客'
+      # it_behaves_like '[削除予約済み][Admin権限]顧客なし' # Tips: 先にRoutingErrorになる
+    end
+    shared_examples_for '[ログイン中/削除予約済み]Member権限' do
+      include_context '顧客・ユーザー紐付け', Time.current, :Member
+      it_behaves_like '[ログイン中/削除予約済み][Member権限]所属顧客'
+      it_behaves_like '[ログイン中/削除予約済み]未所属顧客'
+      it_behaves_like '[ログイン中/削除予約済み]存在しない顧客'
+      # it_behaves_like '[ログイン中/削除予約済み][Member権限]顧客なし' # Tips: 先にRoutingErrorになる
+    end
+
+    context '未ログイン' do
+      it_behaves_like '[未ログイン]権限なし'
+      # it_behaves_like '[未ログイン]Owner権限' # Tips: 未ログインの為、権限なし
+      # it_behaves_like '[未ログイン]Admin権限' # Tips: 未ログインの為、権限なし
+      # it_behaves_like '[未ログイン]Member権限' # Tips: 未ログインの為、権限なし
+    end
+    context 'ログイン中' do
+      include_context 'ログイン処理'
+      it_behaves_like '[ログイン中/削除予約済み]権限なし'
+      it_behaves_like '[ログイン中]Owner権限'
+      it_behaves_like '[ログイン中]Admin権限'
+      it_behaves_like '[ログイン中/削除予約済み]Member権限'
+    end
+    context 'ログイン中（削除予約済み）' do
+      include_context 'ログイン処理', true
+      it_behaves_like '[ログイン中/削除予約済み]権限なし'
+      it_behaves_like '[削除予約済み]Owner権限'
+      it_behaves_like '[削除予約済み]Admin権限'
+      it_behaves_like '[ログイン中/削除予約済み]Member権限'
+    end
+  end
+end

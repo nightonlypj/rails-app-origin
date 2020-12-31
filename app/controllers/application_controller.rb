@@ -47,7 +47,7 @@ class ApplicationController < ActionController::Base
 
   # JSONの場合、サブドメイン禁止
   def not_found_json_sub_domain_response
-    head :not_found if json_request? && !base_domain_request?
+    render json: { error: t('errors.messages.domain_error') }, status: :not_found if json_request? && !base_domain_request?
   end
 
   # 削除予約済みの場合、リダイレクトしてメッセージを表示

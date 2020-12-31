@@ -1,7 +1,6 @@
 require 'rails_helper'
 
 RSpec.describe 'Users::Confirmations', type: :request do
-  include_context '共通ヘッダー'
   include_context 'リクエストスペース作成'
 
   # GET /users/confirmation/new メールアドレス確認メール再送
@@ -27,19 +26,19 @@ RSpec.describe 'Users::Confirmations', type: :request do
 
     # テストケース
     shared_examples_for '[未ログイン]ベースドメイン' do
-      let!(:headers) { base_headers }
+      let!(:headers) { BASE_HEADER }
       it_behaves_like 'ToOK'
     end
     shared_examples_for '[ログイン中]ベースドメイン' do
-      let!(:headers) { base_headers }
+      let!(:headers) { BASE_HEADER }
       it_behaves_like 'ToOK' # Tips: リンクないけど、送れても良さそう
     end
     shared_examples_for '存在するサブドメイン' do
-      let!(:headers) { @space_headers }
+      let!(:headers) { @space_header }
       it_behaves_like 'ToBase'
     end
     shared_examples_for '存在しないサブドメイン' do
-      let!(:headers) { not_space_headers }
+      let!(:headers) { NOT_SPACE_HEADER }
       it_behaves_like 'ToBase'
     end
 
@@ -96,19 +95,19 @@ RSpec.describe 'Users::Confirmations', type: :request do
 
     # テストケース
     shared_examples_for '[有効なパラメータ]ベースドメイン' do
-      let!(:headers) { base_headers }
+      let!(:headers) { BASE_HEADER }
       it_behaves_like 'ToLogin' # Tips: OK
     end
     shared_examples_for '[無効なパラメータ]ベースドメイン' do
-      let!(:headers) { base_headers }
-      it_behaves_like 'ToOK' # Tips: 再入力の為
+      let!(:headers) { BASE_HEADER }
+      it_behaves_like 'ToOK' # Tips: 再入力
     end
     shared_examples_for '存在するサブドメイン' do
-      let!(:headers) { @space_headers }
+      let!(:headers) { @space_header }
       it_behaves_like 'ToNG'
     end
     shared_examples_for '存在しないサブドメイン' do
-      let!(:headers) { not_space_headers }
+      let!(:headers) { NOT_SPACE_HEADER }
       it_behaves_like 'ToNG'
     end
 
@@ -192,57 +191,57 @@ RSpec.describe 'Users::Confirmations', type: :request do
 
     # テストケース
     shared_examples_for '[未ログイン][期限内のtoken][未確認]ベースドメイン' do
-      let!(:headers) { base_headers }
+      let!(:headers) { BASE_HEADER }
       it_behaves_like 'OK'
       it_behaves_like 'ToLogin'
     end
     shared_examples_for '[ログイン中][期限内のtoken][未確認]ベースドメイン' do
-      let!(:headers) { base_headers }
+      let!(:headers) { BASE_HEADER }
       it_behaves_like 'OK'
       it_behaves_like 'ToTop'
     end
     shared_examples_for '[期限切れのtoken][未確認]ベースドメイン' do
-      let!(:headers) { base_headers }
+      let!(:headers) { BASE_HEADER }
       it_behaves_like 'NG'
       it_behaves_like 'ToNew'
     end
     shared_examples_for '[存在しないtoken][未確認]ベースドメイン' do
-      let!(:headers) { base_headers }
+      let!(:headers) { BASE_HEADER }
       # it_behaves_like 'NG' # Tips: tokenが存在しない為、確認日時がない
       it_behaves_like 'ToNew'
     end
     shared_examples_for '[未ログイン][期限内のtoken][確認済み]ベースドメイン' do
-      let!(:headers) { base_headers }
+      let!(:headers) { BASE_HEADER }
       it_behaves_like 'NG'
       it_behaves_like 'ToLogin'
     end
     shared_examples_for '[ログイン中][期限内のtoken][確認済み]ベースドメイン' do
-      let!(:headers) { base_headers }
+      let!(:headers) { BASE_HEADER }
       it_behaves_like 'NG'
       it_behaves_like 'ToLogin' # Tips: ログインからトップにリダイレクト
     end
     shared_examples_for '[期限切れのtoken][確認済み]ベースドメイン' do
-      let!(:headers) { base_headers }
+      let!(:headers) { BASE_HEADER }
       it_behaves_like 'NG'
       it_behaves_like 'ToNew'
     end
     shared_examples_for '[期限内/期限切れのtoken]存在するサブドメイン' do
-      let!(:headers) { @space_headers }
+      let!(:headers) { @space_header }
       it_behaves_like 'NG'
       it_behaves_like 'ToBase'
     end
     shared_examples_for '[存在しないtoken]存在するサブドメイン' do
-      let!(:headers) { @space_headers }
+      let!(:headers) { @space_header }
       # it_behaves_like 'NG' # Tips: tokenが存在しない為、確認日時がない
       it_behaves_like 'ToBase'
     end
     shared_examples_for '[期限内/期限切れのtoken]存在しないサブドメイン' do
-      let!(:headers) { not_space_headers }
+      let!(:headers) { NOT_SPACE_HEADER }
       it_behaves_like 'NG'
       it_behaves_like 'ToBase'
     end
     shared_examples_for '[存在しないtoken]存在しないサブドメイン' do
-      let!(:headers) { not_space_headers }
+      let!(:headers) { NOT_SPACE_HEADER }
       # it_behaves_like 'NG' # Tips: tokenが存在しない為、確認日時がない
       it_behaves_like 'ToBase'
     end
