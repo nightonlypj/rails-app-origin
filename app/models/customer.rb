@@ -1,5 +1,5 @@
 class Customer < ApplicationRecord
-  has_many :customer_user
+  has_many :member
 
   validates :code, presence: true
   validates :code, length: { in: Settings['customer_code_minimum']..Settings['customer_code_maximum'] }, if: proc { |customer| customer.code.present? }

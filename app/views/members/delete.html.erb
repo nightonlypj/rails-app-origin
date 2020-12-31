@@ -1,0 +1,22 @@
+<h2><%= @customer.name %>のメンバー解除</h2>
+
+<div class="field">
+  <label>表示名</label>
+  <%= image_tag @member.user.image_url(:small) %> <%= @member.user.name %>
+</div>
+
+<div class="field">
+  <label>メールアドレス</label>
+  <%= @member.user.email %>
+</div>
+
+<div class="field">
+  <label>権限</label>
+  <%= @member.power_i18n %>
+</div>
+
+<p><%= button_to '解除確認', member_path(customer_code: @customer.code, user_code: @member.user.code), data: { confirm: '本当に解除しますか？' }, method: :delete %></p>
+
+<ul>
+  <li><%= link_to 'メンバー一覧', members_path(customer_code: @customer.code) %></li>
+</ul>

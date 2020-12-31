@@ -1,0 +1,31 @@
+<h2><%= @customer.name %>のメンバー権限変更</h2>
+
+<%= form_with(model: @member, url: member_path(customer_code: @customer.code, user_code: @member.user.code), local: true) do |form| %>
+  <%= render 'users/shared/error_messages', resource: @member %>
+
+  <div class="field">
+    <%= form.label '表示名' %>
+    <%= image_tag @member.user.image_url(:small) %> <%= @member.user.name %>
+  </div>
+
+  <div class="field">
+    <%= form.label 'メールアドレス' %>
+    <%= @member.user.email %>
+  </div>
+
+  <div class="field">
+    <%= form.label '権限' %>
+    <% Member.powers.each do |power| %>
+      <%= form.radio_button :power, power[0] %> <%= Member.powers_i18n[power[0]] %>
+    <% end %>
+    <%= render 'users/shared/field_error_messages', messages: @member.errors[:power] %>
+  </div>
+
+  <div class="actions">
+    <%= form.submit '変更' %>
+  </div>
+<% end %>
+
+<ul>
+  <li><%= link_to 'メンバー一覧', members_path(customer_code: @customer.code) %></li>
+</ul>

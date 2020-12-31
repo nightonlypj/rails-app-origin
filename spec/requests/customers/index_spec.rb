@@ -173,20 +173,20 @@ RSpec.describe 'Customers', type: :request do
       it 'ユーザーの権限が含まれる' do # Tips: ユニークではない為、正確ではない
         get customers_path(page: page), headers: headers
         (start_no..end_no).each do |no|
-          expect(response.body).to include(@create_customers[no - 1].customer_user[0].power_i18n)
+          expect(response.body).to include(@create_customers[no - 1].member[0].power_i18n)
         end
       end
       it '(json)ユーザーの権限が一致する' do
         get customers_path(page: page, format: :json), headers: headers
         parse_response = JSON.parse(response.body)['customers']
         (start_no..end_no).each do |no|
-          expect(parse_response[no - start_no]['current_user']['power']).to eq(@create_customers[no - 1].customer_user[0].power)
+          expect(parse_response[no - start_no]['current_user']['power']).to eq(@create_customers[no - 1].member[0].power)
         end
       end
       it 'メンバー一覧のパスが含まれる' do
         get customers_path(page: page), headers: headers
         (start_no..end_no).each do |no|
-          expect(response.body).to include("\"#{customer_users_path(@create_customers[no - 1].code)}\"")
+          expect(response.body).to include("\"#{members_path(@create_customers[no - 1].code)}\"")
         end
       end
     end

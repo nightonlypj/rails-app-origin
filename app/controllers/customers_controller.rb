@@ -7,6 +7,6 @@ class CustomersController < ApplicationController
   # GET /customers.json（ベースドメイン） 所属一覧API
   def index
     @customers = Customer.order(created_at: 'ASC', id: 'ASC').page(params[:page]).per(Settings['default_customers_limit'])
-                         .includes(:customer_user).where(customer_users: { user_id: current_user.id })
+                         .includes(:member).where(members: { user_id: current_user.id })
   end
 end

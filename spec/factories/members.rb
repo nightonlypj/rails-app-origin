@@ -1,4 +1,4 @@
 FactoryBot.define do
-  factory :customer_user do
+  factory :member do
   end
 end

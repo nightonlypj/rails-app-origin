@@ -1,4 +1,4 @@
-# Tips: id = customer.id & customer_users.power
+# Tips: id = customer.id & members.power
 # 顧客1
 - id: 11
   code: code11

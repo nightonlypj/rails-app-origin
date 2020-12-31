@@ -22,11 +22,11 @@
       <td><%= customer.code %></td>
       <td><%= customer.name %></td>
       <td>
-<% customer.customer_user.each do |customer_user| %>
-      <%= customer_user.power_i18n %><br/>
+<% customer.member.each do |member| %>
+      <%= member.power_i18n %><br/>
 <% end %>
       </td>
-      <td><%= link_to '一覧', customer_users_path(customer.code) %></td>
+      <td><%= link_to '一覧', members_path(customer.code) %></td>
     </tr>
 <% end %>
   </tbody>

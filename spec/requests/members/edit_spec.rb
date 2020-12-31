@@ -1,9 +1,9 @@
 require 'rails_helper'
 
-RSpec.describe 'CustomerUsers', type: :request do
+RSpec.describe 'Members', type: :request do
   include_context 'リクエストスペース作成'
 
-  # GET /customer_users/:customer_code/:user_code/edit（ベースドメイン） メンバー権限変更
+  # GET /members/:customer_code/:user_code/edit（ベースドメイン） メンバー権限変更
   # 前提条件
   #   なし
   # テストパターン
@@ -19,27 +19,27 @@ RSpec.describe 'CustomerUsers', type: :request do
     # テスト内容
     shared_examples_for 'ToOK' do
       it '成功ステータス' do
-        get edit_customer_user_path(customer_code: customer_code, user_code: user_code), headers: headers
+        get edit_member_path(customer_code: customer_code, user_code: user_code), headers: headers
         expect(response).to be_successful
       end
     end
     shared_examples_for 'ToNG' do
       it '存在しないステータス' do
-        get edit_customer_user_path(customer_code: customer_code, user_code: user_code), headers: headers
+        get edit_member_path(customer_code: customer_code, user_code: user_code), headers: headers
         expect(response).to be_not_found
       end
     end
     shared_examples_for 'ToIndex' do |alert, notice|
       it '一覧にリダイレクト' do
-        get edit_customer_user_path(customer_code: customer_code, user_code: user_code), headers: headers
-        expect(response).to redirect_to(customer_users_path(customer_code: customer_code))
+        get edit_member_path(customer_code: customer_code, user_code: user_code), headers: headers
+        expect(response).to redirect_to(members_path(customer_code: customer_code))
         expect(flash[:alert]).to alert.present? ? eq(I18n.t(alert)) : be_nil
         expect(flash[:notice]).to notice.present? ? eq(I18n.t(notice)) : be_nil
       end
     end
     shared_examples_for 'ToLogin' do |alert, notice|
       it 'ログインにリダイレクト' do
-        get edit_customer_user_path(customer_code: customer_code, user_code: user_code), headers: headers
+        get edit_member_path(customer_code: customer_code, user_code: user_code), headers: headers
         expect(response).to redirect_to(new_user_session_path)
         expect(flash[:alert]).to alert.present? ? eq(I18n.t(alert)) : be_nil
         expect(flash[:notice]).to notice.present? ? eq(I18n.t(notice)) : be_nil
@@ -47,8 +47,8 @@ RSpec.describe 'CustomerUsers', type: :request do
     end
     shared_examples_for 'ToBase' do |alert, notice|
       it 'ベースドメインにリダイレクト' do
-        get edit_customer_user_path(customer_code: customer_code, user_code: user_code), headers: headers
-        expect(response).to redirect_to("//#{Settings['base_domain']}#{edit_customer_user_path(customer_code: customer_code, user_code: user_code)}")
+        get edit_member_path(customer_code: customer_code, user_code: user_code), headers: headers
+        expect(response).to redirect_to("//#{Settings['base_domain']}#{edit_member_path(customer_code: customer_code, user_code: user_code)}")
         expect(flash[:alert]).to alert.present? ? eq(I18n.t(alert)) : be_nil
         expect(flash[:notice]).to notice.present? ? eq(I18n.t(notice)) : be_nil
       end
@@ -57,15 +57,15 @@ RSpec.describe 'CustomerUsers', type: :request do
     # テストケース
     shared_examples_for '[ログイン中/削除予約済み][Owner権限][所属顧客][対象自分]ベースドメイン' do
       let!(:headers) { BASE_HEADER }
-      it_behaves_like 'ToIndex', 'alert.customer_user.own_update_power.owner', nil
+      it_behaves_like 'ToIndex', 'alert.member.own_update_power.owner', nil
     end
     shared_examples_for '[ログイン中/削除予約済み][Admin権限][所属顧客][対象自分]ベースドメイン' do
       let!(:headers) { BASE_HEADER }
-      it_behaves_like 'ToIndex', 'alert.customer_user.own_update_power.admin', nil
+      it_behaves_like 'ToIndex', 'alert.member.own_update_power.admin', nil
     end
     shared_examples_for '[ログイン中/削除予約済み][Member権限][所属顧客][対象自分/Admin/Member]ベースドメイン' do
       let!(:headers) { BASE_HEADER }
-      it_behaves_like 'ToIndex', 'alert.customer_user.not_update_power.admin', nil
+      it_behaves_like 'ToIndex', 'alert.member.not_update_power.admin', nil
     end
     shared_examples_for '[ログイン中][Owner権限][所属顧客][対象Owner]ベースドメイン' do
       let!(:headers) { BASE_HEADER }
@@ -77,7 +77,7 @@ RSpec.describe 'CustomerUsers', type: :request do
     end
     shared_examples_for '[ログイン中/削除予約済み][Admin権限/Member][所属顧客][対象Owner]ベースドメイン' do
       let!(:headers) { BASE_HEADER }
-      it_behaves_like 'ToIndex', 'alert.customer_user.not_update_power.owner', nil
+      it_behaves_like 'ToIndex', 'alert.member.not_update_power.owner', nil
     end
     shared_examples_for '[ログイン中][Owner権限/Admin][所属顧客][対象Admin/Member]ベースドメイン' do
       let!(:headers) { BASE_HEADER }

@@ -9,7 +9,7 @@ json.customers do
     json.code customer.code
     json.name customer.name
     json.current_user do
-      json.power customer.customer_user[0].power
+      json.power customer.member[0].power
     end
   end
 end

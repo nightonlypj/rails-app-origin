@@ -5,7 +5,7 @@ ja:
   activerecord:
     models:
       customer: "顧客"
-      customer_user: "メンバー"
+      member: "メンバー"
       space: "スペース"
     attributes:
       customer:
@@ -14,7 +14,7 @@ ja:
         name: "顧客名"
         created_at: "作成日時"
         updated_at: "更新日時"
-      customer_user:
+      member:
         id: "ID"
         customer: "顧客"
         user: "ユーザー"
@@ -33,7 +33,7 @@ ja:
         updated_at: "更新日時"
     errors:
       models:
-        customer_user:
+        member:
           attributes:
             power:
               blank: "選択してください。"
@@ -51,13 +51,13 @@ ja:
               too_short: "%{count}文字以上で入力してください。"
               too_long: "%{count}文字以下で入力してください。"
   enums:
-    customer_user:
+    member:
       power:
         Owner: "所有者"
         Admin: "管理者"
         Member: "メンバー"
   blank_word:
-    customer_user:
+    member:
       invitationed_at: "なし"
       registrationed_at: "登録待ち"
   helpers:
@@ -70,7 +70,7 @@ ja:
       image_destroy: "画像を削除しました。"
       destroy_reserved: "アカウント削除予定の為、この操作はできません。"
       not_destroy_reserved: "既に取り消し済みか、アカウント削除していません。"
-    customer_user:
+    member:
       update: "メンバーの権限を変更しました。"
       destroy: "メンバーを解除しました。"
     space:
@@ -79,7 +79,7 @@ ja:
   alert:
     user:
       destroy_reserved: "アカウント削除予定の為、この操作はできません。"
-    customer_user:
+    member:
       not_update_power:
         owner: "変更権限がありません。所属の所有者に依頼してください。"
         admin: "変更権限がありません。所属の管理者または所有者に依頼してください。"

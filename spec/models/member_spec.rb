@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-RSpec.describe CustomerUser, type: :model do
+RSpec.describe Member, type: :model do
   # 登録日時を返却
   # 前提条件
   #   なし
@@ -18,40 +18,40 @@ RSpec.describe CustomerUser, type: :model do
       let!(:user) do
         FactoryBot.create(:user, invitation_customer_id: customer_id, invitation_requested_at: requested_at, invitation_completed_at: completed_at)
       end
-      let!(:customer_user) do
-        FactoryBot.create(:customer_user, customer_id: customers[0].id, user_id: user.id, invitationed_at: invitationed_at, power: :Member)
+      let!(:member) do
+        FactoryBot.create(:member, customer_id: customers[0].id, user_id: user.id, invitationed_at: invitationed_at, power: :Member)
       end
     end
 
     # テスト内容
     shared_examples_for '自分で顧客作成' do
       it '登録日時' do
-        expect(customer_user.registrationed_at).to eq(customer_user.created_at)
+        expect(member.registrationed_at).to eq(member.created_at)
       end
     end
     shared_examples_for '招待前にアカウント作成' do
       it '登録日時' do
-        expect(customer_user.registrationed_at).to eq(customer_user.created_at)
+        expect(member.registrationed_at).to eq(member.created_at)
       end
     end
     shared_examples_for 'この顧客で招待・登録未完了' do
       it 'なし' do
-        expect(customer_user.registrationed_at).to be_nil
+        expect(member.registrationed_at).to be_nil
       end
     end
     shared_examples_for '他の顧客で招待・登録未完了' do
       it 'なし' do
-        expect(customer_user.registrationed_at).to be_nil
+        expect(member.registrationed_at).to be_nil
       end
     end
     shared_examples_for 'この顧客で招待・登録完了' do
       it '招待完了日時' do
-        expect(customer_user.registrationed_at).to eq(user.invitation_completed_at)
+        expect(member.registrationed_at).to eq(user.invitation_completed_at)
       end
     end
     shared_examples_for '他の顧客で招待・登録完了' do
       it '登録日時' do
-        expect(customer_user.registrationed_at).to eq(customer_user.created_at)
+        expect(member.registrationed_at).to eq(member.created_at)
       end
     end
 
@@ -108,18 +108,18 @@ RSpec.describe CustomerUser, type: :model do
     let!(:customer) { FactoryBot.create(:customer) }
     shared_context 'データ作成' do |power|
       let!(:user) { FactoryBot.create(:user) }
-      let!(:customer_user) { FactoryBot.create(:customer_user, customer_id: customer.id, user_id: user.id, power: power) }
+      let!(:member) { FactoryBot.create(:member, customer_id: customer.id, user_id: user.id, power: power) }
     end
 
     # テスト内容
     shared_examples_for 'ToOK' do
       it 'OK' do
-        expect(customer_user.update_power?).to eq(true)
+        expect(member.update_power?).to eq(true)
       end
     end
     shared_examples_for 'ToNG' do
       it 'NG' do
-        expect(customer_user.update_power?).to eq(false)
+        expect(member.update_power?).to eq(false)
       end
     end
 
@@ -148,18 +148,18 @@ RSpec.describe CustomerUser, type: :model do
     let!(:customer) { FactoryBot.create(:customer) }
     shared_context 'データ作成' do |power|
       let!(:user) { FactoryBot.create(:user) }
-      let!(:customer_user) { FactoryBot.create(:customer_user, customer_id: customer.id, user_id: user.id, power: power) }
+      let!(:member) { FactoryBot.create(:member, customer_id: customer.id, user_id: user.id, power: power) }
     end
 
     # テスト内容
     shared_examples_for 'ToOK' do
       it 'OK' do
-        expect(customer_user.update_power?(taget_user_power)).to eq(true)
+        expect(member.update_power?(taget_user_power)).to eq(true)
       end
     end
     shared_examples_for 'ToNG' do
       it 'NG' do
-        expect(customer_user.update_power?(taget_user_power)).to eq(false)
+        expect(member.update_power?(taget_user_power)).to eq(false)
       end
     end
 
@@ -218,18 +218,18 @@ RSpec.describe CustomerUser, type: :model do
     let!(:customer) { FactoryBot.create(:customer) }
     shared_context 'データ作成' do |power|
       let!(:user) { FactoryBot.create(:user) }
-      let!(:customer_user) { FactoryBot.create(:customer_user, customer_id: customer.id, user_id: user.id, power: power) }
+      let!(:member) { FactoryBot.create(:member, customer_id: customer.id, user_id: user.id, power: power) }
     end
 
     # テスト内容
     shared_examples_for 'ToOK' do
       it 'OK' do
-        expect(customer_user.destroy_power?).to eq(true)
+        expect(member.destroy_power?).to eq(true)
       end
     end
     shared_examples_for 'ToNG' do
       it 'NG' do
-        expect(customer_user.destroy_power?).to eq(false)
+        expect(member.destroy_power?).to eq(false)
       end
     end
 
@@ -258,18 +258,18 @@ RSpec.describe CustomerUser, type: :model do
     let!(:customer) { FactoryBot.create(:customer) }
     shared_context 'データ作成' do |power|
       let!(:user) { FactoryBot.create(:user) }
-      let!(:customer_user) { FactoryBot.create(:customer_user, customer_id: customer.id, user_id: user.id, power: power) }
+      let!(:member) { FactoryBot.create(:member, customer_id: customer.id, user_id: user.id, power: power) }
     end
 
     # テスト内容
     shared_examples_for 'ToOK' do
       it 'OK' do
-        expect(customer_user.destroy_power?(taget_user_power)).to eq(true)
+        expect(member.destroy_power?(taget_user_power)).to eq(true)
       end
     end
     shared_examples_for 'ToNG' do
       it 'NG' do
-        expect(customer_user.destroy_power?(taget_user_power)).to eq(false)
+        expect(member.destroy_power?(taget_user_power)).to eq(false)
       end
     end
 

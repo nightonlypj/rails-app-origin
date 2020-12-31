@@ -39,19 +39,6 @@ ActiveRecord::Schema.define(version: 2020_12_09_114237) do
     t.index ["unlock_token"], name: "index_admin_users4", unique: true
   end
 
-  create_table "customer_users", force: :cascade do |t|
-    t.bigint "customer_id", null: false
-    t.bigint "user_id", null: false
-    t.integer "power", null: false
-    t.datetime "invitationed_at"
-    t.datetime "created_at", precision: 6, null: false
-    t.datetime "updated_at", precision: 6, null: false
-    t.index ["created_at", "id"], name: "index_customer_users2"
-    t.index ["customer_id", "user_id"], name: "index_customer_users1", unique: true
-    t.index ["customer_id"], name: "index_customer_users_on_customer_id"
-    t.index ["user_id"], name: "index_customer_users_on_user_id"
-  end
-
   create_table "customers", force: :cascade do |t|
     t.string "code", null: false
     t.string "name"
@@ -59,6 +46,19 @@ ActiveRecord::Schema.define(version: 2020_12_09_114237) do
     t.datetime "updated_at", precision: 6, null: false
     t.index ["code"], name: "index_customers1", unique: true
     t.index ["created_at", "id"], name: "index_customers2"
+  end
+
+  create_table "members", force: :cascade do |t|
+    t.bigint "customer_id", null: false
+    t.bigint "user_id", null: false
+    t.integer "power", null: false
+    t.datetime "invitationed_at"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["created_at", "id"], name: "index_members2"
+    t.index ["customer_id", "user_id"], name: "index_members1", unique: true
+    t.index ["customer_id"], name: "index_members_on_customer_id"
+    t.index ["user_id"], name: "index_members_on_user_id"
   end
 
   create_table "spaces", force: :cascade do |t|
@@ -120,7 +120,7 @@ ActiveRecord::Schema.define(version: 2020_12_09_114237) do
     t.index ["item_type", "item_id"], name: "index_versions1"
   end
 
-  add_foreign_key "customer_users", "customers"
-  add_foreign_key "customer_users", "users"
+  add_foreign_key "members", "customers"
+  add_foreign_key "members", "users"
   add_foreign_key "spaces", "customers"
 end

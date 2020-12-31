@@ -22,7 +22,7 @@ customer_name_maximum: 32
 
 ## メンバー
 # 一覧のデフォルト最大表示件数
-default_customer_users_limit: 25
+default_members_limit: 25
 
 ## スペース
 # 新しいスペースの最大表示件数

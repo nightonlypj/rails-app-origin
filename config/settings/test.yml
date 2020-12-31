@@ -24,10 +24,10 @@ customer_name_maximum: 21 # Tips: (16+5?)以上
 
 ## メンバー
 # 一覧のデフォルト最大表示件数
-default_customer_users_limit: 4 # Tips: 高速化の為（4以上、下記の合計値+1）
-test_customer_users_owner: 1
-test_customer_users_admin: 1
-test_customer_users_member: 1
+default_members_limit: 4 # Tips: 高速化の為（4以上、下記の合計値+1）
+test_members_owner: 1
+test_members_admin: 1
+test_members_member: 1
 
 ## スペース
 # 新しいスペースの最大表示件数
