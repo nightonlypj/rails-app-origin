@@ -1,11 +1,12 @@
 class CustomerUsersController < ApplicationController
   before_action :not_found_json_sub_domain_response
-  before_action :redirect_base_domain_response, only: %i[index new edit]
+  before_action :redirect_base_domain_response, only: %i[index new edit delete]
   before_action :not_found_sub_domain_response, only: %i[create update destroy]
   before_action :authenticate_user!
   before_action :not_found_outside_customer
   before_action :not_found_outside_customer_user, only: %i[edit update delete destroy]
-  before_action :alert_before_update_power, only: %i[edit update delete destroy]
+  before_action :alert_before_update_power, only: %i[edit update]
+  before_action :alert_before_destroy_power, only: %i[delete destroy]
 
   # GET /customer_users/:customer_code（ベースドメイン） メンバー一覧
   # GET /customer_users/:customer_code.json（ベースドメイン） メンバー一覧API
@@ -48,7 +49,7 @@ class CustomerUsersController < ApplicationController
     elsif CustomerUser.powers[params[:customer_user][:power]].blank?
       @customer_user.errors.add(:power, t('activerecord.errors.models.customer_user.attributes.power.invalid'))
     elsif !@customer.customer_user.first.update_power?(params[:customer_user][:power])
-      @customer_user.errors.add(:power, t('alert.user.not_update_power.owner'))
+      @customer_user.errors.add(:power, t('alert.customer_user.not_update_power.owner'))
     end
 
     respond_to do |format|
@@ -62,14 +63,17 @@ class CustomerUsersController < ApplicationController
     end
   end
 
-  # DELETE /customer_users/1
-  # DELETE /customer_users/1.json
+  # GET /customer_users/:customer_code/:user_code/delete（ベースドメイン） メンバー解除
+  # def delete
+  # end
+
+  # DELETE /customer_users/:customer_code/:user_code（ベースドメイン） メンバー解除(処理)
+  # DELETE /customer_users/:customer_code/:user_code.json（ベースドメイン） メンバー解除API
   def destroy
-    @customer_user = CustomerUser.find(params[:id])
     @customer_user.destroy
     respond_to do |format|
-      format.html { redirect_to customer_users_url, notice: 'Customer user was successfully destroyed.' }
-      format.json { head :no_content }
+      format.html { redirect_to customer_users_url, notice: t('notice.customer_user.destroy') }
+      format.json { render json: { status: 'OK', notice: t('notice.customer_user.destroy') }, status: :ok }
     end
   end
 
@@ -98,9 +102,25 @@ class CustomerUsersController < ApplicationController
   # 変更権限がないメンバーへのアクセス禁止
   def alert_before_update_power
     if !@customer.customer_user.first.update_power?(@customer_user.power)
-      key = @customer_user.power == 'Owner' ? 'alert.user.not_update_power.owner' : 'alert.user.not_update_power.admin'
+      key = @customer_user.power == 'Owner' ? 'alert.customer_user.not_update_power.owner' : 'alert.customer_user.not_update_power.admin'
     elsif @customer_user.user == current_user
-      key = @customer_user.power == 'Owner' ? 'alert.user.own_update_power.owner' : 'alert.user.own_update_power.admin'
+      key = @customer_user.power == 'Owner' ? 'alert.customer_user.own_update_power.owner' : 'alert.customer_user.own_update_power.admin'
+    elsif current_user.destroy_reserved?
+      key = 'alert.user.destroy_reserved'
+    else
+      return
+    end
+    return render json: { error: t(key) }, status: :forbidden if json_request?
+
+    redirect_to customer_users_path(customer_code: params[:customer_code]), alert: t(key)
+  end
+
+  # 解除権限がないメンバーへのアクセス禁止
+  def alert_before_destroy_power
+    if !@customer.customer_user.first.destroy_power?(@customer_user.power)
+      key = @customer_user.power == 'Owner' ? 'alert.customer_user.not_destroy_power.owner' : 'alert.customer_user.not_destroy_power.admin'
+    elsif @customer_user.user == current_user
+      key = @customer_user.power == 'Owner' ? 'alert.customer_user.own_destroy_power.owner' : 'alert.customer_user.own_destroy_power.admin'
     elsif current_user.destroy_reserved?
       key = 'alert.user.destroy_reserved'
     else

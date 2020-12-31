@@ -72,18 +72,26 @@ ja:
       not_destroy_reserved: "既に取り消し済みか、アカウント削除していません。"
     customer_user:
       update: "メンバーの権限を変更しました。"
+      destroy: "メンバーを解除しました。"
     space:
       create: "スペースを作成しました。"
       update: "スペースを更新しました。"
   alert:
     user:
       destroy_reserved: "アカウント削除予定の為、この操作はできません。"
+    customer_user:
       not_update_power:
         owner: "変更権限がありません。所属の所有者に依頼してください。"
         admin: "変更権限がありません。所属の管理者または所有者に依頼してください。"
       own_update_power:
         owner: "自分の権限は変更できません。所属の他の所有者に依頼してください。"
         admin: "自分の権限は変更できません。所属の他の管理者または所有者に依頼してください。"
+      not_destroy_power:
+        owner: "解除権限がありません。所属の所有者に依頼してください。"
+        admin: "解除権限がありません。所属の管理者または所有者に依頼してください。"
+      own_destroy_power:
+        owner: "自分は解除できません。所属の他の所有者に依頼してください。"
+        admin: "自分は解除できません。所属の他の管理者または所有者に依頼してください。"
   errors:
     messages:
       image_update_blank: "選択してください。"

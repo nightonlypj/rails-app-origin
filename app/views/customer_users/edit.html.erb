@@ -1,4 +1,4 @@
-<h2>メンバー権限変更</h2>
+<h2><%= @customer.name %>のメンバー権限変更</h2>
 
 <%= form_with(model: @customer_user, url: customer_user_path(customer_code: @customer.code, user_code: @customer_user.user.code), local: true) do |form| %>
   <%= render 'users/shared/error_messages', resource: @customer_user %>
@@ -14,7 +14,7 @@
   </div>
 
   <div class="field">
-    <%= form.label :power %>
+    <%= form.label '権限' %>
     <% CustomerUser.powers.each do |power| %>
       <%= form.radio_button :power, power[0] %> <%= CustomerUser.powers_i18n[power[0]] %>
     <% end %>

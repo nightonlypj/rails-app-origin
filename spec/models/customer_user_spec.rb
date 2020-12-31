@@ -208,4 +208,114 @@ RSpec.describe CustomerUser, type: :model do
       it_behaves_like '[Member権限]対象Member'
     end
   end
+
+  # 解除権限があるかを返却
+  # 前提条件
+  #   引数なし
+  # テストパターン
+  #   Owner権限, Admin権限, Member権限 → データ作成
+  describe 'destroy_power?' do
+    let!(:customer) { FactoryBot.create(:customer) }
+    shared_context 'データ作成' do |power|
+      let!(:user) { FactoryBot.create(:user) }
+      let!(:customer_user) { FactoryBot.create(:customer_user, customer_id: customer.id, user_id: user.id, power: power) }
+    end
+
+    # テスト内容
+    shared_examples_for 'ToOK' do
+      it 'OK' do
+        expect(customer_user.destroy_power?).to eq(true)
+      end
+    end
+    shared_examples_for 'ToNG' do
+      it 'NG' do
+        expect(customer_user.destroy_power?).to eq(false)
+      end
+    end
+
+    # テストケース
+    context 'Owner権限' do
+      include_context 'データ作成', :Owner
+      it_behaves_like 'ToOK'
+    end
+    context 'Admin権限' do
+      include_context 'データ作成', :Admin
+      it_behaves_like 'ToOK'
+    end
+    context 'Member権限' do
+      include_context 'データ作成', :Member
+      it_behaves_like 'ToNG'
+    end
+  end
+
+  # 解除権限があるかを返却
+  # 前提条件
+  #   引数あり
+  # テストパターン
+  #   Owner権限, Admin権限, Member権限 → データ作成
+  #   対象Owner, 対象Admin, 対象Member
+  describe 'destroy_power?(taget_user_power)' do
+    let!(:customer) { FactoryBot.create(:customer) }
+    shared_context 'データ作成' do |power|
+      let!(:user) { FactoryBot.create(:user) }
+      let!(:customer_user) { FactoryBot.create(:customer_user, customer_id: customer.id, user_id: user.id, power: power) }
+    end
+
+    # テスト内容
+    shared_examples_for 'ToOK' do
+      it 'OK' do
+        expect(customer_user.destroy_power?(taget_user_power)).to eq(true)
+      end
+    end
+    shared_examples_for 'ToNG' do
+      it 'NG' do
+        expect(customer_user.destroy_power?(taget_user_power)).to eq(false)
+      end
+    end
+
+    # テストケース
+    shared_examples_for '[Owner権限]対象Owner' do
+      let!(:taget_user_power) { 'Owner' }
+      it_behaves_like 'ToOK'
+    end
+    shared_examples_for '[Admin/Member権限]対象Owner' do
+      let!(:taget_user_power) { 'Owner' }
+      it_behaves_like 'ToNG'
+    end
+    shared_examples_for '[Owner/Admin権限]対象Admin' do
+      let!(:taget_user_power) { 'Admin' }
+      it_behaves_like 'ToOK'
+    end
+    shared_examples_for '[Member権限]対象Admin' do
+      let!(:taget_user_power) { 'Admin' }
+      it_behaves_like 'ToNG'
+    end
+    shared_examples_for '[Owner/Admin権限]対象Member' do
+      let!(:taget_user_power) { 'Member' }
+      it_behaves_like 'ToOK'
+    end
+    shared_examples_for '[Member権限]対象Member' do
+      let!(:taget_user_power) { 'Member' }
+      it_behaves_like 'ToNG'
+    end
+
+    context 'Owner権限' do
+      include_context 'データ作成', :Owner
+      it_behaves_like '[Owner権限]対象Owner'
+      it_behaves_like '[Owner/Admin権限]対象Admin'
+      it_behaves_like '[Owner/Admin権限]対象Member'
+    end
+    context 'Admin権限' do
+      include_context 'データ作成', :Admin
+      it_behaves_like '[Admin/Member権限]対象Owner'
+      it_behaves_like '[Owner/Admin権限]対象Admin'
+      it_behaves_like '[Owner/Admin権限]対象Member'
+    end
+    context 'Member権限' do
+      include_context 'データ作成', :Member
+      it_behaves_like '[Admin/Member権限]対象Owner'
+      it_behaves_like '[Member権限]対象Admin'
+      it_behaves_like '[Member権限]対象Member'
+    end
+  end
 end

@@ -15,7 +15,7 @@
         <th>権限</th>
       <% end %>
       <th>招待日</th>
-      <% if @customer.customer_user.first.update_power? %>
+      <% if @customer.customer_user.first.destroy_power? %>
         <th colspan="2">登録日</th>
       <% else %>
         <th>登録日</th>
@@ -34,7 +34,7 @@
         <% end %>
         <td><%= customer_user.invitationed_at.present? ? l(customer_user.invitationed_at.to_date) : t('blank_word.customer_user.invitationed_at') %></td>
         <td><%= customer_user.registrationed_at.present? ? l(customer_user.registrationed_at.to_date) : t('blank_word.customer_user.registrationed_at') %></td>
-        <% if @customer.customer_user.first.update_power? %>
+        <% if @customer.customer_user.first.destroy_power? %>
           <td><%= link_to '解除', delete_customer_user_path(customer_code: @customer.code, user_code: customer_user.user.code) %></td>
         <% end %>
       </tr>
