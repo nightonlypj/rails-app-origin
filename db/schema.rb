@@ -41,6 +41,7 @@ ActiveRecord::Schema.define(version: 2020_12_31_131129) do
 
   create_table "infomations", force: :cascade do |t|
     t.string "title", null: false
+    t.string "summary"
     t.text "body"
     t.datetime "started_at", null: false
     t.datetime "ended_at"
@@ -48,8 +49,9 @@ ActiveRecord::Schema.define(version: 2020_12_31_131129) do
     t.bigint "target_user_id"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
-    t.index ["started_at", "ended_at"], name: "index_infomations1"
-    t.index ["target", "target_user_id"], name: "index_infomations2"
+    t.index ["started_at", "ended_at"], name: "index_infomations2"
+    t.index ["started_at", "id"], name: "index_infomations1"
+    t.index ["target", "target_user_id"], name: "index_infomations3"
     t.index ["target_user_id"], name: "index_infomations_on_target_user_id"
   end
 

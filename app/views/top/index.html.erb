@@ -1,1 +1,20 @@
-Hello World!
+<% if @new_infomations.present? %>
+<h2>新しいお知らせ</h2>
+<ul>
+<% @new_infomations.each do |new_infomation| %>
+<% if new_infomation.body.present? %>
+  <li><%= link_to new_infomation.title, new_infomation %> (<%= l(new_infomation.started_at.to_date) %>)
+<% else %>
+  <li><%= new_infomation.title %> (<%= l(new_infomation.started_at.to_date) %>)
+<% end %>
+<% if new_infomation.summary.present? %>
+  <br/><%= new_infomation.summary.html_safe %></li>
+<% else %>
+  </li>
+<% end %>
+<% end %>
+</ul>
+<% if @new_infomations.total_pages > 1 %>
+<p><%= link_to 'もっと見る', infomations_path %></p>
+<% end %>
+<% end %>

@@ -1,38 +1,91 @@
 # Tips: id = target & user_id & 任意
 - id: 11
-  title: 全員へのお知らせ（掲載中）
-  body: 本文
-  started_at: '2021-01-01'
-  ended_at: nil
-  target: 1
-  target_user_id: nil
-- id: 12
-  title: 全員へのお知らせ（掲載終了）
-  body: 本文
+  title: '全員へのお知らせ（掲載終了）'
+  summary: '全員へのお知らせの要約<br/>2行目'
+  body: '全員へのお知らせの本文<br/>2行目'
   started_at: '2020-01-01'
   ended_at: '2020-12-31'
   target: 1
-  target_user_id: nil
+  target_user_id: null
+- id: 12
+  title: '全員へのお知らせ（掲載中）'
+  summary: '全員へのお知らせの要約<br/>2行目'
+  body: '全員へのお知らせの本文<br/>2行目'
+  started_at: '2021-01-01'
+  ended_at: null
+  target: 1
+  target_user_id: null
+- id: 13
+  title: '全員へのお知らせ（掲載中、要約なし）'
+  summary: null
+  body: '全員へのお知らせの本文<br/>2行目'
+  started_at: '2021-01-01'
+  ended_at: null
+  target: 1
+  target_user_id: null
+- id: 14
+  title: '全員へのお知らせ（掲載中、本文なし）'
+  summary: '全員へのお知らせの要約<br/>2行目'
+  body: null
+  started_at: '2021-01-01'
+  ended_at: null
+  target: 1
+  target_user_id: null
+- id: 15
+  title: '全員へのお知らせ（掲載中、要約・本文なし）'
+  summary: null
+  body: null
+  started_at: '2021-01-01'
+  ended_at: null
+  target: 1
+  target_user_id: null
 
 - id: 211
-  title: user1へのお知らせ（掲載中）
-  body: 本文
-  started_at: '2021-01-01'
-  ended_at: nil
+  title: 'user1へのお知らせ（掲載終了）'
+  summary: 'user1へのお知らせの要約<br/>2行目'
+  body: 'user1へのお知らせの本文<br/>2行目'
+  started_at: '2020-01-01'
+  ended_at: '2020-12-31'
   target: 2
   target_user_id: 1
 - id: 212
-  title: user1へのお知らせ（掲載終了）
-  body: 本文
-  started_at: '2020-01-01'
-  ended_at: '2020-12-31'
+  title: 'user1へのお知らせ（掲載中）'
+  summary: 'user1へのお知らせの要約<br/>2行目'
+  body: 'user1へのお知らせの本文<br/>2行目'
+  started_at: '2021-01-01'
+  ended_at: null
+  target: 2
+  target_user_id: 1
+- id: 213
+  title: 'user1へのお知らせ（掲載中、要約なし）'
+  summary: null
+  body: 'user1へのお知らせの本文<br/>2行目'
+  started_at: '2021-01-01'
+  ended_at: null
+  target: 2
+  target_user_id: 1
+- id: 214
+  title: 'user1へのお知らせ（掲載中、本文なし）'
+  summary: 'user1へのお知らせの要約<br/>2行目'
+  body: null
+  started_at: '2021-01-01'
+  ended_at: null
+  target: 2
+  target_user_id: 1
+- id: 215
+  title: 'user1へのお知らせ（掲載中、要約・本文なし）'
+  summary: null
+  body: null
+  started_at: '2021-01-01'
+  ended_at: null
   target: 2
   target_user_id: 1
 
 - id: 221
-  title: user2へのお知らせ（掲載中）
-  body: 本文
+  title: 'user2へのお知らせ（掲載中）'
+  summary: 'user2へのお知らせの要約<br/>2行目'
+  body: 'user2へのお知らせの本文<br/>2行目'
   started_at: '2020-01-01'
-  ended_at: nil
+  ended_at: null
   target: 2
   target_user_id: 2

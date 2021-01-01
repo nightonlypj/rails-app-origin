@@ -1,52 +1,53 @@
 ja:
-  app_name: "RailsAppOrigin"
-  my_name: "My name"
-  my_url: "https://mydomain"
+  app_name: 'RailsAppOrigin'
+  my_name: 'My name'
+  my_url: 'https://mydomain'
   activerecord:
     models:
-      infomation: "お知らせ"
+      infomation: 'お知らせ'
     attributes:
       infomation:
-        id: "ID"
-        title: "タイトル"
-        body: "本文"
-        started_at: "掲載開始日時"
-        ended_at: "掲載終了日時"
-        target: "対象"
-        target_user: "対象ユーザー"
-        created_at: "作成日時"
-        updated_at: "更新日時"
+        id: 'ID'
+        title: 'タイトル'
+        summary: '概要'
+        body: '本文'
+        started_at: '掲載開始日時'
+        ended_at: '掲載終了日時'
+        target: '対象'
+        target_user: '対象ユーザー'
+        created_at: '作成日時'
+        updated_at: '更新日時'
   enums:
     infomation:
       target:
-        All: "全員"
-        User: "ユーザー"
+        All: '全員'
+        User: '対象ユーザーのみ'
   notice:
     user:
-      image_update: "画像を更新しました。"
-      image_destroy: "画像を削除しました。"
+      image_update: '画像を更新しました。'
+      image_destroy: '画像を削除しました。'
   alert:
     user:
-      destroy_reserved: "アカウント削除予定の為、この操作はできません。"
-      not_destroy_reserved: "既に取り消し済みか、アカウント削除していません。"
-      image_destroy_error: "画像削除に失敗しました。"
+      destroy_reserved: 'アカウント削除予定の為、この操作はできません。'
+      not_destroy_reserved: '既に取り消し済みか、アカウント削除していません。'
+      image_destroy_error: '画像削除に失敗しました。'
   errors:
     messages:
-      image_update_blank: "選択してください。"
-      carrierwave_processing_error: "処理に失敗しました。"
-      carrierwave_integrity_error: "許可されたファイルタイプではありません。別のファイルを使用してください。"
-      carrierwave_download_error: "ダウンロードできません。"
-      extension_whitelist_error: "%{allowed_types}のいずれかのファイルを使用してください。"
-      content_type_whitelist_error: "%{allowed_types}のいずれかのファイルを使用してください。"
-      rmagick_processing_error: "画像変換に失敗しました。別のファイルを使用してください。"
-      mini_magick_processing_error: "画像変換に失敗しました。別のファイルを使用してください。"
-      min_size_error: "%{min_size}以上のファイルを使用してください。"
-      max_size_error: "%{max_size}以下のファイルを使用してください。"
+      image_update_blank: '選択してください。'
+      carrierwave_processing_error: '処理に失敗しました。'
+      carrierwave_integrity_error: '許可されたファイルタイプではありません。別のファイルを使用してください。'
+      carrierwave_download_error: 'ダウンロードできません。'
+      extension_whitelist_error: '%{allowed_types}のいずれかのファイルを使用してください。'
+      content_type_whitelist_error: '%{allowed_types}のいずれかのファイルを使用してください。'
+      rmagick_processing_error: '画像変換に失敗しました。別のファイルを使用してください。'
+      mini_magick_processing_error: '画像変換に失敗しました。別のファイルを使用してください。'
+      min_size_error: '%{min_size}以上のファイルを使用してください。'
+      max_size_error: '%{max_size}以下のファイルを使用してください。'
   mailer:
     user:
       destroy_reserved:
-        subject: "【%{app_name}】アカウント削除受け付けのお知らせ"
+        subject: '【%{app_name}】アカウント削除受け付けのお知らせ'
       undo_destroy_reserved:
-        subject: "【%{app_name}】アカウント削除取り消し完了のお知らせ"
+        subject: '【%{app_name}】アカウント削除取り消し完了のお知らせ'
       destroy_completed:
-        subject: "【%{app_name}】アカウント削除完了のお知らせ"
+        subject: '【%{app_name}】アカウント削除完了のお知らせ'

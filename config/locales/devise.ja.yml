@@ -1,192 +1,192 @@
 ja:
   activerecord:
     models:
-      user: "ユーザー"
-      admin_user: "管理者"
+      user: 'ユーザー'
+      admin_user: '管理者'
     attributes:
       user:
-        id: "ID"
-        code: "ユーザーコード"
-        image: "画像"
-        name: "表示名"
-        email: "メールアドレス"
-        password: "パスワード"
-        password_confirmation: "パスワード(確認)"
-        current_password: "現在のパスワード"
-        reset_password_token: "パスワードリセットトークン"
-        reset_password_sent_at: "パスワードリセット送信日時"
-        remember_me: "ログイン状態を維持する"
-        remember_created_at: "ログイン状態維持開始日時"
-        sign_in_count: "ログイン回数"
-        current_sign_in_at: "現在のログイン日時"
-        last_sign_in_at: "最終ログイン日時"
-        current_sign_in_ip: "現在のログインIPアドレス"
-        last_sign_in_ip: "最終ログインIPアドレス"
-        confirmation_token: "メールアドレス確認トークン"
-        confirmed_at: "メールアドレス確認日時"
-        confirmation_sent_at: "メールアドレス確認送信日時"
-        unconfirmed_email: "確認待ちメールアドレス"
-        failed_attempts: "連続ログイン失敗回数"
-        unlock_token: "アカウントロック解除トークン"
-        locked_at: "アカウントロック日時"
-        destroy_requested_at: "削除依頼日時"
-        destroy_schedule_at: "削除予定日時"
-        created_at: "作成日時"
-        updated_at: "更新日時"
+        id: 'ID'
+        code: 'ユーザーコード'
+        image: '画像'
+        name: '表示名'
+        email: 'メールアドレス'
+        password: 'パスワード'
+        password_confirmation: 'パスワード(確認)'
+        current_password: '現在のパスワード'
+        reset_password_token: 'パスワードリセットトークン'
+        reset_password_sent_at: 'パスワードリセット送信日時'
+        remember_me: 'ログイン状態を維持する'
+        remember_created_at: 'ログイン状態維持開始日時'
+        sign_in_count: 'ログイン回数'
+        current_sign_in_at: '現在のログイン日時'
+        last_sign_in_at: '最終ログイン日時'
+        current_sign_in_ip: '現在のログインIPアドレス'
+        last_sign_in_ip: '最終ログインIPアドレス'
+        confirmation_token: 'メールアドレス確認トークン'
+        confirmed_at: 'メールアドレス確認日時'
+        confirmation_sent_at: 'メールアドレス確認送信日時'
+        unconfirmed_email: '確認待ちメールアドレス'
+        failed_attempts: '連続ログイン失敗回数'
+        unlock_token: 'アカウントロック解除トークン'
+        locked_at: 'アカウントロック日時'
+        destroy_requested_at: '削除依頼日時'
+        destroy_schedule_at: '削除予定日時'
+        created_at: '作成日時'
+        updated_at: '更新日時'
       admin_user:
-        id: "ID"
-        name: "表示名"
-        email: "メールアドレス"
-        password: "パスワード"
-        password_confirmation: "パスワード(確認)"
-        current_password: "現在のパスワード"
-        reset_password_token: "パスワードリセットトークン"
-        reset_password_sent_at: "パスワードリセット送信日時"
-        remember_me: "ログイン状態を維持する"
-        remember_created_at: "ログイン状態維持開始日時"
-        sign_in_count: "ログイン回数"
-        current_sign_in_at: "現在のログイン日時"
-        last_sign_in_at: "最終ログイン日時"
-        current_sign_in_ip: "現在のログインIPアドレス"
-        last_sign_in_ip: "最終ログインIPアドレス"
-        confirmation_token: "メールアドレス確認トークン"
-        confirmed_at: "メールアドレス確認日時"
-        confirmation_sent_at: "メールアドレス確認送信日時"
-        unconfirmed_email: "確認待ちメールアドレス"
-        failed_attempts: "連続ログイン失敗回数"
-        unlock_token: "アカウントロック解除トークン"
-        locked_at: "アカウントロック日時"
-        created_at: "作成日時"
-        updated_at: "更新日時"
+        id: 'ID'
+        name: '表示名'
+        email: 'メールアドレス'
+        password: 'パスワード'
+        password_confirmation: 'パスワード(確認)'
+        current_password: '現在のパスワード'
+        reset_password_token: 'パスワードリセットトークン'
+        reset_password_sent_at: 'パスワードリセット送信日時'
+        remember_me: 'ログイン状態を維持する'
+        remember_created_at: 'ログイン状態維持開始日時'
+        sign_in_count: 'ログイン回数'
+        current_sign_in_at: '現在のログイン日時'
+        last_sign_in_at: '最終ログイン日時'
+        current_sign_in_ip: '現在のログインIPアドレス'
+        last_sign_in_ip: '最終ログインIPアドレス'
+        confirmation_token: 'メールアドレス確認トークン'
+        confirmed_at: 'メールアドレス確認日時'
+        confirmation_sent_at: 'メールアドレス確認送信日時'
+        unconfirmed_email: '確認待ちメールアドレス'
+        failed_attempts: '連続ログイン失敗回数'
+        unlock_token: 'アカウントロック解除トークン'
+        locked_at: 'アカウントロック日時'
+        created_at: '作成日時'
+        updated_at: '更新日時'
     errors:
       models:
         user:
           attributes:
             code:
-              blank: "お問い合わせ頂くか、最初からやり直してください。"
-              taken: "既に使用されています。やり直してください。"
+              blank: 'お問い合わせ頂くか、最初からやり直してください。'
+              taken: '既に使用されています。やり直してください。'
             name:
-              blank: "入力してください。"
-              too_short: "%{count}文字以上で入力してください。"
-              too_long: "%{count}文字以下で入力してください。"
+              blank: '入力してください。'
+              too_short: '%{count}文字以上で入力してください。'
+              too_long: '%{count}文字以下で入力してください。'
             email:
-              blank: "入力してください。"
-              too_short: "%{count}文字以上で入力してください。"
-              too_long: "%{count}文字以下で入力してください。"
-              invalid: "形式が正しくありません。"
-              taken: "既に使用されています。"
+              blank: '入力してください。'
+              too_short: '%{count}文字以上で入力してください。'
+              too_long: '%{count}文字以下で入力してください。'
+              invalid: '形式が正しくありません。'
+              taken: '既に使用されています。'
             password:
-              blank: "入力してください。"
-              too_short: "%{count}文字以上で入力してください。"
-              too_long: "%{count}文字以下で入力してください。"
+              blank: '入力してください。'
+              too_short: '%{count}文字以上で入力してください。'
+              too_long: '%{count}文字以下で入力してください。'
             password_confirmation:
-              confirmation: "%{attribute}と一致しません。"
+              confirmation: '%{attribute}と一致しません。'
             current_password:
-              blank: "入力してください。"
-              invalid: "違います。"
+              blank: '入力してください。'
+              invalid: '違います。'
             reset_password_token:
-              blank: "URLが正しくありません。最初からやり直してください。"
-              invalid: "URLが正しくないか、有効期限が切れています。最初からやり直してください。"
+              blank: 'URLが正しくありません。最初からやり直してください。'
+              invalid: 'URLが正しくないか、有効期限が切れています。最初からやり直してください。'
             confirmation_token:
-              blank: "URLが正しくありません。最初からやり直してください。"
-              invalid: "URLが正しくないか、有効期限が切れています。最初からやり直してください。"
+              blank: 'URLが正しくありません。最初からやり直してください。'
+              invalid: 'URLが正しくないか、有効期限が切れています。最初からやり直してください。'
             unlock_token:
-              blank: "URLが正しくありません。最初からやり直してください。"
-              invalid: "URLが正しくないか、有効期限が切れています。最初からやり直してください。"
+              blank: 'URLが正しくありません。最初からやり直してください。'
+              invalid: 'URLが正しくないか、有効期限が切れています。最初からやり直してください。'
         admin_user:
           attributes:
             name:
-              blank: "入力してください。"
-              too_short: "%{count}文字以上で入力してください。"
-              too_long: "%{count}文字以下で入力してください。"
+              blank: '入力してください。'
+              too_short: '%{count}文字以上で入力してください。'
+              too_long: '%{count}文字以下で入力してください。'
             email:
-              blank: "入力してください。"
-              too_short: "%{count}文字以上で入力してください。"
-              too_long: "%{count}文字以下で入力してください。"
-              invalid: "形式が正しくありません。"
-              taken: "既に使用されています。"
+              blank: '入力してください。'
+              too_short: '%{count}文字以上で入力してください。'
+              too_long: '%{count}文字以下で入力してください。'
+              invalid: '形式が正しくありません。'
+              taken: '既に使用されています。'
             password:
-              blank: "入力してください。"
-              too_short: "%{count}文字以上で入力してください。"
-              too_long: "%{count}文字以下で入力してください。"
+              blank: '入力してください。'
+              too_short: '%{count}文字以上で入力してください。'
+              too_long: '%{count}文字以下で入力してください。'
             password_confirmation:
-              confirmation: "%{attribute}と一致しません。"
+              confirmation: '%{attribute}と一致しません。'
             current_password:
-              blank: "入力してください。"
-              invalid: "違います。"
+              blank: '入力してください。'
+              invalid: '違います。'
             reset_password_token:
-              blank: "URLが正しくありません。最初からやり直してください。"
-              invalid: "URLが正しくないか、有効期限が切れています。最初からやり直してください。"
+              blank: 'URLが正しくありません。最初からやり直してください。'
+              invalid: 'URLが正しくないか、有効期限が切れています。最初からやり直してください。'
             confirmation_token:
-              blank: "URLが正しくありません。最初からやり直してください。"
-              invalid: "URLが正しくないか、有効期限が切れています。最初からやり直してください。"
+              blank: 'URLが正しくありません。最初からやり直してください。'
+              invalid: 'URLが正しくないか、有効期限が切れています。最初からやり直してください。'
             unlock_token:
-              blank: "URLが正しくありません。最初からやり直してください。"
-              invalid: "URLが正しくないか、有効期限が切れています。最初からやり直してください。"
+              blank: 'URLが正しくありません。最初からやり直してください。'
+              invalid: 'URLが正しくないか、有効期限が切れています。最初からやり直してください。'
   errors:
     messages:
-      already_confirmed: "メールアドレス確認済みです。ログインしてください。"
-      confirmation_period_expired: "有効期限が切れています。"
-      expired: "有効期限が切れています。最初からやり直してください。"
-      not_found: "見つかりません。"
-      not_locked: "ロックされていません。"
+      already_confirmed: 'メールアドレス確認済みです。ログインしてください。'
+      confirmation_period_expired: '有効期限が切れています。'
+      expired: '有効期限が切れています。最初からやり直してください。'
+      not_found: '見つかりません。'
+      not_locked: 'ロックされていません。'
       not_saved:
-        one: "入力内容を確認してください。"
-        other: "入力内容を確認してください。"
+        one: '入力内容を確認してください。'
+        other: '入力内容を確認してください。'
   devise:
     registrations:
-      signed_up: "アカウント登録が完了しました。"
-      signed_up_but_unconfirmed: "メールアドレス確認のメールを送信しました。メールを確認してください。"
-      updated: "登録情報を変更しました。"
-      updated_but_not_signed_in: "登録情報を変更しました。ログインし直してください。"
-      update_needs_confirmation: "メールアドレス確認のメールを送信しました。メールを確認してください。"
-      destroyed: "アカウントを削除しました。またのご利用をお待ちしております。"
-      destroy_reserved: "アカウント削除を受け付けました。またのご利用をお待ちしております。"
-      undo_destroy_reserved: "アカウント削除の取り消しが完了しました。"
+      signed_up: 'アカウント登録が完了しました。'
+      signed_up_but_unconfirmed: 'メールアドレス確認のメールを送信しました。メールを確認してください。'
+      updated: '登録情報を変更しました。'
+      updated_but_not_signed_in: '登録情報を変更しました。ログインし直してください。'
+      update_needs_confirmation: 'メールアドレス確認のメールを送信しました。メールを確認してください。'
+      destroyed: 'アカウントを削除しました。またのご利用をお待ちしております。'
+      destroy_reserved: 'アカウント削除を受け付けました。またのご利用をお待ちしております。'
+      undo_destroy_reserved: 'アカウント削除の取り消しが完了しました。'
     confirmations:
-      send_instructions: "メールアドレスの確認メールを送信しました。メールを確認してください。"
-      send_paranoid_instructions: "メールアドレスの確認メールを送信しました。メールを確認してください。"
-      confirmed: "メールアドレスの確認が完了しました。"
+      send_instructions: 'メールアドレスの確認メールを送信しました。メールを確認してください。'
+      send_paranoid_instructions: 'メールアドレスの確認メールを送信しました。メールを確認してください。'
+      confirmed: 'メールアドレスの確認が完了しました。'
     sessions:
-      signed_in: "ログインしました。"
-      signed_out: "ログアウトしました。"
-      already_signed_out: "既にログアウト済みです。"
+      signed_in: 'ログインしました。'
+      signed_out: 'ログアウトしました。'
+      already_signed_out: '既にログアウト済みです。'
     unlocks:
-      send_instructions: "アカウントロック解除のメールを送信しました。メールを確認してください。"
-      send_paranoid_instructions: "アカウントロック解除のメールを送信しました。メールを確認してください。"
-      unlocked: "アカウントロックを解除しました。"
+      send_instructions: 'アカウントロック解除のメールを送信しました。メールを確認してください。'
+      send_paranoid_instructions: 'アカウントロック解除のメールを送信しました。メールを確認してください。'
+      unlocked: 'アカウントロックを解除しました。'
     passwords:
-      no_token: "URLが正しくありません。最初からやり直してください。"
-      send_instructions: "パスワード再設定のメールを送信しました。メールを確認してください。"
-      send_paranoid_instructions: "パスワード再設定のメールを送信しました。メールを確認してください。"
-      updated: "パスワードを変更しました。"
-      updated_not_active: "パスワードを変更しました。"
+      no_token: 'URLが正しくありません。最初からやり直してください。'
+      send_instructions: 'パスワード再設定のメールを送信しました。メールを確認してください。'
+      send_paranoid_instructions: 'パスワード再設定のメールを送信しました。メールを確認してください。'
+      updated: 'パスワードを変更しました。'
+      updated_not_active: 'パスワードを変更しました。'
     omniauth_callbacks:
-      failure: "%{kind} アカウントによる認証に失敗しました。理由：（%{reason}）"
-      success: "%{kind} アカウントによる認証に成功しました。"
+      failure: '%{kind} アカウントによる認証に失敗しました。理由：（%{reason}）'
+      success: '%{kind} アカウントによる認証に成功しました。'
     failure:
-      already_authenticated: "既にログインしています。"
-      inactive: "メールアドレスが確認されていません。メールが届いていない場合は[メールアドレス確認メール再送]をしてください。"
-      invalid: "%{authentication_keys}またはパスワードが違います。"
-      last_attempt: "注意：もう一回間違えるとアカウントがロックされます。"
-      locked: "アカウントがロックされています。メールが届いていない場合は[アカウントロック解除メール再送]をしてください。"
-      not_found_in_database: "%{authentication_keys}またはパスワードが違います。"
-      timeout: "セッションがタイムアウトしました。ログインし直してください。"
-      unauthenticated: "ログインしてください。"
-      unconfirmed: "メールアドレスの確認が必要です。メールが届いていない場合は[メールアドレス確認メール再送]をしてください。"
+      already_authenticated: '既にログインしています。'
+      inactive: 'メールアドレスが確認されていません。メールが届いていない場合は[メールアドレス確認メール再送]をしてください。'
+      invalid: '%{authentication_keys}またはパスワードが違います。'
+      last_attempt: '注意：もう一回間違えるとアカウントがロックされます。'
+      locked: 'アカウントがロックされています。メールが届いていない場合は[アカウントロック解除メール再送]をしてください。'
+      not_found_in_database: '%{authentication_keys}またはパスワードが違います。'
+      timeout: 'セッションがタイムアウトしました。ログインし直してください。'
+      unauthenticated: 'ログインしてください。'
+      unconfirmed: 'メールアドレスの確認が必要です。メールが届いていない場合は[メールアドレス確認メール再送]をしてください。'
     mailer:
       confirmation_instructions:
-        subject: "【%{app_name}】メールアドレス確認のお願い"
-        admin_user_subject: "【%{app_name} Admin】メールアドレス確認のお願い"
+        subject: '【%{app_name}】メールアドレス確認のお願い'
+        admin_user_subject: '【%{app_name} Admin】メールアドレス確認のお願い'
       email_changed:
-        subject: "【%{app_name}】メールアドレス変更受け付けのお知らせ"
-        admin_user_subject: "【%{app_name} Admin】メールアドレス変更受け付けのお知らせ"
+        subject: '【%{app_name}】メールアドレス変更受け付けのお知らせ'
+        admin_user_subject: '【%{app_name} Admin】メールアドレス変更受け付けのお知らせ'
       reset_password_instructions:
-        subject: "【%{app_name}】パスワード再設定方法のお知らせ"
-        admin_user_subject: "【%{app_name} Admin】パスワード再設定方法のお知らせ"
+        subject: '【%{app_name}】パスワード再設定方法のお知らせ'
+        admin_user_subject: '【%{app_name} Admin】パスワード再設定方法のお知らせ'
       password_change:
-        subject: "【%{app_name}】パスワード変更完了のお知らせ"
-        admin_user_subject: "【%{app_name} Admin】パスワード変更完了のお知らせ"
+        subject: '【%{app_name}】パスワード変更完了のお知らせ'
+        admin_user_subject: '【%{app_name} Admin】パスワード変更完了のお知らせ'
       unlock_instructions:
-        subject: "【%{app_name}】アカウントロックのお知らせ"
-        admin_user_subject: "【%{app_name} Admin】アカウントロックのお知らせ"
+        subject: '【%{app_name}】アカウントロックのお知らせ'
+        admin_user_subject: '【%{app_name} Admin】アカウントロックのお知らせ'
