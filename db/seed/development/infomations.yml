@@ -1,0 +1,38 @@
+# Tips: id = target & user_id & 任意
+- id: 11
+  title: 全員へのお知らせ（掲載中）
+  body: 本文
+  started_at: '2021-01-01'
+  ended_at: nil
+  target: 1
+  target_user_id: nil
+- id: 12
+  title: 全員へのお知らせ（掲載終了）
+  body: 本文
+  started_at: '2020-01-01'
+  ended_at: '2020-12-31'
+  target: 1
+  target_user_id: nil
+
+- id: 211
+  title: user1へのお知らせ（掲載中）
+  body: 本文
+  started_at: '2021-01-01'
+  ended_at: nil
+  target: 2
+  target_user_id: 1
+- id: 212
+  title: user1へのお知らせ（掲載終了）
+  body: 本文
+  started_at: '2020-01-01'
+  ended_at: '2020-12-31'
+  target: 2
+  target_user_id: 1
+
+- id: 221
+  title: user2へのお知らせ（掲載中）
+  body: 本文
+  started_at: '2020-01-01'
+  ended_at: nil
+  target: 2
+  target_user_id: 2

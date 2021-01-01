@@ -40,13 +40,17 @@ ActiveRecord::Schema.define(version: 2020_12_31_131129) do
   end
 
   create_table "infomations", force: :cascade do |t|
-    t.string "title"
+    t.string "title", null: false
     t.text "body"
-    t.integer "target"
-    t.integer "user_id", null: false
+    t.datetime "started_at", null: false
+    t.datetime "ended_at"
+    t.integer "target", null: false
+    t.bigint "target_user_id"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
-    t.index ["user_id"], name: "index_infomations_on_user_id"
+    t.index ["started_at", "ended_at"], name: "index_infomations1"
+    t.index ["target", "target_user_id"], name: "index_infomations2"
+    t.index ["target_user_id"], name: "index_infomations_on_target_user_id"
   end
 
   create_table "users", force: :cascade do |t|
@@ -92,5 +96,4 @@ ActiveRecord::Schema.define(version: 2020_12_31_131129) do
     t.index ["item_type", "item_id"], name: "index_versions1"
   end
 
-  add_foreign_key "infomations", "users"
 end

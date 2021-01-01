@@ -7,7 +7,7 @@ RSpec.describe InfomationsController, type: :routing do
     end
 
     it 'routes to #new' do
-      expect(get: '/infomations/new').to route_to('infomations#new')
+      # expect(get: '/infomations/new').not_to be_routable # Tips: infomations#show(new)
     end
 
     it 'routes to #show' do
@@ -15,23 +15,23 @@ RSpec.describe InfomationsController, type: :routing do
     end
 
     it 'routes to #edit' do
-      expect(get: '/infomations/1/edit').to route_to('infomations#edit', id: '1')
+      expect(get: '/infomations/1/edit').not_to be_routable
     end
 
     it 'routes to #create' do
-      expect(post: '/infomations').to route_to('infomations#create')
+      expect(post: '/infomations').not_to be_routable
     end
 
     it 'routes to #update via PUT' do
-      expect(put: '/infomations/1').to route_to('infomations#update', id: '1')
+      expect(put: '/infomations/1').not_to be_routable
     end
 
     it 'routes to #update via PATCH' do
-      expect(patch: '/infomations/1').to route_to('infomations#update', id: '1')
+      expect(patch: '/infomations/1').not_to be_routable
     end
 
     it 'routes to #destroy' do
-      expect(delete: '/infomations/1').to route_to('infomations#destroy', id: '1')
+      expect(delete: '/infomations/1').not_to be_routable
     end
   end
 end
