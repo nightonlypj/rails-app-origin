@@ -1,17 +1,17 @@
 <% if @new_infomations.present? %>
-<h2>新しいお知らせ</h2>
+<h3>新しいお知らせ</h3>
 <ul>
 <% @new_infomations.each do |new_infomation| %>
+  <li>
 <% if new_infomation.body.present? %>
-  <li><%= link_to new_infomation.title, new_infomation %> (<%= l(new_infomation.started_at.to_date) %>)
+    <p><%= link_to new_infomation.title, new_infomation %> (<%= l(new_infomation.started_at.to_date) %>)</p>
 <% else %>
-  <li><%= new_infomation.title %> (<%= l(new_infomation.started_at.to_date) %>)
+    <p><%= new_infomation.title %> (<%= l(new_infomation.started_at.to_date) %>)</p>
 <% end %>
 <% if new_infomation.summary.present? %>
-  <br/><%= new_infomation.summary.html_safe %></li>
-<% else %>
-  </li>
+    <p><%= new_infomation.summary.html_safe %></p>
 <% end %>
+  </li>
 <% end %>
 </ul>
 <% if @new_infomations.total_pages > 1 %>

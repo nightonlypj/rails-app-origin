@@ -48,9 +48,7 @@ RSpec.describe 'Top', type: :request do
       it '概要が含まれる（ありの場合）' do
         get root_path
         (1..end_no).each do |no|
-          if @infomations[@infomations.count - no].summary.present?
-            expect(response.body).to include(@infomations[@infomations.count - no].summary)
-          end
+          expect(response.body).to include(@infomations[@infomations.count - no].summary) if @infomations[@infomations.count - no].summary.present?
         end
       end
       it 'お知らせ詳細のパスが含まれる（本文ありの場合）' do
@@ -67,6 +65,12 @@ RSpec.describe 'Top', type: :request do
           unless @infomations[@infomations.count - no].body.present?
             expect(response.body).not_to include("\"#{infomation_path(@infomations[@infomations.count - no])}\"")
           end
+        end
+      end
+      it '掲載開始日が含まれる' do # Tips: ユニークではない為、正確ではない
+        get root_path
+        (1..end_no).each do |no|
+          expect(response.body).to include(I18n.l(@infomations[@infomations.count - no].started_at.to_date))
         end
       end
     end
@@ -89,25 +93,25 @@ RSpec.describe 'Top', type: :request do
       it_behaves_like 'もっと見る非表示'
     end
     shared_examples_for '[未ログイン]お知らせが最大表示数と同じ' do
-      count = Settings['test_new_infomations']
+      count = Settings['test_infomations']
       include_context 'お知らせ作成', count['all_forever_count'] + count['user_forever_count'], count['all_future_count'] + count['user_future_count'], 0, 0
       it_behaves_like 'リスト表示'
       it_behaves_like 'もっと見る非表示'
     end
     shared_examples_for '[ログイン中]お知らせが最大表示数と同じ' do
-      count = Settings['test_new_infomations']
+      count = Settings['test_infomations']
       include_context 'お知らせ作成', count['all_forever_count'], count['all_future_count'], count['user_forever_count'], count['user_future_count']
       it_behaves_like 'リスト表示'
       it_behaves_like 'もっと見る非表示'
     end
     shared_examples_for '[未ログイン]お知らせが最大表示数より多い' do
-      count = Settings['test_new_infomations']
+      count = Settings['test_infomations']
       include_context 'お知らせ作成', count['all_forever_count'] + count['user_forever_count'], count['all_future_count'] + count['user_future_count'] + 1, 0, 0
       it_behaves_like 'リスト表示'
       it_behaves_like 'もっと見る表示'
     end
     shared_examples_for '[ログイン中]お知らせが最大表示数より多い' do
-      count = Settings['test_new_infomations']
+      count = Settings['test_infomations']
       include_context 'お知らせ作成', count['all_forever_count'], count['all_future_count'], count['user_forever_count'], count['user_future_count'] + 1
       it_behaves_like 'リスト表示'
       it_behaves_like 'もっと見る表示'

@@ -14,3 +14,5 @@ user_name_maximum: 32
 ## お知らせ
 # 新しいお知らせの最大表示件数
 new_infomations_limit: 5
+# 一覧のデフォルト最大表示件数
+default_infomations_limit: 25
