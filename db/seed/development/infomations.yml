@@ -6,7 +6,7 @@
   started_at: '2020-01-01'
   ended_at: '2020-12-31'
   target: 1
-  target_user_id: null
+  user_id: null
 - id: 12
   title: '全員へのお知らせ（掲載中）'
   summary: '全員へのお知らせの要約<br/>2行目'
@@ -14,7 +14,7 @@
   started_at: '2021-01-01'
   ended_at: null
   target: 1
-  target_user_id: null
+  user_id: null
 - id: 13
   title: '全員へのお知らせ（掲載中、要約なし）'
   summary: null
@@ -22,7 +22,7 @@
   started_at: '2021-01-01'
   ended_at: null
   target: 1
-  target_user_id: null
+  user_id: null
 - id: 14
   title: '全員へのお知らせ（掲載中、本文なし）'
   summary: '全員へのお知らせの要約<br/>2行目'
@@ -30,7 +30,7 @@
   started_at: '2021-01-01'
   ended_at: null
   target: 1
-  target_user_id: null
+  user_id: null
 - id: 15
   title: '全員へのお知らせ（掲載中、要約・本文なし）'
   summary: null
@@ -38,7 +38,7 @@
   started_at: '2021-01-01'
   ended_at: null
   target: 1
-  target_user_id: null
+  user_id: null
 
 - id: 211
   title: 'user1へのお知らせ（掲載終了）'
@@ -47,7 +47,7 @@
   started_at: '2020-01-01'
   ended_at: '2020-12-31'
   target: 2
-  target_user_id: 1
+  user_id: 1
 - id: 212
   title: 'user1へのお知らせ（掲載中）'
   summary: 'user1へのお知らせの要約<br/>2行目'
@@ -55,7 +55,7 @@
   started_at: '2021-01-01'
   ended_at: null
   target: 2
-  target_user_id: 1
+  user_id: 1
 - id: 213
   title: 'user1へのお知らせ（掲載中、要約なし）'
   summary: null
@@ -63,7 +63,7 @@
   started_at: '2021-01-01'
   ended_at: null
   target: 2
-  target_user_id: 1
+  user_id: 1
 - id: 214
   title: 'user1へのお知らせ（掲載中、本文なし）'
   summary: 'user1へのお知らせの要約<br/>2行目'
@@ -71,7 +71,7 @@
   started_at: '2021-01-01'
   ended_at: null
   target: 2
-  target_user_id: 1
+  user_id: 1
 - id: 215
   title: 'user1へのお知らせ（掲載中、要約・本文なし）'
   summary: null
@@ -79,7 +79,7 @@
   started_at: '2021-01-01'
   ended_at: null
   target: 2
-  target_user_id: 1
+  user_id: 1
 
 - id: 2101
   title: 'user1へのお知らせ 1'
@@ -88,7 +88,7 @@
   started_at: '2020-01-01'
   ended_at: null
   target: 2
-  target_user_id: 1
+  user_id: 1
 - id: 2102
   title: 'user1へのお知らせ 2'
   summary: null
@@ -96,7 +96,7 @@
   started_at: '2020-01-01'
   ended_at: null
   target: 2
-  target_user_id: 1
+  user_id: 1
 - id: 2103
   title: 'user1へのお知らせ 3'
   summary: null
@@ -104,7 +104,7 @@
   started_at: '2020-01-01'
   ended_at: null
   target: 2
-  target_user_id: 1
+  user_id: 1
 - id: 2104
   title: 'user1へのお知らせ 4'
   summary: null
@@ -112,7 +112,7 @@
   started_at: '2020-01-01'
   ended_at: null
   target: 2
-  target_user_id: 1
+  user_id: 1
 - id: 2105
   title: 'user1へのお知らせ 5'
   summary: null
@@ -120,7 +120,7 @@
   started_at: '2020-01-01'
   ended_at: null
   target: 2
-  target_user_id: 1
+  user_id: 1
 - id: 2106
   title: 'user1へのお知らせ 6'
   summary: null
@@ -128,7 +128,7 @@
   started_at: '2020-01-01'
   ended_at: null
   target: 2
-  target_user_id: 1
+  user_id: 1
 - id: 2107
   title: 'user1へのお知らせ 7'
   summary: null
@@ -136,7 +136,7 @@
   started_at: '2020-01-01'
   ended_at: null
   target: 2
-  target_user_id: 1
+  user_id: 1
 - id: 2108
   title: 'user1へのお知らせ 8'
   summary: null
@@ -144,7 +144,7 @@
   started_at: '2020-01-01'
   ended_at: null
   target: 2
-  target_user_id: 1
+  user_id: 1
 - id: 2109
   title: 'user1へのお知らせ 9'
   summary: null
@@ -152,7 +152,7 @@
   started_at: '2020-01-01'
   ended_at: null
   target: 2
-  target_user_id: 1
+  user_id: 1
 - id: 2110
   title: 'user1へのお知らせ 10'
   summary: null
@@ -160,7 +160,7 @@
   started_at: '2020-01-01'
   ended_at: null
   target: 2
-  target_user_id: 1
+  user_id: 1
 - id: 2111
   title: 'user1へのお知らせ 11'
   summary: null
@@ -168,7 +168,7 @@
   started_at: '2020-01-01'
   ended_at: null
   target: 2
-  target_user_id: 1
+  user_id: 1
 - id: 2112
   title: 'user1へのお知らせ 12'
   summary: null
@@ -176,7 +176,7 @@
   started_at: '2020-01-01'
   ended_at: null
   target: 2
-  target_user_id: 1
+  user_id: 1
 - id: 2113
   title: 'user1へのお知らせ 13'
   summary: null
@@ -184,7 +184,7 @@
   started_at: '2020-01-01'
   ended_at: null
   target: 2
-  target_user_id: 1
+  user_id: 1
 - id: 2114
   title: 'user1へのお知らせ 14'
   summary: null
@@ -192,7 +192,7 @@
   started_at: '2020-01-01'
   ended_at: null
   target: 2
-  target_user_id: 1
+  user_id: 1
 - id: 2115
   title: 'user1へのお知らせ 15'
   summary: null
@@ -200,7 +200,7 @@
   started_at: '2020-01-01'
   ended_at: null
   target: 2
-  target_user_id: 1
+  user_id: 1
 - id: 2116
   title: 'user1へのお知らせ 16'
   summary: null
@@ -208,7 +208,7 @@
   started_at: '2020-01-01'
   ended_at: null
   target: 2
-  target_user_id: 1
+  user_id: 1
 - id: 2117
   title: 'user1へのお知らせ 17'
   summary: null
@@ -216,7 +216,7 @@
   started_at: '2020-01-01'
   ended_at: null
   target: 2
-  target_user_id: 1
+  user_id: 1
 - id: 2118
   title: 'user1へのお知らせ 18'
   summary: null
@@ -224,7 +224,7 @@
   started_at: '2020-01-01'
   ended_at: null
   target: 2
-  target_user_id: 1
+  user_id: 1
 
 - id: 221
   title: 'user2へのお知らせ（掲載中）'
@@ -233,4 +233,4 @@
   started_at: '2020-01-01'
   ended_at: null
   target: 2
-  target_user_id: 2
+  user_id: 2

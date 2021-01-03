@@ -79,7 +79,7 @@ RSpec.describe User, type: :model do
   # 前提条件
   #   なし
   # テストパターン
-  #   削除予定日時なし, あり → データ作成
+  #   削除予定日時: なし, あり → データ作成
   describe 'def destroy_reserved?' do
     shared_context 'データ作成' do |destroy_schedule_at|
       let!(:user) { FactoryBot.create(:user, destroy_schedule_at: destroy_schedule_at) }
@@ -102,7 +102,7 @@ RSpec.describe User, type: :model do
 
   # 削除予約
   # 前提条件
-  #   なし
+  #   削除予定日時: なし
   # テストパターン
   #   なし
   describe 'def set_destroy_reserve' do
@@ -127,7 +127,7 @@ RSpec.describe User, type: :model do
 
   # 削除予約取り消し
   # 前提条件
-  #   なし
+  #   削除予定日時: あり
   # テストパターン
   #   なし
   describe 'def set_undo_destroy_reserve' do
@@ -152,7 +152,7 @@ RSpec.describe User, type: :model do
   # 前提条件
   #   なし
   # テストパターン
-  #   画像なし, あり
+  #   画像: なし, あり
   #   mini, small, medium, large, 未定義
   describe 'def image_url' do
     let!(:user) { FactoryBot.create(:user) }

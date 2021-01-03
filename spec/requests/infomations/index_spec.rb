@@ -34,13 +34,12 @@ RSpec.describe 'Infomations', type: :request do
     end
   end
 
-  # GET /infomations お知らせ一覧
-  # GET /infomations.json お知らせ一覧API
+  # お知らせ一覧
   # 前提条件
   #   なし
   # テストパターン
   #   未ログイン, ログイン中, ログイン中（削除予約済み） → データ＆状態作成
-  #   お知らせがない, 最大表示数と同じ, 最大表示数より多い → データ作成
+  #   お知らせ: ない, 最大表示数と同じ, 最大表示数より多い → データ作成
   describe '@infomations' do
     # テスト内容
     shared_examples_for 'ページ情報' do |page|
@@ -91,6 +90,13 @@ RSpec.describe 'Infomations', type: :request do
         get infomations_path(page: page, format: :json)
         expect(JSON.parse(response.body)['infomations'].count).to eq(end_no - start_no + 1)
       end
+      it '(json)お知らせIDが一致する' do
+        get infomations_path(page: page, format: :json)
+        parse_response = JSON.parse(response.body)['infomations']
+        (start_no..end_no).each do |no|
+          expect(parse_response[no - start_no]['id']).to eq(@infomations[@infomations.count - no].id)
+        end
+      end
       it 'タイトルが含まれる' do
         get infomations_path(page: page)
         (start_no..end_no).each do |no|
@@ -140,14 +146,14 @@ RSpec.describe 'Infomations', type: :request do
           expect(response.body).to include(I18n.l(@infomations[@infomations.count - no].started_at.to_date))
         end
       end
-      it '(json)掲載開始日時が一致する' do # Tips: ユニークではない為、正確ではない
+      it '(json)開始日時が一致する' do # Tips: ユニークではない為、正確ではない
         get infomations_path(page: page, format: :json)
         parse_response = JSON.parse(response.body)['infomations']
         (start_no..end_no).each do |no|
           expect(parse_response[no - start_no]['started_at']).to eq(I18n.l(@infomations[@infomations.count - no].started_at, format: :json))
         end
       end
-      it '(json)掲載終了日時が一致する' do # Tips: ユニークではない為、正確ではない
+      it '(json)終了日時が一致する' do # Tips: ユニークではない為、正確ではない
         get infomations_path(page: page, format: :json)
         parse_response = JSON.parse(response.body)['infomations']
         (start_no..end_no).each do |no|
@@ -166,27 +172,27 @@ RSpec.describe 'Infomations', type: :request do
 
     # テストケース
     shared_examples_for 'お知らせがない' do
-      include_context 'お知らせ作成', 0, 0, 0, 0
+      include_context 'お知らせ一覧作成', 0, 0, 0, 0
       it_behaves_like 'ページ情報', 1
       it_behaves_like 'ページネーション非表示', 1, 2
     end
     shared_examples_for '[未ログイン]お知らせが最大表示数と同じ' do
       count = Settings['test_infomations']
-      include_context 'お知らせ作成', count['all_forever_count'] + count['user_forever_count'], count['all_future_count'] + count['user_future_count'], 0, 0
+      include_context 'お知らせ一覧作成', count['all_forever_count'] + count['user_forever_count'], count['all_future_count'] + count['user_future_count'], 0, 0
       it_behaves_like 'ページ情報', 1
       it_behaves_like 'ページネーション非表示', 1, 2
       it_behaves_like 'リスト表示', 1
     end
     shared_examples_for '[ログイン中]お知らせが最大表示数と同じ' do
       count = Settings['test_infomations']
-      include_context 'お知らせ作成', count['all_forever_count'], count['all_future_count'], count['user_forever_count'], count['user_future_count']
+      include_context 'お知らせ一覧作成', count['all_forever_count'], count['all_future_count'], count['user_forever_count'], count['user_future_count']
       it_behaves_like 'ページ情報', 1
       it_behaves_like 'ページネーション非表示', 1, 2
       it_behaves_like 'リスト表示', 1
     end
     shared_examples_for '[未ログイン]お知らせが最大表示数より多い' do
       count = Settings['test_infomations']
-      include_context 'お知らせ作成', count['all_forever_count'] + count['user_forever_count'], count['all_future_count'] + count['user_future_count'] + 1, 0, 0
+      include_context 'お知らせ一覧作成', count['all_forever_count'] + count['user_forever_count'], count['all_future_count'] + count['user_future_count'] + 1, 0, 0
       it_behaves_like 'ページ情報', 1
       it_behaves_like 'ページ情報', 2
       it_behaves_like 'ページネーション表示', 1, 2
@@ -196,7 +202,7 @@ RSpec.describe 'Infomations', type: :request do
     end
     shared_examples_for '[ログイン中]お知らせが最大表示数より多い' do
       count = Settings['test_infomations']
-      include_context 'お知らせ作成', count['all_forever_count'], count['all_future_count'], count['user_forever_count'], count['user_future_count'] + 1
+      include_context 'お知らせ一覧作成', count['all_forever_count'], count['all_future_count'], count['user_forever_count'], count['user_future_count'] + 1
       it_behaves_like 'ページ情報', 1
       it_behaves_like 'ページ情報', 2
       it_behaves_like 'ページネーション表示', 1, 2

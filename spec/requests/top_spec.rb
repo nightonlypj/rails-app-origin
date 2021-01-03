@@ -34,7 +34,7 @@ RSpec.describe 'Top', type: :request do
   #   なし
   # テストパターン
   #   未ログイン, ログイン中, ログイン中（削除予約済み） → データ＆状態作成
-  #   お知らせがない, 最大表示数と同じ, 最大表示数より多い → データ作成
+  #   お知らせ: ない, 最大表示数と同じ, 最大表示数より多い → データ作成
   describe '@new_infomations' do
     # テスト内容
     shared_examples_for 'リスト表示' do
@@ -94,25 +94,25 @@ RSpec.describe 'Top', type: :request do
     end
     shared_examples_for '[未ログイン]お知らせが最大表示数と同じ' do
       count = Settings['test_infomations']
-      include_context 'お知らせ作成', count['all_forever_count'] + count['user_forever_count'], count['all_future_count'] + count['user_future_count'], 0, 0
+      include_context 'お知らせ一覧作成', count['all_forever_count'] + count['user_forever_count'], count['all_future_count'] + count['user_future_count'], 0, 0
       it_behaves_like 'リスト表示'
       it_behaves_like 'もっと見る非表示'
     end
     shared_examples_for '[ログイン中]お知らせが最大表示数と同じ' do
       count = Settings['test_infomations']
-      include_context 'お知らせ作成', count['all_forever_count'], count['all_future_count'], count['user_forever_count'], count['user_future_count']
+      include_context 'お知らせ一覧作成', count['all_forever_count'], count['all_future_count'], count['user_forever_count'], count['user_future_count']
       it_behaves_like 'リスト表示'
       it_behaves_like 'もっと見る非表示'
     end
     shared_examples_for '[未ログイン]お知らせが最大表示数より多い' do
       count = Settings['test_infomations']
-      include_context 'お知らせ作成', count['all_forever_count'] + count['user_forever_count'], count['all_future_count'] + count['user_future_count'] + 1, 0, 0
+      include_context 'お知らせ一覧作成', count['all_forever_count'] + count['user_forever_count'], count['all_future_count'] + count['user_future_count'] + 1, 0, 0
       it_behaves_like 'リスト表示'
       it_behaves_like 'もっと見る表示'
     end
     shared_examples_for '[ログイン中]お知らせが最大表示数より多い' do
       count = Settings['test_infomations']
-      include_context 'お知らせ作成', count['all_forever_count'], count['all_future_count'], count['user_forever_count'], count['user_future_count'] + 1
+      include_context 'お知らせ一覧作成', count['all_forever_count'], count['all_future_count'], count['user_forever_count'], count['user_future_count'] + 1
       it_behaves_like 'リスト表示'
       it_behaves_like 'もっと見る表示'
     end
