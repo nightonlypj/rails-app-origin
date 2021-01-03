@@ -1,0 +1,25 @@
+<h2>お知らせ一覧</h2>
+
+<% if @infomations.blank? %>
+お知らせはありません。
+<% else %>
+<% if @infomations.total_count > @infomations.limit_value %>
+<p><%= page_entries_info @infomations %></p>
+<% end %>
+<p><%= paginate @infomations %></p>
+<ul>
+<% @infomations.each do |infomation| %>
+  <li>
+<% if infomation.body.present? %>
+    <h3><%= link_to infomation.title, infomation %> (<%= l(infomation.started_at.to_date) %>)</h3>
+<% else %>
+    <h3><%= infomation.title %> (<%= l(infomation.started_at.to_date) %>)</h3>
+<% end %>
+<% if infomation.summary.present? %>
+    <p><%= infomation.summary.html_safe %></p>
+<% end %>
+  </li>
+<% end %>
+</ul>
+<p><%= paginate @infomations %></p>
+<% end %>

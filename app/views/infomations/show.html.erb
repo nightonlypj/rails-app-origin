@@ -1,0 +1,7 @@
+<h2><%= @infomation.title %> (<%= l(@infomation.started_at.to_date) %>)</h2>
+
+<p><%= @infomation.body.html_safe %></p>
+
+<ul>
+  <li><%= link_to 'お知らせ一覧', infomations_path %></li>
+</ul>

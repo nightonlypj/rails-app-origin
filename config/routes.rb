@@ -1,4 +1,7 @@
 Rails.application.routes.draw do
+  # お知らせ
+  resources :infomations, only: %i[index show]
+
   # 管理ユーザー
   devise_for :admin_users, controllers: {
     registrations: 'admin_users/registrations',

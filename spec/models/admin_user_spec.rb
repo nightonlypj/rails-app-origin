@@ -1,11 +1,16 @@
 require 'rails_helper'
 
 RSpec.describe AdminUser, type: :model do
-  shared_context 'データ作成' do |name|
-    let!(:admin_user) { FactoryBot.build(:admin_user, name: name) }
-  end
+  # 表示名
+  # 前提条件
+  #   なし
+  # テストパターン
+  #   最小文字数よりも少ない, 最小文字数, 最大文字数, 最大文字数よりも多い → データ作成
+  describe 'validates :name' do
+    shared_context 'データ作成' do |name|
+      let!(:admin_user) { FactoryBot.build(:admin_user, name: name) }
+    end
 
-  describe 'validates name' do
     # テスト内容
     shared_examples_for 'ToOK' do
       it 'OK' do
@@ -19,19 +24,19 @@ RSpec.describe AdminUser, type: :model do
     end
 
     # テストケース
-    context "#{Settings['user_name_minimum'] - 1}文字" do
+    context '最小文字数よりも少ない' do
       include_context 'データ作成', 'a' * (Settings['user_name_minimum'] - 1)
       it_behaves_like 'ToNG'
     end
-    context "#{Settings['user_name_minimum']}文字" do
+    context '最小文字数' do
       include_context 'データ作成', 'a' * Settings['user_name_minimum']
       it_behaves_like 'ToOK'
     end
-    context "#{Settings['user_name_maximum']}文字" do
+    context '最大文字数' do
       include_context 'データ作成', 'a' * Settings['user_name_maximum']
       it_behaves_like 'ToOK'
     end
-    context "#{Settings['user_name_maximum'] + 1}文字" do
+    context '最大文字数よりも多い' do
       include_context 'データ作成', 'a' * (Settings['user_name_maximum'] + 1)
       it_behaves_like 'ToNG'
     end

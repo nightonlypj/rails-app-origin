@@ -43,21 +43,23 @@ RSpec.describe 'AdminUsers::Confirmations', type: :request do
   #         expect(response).to be_successful
   #       end
   #     end
-  #     shared_examples_for 'ToLogin' do
+  #     shared_examples_for 'ToLogin' do |alert, notice|
   #       it 'ログインにリダイレクト' do
   #         post admin_user_confirmation_path, params: { admin_user: attributes }
   #         expect(response).to redirect_to(new_admin_user_session_path)
+  #         expect(flash[:alert]).to alert.present? ? eq(I18n.t(alert)) : be_nil
+  #         expect(flash[:notice]).to notice.present? ? eq(I18n.t(notice)) : be_nil
   #       end
   #     end
   #
   #     # テストケース
   #     shared_examples_for '有効なパラメータ' do # Tips: ログイン中も出来ても良さそう
   #       let!(:attributes) { valid_attributes }
-  #       it_behaves_like 'ToLogin'
+  #       it_behaves_like 'ToLogin', nil, 'devise.confirmations.send_instructions'
   #     end
   #     shared_examples_for '無効なパラメータ' do
   #       let!(:attributes) { invalid_attributes }
-  #       it_behaves_like 'ToOK' # Tips: 再入力の為
+  #       it_behaves_like 'ToOK' # Tips: 再入力
   #     end
   #
   #     context '未ログイン' do
@@ -94,71 +96,77 @@ RSpec.describe 'AdminUsers::Confirmations', type: :request do
   #       end
   #     end
   #
-  #     shared_examples_for 'ToTop' do
+  #     shared_examples_for 'ToTop' do |alert, notice|
   #       it 'トップページにリダイレクト' do
   #         get admin_user_confirmation_path(confirmation_token: confirmation_token)
   #         expect(response).to redirect_to(root_path)
+  #         expect(flash[:alert]).to alert.present? ? eq(I18n.t(alert)) : be_nil
+  #         expect(flash[:notice]).to notice.present? ? eq(I18n.t(notice)) : be_nil
   #       end
   #     end
-  #     shared_examples_for 'ToLogin' do
+  #     shared_examples_for 'ToLogin' do |alert, notice|
   #       it 'ログインにリダイレクト' do
   #         get admin_user_confirmation_path(confirmation_token: confirmation_token)
   #         expect(response).to redirect_to(new_admin_user_session_path)
+  #         expect(flash[:alert]).to alert.present? ? eq(I18n.t(alert)) : be_nil
+  #         expect(flash[:notice]).to notice.present? ? eq(I18n.t(notice)) : be_nil
   #       end
   #     end
-  #     shared_examples_for 'ToNew' do
+  #     shared_examples_for 'ToNew' do |alert, notice|
   #       it 'メールアドレス確認メール再送にリダイレクト' do
   #         get admin_user_confirmation_path(confirmation_token: confirmation_token)
   #         expect(response).to redirect_to(new_admin_user_confirmation_path)
+  #         expect(flash[:alert]).to alert.present? ? eq(I18n.t(alert)) : be_nil
+  #         expect(flash[:notice]).to notice.present? ? eq(I18n.t(notice)) : be_nil
   #       end
   #     end
   #
   #     # テストケース
   #     shared_examples_for '[未ログイン][期限内のtoken]未確認（確認日時がない）' do
   #       it_behaves_like 'OK'
-  #       it_behaves_like 'ToLogin'
+  #       it_behaves_like 'ToLogin', nil, 'devise.confirmations.confirmed'
   #     end
   #     shared_examples_for '[ログイン中][期限内のtoken]未確認（確認日時がない）' do # Tips: ログイン中も出来ても良さそう
   #       it_behaves_like 'OK'
-  #       it_behaves_like 'ToTop'
+  #       it_behaves_like 'ToTop', nil, 'devise.confirmations.confirmed'
   #     end
   #     shared_examples_for '[期限切れのtoken]未確認（確認日時がない）' do
   #       it_behaves_like 'NG'
-  #       it_behaves_like 'ToNew'
+  #       it_behaves_like 'ToNew', 'activerecord.errors.models.admin_user.attributes.confirmation_token.invalid', nil
   #     end
   #     shared_examples_for '[存在しないtoken]未確認（確認日時がない）' do
   #       # it_behaves_like 'NG' # Tips: tokenが存在しない為、確認日時がない
-  #       it_behaves_like 'ToNew'
+  #       it_behaves_like 'ToNew', 'activerecord.errors.models.admin_user.attributes.confirmation_token.invalid', nil
   #     end
   #     shared_examples_for '[未ログイン][期限内のtoken]未確認（確認日時が確認送信日時より前）' do
   #       include_context 'メールアドレス確認トークン確認（管理者）', true
   #       it_behaves_like 'OK'
-  #       it_behaves_like 'ToLogin'
+  #       it_behaves_like 'ToLogin', nil, 'devise.confirmations.confirmed'
   #     end
   #     shared_examples_for '[ログイン中][期限内のtoken]未確認（確認日時が確認送信日時より前）' do # Tips: ログイン中も出来ても良さそう
   #       include_context 'メールアドレス確認トークン確認（管理者）', true
   #       it_behaves_like 'OK'
-  #       it_behaves_like 'ToTop'
+  #       it_behaves_like 'ToTop', nil, 'devise.confirmations.confirmed'
   #     end
   #     shared_examples_for '[期限切れのtoken]未確認（確認日時が確認送信日時より前）' do
   #       include_context 'メールアドレス確認トークン確認（管理者）', true
   #       it_behaves_like 'NG'
-  #       it_behaves_like 'ToNew'
+  #       it_behaves_like 'ToNew', 'activerecord.errors.models.admin_user.attributes.confirmation_token.invalid', nil
   #     end
   #     shared_examples_for '[未ログイン][期限内のtoken]確認済み（確認日時が確認送信日時より後）' do
   #       include_context 'メールアドレス確認トークン確認（管理者）', false
   #       it_behaves_like 'NG'
-  #       it_behaves_like 'ToLogin'
+  #       it_behaves_like 'ToLogin', 'errors.messages.already_confirmed', nil
   #     end
   #     shared_examples_for '[ログイン中][期限内のtoken]確認済み（確認日時が確認送信日時より後）' do
   #       include_context 'メールアドレス確認トークン確認（管理者）', false
   #       it_behaves_like 'NG'
-  #       it_behaves_like 'ToLogin' # Tips: ログインからトップにリダイレクト
+  #       it_behaves_like 'ToLogin', 'errors.messages.already_confirmed', nil # Tips: ログインからトップにリダイレクト
   #     end
   #     shared_examples_for '[期限切れのtoken]確認済み（確認日時が確認送信日時より後）' do
   #       include_context 'メールアドレス確認トークン確認（管理者）', false
   #       it_behaves_like 'NG'
-  #       it_behaves_like 'ToNew'
+  #       it_behaves_like 'ToNew', 'activerecord.errors.models.admin_user.attributes.confirmation_token.invalid', nil
   #     end
   #
   #     shared_examples_for '[未ログイン]期限内のtoken' do
