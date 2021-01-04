@@ -79,22 +79,22 @@ class MembersController < ApplicationController
 
   private
 
-  # 存在しない/所属していない顧客へのアクセス禁止
+  # 未所属/存在しない顧客へのアクセス禁止
   def not_found_outside_customer
     @customer = Customer.where(code: params[:customer_code])
                         .includes(:member).where(members: { user_id: current_user.id }).first
     return if @customer.present?
-    return render json: { error: t('errors.messages.customer_code_error') }, status: :not_found if json_request?
+    return render json: { error: t('errors.messages.customer.code_error') }, status: :not_found if request.format.json?
 
     head :not_found
   end
 
-  # 存在しない/所属していないメンバーへのアクセス禁止
+  # 未所属/存在しないメンバーへのアクセス禁止
   def not_found_outside_member
     @member = Member.where(customer_id: @customer.id)
                     .includes(:user).where(users: { code: params[:user_code] }).first
     return if @customer.present?
-    return render json: { error: t('errors.messages.user_code_error') }, status: :not_found if json_request?
+    return render json: { error: t('errors.messages.user.code_error') }, status: :not_found if request.format.json?
 
     head :not_found
   end
@@ -110,7 +110,7 @@ class MembersController < ApplicationController
     else
       return
     end
-    return render json: { error: t(key) }, status: :forbidden if json_request?
+    return render json: { error: t(key) }, status: :forbidden if request.format.json?
 
     redirect_to members_path(customer_code: params[:customer_code]), alert: t(key)
   end
@@ -126,7 +126,7 @@ class MembersController < ApplicationController
     else
       return
     end
-    return render json: { error: t(key) }, status: :forbidden if json_request?
+    return render json: { error: t(key) }, status: :forbidden if request.format.json?
 
     redirect_to members_path(customer_code: params[:customer_code]), alert: t(key)
   end

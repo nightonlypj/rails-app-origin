@@ -1,7 +1,8 @@
 require 'rails_helper'
 
-# TODO: private未対応
+# TODO
 RSpec.describe 'Spaces', type: :request do
+=begin
   include_context '共通ヘッダー'
 
   # GET /spaces/new（ベースドメイン） スペース作成
@@ -43,4 +44,5 @@ RSpec.describe 'Spaces', type: :request do
       it_behaves_like '存在しないサブドメイン'
     end
   end
+=end
 end

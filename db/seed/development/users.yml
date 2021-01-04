@@ -1,48 +1,48 @@
 # Tips: id = customer.id & members.power
 # 顧客1
 - id: 11
-  code: code11
-  name: 顧客1のOwner
-  email: owner@customer1
-  password: changepassword
+  code: 'code11'
+  name: '顧客1のOwner'
+  email: 'owner@customer1'
+  password: 'changepassword'
   confirmed_at: '0000-01-01'
-  invitation_customer_id: nil
-  invitation_requested_at: nil
-  invitation_completed_at: nil
+  invitation_customer_id: null
+  invitation_requested_at: null
+  invitation_completed_at: null
 - id: 12
-  code: code12
-  name: 顧客1のAdmin
-  email: admin@customer1
-  password: changepassword
+  code: 'code12'
+  name: '顧客1のAdmin'
+  email: 'admin@customer1'
+  password: 'changepassword'
   confirmed_at: '0000-01-01'
   invitation_customer_id: 1
   invitation_requested_at: '2020-01-01'
   invitation_completed_at: '2020-01-02'
 - id: 13
-  code: code13
-  name: 顧客1のMember
-  email: member@customer1
-  password: changepassword
-  confirmed_at: nil
+  code: 'code13'
+  name: '顧客1のMember'
+  email: 'member@customer1'
+  password: 'changepassword'
+  confirmed_at: null
   invitation_customer_id: 1
   invitation_requested_at: '2020-01-03'
-  invitation_completed_at: nil
+  invitation_completed_at: null
 
 # 顧客2
 - id: 21
-  code: code21
-  name: 顧客2のOwner
-  email: owner@customer2
-  password: changepassword
+  code: 'code21'
+  name: '顧客2のOwner'
+  email: 'owner@customer2'
+  password: 'changepassword'
   confirmed_at: '0000-01-01'
-  invitation_customer_id: nil
-  invitation_requested_at: nil
-  invitation_completed_at: nil
+  invitation_customer_id: null
+  invitation_requested_at: null
+  invitation_completed_at: null
 - id: 23
-  code: code23
-  name: 顧客2のMember
-  email: member@customer2
-  password: changepassword
+  code: 'code23'
+  name: '顧客2のMember'
+  email: 'member@customer2'
+  password: 'changepassword'
   confirmed_at: '0000-01-01'
   invitation_customer_id: 2
   invitation_requested_at: '2020-02-01'
@@ -50,10 +50,10 @@
 
 # 顧客3
 - id: 31
-  code: code31
-  name: 顧客3のOwner/顧客2のMember
-  email: owner@customer3
-  password: changepassword
+  code: 'code31'
+  name: '顧客3のOwner/顧客2のMember'
+  email: 'owner@customer3'
+  password: 'changepassword'
   confirmed_at: '0000-01-01'
   invitation_customer_id: 2
   invitation_requested_at: '2020-02-03'
@@ -62,29 +62,29 @@
 # Tips: id = 連番
 # その他
 - id: 1
-  code: code1
-  name: 未所属
-  email: user1@mydomain
-  password: changepassword
+  code: 'code1'
+  name: '未所属'
+  email: 'user1@mydomain'
+  password: 'changepassword'
   confirmed_at: '0000-01-01'
-  invitation_customer_id: nil
-  invitation_requested_at: nil
-  invitation_completed_at: nil
+  invitation_customer_id: null
+  invitation_requested_at: null
+  invitation_completed_at: null
 - id: 2
-  code: code2
-  name: 顧客1の外部Member
-  email: user2@mydomain
-  password: changepassword
-  confirmed_at: nil
+  code: 'code2'
+  name: '顧客1の外部Member'
+  email: 'user2@mydomain'
+  password: 'changepassword'
+  confirmed_at: null
   invitation_customer_id: 1
   invitation_requested_at: '2020-01-04'
-  invitation_completed_at: nil
+  invitation_completed_at: null
 - id: 3
-  code: code3
-  name: 顧客1・2の外部Member
-  email: user3@mydomain
-  password: changepassword
+  code: 'code3'
+  name: '顧客1・2の外部Member'
+  email: 'user3@mydomain'
+  password: 'changepassword'
   confirmed_at: '0000-01-01'
-  invitation_customer_id: nil
-  invitation_requested_at: nil
-  invitation_completed_at: nil
+  invitation_customer_id: null
+  invitation_requested_at: null
+  invitation_completed_at: null

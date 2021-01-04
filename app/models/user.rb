@@ -31,17 +31,15 @@ class User < ApplicationRecord
 
   # ユーザーの画像URLを返却
   def image_url(version)
-    return "/images/user/#{version}_noimage.jpg" unless image?
-
     case version
     when :mini
-      image.mini.url
+      image? ? image.mini.url : "/images/user/#{version}_noimage.jpg"
     when :small
-      image.small.url
+      image? ? image.small.url : "/images/user/#{version}_noimage.jpg"
     when :medium
-      image.medium.url
+      image? ? image.medium.url : "/images/user/#{version}_noimage.jpg"
     when :large
-      image.large.url
+      image? ? image.large.url : "/images/user/#{version}_noimage.jpg"
     else
       logger.warn("[WARN]Not found: User.image_url(#{version})")
       ''

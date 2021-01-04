@@ -1,7 +1,8 @@
 require 'rails_helper'
 
-# TODO: private未対応
+# TODO
 RSpec.describe 'Spaces', type: :request do
+=begin
   include_context '共通ヘッダー'
 
   # GET /spaces（ベースドメイン） スペース一覧
@@ -195,4 +196,5 @@ RSpec.describe 'Spaces', type: :request do
       it_behaves_like 'スペースが最大表示数より多い'
     end
   end
+=end
 end

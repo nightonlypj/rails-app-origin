@@ -1,5 +1,5 @@
 - id: 1
-  name: admin
-  email: admin@mydomain
-  password: changepassword
+  name: 'admin'
+  email: 'admin@mydomain'
+  password: 'changepassword'
   confirmed_at: '0000-01-01'

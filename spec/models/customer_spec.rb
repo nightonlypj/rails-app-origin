@@ -5,7 +5,8 @@ RSpec.describe Customer, type: :model do
   # 前提条件
   #   なし
   # テストパターン
-  #   最小文字数よりも少ない, 最小文字数, 最大文字数, 最大文字数よりも多い, アルファベット(小文字)・数字, アルファベット(大文字), 重複 → データ作成
+  #   最小文字数よりも少ない, 最小文字数, 最大文字数, 最大文字数よりも多い,
+  #     アルファベット(小文字)・数字, アルファベット(大文字), 重複 → データ作成
   describe 'validates :code' do
     shared_context 'データ作成' do |code|
       let!(:customer) { FactoryBot.build(:customer, code: code, name: 'test') }

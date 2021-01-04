@@ -1,9 +1,15 @@
 require 'rails_helper'
 
 RSpec.describe Space, type: :model do
-  let!(:customers) { FactoryBot.create_list(:customer, 2) }
-
-  describe 'validates subdomain' do
+  # サブドメイン
+  # 前提条件
+  #   なし
+  # テストパターン
+  #   最小文字数よりも少ない, 最小文字数と同じ, 最大文字数と同じ, 最大文字数よりも多い,
+  #     アルファベット(小文字)・数字・ハイフン(先頭不可), アルファベット(大文字),
+  #     ハイフン(先頭), ハイフン(後尾), 重複（同じ顧客）, 重複（違う顧客） → データ作成
+  describe 'validates :subdomain' do
+    let!(:customers) { FactoryBot.create_list(:customer, 2) }
     shared_context 'データ作成' do |subdomain|
       let!(:space) { FactoryBot.build(:space, customer_id: customers[0].id, subdomain: subdomain, name: 'test') }
     end
@@ -25,19 +31,19 @@ RSpec.describe Space, type: :model do
     end
 
     # テストケース
-    context "#{Settings['subdomain_minimum'] - 1}文字" do
+    context '最小文字数よりも少ない' do
       include_context 'データ作成', 'a' * (Settings['subdomain_minimum'] - 1)
       it_behaves_like 'ToNG'
     end
-    context "#{Settings['subdomain_minimum']}文字" do
+    context '最小文字数と同じ' do
       include_context 'データ作成', 'a' * Settings['subdomain_minimum']
       it_behaves_like 'ToOK'
     end
-    context "#{Settings['subdomain_maximum']}文字" do
+    context '最大文字数と同じ' do
       include_context 'データ作成', 'a' * Settings['subdomain_maximum']
       it_behaves_like 'ToOK'
     end
-    context "#{Settings['subdomain_maximum'] + 1}文字" do
+    context '最大文字数よりも多い' do
       include_context 'データ作成', 'a' * (Settings['subdomain_maximum'] + 1)
       it_behaves_like 'ToNG'
     end
@@ -67,9 +73,15 @@ RSpec.describe Space, type: :model do
     end
   end
 
-  describe 'validates name' do
+  # スペース名
+  # 前提条件
+  #   なし
+  # テストパターン
+  #   最小文字数よりも少ない, 最小文字数と同じ, 最大文字数と同じ, 最大文字数よりも多い → データ作成
+  describe 'validates :name' do
+    let!(:customer) { FactoryBot.create(:customer) }
     shared_context 'データ作成' do |name|
-      let!(:space) { FactoryBot.build(:space, customer_id: customers[0].id, name: name) }
+      let!(:space) { FactoryBot.build(:space, customer_id: customer.id, name: name) }
     end
 
     # テスト内容
@@ -85,19 +97,19 @@ RSpec.describe Space, type: :model do
     end
 
     # テストケース
-    context "#{Settings['space_name_minimum'] - 1}文字" do
+    context '最小文字数よりも少ない' do
       include_context 'データ作成', 'a' * (Settings['space_name_minimum'] - 1)
       it_behaves_like 'ToNG'
     end
-    context "#{Settings['space_name_minimum']}文字" do
+    context '最小文字数と同じ' do
       include_context 'データ作成', 'a' * Settings['space_name_minimum']
       it_behaves_like 'ToOK'
     end
-    context "#{Settings['space_name_maximum']}文字" do
+    context '最大文字数と同じ' do
       include_context 'データ作成', 'a' * Settings['space_name_maximum']
       it_behaves_like 'ToOK'
     end
-    context "#{Settings['space_name_maximum'] + 1}文字" do
+    context '最大文字数よりも多い' do
       include_context 'データ作成', 'a' * (Settings['space_name_maximum'] + 1)
       it_behaves_like 'ToNG'
     end

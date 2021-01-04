@@ -1,118 +1,137 @@
 ja:
-  app_name: "RailsAppOrigin"
-  my_name: "My name"
-  my_url: "https://mydomain"
+  app_name: 'RailsAppOrigin'
+  my_name: 'My name'
+  my_url: 'https://mydomain'
   activerecord:
     models:
-      customer: "顧客"
-      member: "メンバー"
-      space: "スペース"
+      infomation: 'お知らせ'
+      customer: '顧客'
+      member: 'メンバー'
+      space: 'スペース'
     attributes:
+      infomation:
+        id: 'お知らせID'
+        title: 'タイトル'
+        summary: '概要'
+        body: '本文'
+        started_at: '開始日時'
+        ended_at: '終了日時'
+        target: '対象'
+        user: 'ユーザー'
+        created_at: '作成日時'
+        updated_at: '更新日時'
       customer:
-        id: "ID"
-        code: "顧客コード"
-        name: "顧客名"
-        created_at: "作成日時"
-        updated_at: "更新日時"
+        id: 'ID'
+        code: '顧客コード'
+        name: '顧客名'
+        created_at: '作成日時'
+        updated_at: '更新日時'
       member:
-        id: "ID"
-        customer: "顧客"
-        user: "ユーザー"
-        power: "権限"
-        invitationed_at: "招待日時"
-        created_at: "作成日時"
-        updated_at: "更新日時"
+        id: 'ID'
+        customer: '顧客'
+        user: 'ユーザー'
+        power: '権限'
+        invitationed_at: '招待日時'
+        created_at: '作成日時'
+        updated_at: '更新日時'
       space:
-        id: "ID"
-        customer: "顧客"
-        subdomain: "サブドメイン"
-        name: "スペース名"
-        sort_key: "並び順"
-        public_flag: "公開"
-        created_at: "作成日時"
-        updated_at: "更新日時"
+        id: 'ID'
+        customer: '顧客'
+        subdomain: 'サブドメイン'
+        name: 'スペース名'
+        sort_key: '並び順'
+        public_flag: '公開'
+        created_at: '作成日時'
+        updated_at: '更新日時'
     errors:
       models:
         member:
           attributes:
             power:
-              blank: "選択してください。"
-              invalid: "この値は使用できません。"
+              blank: '選択してください。'
+              invalid: 'この値は使用できません。'
         space:
           attributes:
             subdomain:
-              taken: "既に使用されています。"
-              blank: "入力してください。"
-              too_short: "%{count}文字以上で入力してください。"
-              too_long: "%{count}文字以下で入力してください。"
-              invalid: "アルファベット(小文字)・数字・ハイフン(先頭不可)のみで入力してください。"
+              taken: '既に使用されています。'
+              blank: '入力してください。'
+              too_short: '%{count}文字以上で入力してください。'
+              too_long: '%{count}文字以下で入力してください。'
+              invalid: 'アルファベット(小文字)・数字・ハイフン(先頭不可)のみで入力してください。'
             name:
-              blank: "入力してください。"
-              too_short: "%{count}文字以上で入力してください。"
-              too_long: "%{count}文字以下で入力してください。"
+              blank: '入力してください。'
+              too_short: '%{count}文字以上で入力してください。'
+              too_long: '%{count}文字以下で入力してください。'
   enums:
+    infomation:
+      target:
+        All: '全員'
+        User: '対象ユーザーのみ'
     member:
       power:
-        Owner: "所有者"
-        Admin: "管理者"
-        Member: "メンバー"
+        Owner: '所有者'
+        Admin: '管理者'
+        Member: 'メンバー'
   blank_word:
     member:
-      invitationed_at: "なし"
-      registrationed_at: "登録待ち"
+      invitationed_at: 'なし'
+      registrationed_at: '登録待ち'
   helpers:
     submit:
-      create: "登録"
-      update: "更新"
+      create: '登録'
+      update: '更新'
   notice:
     user:
-      image_update: "画像を更新しました。"
-      image_destroy: "画像を削除しました。"
-      destroy_reserved: "アカウント削除予定の為、この操作はできません。"
-      not_destroy_reserved: "既に取り消し済みか、アカウント削除していません。"
+      image_update: '画像を更新しました。'
+      image_destroy: '画像を削除しました。'
     member:
-      update: "メンバーの権限を変更しました。"
-      destroy: "メンバーを解除しました。"
+      update: 'メンバーの権限を変更しました。'
+      destroy: 'メンバーを解除しました。'
     space:
-      create: "スペースを作成しました。"
-      update: "スペースを更新しました。"
+      create: 'スペースを作成しました。'
+      update: 'スペースを更新しました。'
   alert:
     user:
-      destroy_reserved: "アカウント削除予定の為、この操作はできません。"
+      destroy_reserved: 'アカウント削除予定の為、この操作はできません。'
+      not_destroy_reserved: '既に取り消し済みか、アカウント削除していません。'
+      image_destroy_error: '画像削除に失敗しました。'
     member:
       not_update_power:
-        owner: "変更権限がありません。所属の所有者に依頼してください。"
-        admin: "変更権限がありません。所属の管理者または所有者に依頼してください。"
+        owner: '変更権限がありません。所属の所有者に依頼してください。'
+        admin: '変更権限がありません。所属の管理者または所有者に依頼してください。'
       own_update_power:
-        owner: "自分の権限は変更できません。所属の他の所有者に依頼してください。"
-        admin: "自分の権限は変更できません。所属の他の管理者または所有者に依頼してください。"
+        owner: '自分の権限は変更できません。所属の他の所有者に依頼してください。'
+        admin: '自分の権限は変更できません。所属の他の管理者または所有者に依頼してください。'
       not_destroy_power:
-        owner: "解除権限がありません。所属の所有者に依頼してください。"
-        admin: "解除権限がありません。所属の管理者または所有者に依頼してください。"
+        owner: '解除権限がありません。所属の所有者に依頼してください。'
+        admin: '解除権限がありません。所属の管理者または所有者に依頼してください。'
       own_destroy_power:
-        owner: "自分は解除できません。所属の他の所有者に依頼してください。"
-        admin: "自分は解除できません。所属の他の管理者または所有者に依頼してください。"
+        owner: '自分は解除できません。所属の他の所有者に依頼してください。'
+        admin: '自分は解除できません。所属の他の管理者または所有者に依頼してください。'
   errors:
     messages:
-      image_update_blank: "選択してください。"
-      image_destroy_error: "画像削除に失敗しました。"
-      carrierwave_processing_error: "処理に失敗しました。"
-      carrierwave_integrity_error: "許可されたファイルタイプではありません。別のファイルを使用してください。"
-      carrierwave_download_error: "ダウンロードできません。"
-      extension_whitelist_error: "%{allowed_types}のいずれかのファイルを使用してください。"
-      content_type_whitelist_error: "%{allowed_types}のいずれかのファイルを使用してください。"
-      rmagick_processing_error: "画像変換に失敗しました。別のファイルを使用してください。"
-      mini_magick_processing_error: "画像変換に失敗しました。別のファイルを使用してください。"
-      min_size_error: "%{min_size}以上のファイルを使用してください。"
-      max_size_error: "%{max_size}以下のファイルを使用してください。"
-      domain_error: "このドメインでは利用できません。"
-      customer_code_error: "顧客コードが存在しないか、所属していません。"
-      user_code_error: "ユーザーコードが存在しないか、所属していません。"
+      image_update_blank: '選択してください。'
+      carrierwave_processing_error: '処理に失敗しました。'
+      carrierwave_integrity_error: '許可されたファイルタイプではありません。別のファイルを使用してください。'
+      carrierwave_download_error: 'ダウンロードできません。'
+      extension_whitelist_error: '%{allowed_types}のいずれかのファイルを使用してください。'
+      content_type_whitelist_error: '%{allowed_types}のいずれかのファイルを使用してください。'
+      rmagick_processing_error: '画像変換に失敗しました。別のファイルを使用してください。'
+      mini_magick_processing_error: '画像変換に失敗しました。別のファイルを使用してください。'
+      min_size_error: '%{min_size}以上のファイルを使用してください。'
+      max_size_error: '%{max_size}以下のファイルを使用してください。'
+      domain_error: 'このドメインでは利用できません。'
+      infomation:
+        ended: '掲載期間が終了しました。'
+      user:
+        code_error: 'ユーザーコードが存在しないか、所属していません。'
+      customer:
+        code_error: '顧客コードが存在しないか、所属していません。'
   mailer:
     user:
       destroy_reserved:
-        subject: "【%{app_name}】アカウント削除受け付けのお知らせ"
+        subject: '【%{app_name}】アカウント削除受け付けのお知らせ'
       undo_destroy_reserved:
-        subject: "【%{app_name}】アカウント削除取り消し完了のお知らせ"
+        subject: '【%{app_name}】アカウント削除取り消し完了のお知らせ'
       destroy_completed:
-        subject: "【%{app_name}】アカウント削除完了のお知らせ"
+        subject: '【%{app_name}】アカウント削除完了のお知らせ'

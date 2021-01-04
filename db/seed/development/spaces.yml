@@ -2,21 +2,21 @@
 # 顧客1
 - id: 11
   customer_id: 1
-  subdomain: customer1
-  name: customer1のスペース
+  subdomain: 'customer1'
+  name: 'customer1のスペース'
   sort_key: 1
   public_flag: false
 - id: 12
   customer_id: 1
-  subdomain: public1
-  name: 公開スペース
+  subdomain: 'public1'
+  name: '公開スペース'
   sort_key: 2
   public_flag: true
 
 # 顧客2
 - id: 21
   customer_id: 2
-  subdomain: customer2
-  name: customer2のスペース
+  subdomain: 'customer2'
+  name: 'customer2のスペース'
   sort_key: 1
   public_flag: false

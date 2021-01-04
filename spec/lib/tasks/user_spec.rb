@@ -2,6 +2,10 @@ require 'rake_helper'
 
 RSpec.describe User do
   # 削除予定日時を過ぎたユーザーのアカウントを削除
+  # 前提条件
+  #   なし
+  # テストパターン
+  #   2件（削除予約1件、削除対象0件）, 3件（削除予約1件、削除対象1件）, 4件（削除予約1件、削除対象2件） → データ作成
   describe 'user:destroy' do
     let!(:task) { Rake.application['user:destroy'] }
     let!(:dry_run) { 'false' }

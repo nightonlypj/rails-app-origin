@@ -4,7 +4,7 @@
   customer_id: 1
   user_id: 11 # 顧客1のOwner
   power: 1
-  invitationed_at: nil
+  invitationed_at: null
 - id: 112
   customer_id: 1
   user_id: 12 # 顧客1のAdmin
@@ -21,7 +21,7 @@
   customer_id: 2
   user_id: 21 # 顧客2のOwner
   power: 1
-  invitationed_at: nil
+  invitationed_at: null
 - id: 223
   customer_id: 2
   user_id: 23 # 顧客2のMember
@@ -33,7 +33,7 @@
   customer_id: 3
   user_id: 31 # 顧客3のOwner/顧客2のMember
   power: 1
-  invitationed_at: nil
+  invitationed_at: null
 - id: 231
   customer_id: 2
   user_id: 31 # 顧客3のOwner/顧客2のMember
@@ -55,4 +55,4 @@
   customer_id: 2
   user_id: 3 # 顧客1・2の外部Member
   power: 3
-  invitationed_at: nil
+  invitationed_at: null

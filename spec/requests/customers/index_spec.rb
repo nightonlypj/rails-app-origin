@@ -32,7 +32,8 @@ RSpec.describe 'Customers', type: :request do
       it '(json)認証エラー' do
         get customers_path(format: :json), headers: headers
         expect(response).to be_unauthorized
-        expect(JSON.parse(response.body)['error']).to error.present? ? eq(I18n.t(error)) : be_nil
+        message = response.body.present? ? JSON.parse(response.body)['error'] : nil
+        expect(message).to error.present? ? eq(I18n.t(error)) : be_nil
       end
     end
     shared_examples_for 'ToBase' do |alert, notice, error|
@@ -45,7 +46,8 @@ RSpec.describe 'Customers', type: :request do
       it '(json)存在しないエラー' do
         get customers_path(format: :json), headers: headers
         expect(response).to be_not_found
-        expect(JSON.parse(response.body)['error']).to error.present? ? eq(I18n.t(error)) : be_nil
+        message = response.body.present? ? JSON.parse(response.body)['error'] : nil
+        expect(message).to error.present? ? eq(I18n.t(error)) : be_nil
       end
     end
 
@@ -54,45 +56,44 @@ RSpec.describe 'Customers', type: :request do
       let!(:headers) { BASE_HEADER }
       it_behaves_like 'ToLogin', 'devise.failure.unauthenticated', nil, 'devise.failure.unauthenticated'
     end
-    shared_examples_for '[ログイン中]ベースドメイン' do
+    shared_examples_for '[ログイン中/削除予約済み]ベースドメイン' do
       let!(:headers) { BASE_HEADER }
       it_behaves_like 'ToOK'
     end
-    shared_examples_for '存在するサブドメイン' do
+    shared_examples_for '[*]存在するサブドメイン' do
       let!(:headers) { @space_header }
       it_behaves_like 'ToBase', nil, nil, 'errors.messages.domain_error'
     end
-    shared_examples_for '存在しないサブドメイン' do
+    shared_examples_for '[*]存在しないサブドメイン' do
       let!(:headers) { NOT_SPACE_HEADER }
       it_behaves_like 'ToBase', nil, nil, 'errors.messages.domain_error'
     end
 
     context '未ログイン' do
       it_behaves_like '[未ログイン]ベースドメイン'
-      it_behaves_like '存在するサブドメイン'
-      it_behaves_like '存在しないサブドメイン'
+      it_behaves_like '[*]存在するサブドメイン'
+      it_behaves_like '[*]存在しないサブドメイン'
     end
     context 'ログイン中' do
       include_context 'ログイン処理'
-      it_behaves_like '[ログイン中]ベースドメイン'
-      it_behaves_like '存在するサブドメイン'
-      it_behaves_like '存在しないサブドメイン'
+      it_behaves_like '[ログイン中/削除予約済み]ベースドメイン'
+      it_behaves_like '[*]存在するサブドメイン'
+      it_behaves_like '[*]存在しないサブドメイン'
     end
     context 'ログイン中（削除予約済み）' do
       include_context 'ログイン処理', true
-      it_behaves_like '[ログイン中]ベースドメイン'
-      it_behaves_like '存在するサブドメイン'
-      it_behaves_like '存在しないサブドメイン'
+      it_behaves_like '[ログイン中/削除予約済み]ベースドメイン'
+      it_behaves_like '[*]存在するサブドメイン'
+      it_behaves_like '[*]存在しないサブドメイン'
     end
   end
 
-  # GET /customers（ベースドメイン） 所属一覧：顧客情報
-  # GET /customers.json（ベースドメイン） 所属一覧API：顧客情報
+  # 顧客情報
   # 前提条件
-  #   ベースドメイン, ログイン中
+  #   ベースドメイン, ログイン中/削除予約済み
   # テストパターン
   #   ログイン中, ログイン中（削除予約済み） → データ＆状態作成
-  #   所属する顧客が0件, 最大表示数と同じ, 最大表示数より多い → データ作成
+  #   所属する顧客: ない, 最大表示数と同じ, 最大表示数より多い → データ作成
   describe 'GET /index @customers' do
     let!(:headers) { BASE_HEADER }
 
@@ -192,18 +193,18 @@ RSpec.describe 'Customers', type: :request do
     end
 
     # テストケース
-    shared_examples_for '所属する顧客が0件' do
+    shared_examples_for '[ログイン中/削除予約済み]所属する顧客がない' do
       include_context '顧客作成', 0, 0, 0
       it_behaves_like 'ページ情報', 1
       it_behaves_like 'ページネーション非表示', 1, 2
     end
-    shared_examples_for '所属する顧客が最大表示数と同じ' do
+    shared_examples_for '[ログイン中/削除予約済み]所属する顧客が最大表示数と同じ' do
       include_context '顧客作成', Settings['test_customers_owner'], Settings['test_customers_admin'], Settings['test_customers_member']
       it_behaves_like 'ページ情報', 1
       it_behaves_like 'ページネーション非表示', 1, 2
       it_behaves_like 'リスト表示', 1
     end
-    shared_examples_for '所属する顧客が最大表示数より多い' do
+    shared_examples_for '[ログイン中/削除予約済み]所属する顧客が最大表示数より多い' do
       include_context '顧客作成', Settings['test_customers_owner'], Settings['test_customers_admin'], Settings['test_customers_member'] + 1
       it_behaves_like 'ページ情報', 1
       it_behaves_like 'ページ情報', 2
@@ -215,15 +216,15 @@ RSpec.describe 'Customers', type: :request do
 
     context 'ログイン中' do
       include_context 'ログイン処理'
-      it_behaves_like '所属する顧客が0件'
-      it_behaves_like '所属する顧客が最大表示数と同じ'
-      it_behaves_like '所属する顧客が最大表示数より多い'
+      it_behaves_like '[ログイン中/削除予約済み]所属する顧客がない'
+      it_behaves_like '[ログイン中/削除予約済み]所属する顧客が最大表示数と同じ'
+      it_behaves_like '[ログイン中/削除予約済み]所属する顧客が最大表示数より多い'
     end
     context 'ログイン中（削除予約済み）' do
       include_context 'ログイン処理', true
-      it_behaves_like '所属する顧客が0件'
-      it_behaves_like '所属する顧客が最大表示数と同じ'
-      it_behaves_like '所属する顧客が最大表示数より多い'
+      it_behaves_like '[ログイン中/削除予約済み]所属する顧客がない'
+      it_behaves_like '[ログイン中/削除予約済み]所属する顧客が最大表示数と同じ'
+      it_behaves_like '[ログイン中/削除予約済み]所属する顧客が最大表示数より多い'
     end
   end
 end

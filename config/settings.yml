@@ -1,3 +1,4 @@
+## ユーザー
 # メールアドレス確認URLの有効期限（単位：時間）
 confirm_within_hours: 24
 # パスワード再設定URLの有効期限（単位：時間）
@@ -9,6 +10,12 @@ sendmail_destroy_completed: true
 # 表示名の最小・最大文字数
 user_name_minimum: 1
 user_name_maximum: 32
+
+## お知らせ
+# 新しいお知らせの最大表示件数
+new_infomations_limit: 5
+# 一覧のデフォルト最大表示件数
+default_infomations_limit: 25
 
 ## 顧客
 # 一覧のデフォルト最大表示件数

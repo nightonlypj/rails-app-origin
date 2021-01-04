@@ -1,13 +1,13 @@
 # frozen_string_literal: true
 
 class Users::RegistrationsController < Devise::RegistrationsController
-  before_action :configure_sign_up_params, only: [:create]
-  before_action :configure_account_update_params, only: [:update]
   prepend_before_action :authenticate_scope!, only: %i[edit update image_update image_destroy delete destroy undo_delete undo_destroy]
   before_action :redirect_response_destroy_reserved, only: %i[edit update image_update image_destroy delete destroy]
   before_action :redirect_response_not_destroy_reserved, only: %i[undo_delete undo_destroy]
   before_action :redirect_base_domain_response, only: %i[new edit delete undo_delete]
   before_action :not_found_sub_domain_response, only: %i[create update image_update image_destroy destroy undo_destroy]
+  before_action :configure_sign_up_params, only: [:create]
+  before_action :configure_account_update_params, only: [:update]
 
   # GET /users/sign_up アカウント登録
   # def new
@@ -64,7 +64,7 @@ class Users::RegistrationsController < Devise::RegistrationsController
     if @user.save
       redirect_to edit_user_registration_path, notice: t('notice.user.image_destroy')
     else
-      redirect_to edit_user_registration_path, notice: t('errors.messages.image_destroy_error')
+      redirect_to edit_user_registration_path, alert: t('alert.user.image_destroy_error')
     end
   end
 
@@ -131,11 +131,11 @@ class Users::RegistrationsController < Devise::RegistrationsController
 
   # 削除予約済みの場合、リダイレクトしてメッセージを表示
   def redirect_response_destroy_reserved
-    redirect_to root_path, notice: t('notice.user.destroy_reserved') if current_user.destroy_reserved?
+    redirect_to root_path, alert: t('alert.user.destroy_reserved') if current_user.destroy_reserved?
   end
 
   # 削除予約済みでない場合、リダイレクトしてメッセージを表示
   def redirect_response_not_destroy_reserved
-    redirect_to root_path, notice: t('notice.user.not_destroy_reserved') unless current_user.destroy_reserved?
+    redirect_to root_path, alert: t('alert.user.not_destroy_reserved') unless current_user.destroy_reserved?
   end
 end

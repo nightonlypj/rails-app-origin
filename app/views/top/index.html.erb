@@ -1,5 +1,25 @@
-<h2>新しいスペース</h2>
+<% if @new_infomations.present? %>
+<h3>新しいお知らせ</h3>
+<ul>
+<% @new_infomations.each do |new_infomation| %>
+  <li>
+<% if new_infomation.body.present? %>
+    <p><%= link_to new_infomation.title, new_infomation %> (<%= l(new_infomation.started_at.to_date) %>)</p>
+<% else %>
+    <p><%= new_infomation.title %> (<%= l(new_infomation.started_at.to_date) %>)</p>
+<% end %>
+<% if new_infomation.summary.present? %>
+    <p><%= new_infomation.summary.html_safe %></p>
+<% end %>
+  </li>
+<% end %>
+</ul>
+<% if @new_infomations.total_pages > 1 %>
+<p><%= link_to 'もっと見る', infomations_path %></p>
+<% end %>
+<% end %>
 
+<h3>新しいスペース</h3>
 <% if @new_spaces.blank? %>
 <p>Not found</p>
 <% else %>
@@ -10,5 +30,4 @@
 </ul>
 <p><%= link_to 'もっと見る', spaces_path %></p>
 <% end %>
-
 <p><%= link_to 'スペース作成', new_space_path %></p>
