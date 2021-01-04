@@ -69,7 +69,7 @@ RSpec.describe 'Users::Sessions', type: :request do
       let!(:attributes) { valid_attributes }
       it_behaves_like 'ToTop', nil, 'devise.sessions.signed_in'
     end
-    shared_examples_for '[ログイン中]有効なパラメータ' do
+    shared_examples_for '[ログイン中/削除予約済み]有効なパラメータ' do
       let!(:attributes) { valid_attributes }
       it_behaves_like 'ToTop', 'devise.failure.already_authenticated', nil
     end
@@ -77,7 +77,7 @@ RSpec.describe 'Users::Sessions', type: :request do
       let!(:attributes) { invalid_attributes }
       it_behaves_like 'ToOK' # Tips: 再入力
     end
-    shared_examples_for '[ログイン中]無効なパラメータ' do
+    shared_examples_for '[ログイン中/削除予約済み]無効なパラメータ' do
       let!(:attributes) { invalid_attributes }
       it_behaves_like 'ToTop', 'devise.failure.already_authenticated', nil
     end
@@ -88,13 +88,13 @@ RSpec.describe 'Users::Sessions', type: :request do
     end
     context 'ログイン中' do
       include_context 'ログイン処理'
-      it_behaves_like '[ログイン中]有効なパラメータ'
-      it_behaves_like '[ログイン中]無効なパラメータ'
+      it_behaves_like '[ログイン中/削除予約済み]有効なパラメータ'
+      it_behaves_like '[ログイン中/削除予約済み]無効なパラメータ'
     end
     context 'ログイン中（削除予約済み）' do
       include_context 'ログイン処理', true
-      it_behaves_like '[ログイン中]有効なパラメータ'
-      it_behaves_like '[ログイン中]無効なパラメータ'
+      it_behaves_like '[ログイン中/削除予約済み]有効なパラメータ'
+      it_behaves_like '[ログイン中/削除予約済み]無効なパラメータ'
     end
   end
 

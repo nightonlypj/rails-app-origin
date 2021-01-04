@@ -5,7 +5,7 @@ RSpec.describe User, type: :model do
   # 前提条件
   #   なし
   # テストパターン
-  #   空, 正常値 → データ作成
+  #   正常値, ない（異常値） → データ作成
   describe 'validates :code' do
     shared_context 'データ作成' do |code|
       let!(:user) { FactoryBot.build(:user, code: code) }
@@ -24,13 +24,13 @@ RSpec.describe User, type: :model do
     end
 
     # テストケース
-    context '空' do
-      include_context 'データ作成', ''
-      it_behaves_like 'ToNG'
-    end
     context '正常値' do
       include_context 'データ作成', Digest::MD5.hexdigest(SecureRandom.uuid)
       it_behaves_like 'ToOK'
+    end
+    context 'ない（異常値）' do
+      include_context 'データ作成', ''
+      it_behaves_like 'ToNG'
     end
   end
 
@@ -38,7 +38,7 @@ RSpec.describe User, type: :model do
   # 前提条件
   #   なし
   # テストパターン
-  #   最小文字数よりも少ない, 最小文字数, 最大文字数, 最大文字数よりも多い → データ作成
+  #   最小文字数よりも少ない, 最小文字数と同じ, 最大文字数と同じ, 最大文字数よりも多い → データ作成
   describe 'validates :name' do
     shared_context 'データ作成' do |name|
       let!(:user) { FactoryBot.build(:user, name: name) }
@@ -61,11 +61,11 @@ RSpec.describe User, type: :model do
       include_context 'データ作成', 'a' * (Settings['user_name_minimum'] - 1)
       it_behaves_like 'ToNG'
     end
-    context '最小文字数' do
+    context '最小文字数と同じ' do
       include_context 'データ作成', 'a' * Settings['user_name_minimum']
       it_behaves_like 'ToOK'
     end
-    context '最大文字数' do
+    context '最大文字数と同じ' do
       include_context 'データ作成', 'a' * Settings['user_name_maximum']
       it_behaves_like 'ToOK'
     end
@@ -79,20 +79,20 @@ RSpec.describe User, type: :model do
   # 前提条件
   #   なし
   # テストパターン
-  #   削除予定日時: なし, あり → データ作成
+  #   削除予定日時: ない（未予約）, ある（予約済み） → データ作成
   describe 'def destroy_reserved?' do
     shared_context 'データ作成' do |destroy_schedule_at|
       let!(:user) { FactoryBot.create(:user, destroy_schedule_at: destroy_schedule_at) }
     end
 
     # テストケース・内容
-    context '削除予定日時なし' do
+    context '削除予定日時がない（未予約）' do
       include_context 'データ作成', nil
       it 'false' do
         expect(user.destroy_reserved?).to eq(false)
       end
     end
-    context '削除予定日時あり' do
+    context '削除予定日時がある（予約済み）' do
       include_context 'データ作成', Time.current
       it 'true' do
         expect(user.destroy_reserved?).to eq(true)
@@ -102,7 +102,7 @@ RSpec.describe User, type: :model do
 
   # 削除予約
   # 前提条件
-  #   削除予定日時: なし
+  #   削除予定日時: ない
   # テストパターン
   #   なし
   describe 'def set_destroy_reserve' do
@@ -111,14 +111,14 @@ RSpec.describe User, type: :model do
     # テストケース・内容
     context '削除依頼日時' do
       let!(:start_time) { Time.current }
-      it '現在日時' do
+      it '現在日時に変更される' do
         user.set_destroy_reserve
         expect(user.destroy_requested_at).to be_between(start_time, Time.current)
       end
     end
     context '削除予定日時' do
       let!(:start_time) { Time.current + Settings['destroy_schedule_days'].days }
-      it '現在日時＋設定日数' do
+      it '現在日時＋設定日数に変更される' do
         user.set_destroy_reserve
         expect(user.destroy_schedule_at).to be_between(start_time, Time.current + Settings['destroy_schedule_days'].days)
       end
@@ -127,7 +127,7 @@ RSpec.describe User, type: :model do
 
   # 削除予約取り消し
   # 前提条件
-  #   削除予定日時: あり
+  #   削除予定日時: ある
   # テストパターン
   #   なし
   describe 'def set_undo_destroy_reserve' do
@@ -135,13 +135,13 @@ RSpec.describe User, type: :model do
 
     # テストケース・内容
     context '削除依頼日時' do
-      it '空' do
+      it 'なしに変更される' do
         user.set_undo_destroy_reserve
         expect(user.destroy_requested_at).to be_nil
       end
     end
     context '削除予定日時' do
-      it '空' do
+      it 'なしに変更される' do
         user.set_undo_destroy_reserve
         expect(user.destroy_schedule_at).to be_nil
       end
@@ -152,32 +152,32 @@ RSpec.describe User, type: :model do
   # 前提条件
   #   なし
   # テストパターン
-  #   画像: なし, あり
+  #   画像: ない, ある
   #   mini, small, medium, large, 未定義
   describe 'def image_url' do
     let!(:user) { FactoryBot.create(:user) }
 
     # テスト内容
     shared_examples_for 'ToOK' do |version|
-      it 'URLあり' do
+      it 'URLが返却される' do
         expect(user.image_url(version)).not_to be_nil
       end
     end
     shared_examples_for 'ToNG' do |version|
-      it 'URLなし' do
+      it 'URLが返却されない' do
         expect(user.image_url(version)).to eq('')
       end
     end
 
     # テストケース
-    context '画像なし' do
+    context '画像がない' do
       it_behaves_like 'ToOK', :mini
       it_behaves_like 'ToOK', :small
       it_behaves_like 'ToOK', :medium
       it_behaves_like 'ToOK', :large
       it_behaves_like 'ToNG', nil
     end
-    context '画像あり' do
+    context '画像がある' do
       include_context '画像登録処理'
       it_behaves_like 'ToOK', :mini
       it_behaves_like 'ToOK', :small

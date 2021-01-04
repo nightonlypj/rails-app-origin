@@ -53,23 +53,23 @@ RSpec.describe 'AdminUsers::Confirmations', type: :request do
   #     end
   #
   #     # テストケース
-  #     shared_examples_for '有効なパラメータ' do # Tips: ログイン中も出来ても良さそう
+  #     shared_examples_for '[*]有効なパラメータ' do # Tips: ログイン中も出来ても良さそう
   #       let!(:attributes) { valid_attributes }
   #       it_behaves_like 'ToLogin', nil, 'devise.confirmations.send_instructions'
   #     end
-  #     shared_examples_for '無効なパラメータ' do
+  #     shared_examples_for '[*]無効なパラメータ' do
   #       let!(:attributes) { invalid_attributes }
   #       it_behaves_like 'ToOK' # Tips: 再入力
   #     end
   #
   #     context '未ログイン' do
-  #       it_behaves_like '有効なパラメータ'
-  #       it_behaves_like '無効なパラメータ'
+  #       it_behaves_like '[*]有効なパラメータ'
+  #       it_behaves_like '[*]無効なパラメータ'
   #     end
   #     context 'ログイン中' do
   #       include_context 'ログイン処理（管理者）'
-  #       it_behaves_like '有効なパラメータ'
-  #       it_behaves_like '無効なパラメータ'
+  #       it_behaves_like '[*]有効なパラメータ'
+  #       it_behaves_like '[*]無効なパラメータ'
   #     end
   #   end
   #
@@ -78,8 +78,8 @@ RSpec.describe 'AdminUsers::Confirmations', type: :request do
   #   #   なし
   #   # テストパターン
   #   #   未ログイン, ログイン中 → データ＆状態作成
-  #   #   期限内のtoken, 期限切れのtoken, 存在しないtoken, tokenなし → データ作成
-  #   #   未確認（確認日時がない）, 未確認（確認日時が確認送信日時より前）, 確認済み（確認日時が確認送信日時より後） → データ作成
+  #   #   トークン: 期限内, 期限切れ, 存在しない, ない → データ作成
+  #   #   確認日時: ない（未確認）, 確認送信日時より前（未確認）, 確認送信日時より後（確認済み） → データ作成
   #   describe 'GET /show' do
   #     # テスト内容
   #     shared_examples_for 'OK' do
@@ -122,96 +122,96 @@ RSpec.describe 'AdminUsers::Confirmations', type: :request do
   #     end
   #
   #     # テストケース
-  #     shared_examples_for '[未ログイン][期限内のtoken]未確認（確認日時がない）' do
+  #     shared_examples_for '[未ログイン][期限内]確認日時がない（未確認）' do
   #       it_behaves_like 'OK'
   #       it_behaves_like 'ToLogin', nil, 'devise.confirmations.confirmed'
   #     end
-  #     shared_examples_for '[ログイン中][期限内のtoken]未確認（確認日時がない）' do # Tips: ログイン中も出来ても良さそう
+  #     shared_examples_for '[ログイン中][期限内]確認日時がない（未確認）' do # Tips: ログイン中も出来ても良さそう
   #       it_behaves_like 'OK'
   #       it_behaves_like 'ToTop', nil, 'devise.confirmations.confirmed'
   #     end
-  #     shared_examples_for '[期限切れのtoken]未確認（確認日時がない）' do
+  #     shared_examples_for '[*][期限切れ]確認日時がない（未確認）' do
   #       it_behaves_like 'NG'
   #       it_behaves_like 'ToNew', 'activerecord.errors.models.admin_user.attributes.confirmation_token.invalid', nil
   #     end
-  #     shared_examples_for '[存在しないtoken]未確認（確認日時がない）' do
-  #       # it_behaves_like 'NG' # Tips: tokenが存在しない為、確認日時がない
+  #     shared_examples_for '[*][存在しない/なし]確認日時がない（未確認）' do
+  #       # it_behaves_like 'NG' # Tips: トークンが存在しない為、確認日時がない
   #       it_behaves_like 'ToNew', 'activerecord.errors.models.admin_user.attributes.confirmation_token.invalid', nil
   #     end
-  #     shared_examples_for '[未ログイン][期限内のtoken]未確認（確認日時が確認送信日時より前）' do
+  #     shared_examples_for '[未ログイン][期限内]確認日時が確認送信日時より前（未確認）' do
   #       include_context 'メールアドレス確認トークン確認（管理者）', true
   #       it_behaves_like 'OK'
   #       it_behaves_like 'ToLogin', nil, 'devise.confirmations.confirmed'
   #     end
-  #     shared_examples_for '[ログイン中][期限内のtoken]未確認（確認日時が確認送信日時より前）' do # Tips: ログイン中も出来ても良さそう
+  #     shared_examples_for '[ログイン中][期限内]確認日時が確認送信日時より前（未確認）' do # Tips: ログイン中も出来ても良さそう
   #       include_context 'メールアドレス確認トークン確認（管理者）', true
   #       it_behaves_like 'OK'
   #       it_behaves_like 'ToTop', nil, 'devise.confirmations.confirmed'
   #     end
-  #     shared_examples_for '[期限切れのtoken]未確認（確認日時が確認送信日時より前）' do
+  #     shared_examples_for '[*][期限切れ]確認日時が確認送信日時より前（未確認）' do
   #       include_context 'メールアドレス確認トークン確認（管理者）', true
   #       it_behaves_like 'NG'
   #       it_behaves_like 'ToNew', 'activerecord.errors.models.admin_user.attributes.confirmation_token.invalid', nil
   #     end
-  #     shared_examples_for '[未ログイン][期限内のtoken]確認済み（確認日時が確認送信日時より後）' do
+  #     shared_examples_for '[未ログイン][期限内]確認日時が確認送信日時より後（確認済み）' do
   #       include_context 'メールアドレス確認トークン確認（管理者）', false
   #       it_behaves_like 'NG'
   #       it_behaves_like 'ToLogin', 'errors.messages.already_confirmed', nil
   #     end
-  #     shared_examples_for '[ログイン中][期限内のtoken]確認済み（確認日時が確認送信日時より後）' do
+  #     shared_examples_for '[ログイン中][期限内]確認日時が確認送信日時より後（確認済み）' do
   #       include_context 'メールアドレス確認トークン確認（管理者）', false
   #       it_behaves_like 'NG'
   #       it_behaves_like 'ToLogin', 'errors.messages.already_confirmed', nil # Tips: ログインからトップにリダイレクト
   #     end
-  #     shared_examples_for '[期限切れのtoken]確認済み（確認日時が確認送信日時より後）' do
+  #     shared_examples_for '[*][期限切れ]確認日時が確認送信日時より後（確認済み）' do
   #       include_context 'メールアドレス確認トークン確認（管理者）', false
   #       it_behaves_like 'NG'
   #       it_behaves_like 'ToNew', 'activerecord.errors.models.admin_user.attributes.confirmation_token.invalid', nil
   #     end
   #
-  #     shared_examples_for '[未ログイン]期限内のtoken' do
+  #     shared_examples_for '[未ログイン]トークンが期限内' do
   #       include_context 'メールアドレス確認トークン作成（管理者）', true
-  #       it_behaves_like '[未ログイン][期限内のtoken]未確認（確認日時がない）'
-  #       it_behaves_like '[未ログイン][期限内のtoken]未確認（確認日時が確認送信日時より前）'
-  #       it_behaves_like '[未ログイン][期限内のtoken]確認済み（確認日時が確認送信日時より後）'
+  #       it_behaves_like '[未ログイン][期限内]確認日時がない（未確認）'
+  #       it_behaves_like '[未ログイン][期限内]確認日時が確認送信日時より前（未確認）'
+  #       it_behaves_like '[未ログイン][期限内]確認日時が確認送信日時より後（確認済み）'
   #     end
-  #     shared_examples_for '[ログイン中]期限内のtoken' do
+  #     shared_examples_for '[ログイン中]トークンが期限内' do
   #       include_context 'メールアドレス確認トークン作成（管理者）', true
-  #       it_behaves_like '[ログイン中][期限内のtoken]未確認（確認日時がない）'
-  #       it_behaves_like '[ログイン中][期限内のtoken]未確認（確認日時が確認送信日時より前）'
-  #       it_behaves_like '[ログイン中][期限内のtoken]確認済み（確認日時が確認送信日時より後）'
+  #       it_behaves_like '[ログイン中][期限内]確認日時がない（未確認）'
+  #       it_behaves_like '[ログイン中][期限内]確認日時が確認送信日時より前（未確認）'
+  #       it_behaves_like '[ログイン中][期限内]確認日時が確認送信日時より後（確認済み）'
   #     end
-  #     shared_examples_for '期限切れのtoken' do
+  #     shared_examples_for '[*]トークンが期限切れ' do
   #       include_context 'メールアドレス確認トークン作成（管理者）', false
-  #       it_behaves_like '[期限切れのtoken]未確認（確認日時がない）'
-  #       it_behaves_like '[期限切れのtoken]未確認（確認日時が確認送信日時より前）'
-  #       it_behaves_like '[期限切れのtoken]確認済み（確認日時が確認送信日時より後）'
+  #       it_behaves_like '[*][期限切れ]確認日時がない（未確認）'
+  #       it_behaves_like '[*][期限切れ]確認日時が確認送信日時より前（未確認）'
+  #       it_behaves_like '[*][期限切れ]確認日時が確認送信日時より後（確認済み）'
   #     end
-  #     shared_examples_for '存在しないtoken' do
+  #     shared_examples_for '[*]トークンが存在しない' do
   #       let!(:confirmation_token) { NOT_TOKEN }
-  #       it_behaves_like '[存在しないtoken]未確認（確認日時がない）'
-  #       # it_behaves_like '[存在しないtoken]未確認（確認日時が確認送信日時より前）' # Tips: tokenが存在しない為、確認日時がない
-  #       # it_behaves_like '確認済み（確認日時が確認送信日時より後）' # Tips: tokenが存在しない為、確認日時がない
+  #       it_behaves_like '[*][存在しない/なし]確認日時がない（未確認）'
+  #       # it_behaves_like '[*][存在しない]確認日時が確認送信日時より前（未確認）' # Tips: トークンが存在しない為、確認日時がない
+  #       # it_behaves_like '[*][存在しない]確認日時が確認送信日時より後（確認済み）' # Tips: トークンが存在しない為、確認日時がない
   #     end
-  #     shared_examples_for 'tokenなし' do
+  #     shared_examples_for '[*]トークンがない' do
   #       let!(:confirmation_token) { NO_TOKEN }
-  #       it_behaves_like '[存在しないtoken]未確認（確認日時がない）'
-  #       # it_behaves_like '[存在しないtoken]未確認（確認日時が確認送信日時より前）' # Tips: tokenが存在しない為、確認日時がない
-  #       # it_behaves_like '確認済み（確認日時が確認送信日時より後）' # Tips: tokenが存在しない為、確認日時がない
+  #       it_behaves_like '[*][存在しない/なし]確認日時がない（未確認）'
+  #       # it_behaves_like '[*][ない]確認日時が確認送信日時より前（未確認）' # Tips: トークンが存在しない為、確認日時がない
+  #       # it_behaves_like '[*][ない]確認日時が確認送信日時より後（確認済み）' # Tips: トークンが存在しない為、確認日時がない
   #     end
   #
   #     context '未ログイン' do
-  #       it_behaves_like '[未ログイン]期限内のtoken'
-  #       it_behaves_like '期限切れのtoken'
-  #       it_behaves_like '存在しないtoken'
-  #       it_behaves_like 'tokenなし'
+  #       it_behaves_like '[未ログイン]トークンが期限内'
+  #       it_behaves_like '[*]トークンが期限切れ'
+  #       it_behaves_like '[*]トークンが存在しない'
+  #       it_behaves_like '[*]トークンがない'
   #     end
   #     context 'ログイン中' do
   #       include_context 'ログイン処理（管理者）'
-  #       it_behaves_like '[ログイン中]期限内のtoken'
-  #       it_behaves_like '期限切れのtoken'
-  #       it_behaves_like '存在しないtoken'
-  #       it_behaves_like 'tokenなし'
+  #       it_behaves_like '[ログイン中]トークンが期限内'
+  #       it_behaves_like '[*]トークンが期限切れ'
+  #       it_behaves_like '[*]トークンが存在しない'
+  #       it_behaves_like '[*]トークンがない'
   #     end
   #   end
 end

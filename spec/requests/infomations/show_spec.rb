@@ -9,7 +9,7 @@ RSpec.describe 'Infomations', type: :request do
   #   未ログイン, ログイン中, ログイン中（削除予約済み） → データ＆状態作成
   #   対象: 全員, 自分, 他人
   #   開始日時: 過去, 未来
-  #   終了日時: なし, 過去, 未来 → まとめてデータ作成
+  #   終了日時: 過去, 未来, ない → まとめてデータ作成
   describe 'GET /show' do
     let!(:outside_user) { FactoryBot.create(:user) }
     shared_context 'データ作成' do
@@ -75,22 +75,6 @@ RSpec.describe 'Infomations', type: :request do
     end
 
     # テストケース
-    shared_examples_for '[*][全員][過去]終了日時がなし' do
-      let!(:ended_at) { nil }
-      it_behaves_like 'ToOK'
-    end
-    shared_examples_for '[ログイン中/削除予約済み][自分][過去]終了日時がなし' do
-      let!(:ended_at) { nil }
-      it_behaves_like 'ToOK'
-    end
-    shared_examples_for '[*][他人][過去]終了日時がなし' do
-      let!(:ended_at) { nil }
-      it_behaves_like 'ToNG', nil
-    end
-    shared_examples_for '[*][*][未来]終了日時がなし' do
-      let!(:ended_at) { nil }
-      it_behaves_like 'ToNG', nil
-    end
     shared_examples_for '[*][全員][過去]終了日時が過去' do
       let!(:ended_at) { Time.current - 1.day }
       it_behaves_like 'ToNG', 'errors.messages.infomation.ended'
@@ -123,30 +107,46 @@ RSpec.describe 'Infomations', type: :request do
       let!(:ended_at) { Time.current + 1.day }
       it_behaves_like 'ToNG', nil
     end
+    shared_examples_for '[*][全員][過去]終了日時がない' do
+      let!(:ended_at) { nil }
+      it_behaves_like 'ToOK'
+    end
+    shared_examples_for '[ログイン中/削除予約済み][自分][過去]終了日時がない' do
+      let!(:ended_at) { nil }
+      it_behaves_like 'ToOK'
+    end
+    shared_examples_for '[*][他人][過去]終了日時がない' do
+      let!(:ended_at) { nil }
+      it_behaves_like 'ToNG', nil
+    end
+    shared_examples_for '[*][*][未来]終了日時がない' do
+      let!(:ended_at) { nil }
+      it_behaves_like 'ToNG', nil
+    end
 
     shared_examples_for '[*][全員]開始日時が過去' do
       let!(:started_at) { Time.current - 1.day }
-      it_behaves_like '[*][全員][過去]終了日時がなし'
       it_behaves_like '[*][全員][過去]終了日時が過去' # Tips: NG
       it_behaves_like '[*][全員][過去]終了日時が未来'
+      it_behaves_like '[*][全員][過去]終了日時がない'
     end
     shared_examples_for '[ログイン中/削除予約済み][自分]開始日時が過去' do
       let!(:started_at) { Time.current - 1.day }
-      it_behaves_like '[ログイン中/削除予約済み][自分][過去]終了日時がなし'
       it_behaves_like '[ログイン中/削除予約済み][自分][過去]終了日時が過去' # Tips: NG
       it_behaves_like '[ログイン中/削除予約済み][自分][過去]終了日時が未来'
+      it_behaves_like '[ログイン中/削除予約済み][自分][過去]終了日時がない'
     end
     shared_examples_for '[*][他人]開始日時が過去' do # Tips: NG
       let!(:started_at) { Time.current - 1.day }
-      it_behaves_like '[*][他人][過去]終了日時がなし'
       it_behaves_like '[*][他人][過去]終了日時が過去'
       it_behaves_like '[*][他人][過去]終了日時が未来'
+      it_behaves_like '[*][他人][過去]終了日時がない'
     end
     shared_examples_for '[*][*]開始日時が未来' do # Tips: NG
       let!(:started_at) { Time.current + 1.day }
-      it_behaves_like '[*][*][未来]終了日時がなし'
       it_behaves_like '[*][*][未来]終了日時が過去'
       it_behaves_like '[*][*][未来]終了日時が未来'
+      it_behaves_like '[*][*][未来]終了日時がない'
     end
 
     shared_examples_for '[*]対象が全員' do

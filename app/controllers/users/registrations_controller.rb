@@ -62,7 +62,7 @@ class Users::RegistrationsController < Devise::RegistrationsController
     if @user.save
       redirect_to edit_user_registration_path, notice: t('notice.user.image_destroy')
     else
-      redirect_to edit_user_registration_path, notice: t('alert.user.image_destroy_error')
+      redirect_to edit_user_registration_path, alert: t('alert.user.image_destroy_error')
     end
   end
 
