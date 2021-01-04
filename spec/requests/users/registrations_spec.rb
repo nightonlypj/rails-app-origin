@@ -92,7 +92,7 @@ RSpec.describe 'Users::Registrations', type: :request do
       it_behaves_like 'OK'
       it_behaves_like 'ToLogin', nil, 'devise.registrations.signed_up_but_unconfirmed'
     end
-    shared_examples_for '[ログイン中]有効なパラメータ' do
+    shared_examples_for '[ログイン中/削除予約済み]有効なパラメータ' do
       let!(:attributes) { valid_attributes }
       it_behaves_like 'NG'
       it_behaves_like 'ToTop', 'devise.failure.already_authenticated', nil
@@ -102,7 +102,7 @@ RSpec.describe 'Users::Registrations', type: :request do
       it_behaves_like 'NG'
       it_behaves_like 'ToOK' # Tips: 再入力
     end
-    shared_examples_for '[ログイン中]無効なパラメータ' do
+    shared_examples_for '[ログイン中/削除予約済み]無効なパラメータ' do
       let!(:attributes) { invalid_attributes }
       it_behaves_like 'NG'
       it_behaves_like 'ToTop', 'devise.failure.already_authenticated', nil
@@ -114,13 +114,13 @@ RSpec.describe 'Users::Registrations', type: :request do
     end
     context 'ログイン中' do
       include_context 'ログイン処理'
-      it_behaves_like '[ログイン中]有効なパラメータ'
-      it_behaves_like '[ログイン中]無効なパラメータ'
+      it_behaves_like '[ログイン中/削除予約済み]有効なパラメータ'
+      it_behaves_like '[ログイン中/削除予約済み]無効なパラメータ'
     end
     context 'ログイン中（削除予約済み）' do
       include_context 'ログイン処理', true
-      it_behaves_like '[ログイン中]有効なパラメータ'
-      it_behaves_like '[ログイン中]無効なパラメータ'
+      it_behaves_like '[ログイン中/削除予約済み]有効なパラメータ'
+      it_behaves_like '[ログイン中/削除予約済み]無効なパラメータ'
     end
   end
 
@@ -606,11 +606,11 @@ RSpec.describe 'Users::Registrations', type: :request do
   describe 'DELETE /undo_destroy' do
     # テスト内容
     shared_examples_for 'OK' do
-      it '削除依頼日時が空に変更される' do
+      it '削除依頼日時がなしに変更される' do
         delete users_undo_delete_path
         expect(user.destroy_requested_at).to be_nil
       end
-      it '削除予定日時が空に変更される' do
+      it '削除予定日時がなしに変更される' do
         delete users_undo_delete_path
         expect(user.destroy_schedule_at).to be_nil
       end

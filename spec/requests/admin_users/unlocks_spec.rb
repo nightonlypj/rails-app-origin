@@ -102,12 +102,12 @@ RSpec.describe 'AdminUsers::Unlocks', type: :request do
   #   なし
   # テストパターン
   #   未ログイン, ログイン中 → データ＆状態作成
-  #   存在するtoken, 存在しないtoken, tokenなし → データ作成
-  #   未ロック（ロック日時がない）, ロック中（ロック日時がある） → データ作成
+  #   トークン: 存在する, 存在しない, ない → データ作成
+  #   ロック日時: ない（未ロック）, ある（ロック中） → データ作成
   describe 'GET /show' do
     # テスト内容
     shared_examples_for 'OK' do
-      it 'アカウントロック日時が空に変更される' do
+      it 'アカウントロック日時がなしに変更される' do
         get admin_user_unlock_path(unlock_token: unlock_token)
         expect(AdminUser.find(@send_admin_user.id).locked_at).to be_nil
       end
@@ -143,74 +143,74 @@ RSpec.describe 'AdminUsers::Unlocks', type: :request do
     end
 
     # テストケース
-    shared_examples_for '[未ログイン][存在するtoken]未ロック（ロック日時がない）' do
+    shared_examples_for '[未ログイン][存在する]ロック日時がない（未ロック）' do
       include_context 'アカウントロック解除トークン解除（管理者）'
-      # it_behaves_like 'NG' # Tips: 元々、ロック日時が空
+      # it_behaves_like 'NG' # Tips: 元々、ロック日時がない
       it_behaves_like 'ToLogin', nil, 'devise.unlocks.unlocked' # Tips: 既に解除済み
     end
-    shared_examples_for '[ログイン中][存在するtoken]未ロック（ロック日時がない）' do
+    shared_examples_for '[ログイン中][存在する]ロック日時がない（未ロック）' do
       include_context 'アカウントロック解除トークン解除（管理者）'
-      # it_behaves_like 'NG' # Tips: 元々、ロック日時が空
+      # it_behaves_like 'NG' # Tips: 元々、ロック日時がない
       it_behaves_like 'ToAdmin', 'devise.failure.already_authenticated', nil
     end
-    shared_examples_for '[未ログイン][存在しないtoken]未ロック（ロック日時がない）' do
-      # it_behaves_like 'NG' # Tips: tokenが存在しない為、ロック日時がない
+    shared_examples_for '[未ログイン][存在しない/なし]ロック日時がない（未ロック）' do
+      # it_behaves_like 'NG' # Tips: トークンが存在しない為、ロック日時がない
       it_behaves_like 'ToOK' # Tips: 再入力
     end
-    shared_examples_for '[ログイン中][存在しないtoken]未ロック（ロック日時がない）' do
-      # it_behaves_like 'NG' # Tips: tokenが存在しない為、ロック日時がない
+    shared_examples_for '[ログイン中][存在しない/なし]ロック日時がない（未ロック）' do
+      # it_behaves_like 'NG' # Tips: トークンが存在しない為、ロック日時がない
       it_behaves_like 'ToAdmin', 'devise.failure.already_authenticated', nil
     end
-    shared_examples_for '[未ログイン][存在するtoken]ロック中（ロック日時がある）' do
+    shared_examples_for '[未ログイン][存在する]ロック日時がある（ロック中）' do
       it_behaves_like 'OK'
       it_behaves_like 'ToLogin', nil, 'devise.unlocks.unlocked'
     end
-    shared_examples_for '[ログイン中][存在するtoken]ロック中（ロック日時がある）' do
+    shared_examples_for '[ログイン中][存在する]ロック日時がある（ロック中）' do
       it_behaves_like 'NG'
       it_behaves_like 'ToAdmin', 'devise.failure.already_authenticated', nil
     end
 
-    shared_examples_for '[未ログイン]存在するtoken' do
+    shared_examples_for '[未ログイン]トークンが存在する' do
       include_context 'アカウントロック解除トークン作成（管理者）'
-      it_behaves_like '[未ログイン][存在するtoken]未ロック（ロック日時がない）'
-      it_behaves_like '[未ログイン][存在するtoken]ロック中（ロック日時がある）'
+      it_behaves_like '[未ログイン][存在する]ロック日時がない（未ロック）'
+      it_behaves_like '[未ログイン][存在する]ロック日時がある（ロック中）'
     end
-    shared_examples_for '[ログイン中]存在するtoken' do
+    shared_examples_for '[ログイン中]トークンが存在する' do
       include_context 'アカウントロック解除トークン作成（管理者）'
-      it_behaves_like '[ログイン中][存在するtoken]未ロック（ロック日時がない）'
-      it_behaves_like '[ログイン中][存在するtoken]ロック中（ロック日時がある）'
+      it_behaves_like '[ログイン中][存在する]ロック日時がない（未ロック）'
+      it_behaves_like '[ログイン中][存在する]ロック日時がある（ロック中）'
     end
-    shared_examples_for '[未ログイン]存在しないtoken' do
+    shared_examples_for '[未ログイン]トークンが存在しない' do
       let!(:unlock_token) { NOT_TOKEN }
-      it_behaves_like '[未ログイン][存在しないtoken]未ロック（ロック日時がない）'
-      # it_behaves_like '[未ログイン][存在しないtoken]ロック中（ロック日時がある）' # Tips: tokenが存在しない為、ロック日時がない
+      it_behaves_like '[未ログイン][存在しない/なし]ロック日時がない（未ロック）'
+      # it_behaves_like '[未ログイン][存在しない]ロック日時がある（ロック中）' # Tips: トークンが存在しない為、ロック日時がない
     end
-    shared_examples_for '[ログイン中]存在しないtoken' do
+    shared_examples_for '[ログイン中]トークンが存在しない' do
       let!(:unlock_token) { NOT_TOKEN }
-      it_behaves_like '[ログイン中][存在しないtoken]未ロック（ロック日時がない）'
-      # it_behaves_like '[ログイン中][存在しないtoken]ロック中（ロック日時がある）' # Tips: tokenが存在しない為、ロック日時がない
+      it_behaves_like '[ログイン中][存在しない/なし]ロック日時がない（未ロック）'
+      # it_behaves_like '[ログイン中][存在しない]ロック日時がある（ロック中）' # Tips: トークンが存在しない為、ロック日時がない
     end
-    shared_examples_for '[未ログイン]tokenなし' do
+    shared_examples_for '[未ログイン]トークンがない' do
       let!(:unlock_token) { NO_TOKEN }
-      it_behaves_like '[未ログイン][存在しないtoken]未ロック（ロック日時がない）'
-      # it_behaves_like '[未ログイン][存在しないtoken]ロック中（ロック日時がある）' # Tips: tokenが存在しない為、ロック日時がない
+      it_behaves_like '[未ログイン][存在しない/なし]ロック日時がない（未ロック）'
+      # it_behaves_like '[未ログイン][ない]ロック日時がある（ロック中）' # Tips: トークンが存在しない為、ロック日時がない
     end
-    shared_examples_for '[ログイン中]tokenなし' do
+    shared_examples_for '[ログイン中]トークンがない' do
       let!(:unlock_token) { NO_TOKEN }
-      it_behaves_like '[ログイン中][存在しないtoken]未ロック（ロック日時がない）'
-      # it_behaves_like '[ログイン中][存在しないtoken]ロック中（ロック日時がある）' # Tips: tokenが存在しない為、ロック日時がない
+      it_behaves_like '[ログイン中][存在しない/なし]ロック日時がない（未ロック）'
+      # it_behaves_like '[ログイン中][ない]ロック日時がある（ロック中）' # Tips: トークンが存在しない為、ロック日時がない
     end
 
     context '未ログイン' do
-      it_behaves_like '[未ログイン]存在するtoken'
-      it_behaves_like '[未ログイン]存在しないtoken'
-      it_behaves_like '[未ログイン]tokenなし'
+      it_behaves_like '[未ログイン]トークンが存在する'
+      it_behaves_like '[未ログイン]トークンが存在しない'
+      it_behaves_like '[未ログイン]トークンがない'
     end
     context 'ログイン中' do
       include_context 'ログイン処理（管理者）'
-      it_behaves_like '[ログイン中]存在するtoken'
-      it_behaves_like '[ログイン中]存在しないtoken'
-      it_behaves_like '[ログイン中]tokenなし'
+      it_behaves_like '[ログイン中]トークンが存在する'
+      it_behaves_like '[ログイン中]トークンが存在しない'
+      it_behaves_like '[ログイン中]トークンがない'
     end
   end
 end
