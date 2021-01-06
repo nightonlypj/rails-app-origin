@@ -32,6 +32,7 @@ ja:
         destroy_requested_at: '削除依頼日時'
         destroy_schedule_at: '削除予定日時'
         invitation_customer_id: '招待顧客ID'
+        invitation_token: '招待トークン'
         invitation_requested_at: '招待依頼日時'
         invitation_completed_at: '招待完了日時'
         created_at: '作成日時'
@@ -77,7 +78,7 @@ ja:
               too_short: '%{count}文字以上で入力してください。'
               too_long: '%{count}文字以下で入力してください。'
               invalid: '形式が正しくありません。'
-              taken: '既に使用されています。'
+              taken: '既に使用されています。パスワードが不明な場合は、パスワード再設定メール送信をしてください。'
             password:
               blank: '入力してください。'
               too_short: '%{count}文字以上で入力してください。'
@@ -96,6 +97,8 @@ ja:
             unlock_token:
               blank: 'URLが正しくありません。最初からやり直してください。'
               invalid: 'URLが正しくないか、有効期限が切れています。最初からやり直してください。'
+            invitation_token:
+              taken: '既に使用されています。やり直してください。'
         admin_user:
           attributes:
             name:
@@ -107,7 +110,7 @@ ja:
               too_short: '%{count}文字以上で入力してください。'
               too_long: '%{count}文字以下で入力してください。'
               invalid: '形式が正しくありません。'
-              taken: '既に使用されています。'
+              taken: '既に使用されています。パスワードが不明な場合は、パスワード再設定メール送信をしてください。'
             password:
               blank: '入力してください。'
               too_short: '%{count}文字以上で入力してください。'

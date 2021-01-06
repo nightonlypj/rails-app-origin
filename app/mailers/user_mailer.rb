@@ -13,4 +13,12 @@ class UserMailer < ApplicationMailer
   def destroy_completed
     send_mail('mailer.user.destroy_completed.subject')
   end
+
+  # メンバー登録のお願い
+  def member_create
+    @customer = params[:customer]
+    @member = params[:member]
+    @current_user = params[:current_user]
+    send_mail('mailer.user.member_create.subject')
+  end
 end

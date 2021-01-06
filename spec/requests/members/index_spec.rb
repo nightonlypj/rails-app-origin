@@ -9,7 +9,7 @@ RSpec.describe 'Members', type: :request do
   #   なし
   # テストパターン
   #   未ログイン, ログイン中, ログイン中（削除予約済み） → データ＆状態作成
-  #   権限: Owner, Admin, Member, ない → データ作成
+  #   権限: ある(Owner, Admin, Member), ない → データ作成
   #   顧客: 所属, 未所属, 存在しない, ない → 事前にデータ作成
   #   ベースドメイン, 存在するサブドメイン, 存在しないサブドメイン → 事前にデータ作成
   describe 'GET /index' do
@@ -136,7 +136,7 @@ RSpec.describe 'Members', type: :request do
       it_behaves_like '[*][*][*]存在しないサブドメイン'
     end
 
-    shared_examples_for '[ログイン中/削除予約済み]権限が' do |power|
+    shared_examples_for '[ログイン中/削除予約済み]権限がある' do |power|
       include_context '顧客・ユーザー紐付け', Time.current, power
       it_behaves_like '[ログイン中/削除予約済み][Owner/Admin/Member]顧客に所属'
       it_behaves_like '[ログイン中/削除予約済み][Owner/Admin/Member]顧客に未所属'
@@ -157,23 +157,23 @@ RSpec.describe 'Members', type: :request do
     end
 
     context '未ログイン' do
-      # it_behaves_like '[未ログイン]権限が', :Owner # Tips: 未ログインの為、権限がない
-      # it_behaves_like '[未ログイン]権限が', :Admin # Tips: 未ログインの為、権限がない
-      # it_behaves_like '[未ログイン]権限が', :Member # Tips: 未ログインの為、権限がない
+      # it_behaves_like '[未ログイン]権限がある', :Owner # Tips: 未ログインの為、権限がない
+      # it_behaves_like '[未ログイン]権限がある', :Admin # Tips: 未ログインの為、権限がない
+      # it_behaves_like '[未ログイン]権限がある', :Member # Tips: 未ログインの為、権限がない
       it_behaves_like '[未ログイン]権限がない'
     end
     context 'ログイン中' do
       include_context 'ログイン処理'
-      it_behaves_like '[ログイン中/削除予約済み]権限が', :Owner
-      it_behaves_like '[ログイン中/削除予約済み]権限が', :Admin
-      it_behaves_like '[ログイン中/削除予約済み]権限が', :Member
+      it_behaves_like '[ログイン中/削除予約済み]権限がある', :Owner
+      it_behaves_like '[ログイン中/削除予約済み]権限がある', :Admin
+      it_behaves_like '[ログイン中/削除予約済み]権限がある', :Member
       it_behaves_like '[ログイン中/削除予約済み]権限がない'
     end
     context 'ログイン中（削除予約済み）' do
       include_context 'ログイン処理', true
-      it_behaves_like '[ログイン中/削除予約済み]権限が', :Owner
-      it_behaves_like '[ログイン中/削除予約済み]権限が', :Admin
-      it_behaves_like '[ログイン中/削除予約済み]権限が', :Member
+      it_behaves_like '[ログイン中/削除予約済み]権限がある', :Owner
+      it_behaves_like '[ログイン中/削除予約済み]権限がある', :Admin
+      it_behaves_like '[ログイン中/削除予約済み]権限がある', :Member
       it_behaves_like '[ログイン中/削除予約済み]権限がない'
     end
   end
@@ -190,7 +190,7 @@ RSpec.describe 'Members', type: :request do
     let!(:customer_code) { customer.code }
 
     # テスト内容
-    shared_examples_for 'ページ情報' do |page|
+    shared_examples_for 'ページ情報' do |page, power|
       it '顧客名が含まれる' do
         get members_path(customer_code: customer_code, page: page), headers: headers
         expect(response.body).to include(customer.name)
@@ -216,9 +216,17 @@ RSpec.describe 'Members', type: :request do
         get members_path(customer_code: customer_code, page: page, format: :json), headers: headers
         expect(JSON.parse(response.body)['member']['limit_value']).to eq(Settings['default_members_limit'])
       end
-      it '招待のパスが含まれる' do
-        get members_path(customer_code: customer_code, page: page), headers: headers
-        expect(response.body).to include("\"#{new_member_path(customer_code: customer_code)}\"")
+      it '招待のパスが含まれる（権限がある場合）' do
+        if (power == :Owner) || (power == :Admin)
+          get members_path(customer_code: customer_code, page: page), headers: headers
+          expect(response.body).to include("\"#{new_member_path(customer_code: customer_code)}\"")
+        end
+      end
+      it '招待のパスが含まれない（権限がない場合）' do
+        unless (power == :Owner) || (power == :Admin)
+          get members_path(customer_code: customer_code, page: page), headers: headers
+          expect(response.body).not_to include("\"#{new_member_path(customer_code: customer_code)}\"")
+        end
       end
     end
 
@@ -243,7 +251,7 @@ RSpec.describe 'Members', type: :request do
       end
     end
 
-    shared_examples_for 'リスト表示' do |page|
+    shared_examples_for 'リスト表示' do |page, power|
       let!(:start_no) { Settings['default_members_limit'] * (page - 1) + 1 }
       let!(:end_no) { [@create_members.count, Settings['default_members_limit'] * page].min }
       it '(json)配列の件数が一致する' do
@@ -351,46 +359,37 @@ RSpec.describe 'Members', type: :request do
           end
         end
       end
-    end
-
-    shared_examples_for 'リストリンク表示' do |page, power|
-      let!(:start_no) { Settings['default_members_limit'] * (page - 1) + 1 }
-      let!(:end_no) { [@create_members.count, Settings['default_members_limit'] * page].min }
-      it '変更のパスが含まれる' do
+      it '変更のパスが含まれる（権限がある場合）' do
         get members_path(customer_code: customer_code, page: page), headers: headers
         (start_no..end_no).each do |no|
-          if (power == :Owner) || (power == :Admin && @create_members[no - 1].power != :Owner)
+          if (power == :Owner) || (power == :Admin)
             edit_path = edit_member_path(customer_code: customer_code, user_code: @create_members[no - 1].user.code)
             expect(response.body).to include("\"#{edit_path}\"")
           end
         end
       end
-      it '解除のパスが含まれる' do
+      it '変更のパスが含まれない（権限がない場合）' do
         get members_path(customer_code: customer_code, page: page), headers: headers
         (start_no..end_no).each do |no|
-          if (power == :Owner) || (power == :Admin && @create_members[no - 1].power != :Owner)
-            delete_path = delete_member_path(customer_code: customer_code, user_code: @create_members[no - 1].user.code)
-            expect(response.body).to include("\"#{delete_path}\"")
-          end
-        end
-      end
-    end
-    shared_examples_for 'リストリンク非表示' do |page, power|
-      let!(:start_no) { Settings['default_members_limit'] * (page - 1) + 1 }
-      let!(:end_no) { [@create_members.count, Settings['default_members_limit'] * page].min }
-      it '変更のパスが含まれない' do
-        get members_path(customer_code: customer_code, page: page), headers: headers
-        (start_no..end_no).each do |no|
-          unless (power == :Owner) || (power == :Admin && @create_members[no - 1].power != :Owner)
+          unless (power == :Owner) || (power == :Admin)
             edit_path = edit_member_path(customer_code: customer_code, user_code: @create_members[no - 1].user.code)
             expect(response.body).not_to include("\"#{edit_path}\"")
           end
         end
       end
-      it '解除のパスが含まれない' do
+      it '解除のパスが含まれる（権限がある場合）' do
         get members_path(customer_code: customer_code, page: page), headers: headers
         (start_no..end_no).each do |no|
-          unless (power == :Owner) || (power == :Admin && @create_members[no - 1].power != :Owner)
+          if (power == :Owner) || (power == :Admin)
+            delete_path = delete_member_path(customer_code: customer_code, user_code: @create_members[no - 1].user.code)
+            expect(response.body).to include("\"#{delete_path}\"")
+          end
+        end
+      end
+      it '解除のパスが含まれない（権限がない場合）' do
+        get members_path(customer_code: customer_code, page: page), headers: headers
+        (start_no..end_no).each do |no|
+          unless (power == :Owner) || (power == :Admin)
             delete_path = delete_member_path(customer_code: customer_code, user_code: @create_members[no - 1].user.code)
             expect(response.body).not_to include("\"#{delete_path}\"")
           end
@@ -401,27 +400,21 @@ RSpec.describe 'Members', type: :request do
     # テストケース
     shared_examples_for '[*][権限が]所属メンバーが最大表示数と同じ' do |power|
       include_context 'メンバー作成', Settings['test_customers_owner'], Settings['test_customers_admin'], Settings['test_customers_member'], 1
-      it_behaves_like 'ページ情報', 1
+      it_behaves_like 'ページ情報', 1, power
       it_behaves_like 'ページネーション非表示', 1, 2
-      it_behaves_like 'リスト表示', 1
-      it_behaves_like 'リストリンク表示', 1, power
-      it_behaves_like 'リストリンク非表示', 1, power
+      it_behaves_like 'リスト表示', 1, power
     end
     shared_examples_for '[*][権限が]所属メンバーが最大表示数より多い' do |power|
       include_context 'メンバー作成', Settings['test_customers_owner'], Settings['test_customers_admin'], Settings['test_customers_member'] + 1, 1
-      it_behaves_like 'ページ情報', 1
-      it_behaves_like 'ページ情報', 2
+      it_behaves_like 'ページ情報', 1, power
+      it_behaves_like 'ページ情報', 2, power
       it_behaves_like 'ページネーション表示', 1, 2
       it_behaves_like 'ページネーション表示', 2, 1
-      it_behaves_like 'リスト表示', 1
-      it_behaves_like 'リスト表示', 2
-      it_behaves_like 'リストリンク表示', 1, power
-      it_behaves_like 'リストリンク表示', 2, power
-      it_behaves_like 'リストリンク非表示', 1, power
-      it_behaves_like 'リストリンク非表示', 2, power
+      it_behaves_like 'リスト表示', 1, power
+      it_behaves_like 'リスト表示', 2, power
     end
 
-    shared_examples_for '[*]権限が' do |power|
+    shared_examples_for '[*]権限がある' do |power|
       include_context '顧客・ユーザー紐付け', Time.current, power
       # it_behaves_like '[*][権限が]所属メンバーがいない', power # Tips: 自分が所属している為、1件以上
       it_behaves_like '[*][権限が]所属メンバーが最大表示数と同じ', power
@@ -431,17 +424,17 @@ RSpec.describe 'Members', type: :request do
     context 'ログイン中' do
       include_context 'ログイン処理'
       include_context '画像登録処理'
-      it_behaves_like '[*]権限が', :Owner
-      it_behaves_like '[*]権限が', :Admin
-      it_behaves_like '[*]権限が', :Member
+      it_behaves_like '[*]権限がある', :Owner
+      it_behaves_like '[*]権限がある', :Admin
+      it_behaves_like '[*]権限がある', :Member
       include_context '画像削除処理'
     end
     context 'ログイン中（削除予約済み）' do
       include_context 'ログイン処理', true
       include_context '画像登録処理'
-      it_behaves_like '[*]権限が', :Owner
-      it_behaves_like '[*]権限が', :Admin
-      it_behaves_like '[*]権限が', :Member
+      it_behaves_like '[*]権限がある', :Owner
+      it_behaves_like '[*]権限がある', :Admin
+      it_behaves_like '[*]権限がある', :Member
       include_context '画像削除処理'
     end
   end

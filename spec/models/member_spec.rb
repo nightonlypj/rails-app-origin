@@ -99,6 +99,116 @@ RSpec.describe Member, type: :model do
     end
   end
 
+  # 招待権限があるかを返却
+  # 前提条件
+  #   引数なし
+  # テストパターン
+  #   権限: Owner, Admin, Member → データ作成
+  describe 'create_power?' do
+    let!(:customer) { FactoryBot.create(:customer) }
+    shared_context 'データ作成' do |power|
+      let!(:user) { FactoryBot.create(:user) }
+      let!(:member) { FactoryBot.create(:member, customer_id: customer.id, user_id: user.id, power: power) }
+    end
+
+    # テスト内容
+    shared_examples_for 'ToOK' do
+      it 'trueが返却される' do
+        expect(member.create_power?).to eq(true)
+      end
+    end
+    shared_examples_for 'ToNG' do
+      it 'falseが返却される' do
+        expect(member.create_power?).to eq(false)
+      end
+    end
+
+    # テストケース
+    context '権限がOwner' do
+      include_context 'データ作成', :Owner
+      it_behaves_like 'ToOK'
+    end
+    context '権限がAdmin' do
+      include_context 'データ作成', :Admin
+      it_behaves_like 'ToOK'
+    end
+    context '権限がMember' do
+      include_context 'データ作成', :Member
+      it_behaves_like 'ToNG'
+    end
+  end
+
+  # 招待権限があるかを返却
+  # 前提条件
+  #   引数あり
+  # テストパターン
+  #   権限: Owner, Admin, Member → データ作成
+  #   対象: Owner, Admin, Member
+  describe 'create_power?(taget_user_power)' do
+    let!(:customer) { FactoryBot.create(:customer) }
+    shared_context 'データ作成' do |power|
+      let!(:user) { FactoryBot.create(:user) }
+      let!(:member) { FactoryBot.create(:member, customer_id: customer.id, user_id: user.id, power: power) }
+    end
+
+    # テスト内容
+    shared_examples_for 'ToOK' do
+      it 'trueが返却される' do
+        expect(member.create_power?(taget_user_power)).to eq(true)
+      end
+    end
+    shared_examples_for 'ToNG' do
+      it 'falseが返却される' do
+        expect(member.create_power?(taget_user_power)).to eq(false)
+      end
+    end
+
+    # テストケース
+    shared_examples_for '[Owner]対象がOwner' do
+      let!(:taget_user_power) { 'Owner' }
+      it_behaves_like 'ToOK'
+    end
+    shared_examples_for '[Admin/Member]対象がOwner' do
+      let!(:taget_user_power) { 'Owner' }
+      it_behaves_like 'ToNG'
+    end
+    shared_examples_for '[Owner/Admin]対象がAdmin' do
+      let!(:taget_user_power) { 'Admin' }
+      it_behaves_like 'ToOK'
+    end
+    shared_examples_for '[Member]対象がAdmin' do
+      let!(:taget_user_power) { 'Admin' }
+      it_behaves_like 'ToNG'
+    end
+    shared_examples_for '[Owner/Admin]対象がMember' do
+      let!(:taget_user_power) { 'Member' }
+      it_behaves_like 'ToOK'
+    end
+    shared_examples_for '[Member]対象がMember' do
+      let!(:taget_user_power) { 'Member' }
+      it_behaves_like 'ToNG'
+    end
+
+    context '権限がOwner' do
+      include_context 'データ作成', :Owner
+      it_behaves_like '[Owner]対象がOwner'
+      it_behaves_like '[Owner/Admin]対象がAdmin'
+      it_behaves_like '[Owner/Admin]対象がMember'
+    end
+    context '権限がAdmin' do
+      include_context 'データ作成', :Admin
+      it_behaves_like '[Admin/Member]対象がOwner'
+      it_behaves_like '[Owner/Admin]対象がAdmin'
+      it_behaves_like '[Owner/Admin]対象がMember'
+    end
+    context '権限がMember' do
+      include_context 'データ作成', :Member
+      it_behaves_like '[Admin/Member]対象がOwner'
+      it_behaves_like '[Member]対象がAdmin'
+      it_behaves_like '[Member]対象がMember'
+    end
+  end
+
   # 変更権限があるかを返却
   # 前提条件
   #   引数なし

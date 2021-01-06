@@ -5,6 +5,7 @@ class User < ApplicationRecord
   validates :code, uniqueness: true
   validates :name, presence: true
   validates :name, length: { in: Settings['user_name_minimum']..Settings['user_name_maximum'] }, if: proc { |user| user.name.present? }
+  validates :invitation_token, uniqueness: true, if: proc { |user| user.invitation_token.present? }
 
   # Include default devise modules. Others available are:
   # :confirmable, :lockable, :timeoutable, :trackable and :omniauthable

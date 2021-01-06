@@ -7,6 +7,7 @@
   password: 'changepassword'
   confirmed_at: '0000-01-01'
   invitation_customer_id: null
+  invitation_token: null
   invitation_requested_at: null
   invitation_completed_at: null
 - id: 12
@@ -16,6 +17,7 @@
   password: 'changepassword'
   confirmed_at: '0000-01-01'
   invitation_customer_id: 1
+  invitation_token: null
   invitation_requested_at: '2020-01-01'
   invitation_completed_at: '2020-01-02'
 - id: 13
@@ -23,8 +25,9 @@
   name: '顧客1のMember'
   email: 'member@customer1'
   password: 'changepassword'
-  confirmed_at: null
+  confirmed_at: '0000-01-01'
   invitation_customer_id: 1
+  invitation_token: 'invitation_token13'
   invitation_requested_at: '2020-01-03'
   invitation_completed_at: null
 
@@ -36,6 +39,7 @@
   password: 'changepassword'
   confirmed_at: '0000-01-01'
   invitation_customer_id: null
+  invitation_token: null
   invitation_requested_at: null
   invitation_completed_at: null
 - id: 23
@@ -45,6 +49,7 @@
   password: 'changepassword'
   confirmed_at: '0000-01-01'
   invitation_customer_id: 2
+  invitation_token: null
   invitation_requested_at: '2020-02-01'
   invitation_completed_at: '2020-02-02'
 
@@ -56,6 +61,7 @@
   password: 'changepassword'
   confirmed_at: '0000-01-01'
   invitation_customer_id: 2
+  invitation_token: null
   invitation_requested_at: '2020-02-03'
   invitation_completed_at: '2020-02-04'
 
@@ -68,6 +74,7 @@
   password: 'changepassword'
   confirmed_at: '0000-01-01'
   invitation_customer_id: null
+  invitation_token: null
   invitation_requested_at: null
   invitation_completed_at: null
 - id: 2
@@ -75,8 +82,9 @@
   name: '顧客1の外部Member'
   email: 'user2@mydomain'
   password: 'changepassword'
-  confirmed_at: null
+  confirmed_at: '0000-01-01'
   invitation_customer_id: 1
+  invitation_token: 'invitation_token2'
   invitation_requested_at: '2020-01-04'
   invitation_completed_at: null
 - id: 3
@@ -86,5 +94,6 @@
   password: 'changepassword'
   confirmed_at: '0000-01-01'
   invitation_customer_id: null
+  invitation_token: null
   invitation_requested_at: null
   invitation_completed_at: null

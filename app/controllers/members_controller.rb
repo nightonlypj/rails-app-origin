@@ -5,6 +5,7 @@ class MembersController < ApplicationController
   before_action :authenticate_user!
   before_action :not_found_outside_customer
   before_action :not_found_outside_member, only: %i[edit update delete destroy]
+  before_action :alert_before_create_power, only: %i[new create]
   before_action :alert_before_update_power, only: %i[edit update]
   before_action :alert_before_destroy_power, only: %i[delete destroy]
 
@@ -16,27 +17,66 @@ class MembersController < ApplicationController
                      .includes(:user)
   end
 
-  # GET /members/new
+  # GET /members/:customer_code/new（ベースドメイン） メンバー招待
   def new
     @member = Member.new
+    @user = User.new
   end
 
   # GET /members/:customer_code/:user_code/edit（ベースドメイン） メンバー権限変更
   # def edit
   # end
 
-  # POST /members
-  # POST /members.json
+  # POST /members/:customer_code（ベースドメイン） メンバー招待(処理)
+  # POST /members/:customer_code.json（ベースドメイン） メンバー招待API
   def create
-    @member = Member.new(member_params)
-    respond_to do |format|
-      if @member.save
-        format.html { redirect_to @member, notice: 'Customer user was successfully created.' }
-        format.json { render :show, status: :created, location: @member }
-      else
-        format.html { render :new }
-        format.json { render json: @member.errors, status: :unprocessable_entity }
+    @member = Member.new(params.require(:member).permit(:power))
+    @user = User.new(params.require(:member).require(:user).permit(:email))
+    exist_user = if params[:member].present? && params[:member][:user].present? && params[:member][:user][:email].present?
+                   User.find_by(email: params[:member][:user][:email])
+                 end
+    invitationed_at = Time.current
+
+    # validates :power # Tips: enum未定義の値はvalidatesの前にArgumentErrorやRecordInvalidになる
+    if params[:member].blank? || params[:member][:power].blank?
+      @member.errors.add(:power, t('activerecord.errors.models.member.attributes.power.blank'))
+    elsif Member.powers[params[:member][:power]].blank?
+      @member.errors.add(:power, t('activerecord.errors.models.member.attributes.power.invalid'))
+    elsif !@customer.member.first.create_power?(params[:member][:power])
+      @member.errors.add(:power, t('alert.member.not_create_power.owner'))
+    end
+    if exist_user.present?
+      exist_member = Member.find_by(customer_id: @customer.id, user_id: exist_user.id)
+      @member.errors.add(:power, t('activerecord.errors.models.member.attributes.user.taken')) if exist_member.present?
+    end
+    # validates :email # Tips: emailとpowerのメッセージを同時に出す為
+    if exist_user.blank?
+      code = create_unique_code(User, 'code', "MembersController.create[code] #{params[:member]}")
+      password = Faker::Internet.password(min_length: 8) # Tips: ダミーで設定。nameも同様
+      invitation_token = create_unique_code(User, 'invitation_token', "MembersController.create[invitation_token] #{params[:member]}")
+      @user = User.new(code: code, name: '-', email: @user.email, password: password, confirmed_at: '0000-01-01',
+                       invitation_customer_id: @customer.id, invitation_token: invitation_token, invitation_requested_at: invitationed_at)
+    end
+    @user.valid? if exist_user.blank?
+    if @member.errors.present? || @user.errors.present?
+      respond_to do |format|
+        format.html { return render :new }
+        format.json { return render json: { status: 'NG', errors: @member.errors.merge(@user.merge) }, status: :unprocessable_entity }
       end
+    end
+
+    ActiveRecord::Base.transaction do
+      @user.save! if exist_user.blank?
+      user_id = exist_user.present? ? exist_user.id : @user.id
+      @member = Member.new(customer_id: @customer.id, user_id: user_id, power: @member.power, invitationed_at: invitationed_at)
+      @member.save!
+      Infomation.new(started_at: invitationed_at, target: :User, user_id: user_id,
+                     action: 'MemberCreate', action_user_id: current_user.id, customer_id: @customer.id).save!
+      UserMailer.with(user: @user, member: @member, customer: @customer, current_user: current_user).member_create.deliver_now if exist_user.blank?
+    end
+    respond_to do |format|
+      format.html { redirect_to members_path(customer_code: @customer.code), notice: t('notice.member.create') }
+      format.json { render json: { status: 'OK', notice: t('notice.member.create') }, status: :ok }
     end
   end
 
@@ -97,6 +137,20 @@ class MembersController < ApplicationController
     return render json: { error: t('errors.messages.user.code_error') }, status: :not_found if request.format.json?
 
     head :not_found
+  end
+
+  # 招待権限がない顧客へのアクセス禁止
+  def alert_before_create_power
+    if !@customer.member.first.create_power?
+      key = 'alert.member.not_create_power.admin'
+    elsif current_user.destroy_reserved?
+      key = 'alert.user.destroy_reserved'
+    else
+      return
+    end
+    return render json: { error: t(key) }, status: :forbidden if request.format.json?
+
+    redirect_to members_path(customer_code: params[:customer_code]), alert: t(key)
   end
 
   # 変更権限がないメンバーへのアクセス禁止

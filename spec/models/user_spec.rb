@@ -5,9 +5,13 @@ RSpec.describe User, type: :model do
   # 前提条件
   #   なし
   # テストパターン
-  #   正常値, ない（異常値） → データ作成
+  #   正常値, ない（異常値）, 重複 → データ作成
   describe 'validates :code' do
     shared_context 'データ作成' do |code|
+      let!(:user) { FactoryBot.build(:user, code: code) }
+    end
+    shared_context '重複データ作成' do |code|
+      before { FactoryBot.create(:user, code: code) }
       let!(:user) { FactoryBot.build(:user, code: code) }
     end
 
@@ -30,6 +34,10 @@ RSpec.describe User, type: :model do
     end
     context 'ない（異常値）' do
       include_context 'データ作成', ''
+      it_behaves_like 'ToNG'
+    end
+    context '重複' do
+      include_context '重複データ作成', Digest::MD5.hexdigest(SecureRandom.uuid)
       it_behaves_like 'ToNG'
     end
   end
@@ -71,6 +79,43 @@ RSpec.describe User, type: :model do
     end
     context '最大文字数よりも多い' do
       include_context 'データ作成', 'a' * (Settings['user_name_maximum'] + 1)
+      it_behaves_like 'ToNG'
+    end
+  end
+
+  # 招待トークン
+  # 前提条件
+  #   なし
+  # テストパターン
+  #   正常値, 重複 → データ作成
+  describe 'validates :invitation_token' do
+    shared_context 'データ作成' do |invitation_token|
+      let!(:user) { FactoryBot.build(:user, invitation_token: invitation_token) }
+    end
+    shared_context '重複データ作成' do |invitation_token|
+      before { FactoryBot.create(:user, invitation_token: invitation_token) }
+      let!(:user) { FactoryBot.build(:user, invitation_token: invitation_token) }
+    end
+
+    # テスト内容
+    shared_examples_for 'ToOK' do
+      it 'OK' do
+        expect(user).to be_valid
+      end
+    end
+    shared_examples_for 'ToNG' do
+      it 'NG' do
+        expect(user).not_to be_valid
+      end
+    end
+
+    # テストケース
+    context '正常値' do
+      include_context 'データ作成', Digest::MD5.hexdigest(SecureRandom.uuid)
+      it_behaves_like 'ToOK'
+    end
+    context '重複' do
+      include_context '重複データ作成', Digest::MD5.hexdigest(SecureRandom.uuid)
       it_behaves_like 'ToNG'
     end
   end

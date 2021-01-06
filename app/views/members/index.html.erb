@@ -1,6 +1,8 @@
 <h2><%= @customer.name %>のメンバー一覧</h2>
 
+<% if @customer.member.first.create_power? %>
 <%= link_to '招待', new_member_path(customer_code: @customer.code) %>
+<% end %>
 
 <p><%= page_entries_info @members %></p>
 <p><%= paginate @members %></p>

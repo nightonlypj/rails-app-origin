@@ -42,4 +42,19 @@ RSpec.describe UserMailer, type: :mailer do
       expect(mail.to).to eq([user.email])
     end
   end
+
+  # メンバー登録のお願い
+  describe 'member_create' do
+    let(:user) { FactoryBot.build_stubbed(:user, name: '-', invitation_token: Digest::MD5.hexdigest(SecureRandom.uuid), invitation_requested_at: Time.current) }
+    let(:member) { FactoryBot.build_stubbed(:member, power: :Member, invitationed_at: Time.current) }
+    let(:customer) { FactoryBot.build_stubbed(:customer) }
+    let(:current_user) { FactoryBot.build_stubbed(:user) }
+    let(:mail) { UserMailer.with(user: user, member: member, customer: customer, current_user: current_user).member_create }
+    it '送信者のメールアドレスが設定と一致' do
+      expect(mail.from).to eq([Settings['mailer_from']['email']])
+    end
+    it '宛先がユーザーのメールアドレスと一致' do
+      expect(mail.to).to eq([user.email])
+    end
+  end
 end

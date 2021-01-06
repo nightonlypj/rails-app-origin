@@ -79,5 +79,5 @@ Layout/LineLength:
   Max: 160
 
 # C: Metrics/MethodLength: Method has too many lines.
-Metrics/MethodLength:
-  Max: 20
+# Metrics/MethodLength:
+#   Max: 20

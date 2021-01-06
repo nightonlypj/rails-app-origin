@@ -1,5 +1,26 @@
-<h1>New Customer User</h1>
+<h2>メンバー招待</h2>
 
-<%= render 'form', member: @member %>
+<%= form_with(model: @member, url: members_path(customer_code: @customer.code), local: true) do |form| %>
+  <%= render 'users/shared/error_messages', resource: @member %>
+  <%= render 'users/shared/error_messages', resource: @user %>
 
-<%= link_to 'Back', members_path %>
+  <%= form.fields_for @user do |form_user| %>
+    <div class="field">
+      <%= form_user.label 'メールアドレス' %>
+      <%= form_user.text_field :email %>
+      <%= render 'users/shared/field_error_messages', messages: @user.errors[:email] %>
+    </div>
+  <% end %>
+
+  <div class="field">
+    <%= form.label '権限' %>
+    <% Member.powers.each do |power| %>
+      <%= form.radio_button :power, power[0] %> <%= Member.powers_i18n[power[0]] %>
+    <% end %>
+    <%= render 'users/shared/field_error_messages', messages: @member.errors[:power] %>
+  </div>
+
+  <div class="actions">
+    <%= form.submit %>
+  </div>
+<% end %>

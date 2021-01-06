@@ -49,15 +49,21 @@ ActiveRecord::Schema.define(version: 2020_12_31_131129) do
   end
 
   create_table "infomations", force: :cascade do |t|
-    t.string "title", null: false
+    t.string "title"
     t.string "summary"
     t.text "body"
     t.datetime "started_at", null: false
     t.datetime "ended_at"
     t.integer "target", null: false
     t.bigint "user_id"
+    t.string "action"
+    t.bigint "action_user_id"
+    t.bigint "customer_id"
+    t.bigint "space_id"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
+    t.index ["customer_id"], name: "index_infomations_on_customer_id"
+    t.index ["space_id"], name: "index_infomations_on_space_id"
     t.index ["started_at", "ended_at"], name: "index_infomations2"
     t.index ["started_at", "id"], name: "index_infomations1"
     t.index ["target", "user_id"], name: "index_infomations3"
@@ -114,6 +120,7 @@ ActiveRecord::Schema.define(version: 2020_12_31_131129) do
     t.datetime "destroy_requested_at"
     t.datetime "destroy_schedule_at"
     t.bigint "invitation_customer_id"
+    t.string "invitation_token"
     t.datetime "invitation_requested_at"
     t.datetime "invitation_completed_at"
     t.datetime "created_at", precision: 6, null: false
@@ -122,6 +129,7 @@ ActiveRecord::Schema.define(version: 2020_12_31_131129) do
     t.index ["confirmation_token"], name: "index_users3", unique: true
     t.index ["destroy_schedule_at"], name: "index_users6"
     t.index ["email"], name: "index_users1", unique: true
+    t.index ["invitation_token"], name: "index_users7", unique: true
     t.index ["reset_password_token"], name: "index_users2", unique: true
     t.index ["unlock_token"], name: "index_users4", unique: true
   end

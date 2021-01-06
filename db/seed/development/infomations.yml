@@ -1,4 +1,4 @@
-# Tips: id = target & user_id & 任意
+# Tips: id = target & user_id(2桁) & 任意
 - id: 11
   title: '全員へのお知らせ（掲載終了）'
   summary: '全員へのお知らせの要約<br/>2行目'
@@ -40,7 +40,7 @@
   target: 1
   user_id: null
 
-- id: 211
+- id: 2011
   title: 'user1へのお知らせ（掲載終了）'
   summary: 'user1へのお知らせの要約<br/>2行目'
   body: 'user1へのお知らせの本文<br/>2行目'
@@ -48,7 +48,7 @@
   ended_at: '2020-12-31'
   target: 2
   user_id: 1
-- id: 212
+- id: 2012
   title: 'user1へのお知らせ（掲載中）'
   summary: 'user1へのお知らせの要約<br/>2行目'
   body: 'user1へのお知らせの本文<br/>2行目'
@@ -56,7 +56,7 @@
   ended_at: null
   target: 2
   user_id: 1
-- id: 213
+- id: 2013
   title: 'user1へのお知らせ（掲載中、要約なし）'
   summary: null
   body: 'user1へのお知らせの本文<br/>2行目'
@@ -64,7 +64,7 @@
   ended_at: null
   target: 2
   user_id: 1
-- id: 214
+- id: 2014
   title: 'user1へのお知らせ（掲載中、本文なし）'
   summary: 'user1へのお知らせの要約<br/>2行目'
   body: null
@@ -72,7 +72,7 @@
   ended_at: null
   target: 2
   user_id: 1
-- id: 215
+- id: 2015
   title: 'user1へのお知らせ（掲載中、要約・本文なし）'
   summary: null
   body: null
@@ -81,7 +81,7 @@
   target: 2
   user_id: 1
 
-- id: 2101
+- id: 20101
   title: 'user1へのお知らせ 1'
   summary: null
   body: null
@@ -89,7 +89,7 @@
   ended_at: null
   target: 2
   user_id: 1
-- id: 2102
+- id: 20102
   title: 'user1へのお知らせ 2'
   summary: null
   body: null
@@ -97,7 +97,7 @@
   ended_at: null
   target: 2
   user_id: 1
-- id: 2103
+- id: 20103
   title: 'user1へのお知らせ 3'
   summary: null
   body: null
@@ -105,7 +105,7 @@
   ended_at: null
   target: 2
   user_id: 1
-- id: 2104
+- id: 20104
   title: 'user1へのお知らせ 4'
   summary: null
   body: null
@@ -113,7 +113,7 @@
   ended_at: null
   target: 2
   user_id: 1
-- id: 2105
+- id: 20105
   title: 'user1へのお知らせ 5'
   summary: null
   body: null
@@ -121,7 +121,7 @@
   ended_at: null
   target: 2
   user_id: 1
-- id: 2106
+- id: 20106
   title: 'user1へのお知らせ 6'
   summary: null
   body: null
@@ -129,7 +129,7 @@
   ended_at: null
   target: 2
   user_id: 1
-- id: 2107
+- id: 20107
   title: 'user1へのお知らせ 7'
   summary: null
   body: null
@@ -137,7 +137,7 @@
   ended_at: null
   target: 2
   user_id: 1
-- id: 2108
+- id: 20108
   title: 'user1へのお知らせ 8'
   summary: null
   body: null
@@ -145,7 +145,7 @@
   ended_at: null
   target: 2
   user_id: 1
-- id: 2109
+- id: 20109
   title: 'user1へのお知らせ 9'
   summary: null
   body: null
@@ -153,7 +153,7 @@
   ended_at: null
   target: 2
   user_id: 1
-- id: 2110
+- id: 20110
   title: 'user1へのお知らせ 10'
   summary: null
   body: null
@@ -161,7 +161,7 @@
   ended_at: null
   target: 2
   user_id: 1
-- id: 2111
+- id: 20111
   title: 'user1へのお知らせ 11'
   summary: null
   body: null
@@ -169,7 +169,7 @@
   ended_at: null
   target: 2
   user_id: 1
-- id: 2112
+- id: 20112
   title: 'user1へのお知らせ 12'
   summary: null
   body: null
@@ -177,7 +177,7 @@
   ended_at: null
   target: 2
   user_id: 1
-- id: 2113
+- id: 20113
   title: 'user1へのお知らせ 13'
   summary: null
   body: null
@@ -185,7 +185,7 @@
   ended_at: null
   target: 2
   user_id: 1
-- id: 2114
+- id: 20114
   title: 'user1へのお知らせ 14'
   summary: null
   body: null
@@ -193,7 +193,7 @@
   ended_at: null
   target: 2
   user_id: 1
-- id: 2115
+- id: 20115
   title: 'user1へのお知らせ 15'
   summary: null
   body: null
@@ -201,7 +201,7 @@
   ended_at: null
   target: 2
   user_id: 1
-- id: 2116
+- id: 20116
   title: 'user1へのお知らせ 16'
   summary: null
   body: null
@@ -209,7 +209,7 @@
   ended_at: null
   target: 2
   user_id: 1
-- id: 2117
+- id: 20117
   title: 'user1へのお知らせ 17'
   summary: null
   body: null
@@ -217,7 +217,7 @@
   ended_at: null
   target: 2
   user_id: 1
-- id: 2118
+- id: 20118
   title: 'user1へのお知らせ 18'
   summary: null
   body: null
@@ -226,7 +226,7 @@
   target: 2
   user_id: 1
 
-- id: 221
+- id: 2021
   title: 'user2へのお知らせ（掲載中）'
   summary: 'user2へのお知らせの要約<br/>2行目'
   body: 'user2へのお知らせの本文<br/>2行目'
@@ -234,3 +234,47 @@
   ended_at: null
   target: 2
   user_id: 2
+- id: 2022
+  started_at: '2020-01-03'
+  ended_at: null
+  target: 2
+  user_id: 2
+  action: 'MemberCreate'
+  action_user_id: 12
+  customer_id: 1
+
+- id: 2121
+  started_at: '2020-01-01'
+  ended_at: null
+  target: 2
+  user_id: 12
+  action: 'MemberCreate'
+  action_user_id: 11
+  customer_id: 1
+
+- id: 2131
+  started_at: '2020-01-03'
+  ended_at: null
+  target: 2
+  user_id: 13
+  action: 'MemberCreate'
+  action_user_id: 12
+  customer_id: 1
+
+- id: 2231
+  started_at: '2020-02-01'
+  ended_at: null
+  target: 2
+  user_id: 23
+  action: 'MemberCreate'
+  action_user_id: 21
+  customer_id: 2
+
+- id: 2311
+  started_at: '2020-02-03'
+  ended_at: null
+  target: 2
+  user_id: 31
+  action: 'MemberCreate'
+  action_user_id: 21
+  customer_id: 2
