@@ -1,4 +1,6 @@
 Rails.application.routes.draw do
+  get 'registration/new'
+  get 'registration/create'
   # スペース
   get   'spaces',      to: 'spaces#index', as: 'spaces'
   post  'spaces',      to: 'spaces#create'
