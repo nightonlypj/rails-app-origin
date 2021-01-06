@@ -89,6 +89,8 @@ ja:
   infomation:
     action:
       member_create: '%{action_user_name}さんが「%{customer_name}」(%{customer_code})に招待しました。'
+      member_update: '%{action_user_name}さんが「%{customer_name}」(%{customer_code})の権限を変更しました。'
+      member_destroy: '%{action_user_name}さんが「%{customer_name}」(%{customer_code})から解除しました。'
     action_user:
       blank: '所有者または管理者'
   notice:

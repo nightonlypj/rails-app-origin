@@ -11,9 +11,9 @@
 <% @infomations.each do |infomation| %>
   <li>
 <% if infomation.body.present? %>
-    <h3><%= link_to infomation.title, infomation %> (<%= l(infomation.started_at.to_date) %>)</h3>
+    <h3><%= link_to infomation.action_title, infomation %> (<%= l(infomation.started_at.to_date) %>)</h3>
 <% else %>
-    <h3><%= infomation.title %> (<%= l(infomation.started_at.to_date) %>)</h3>
+    <h3><%= infomation.action_title %> (<%= l(infomation.started_at.to_date) %>)</h3>
 <% end %>
 <% if infomation.summary.present? %>
     <p><%= infomation.summary.html_safe %></p>

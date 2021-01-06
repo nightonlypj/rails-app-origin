@@ -3,7 +3,8 @@ class CreateMembers < ActiveRecord::Migration[6.0]
     create_table :members do |t|
       t.references :customer, null: false, foreign_key: true, type: :bigint
       t.references :user, null: false, foreign_key: true, type: :bigint
-      t.integer :power, null: false
+
+      t.integer  :power, null: false
       t.datetime :invitationed_at
 
       t.timestamps

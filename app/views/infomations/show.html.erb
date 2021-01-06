@@ -1,6 +1,6 @@
-<h2><%= @infomation.title %> (<%= l(@infomation.started_at.to_date) %>)</h2>
+<h2><%= @infomation.action_title %> (<%= l(@infomation.started_at.to_date) %>)</h2>
 
-<p><%= @infomation.body.html_safe %></p>
+<p><%= @infomation.body.html_safe if @infomation.body.present? %></p>
 
 <ul>
   <li><%= link_to 'お知らせ一覧', infomations_path %></li>

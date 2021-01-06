@@ -1,8 +1,7 @@
 <h2>メンバー招待</h2>
 
 <%= form_with(model: @member, url: members_path(customer_code: @customer.code), local: true) do |form| %>
-  <%= render 'users/shared/error_messages', resource: @member %>
-  <%= render 'users/shared/error_messages', resource: @user %>
+  <%= render 'users/shared/error_messages', resource: @user, resource2: @member %>
 
   <%= form.fields_for @user do |form_user| %>
     <div class="field">

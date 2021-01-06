@@ -7,7 +7,7 @@ end
 json.infomations do
   json.array! @infomations do |infomation|
     json.id infomation.id
-    json.title infomation.title
+    json.title infomation.action_title
     json.summary infomation.summary.present? ? infomation.summary : ''
     json.started_at l(infomation.started_at, format: :json)
     json.ended_at infomation.ended_at.present? ? l(infomation.ended_at, format: :json) : ''

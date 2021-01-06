@@ -11,6 +11,7 @@ RSpec.describe 'Infomations', type: :request do
   #   開始日時: 過去, 未来
   #   終了日時: 過去, 未来, ない → まとめてデータ作成
   #   ベースドメイン, 存在するサブドメイン, 存在しないサブドメイン → 事前にデータ作成
+  # TODO: action_title
   describe 'GET /show' do
     let!(:outside_user) { FactoryBot.create(:user) }
     shared_context 'データ作成' do

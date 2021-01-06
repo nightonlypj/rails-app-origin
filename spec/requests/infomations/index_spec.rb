@@ -73,6 +73,7 @@ RSpec.describe 'Infomations', type: :request do
   # テストパターン
   #   未ログイン, ログイン中, ログイン中（削除予約済み） → データ＆状態作成
   #   お知らせ: ない, 最大表示数と同じ, 最大表示数より多い → データ作成
+  # TODO: action_title
   describe '@infomations' do
     let!(:headers) { BASE_HEADER }
 

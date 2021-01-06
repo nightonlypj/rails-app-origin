@@ -61,7 +61,7 @@ class MembersController < ApplicationController
     if @member.errors.present? || @user.errors.present?
       respond_to do |format|
         format.html { return render :new }
-        format.json { return render json: { status: 'NG', errors: @member.errors.merge(@user.merge) }, status: :unprocessable_entity }
+        format.json { return render json: { status: 'NG', errors: @member.errors.merge(@user.errors) }, status: :unprocessable_entity }
       end
     end
 
@@ -70,7 +70,7 @@ class MembersController < ApplicationController
       user_id = exist_user.present? ? exist_user.id : @user.id
       @member = Member.new(customer_id: @customer.id, user_id: user_id, power: @member.power, invitationed_at: invitationed_at)
       @member.save!
-      Infomation.new(started_at: invitationed_at, target: :User, user_id: user_id,
+      Infomation.new(started_at: invitationed_at, target: :User, user_id: @member.user_id,
                      action: 'MemberCreate', action_user_id: current_user.id, customer_id: @customer.id).save!
       UserMailer.with(user: @user, member: @member, customer: @customer, current_user: current_user).member_create.deliver_now if exist_user.blank?
     end
@@ -88,18 +88,28 @@ class MembersController < ApplicationController
       @member.errors.add(:power, t('activerecord.errors.models.member.attributes.power.blank'))
     elsif Member.powers[params[:member][:power]].blank?
       @member.errors.add(:power, t('activerecord.errors.models.member.attributes.power.invalid'))
-    elsif !@customer.member.first.update_power?(params[:member][:power])
-      @member.errors.add(:power, t('alert.member.not_update_power.owner'))
+    else
+      before_power = @member.power
+      @member.power = params[:member][:power] # Tips: 有効な場合に、選択したものを復元する為
+    end
+    @member.errors.add(:power, t('alert.member.not_update_power.owner')) unless @customer.member.first.update_power?(params[:member][:power])
+    if @member.errors.present?
+      respond_to do |format|
+        format.html { return render :edit }
+        format.json { return render json: { status: 'NG', errors: @member.errors }, status: :unprocessable_entity }
+      end
     end
 
-    respond_to do |format|
-      if @member.errors.blank? && @member.update!(params.require(:member).permit(:power))
-        format.html { redirect_to members_path(customer_code: @customer.code), notice: t('notice.member.update') }
-        format.json { render json: { status: 'OK', notice: t('notice.member.update') }, status: :ok }
-      else
-        format.html { render :edit }
-        format.json { render json: { status: 'NG', errors: @member.errors }, status: :unprocessable_entity }
+    ActiveRecord::Base.transaction do
+      @member.save!
+      if @member.power != before_power
+        Infomation.new(started_at: Time.current, target: :User, user_id: @member.user_id,
+                       action: 'MemberUpdate', action_user_id: current_user.id, customer_id: @customer.id).save!
       end
+    end
+    respond_to do |format|
+      format.html { redirect_to members_path(customer_code: @customer.code), notice: t('notice.member.update') }
+      format.json { render json: { status: 'OK', notice: t('notice.member.update') }, status: :ok }
     end
   end
 
@@ -110,7 +120,11 @@ class MembersController < ApplicationController
   # DELETE /members/:customer_code/:user_code（ベースドメイン） メンバー解除(処理)
   # DELETE /members/:customer_code/:user_code.json（ベースドメイン） メンバー解除API
   def destroy
-    @member.destroy
+    ActiveRecord::Base.transaction do
+      Infomation.new(started_at: Time.current, target: :User, user_id: @member.user_id,
+                     action: 'MemberDestroy', action_user_id: current_user.id, customer_id: @customer.id).save!
+      @member.destroy!
+    end
     respond_to do |format|
       format.html { redirect_to members_url, notice: t('notice.member.destroy') }
       format.json { render json: { status: 'OK', notice: t('notice.member.destroy') }, status: :ok }

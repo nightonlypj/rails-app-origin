@@ -2,8 +2,10 @@ class CreateSpaces < ActiveRecord::Migration[6.0]
   def change
     create_table :spaces do |t|
       t.references :customer, null: false, foreign_key: true, type: :bigint
+
       t.string :subdomain, null: false
       t.string :name, null: false
+
       t.integer :sort_key, null: false, default: 0
       t.boolean :public_flag, null: false, default: false
 
