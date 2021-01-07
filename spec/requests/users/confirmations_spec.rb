@@ -143,7 +143,7 @@ RSpec.describe 'Users::Confirmations', type: :request do
       it_behaves_like 'NG'
       it_behaves_like 'ToNew', 'activerecord.errors.models.user.attributes.confirmation_token.invalid', nil
     end
-    shared_examples_for '[*][存在しない/なし]確認日時がない（未確認）' do
+    shared_examples_for '[*][存在しない/ない]確認日時がない（未確認）' do
       # it_behaves_like 'NG' # Tips: トークンが存在しない為、確認日時がない
       it_behaves_like 'ToNew', 'activerecord.errors.models.user.attributes.confirmation_token.invalid', nil
     end
@@ -198,13 +198,13 @@ RSpec.describe 'Users::Confirmations', type: :request do
     end
     shared_examples_for '[*]トークンが存在しない' do
       let!(:confirmation_token) { NOT_TOKEN }
-      it_behaves_like '[*][存在しない/なし]確認日時がない（未確認）'
+      it_behaves_like '[*][存在しない/ない]確認日時がない（未確認）'
       # it_behaves_like '[*][存在しない]確認日時が確認送信日時より前（未確認）' # Tips: トークンが存在しない為、確認日時がない
       # it_behaves_like '[*][存在しない]確認日時が確認送信日時より後（確認済み）' # Tips: トークンが存在しない為、確認日時がない
     end
     shared_examples_for '[*]トークンがない' do
       let!(:confirmation_token) { NO_TOKEN }
-      it_behaves_like '[*][存在しない/なし]確認日時がない（未確認）'
+      it_behaves_like '[*][存在しない/ない]確認日時がない（未確認）'
       # it_behaves_like '[*][ない]確認日時が確認送信日時より前（未確認）' # Tips: トークンが存在しない為、確認日時がない
       # it_behaves_like '[*][ない]確認日時が確認送信日時より後（確認済み）' # Tips: トークンが存在しない為、確認日時がない
     end

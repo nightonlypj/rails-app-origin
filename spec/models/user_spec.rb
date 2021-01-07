@@ -5,9 +5,13 @@ RSpec.describe User, type: :model do
   # 前提条件
   #   なし
   # テストパターン
-  #   正常値, ない（異常値） → データ作成
+  #   正常値, ない（異常値）, 重複 → データ作成
   describe 'validates :code' do
     shared_context 'データ作成' do |code|
+      let!(:user) { FactoryBot.build(:user, code: code) }
+    end
+    shared_context '重複データ作成' do |code|
+      before { FactoryBot.create(:user, code: code) }
       let!(:user) { FactoryBot.build(:user, code: code) }
     end
 
@@ -30,6 +34,10 @@ RSpec.describe User, type: :model do
     end
     context 'ない（異常値）' do
       include_context 'データ作成', ''
+      it_behaves_like 'ToNG'
+    end
+    context '重複' do
+      include_context '重複データ作成', Digest::MD5.hexdigest(SecureRandom.uuid)
       it_behaves_like 'ToNG'
     end
   end
@@ -88,13 +96,13 @@ RSpec.describe User, type: :model do
     # テストケース・内容
     context '削除予定日時がない（未予約）' do
       include_context 'データ作成', nil
-      it 'false' do
+      it 'falseが返却される' do
         expect(user.destroy_reserved?).to eq(false)
       end
     end
     context '削除予定日時がある（予約済み）' do
       include_context 'データ作成', Time.current
-      it 'true' do
+      it 'trueが返却される' do
         expect(user.destroy_reserved?).to eq(true)
       end
     end

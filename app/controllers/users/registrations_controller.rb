@@ -4,8 +4,8 @@ class Users::RegistrationsController < Devise::RegistrationsController
   prepend_before_action :authenticate_scope!, only: %i[edit update image_update image_destroy delete destroy undo_delete undo_destroy]
   before_action :redirect_response_destroy_reserved, only: %i[edit update image_update image_destroy delete destroy]
   before_action :redirect_response_not_destroy_reserved, only: %i[undo_delete undo_destroy]
-  before_action :configure_sign_up_params, only: [:create]
-  before_action :configure_account_update_params, only: [:update]
+  before_action :configure_sign_up_params, only: %i[create]
+  before_action :configure_account_update_params, only: %i[update]
 
   # GET /users/sign_up アカウント登録
   # def new
@@ -14,21 +14,7 @@ class Users::RegistrationsController < Devise::RegistrationsController
 
   # POST /users アカウント登録(処理)
   def create
-    # ユーザーコード作成
-    try_count = 1
-    loop do
-      params[:user][:code] = Digest::MD5.hexdigest(SecureRandom.uuid)
-      break if User.find_by(code: params[:user][:code]).blank?
-
-      if try_count < 10
-        logger.warn("[WARN](#{try_count})Not unique code: Users::RegistrationsController.create #{params[:user]}")
-      elsif try_count >= 10
-        logger.error("[ERROR](#{try_count})Not unique code: Users::RegistrationsController.create #{params[:user]}")
-        break
-      end
-      try_count += 1
-    end
-
+    params[:user][:code] = create_unique_code(User, 'code', "Users::RegistrationsController.create #{params[:user]}")
     super
   end
 
