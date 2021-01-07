@@ -30,20 +30,18 @@ class MembersController < ApplicationController
   # POST /members/:customer_code（ベースドメイン） メンバー招待(処理)
   # POST /members/:customer_code.json（ベースドメイン） メンバー招待API
   def create
-    @member = Member.new(params.require(:member).permit(:power))
+    @member = Member.new
     @user = User.new(params.require(:member).require(:user).permit(:email))
-    exist_user = if params[:member].present? && params[:member][:user].present? && params[:member][:user][:email].present?
-                   User.find_by(email: params[:member][:user][:email])
-                 end
+    exist_user = @user.email.present? ? User.find_by(email: @user.email) : nil
     invitationed_at = Time.current
-
     # validates :power # Tips: enum未定義の値はvalidatesの前にArgumentErrorやRecordInvalidになる
     if params[:member].blank? || params[:member][:power].blank?
       @member.errors.add(:power, t('activerecord.errors.models.member.attributes.power.blank'))
     elsif Member.powers[params[:member][:power]].blank?
       @member.errors.add(:power, t('activerecord.errors.models.member.attributes.power.invalid'))
-    elsif !@customer.member.first.create_power?(params[:member][:power])
-      @member.errors.add(:power, t('alert.member.not_create_power.owner'))
+    else
+      @member.assign_attributes(params.require(:member).permit(:power))
+      @member.errors.add(:power, t('alert.member.not_create_power.owner')) unless @customer.member.first.create_power?(@member.power)
     end
     if exist_user.present?
       exist_member = Member.find_by(customer_id: @customer.id, user_id: exist_user.id)
@@ -52,12 +50,12 @@ class MembersController < ApplicationController
     # validates :email # Tips: emailとpowerのメッセージを同時に出す為
     if exist_user.blank?
       code = create_unique_code(User, 'code', "MembersController.create[code] #{params[:member]}")
-      password = Faker::Internet.password(min_length: 8) # Tips: ダミーで設定。nameも同様
+      password = Faker::Internet.password(min_length: 8) # Tips: ダミーを設定。nameも同様
       invitation_token = create_unique_code(User, 'invitation_token', "MembersController.create[invitation_token] #{params[:member]}")
-      @user = User.new(code: code, name: '-', email: @user.email, password: password, confirmed_at: '0000-01-01',
-                       invitation_customer_id: @customer.id, invitation_token: invitation_token, invitation_requested_at: invitationed_at)
+      @user.assign_attributes(code: code, name: '-', password: password, confirmed_at: '0000-01-01',
+                              invitation_customer_id: @customer.id, invitation_token: invitation_token, invitation_requested_at: invitationed_at)
+      @user.valid?
     end
-    @user.valid? if exist_user.blank?
     if @member.errors.present? || @user.errors.present?
       respond_to do |format|
         format.html { return render :new }
@@ -68,7 +66,7 @@ class MembersController < ApplicationController
     ActiveRecord::Base.transaction do
       @user.save! if exist_user.blank?
       user_id = exist_user.present? ? exist_user.id : @user.id
-      @member = Member.new(customer_id: @customer.id, user_id: user_id, power: @member.power, invitationed_at: invitationed_at)
+      @member.assign_attributes(customer_id: @customer.id, user_id: user_id, invitation_user_id: current_user.id, invitationed_at: invitationed_at)
       @member.save!
       Infomation.new(started_at: invitationed_at, target: :User, user_id: @member.user_id,
                      action: 'MemberCreate', action_user_id: current_user.id, customer_id: @customer.id).save!
@@ -90,9 +88,9 @@ class MembersController < ApplicationController
       @member.errors.add(:power, t('activerecord.errors.models.member.attributes.power.invalid'))
     else
       before_power = @member.power
-      @member.power = params[:member][:power] # Tips: 有効な場合に、選択したものを復元する為
+      @member.assign_attributes(params.require(:member).permit(:power))
+      @member.errors.add(:power, t('alert.member.not_update_power.owner')) unless @customer.member.first.update_power?(@member.power)
     end
-    @member.errors.add(:power, t('alert.member.not_update_power.owner')) unless @customer.member.first.update_power?(params[:member][:power])
     if @member.errors.present?
       respond_to do |format|
         format.html { return render :edit }

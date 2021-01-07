@@ -1,15 +1,8 @@
-# TODO<br/>
+<%= @user.email %> 様<br/>
 <br/>
-customer.code: <%= @customer.code %><br/>
-customer.name: <%= @customer.name %><br/>
+<%= @current_user.name %> さん( <%= @current_user.email %> )が、<br/>
+<%= t('app_name') %> の「<%= @customer.name %>」(<%= @customer.code %>)の<%= @member.power_i18n %>に招待しました。<br/>
 <br/>
-member.power: <%= @member.power_i18n %><br/>
-member.invitationed_at: <%= @member.invitationed_at %><br/>
-<br/>
-user.name: <%= @user.name %><br/>
-user.email: <%= @user.email %><br/>
-user.invitation_token: <%= @user.invitation_token %><br/>
-user.invitation_requested_at: <%= @user.invitation_requested_at %><br/>
-<br/>
-current_user.name: <%= @current_user.name %><br/>
-current_user.email: <%= @current_user.email %><br/>
+下記のリンクをクリックして、メンバー登録を行なってください。<br/>
+招待者や「<%= @customer.name %>」にお心当たりがない場合は、このメールを無視してください。<br/>
+<%= link_to 'メンバー登録', registration_sign_up_url(invitation_token: @user.invitation_token) %><br/>

@@ -74,6 +74,7 @@ ActiveRecord::Schema.define(version: 2020_12_31_131129) do
     t.bigint "customer_id", null: false
     t.bigint "user_id", null: false
     t.integer "power", null: false
+    t.bigint "invitation_user_id"
     t.datetime "invitationed_at"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false

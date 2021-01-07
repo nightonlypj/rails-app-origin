@@ -15,18 +15,21 @@ class Infomation < ApplicationRecord
     def get_title(key)
       action_user = User.find_by(id: action_user_id)
       I18n.t(key)
-          .gsub(/%{action_user_name}/, action_user.present? ? action_user.name : I18n.t('infomation.action_user.blank'))
+          .gsub(/%{action_user_name}/, action_user.present? ? action_user.name : I18n.t('infomation.action_user.blank.name'))
+          .gsub(/%{action_user_email}/, action_user.present? ? action_user.email : I18n.t('infomation.action_user.blank.email'))
           .gsub(/%{customer_name}/, customer.name)
           .gsub(/%{customer_code}/, customer.code)
     end
 
     case action
-    when 'MemberCreate' # メンバー登録
+    when 'MemberCreate' # メンバー招待
       get_title('infomation.action.member_create')
     when 'MemberUpdate' # メンバー権限変更
       get_title('infomation.action.member_update')
     when 'MemberDestroy' # メンバー解除
       get_title('infomation.action.member_destroy')
+    when 'RegistrationCreate' # メンバー登録
+      get_title('infomation.action.registration_create')
     when nil
       title
     else

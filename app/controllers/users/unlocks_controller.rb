@@ -2,7 +2,7 @@
 
 class Users::UnlocksController < Devise::UnlocksController
   before_action :redirect_base_domain_response, only: %i[new show]
-  before_action :not_found_sub_domain_response, only: [:create]
+  before_action :not_found_sub_domain_response, only: %i[create]
 
   # GET /users/unlock/new アカウントロック解除メール再送
   # def new

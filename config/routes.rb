@@ -1,6 +1,4 @@
 Rails.application.routes.draw do
-  get 'registration/new'
-  get 'registration/create'
   # スペース
   get   'spaces',      to: 'spaces#index', as: 'spaces'
   post  'spaces',      to: 'spaces#create'
@@ -19,7 +17,11 @@ Rails.application.routes.draw do
   get    'members/:customer_code/:user_code/delete', to: 'members#delete', as: 'delete_member'
   delete 'members/:customer_code/:user_code',        to: 'members#destroy'
 
-  # 所属（顧客）
+  # メンバー登録
+  get    'registration/sign_up', to: 'registration#new',    as: 'registration_sign_up' # Tips: NG(new_registration)
+  post   'registration/sign_up', to: 'registration#create', as: nil
+
+  # 顧客（所属）
   resources :customers, only: %i[index]
 
   # お知らせ

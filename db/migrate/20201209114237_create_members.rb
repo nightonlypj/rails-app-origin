@@ -5,6 +5,7 @@ class CreateMembers < ActiveRecord::Migration[6.0]
       t.references :user, null: false, foreign_key: true, type: :bigint
 
       t.integer  :power, null: false
+      t.bigint   :invitation_user_id
       t.datetime :invitationed_at
 
       t.timestamps

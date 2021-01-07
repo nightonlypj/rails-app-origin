@@ -14,7 +14,7 @@
   </div>
 
   <div class="field">
-    <%= form.label '権限' %>
+    <%= form.label :power %>
     <% Member.powers.each do |power| %>
       <%= form.radio_button :power, power[0] %> <%= Member.powers_i18n[power[0]] %>
     <% end %>

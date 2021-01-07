@@ -88,11 +88,14 @@ ja:
       update: '更新'
   infomation:
     action:
-      member_create: '%{action_user_name}さんが「%{customer_name}」(%{customer_code})に招待しました。'
-      member_update: '%{action_user_name}さんが「%{customer_name}」(%{customer_code})の権限を変更しました。'
-      member_destroy: '%{action_user_name}さんが「%{customer_name}」(%{customer_code})から解除しました。'
+      member_create: '%{action_user_name} さんが「%{customer_name}」(%{customer_code})に招待しました。'
+      member_update: '%{action_user_name} さんが「%{customer_name}」(%{customer_code})の権限を変更しました。'
+      member_destroy: '%{action_user_name} さんが「%{customer_name}」(%{customer_code})から解除しました。'
+      registration_create: '招待した %{action_user_name} さん( %{action_user_email} )が「%{customer_name}」(%{customer_code})に参加しました。'
     action_user:
-      blank: '所有者または管理者'
+      blank:
+        name: '所有者または管理者'
+        email: 'N/A'
   notice:
     user:
       image_update: '画像を更新しました。'
@@ -101,6 +104,8 @@ ja:
       create: 'メンバーを招待しました。'
       update: 'メンバーの権限を変更しました。'
       destroy: 'メンバーを解除しました。'
+    registration:
+      create: 'メンバー登録が完了しました。先ずはお知らせを確認してみてください。'
     space:
       create: 'スペースを作成しました。'
       update: 'スペースを更新しました。'
@@ -109,6 +114,10 @@ ja:
       destroy_reserved: 'アカウント削除予定の為、この操作はできません。'
       not_destroy_reserved: '既に取り消し済みか、アカウント削除していません。'
       image_destroy_error: '画像削除に失敗しました。'
+      invitation_token:
+        already_sign_in: 'ログイン中の為、アクセスできません。ログアウトしてからお試しください。'
+        blank: 'URLが正しくありません。やり直してください。'
+        invalid: 'URLが正しくないか、既にメンバー登録が完了しています。ログインしてください。'
     member:
       not_create_power:
         owner: '所有者で招待する権限がありません。所属の所有者に依頼してください。'

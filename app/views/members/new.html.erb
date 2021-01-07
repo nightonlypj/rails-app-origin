@@ -1,18 +1,18 @@
-<h2>メンバー招待</h2>
+<h2><%= @customer.name %>のメンバー招待（β版）</h2>
 
 <%= form_with(model: @member, url: members_path(customer_code: @customer.code), local: true) do |form| %>
   <%= render 'users/shared/error_messages', resource: @user, resource2: @member %>
 
   <%= form.fields_for @user do |form_user| %>
     <div class="field">
-      <%= form_user.label 'メールアドレス' %>
+      <%= form_user.label :email %>
       <%= form_user.text_field :email %>
       <%= render 'users/shared/field_error_messages', messages: @user.errors[:email] %>
     </div>
   <% end %>
 
   <div class="field">
-    <%= form.label '権限' %>
+    <%= form.label :power %>
     <% Member.powers.each do |power| %>
       <%= form.radio_button :power, power[0] %> <%= Member.powers_i18n[power[0]] %>
     <% end %>

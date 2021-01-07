@@ -19,6 +19,8 @@
     <%= form.label :password %>
     <% if @minimum_password_length %>
       <em>(必須、<%= @minimum_password_length %>文字以上)</em><br/>
+    <% else %>
+      <em>(必須)</em><br/>
     <% end %>
     <%= form.password_field :password, autocomplete: 'new-password' %>
     <%= render 'users/shared/field_error_messages', messages: resource.errors[:password] %>

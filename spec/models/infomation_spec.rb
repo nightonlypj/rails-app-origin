@@ -68,7 +68,7 @@ RSpec.describe Infomation, type: :model do
   # テストパターン
   #   ログイン中, ログイン中（削除予約済み） → データ作成
   #   アクションユーザー: いる, いない（削除済み） → 事前にデータ作成
-  #   アクション: ある(MemberCreate, MemberUpdate, MemberDestroy), ない, 未定義 → データ作成
+  #   アクション: ある(MemberCreate, MemberUpdate, MemberDestroy, RegistrationCreate), ない, 未定義 → データ作成
   describe 'def action_title' do
     let!(:action_user) { FactoryBot.create(:user) }
     let!(:customer) { FactoryBot.create(:customer) }
@@ -81,8 +81,10 @@ RSpec.describe Infomation, type: :model do
     # テスト内容
     shared_examples_for 'ToOK' do |key|
       it 'アクションのメッセージが返却される' do
-        action_user_name = action_user_id.present? ? action_user.name : I18n.t('infomation.action_user.blank')
+        action_user_name = action_user_id.present? ? action_user.name : I18n.t('infomation.action_user.blank.name')
+        action_user_email = action_user_id.present? ? action_user.email : I18n.t('infomation.action_user.blank.email')
         expect(infomation.action_title).to eq(I18n.t(key).gsub(/%{action_user_name}/, action_user_name)
+                                                         .gsub(/%{action_user_email}/, action_user_email)
                                                          .gsub(/%{customer_name}/, customer.name)
                                                          .gsub(/%{customer_code}/, customer.code))
       end
@@ -117,6 +119,7 @@ RSpec.describe Infomation, type: :model do
       it_behaves_like '[*][*]アクションがある', 'MemberCreate', 'infomation.action.member_create'
       it_behaves_like '[*][*]アクションがある', 'MemberUpdate', 'infomation.action.member_update'
       it_behaves_like '[*][*]アクションがある', 'MemberDestroy', 'infomation.action.member_destroy'
+      it_behaves_like '[*][*]アクションがある', 'RegistrationCreate', 'infomation.action.registration_create'
       it_behaves_like '[*][*]アクションがない'
       it_behaves_like '[*][*]アクションが未定義'
     end
@@ -125,6 +128,7 @@ RSpec.describe Infomation, type: :model do
       it_behaves_like '[*][*]アクションがある', 'MemberCreate', 'infomation.action.member_create'
       it_behaves_like '[*][*]アクションがある', 'MemberUpdate', 'infomation.action.member_update'
       it_behaves_like '[*][*]アクションがある', 'MemberDestroy', 'infomation.action.member_destroy'
+      it_behaves_like '[*][*]アクションがある', 'RegistrationCreate', 'infomation.action.registration_create'
       it_behaves_like '[*][*]アクションがない'
       it_behaves_like '[*][*]アクションが未定義'
     end
