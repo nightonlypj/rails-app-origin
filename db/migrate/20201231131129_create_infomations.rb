@@ -3,10 +3,12 @@ class CreateInfomations < ActiveRecord::Migration[6.0]
     create_table :infomations do |t|
       t.string :title, null: false
       t.string :summary
-      t.text :body
+      t.text   :body
+
       t.datetime :started_at, null: false
       t.datetime :ended_at
-      t.integer :target, null: false
+
+      t.integer    :target, null: false
       t.references :user, type: :bigint
 
       t.timestamps

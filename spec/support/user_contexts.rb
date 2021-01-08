@@ -27,7 +27,7 @@ shared_context 'パスワードリセットトークン作成' do |valid_flag|
   let!(:reset_password_token) { Faker::Internet.password(min_length: 20, max_length: 20) }
   before do
     digest_token = Devise.token_generator.digest(self, :reset_password_token, reset_password_token)
-    sent_at = valid_flag ? Time.now.utc : '0000-01-01'
+    sent_at = valid_flag ? Time.now.utc : '0000-01-01 00:00:00+0000'
     @send_user = FactoryBot.create(:user, reset_password_token: digest_token, reset_password_sent_at: sent_at)
   end
 end

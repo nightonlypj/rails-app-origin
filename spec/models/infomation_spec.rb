@@ -9,38 +9,36 @@ RSpec.describe Infomation, type: :model do
   #   対象: 全員, 自分, 他人 → データ作成
   describe 'def target_user?' do
     let!(:outside_user) { FactoryBot.create(:user) }
-    shared_context 'データ作成' do
+    shared_context 'データ作成' do |target|
       let!(:infomation) { FactoryBot.create(:infomation, target: target, user_id: user_id) }
     end
 
     # テスト内容
     shared_examples_for 'ToOK' do
-      include_context 'データ作成'
-      it 'true' do
+      it 'trueが返却される' do
         expect(infomation.target_user?(user)).to eq(true)
       end
     end
     shared_examples_for 'ToNG' do
-      include_context 'データ作成'
-      it 'false' do
+      it 'falseが返却される' do
         expect(infomation.target_user?(user)).to eq(false)
       end
     end
 
     # テストケース
     shared_examples_for '[*]対象が全員' do
-      let!(:target) { :All }
       let!(:user_id) { nil }
+      include_context 'データ作成', :All
       it_behaves_like 'ToOK'
     end
     shared_examples_for '[ログイン中/削除予約済み]対象が自分' do
-      let!(:target) { :User }
       let!(:user_id) { user.id }
+      include_context 'データ作成', :User
       it_behaves_like 'ToOK'
     end
     shared_examples_for '[*]対象が他人' do
-      let!(:target) { :User }
       let!(:user_id) { outside_user.id }
+      include_context 'データ作成', :User
       it_behaves_like 'ToNG'
     end
 

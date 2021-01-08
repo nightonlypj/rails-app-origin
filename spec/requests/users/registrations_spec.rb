@@ -497,7 +497,7 @@ RSpec.describe 'Users::Registrations', type: :request do
   describe 'DELETE /destroy' do
     # テスト内容
     shared_examples_for 'OK' do
-      let!(:start_time) { Time.current }
+      let!(:start_time) { Time.current - 1.second }
       it '削除依頼日時が現在日時に変更される' do
         delete user_registration_path
         expect(user.destroy_requested_at).to be_between(start_time, Time.current)

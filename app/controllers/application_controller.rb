@@ -45,4 +45,22 @@ class ApplicationController < ActionController::Base
       new_user_session_path
     end
   end
+
+  # ユニークコードを作成して返却
+  # @return ハッシュ値（ユニークな値とならなかった場合は最後に作成した値を返却）
+  def create_unique_code(model, key, logger_message)
+    try_count = 1
+    loop do
+      code = Digest::MD5.hexdigest(SecureRandom.uuid)
+      return code if model.where("#{key} = ?", code).blank?
+
+      if try_count < 10
+        logger.warn("[WARN](#{try_count})Not unique code(#{code}): #{logger_message}")
+      elsif try_count >= 10
+        logger.error("[ERROR](#{try_count})Not unique code(#{code}): #{logger_message}")
+        return code
+      end
+      try_count += 1
+    end
+  end
 end

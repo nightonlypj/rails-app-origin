@@ -12,7 +12,7 @@
 
 ActiveRecord::Schema.define(version: 2020_12_31_131129) do
 
-  create_table "admin_users", force: :cascade do |t|
+  create_table "admin_users", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin", force: :cascade do |t|
     t.string "name", null: false
     t.string "email", default: "", null: false
     t.string "encrypted_password", default: "", null: false
@@ -39,7 +39,7 @@ ActiveRecord::Schema.define(version: 2020_12_31_131129) do
     t.index ["unlock_token"], name: "index_admin_users4", unique: true
   end
 
-  create_table "infomations", force: :cascade do |t|
+  create_table "infomations", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin", force: :cascade do |t|
     t.string "title", null: false
     t.string "summary"
     t.text "body"
@@ -55,9 +55,9 @@ ActiveRecord::Schema.define(version: 2020_12_31_131129) do
     t.index ["user_id"], name: "index_infomations_on_user_id"
   end
 
-  create_table "users", force: :cascade do |t|
+  create_table "users", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin", force: :cascade do |t|
     t.string "code", null: false
-    t.json "image"
+    t.string "image"
     t.string "name", null: false
     t.string "email", default: "", null: false
     t.string "encrypted_password", default: "", null: false
@@ -88,12 +88,12 @@ ActiveRecord::Schema.define(version: 2020_12_31_131129) do
     t.index ["unlock_token"], name: "index_users4", unique: true
   end
 
-  create_table "versions", force: :cascade do |t|
+  create_table "versions", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin", force: :cascade do |t|
     t.string "item_type", null: false
-    t.integer "item_id", limit: 8, null: false
+    t.bigint "item_id", null: false
     t.string "event", null: false
     t.string "whodunnit"
-    t.text "object", limit: 1073741823
+    t.text "object", size: :long
     t.datetime "created_at"
     t.index ["item_type", "item_id"], name: "index_versions1"
   end

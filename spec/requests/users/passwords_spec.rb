@@ -265,12 +265,12 @@ RSpec.describe 'Users::Passwords', type: :request do
       it_behaves_like 'NG'
       it_behaves_like 'ToNew', 'activerecord.errors.models.user.attributes.reset_password_token.invalid', nil
     end
-    shared_examples_for '[未ログイン][存在しない]有効なパラメータ' do
+    shared_examples_for '[未ログイン][存在しない/ない]有効なパラメータ' do
       let!(:attributes) { valid_attributes }
       # it_behaves_like 'NG' # Tips: トークンが存在しない為、送信日時がない
       it_behaves_like 'ToNew', 'activerecord.errors.models.user.attributes.reset_password_token.invalid', nil
     end
-    shared_examples_for '[ログイン中/削除予約済み][存在しない]有効なパラメータ' do
+    shared_examples_for '[ログイン中/削除予約済み][存在しない/ない]有効なパラメータ' do
       let!(:attributes) { valid_attributes }
       # it_behaves_like 'NG' # Tips: トークンが存在しない為、送信日時がない
       it_behaves_like 'ToTop', 'devise.failure.already_authenticated', nil
@@ -290,12 +290,12 @@ RSpec.describe 'Users::Passwords', type: :request do
       it_behaves_like 'NG'
       it_behaves_like 'ToNew', 'activerecord.errors.models.user.attributes.reset_password_token.invalid', nil
     end
-    shared_examples_for '[未ログイン][存在しない]無効なパラメータ' do
+    shared_examples_for '[未ログイン][存在しない/ない]無効なパラメータ' do
       let!(:attributes) { invalid_attributes }
       # it_behaves_like 'NG' # Tips: トークンが存在しない為、送信日時がない
       it_behaves_like 'ToNew', 'activerecord.errors.models.user.attributes.reset_password_token.invalid', nil
     end
-    shared_examples_for '[ログイン中/削除予約済み][存在しない]無効なパラメータ' do
+    shared_examples_for '[ログイン中/削除予約済み][存在しない/ない]無効なパラメータ' do
       let!(:attributes) { invalid_attributes }
       # it_behaves_like 'NG' # Tips: トークンが存在しない為、送信日時がない
       it_behaves_like 'ToTop', 'devise.failure.already_authenticated', nil
@@ -323,23 +323,23 @@ RSpec.describe 'Users::Passwords', type: :request do
     end
     shared_examples_for '[未ログイン]トークンが存在しない' do
       let!(:reset_password_token) { NOT_TOKEN }
-      it_behaves_like '[未ログイン][存在しない]有効なパラメータ'
-      it_behaves_like '[未ログイン][存在しない]無効なパラメータ'
+      it_behaves_like '[未ログイン][存在しない/ない]有効なパラメータ'
+      it_behaves_like '[未ログイン][存在しない/ない]無効なパラメータ'
     end
     shared_examples_for '[ログイン中/削除予約済み]トークンが存在しない' do
       let!(:reset_password_token) { NOT_TOKEN }
-      it_behaves_like '[ログイン中/削除予約済み][存在しない]有効なパラメータ'
-      it_behaves_like '[ログイン中/削除予約済み][存在しない]無効なパラメータ'
+      it_behaves_like '[ログイン中/削除予約済み][存在しない/ない]有効なパラメータ'
+      it_behaves_like '[ログイン中/削除予約済み][存在しない/ない]無効なパラメータ'
     end
     shared_examples_for '[未ログイン]トークンがない' do
       let!(:reset_password_token) { NO_TOKEN }
-      it_behaves_like '[未ログイン][存在しない]有効なパラメータ'
-      it_behaves_like '[未ログイン][存在しない]無効なパラメータ'
+      it_behaves_like '[未ログイン][存在しない/ない]有効なパラメータ'
+      it_behaves_like '[未ログイン][存在しない/ない]無効なパラメータ'
     end
     shared_examples_for '[ログイン中/削除予約済み]トークンがない' do
       let!(:reset_password_token) { NO_TOKEN }
-      it_behaves_like '[ログイン中/削除予約済み][存在しない]有効なパラメータ'
-      it_behaves_like '[ログイン中/削除予約済み][存在しない]無効なパラメータ'
+      it_behaves_like '[ログイン中/削除予約済み][存在しない/ない]有効なパラメータ'
+      it_behaves_like '[ログイン中/削除予約済み][存在しない/ない]無効なパラメータ'
     end
 
     context '未ログイン' do

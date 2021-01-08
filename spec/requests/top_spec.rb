@@ -89,7 +89,7 @@ RSpec.describe 'Top', type: :request do
     end
 
     # テストケース
-    shared_examples_for 'お知らせがない' do
+    shared_examples_for '[*]お知らせがない' do
       it_behaves_like 'もっと見る非表示'
     end
     shared_examples_for '[未ログイン]お知らせが最大表示数と同じ' do
@@ -98,7 +98,7 @@ RSpec.describe 'Top', type: :request do
       it_behaves_like 'リスト表示'
       it_behaves_like 'もっと見る非表示'
     end
-    shared_examples_for '[ログイン中]お知らせが最大表示数と同じ' do
+    shared_examples_for '[ログイン中/削除予約済み]お知らせが最大表示数と同じ' do
       count = Settings['test_infomations']
       include_context 'お知らせ一覧作成', count['all_forever_count'], count['all_future_count'], count['user_forever_count'], count['user_future_count']
       it_behaves_like 'リスト表示'
@@ -110,7 +110,7 @@ RSpec.describe 'Top', type: :request do
       it_behaves_like 'リスト表示'
       it_behaves_like 'もっと見る表示'
     end
-    shared_examples_for '[ログイン中]お知らせが最大表示数より多い' do
+    shared_examples_for '[ログイン中/削除予約済み]お知らせが最大表示数より多い' do
       count = Settings['test_infomations']
       include_context 'お知らせ一覧作成', count['all_forever_count'], count['all_future_count'], count['user_forever_count'], count['user_future_count'] + 1
       it_behaves_like 'リスト表示'
@@ -118,21 +118,21 @@ RSpec.describe 'Top', type: :request do
     end
 
     context '未ログイン' do
-      it_behaves_like 'お知らせがない'
+      it_behaves_like '[*]お知らせがない'
       it_behaves_like '[未ログイン]お知らせが最大表示数と同じ'
       it_behaves_like '[未ログイン]お知らせが最大表示数より多い'
     end
     context 'ログイン中' do
       include_context 'ログイン処理'
-      it_behaves_like 'お知らせがない'
-      it_behaves_like '[ログイン中]お知らせが最大表示数と同じ'
-      it_behaves_like '[ログイン中]お知らせが最大表示数より多い'
+      it_behaves_like '[*]お知らせがない'
+      it_behaves_like '[ログイン中/削除予約済み]お知らせが最大表示数と同じ'
+      it_behaves_like '[ログイン中/削除予約済み]お知らせが最大表示数より多い'
     end
     context 'ログイン中（削除予約済み）' do
       include_context 'ログイン処理', true
-      it_behaves_like 'お知らせがない'
-      it_behaves_like '[ログイン中]お知らせが最大表示数と同じ'
-      it_behaves_like '[ログイン中]お知らせが最大表示数より多い'
+      it_behaves_like '[*]お知らせがない'
+      it_behaves_like '[ログイン中/削除予約済み]お知らせが最大表示数と同じ'
+      it_behaves_like '[ログイン中/削除予約済み]お知らせが最大表示数より多い'
     end
   end
 end
