@@ -118,14 +118,14 @@ RSpec.describe User, type: :model do
 
     # テストケース・内容
     context '削除依頼日時' do
-      let!(:start_time) { Time.current }
+      let!(:start_time) { Time.current - 1.second }
       it '現在日時に変更される' do
         user.set_destroy_reserve
         expect(user.destroy_requested_at).to be_between(start_time, Time.current)
       end
     end
     context '削除予定日時' do
-      let!(:start_time) { Time.current + Settings['destroy_schedule_days'].days }
+      let!(:start_time) { Time.current - 1.second + Settings['destroy_schedule_days'].days }
       it '現在日時＋設定日数に変更される' do
         user.set_destroy_reserve
         expect(user.destroy_schedule_at).to be_between(start_time, Time.current + Settings['destroy_schedule_days'].days)

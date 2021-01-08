@@ -92,7 +92,7 @@ RSpec.describe 'Users::Confirmations', type: :request do
   describe 'GET /show' do
     # テスト内容
     shared_examples_for 'OK' do
-      let!(:start_time) { Time.now.utc }
+      let!(:start_time) { Time.now.utc - 1.second }
       it '確認日時が現在日時に変更される' do
         get user_confirmation_path(confirmation_token: confirmation_token)
         expect(User.find(@send_user.id).confirmed_at).to be_between(start_time, Time.now.utc)
