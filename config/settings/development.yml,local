@@ -1,0 +1,4 @@
+base_domain: 'localhost:3000'
+mailer_from:
+  name: '%{app_name}'
+  email: 'noreply@localhost'
