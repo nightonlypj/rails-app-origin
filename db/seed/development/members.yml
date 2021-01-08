@@ -11,13 +11,13 @@
   user_id: 12 # 顧客1のAdmin
   power: 2
   invitation_user_id: 11 # 顧客1のOwner
-  invitationed_at: '2020-01-01'
+  invitationed_at: '2020-01-01 00:00:00+0900'
 - id: 113
   customer_id: 1
   user_id: 13 # 顧客1のMember
   power: 3
   invitation_user_id: 12 # 顧客1のAdmin
-  invitationed_at: '2020-01-03'
+  invitationed_at: '2020-01-03 00:00:00+0900'
 
 # 顧客2
 - id: 221
@@ -31,7 +31,7 @@
   user_id: 23 # 顧客2のMember
   power: 3
   invitation_user_id: 21 # 顧客2のOwner
-  invitationed_at: '2020-02-01'
+  invitationed_at: '2020-02-01 00:00:00+0900'
 
 # 顧客3
 - id: 331
@@ -45,7 +45,7 @@
   user_id: 31 # 顧客3のOwner/顧客2のMember
   power: 3
   invitation_user_id: 21 # 顧客2のOwner
-  invitationed_at: '2020-02-03'
+  invitationed_at: '2020-02-03 00:00:00+0900'
 
 # その他
 - id: 11
@@ -53,13 +53,13 @@
   user_id: 2 # 顧客1の外部Member
   power: 3
   invitation_user_id: 12 # 顧客1のAdmin
-  invitationed_at: '2020-01-04'
+  invitationed_at: '2020-01-04 00:00:00+0900'
 - id: 13
   customer_id: 1
   user_id: 3 # 顧客1・2の外部Member
   power: 3
   invitation_user_id: 12 # 顧客1のAdmin
-  invitationed_at: '2020-01-05'
+  invitationed_at: '2020-01-05 00:00:00+0900'
 - id: 23
   customer_id: 2
   user_id: 3 # 顧客1・2の外部Member

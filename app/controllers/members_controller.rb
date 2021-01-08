@@ -52,7 +52,7 @@ class MembersController < ApplicationController
       code = create_unique_code(User, 'code', "MembersController.create[code] #{params[:member]}")
       password = Faker::Internet.password(min_length: 8) # Tips: ダミーを設定。nameも同様
       invitation_token = create_unique_code(User, 'invitation_token', "MembersController.create[invitation_token] #{params[:member]}")
-      @user.assign_attributes(code: code, name: '-', password: password, confirmed_at: '0000-01-01',
+      @user.assign_attributes(code: code, name: '-', password: password, confirmed_at: '0000-01-01 00:00:00+0000',
                               invitation_customer_id: @customer.id, invitation_token: invitation_token, invitation_requested_at: invitationed_at)
       @user.valid?
     end
