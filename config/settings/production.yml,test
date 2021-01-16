@@ -1,4 +1,4 @@
-base_domain: 'test-mydomain'
+base_domain: 'test.mydomain'
 mailer_from:
   name: '%{app_name}'
-  email: 'noreply@test-mydomain'
+  email: 'noreply@test.mydomain'
