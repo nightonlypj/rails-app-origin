@@ -1,0 +1,5 @@
+cookie_domain: 'staging.mydomain'
+base_domain: 'staging.mydomain'
+mailer_from:
+  name: '%{app_name}'
+  email: 'noreply@staging.mydomain'

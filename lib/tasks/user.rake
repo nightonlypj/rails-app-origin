@@ -1,8 +1,8 @@
-require './lib/tasks/application.rb'
+require './lib/tasks/application'
 
 namespace :user do
   desc '削除予定日時を過ぎたユーザーのアカウントを削除'
-  task :destroy, [:dry_run] => :environment do |_, args|
+  task(:destroy, [:dry_run] => :environment) do |_, args|
     args.with_defaults(dry_run: 'true')
     dry_run = (args.dry_run != 'false')
 
