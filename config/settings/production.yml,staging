@@ -1,5 +1,0 @@
-cookie_domain: 'stg-mydomain'
-base_domain: 'stg-mydomain'
-mailer_from:
-  name: '%{app_name}'
-  email: 'noreply@stg-mydomain'
