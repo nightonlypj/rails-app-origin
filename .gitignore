@@ -50,3 +50,4 @@ config/environments/*.local.yml
 
 /public/uploads/*
 !/public/uploads/.keep
+/public/robots.txt
