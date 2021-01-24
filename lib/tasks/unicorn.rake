@@ -1,6 +1,6 @@
-namespace :unicorn do
-  DEFAULT_PID_PATH = File.expand_path('../../tmp/pids/unicorn.pid', __dir__).freeze
+DEFAULT_PID_PATH = File.expand_path('../../tmp/pids/unicorn.pid', __dir__).freeze
 
+namespace :unicorn do
   desc 'Unicorn起動(bundle exec unicorn)'
   task(:start) do
     pid_path = ENV['PID_PATH'] || DEFAULT_PID_PATH
