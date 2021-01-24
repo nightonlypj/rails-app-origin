@@ -1,4 +1,4 @@
-require 'rails_helper'
+# require 'rails_helper'
 
-RSpec.describe CustomersHelper, type: :helper do
-end
+# RSpec.describe CustomersHelper, type: :helper do
+# end
