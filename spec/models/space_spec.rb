@@ -48,7 +48,7 @@ RSpec.describe Space, type: :model do
       it_behaves_like 'ToNG'
     end
     context 'アルファベット(小文字)・数字・ハイフン(先頭不可)' do
-      include_context 'データ作成', 'a' * [Settings['subdomain_minimum'] - 4, 1].max + 'z09-'
+      include_context 'データ作成', "#{'a' * [Settings['subdomain_minimum'] - 4, 1].max}z09-"
       it_behaves_like 'ToOK'
     end
     context 'アルファベット(大文字)' do
@@ -56,11 +56,11 @@ RSpec.describe Space, type: :model do
       it_behaves_like 'ToNG'
     end
     context 'ハイフン(先頭)' do
-      include_context 'データ作成', '-' + 'a' * [Settings['subdomain_minimum'] - 1, 1].max
+      include_context 'データ作成', "-#{'a' * [Settings['subdomain_minimum'] - 1, 1].max}"
       it_behaves_like 'ToNG'
     end
     context 'ハイフン(後尾)' do
-      include_context 'データ作成', 'a' * [Settings['subdomain_minimum'] - 1, 1].max + '-'
+      include_context 'データ作成', "#{'a' * [Settings['subdomain_minimum'] - 1, 1].max}-"
       it_behaves_like 'ToOK'
     end
     context '重複（同じ顧客）' do

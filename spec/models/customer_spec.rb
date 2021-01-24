@@ -46,7 +46,7 @@ RSpec.describe Customer, type: :model do
       it_behaves_like 'ToNG'
     end
     context 'アルファベット(小文字)・数字' do
-      include_context 'データ作成', 'a' * [Settings['customer_code_minimum'] - 3, 1].max + 'z09'
+      include_context 'データ作成', "#{'a' * [Settings['customer_code_minimum'] - 3, 1].max}z09"
       it_behaves_like 'ToOK'
     end
     context 'アルファベット(大文字)' do

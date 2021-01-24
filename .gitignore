@@ -47,6 +47,8 @@ Thumbs.db
 config/settings.local.yml
 config/settings/*.local.yml
 config/environments/*.local.yml
+config/settings/development.yml
 
 /public/uploads/*
 !/public/uploads/.keep
+/public/robots.txt
