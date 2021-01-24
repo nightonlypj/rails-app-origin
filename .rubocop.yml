@@ -1,47 +1,53 @@
 inherit_from: .rubocop_todo.yml
 
-# The following cops were added to RuboCop, but are not configured. Please set Enabled to either `true` or `false` in your `.rubocop.yml` file:
-# - Layout/EmptyLinesAroundAttributeAccessor (0.83)
-Layout/EmptyLinesAroundAttributeAccessor:
+# The following cops were added to RuboCop, but are not configured. Please set Enabled to either `true` or `false` in your `.rubocop.yml` file.
+Layout/SpaceBeforeBrackets: # (new in 1.7)
   Enabled: true
-# - Layout/SpaceAroundMethodCallOperator (0.82)
-Layout/SpaceAroundMethodCallOperator:
+Lint/AmbiguousAssignment: # (new in 1.7)
   Enabled: true
-# - Lint/DeprecatedOpenSSLConstant (0.84)
-Lint/DeprecatedOpenSSLConstant:
+Lint/DeprecatedConstants: # (new in 1.8)
   Enabled: true
-# - Lint/MixedRegexpCaptureTypes (0.85)
-Lint/MixedRegexpCaptureTypes:
+Lint/DuplicateBranch: # (new in 1.3)
   Enabled: true
-# - Lint/RaiseException (0.81)
-Lint/RaiseException:
+Lint/DuplicateRegexpCharacterClassElement: # (new in 1.1)
   Enabled: true
-# - Lint/StructNewOverride (0.81)
-Lint/StructNewOverride:
+Lint/EmptyBlock: # (new in 1.1)
   Enabled: true
-# - Style/ExponentialNotation (0.82)
-Style/ExponentialNotation:
+Lint/EmptyClass: # (new in 1.3)
   Enabled: true
-# - Style/HashEachMethods (0.80)
-Style/HashEachMethods:
+Lint/LambdaWithoutLiteralBlock: # (new in 1.8)
   Enabled: true
-# - Style/HashTransformKeys (0.80)
-Style/HashTransformKeys:
+Lint/NoReturnInBeginEndBlocks: # (new in 1.2)
   Enabled: true
-# - Style/HashTransformValues (0.80)
-Style/HashTransformValues:
+Lint/RedundantDirGlobSort: # (new in 1.8)
   Enabled: true
-# - Style/RedundantRegexpCharacterClass (0.85)
-Style/RedundantRegexpCharacterClass:
+Lint/ToEnumArguments: # (new in 1.1)
   Enabled: true
-# - Style/RedundantRegexpEscape (0.85)
-Style/RedundantRegexpEscape:
+Lint/UnexpectedBlockArity: # (new in 1.5)
   Enabled: true
-# - Style/SlicingWithRange (0.83)
-Style/SlicingWithRange:
+Lint/UnmodifiedReduceAccumulator: # (new in 1.1)
+  Enabled: true
+Style/ArgumentsForwarding: # (new in 1.1)
+  Enabled: true
+Style/CollectionCompact: # (new in 1.2)
+  Enabled: true
+Style/DocumentDynamicEvalDefinition: # (new in 1.1)
+  Enabled: true
+Style/EndlessMethod: # (new in 1.8)
+  Enabled: true
+Style/HashExcept: # (new in 1.7)
+  Enabled: true
+Style/NegatedIfElseCondition: # (new in 1.2)
+  Enabled: true
+Style/NilLambda: # (new in 1.3)
+  Enabled: true
+Style/RedundantArgument: # (new in 1.4)
+  Enabled: true
+Style/SwapValues: # (new in 1.1)
   Enabled: true
 
 AllCops:
+  SuggestExtensions: false
   Exclude:
     - 'bin/*'
     - 'test/**/*'

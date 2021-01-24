@@ -23,10 +23,18 @@
     <p class="alert">このアカウントは<%= l(current_user.destroy_schedule_at.to_date) %>以降に削除されます。<%= link_to '取り消しはこちら', users_undo_delete_path %></p>
 <% end %>
 <% if alert.present? %>
-    <p class="alert"><%= alert %></p>
+    <div class="card text-white bg-danger mb-3">
+      <div class="card-body">
+        <p class="card-text"><%= alert %></p>
+      </div>
+    </div>
 <% end %>
 <% if notice.present? %>
-    <p class="notice"><%= notice %></p>
+    <div class="card text-body bg-info mb-3">
+      <div class="card-body">
+        <p class="card-text"><%= notice %></p>
+      </div>
+    </div>
 <% end %>
 
 <%= yield %>

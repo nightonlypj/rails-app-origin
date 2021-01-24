@@ -11,10 +11,18 @@
     <h1><%= link_to "#{t('app_name')} Admin", new_admin_user_session_path %></h1>
     <hr/>
 <% if alert.present? %>
-    <p class="alert"><%= alert %></p>
+    <div class="card text-white bg-danger mb-3">
+      <div class="card-body">
+        <p class="card-text"><%= alert %></p>
+      </div>
+    </div>
 <% end %>
 <% if notice.present? %>
-    <p class="notice"><%= notice %></p>
+    <div class="card text-body bg-info mb-3">
+      <div class="card-body">
+        <p class="card-text"><%= notice %></p>
+      </div>
+    </div>
 <% end %>
 
 <%= yield %>

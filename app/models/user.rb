@@ -2,7 +2,7 @@ class User < ApplicationRecord
   mount_uploader :image, ImageUploader
 
   validates :code, presence: true
-  validates :code, uniqueness: true
+  validates :code, uniqueness: { case_sensitive: true }
   validates :name, presence: true
   validates :name, length: { in: Settings['user_name_minimum']..Settings['user_name_maximum'] }, if: proc { |user| user.name.present? }
 

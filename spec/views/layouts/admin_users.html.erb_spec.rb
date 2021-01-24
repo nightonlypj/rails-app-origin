@@ -1,4 +1,4 @@
-require 'rails_helper'
+# require 'rails_helper'
 
-RSpec.describe 'layouts/admin_users', type: :view do
-end
+# RSpec.describe 'layouts/admin_users', type: :view do
+# end

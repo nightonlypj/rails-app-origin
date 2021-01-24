@@ -2,6 +2,10 @@
 
 ## 1.1.0
 
+- 環境構築手順とリリースノートを作りたい
+  - https://dev.azure.com/nightonly/rails-app-origin/_workitems/edit/304/
+- Ruby3.0に対応したい（Gemのバージョンアップも）
+  - https://dev.azure.com/nightonly/rails-app-origin/_workitems/edit/321/
 - robots.txtでの許可/拒否を環境毎に変えたい
   - https://dev.azure.com/nightonly/rails-app-origin/_workitems/edit/323/
 - サーバーはUnicornで動かした
