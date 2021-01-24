@@ -1,4 +1,4 @@
-base_domain: 'staging.mydomain'
+base_domain: 'stg.mydomain'
 mailer_from:
   name: '%{app_name}'
-  email: 'noreply@staging.mydomain'
+  email: 'noreply@stg.mydomain'
