@@ -175,7 +175,7 @@ $ bundle install
 
 $ rails webpacker:install
 ```
-Overwrite /mnt/rails-app-origin/config/webpacker.yml? (enter "h" for help) [Ynaqdhm] n
+Overwrite config/webpacker.yml? (enter "h" for help) [Ynaqdhm] n
 ```
 
 $ rails db:migrate  
