@@ -48,8 +48,8 @@ ja:
   mailer:
     user:
       destroy_reserved:
-        subject: '【%{app_name}】アカウント削除受け付けのお知らせ'
+        subject: '%{env_name}【%{app_name}】アカウント削除受け付けのお知らせ'
       undo_destroy_reserved:
-        subject: '【%{app_name}】アカウント削除取り消し完了のお知らせ'
+        subject: '%{env_name}【%{app_name}】アカウント削除取り消し完了のお知らせ'
       destroy_completed:
-        subject: '【%{app_name}】アカウント削除完了のお知らせ'
+        subject: '%{env_name}【%{app_name}】アカウント削除完了のお知らせ'
