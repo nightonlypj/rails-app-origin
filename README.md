@@ -186,3 +186,65 @@ $ rails s
   - メールアドレスとパスワードは、`db/seed/development/users.yml`参照
 - http://localhost:3000/admin
   - メールアドレスとパスワードは、`db/seed/admin_users.yml`参照
+
+### Nginxインストール
+
+$ brew install nginx
+
+$ nginx -v
+> nginx version: nginx/1.19.6
+
+$ vi /opt/homebrew/etc/nginx/nginx.conf
+```
+### START ###
+    server_names_hash_bucket_size 64;
+### END ###
+
+    server {
+### START ###
+#        listen       8080;
+        listen       80;
+### END ###
+```
+
+$ vi /opt/homebrew/etc/nginx/servers/localhost.local.conf
+```
+### START ###
+server {
+    listen       80;
+    server_name  localhost.local;
+
+    location / {
+        proxy_set_header    Host                $http_host;
+        proxy_set_header    X-Forwarded-For     $proxy_add_x_forwarded_for;
+        proxy_set_header    X-Forwarded-Host    $host;
+        proxy_set_header    X-Forwarded-Proto   $scheme;
+        proxy_set_header    X-Real-IP           $remote_addr;
+        proxy_redirect      off;
+        proxy_pass          http://127.0.0.1:3000;
+    }
+}
+### END ###
+```
+
+$ nginx -t -c /opt/homebrew/etc/nginx/nginx.conf
+> nginx: the configuration file /opt/homebrew/etc/nginx/nginx.conf syntax is ok  
+> nginx: configuration file /opt/homebrew/etc/nginx/nginx.conf test is successful
+
+$ brew services start nginx
+
+PCのhostsに下記を追加
+```
+$ sudo vi /etc/hosts
+127.0.0.1       localhost.local
+```
+
+$ cp -a config/settings/development.yml,dev config/settings/development.yml  
+overwrite config/settings/development.yml? (y/n [n]) y
+
+$ rails s
+
+- http://localhost.local
+  - メールアドレスとパスワードは、`db/seed/development/users.yml`参照
+- http://localhost.local/admin
+  - メールアドレスとパスワードは、`db/seed/admin_users.yml`参照
