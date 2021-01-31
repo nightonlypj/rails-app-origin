@@ -1,71 +1,33 @@
-<h2>登録情報変更</h2>
+<%= render 'users/shared/error_messages', resource: resource %>
 
-<%= form_for(resource, as: resource_name, url: users_image_path, html: { method: :put }, local: true) do |form| %>
-  <%= render 'users/shared/error_messages', resource: resource %>
-
-  <div class="field">
-    <%= image_tag current_user.image_url(:large) %><br/>
-    <%= form.file_field :image %>
-    <%= render 'users/shared/field_error_messages', messages: resource.errors[:image] %>
-  </div>
-
-  <div class="actions">
-    <%= form.submit '変更' %>
-  </div>
+<main class="card" style="max-width: 850px; margin-left: auto; margin-right: auto">
+  <div class="card-body">
+    <div class="row">
+      <div class="col">
+        <h5 class="card-title">登録情報変更</h5>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-md-4">
+        <%= render 'edit_image' %>
+      </div>
+      <div class="col-md-8">
+        <%= render 'edit_user' %>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col">
+        <p class="card-footer">
+          <nav>
+            <ul>
+<% if devise_mapping.confirmable? && resource.pending_reconfirmation? && valid_confirmation_token? %>
+              <li><%= link_to 'メールアドレス確認', new_confirmation_path(resource_name) %></li>
 <% end %>
-
-<% if current_user.image? %>
-  <p><%= button_to '削除', users_image_path, data: { confirm: '本当に削除しますか？' }, method: :delete %></p>
-<% end %>
-
-<hr/>
-
-<%= form_for(resource, as: resource_name, url: registration_path(resource_name), html: { method: :put }, local: true) do |form| %>
-  <div class="field">
-    <%= form.label :name %> <em>(必須)</em><br/>
-    <%= form.text_field :name, autofocus: true, autocomplete: 'name' %>
-    <%= render 'users/shared/field_error_messages', messages: resource.errors[:name] %>
+              <li><%= link_to 'アカウント削除', users_delete_path %></li>
+            </ul>
+          </nav>
+        </p>
+      </div>
+    </div>
   </div>
-
-  <div class="field">
-    <%= form.label :email %> <em>(必須)</em><br/>
-    <%= form.email_field :email, autofocus: true, autocomplete: 'email' %>
-    <%= render 'users/shared/field_error_messages', messages: resource.errors[:email] %>
-  </div>
-
-  <% if devise_mapping.confirmable? && resource.pending_reconfirmation? && valid_confirmation_token? %>
-    <div>確認待ち：<%= resource.unconfirmed_email %></div><br/>
-  <% end %>
-
-  <div class="field">
-    <%= form.label :password %> <em>(変更する場合のみ入力)</em><br/>
-    <%= form.password_field :password, autocomplete: 'new-password' %>
-    <% if resource.errors[:password].any? %>
-      <%= render 'users/shared/field_error_messages', messages: resource.errors[:password] %>
-    <% else %>
-      <% if @minimum_password_length %>
-        <br/><em><%= @minimum_password_length %>文字以上</em>
-      <% end %>
-    <% end %>
-  </div>
-
-  <div class="field">
-    <%= form.label :password_confirmation %> <em>(変更する場合のみ入力)</em><br/>
-    <%= form.password_field :password_confirmation, autocomplete: 'new-password' %>
-    <%= render 'users/shared/field_error_messages', messages: resource.errors[:password_confirmation] %>
-  </div>
-
-  <div class="field">
-    <%= form.label :current_password %> <em>(必須)</em><br/>
-    <%= form.password_field :current_password, autocomplete: 'current-password' %>
-    <%= render 'users/shared/field_error_messages', messages: resource.errors[:current_password] %>
-  </div>
-
-  <div class="actions">
-    <%= form.submit '変更' %>
-  </div>
-<% end %>
-
-<ul>
-  <li><%= link_to 'アカウント削除', users_delete_path %></li>
-</ul>
+</main>

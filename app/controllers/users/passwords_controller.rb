@@ -4,12 +4,12 @@ class Users::PasswordsController < Devise::PasswordsController
   before_action :redirect_base_domain_response, only: %i[new edit]
   before_action :not_found_sub_domain_response, only: %i[create update]
 
-  # GET /users/password/new パスワード再設定メール送信
+  # GET /users/password/new パスワード再設定[メール送信]
   # def new
   #   super
   # end
 
-  # POST /users/password パスワード再設定メール送信(処理)
+  # POST /users/password パスワード再設定[メール送信](処理)
   # def create
   #   super
   # end

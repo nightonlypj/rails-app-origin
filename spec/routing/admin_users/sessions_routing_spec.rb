@@ -10,6 +10,7 @@ RSpec.describe AdminUsers::SessionsController, type: :routing do
     end
     it 'routes to #destroy' do
       expect(delete: '/admin_users/sign_out').to route_to('admin_users/sessions#destroy')
+      expect(get: '/admin_users/sign_out').to route_to('admin_users/sessions#destroy')
     end
   end
 end

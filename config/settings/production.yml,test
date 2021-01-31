@@ -1,5 +1,6 @@
-cookie_domain: 'test.mydomain'
+env_name: '【テスト環境】'
 base_domain: 'test.mydomain'
+cookie_domain: 'test.mydomain'
 mailer_from:
   name: '%{app_name}'
   email: 'noreply@test.mydomain'

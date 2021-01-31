@@ -1,0 +1,27 @@
+<%= form_for(resource, as: resource_name, url: registration_path(resource_name), html: { novalidate: true }, local: true) do |form| %>
+  <div class="form-outline<%= input_size_class_name(resource, :name) %>">
+    <%= form.text_field :name, autocomplete: 'name', class: "form-control#{validate_class_name(true, resource, :name)}" %>
+    <%= form.label '氏名', class: 'form-label', for: 'user_name' %>
+    <%= render 'users/shared/field_error_messages', messages: resource.errors[:name] %>
+  </div>
+
+  <div class="form-outline<%= input_size_class_name(resource, :email) %>">
+    <%= form.email_field :email, autocomplete: 'email', class: "form-control#{validate_class_name(true, resource, :email)}" %>
+    <%= form.label 'メールアドレス', class: 'form-label', for: 'user_email' %>
+    <%= render 'users/shared/field_error_messages', messages: resource.errors[:email] %>
+  </div>
+
+  <div class="form-outline<%= input_size_class_name(resource, :password) %>">
+    <%= form.password_field :password, autocomplete: 'new-password', class: "form-control#{validate_password_class_name(true, resource)}" %>
+    <%= form.label "パスワード#{" [#{@minimum_password_length}文字以上]" if @minimum_password_length}", class: 'form-label', for: 'user_password' %>
+    <%= render 'users/shared/field_error_messages', messages: resource.errors[:password] %>
+  </div>
+
+  <div class="form-outline<%= input_size_class_name(resource, :password_confirmation) %>">
+    <%= form.password_field :password_confirmation, autocomplete: 'new-password', class: "form-control#{validate_password_class_name(true, resource)}" %>
+    <%= form.label 'パスワード(確認)', class: 'form-label', for: 'user_password_confirmation' %>
+    <%= render 'users/shared/field_error_messages', messages: resource.errors[:password_confirmation] %>
+  </div>
+
+  <%= form.submit '登録', class: 'btn btn-primary' %>
+<% end %>

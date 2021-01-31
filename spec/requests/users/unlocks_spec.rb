@@ -3,7 +3,7 @@ require 'rails_helper'
 RSpec.describe 'Users::Unlocks', type: :request do
   include_context 'リクエストスペース作成'
 
-  # GET /users/unlock/new アカウントロック解除メール再送
+  # GET /users/unlock/new アカウントロック解除[メール再送]
   # 前提条件
   #   なし
   # テストパターン
@@ -77,7 +77,7 @@ RSpec.describe 'Users::Unlocks', type: :request do
     end
   end
 
-  # POST /users/unlock アカウントロック解除メール再送(処理)
+  # POST /users/unlock アカウントロック解除[メール再送](処理)
   # 前提条件
   #   なし
   # テストパターン

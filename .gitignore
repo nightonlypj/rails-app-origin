@@ -28,6 +28,9 @@
 # Ignore master key for decrypting credentials and more.
 /config/master.key
 
+/yarn.lock
+/package.json
+/package-lock.json
 /public/packs
 /public/packs-test
 /node_modules

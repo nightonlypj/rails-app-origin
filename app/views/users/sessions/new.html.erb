@@ -1,26 +1,7 @@
-<h2>ログイン</h2>
-
-<%= form_for(resource, as: resource_name, url: session_path(resource_name), local: true) do |form| %>
-  <div class="field">
-    <%= form.label :email %>
-    <%= form.email_field :email, autofocus: true, autocomplete: 'email' %>
+<main class="card" style="max-width: 480px; margin-left: auto; margin-right: auto">
+  <div class="card-body">
+    <h5 class="card-title">ログイン</h5>
+    <p class="card-text"><%= render 'new_user' %></p>
+    <p class="card-footer"><%= render 'users/shared/links' %></p>
   </div>
-
-  <div class="field">
-    <%= form.label :password %>
-    <%= form.password_field :password, autocomplete: 'current-password' %>
-  </div>
-
-  <% if devise_mapping.rememberable? %>
-    <div class="field">
-      <%= form.check_box :remember_me %>
-      <%= form.label :remember_me %>
-    </div>
-  <% end %>
-
-  <div class="actions">
-    <%= form.submit 'ログイン' %>
-  </div>
-<% end %>
-
-<%= render 'users/shared/links' %>
+</main>

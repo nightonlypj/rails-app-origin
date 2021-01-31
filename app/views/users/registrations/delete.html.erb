@@ -1,10 +1,15 @@
-<h2>アカウント削除</h2>
-
-アカウントは<%= Settings['destroy_schedule_days'] %>日後以降に削除されます。それまでは取り消し可能です。<br/>
-削除されるまではログインできますが、一部機能が制限されます。<br/>
-
-<p><%= button_to '削除確認', registration_path(resource_name), data: { confirm: '本当に削除しますか？' }, method: :delete %></p>
-
-<ul>
-  <li><%= link_to '登録情報変更', edit_user_registration_path %></li>
-</ul>
+<main class="card" style="max-width: 640px; margin-left: auto; margin-right: auto">
+  <div class="card-body">
+    <h5 class="card-title">アカウント削除</h5>
+    <p class="card-text">
+      アカウントは<%= Settings['destroy_schedule_days'] %>日後以降に削除されます。それまでは取り消し可能です。<br/>
+      削除されるまではログインできますが、一部機能が制限されます。<br/>
+      <p><%= button_to '削除', registration_path(resource_name), data: { confirm: '本当に削除しますか？' }, method: :delete, class: 'btn btn-danger' %></p>
+    </p>
+    <p class="card-footer">
+      <ul>
+        <li><%= link_to '登録情報変更', edit_user_registration_path %></li>
+      </ul>
+    </p>
+  </div>
+</main>

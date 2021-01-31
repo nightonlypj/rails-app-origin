@@ -16,7 +16,7 @@ RSpec.describe 'layouts/application', type: :view do
       render
       expect(rendered).to include("\"#{domain}#{new_user_registration_path}\"")
     end
-    # it 'ログインユーザーの表示名が含まれない' do # Tips: 未ログインの為、対象なし
+    # it 'ログインユーザーの氏名が含まれない' do # Tips: 未ログインの為、対象なし
     # end
     it '登録情報変更のパスが含まれない' do
       render
@@ -40,7 +40,7 @@ RSpec.describe 'layouts/application', type: :view do
       render
       expect(rendered).not_to include("\"#{domain}#{new_user_registration_path}\"")
     end
-    it 'ログインユーザーの表示名が含まれる' do
+    it 'ログインユーザーの氏名が含まれる' do
       render
       expect(rendered).to include(user.name)
     end

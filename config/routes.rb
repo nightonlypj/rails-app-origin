@@ -29,12 +29,13 @@ Rails.application.routes.draw do
 
   # 管理ユーザー
   devise_for :admin_users, controllers: {
-    registrations: 'admin_users/registrations',
-    confirmations: 'admin_users/confirmations',
     sessions: 'admin_users/sessions',
     unlocks: 'admin_users/unlocks',
     passwords: 'admin_users/passwords'
   }
+  devise_scope :admin_user do
+    get 'admin_users/sign_out', to: 'admin_users/sessions#destroy'
+  end
 
   # ユーザー
   devise_for :users, controllers: {
@@ -45,6 +46,7 @@ Rails.application.routes.draw do
     passwords: 'users/passwords'
   }
   devise_scope :user do
+    get    'users/sign_out',    to: 'users/sessions#destroy'
     put    'users/image',       to: 'users/registrations#image_update'
     delete 'users/image',       to: 'users/registrations#image_destroy'
     get    'users/delete',      to: 'users/registrations#delete'

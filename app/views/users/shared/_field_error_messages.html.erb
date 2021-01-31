@@ -1,7 +1,7 @@
 <% if messages.any? %>
-  <div class="field_error_messages">
-    <% messages.each do |message| %>
-      <%= message %><br/>
-    <% end %>
-  </div>
+<div class="invalid-feedback">
+<% messages.each do |message| %>
+<%= message %>
+<% end %>
+</div>
 <% end %>

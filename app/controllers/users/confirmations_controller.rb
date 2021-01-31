@@ -4,12 +4,12 @@ class Users::ConfirmationsController < Devise::ConfirmationsController
   before_action :redirect_base_domain_response, only: %i[new show]
   before_action :not_found_sub_domain_response, only: %i[create]
 
-  # GET /users/confirmation/new メールアドレス確認メール再送
+  # GET /users/confirmation/new メールアドレス確認[メール再送]
   # def new
   #   super
   # end
 
-  # POST /users/confirmation メールアドレス確認メール再送(処理)
+  # POST /users/confirmation メールアドレス確認[メール再送](処理)
   # def create
   #   super
   # end

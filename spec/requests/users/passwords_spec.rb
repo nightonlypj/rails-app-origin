@@ -3,7 +3,7 @@ require 'rails_helper'
 RSpec.describe 'Users::Passwords', type: :request do
   include_context 'リクエストスペース作成'
 
-  # GET /users/password/new パスワード再設定メール送信
+  # GET /users/password/new パスワード再設定[メール送信]
   # 前提条件
   #   なし
   # テストパターン
@@ -77,7 +77,7 @@ RSpec.describe 'Users::Passwords', type: :request do
     end
   end
 
-  # POST /users/password パスワード再設定メール送信(処理)
+  # POST /users/password パスワード再設定[メール送信](処理)
   # 前提条件
   #   なし
   # テストパターン
@@ -226,7 +226,7 @@ RSpec.describe 'Users::Passwords', type: :request do
       end
     end
     shared_examples_for 'ToNew' do |alert, notice|
-      it 'パスワード再設定メール送信にリダイレクト' do
+      it 'パスワード再設定[メール送信]にリダイレクト' do
         get edit_user_password_path(reset_password_token: reset_password_token), headers: headers
         expect(response).to redirect_to(new_user_password_path)
         expect(flash[:alert]).to alert.present? ? eq(I18n.t(alert)) : be_nil
@@ -400,7 +400,7 @@ RSpec.describe 'Users::Passwords', type: :request do
       end
     end
     shared_examples_for 'ToNew' do |alert, notice|
-      it 'パスワード再設定メール送信にリダイレクト' do
+      it 'パスワード再設定[メール送信]にリダイレクト' do
         put user_password_path, params: { user: attributes.merge({ reset_password_token: reset_password_token }) }, headers: headers
         expect(response).to redirect_to(new_user_password_path)
         expect(flash[:alert]).to alert.present? ? eq(I18n.t(alert)) : be_nil

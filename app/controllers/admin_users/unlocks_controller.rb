@@ -3,12 +3,12 @@
 class AdminUsers::UnlocksController < Devise::UnlocksController
   layout 'admin_users'
 
-  # GET /admin_users/unlock/new アカウントロック解除メール再送
+  # GET /admin_users/unlock/new アカウントロック解除[メール再送]
   # def new
   #   super
   # end
 
-  # POST /admin_users/unlock アカウントロック解除メール再送(処理)
+  # POST /admin_users/unlock アカウントロック解除[メール再送](処理)
   # def create
   #   super
   # end

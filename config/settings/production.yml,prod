@@ -1,5 +1,6 @@
-cookie_domain: 'mydomain'
+env_name: ''
 base_domain: 'mydomain'
+cookie_domain: 'mydomain'
 mailer_from:
   name: '%{app_name}'
   email: 'noreply@mydomain'

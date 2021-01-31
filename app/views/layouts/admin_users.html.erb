@@ -1,38 +1,66 @@
 <!DOCTYPE html>
-<html>
+<html lang="ja">
   <head>
-    <title><%= t('app_name') %> Admin</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+    <meta http-equiv="x-ua-compatible" content="ie=edge" />
+    <title><%= "#{t('app_name')} Admin#{Settings['env_name']}" %></title>
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.11.2/css/all.css" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" />
+    <link rel="stylesheet" href="<%= config.asset_host %>/css/mdb.min.css?v3.1.0" />
     <%= stylesheet_link_tag 'application', media: 'all', 'data-turbolinks-track': 'reload' %>
     <%= javascript_pack_tag 'application', 'data-turbolinks-track': 'reload' %>
   </head>
   <body>
-    <h1><%= link_to "#{t('app_name')} Admin", new_admin_user_session_path %></h1>
-    <hr/>
+    <header style="margin-bottom: 58px">
+      <nav class="navbar navbar-expand-lg navbar-light bg-warning fixed-top">
+        <div class="container-fluid">
+          <%= link_to "#{t('app_name')} Admin#{Settings['env_name']}", new_admin_user_session_path, class: 'navbar-brand' %>
+          <button class="navbar-toggler" type="button" data-mdb-toggle="collapse" data-mdb-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
+            <i class="fas fa-bars"></i>
+          </button>
+          <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
+            <ul class="navbar-nav" style="margin-left: auto">
+<% if admin_user_signed_in? %>
+              <li class="nav-item"><%= current_admin_user.name %></li>
+              <li class="nav-item"><%= link_to 'ログアウト', destroy_admin_user_session_path, method: :delete, class: 'nav-link' %></li>
+<% else %>
+<% if controller_name != 'sessions' %>
+              <li class="nav-item"><%= link_to 'ログイン', new_admin_user_session_path, class: 'nav-link' %></li>
+<% end %>
+<% end %>
+            </ul>
+          </div>
+        </div>
+      </nav>
+    </header>
 <% if alert.present? %>
-    <div class="card text-white bg-danger mb-3">
-      <div class="card-body">
-        <p class="card-text"><%= alert %></p>
-      </div>
-    </div>
+    <aside>
+      <p class="note note-danger m-1"><%= alert %></p>
+    </aside>
 <% end %>
 <% if notice.present? %>
-    <div class="card text-body bg-info mb-3">
-      <div class="card-body">
-        <p class="card-text"><%= notice %></p>
-      </div>
-    </div>
+    <aside>
+      <p class="note note-success m-1"><%= notice %></p>
+    </aside>
 <% end %>
 
 <%= yield %>
 
+    <footer class="bg-light">
+      <div class="text-center p-3">
+        Copyright &copy; <%= link_to t('my_name'), t('my_url'), target: :_blank, rel: [:noopener, :noreferrer] %> All Rights Reserved.
+      </div>
 <% if Rails.env.development? %>
-    <hr/>
-    <ul>
-      <li><%= link_to '[LetterOpenerWeb]', letter_opener_web_path %></li>
-      <li><%= link_to '[ActionMailer Preview]', '/rails/mailers' %></li>
-    </ul>
+      <h5>development</h5>
+      <ul>
+        <li><%= link_to 'LetterOpenerWeb', letter_opener_web_path %></li>
+        <li><%= link_to 'ActionMailer Preview', '/rails/mailers' %></li>
+      </ul>
 <% end %>
+    </footer>
   </body>
+  <script type="text/javascript" src="<%= config.asset_host %>/js/mdb.min.js?v3.1.0"></script>
 </html>

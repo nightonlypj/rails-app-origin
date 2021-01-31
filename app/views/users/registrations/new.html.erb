@@ -1,40 +1,9 @@
-<h2>アカウント登録</h2>
+<%= render 'users/shared/error_messages', resource: resource %>
 
-<%= form_for(resource, as: resource_name, url: registration_path(resource_name), local: true) do |form| %>
-  <%= render 'users/shared/error_messages', resource: resource %>
-
-  <div class="field">
-    <%= form.label :name %> <em>(必須)</em><br/>
-    <%= form.text_field :name, autofocus: true, autocomplete: 'name' %>
-    <%= render 'users/shared/field_error_messages', messages: resource.errors[:name] %>
+<main class="card" style="max-width: 480px; margin-left: auto; margin-right: auto">
+  <div class="card-body">
+    <h5 class="card-title">アカウント登録</h5>
+    <p class="card-text"><%= render 'new_user' %></p>
+    <p class="card-footer"><%= render 'users/shared/links' %></p>
   </div>
-
-  <div class="field">
-    <%= form.label :email %> <em>(必須)</em><br/>
-    <%= form.email_field :email, autofocus: true, autocomplete: 'email' %>
-    <%= render 'users/shared/field_error_messages', messages: resource.errors[:email] %>
-  </div>
-
-  <div class="field">
-    <%= form.label :password %>
-    <% if @minimum_password_length %>
-      <em>(必須、<%= @minimum_password_length %>文字以上)</em><br/>
-    <% else %>
-      <em>(必須)</em><br/>
-    <% end %>
-    <%= form.password_field :password, autocomplete: 'new-password' %>
-    <%= render 'users/shared/field_error_messages', messages: resource.errors[:password] %>
-  </div>
-
-  <div class="field">
-    <%= form.label :password_confirmation %> <em>(必須)</em><br/>
-    <%= form.password_field :password_confirmation, autocomplete: 'new-password' %>
-    <%= render 'users/shared/field_error_messages', messages: resource.errors[:password_confirmation] %>
-  </div>
-
-  <div class="actions">
-    <%= form.submit '登録' %>
-  </div>
-<% end %>
-
-<%= render 'users/shared/links' %>
+</main>

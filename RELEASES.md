@@ -2,6 +2,8 @@
 
 ## 1.1.0
 
+- フロントにマテリアルデザインを導入したい
+  - https://dev.azure.com/nightonly/rails-app-origin/_workitems/edit/124/
 - 環境構築手順とリリースノートを作りたい
   - https://dev.azure.com/nightonly/rails-app-origin/_workitems/edit/304/
 - Ruby3.0に対応したい（Gemのバージョンアップも）
@@ -27,6 +29,10 @@
 
 ### Bug
 
+- ログアウト -> No route matches [GET] "/users/sign_out"
+  - https://dev.azure.com/nightonly/rails-app-origin/_workitems/edit/330/
+- ActionView::Template::Error(FATAL ERROR: wasm code commit Allocation failed - process out of memory)
+  - https://dev.azure.com/nightonly/rails-app-origin/_workitems/edit/328/
 - RSpecでユーザー名が重複して失敗する事がある
   - https://dev.azure.com/nightonly/rails-app-origin/_workitems/edit/285/
 - ActionMailer Previewでユーザーが作成される

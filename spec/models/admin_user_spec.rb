@@ -1,7 +1,7 @@
 require 'rails_helper'
 
 RSpec.describe AdminUser, type: :model do
-  # 表示名
+  # 氏名
   # 前提条件
   #   なし
   # テストパターン
