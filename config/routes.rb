@@ -4,8 +4,6 @@ Rails.application.routes.draw do
 
   # 管理ユーザー
   devise_for :admin_users, controllers: {
-    registrations: 'admin_users/registrations',
-    confirmations: 'admin_users/confirmations',
     sessions: 'admin_users/sessions',
     unlocks: 'admin_users/unlocks',
     passwords: 'admin_users/passwords'

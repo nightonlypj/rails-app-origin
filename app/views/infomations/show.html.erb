@@ -1,7 +1,13 @@
-<h2><%= @infomation.title %> (<%= l(@infomation.started_at.to_date) %>)</h2>
-
-<p><%= @infomation.body.html_safe %></p>
-
-<ul>
-  <li><%= link_to 'お知らせ一覧', infomations_path %></li>
-</ul>
+<main class="card">
+  <div class="card-body">
+    <h5 class="card-title"><%= @infomation.title %> (<%= l(@infomation.started_at.to_date) %>)</h5>
+    <p class="card-text"><%= @infomation.body.html_safe %></p>
+    <p class="card-footer">
+      <nav>
+        <ul>
+          <li><%= link_to 'お知らせ一覧', infomations_path %></li>
+        </ul>
+      </nav>
+    </p>
+  </div>
+</main>

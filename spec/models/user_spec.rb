@@ -42,7 +42,7 @@ RSpec.describe User, type: :model do
     end
   end
 
-  # 表示名
+  # 氏名
   # 前提条件
   #   なし
   # テストパターン
@@ -161,7 +161,7 @@ RSpec.describe User, type: :model do
   #   なし
   # テストパターン
   #   画像: ない, ある
-  #   mini, small, medium, large, 未定義
+  #   mini, small, medium, large, xlarge, 未定義
   describe 'def image_url' do
     let!(:user) { FactoryBot.create(:user) }
 
@@ -183,6 +183,7 @@ RSpec.describe User, type: :model do
       it_behaves_like 'ToOK', :small
       it_behaves_like 'ToOK', :medium
       it_behaves_like 'ToOK', :large
+      it_behaves_like 'ToOK', :xlarge
       it_behaves_like 'ToNG', nil
     end
     context '画像がある' do
@@ -191,6 +192,7 @@ RSpec.describe User, type: :model do
       it_behaves_like 'ToOK', :small
       it_behaves_like 'ToOK', :medium
       it_behaves_like 'ToOK', :large
+      it_behaves_like 'ToOK', :xlarge
       it_behaves_like 'ToNG', nil
       include_context '画像削除処理'
     end

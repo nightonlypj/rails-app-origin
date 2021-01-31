@@ -1,19 +1,10 @@
 <%= render 'users/shared/alert_messages', messages: resource.errors[:confirmation_token] %>
+<%= render 'users/shared/error_messages', resource: resource unless resource.errors[:confirmation_token].any? %>
 
-<h2>メールアドレス確認メール再送</h2>
-
-<%= form_for(resource, as: resource_name, url: confirmation_path(resource_name), html: { method: :post }, local: true) do |form| %>
-  <%= render 'users/shared/error_messages', resource: resource unless resource.errors[:confirmation_token].any? %>
-
-  <div class="field">
-    <%= form.label :email %>
-    <%= form.email_field :email, autofocus: true, autocomplete: 'email', value: (resource.pending_reconfirmation? ? resource.unconfirmed_email : resource.email) %>
-    <%= render 'users/shared/field_error_messages', messages: resource.errors[:email] %>
+<main class="card" style="max-width: 480px; margin-left: auto; margin-right: auto">
+  <div class="card-body">
+    <h5 class="card-title">メールアドレス確認</h5>
+    <p class="card-text"><%= render 'new_user' %></p>
+    <p class="card-footer"><%= render 'users/shared/links' %></p>
   </div>
-
-  <div class="actions">
-    <%= form.submit '送信' %>
-  </div>
-<% end %>
-
-<%= render 'users/shared/links' %>
+</main>

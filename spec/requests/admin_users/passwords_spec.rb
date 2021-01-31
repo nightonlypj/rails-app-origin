@@ -1,7 +1,7 @@
 require 'rails_helper'
 
 RSpec.describe 'AdminUsers::Passwords', type: :request do
-  # GET /admin_users/password/new パスワード再設定メール送信
+  # GET /admin_users/password/new パスワード再設定[メール送信]
   # 前提条件
   #   なし
   # テストパターン
@@ -33,7 +33,7 @@ RSpec.describe 'AdminUsers::Passwords', type: :request do
     end
   end
 
-  # POST /admin_users/password パスワード再設定メール送信(処理)
+  # POST /admin_users/password パスワード再設定[メール送信](処理)
   # 前提条件
   #   なし
   # テストパターン
@@ -128,7 +128,7 @@ RSpec.describe 'AdminUsers::Passwords', type: :request do
       end
     end
     shared_examples_for 'ToNew' do |alert, notice|
-      it 'パスワード再設定メール送信にリダイレクト' do
+      it 'パスワード再設定[メール送信]にリダイレクト' do
         get edit_admin_user_password_path(reset_password_token: reset_password_token)
         expect(response).to redirect_to(new_admin_user_password_path)
         expect(flash[:alert]).to alert.present? ? eq(I18n.t(alert)) : be_nil
@@ -225,7 +225,7 @@ RSpec.describe 'AdminUsers::Passwords', type: :request do
       end
     end
     shared_examples_for 'ToNew' do |alert, notice|
-      it 'パスワード再設定メール送信にリダイレクト' do
+      it 'パスワード再設定[メール送信]にリダイレクト' do
         put admin_user_password_path, params: { admin_user: attributes.merge({ reset_password_token: reset_password_token }) }
         expect(response).to redirect_to(new_admin_user_password_path)
         expect(flash[:alert]).to alert.present? ? eq(I18n.t(alert)) : be_nil

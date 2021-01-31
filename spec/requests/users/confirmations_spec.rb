@@ -1,7 +1,7 @@
 require 'rails_helper'
 
 RSpec.describe 'Users::Confirmations', type: :request do
-  # GET /users/confirmation/new メールアドレス確認メール再送
+  # GET /users/confirmation/new メールアドレス確認[メール再送]
   # 前提条件
   #   なし
   # テストパターン
@@ -29,7 +29,7 @@ RSpec.describe 'Users::Confirmations', type: :request do
     end
   end
 
-  # POST /users/confirmation メールアドレス確認メール再送(処理)
+  # POST /users/confirmation メールアドレス確認[メール再送](処理)
   # 前提条件
   #   なし
   # テストパターン
@@ -122,7 +122,7 @@ RSpec.describe 'Users::Confirmations', type: :request do
       end
     end
     shared_examples_for 'ToNew' do |alert, notice|
-      it 'メールアドレス確認メール再送にリダイレクト' do
+      it 'メールアドレス確認[メール再送]にリダイレクト' do
         get user_confirmation_path(confirmation_token: confirmation_token)
         expect(response).to redirect_to(new_user_confirmation_path)
         expect(flash[:alert]).to alert.present? ? eq(I18n.t(alert)) : be_nil

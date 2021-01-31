@@ -196,14 +196,55 @@ $ nginx -v
 
 $ vi /opt/homebrew/etc/nginx/nginx.conf
 ```
+worker_processes  1;
+### START ###
+worker_rlimit_nofile 65536;
+### END ###
+```
+```
+events {
+    worker_connections  1024;
+### START ###
+    accept_mutex_delay 100ms;
+    multi_accept on;
+### END ###
+```
+```
+http {
 ### START ###
     server_names_hash_bucket_size 64;
+    server_tokens off;
+    add_header X-Frame-Options SAMEORIGIN;
+    add_header X-XSS-Protection "1; mode=block";
+    add_header X-Content-Type-Options nosniff;
+    client_max_body_size 64m;
+    gzip on;
+    gzip_types text/plain text/css text/javascript application/javascript application/x-javascript application/json text/xml application/xml application/xml+rss;
 ### END ###
-
+```
+```
+    #tcp_nopush     on;
+### START ###
+    tcp_nopush      on;
+    tcp_nodelay     on;
+### END ###
+```
+```
+    #keepalive_timeout  0;
+### START ###
+#    keepalive_timeout  65;
+    keepalive_timeout   120;
+    open_file_cache     max=100 inactive=20s;
+    types_hash_max_size 2048;
+### END ###
+```
+```
     server {
 ### START ###
 #        listen       8080;
         listen       80;
+#        server_name  localhost;
+        server_name  _;
 ### END ###
 ```
 
@@ -213,6 +254,10 @@ $ vi /opt/homebrew/etc/nginx/servers/localhost.local.conf
 server {
     listen       80;
     server_name  localhost.local;
+
+    location ~ /\.(ht|git|svn|cvs) {
+        deny all;
+    }
 
     location / {
         proxy_set_header    Host                $http_host;
@@ -226,6 +271,9 @@ server {
 }
 ### END ###
 ```
+
+※Tips: ファイルアップロードに失敗する為  
+$ sudo chmod 770 /opt/homebrew/var/run/nginx/*
 
 $ nginx -t -c /opt/homebrew/etc/nginx/nginx.conf
 > nginx: the configuration file /opt/homebrew/etc/nginx/nginx.conf syntax is ok  

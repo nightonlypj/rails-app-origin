@@ -170,11 +170,27 @@ RSpec.describe 'Infomations', type: :request do
       end
     end
 
+    shared_examples_for 'リダイレクト' do |page, redirect_page|
+      it '最終ページにリダイレクト' do
+        get infomations_path(page: page)
+        if redirect_page == 1
+          expect(response).to redirect_to(infomations_path)
+        else
+          expect(response).to redirect_to(infomations_path(page: redirect_page))
+        end
+      end
+      it '(json)リダイレクトしない' do
+        get infomations_path(page: page, format: :json)
+        expect(response).to be_successful
+      end
+    end
+
     # テストケース
     shared_examples_for '[*]お知らせがない' do
       include_context 'お知らせ一覧作成', 0, 0, 0, 0
       it_behaves_like 'ページ情報', 1
       it_behaves_like 'ページネーション非表示', 1, 2
+      it_behaves_like 'リダイレクト', 2, 1
     end
     shared_examples_for '[未ログイン]お知らせが最大表示数と同じ' do
       count = Settings['test_infomations']
@@ -182,6 +198,7 @@ RSpec.describe 'Infomations', type: :request do
       it_behaves_like 'ページ情報', 1
       it_behaves_like 'ページネーション非表示', 1, 2
       it_behaves_like 'リスト表示', 1
+      it_behaves_like 'リダイレクト', 2, 1
     end
     shared_examples_for '[ログイン中/削除予約済み]お知らせが最大表示数と同じ' do
       count = Settings['test_infomations']
@@ -189,6 +206,7 @@ RSpec.describe 'Infomations', type: :request do
       it_behaves_like 'ページ情報', 1
       it_behaves_like 'ページネーション非表示', 1, 2
       it_behaves_like 'リスト表示', 1
+      it_behaves_like 'リダイレクト', 2, 1
     end
     shared_examples_for '[未ログイン]お知らせが最大表示数より多い' do
       count = Settings['test_infomations']
@@ -199,6 +217,7 @@ RSpec.describe 'Infomations', type: :request do
       it_behaves_like 'ページネーション表示', 2, 1
       it_behaves_like 'リスト表示', 1
       it_behaves_like 'リスト表示', 2
+      it_behaves_like 'リダイレクト', 3, 2
     end
     shared_examples_for '[ログイン中/削除予約済み]お知らせが最大表示数より多い' do
       count = Settings['test_infomations']
@@ -209,6 +228,7 @@ RSpec.describe 'Infomations', type: :request do
       it_behaves_like 'ページネーション表示', 2, 1
       it_behaves_like 'リスト表示', 1
       it_behaves_like 'リスト表示', 2
+      it_behaves_like 'リダイレクト', 3, 2
     end
 
     context '未ログイン' do
