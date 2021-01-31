@@ -40,6 +40,8 @@ class User < ApplicationRecord
       image? ? image.medium.url : "/images/user/#{version}_noimage.jpg"
     when :large
       image? ? image.large.url : "/images/user/#{version}_noimage.jpg"
+    when :xlarge
+      image? ? image.xlarge.url : "/images/user/#{version}_noimage.jpg"
     else
       logger.warn("[WARN]Not found: User.image_url(#{version})")
       ''

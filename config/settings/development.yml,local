@@ -1,3 +1,4 @@
+env_name: '【開発環境】'
 base_domain: 'localhost:3000'
 mailer_from:
   name: '%{app_name}'

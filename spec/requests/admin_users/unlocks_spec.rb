@@ -1,7 +1,7 @@
 require 'rails_helper'
 
 RSpec.describe 'AdminUsers::Unlocks', type: :request do
-  # GET /admin_users/unlock/new アカウントロック解除メール再送
+  # GET /admin_users/unlock/new アカウントロック解除[メール再送]
   # 前提条件
   #   なし
   # テストパターン
@@ -33,7 +33,7 @@ RSpec.describe 'AdminUsers::Unlocks', type: :request do
     end
   end
 
-  # POST /admin_users/unlock アカウントロック解除メール再送(処理)
+  # POST /admin_users/unlock アカウントロック解除[メール再送](処理)
   # 前提条件
   #   なし
   # テストパターン

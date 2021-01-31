@@ -6,6 +6,13 @@ class InfomationsController < ApplicationController
     @infomations = Infomation.order(started_at: 'DESC', id: 'DESC').page(params[:page]).per(Settings['default_infomations_limit'])
                              .where('started_at <= ? AND (ended_at IS NULL OR ended_at >= ?)', Time.current, Time.current)
                              .where('target = ? OR (target = ? AND user_id = ?)', Infomation.targets[:All], Infomation.targets[:User], user_id)
+    return if request.format.json? || @infomations.current_page <= [@infomations.total_pages, 1].max
+
+    if @infomations.total_pages <= 1
+      redirect_to infomations_path
+    else
+      redirect_to infomations_path(page: @infomations.total_pages)
+    end
   end
 
   # GET /infomations/1 お知らせ詳細

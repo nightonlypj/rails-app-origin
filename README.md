@@ -175,7 +175,7 @@ $ bundle install
 
 $ rails webpacker:install
 ```
-Overwrite /mnt/rails-app-origin/config/webpacker.yml? (enter "h" for help) [Ynaqdhm] n
+Overwrite config/webpacker.yml? (enter "h" for help) [Ynaqdhm] n
 ```
 
 $ rails db:migrate  
@@ -185,4 +185,114 @@ $ rails s
 - http://localhost:3000
   - メールアドレスとパスワードは、`db/seed/development/users.yml`参照
 - http://localhost:3000/admin
+  - メールアドレスとパスワードは、`db/seed/admin_users.yml`参照
+
+### Nginxインストール
+
+$ brew install nginx
+
+$ nginx -v
+> nginx version: nginx/1.19.6
+
+$ vi /opt/homebrew/etc/nginx/nginx.conf
+```
+worker_processes  1;
+### START ###
+worker_rlimit_nofile 65536;
+### END ###
+```
+```
+events {
+    worker_connections  1024;
+### START ###
+    accept_mutex_delay 100ms;
+    multi_accept on;
+### END ###
+```
+```
+http {
+### START ###
+    server_names_hash_bucket_size 64;
+    server_tokens off;
+    add_header X-Frame-Options SAMEORIGIN;
+    add_header X-XSS-Protection "1; mode=block";
+    add_header X-Content-Type-Options nosniff;
+    client_max_body_size 64m;
+    gzip on;
+    gzip_types text/plain text/css text/javascript application/javascript application/x-javascript application/json text/xml application/xml application/xml+rss;
+### END ###
+```
+```
+    #tcp_nopush     on;
+### START ###
+    tcp_nopush      on;
+    tcp_nodelay     on;
+### END ###
+```
+```
+    #keepalive_timeout  0;
+### START ###
+#    keepalive_timeout  65;
+    keepalive_timeout   120;
+    open_file_cache     max=100 inactive=20s;
+    types_hash_max_size 2048;
+### END ###
+```
+```
+    server {
+### START ###
+#        listen       8080;
+        listen       80;
+#        server_name  localhost;
+        server_name  _;
+### END ###
+```
+
+$ vi /opt/homebrew/etc/nginx/servers/localhost.local.conf
+```
+### START ###
+server {
+    listen       80;
+    server_name  localhost.local;
+
+    location ~ /\.(ht|git|svn|cvs) {
+        deny all;
+    }
+
+    location / {
+        proxy_set_header    Host                $http_host;
+        proxy_set_header    X-Forwarded-For     $proxy_add_x_forwarded_for;
+        proxy_set_header    X-Forwarded-Host    $host;
+        proxy_set_header    X-Forwarded-Proto   $scheme;
+        proxy_set_header    X-Real-IP           $remote_addr;
+        proxy_redirect      off;
+        proxy_pass          http://127.0.0.1:3000;
+    }
+}
+### END ###
+```
+
+※Tips: ファイルアップロードに失敗する為  
+$ sudo chmod 770 /opt/homebrew/var/run/nginx/*
+
+$ nginx -t -c /opt/homebrew/etc/nginx/nginx.conf
+> nginx: the configuration file /opt/homebrew/etc/nginx/nginx.conf syntax is ok  
+> nginx: configuration file /opt/homebrew/etc/nginx/nginx.conf test is successful
+
+$ brew services start nginx
+
+PCのhostsに下記を追加
+```
+$ sudo vi /etc/hosts
+127.0.0.1       localhost.local
+```
+
+$ cp -a config/settings/development.yml,dev config/settings/development.yml  
+overwrite config/settings/development.yml? (y/n [n]) y
+
+$ rails s
+
+- http://localhost.local
+  - メールアドレスとパスワードは、`db/seed/development/users.yml`参照
+- http://localhost.local/admin
   - メールアドレスとパスワードは、`db/seed/admin_users.yml`参照

@@ -1,6 +1,0 @@
-<%= @resource.name %> 様
-
-下記のURLをクリックして、メールアドレスの確認をしてください。
-アカウント登録やメールアドレスの変更を行なっていない場合は、このメールを無視してください。
-※このURLの有効期限は<%= Settings['confirm_within_hours'] %>時間です。
-<%= confirmation_url(@resource, confirmation_token: @token) %>

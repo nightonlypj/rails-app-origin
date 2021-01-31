@@ -1,3 +1,4 @@
+env_name: ''
 base_domain: 'localhost.test'
 mailer_from:
   name: '%{app_name}'

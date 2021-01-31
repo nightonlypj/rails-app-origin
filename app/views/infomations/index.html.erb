@@ -1,25 +1,54 @@
-<h2>お知らせ一覧</h2>
-
-<% if @infomations.blank? %>
-お知らせはありません。
-<% else %>
+<main class="card">
+  <div class="card-body">
+    <div class="row">
+      <div class="col">
+        <h5 class="card-title">お知らせ一覧</h5>
+      </div>
+    </div>
 <% if @infomations.total_count > @infomations.limit_value %>
-<p><%= page_entries_info @infomations %></p>
+    <div class="row">
+      <div class="col-sm-5">
+        <%= page_entries_info @infomations %>
+      </div>
+      <div class="col-sm-7">
+        <div class="float-sm-end"><%= paginate @infomations %></div>
+      </div>
+    </div>
 <% end %>
-<p><%= paginate @infomations %></p>
-<ul>
+    <div class="row">
+      <div class="col">
+        <ul class="list-group">
+<% if @infomations.blank? %>
+          <li class="list-group-item">
+            お知らせはありません。
+          </li>
+<% end %>
 <% @infomations.each do |infomation| %>
-  <li>
+          <li class="list-group-item">
+            <div>
+              <span class="fw-bolder">
 <% if infomation.body.present? %>
-    <h3><%= link_to infomation.title, infomation %> (<%= l(infomation.started_at.to_date) %>)</h3>
+                <%= link_to infomation.title, infomation %>
 <% else %>
-    <h3><%= infomation.title %> (<%= l(infomation.started_at.to_date) %>)</h3>
+                <%= infomation.title %>
 <% end %>
+              </span>
+              (<%= l(infomation.started_at.to_date) %>)
+            </div>
 <% if infomation.summary.present? %>
-    <p><%= infomation.summary.html_safe %></p>
+            <div class="fw-light">
+              <%= infomation.summary.html_safe %>
+            </div>
 <% end %>
-  </li>
+          </li>
 <% end %>
-</ul>
-<p><%= paginate @infomations %></p>
-<% end %>
+        </ul>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col">
+        <div class="float-sm-end"><%= paginate @infomations %></div>
+      </div>
+    </div>
+  </div>
+</main>

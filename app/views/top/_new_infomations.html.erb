@@ -1,20 +1,31 @@
 <% if @new_infomations.present? %>
-<h3>新しいお知らせ</h3>
-<ul>
+<article class="card">
+  <div class="card-body">
+    <h5 class="card-title">新しいお知らせ</h5>
+    <ul class="list-group">
 <% @new_infomations.each do |new_infomation| %>
-  <li>
+      <li class="list-group-item">
+        <div>
+          <span class="fw-bolder">
 <% if new_infomation.body.present? %>
-    <p><%= link_to new_infomation.title, new_infomation %> (<%= l(new_infomation.started_at.to_date) %>)</p>
+            <%= link_to new_infomation.title, new_infomation %>
 <% else %>
-    <p><%= new_infomation.title %> (<%= l(new_infomation.started_at.to_date) %>)</p>
+            <%= new_infomation.title %>
 <% end %>
+          </span>
+          (<%= l(new_infomation.started_at.to_date) %>)
+        </div>
 <% if new_infomation.summary.present? %>
-    <p><%= new_infomation.summary.html_safe %></p>
+        <div class="fw-light">
+          <%= new_infomation.summary.html_safe %>
+        </div>
 <% end %>
-  </li>
+      </li>
 <% end %>
-</ul>
+    </ul>
 <% if @new_infomations.total_pages > 1 %>
-<p><%= link_to 'もっと見る', infomations_path %></p>
+    <p class="card-footer"><%= link_to 'もっと見る', infomations_path, class: 'btn btn-info' %></p>
 <% end %>
+  </div>
+</article>
 <% end %>

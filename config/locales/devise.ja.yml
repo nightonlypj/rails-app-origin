@@ -8,7 +8,7 @@ ja:
         id: 'ID'
         code: 'ユーザーコード'
         image: '画像'
-        name: '表示名'
+        name: '氏名'
         email: 'メールアドレス'
         password: 'パスワード'
         password_confirmation: 'パスワード(確認)'
@@ -35,7 +35,7 @@ ja:
         updated_at: '更新日時'
       admin_user:
         id: 'ID'
-        name: '表示名'
+        name: '氏名'
         email: 'メールアドレス'
         password: 'パスワード'
         password_confirmation: 'パスワード(確認)'
@@ -74,7 +74,7 @@ ja:
               too_short: '%{count}文字以上で入力してください。'
               too_long: '%{count}文字以下で入力してください。'
               invalid: '形式が正しくありません。'
-              taken: '既に使用されています。パスワードが不明な場合は、パスワード再設定メール送信をしてください。'
+              taken: '既に使用されています。パスワードが不明な場合は[パスワード再設定]をしてください。'
             password:
               blank: '入力してください。'
               too_short: '%{count}文字以上で入力してください。'
@@ -83,7 +83,7 @@ ja:
               confirmation: '%{attribute}と一致しません。'
             current_password:
               blank: '入力してください。'
-              invalid: '違います。'
+              invalid: 'パスワードが違います。'
             reset_password_token:
               blank: 'URLが正しくありません。最初からやり直してください。'
               invalid: 'URLが正しくないか、有効期限が切れています。最初からやり直してください。'
@@ -104,7 +104,7 @@ ja:
               too_short: '%{count}文字以上で入力してください。'
               too_long: '%{count}文字以下で入力してください。'
               invalid: '形式が正しくありません。'
-              taken: '既に使用されています。パスワードが不明な場合は、パスワード再設定メール送信をしてください。'
+              taken: '既に使用されています。パスワードが不明な場合は[パスワード再設定]をしてください。'
             password:
               blank: '入力してください。'
               too_short: '%{count}文字以上で入力してください。'
@@ -113,7 +113,7 @@ ja:
               confirmation: '%{attribute}と一致しません。'
             current_password:
               blank: '入力してください。'
-              invalid: '違います。'
+              invalid: 'パスワードが違います。'
             reset_password_token:
               blank: 'URLが正しくありません。最初からやり直してください。'
               invalid: 'URLが正しくないか、有効期限が切れています。最初からやり直してください。'
@@ -166,27 +166,25 @@ ja:
       success: '%{kind} アカウントによる認証に成功しました。'
     failure:
       already_authenticated: '既にログインしています。'
-      inactive: 'メールアドレスが確認されていません。メールが届いていない場合は[メールアドレス確認メール再送]をしてください。'
+      inactive: 'メールアドレスが確認されていません。メールが届いていない場合は[メールアドレス確認]をしてください。'
       invalid: '%{authentication_keys}またはパスワードが違います。'
       last_attempt: '注意：もう一回間違えるとアカウントがロックされます。'
-      locked: 'アカウントがロックされています。メールが届いていない場合は[アカウントロック解除メール再送]をしてください。'
+      locked: 'アカウントがロックされています。メールが届いていない場合は[アカウントロック解除]をしてください。'
       not_found_in_database: '%{authentication_keys}またはパスワードが違います。'
       timeout: 'セッションがタイムアウトしました。ログインし直してください。'
       unauthenticated: 'ログインしてください。'
-      unconfirmed: 'メールアドレスの確認が必要です。メールが届いていない場合は[メールアドレス確認メール再送]をしてください。'
+      unconfirmed: 'メールアドレスの確認が必要です。メールが届いていない場合は[メールアドレス確認]をしてください。'
     mailer:
       confirmation_instructions:
-        subject: '【%{app_name}】メールアドレス確認のお願い'
-        admin_user_subject: '【%{app_name} Admin】メールアドレス確認のお願い'
+        subject: '%{env_name}【%{app_name}】メールアドレス確認のお願い'
       email_changed:
-        subject: '【%{app_name}】メールアドレス変更受け付けのお知らせ'
-        admin_user_subject: '【%{app_name} Admin】メールアドレス変更受け付けのお知らせ'
+        subject: '%{env_name}【%{app_name}】メールアドレス変更受け付けのお知らせ'
       reset_password_instructions:
-        subject: '【%{app_name}】パスワード再設定方法のお知らせ'
-        admin_user_subject: '【%{app_name} Admin】パスワード再設定方法のお知らせ'
+        subject: '%{env_name}【%{app_name}】パスワード再設定方法のお知らせ'
+        admin_user_subject: '%{env_name}【%{app_name} Admin】パスワード再設定方法のお知らせ'
       password_change:
-        subject: '【%{app_name}】パスワード変更完了のお知らせ'
-        admin_user_subject: '【%{app_name} Admin】パスワード変更完了のお知らせ'
+        subject: '%{env_name}【%{app_name}】パスワード変更完了のお知らせ'
+        admin_user_subject: '%{env_name}【%{app_name} Admin】パスワード変更完了のお知らせ'
       unlock_instructions:
-        subject: '【%{app_name}】アカウントロックのお知らせ'
-        admin_user_subject: '【%{app_name} Admin】アカウントロックのお知らせ'
+        subject: '%{env_name}【%{app_name}】アカウントロックのお知らせ'
+        admin_user_subject: '%{env_name}【%{app_name} Admin】アカウントロックのお知らせ'
