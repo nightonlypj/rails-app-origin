@@ -1,54 +1,47 @@
-<main class="card">
-  <div class="card-body">
-    <div class="row">
-      <div class="col">
-        <h5 class="card-title">お知らせ一覧</h5>
-      </div>
-    </div>
+<main class="container">
+  <h3 class="pt-3">お知らせ一覧</h3>
+
 <% if @infomations.total_count > @infomations.limit_value %>
-    <div class="row">
-      <div class="col-sm-5">
-        <%= page_entries_info @infomations %>
-      </div>
-      <div class="col-sm-7">
-        <div class="float-sm-end"><%= paginate @infomations %></div>
-      </div>
+  <div class="row">
+    <div class="col-sm-5 d-flex align-items-center">
+      <%= page_entries_info @infomations %>
     </div>
+    <div class="col-sm-7">
+      <div class="float-sm-end"><%= paginate @infomations %></div>
+    </div>
+  </div>
 <% end %>
-    <div class="row">
-      <div class="col">
-        <ul class="list-group">
+
+  <ul class="list-group">
 <% if @infomations.blank? %>
-          <li class="list-group-item">
-            お知らせはありません。
-          </li>
+    <li class="list-group-item">
+      お知らせはありません。
+    </li>
 <% end %>
 <% @infomations.each do |infomation| %>
-          <li class="list-group-item">
-            <div>
-              <span class="fw-bolder">
+    <li class="list-group-item">
+      <div>
+        <span class="fw-bolder">
 <% if infomation.body.present? %>
-                <%= link_to infomation.title, infomation %>
+          <%= link_to infomation.title, infomation %>
 <% else %>
-                <%= infomation.title %>
+          <%= infomation.title %>
 <% end %>
-              </span>
-              (<%= l(infomation.started_at.to_date) %>)
-            </div>
+        </span>
+        (<%= l(infomation.started_at.to_date) %>)
+      </div>
 <% if infomation.summary.present? %>
-            <div class="fw-light">
-              <%= infomation.summary.html_safe %>
-            </div>
-<% end %>
-          </li>
-<% end %>
-        </ul>
+      <div class="fw-light">
+        <%= infomation.summary.html_safe %>
       </div>
-    </div>
-    <div class="row">
-      <div class="col">
-        <div class="float-sm-end"><%= paginate @infomations %></div>
-      </div>
+<% end %>
+    </li>
+<% end %>
+  </ul>
+
+  <div class="row">
+    <div class="col">
+      <div class="float-sm-end"><%= paginate @infomations %></div>
     </div>
   </div>
 </main>

@@ -1,4 +1,4 @@
-env_name: '【ステージング環境】'
+env_name: '【STG環境】'
 base_domain: 'stg.mydomain'
 mailer_from:
   name: '%{app_name}'
