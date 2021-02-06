@@ -22,7 +22,7 @@
   invitation_completed_at: '2020-01-02 00:00:00+0900'
 - id: 13
   code: 'code13'
-  name: '顧客1のMember'
+  name: '-' # 顧客1のMember
   email: 'member@customer1'
   password: 'changepassword'
   confirmed_at: '0000-01-01 00:00:00+0000'
@@ -79,7 +79,7 @@
   invitation_completed_at: null
 - id: 2
   code: 'code2'
-  name: '顧客1の外部Member'
+  name: '-' # 顧客1の外部Member
   email: 'user2@mydomain'
   password: 'changepassword'
   confirmed_at: '0000-01-01 00:00:00+0000'

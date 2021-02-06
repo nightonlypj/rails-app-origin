@@ -15,6 +15,13 @@ class MembersController < ApplicationController
     @members = Member.order(created_at: 'DESC', id: 'DESC').page(params[:page]).per(Settings['default_members_limit'])
                      .where(customer_id: @customer.id)
                      .includes(:user)
+    return if request.format.json? || @members.current_page <= [@members.total_pages, 1].max
+
+    if @members.total_pages <= 1
+      redirect_to members_path(customer_code: @customer.code)
+    else
+      redirect_to members_path(customer_code: @customer.code, page: @members.total_pages)
+    end
   end
 
   # GET /members/:customer_code/new（ベースドメイン） メンバー招待
@@ -45,7 +52,7 @@ class MembersController < ApplicationController
     end
     if exist_user.present?
       exist_member = Member.find_by(customer_id: @customer.id, user_id: exist_user.id)
-      @member.errors.add(:power, t('activerecord.errors.models.member.attributes.user.taken')) if exist_member.present?
+      @user.errors.add(:email, t('activerecord.errors.models.member.attributes.user.taken')) if exist_member.present?
     end
     # validates :email # Tips: emailとpowerのメッセージを同時に出す為
     if exist_user.blank?
@@ -130,16 +137,6 @@ class MembersController < ApplicationController
   end
 
   private
-
-  # 未所属/存在しない顧客へのアクセス禁止
-  def not_found_outside_customer
-    @customer = Customer.where(code: params[:customer_code])
-                        .includes(:member).where(members: { user_id: current_user.id }).first
-    return if @customer.present?
-    return render json: { error: t('errors.messages.customer.code_error') }, status: :not_found if request.format.json?
-
-    head :not_found
-  end
 
   # 未所属/存在しないメンバーへのアクセス禁止
   def not_found_outside_member

@@ -6,7 +6,7 @@ RSpec.describe 'Spaces', type: :request do
   include_context '共通ヘッダー'
   include_context 'リクエストスペース作成'
 
-  # GET /spaces/edit（サブドメイン） スペース編集
+  # GET /spaces/edit（サブドメイン） スペース情報変更
   describe 'GET /edit' do
     # テスト内容
     shared_examples_for 'ベースドメイン' do

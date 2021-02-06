@@ -22,7 +22,8 @@ Rails.application.routes.draw do
   post   'registration/sign_up', to: 'registration#create', as: nil
 
   # 顧客（所属）
-  resources :customers, only: %i[index]
+  get 'customers',                to: 'customers#index', as: 'customers'
+  get 'customers/:customer_code', to: 'customers#show',  as: 'customer'
 
   # お知らせ
   resources :infomations, only: %i[index show]

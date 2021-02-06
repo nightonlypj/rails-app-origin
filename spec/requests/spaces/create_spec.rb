@@ -8,8 +8,8 @@ RSpec.describe 'Spaces', type: :request do
   let!(:valid_attributes) { FactoryBot.attributes_for(:space, customer_id: customer.id) }
   let!(:invalid_attributes) { FactoryBot.attributes_for(:space, customer_id: customer.id, name: nil) }
 
-  # POST /spaces（ベースドメイン） スペース登録(処理)
-  # POST /spaces.json（ベースドメイン） スペース登録API
+  # POST /spaces（ベースドメイン） スペース作成(処理)
+  # POST /spaces.json（ベースドメイン） スペース作成API
   describe 'POST /create' do
     # テスト内容
     shared_examples_for '有効なパラメータ' do

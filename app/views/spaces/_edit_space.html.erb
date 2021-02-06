@@ -1,0 +1,20 @@
+<% validate_enabled = @space.errors.any? %>
+<%= form_with(model: @space, html: { novalidate: true }, local: true) do |form| %>
+  <div class="mb-3">
+    <span class="font-weight-bold">顧客名 (コード):</span> <%= @space.customer.name %> (<%= @space.customer.code %>)
+  </div>
+
+  <div class="form-outline<%= input_size_class_name(@space, :subdomain) %>">
+    <%= form.text_field :subdomain, autocomplete: 'name', class: "form-control#{validate_class_name(validate_enabled, @space, :subdomain)}" %>
+    <%= form.label 'サブドメイン', class: 'form-label', for: 'space_subdomain' %>
+    <%= render 'users/shared/field_error_messages', messages: @space.errors[:subdomain] %>
+  </div>
+
+  <div class="form-outline<%= input_size_class_name(@space, :name) %>">
+    <%= form.text_field :name, autocomplete: 'name', class: "form-control#{validate_class_name(validate_enabled, @space, :name)}" %>
+    <%= form.label 'スペース名', class: 'form-label', for: 'space_name' %>
+    <%= render 'users/shared/field_error_messages', messages: @space.errors[:name] %>
+  </div>
+
+  <%= form.submit '変更', class: 'btn btn-warning' %>
+<% end %>

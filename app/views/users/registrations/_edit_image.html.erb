@@ -1,10 +1,11 @@
+<% validate_enabled = action_name == 'image_update' && resource.errors.any? %>
 <%= form_for(resource, as: resource_name, url: users_image_path, html: { method: :put, novalidate: true, id: 'edit_image' }, local: true) do |form| %>
   <div>
     <%= image_tag current_user.image_url(:xlarge) %>
   </div>
 
   <div class="form-outline<%= input_size_class_name(resource, :image) %>">
-    <%= form.file_field :image, class: "form-control#{validate_class_name(action_name == 'image_update', resource, :image)}" %>
+    <%= form.file_field :image, class: "form-control#{validate_class_name(validate_enabled, resource, :image)}" %>
     <%= render 'users/shared/field_error_messages', messages: resource.errors[:image] %>
   </div>
 

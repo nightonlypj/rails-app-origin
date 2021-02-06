@@ -55,6 +55,16 @@ class ApplicationController < ActionController::Base
     redirect_to root_path, notice: t('notice.user.destroy_reserved') if current_user.destroy_reserved?
   end
 
+  # 未所属/存在しない顧客へのアクセス禁止
+  def not_found_outside_customer
+    @customer = Customer.where(code: params[:customer_code])
+                        .includes(:member).where(members: { user_id: current_user.id }).first
+    return if @customer.present?
+    return render json: { error: t('errors.messages.customer.code_error') }, status: :not_found if request.format.json?
+
+    head :not_found
+  end
+
   # 有効なパスワードリセットトークンかを返却
   # @return true: 有効期限内, false: 存在しないか、期限切れ
   def valid_reset_password_token?(token)

@@ -25,15 +25,15 @@
           <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
             <ul class="navbar-nav" style="margin-left: auto">
 <% if user_signed_in? %>
-              <li class="nav-item"><%= link_to (image_tag "#{domain}#{current_user.image_url(:small)}").html_safe + ' ' + current_user.name, "#{domain}#{edit_user_registration_path}", class: 'nav-link' %></li>
-              <li class="nav-item"><%= link_to '所属一覧', "#{domain}#{customers_path}", class: 'nav-link', style: 'padding-top: 10px; padding-bottom: 10px' %></li>
-              <li class="nav-item"><%= link_to 'ログアウト', "#{domain}#{destroy_user_session_path}", method: :delete, class: 'nav-link', style: 'padding-top: 10px; padding-bottom: 10px' %></li>
+              <li class="nav-item text-nowrap" style="height: 45px"><%= link_to (image_tag "#{domain}#{current_user.image_url(:small)}").html_safe + ' ' + current_user.name, "#{domain}#{edit_user_registration_path}", class: 'nav-link d-inline-block text-truncate', style: 'max-width: 400px' %></li>
+              <li class="nav-item text-nowrap"><%= link_to '所属一覧', "#{domain}#{customers_path}", class: 'nav-link', style: 'padding-top: 10px; padding-bottom: 10px' %></li>
+              <li class="nav-item text-nowrap"><%= link_to 'ログアウト', "#{domain}#{destroy_user_session_path}", method: :delete, class: 'nav-link', style: 'padding-top: 10px; padding-bottom: 10px' %></li>
 <% else %>
 <% if controller_name != 'sessions' %>
-              <li class="nav-item"><%= link_to 'ログイン', "#{domain}#{new_user_session_path}", class: 'nav-link', style: 'padding-top: 10px; padding-bottom: 10px' %></li>
+              <li class="nav-item text-nowrap"><%= link_to 'ログイン', "#{domain}#{new_user_session_path}", class: 'nav-link', style: 'padding-top: 10px; padding-bottom: 10px' %></li>
 <% end %>
 <% if controller_name != 'registrations' %>
-              <li class="nav-item"><%= link_to 'アカウント登録', "#{domain}#{new_user_registration_path}", class: 'nav-link', style: 'padding-top: 10px; padding-bottom: 10px' %></li>
+              <li class="nav-item text-nowrap"><%= link_to 'アカウント登録', "#{domain}#{new_user_registration_path}", class: 'nav-link', style: 'padding-top: 10px; padding-bottom: 10px' %></li>
 <% end %>
 <% end %>
             </ul>
@@ -42,12 +42,14 @@
       </nav>
     </header>
 <% if @request_space.present? %>
-    <h2><%= link_to @request_space.name, root_path %></h2>
-    <nav>
-      <ul>
-        <li><%= link_to '編集', edit_space_path %></li>
-      </ul>
-    </nav>
+    <header>
+      <div class="text-center bg-light">
+        <%= link_to @request_space.name, root_path, class: 'fs-4' %>
+<% if controller_name != 'spaces' && action_name != 'edit' %>
+        <%= link_to '変更', edit_space_path, class: 'btn btn-outline-warning btn-rounded btn-sm float-end m-1' %><%# TODO: Spec %>
+      <% end %>
+</div>
+    </header>
 <% end %>
 <% if destroy_reserved_message? %>
     <aside>

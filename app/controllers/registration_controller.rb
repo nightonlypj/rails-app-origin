@@ -25,6 +25,7 @@ class RegistrationController < ApplicationController
     @user.assign_attributes(invitation_token: nil, invitation_completed_at: completed_at)
     members = Member.where(user_id: @user.id)
     ActiveRecord::Base.transaction do
+      @user.skip_password_change_notification! # Tips: パスワード変更完了メールを送らない
       @user.save!
       members.each do |member|
         if member.invitation_user_id.present?
@@ -33,6 +34,7 @@ class RegistrationController < ApplicationController
         end
       end
     end
+
     sign_in(User, @user)
     respond_to do |format|
       format.html { redirect_to root_path, notice: t('notice.registration.create') }

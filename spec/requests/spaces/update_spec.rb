@@ -8,8 +8,8 @@ RSpec.describe 'Spaces', type: :request do
   let!(:valid_attributes) { FactoryBot.attributes_for(:space, customer_id: @request_space.customer_id) }
   let!(:invalid_attributes) { FactoryBot.attributes_for(:space, customer_id: @request_space.customer_id, name: nil) }
 
-  # PATCH/PUT /spaces（サブドメイン） スペース更新(処理)
-  # PATCH/PUT /spaces.json（サブドメイン） スペース更新API
+  # PATCH/PUT /spaces（サブドメイン） スペース情報変更(処理)
+  # PATCH/PUT /spaces.json（サブドメイン） スペース情報変更API
   describe 'PATCH /update' do
     # テスト内容
     shared_examples_for '有効なパラメータ' do

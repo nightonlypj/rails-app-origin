@@ -8,8 +8,9 @@ json.customers do
   json.array! @customers do |customer|
     json.code customer.code
     json.name customer.name
+    json.created_at l(customer.created_at, format: :json)
     json.current_user do
-      json.power customer.member[0].power
+      json.power customer.member.first.power
     end
   end
 end

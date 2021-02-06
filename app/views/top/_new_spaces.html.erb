@@ -1,12 +1,22 @@
-<h3>新しいスペース</h3>
+<article class="card">
+  <div class="card-body">
+    <h5 class="card-title">新しいスペース</h5>
+    <ul class="list-group">
 <% if @new_spaces.blank? %>
-<p>Not found</p>
-<% else %>
-<ul>
+      <li class="list-group-item">
+        Not found
+      </li>
+<% end %>
 <% @new_spaces.each do |new_space| %>
-  <li><%= link_to new_space.name, "//#{new_space.subdomain}.#{Settings['base_domain']}" %></li>
+      <li class="list-group-item">
+        <%= link_to new_space.name, "//#{new_space.subdomain}.#{Settings['base_domain']}" %>
+      </li>
 <% end %>
-</ul>
-<p><%= link_to 'もっと見る', spaces_path %></p>
+    </ul>
+<% if @new_spaces.total_pages > 1 %>
+    <nav>
+      <%= link_to 'もっと見る', spaces_path, class: 'btn btn-info btn-rounded btn-sm m-2' %>
+    </nav>
 <% end %>
-<p><%= link_to 'スペース作成', new_space_path %></p>
+  </div>
+</article>

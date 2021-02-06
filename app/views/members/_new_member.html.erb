@@ -1,0 +1,23 @@
+<% validate_enabled = @member.errors.any? || @user.errors.any? %>
+<%= form_with(model: @member, url: members_path(customer_code: @customer.code), html: { novalidate: true }, local: true) do |form| %>
+<%= form.fields_for @user do |form_user| %>
+  <div class="form-outline<%= input_size_class_name(@user, :email) %>">
+    <%= form_user.email_field :email, autocomplete: 'email', class: "form-control#{validate_class_name(validate_enabled, @user, :email)}" %>
+    <%= form_user.label 'メールアドレス', class: 'form-label', for: 'member_user_email' %>
+    <%= render 'users/shared/field_error_messages', messages: @user.errors[:email] %>
+  </div>
+<% end %>
+
+  <div class="form-outline<%= input_size_class_name(@member, :power) %>">
+    <%= form.label '権限:', class: "form-label form-check-inline font-weight-bold#{validate_text_class_name(validate_enabled, @member, :power)}" %>
+    <% Member.powers.each do |power| %>
+      <div class="form-check form-check-inline<%= validate_class_name(validate_enabled, @member, :power) %>">
+        <%= form.radio_button :power, power[0], class: "form-check-input#{validate_class_name(validate_enabled, @member, :power)}" %>
+        <%= form.label Member.powers_i18n[power[0]], class: 'form-check-label', for: "member_power_#{power[0].downcase}" %>
+      </div>
+    <% end %>
+    <%= render 'users/shared/field_error_messages', messages: @member.errors[:power] %>
+  </div>
+
+  <%= form.submit '招待', class: 'btn btn-primary' %>
+<% end %>

@@ -76,7 +76,7 @@ RSpec.describe 'layouts/application', type: :view do
       render
       expect(rendered).to include(@request_space.name)
     end
-    it 'スペース編集のパスが含まれる' do
+    it 'スペース情報変更のパスが含まれる' do
       render
       expect(rendered).to include("\"#{edit_space_path}\"")
     end

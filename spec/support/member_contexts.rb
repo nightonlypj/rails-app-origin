@@ -22,6 +22,10 @@ shared_context 'メンバー作成' do |owner_count, admin_count, member_count, 
     @create_members = Member.where(customer_id: customer.id).order(created_at: sort, id: sort)
                             .includes(:user)
     raise "#{@create_members.count} != #{count} + #{before_count}" if @create_members.count != count + before_count
+
+    # Tips: 登録待ち(member.registrationed_atがnil)のユーザー
+    @create_users[count - 1].invitation_requested_at = Time.current
+    @create_users[count - 1].save!
   end
 end
 

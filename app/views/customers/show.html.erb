@@ -1,0 +1,47 @@
+<main class="container">
+  <h3 class="pt-3"><%= @customer.name %>の詳細</h3>
+
+  <div class="table-responsive">
+    <table class="table table-sm align-middle">
+      <tr>
+        <th width="20%" scope="col" nowrap>顧客名</th>
+        <td width="80%" scope="col"><%= @customer.name %></td>
+      </tr>
+      <tr>
+        <th scope="row" nowrap>顧客コード</th>
+        <td><%= @customer.code %></td>
+      </tr>
+      <tr>
+        <th scope="row" nowrap>あなたの権限</th>
+        <td><%= @customer.member.first.power_i18n %></td>
+      </tr>
+      <tr>
+        <th scope="row" nowrap>メンバー</th>
+        <td>
+          <%= @customer.member.count.to_s(:delimited) %>名
+          <%= link_to '一覧', members_path(@customer.code), class: 'btn btn-outline-info btn-rounded btn-sm' %>
+          <%= link_to '招待', new_member_path(customer_code: @customer.code), class: 'btn btn-outline-primary btn-rounded btn-sm' %><%# TODO: Spec %>
+        </td>
+      </tr>
+      <tr>
+        <th scope="row" nowrap>スペース</th>
+        <td>
+          <%# TODO: 件数 %>
+          <%= link_to '一覧', spaces_path, class: 'btn btn-outline-info btn-rounded btn-sm' %><%# TODO: 顧客毎の一覧 %>
+          <%= link_to '作成', new_space_path(customer_code: @customer.code), class: 'btn btn-outline-primary btn-rounded btn-sm' %><%# TODO: Spec %>
+        </td>
+      </tr>
+      <tr>
+        <th scope="row" nowrap>作成日時</th>
+        <td><%= l(@customer.created_at) %></td>
+      </tr>
+    </table>
+  </div>
+
+  <hr/>
+  <nav>
+    <ul>
+      <li><%= link_to '所属一覧', customers_path %></li>
+    </ul>
+  </nav>
+</main>

@@ -1,0 +1,13 @@
+<nav>
+  <ul>
+<% if action_name != 'index' %>
+    <li><%= link_to 'スペース一覧', "//#{Settings['base_domain']}#{spaces_path}" %></li>
+<% if action_name != 'new' && action_name != 'create' %>
+    <li><%= link_to "#{@space.customer.name}の詳細", "//#{Settings['base_domain']}#{customer_path(customer_code: @space.customer.code)}" %></li>
+<% end %>
+    <li><%= link_to '所属一覧', "//#{Settings['base_domain']}#{customers_path}" %></li>
+<% else %>
+    <li><%= link_to '所属一覧', customers_path %></li>
+<% end %>
+  </ul>
+</nav>

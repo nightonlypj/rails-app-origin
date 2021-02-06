@@ -88,7 +88,7 @@ RSpec.describe 'Top', type: :request do
         get root_path, headers: headers
         (1..end_no).each do |no|
           if @infomations[@infomations.count - no].body.present?
-            expect(response.body).to include("\"#{infomation_path(@infomations[@infomations.count - no])}\"")
+            expect(response.body).to include("\"#{domain}#{infomation_path(@infomations[@infomations.count - no])}\"")
           end
         end
       end
@@ -96,7 +96,7 @@ RSpec.describe 'Top', type: :request do
         get root_path, headers: headers
         (1..end_no).each do |no|
           unless @infomations[@infomations.count - no].body.present?
-            expect(response.body).not_to include("\"#{infomation_path(@infomations[@infomations.count - no])}\"")
+            expect(response.body).not_to include("\"#{domain}#{infomation_path(@infomations[@infomations.count - no])}\"")
           end
         end
       end
@@ -111,44 +111,50 @@ RSpec.describe 'Top', type: :request do
     shared_examples_for 'もっと見る表示' do
       it 'パスが含まれる' do
         get root_path, headers: headers
-        expect(response.body).to include("\"#{infomations_path}\"")
+        expect(response.body).to include("\"#{domain}#{infomations_path}\"")
       end
     end
     shared_examples_for 'もっと見る非表示' do
       it 'パスが含まれない' do
         get root_path, headers: headers
-        expect(response.body).not_to include("\"#{infomations_path}\"")
+        expect(response.body).not_to include("\"#{domain}#{infomations_path}\"")
       end
     end
 
     # テストケース
     shared_examples_for '[*][ない]ベースドメイン' do
       let!(:headers) { BASE_HEADER }
+      let!(:domain) { '' }
       # it_behaves_like 'リスト表示' # Tips: 対象がない
       it_behaves_like 'もっと見る非表示'
     end
     shared_examples_for '[*][最大表示数と同じ]ベースドメイン' do
       let!(:headers) { BASE_HEADER }
+      let!(:domain) { '' }
       it_behaves_like 'リスト表示'
       it_behaves_like 'もっと見る非表示'
     end
     shared_examples_for '[*][最大表示数より多い]ベースドメイン' do
       let!(:headers) { BASE_HEADER }
+      let!(:domain) { '' }
       it_behaves_like 'リスト表示'
       it_behaves_like 'もっと見る表示'
     end
     shared_examples_for '[*][ない]存在するサブドメイン' do
       let!(:headers) { @space_header }
+      let!(:domain) { "//#{Settings['base_domain']}" }
       # it_behaves_like 'リスト表示' # Tips: 対象がない
       it_behaves_like 'もっと見る非表示'
     end
     shared_examples_for '[*][最大表示数と同じ]存在するサブドメイン' do
       let!(:headers) { @space_header }
+      let!(:domain) { "//#{Settings['base_domain']}" }
       it_behaves_like 'リスト表示'
       it_behaves_like 'もっと見る非表示'
     end
     shared_examples_for '[*][最大表示数より多い]存在するサブドメイン' do
       let!(:headers) { @space_header }
+      let!(:domain) { "//#{Settings['base_domain']}" }
       it_behaves_like 'リスト表示'
       it_behaves_like 'もっと見る表示'
     end
@@ -253,31 +259,21 @@ RSpec.describe 'Top', type: :request do
       end
     end
 
-    shared_examples_for 'スペース作成リンク表示' do
-      it 'パスが含まれる' do
-        get root_path, headers: headers
-        expect(response.body).to include("\"#{new_space_path}\"")
-      end
-    end
-
     # テストケース
     shared_examples_for '[*]スペースがない' do
       include_context 'スペース作成', 0
       it_behaves_like 'スペース一覧リンク非表示'
-      it_behaves_like 'スペース作成リンク表示'
     end
     shared_examples_for '[*]スペースが最大表示数と同じ' do
       include_context 'スペース作成', Settings['new_spaces_limit']
       it_behaves_like '対象のリスト表示'
-      it_behaves_like 'スペース一覧リンク表示'
-      it_behaves_like 'スペース作成リンク表示'
+      it_behaves_like 'スペース一覧リンク非表示'
     end
     shared_examples_for '[*]スペースが最大表示数より多い' do
       include_context 'スペース作成', Settings['new_spaces_limit'] + 1
       it_behaves_like '対象のリスト表示'
       it_behaves_like '対象外のリスト非表示'
       it_behaves_like 'スペース一覧リンク表示'
-      it_behaves_like 'スペース作成リンク表示'
     end
 
     context '未ログイン' do

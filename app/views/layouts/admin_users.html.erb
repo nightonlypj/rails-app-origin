@@ -24,11 +24,11 @@
           <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
             <ul class="navbar-nav" style="margin-left: auto">
 <% if admin_user_signed_in? %>
-              <li class="nav-item"><%= current_admin_user.name %></li>
-              <li class="nav-item"><%= link_to 'ログアウト', destroy_admin_user_session_path, method: :delete, class: 'nav-link' %></li>
+              <li class="nav-item text-nowrap"><p class="d-inline-block text-truncate" style="max-width: 400px"><%= current_admin_user.name %></p></li>
+              <li class="nav-item text-nowrap"><%= link_to 'ログアウト', destroy_admin_user_session_path, method: :delete, class: 'nav-link' %></li>
 <% else %>
 <% if controller_name != 'sessions' %>
-              <li class="nav-item"><%= link_to 'ログイン', new_admin_user_session_path, class: 'nav-link' %></li>
+              <li class="nav-item text-nowrap"><%= link_to 'ログイン', new_admin_user_session_path, class: 'nav-link' %></li>
 <% end %>
 <% end %>
             </ul>

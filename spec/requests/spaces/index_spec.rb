@@ -158,12 +158,28 @@ RSpec.describe 'Spaces', type: :request do
       end
     end
 
+    shared_examples_for 'リダイレクト' do |page, redirect_page|
+      it '最終ページにリダイレクト' do
+        get spaces_path(customer_code: customer_code, page: page), headers: headers
+        if redirect_page == 1
+          expect(response).to redirect_to(spaces_path(customer_code: customer_code))
+        else
+          expect(response).to redirect_to(spaces_path(customer_code: customer_code, page: redirect_page))
+        end
+      end
+      it '(json)リダイレクトしない' do
+        get spaces_path(customer_code: customer_code, page: page, format: :json), headers: headers
+        expect(response).to be_successful
+      end
+    end
+
     # 子テストケース
     shared_examples_for 'スペースが0件' do
       include_context 'スペース作成', 0
       it_behaves_like 'ヘッダ情報'
       it_behaves_like '2ページ目リンク非表示'
       it_behaves_like 'スペース作成リンク表示'
+      it_behaves_like 'リダイレクト', 2, 1
     end
     shared_examples_for 'スペースが最大表示数と同じ' do
       include_context 'スペース作成', Settings['default_spaces_limit']
@@ -171,6 +187,7 @@ RSpec.describe 'Spaces', type: :request do
       it_behaves_like '2ページ目リンク非表示'
       it_behaves_like '対象のリスト表示', 1
       it_behaves_like 'スペース作成リンク表示'
+      it_behaves_like 'リダイレクト', 2, 1
     end
     shared_examples_for 'スペースが最大表示数より多い' do
       include_context 'スペース作成', Settings['default_spaces_limit'] + 1
@@ -181,6 +198,7 @@ RSpec.describe 'Spaces', type: :request do
       it_behaves_like 'ページ外のリスト非表示', 1, 2
       it_behaves_like 'ページ外のリスト非表示', 2, 1
       it_behaves_like 'スペース作成リンク表示'
+      it_behaves_like 'リダイレクト', 3, 2
     end
 
     # テストケース

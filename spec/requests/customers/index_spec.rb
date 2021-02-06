@@ -171,17 +171,36 @@ RSpec.describe 'Customers', type: :request do
           expect(parse_response[no - start_no]['name']).to eq(@create_customers[no - 1].name)
         end
       end
+      it '顧客詳細のパスが含まれる' do
+        get customers_path(page: page), headers: headers
+        (start_no..end_no).each do |no|
+          expect(response.body).to include("\"#{customer_path(@create_customers[no - 1].code)}\"")
+        end
+      end
+      it '作成日が含まれる' do # Tips: ユニークではない為、正確ではない
+        get customers_path(page: page), headers: headers
+        (start_no..end_no).each do |no|
+          expect(response.body).to include(I18n.l(@create_customers[no - 1].created_at.to_date))
+        end
+      end
+      it '(json)作成日時が一致する' do
+        get customers_path(page: page, format: :json), headers: headers
+        parse_response = JSON.parse(response.body)['customers']
+        (start_no..end_no).each do |no|
+          expect(parse_response[no - start_no]['created_at']).to eq(I18n.l(@create_customers[no - 1].created_at, format: :json))
+        end
+      end
       it 'ユーザーの権限が含まれる' do # Tips: ユニークではない為、正確ではない
         get customers_path(page: page), headers: headers
         (start_no..end_no).each do |no|
-          expect(response.body).to include(@create_customers[no - 1].member[0].power_i18n)
+          expect(response.body).to include(@create_customers[no - 1].member.first.power_i18n)
         end
       end
       it '(json)ユーザーの権限が一致する' do
         get customers_path(page: page, format: :json), headers: headers
         parse_response = JSON.parse(response.body)['customers']
         (start_no..end_no).each do |no|
-          expect(parse_response[no - start_no]['current_user']['power']).to eq(@create_customers[no - 1].member[0].power)
+          expect(parse_response[no - start_no]['current_user']['power']).to eq(@create_customers[no - 1].member.first.power)
         end
       end
       it 'メンバー一覧のパスが含まれる' do
@@ -192,17 +211,34 @@ RSpec.describe 'Customers', type: :request do
       end
     end
 
+    shared_examples_for 'リダイレクト' do |page, redirect_page|
+      it '最終ページにリダイレクト' do
+        get customers_path(page: page), headers: headers
+        if redirect_page == 1
+          expect(response).to redirect_to(customers_path)
+        else
+          expect(response).to redirect_to(customers_path(page: redirect_page))
+        end
+      end
+      it '(json)リダイレクトしない' do
+        get customers_path(page: page, format: :json), headers: headers
+        expect(response).to be_successful
+      end
+    end
+
     # テストケース
     shared_examples_for '[ログイン中/削除予約済み]所属する顧客がない' do
       include_context '顧客作成', 0, 0, 0
       it_behaves_like 'ページ情報', 1
       it_behaves_like 'ページネーション非表示', 1, 2
+      it_behaves_like 'リダイレクト', 2, 1
     end
     shared_examples_for '[ログイン中/削除予約済み]所属する顧客が最大表示数と同じ' do
       include_context '顧客作成', Settings['test_customers_owner'], Settings['test_customers_admin'], Settings['test_customers_member']
       it_behaves_like 'ページ情報', 1
       it_behaves_like 'ページネーション非表示', 1, 2
       it_behaves_like 'リスト表示', 1
+      it_behaves_like 'リダイレクト', 2, 1
     end
     shared_examples_for '[ログイン中/削除予約済み]所属する顧客が最大表示数より多い' do
       include_context '顧客作成', Settings['test_customers_owner'], Settings['test_customers_admin'], Settings['test_customers_member'] + 1
@@ -212,6 +248,7 @@ RSpec.describe 'Customers', type: :request do
       it_behaves_like 'ページネーション表示', 2, 1
       it_behaves_like 'リスト表示', 1
       it_behaves_like 'リスト表示', 2
+      it_behaves_like 'リダイレクト', 3, 2
     end
 
     context 'ログイン中' do

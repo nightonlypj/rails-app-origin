@@ -51,4 +51,5 @@ Style/BlockComments:
     - 'spec/requests/spaces/index_spec.rb'
     - 'spec/requests/spaces/new_spec.rb'
     - 'spec/requests/spaces/update_spec.rb'
+    - 'spec/views/spaces/new.html.erb_spec.rb'
     - 'spec/views/members/new.html.erb_spec.rb'

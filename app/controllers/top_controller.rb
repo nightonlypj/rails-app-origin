@@ -10,6 +10,6 @@ class TopController < ApplicationController
                                  .where('target = ? OR (target = ? AND user_id = ?)', Infomation.targets[:All], Infomation.targets[:User], user_id)
     return render :index_subdomain unless base_domain_request?
 
-    @new_spaces = Space.all.order(id: 'DESC').limit(Settings['new_spaces_limit'])
+    @new_spaces = Space.order(id: 'DESC').page(1).per(Settings['new_spaces_limit'])
   end
 end

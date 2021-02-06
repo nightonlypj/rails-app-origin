@@ -1,4 +1,5 @@
 <% if @new_infomations.present? %>
+<% domain = @request_space.present? ? "//#{Settings['base_domain']}" : '' %>
 <article class="card">
   <div class="card-body">
     <h5 class="card-title">新しいお知らせ</h5>
@@ -8,7 +9,7 @@
         <div>
           <span class="fw-bolder">
 <% if new_infomation.body.present? %>
-            <%= link_to new_infomation.action_title, new_infomation %>
+            <%= link_to new_infomation.action_title, "#{domain}#{infomation_path(new_infomation)}" %>
 <% else %>
             <%= new_infomation.action_title %>
 <% end %>
@@ -24,7 +25,9 @@
 <% end %>
     </ul>
 <% if @new_infomations.total_pages > 1 %>
-    <p class="card-footer"><%= link_to 'もっと見る', infomations_path, class: 'btn btn-info' %></p>
+    <nav>
+      <%= link_to 'もっと見る', "#{domain}#{infomations_path}", class: 'btn btn-info btn-rounded btn-sm m-2' %>
+    </nav>
 <% end %>
   </div>
 </article>

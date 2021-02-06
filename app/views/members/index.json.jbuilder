@@ -10,8 +10,8 @@ end
 json.members do
   json.array! @members do |member|
     json.code member.user.code
-    json.image_url "https://#{Settings['base_domain']}#{member.user.image_url(:small)}"
-    json.name member.user.name
+    json.image_url member.registrationed_at.present? ? "https://#{Settings['base_domain']}#{member.user.image_url(:small)}" : nil
+    json.name member.registrationed_at.present? ? member.user.name : nil
     json.email member.user.email
     json.power member.power
     json.invitationed_at member.invitationed_at.present? ? l(member.invitationed_at, format: :json) : nil
