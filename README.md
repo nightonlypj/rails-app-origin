@@ -1,186 +1,238 @@
 # Ruby on Railsベースアプリケーション
 
-運営元が情報提供して1つのサービスを作る（BtoC向け）
+運営元が情報提供して1つのサービスを作る（BtoC向け）  
 (Ruby 3.0.0, Rails 6.0.3.4)
 
 ## 環境構築手順（Macの場合）
 
 ### Homebrewインストール
 
-$ ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
-> Warning: /opt/homebrew/bin is not in your PATH.
-
-※zshの場合(Catalina以降)  
-% vi ~/.zshrc  
-※bashの場合  
-$ vi ~/.bash_profile
 ```
+$ ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
+Warning: /opt/homebrew/bin is not in your PATH.
+
+※zshの場合(Catalina以降)
+% vi ~/.zshrc
+※bashの場合
+$ vi ~/.bash_profile
+---- ここから ----
 ### START ###
 export PATH="/opt/homebrew/bin:/opt/homebrew/sbin:$PATH"
 ### END ###
-```
+---- ここまで ----
 
-※zshの場合(Catalina以降)  
-% source ~/.zshrc  
-※bashの場合  
+※zshの場合(Catalina以降)
+% source ~/.zshrc
+※bashの場合
 $ source ~/.bash_profile
 
 $ brew doctor
-> Your system is ready to brew.
+Your system is ready to brew.
 
 $ brew -v
-> Homebrew 2.7.5
+Homebrew 3.0.0
+※バージョンは異なっても良い
+```
 
 ### ImageMagickインストール
 
+```
 $ brew install imagemagick
 
 $ magick -version
-> Version: ImageMagick 7.0.10-58 Q16 arm 2021-01-16 https://imagemagick.org
+Version: ImageMagick 7.0.10-58 Q16 arm 2021-01-16 https://imagemagick.org
+※バージョンは異なっても良い
+```
 
-### node.jsインストール
+### Rubyインストール
 
-$ brew install nvm  
+```
+$ brew install gpg2
+$ gpg2 --keyserver hkp://pool.sks-keyservers.net --recv-keys 409B6B1796C275462A1703113804BB82D39DC0E3 7D2BAF1CF37B13E2069D6956105BD0E739499BDB
+gpg:           インポート: 2  (RSA: 2)
+
+$ 'curl' -sSL https://get.rvm.io | bash -s stable
+Donate: https://opencollective.com/rvm/donate
+
+$ source ~/.rvm/scripts/rvm
+$ rvm -v
+rvm 1.29.12 (latest) by Michal Papis, Piotr Kuczynski, Wayne E. Seguin [https://rvm.io]
+※バージョンは異なっても良い
+```
+```
+$ rvm list known
+[ruby-]3[.0.0]
+$ rvm install 3.0
+
+$ ruby -v
+ruby 3.0.0p0 (2020-12-25 revision 95aff21468) [arm64-darwin20]
+```
+
+### Node.jsインストール
+
+```
+$ brew install nvm
 $ mkdir ~/.nvm
 
-※zshの場合(Catalina以降)  
-% vi ~/.zshrc  
-※bashの場合  
+※zshの場合(Catalina以降)
+% vi ~/.zshrc
+※bashの場合
 $ vi ~/.bash_profile
-```
+---- ここから ----
 ### START ###
 export NVM_DIR="$HOME/.nvm"
 [ -s "/opt/homebrew/opt/nvm/nvm.sh" ] && . "/opt/homebrew/opt/nvm/nvm.sh"  # This loads nvm
 [ -s "/opt/homebrew/opt/nvm/etc/bash_completion.d/nvm" ] && . "/opt/homebrew/opt/nvm/etc/bash_completion.d/nvm"  # This loads nvm bash_completion
 ### END ###
-```
+---- ここまで ----
 
-※zshの場合(Catalina以降)  
-% source ~/.zshrc  
-※bashの場合  
+※zshの場合(Catalina以降)
+% source ~/.zshrc
+※bashの場合
 $ source ~/.bash_profile
 
 $ nvm --version
-> 0.37.2
-
+0.37.2
+※バージョンは異なっても良い
+```
+```
 $ nvm ls-remote | grep 'Latest LTS'
->        v14.15.4   (Latest LTS: Fermium)
-
-$ nvm install 14.15.4
+       v14.15.5   (Latest LTS: Fermium)
+$ nvm install v14.15.5
+※バージョンは異なっても良いが、本番の環境に合わせるのがベスト
 
 $ node -v
-> v14.15.4
+v14.15.5
+```
 
 ### yarnインストール
 
+```
 $ brew install yarn
 
-※zshの場合(Catalina以降)  
-% vi ~/.zshrc  
-※bashの場合  
-$ vi ~/.bash_profile  
-```
+※zshの場合(Catalina以降)
+% vi ~/.zshrc
+※bashの場合
+$ vi ~/.bash_profile
+---- ここから ----
 export PATH="/opt/homebrew/opt/icu4c/bin:/opt/homebrew/opt/icu4c/sbin:$PATH"
-```
+---- ここまで ----
 
-※zshの場合(Catalina以降)  
-% source ~/.zshrc  
-※bashの場合  
+※zshの場合(Catalina以降)
+% source ~/.zshrc
+※bashの場合
 $ source ~/.bash_profile
 
 $ yarn -v
-> 1.22.10
-
-### MySQLインストール
-
-$ brew install mysql@5.7
-
-※zshの場合(Catalina以降)  
-% vi ~/.zshrc  
-※bashの場合  
-$ vi ~/.bash_profile
-```
-export PATH="/opt/homebrew/opt/mysql@5.7/bin:$PATH"
+1.22.10
+※バージョンは異なっても良い
 ```
 
-※zshの場合(Catalina以降)  
-% source ~/.zshrc  
-※bashの場合  
-$ source ~/.bash_profile
+### MariaDB or MySQLインストール
 
-$ mysql.server start
+```
+※MariaDBを使う場合
+$ brew install mariadb
+※MySQLを使う場合
+$ brew install mysql
+
+※MariaDBを使う場合
+$ brew services start mariadb
+※MySQLを使う場合
+$ brew services start mysql
+（or $ mysql.server start）
+```
+
+※以降の「xyz789」は好きなパスワードに変更してください。
+```
+※MariaDBを使う場合
+$ mysql
+> SET PASSWORD FOR root@localhost=PASSWORD('xyz789');
+> \q
 
 $ mysql_secure_installation
-```
+※MariaDBを使う場合
+[Enter current password for root (enter for none): xyz789
+Switch to unix_socket authentication [Y/n] n
+Change the root password? [Y/n] n
+※MySQLを使う場合
 Press y|Y for Yes, any other key for No: n
 New password: xyz789
 Re-enter new password: xyz789
+
 Remove anonymous users? (Press y|Y for Yes, any other key for No) : y
 Disallow root login remotely? (Press y|Y for Yes, any other key for No) : y
 Remove test database and access to it? (Press y|Y for Yes, any other key for No) : y
 Reload privilege tables now? (Press y|Y for Yes, any other key for No) : y
 ```
 
-$ vi ~/.my.cnf
 ```
+$ vi ~/.my.cnf
+---- ここから ----
 ### START ###
 [client]
 user = root
 password = xyz789
 ### END ###
-```
+---- ここまで ----
 
 $ mysql
-> Server version: 5.7.32 Homebrew
+※MariaDBの場合
+Server version: 10.5.8-MariaDB Homebrew
+※MySQLの場合
+Server version: 8.0.23 Homebrew
+※バージョンは異なっても良いが、本番と同じが理想
 
-mysql> \q
+> \q
+```
 
-### Rubyインストール
+#### Tips: アンインストール
 
-$ brew install gpg2  
-$ gpg --keyserver hkp://pool.sks-keyservers.net --recv-keys 409B6B1796C275462A1703113804BB82D39DC0E3 7D2BAF1CF37B13E2069D6956105BD0E739499BDB  
-$ 'curl' -sSL https://get.rvm.io | bash -s stable  
-$ source ~/.rvm/scripts/rvm
+```
+※MariaDBの場合
+$ brew services stop mariadb
+$ brew uninstall mariadb
+※MySQLの場合
+$ brew services stop mysql
+$ brew uninstall mysql
 
-$ rvm -v
-> rvm 1.29.12 (latest) by Michal Papis, Piotr Kuczynski, Wayne E. Seguin [https://rvm.io]
-
-$ rvm list known
-> [ruby-]3[.0.0]
-
-$ rvm install 3.0
-
-$ ruby -v
-> ruby 3.0.0p0 (2020-12-25 revision 95aff21468) [arm64-darwin20]
+$ rm -fr /opt/homebrew/var/mysql
+$ rm -fr /opt/homebrew/etc/my.cnf.d
+$ rm -f /opt/homebrew/etc/my.cnf*
+$ rm -f ~/.my.cnf
+```
 
 ### データベースとユーザー作成
 
-$ mysql
 ```
-CREATE DATABASE rails_app_development;
-CREATE USER 'rails_app'@'%' IDENTIFIED BY 'abc123';
-GRANT ALL PRIVILEGES ON rails_app_development.* TO 'rails_app'@'%';
-CREATE DATABASE rails_app_test;
-CREATE USER 'rails_app_test'@'%' IDENTIFIED BY 'abc123'; 
-GRANT ALL PRIVILEGES ON rails_app_test.* TO 'rails_app_test'@'%';
-\q
+$ mysql
+> CREATE DATABASE rails_app_development;
+> CREATE USER 'rails_app'@'%' IDENTIFIED BY 'abc123';
+> GRANT ALL PRIVILEGES ON rails_app_development.* TO 'rails_app'@'%';
+> CREATE DATABASE rails_app_test;
+> CREATE USER 'rails_app_test'@'%' IDENTIFIED BY 'abc123';
+> GRANT ALL PRIVILEGES ON rails_app_test.* TO 'rails_app_test'@'%';
+> \q
 ```
 
 ### Gemインストールから起動まで
 
-$ cd rails-app-origin  
+```
+$ cd rails-app-origin
 $ cp -a config/settings/development.yml,local config/settings/development.yml
 
 $ bundle install
+Bundle complete!
 
-$ rails webpacker:install
-```
-Overwrite config/webpacker.yml? (enter "h" for help) [Ynaqdhm] n
-```
+$ yarn
+Done
 
-$ rails db:migrate  
-$ rails db:seed  
+$ rails db:migrate
+※「Mysql2::Error: Specified key was too long; max key length is 767 bytes」の場合は「rails db:migrate:reset」で回避
+
+$ rails db:seed
 $ rails s
+```
 
 - http://localhost:3000
   - メールアドレスとパスワードは、`db/seed/development/users.yml`参照
@@ -189,27 +241,30 @@ $ rails s
 
 ### Nginxインストール
 
+```
 $ brew install nginx
 
 $ nginx -v
-> nginx version: nginx/1.19.6
-
-$ vi /opt/homebrew/etc/nginx/nginx.conf
+nginx version: nginx/1.19.6
+※バージョンは異なっても良い
 ```
+```
+$ vi /opt/homebrew/etc/nginx/nginx.conf
+---- ここから ----
 worker_processes  1;
 ### START ###
 worker_rlimit_nofile 65536;
 ### END ###
-```
-```
+---- ここまで ----
+---- ここから ----
 events {
     worker_connections  1024;
 ### START ###
     accept_mutex_delay 100ms;
     multi_accept on;
 ### END ###
-```
-```
+---- ここまで ----
+---- ここから ----
 http {
 ### START ###
     server_names_hash_bucket_size 64;
@@ -221,15 +276,15 @@ http {
     gzip on;
     gzip_types text/plain text/css text/javascript application/javascript application/x-javascript application/json text/xml application/xml application/xml+rss;
 ### END ###
-```
-```
+---- ここまで ----
+---- ここから ----
     #tcp_nopush     on;
 ### START ###
     tcp_nopush      on;
     tcp_nodelay     on;
 ### END ###
-```
-```
+---- ここまで ----
+---- ここから ----
     #keepalive_timeout  0;
 ### START ###
 #    keepalive_timeout  65;
@@ -237,8 +292,8 @@ http {
     open_file_cache     max=100 inactive=20s;
     types_hash_max_size 2048;
 ### END ###
-```
-```
+---- ここまで ----
+---- ここから ----
     server {
 ### START ###
 #        listen       8080;
@@ -246,10 +301,11 @@ http {
 #        server_name  localhost;
         server_name  _;
 ### END ###
+---- ここまで ----
 ```
-
+```
 $ vi /opt/homebrew/etc/nginx/servers/localhost.local.conf
-```
+---- ここから ----
 ### START ###
 server {
     listen       80;
@@ -270,27 +326,32 @@ server {
     }
 }
 ### END ###
-```
+---- ここまで ----
 
-※Tips: ファイルアップロードに失敗する為  
+※Tips: ファイルアップロードに失敗する為
 $ sudo chmod 770 /opt/homebrew/var/run/nginx/*
 
 $ nginx -t -c /opt/homebrew/etc/nginx/nginx.conf
-> nginx: the configuration file /opt/homebrew/etc/nginx/nginx.conf syntax is ok  
-> nginx: configuration file /opt/homebrew/etc/nginx/nginx.conf test is successful
+nginx: the configuration file /opt/homebrew/etc/nginx/nginx.conf syntax is ok
+nginx: configuration file /opt/homebrew/etc/nginx/nginx.conf test is successful
 
 $ brew services start nginx
+```
 
 PCのhostsに下記を追加
 ```
 $ sudo vi /etc/hosts
+---- ここから ----
 127.0.0.1       localhost.local
+---- ここまで ----
 ```
 
-$ cp -a config/settings/development.yml,dev config/settings/development.yml  
+```
+$ cp -a config/settings/development.yml,dev config/settings/development.yml
 overwrite config/settings/development.yml? (y/n [n]) y
 
 $ rails s
+```
 
 - http://localhost.local
   - メールアドレスとパスワードは、`db/seed/development/users.yml`参照
