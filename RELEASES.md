@@ -2,6 +2,8 @@
 
 ## 1.1.0
 
+- フロントにマテリアルデザインを導入したい
+  - https://dev.azure.com/nightonly/rails-app-origin/_workitems/edit/124/
 - 環境構築手順とリリースノートを作りたい
   - https://dev.azure.com/nightonly/rails-app-origin/_workitems/edit/304/
 - Ruby3.0に対応したい（Gemのバージョンアップも）

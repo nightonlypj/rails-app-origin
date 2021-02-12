@@ -8,11 +8,7 @@ class InfomationsController < ApplicationController
                              .where('target = ? OR (target = ? AND user_id = ?)', Infomation.targets[:All], Infomation.targets[:User], user_id)
     return if request.format.json? || @infomations.current_page <= [@infomations.total_pages, 1].max
 
-    if @infomations.total_pages <= 1
-      redirect_to infomations_path
-    else
-      redirect_to infomations_path(page: @infomations.total_pages)
-    end
+    redirect_to @infomations.total_pages <= 1 ? infomations_path : infomations_path(page: @infomations.total_pages)
   end
 
   # GET /infomations/1 お知らせ詳細

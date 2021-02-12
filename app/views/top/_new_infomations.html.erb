@@ -8,7 +8,7 @@
         <div>
           <span class="fw-bolder">
 <% if new_infomation.body.present? %>
-            <%= link_to new_infomation.title, new_infomation %>
+            <%= link_to new_infomation.title, infomation_path(new_infomation) %>
 <% else %>
             <%= new_infomation.title %>
 <% end %>
@@ -24,7 +24,9 @@
 <% end %>
     </ul>
 <% if @new_infomations.total_pages > 1 %>
-    <p class="card-footer"><%= link_to 'もっと見る', infomations_path, class: 'btn btn-info' %></p>
+    <nav>
+      <%= link_to 'もっと見る', infomations_path, class: 'btn btn-info btn-rounded btn-sm m-2' %>
+    </nav>
 <% end %>
   </div>
 </article>

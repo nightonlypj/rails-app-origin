@@ -1,13 +1,14 @@
-<main class="card">
-  <div class="card-body">
-    <h5 class="card-title"><%= @infomation.title %> (<%= l(@infomation.started_at.to_date) %>)</h5>
-    <p class="card-text"><%= @infomation.body.html_safe %></p>
-    <p class="card-footer">
-      <nav>
-        <ul>
-          <li><%= link_to 'お知らせ一覧', infomations_path %></li>
-        </ul>
-      </nav>
-    </p>
-  </div>
+<main class="container">
+  <h3 class="pt-3"><%= @infomation.title %> (<%= l(@infomation.started_at.to_date) %>)</h3>
+
+<% if @infomation.body.present? %>
+  <p class="border p-3"><%= @infomation.body.html_safe %></p>
+<% end %>
+
+  <hr/>
+  <nav>
+    <ul>
+      <li><%= link_to 'お知らせ一覧', infomations_path %></li>
+    </ul>
+  </nav>
 </main>
