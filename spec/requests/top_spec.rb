@@ -75,14 +75,14 @@ RSpec.describe 'Top', type: :request do
       end
     end
 
-    shared_examples_for 'もっと見る表示' do
-      it 'パスが含まれる' do
+    shared_examples_for 'リンク表示' do
+      it 'お知らせ一覧のパスが含まれる' do
         get root_path
         expect(response.body).to include("\"#{infomations_path}\"")
       end
     end
-    shared_examples_for 'もっと見る非表示' do
-      it 'パスが含まれない' do
+    shared_examples_for 'リンク非表示' do
+      it 'お知らせ一覧のパスが含まれない' do
         get root_path
         expect(response.body).not_to include("\"#{infomations_path}\"")
       end
@@ -90,31 +90,31 @@ RSpec.describe 'Top', type: :request do
 
     # テストケース
     shared_examples_for '[*]お知らせがない' do
-      it_behaves_like 'もっと見る非表示'
+      it_behaves_like 'リンク非表示'
     end
     shared_examples_for '[未ログイン]お知らせが最大表示数と同じ' do
       count = Settings['test_infomations']
       include_context 'お知らせ一覧作成', count['all_forever_count'] + count['user_forever_count'], count['all_future_count'] + count['user_future_count'], 0, 0
       it_behaves_like 'リスト表示'
-      it_behaves_like 'もっと見る非表示'
+      it_behaves_like 'リンク表示'
     end
     shared_examples_for '[ログイン中/削除予約済み]お知らせが最大表示数と同じ' do
       count = Settings['test_infomations']
       include_context 'お知らせ一覧作成', count['all_forever_count'], count['all_future_count'], count['user_forever_count'], count['user_future_count']
       it_behaves_like 'リスト表示'
-      it_behaves_like 'もっと見る非表示'
+      it_behaves_like 'リンク表示'
     end
     shared_examples_for '[未ログイン]お知らせが最大表示数より多い' do
       count = Settings['test_infomations']
       include_context 'お知らせ一覧作成', count['all_forever_count'] + count['user_forever_count'], count['all_future_count'] + count['user_future_count'] + 1, 0, 0
       it_behaves_like 'リスト表示'
-      it_behaves_like 'もっと見る表示'
+      it_behaves_like 'リンク表示'
     end
     shared_examples_for '[ログイン中/削除予約済み]お知らせが最大表示数より多い' do
       count = Settings['test_infomations']
       include_context 'お知らせ一覧作成', count['all_forever_count'], count['all_future_count'], count['user_forever_count'], count['user_future_count'] + 1
       it_behaves_like 'リスト表示'
-      it_behaves_like 'もっと見る表示'
+      it_behaves_like 'リンク表示'
     end
 
     context '未ログイン' do

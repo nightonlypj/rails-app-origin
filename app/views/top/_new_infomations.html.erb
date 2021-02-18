@@ -1,7 +1,6 @@
-<% if @new_infomations.present? %>
 <article class="card">
   <div class="card-body">
-    <h5 class="card-title">新しいお知らせ</h5>
+    <h5 class="card-title"><%= link_to 'お知らせ', infomations_path, class: 'text-dark' %></h5>
     <ul class="list-group">
 <% @new_infomations.each do |new_infomation| %>
       <li class="list-group-item">
@@ -30,4 +29,3 @@
 <% end %>
   </div>
 </article>
-<% end %>

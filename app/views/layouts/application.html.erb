@@ -27,12 +27,8 @@
               <li class="nav-item text-nowrap" style="height: 45px"><%= link_to (image_tag current_user.image_url(:small)).html_safe + ' ' + current_user.name, edit_user_registration_path, class: 'nav-link d-inline-block text-truncate', style: 'max-width: 400px' %></li>
               <li class="nav-item text-nowrap"><%= link_to 'ログアウト', destroy_user_session_path, method: :delete, class: 'nav-link', style: 'padding-top: 10px; padding-bottom: 10px' %></li>
 <% else %>
-<% if controller_name != 'sessions' %>
               <li class="nav-item text-nowrap"><%= link_to 'ログイン', new_user_session_path, class: 'nav-link', style: 'padding-top: 10px; padding-bottom: 10px' %></li>
-<% end %>
-<% if controller_name != 'registrations' %>
               <li class="nav-item text-nowrap"><%= link_to 'アカウント登録', new_user_registration_path, class: 'nav-link', style: 'padding-top: 10px; padding-bottom: 10px' %></li>
-<% end %>
 <% end %>
             </ul>
           </div>

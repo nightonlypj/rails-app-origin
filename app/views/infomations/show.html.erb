@@ -1,5 +1,5 @@
-<main class="container">
-  <h3 class="pt-3"><%= @infomation.title %> (<%= l(@infomation.started_at.to_date) %>)</h3>
+<main class="container pt-3">
+  <h3><%= @infomation.title %> (<%= l(@infomation.started_at.to_date) %>)</h3>
 
 <% if @infomation.body.present? %>
   <p class="border p-3"><%= @infomation.body.html_safe %></p>
