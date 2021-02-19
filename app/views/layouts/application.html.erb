@@ -29,12 +29,8 @@
               <li class="nav-item text-nowrap"><%= link_to '所属一覧', "#{domain}#{customers_path}", class: 'nav-link', style: 'padding-top: 10px; padding-bottom: 10px' %></li>
               <li class="nav-item text-nowrap"><%= link_to 'ログアウト', "#{domain}#{destroy_user_session_path}", method: :delete, class: 'nav-link', style: 'padding-top: 10px; padding-bottom: 10px' %></li>
 <% else %>
-<% if controller_name != 'sessions' %>
               <li class="nav-item text-nowrap"><%= link_to 'ログイン', "#{domain}#{new_user_session_path}", class: 'nav-link', style: 'padding-top: 10px; padding-bottom: 10px' %></li>
-<% end %>
-<% if controller_name != 'registrations' %>
               <li class="nav-item text-nowrap"><%= link_to 'アカウント登録', "#{domain}#{new_user_registration_path}", class: 'nav-link', style: 'padding-top: 10px; padding-bottom: 10px' %></li>
-<% end %>
 <% end %>
             </ul>
           </div>

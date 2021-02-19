@@ -108,15 +108,15 @@ RSpec.describe 'Top', type: :request do
       end
     end
 
-    shared_examples_for 'もっと見る表示' do
-      it 'パスが含まれる' do
-        get root_path, headers: headers
+    shared_examples_for 'リンク表示' do
+      it 'お知らせ一覧のパスが含まれる' do
+        get root_path
         expect(response.body).to include("\"#{domain}#{infomations_path}\"")
       end
     end
-    shared_examples_for 'もっと見る非表示' do
-      it 'パスが含まれない' do
-        get root_path, headers: headers
+    shared_examples_for 'リンク非表示' do
+      it 'お知らせ一覧のパスが含まれない' do
+        get root_path
         expect(response.body).not_to include("\"#{domain}#{infomations_path}\"")
       end
     end
@@ -126,37 +126,37 @@ RSpec.describe 'Top', type: :request do
       let!(:headers) { BASE_HEADER }
       let!(:domain) { '' }
       # it_behaves_like 'リスト表示' # Tips: 対象がない
-      it_behaves_like 'もっと見る非表示'
+      it_behaves_like 'リンク非表示'
     end
     shared_examples_for '[*][最大表示数と同じ]ベースドメイン' do
       let!(:headers) { BASE_HEADER }
       let!(:domain) { '' }
       it_behaves_like 'リスト表示'
-      it_behaves_like 'もっと見る非表示'
+      it_behaves_like 'リンク表示'
     end
     shared_examples_for '[*][最大表示数より多い]ベースドメイン' do
       let!(:headers) { BASE_HEADER }
       let!(:domain) { '' }
       it_behaves_like 'リスト表示'
-      it_behaves_like 'もっと見る表示'
+      it_behaves_like 'リンク表示'
     end
     shared_examples_for '[*][ない]存在するサブドメイン' do
       let!(:headers) { @space_header }
       let!(:domain) { "//#{Settings['base_domain']}" }
       # it_behaves_like 'リスト表示' # Tips: 対象がない
-      it_behaves_like 'もっと見る非表示'
+      it_behaves_like 'リンク非表示'
     end
     shared_examples_for '[*][最大表示数と同じ]存在するサブドメイン' do
       let!(:headers) { @space_header }
       let!(:domain) { "//#{Settings['base_domain']}" }
       it_behaves_like 'リスト表示'
-      it_behaves_like 'もっと見る非表示'
+      it_behaves_like 'リンク表示'
     end
     shared_examples_for '[*][最大表示数より多い]存在するサブドメイン' do
       let!(:headers) { @space_header }
       let!(:domain) { "//#{Settings['base_domain']}" }
       it_behaves_like 'リスト表示'
-      it_behaves_like 'もっと見る表示'
+      it_behaves_like 'リンク表示'
     end
 
     shared_examples_for '[*]お知らせがない' do
