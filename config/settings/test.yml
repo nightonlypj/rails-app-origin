@@ -12,14 +12,14 @@ user_name_maximum: 19 # Tips: (14+5?)以上
 
 ## お知らせ
 # 新しいお知らせの最大表示件数
-new_infomations_limit: 4 # Tips: 高速化の為（4以上、下記の合計値と一致）
+infomations_limit: 4 # Tips: 高速化の為（4以上、下記の合計値と一致）
 test_infomations:
   all_forever_count: 1
   all_future_count: 1
   user_forever_count: 1
   user_future_count: 1
 # 一覧のデフォルト最大表示件数
-default_infomations_limit: 4 # Tips: 高速化の為（new_infomations_limitと同じ）
+default_infomations_limit: 4 # Tips: 高速化の為（infomations_limitと同じ）
 
 ## 顧客
 # 一覧のデフォルト最大表示件数
@@ -42,8 +42,10 @@ test_members_admin: 1
 test_members_member: 1
 
 ## スペース
-# 新しいスペースの最大表示件数
-new_spaces_limit: 3 # Tips: 高速化の為
+# 参加スペースの最大表示件数
+join_spaces_limit: 3 # Tips: 高速化の為
+# 公開スペースの最大表示件数
+public_spaces_limit: 3 # Tips: 高速化の為
 # 一覧のデフォルト最大表示件数
 default_spaces_limit: 3 # Tips: 高速化の為
 # サブドメインの最小・最大文字数

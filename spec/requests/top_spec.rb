@@ -66,12 +66,12 @@ RSpec.describe 'Top', type: :request do
   #   お知らせ: ない, 最大表示数と同じ, 最大表示数より多い → データ作成
   #   ベースドメイン, 存在するサブドメイン → 事前にデータ作成
   # TODO: action_title
-  describe '@new_infomations' do
+  describe '@infomations' do
     include_context 'リクエストスペース作成'
 
     # テスト内容
     shared_examples_for 'リスト表示' do
-      let!(:end_no) { Settings['new_infomations_limit'] }
+      let!(:end_no) { Settings['infomations_limit'] }
       it 'タイトルが含まれる' do
         get root_path, headers: headers
         (1..end_no).each do |no|
@@ -110,13 +110,13 @@ RSpec.describe 'Top', type: :request do
 
     shared_examples_for 'リンク表示' do
       it 'お知らせ一覧のパスが含まれる' do
-        get root_path
+        get root_path, headers: headers
         expect(response.body).to include("\"#{domain}#{infomations_path}\"")
       end
     end
     shared_examples_for 'リンク非表示' do
       it 'お知らせ一覧のパスが含まれない' do
-        get root_path
+        get root_path, headers: headers
         expect(response.body).not_to include("\"#{domain}#{infomations_path}\"")
       end
     end
@@ -207,26 +207,36 @@ RSpec.describe 'Top', type: :request do
     end
   end
 
-  # 新しいスペース一覧
+  # 参加スペース
   # 前提条件
   #   ベースドメイン
   # テストパターン
   #   未ログイン, ログイン中, ログイン中（削除予約済み） → データ＆状態作成
   #   スペース: ない, 最大表示数と同じ, 最大表示数より多い → データ作成
-  describe 'GET / @new_spaces' do
+  describe 'GET / @join_spaces' do
+    # TODO: Spec
+  end
+
+  # 公開スペース
+  # 前提条件
+  #   ベースドメイン
+  # テストパターン
+  #   未ログイン, ログイン中, ログイン中（削除予約済み） → データ＆状態作成
+  #   スペース: ない, 最大表示数と同じ, 最大表示数より多い → データ作成
+  describe 'GET / @public_spaces' do
     let!(:headers) { BASE_HEADER }
 
     # テスト内容
     shared_examples_for '対象のリスト表示' do
       it '名前が含まれる' do
         get root_path, headers: headers
-        (1..[@create_spaces.count, Settings['new_spaces_limit']].min).each do |n|
+        (1..[@create_spaces.count, Settings['join_spaces_limit']].min).each do |n|
           expect(response.body).to include(@create_spaces[@create_spaces.count - n].name)
         end
       end
       it 'パスが含まれる' do
         get root_path, headers: headers
-        (1..[@create_spaces.count, Settings['new_spaces_limit']].min).each do |n|
+        (1..[@create_spaces.count, Settings['join_spaces_limit']].min).each do |n|
           expect(response.body).to include("//#{@create_spaces[@create_spaces.count - n].subdomain}.#{Settings['base_domain']}")
         end
       end
@@ -234,26 +244,26 @@ RSpec.describe 'Top', type: :request do
     shared_examples_for '対象外のリスト非表示' do
       it '名前が含まれない' do
         get root_path, headers: headers
-        ((Settings['new_spaces_limit'] + 1)..@create_spaces.count).each do |n|
+        ((Settings['join_spaces_limit'] + 1)..@create_spaces.count).each do |n|
           expect(response.body).not_to include(@create_spaces[@create_spaces.count - n].name)
         end
       end
       it 'パスが含まれない' do
         get root_path, headers: headers
-        ((Settings['new_spaces_limit'] + 1)..@create_spaces.count).each do |n|
+        ((Settings['join_spaces_limit'] + 1)..@create_spaces.count).each do |n|
           expect(response.body).not_to include("//#{@create_spaces[@create_spaces.count - n].subdomain}.#{Settings['base_domain']}")
         end
       end
     end
 
-    shared_examples_for 'スペース一覧リンク表示' do
-      it 'パスが含まれる' do
+    shared_examples_for 'リンク表示' do
+      it 'スペース一覧のパスが含まれる' do
         get root_path, headers: headers
         expect(response.body).to include("\"#{spaces_path}\"")
       end
     end
-    shared_examples_for 'スペース一覧リンク非表示' do
-      it 'パスが含まれない' do
+    shared_examples_for 'リンク非表示' do
+      it 'スペース一覧のパスが含まれない' do
         get root_path, headers: headers
         expect(response.body).not_to include("\"#{spaces_path}\"")
       end
@@ -261,19 +271,19 @@ RSpec.describe 'Top', type: :request do
 
     # テストケース
     shared_examples_for '[*]スペースがない' do
-      include_context 'スペース作成', 0
-      it_behaves_like 'スペース一覧リンク非表示'
+      include_context 'スペース作成', 0, true
+      it_behaves_like 'リンク非表示'
     end
     shared_examples_for '[*]スペースが最大表示数と同じ' do
-      include_context 'スペース作成', Settings['new_spaces_limit']
+      include_context 'スペース作成', Settings['join_spaces_limit'], true
       it_behaves_like '対象のリスト表示'
-      it_behaves_like 'スペース一覧リンク非表示'
+      it_behaves_like 'リンク表示'
     end
     shared_examples_for '[*]スペースが最大表示数より多い' do
-      include_context 'スペース作成', Settings['new_spaces_limit'] + 1
+      include_context 'スペース作成', Settings['join_spaces_limit'] + 1, true
       it_behaves_like '対象のリスト表示'
       it_behaves_like '対象外のリスト非表示'
-      it_behaves_like 'スペース一覧リンク表示'
+      it_behaves_like 'リンク表示'
     end
 
     context '未ログイン' do

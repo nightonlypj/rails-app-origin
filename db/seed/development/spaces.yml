@@ -3,20 +3,51 @@
 - id: 11
   customer_id: 1
   subdomain: 'customer1'
-  name: 'customer1のスペース'
+  name: '顧客1の非公開スペース'
   sort_key: 1
   public_flag: false
 - id: 12
   customer_id: 1
-  subdomain: 'public1'
-  name: '公開スペース'
+  subdomain: 'customer1-2'
+  name: '顧客1の非公開スペース2'
   sort_key: 2
+  public_flag: false
+- id: 13
+  customer_id: 1
+  subdomain: 'customer1-3'
+  name: '顧客1の非公開スペース3'
+  sort_key: 3
+  public_flag: false
+- id: 14
+  customer_id: 1
+  subdomain: 'customer1-4'
+  name: '顧客1の非公開スペース4'
+  sort_key: 4
+  public_flag: false
+- id: 15
+  customer_id: 1
+  subdomain: 'customer1-5'
+  name: '顧客1の非公開スペース5'
+  sort_key: 5
+  public_flag: false
+- id: 16
+  customer_id: 1
+  subdomain: 'customer1-6'
+  name: '顧客1の非公開スペース6'
+  sort_key: 6
+  public_flag: false
+
+- id: 13
+  customer_id: 1
+  subdomain: 'public1'
+  name: '顧客1の公開スペース'
+  sort_key: 3
   public_flag: true
 
 # 顧客2
 - id: 21
   customer_id: 2
   subdomain: 'customer2'
-  name: 'customer2のスペース'
+  name: '顧客2の非公開スペース'
   sort_key: 1
   public_flag: false

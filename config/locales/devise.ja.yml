@@ -31,7 +31,7 @@ ja:
         locked_at: 'アカウントロック日時'
         destroy_requested_at: '削除依頼日時'
         destroy_schedule_at: '削除予定日時'
-        invitation_customer_id: '招待顧客ID'
+        invitation_customer_id: '招待顧客'
         invitation_token: '招待トークン'
         invitation_requested_at: '招待依頼日時'
         invitation_completed_at: '招待完了日時'

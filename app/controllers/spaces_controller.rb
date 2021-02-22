@@ -37,7 +37,11 @@ class SpacesController < ApplicationController
     else
       customer = Customer.where(code: @customer.code)
                          .includes(:member).where(members: { user_id: current_user.id }).first
-      @customer.errors.add(:code, t('errors.messages.customer.code_invalid')) if customer.blank?
+      if customer.blank?
+        @customer.errors.add(:code, t('errors.messages.customer.code_invalid'))
+      else
+        @customer = customer
+      end
     end
 
     @space = Space.new(params.require(:space).permit(:subdomain, :name).merge(customer_id: @customer.id))

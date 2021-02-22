@@ -6,7 +6,7 @@ RSpec.describe Member, type: :model do
   #   なし
   # テストパターン
   #   招待日時: ない, ある → データ作成
-  #   招待顧客ID・依頼日時・完了日時: ない・ない・ない, 一致・ある・ない, 不一致・ある・ない, 一致・ある・ある, 不一致・ある・ある → データ作成
+  #   招待顧客・依頼日時・完了日時: ない・ない・ない, 一致・ある・ない, 不一致・ある・ない, 一致・ある・ある, 不一致・ある・ある → データ作成
   describe 'registrationed_at' do
     let!(:customers) { FactoryBot.create_list(:customer, 2) }
     shared_context 'データ作成' do |invitationed_flag, customer_flag, requested_flag, completed_flag|
@@ -56,44 +56,44 @@ RSpec.describe Member, type: :model do
     end
 
     # テストケース
-    context '招待日時：ない、招待顧客ID・依頼日時・完了日時：ない・ない・ない' do
+    context '招待日時：ない、招待顧客・依頼日時・完了日時：ない・ない・ない' do
       include_context 'データ作成', nil, nil, nil, nil
       it_behaves_like '自分で顧客作成'
     end
-    context '招待日時：ない、招待顧客ID・依頼日時・完了日時：一致・ある・ない' do # Tips: 不整合（招待したのに招待日時がない）
+    context '招待日時：ない、招待顧客・依頼日時・完了日時：一致・ある・ない' do # Tips: 不整合（招待したのに招待日時がない）
       include_context 'データ作成', nil, true, true, nil
       it_behaves_like 'この顧客で招待・登録未完了'
     end
-    context '招待日時：ない、招待顧客ID・依頼日時・完了日時：不一致・ある・ない' do # Tips: 不整合（未登録で顧客作成できない）
+    context '招待日時：ない、招待顧客・依頼日時・完了日時：不一致・ある・ない' do # Tips: 不整合（未登録で顧客作成できない）
       include_context 'データ作成', nil, false, true, nil
       it_behaves_like '他の顧客で招待・登録未完了'
     end
-    context '招待日時：ない、招待顧客ID・依頼日時・完了日時：一致・ある・ある' do # Tips: 不整合（招待したのに招待日時がない）
+    context '招待日時：ない、招待顧客・依頼日時・完了日時：一致・ある・ある' do # Tips: 不整合（招待したのに招待日時がない）
       include_context 'データ作成', nil, true, true, true
       it_behaves_like 'この顧客で招待・登録完了'
     end
-    context '招待日時：ない、招待顧客ID・依頼日時・完了日時：不一致・ある・ある' do # Tips: 他で招待された後に自分で顧客作成
+    context '招待日時：ない、招待顧客・依頼日時・完了日時：不一致・ある・ある' do # Tips: 他で招待された後に自分で顧客作成
       include_context 'データ作成', nil, false, true, true
       it_behaves_like '他の顧客で招待・登録完了'
     end
 
-    context '招待日時：ある、招待顧客ID・依頼日時・完了日時：ない・ない・ない' do
+    context '招待日時：ある、招待顧客・依頼日時・完了日時：ない・ない・ない' do
       include_context 'データ作成', true, nil, nil, nil
       it_behaves_like '招待前にアカウント作成'
     end
-    context '招待日時：ある、招待顧客ID・依頼日時・完了日時：一致・ある・ない' do
+    context '招待日時：ある、招待顧客・依頼日時・完了日時：一致・ある・ない' do
       include_context 'データ作成', true, true, true, nil
       it_behaves_like 'この顧客で招待・登録未完了'
     end
-    context '招待日時：ある、招待顧客ID・依頼日時・完了日時：不一致・ある・ない' do
+    context '招待日時：ある、招待顧客・依頼日時・完了日時：不一致・ある・ない' do
       include_context 'データ作成', true, false, true, nil
       it_behaves_like '他の顧客で招待・登録未完了'
     end
-    context '招待日時：ある、招待顧客ID・依頼日時・完了日時：一致・ある・ある' do
+    context '招待日時：ある、招待顧客・依頼日時・完了日時：一致・ある・ある' do
       include_context 'データ作成', true, true, true, true
       it_behaves_like 'この顧客で招待・登録完了'
     end
-    context '招待日時：ある、招待顧客ID・依頼日時・完了日時：不一致・ある・ある' do
+    context '招待日時：ある、招待顧客・依頼日時・完了日時：不一致・ある・ある' do
       include_context 'データ作成', true, false, true, true
       it_behaves_like '他の顧客で招待・登録完了'
     end

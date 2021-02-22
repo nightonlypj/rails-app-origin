@@ -1,9 +1,9 @@
 <% domain = @request_space.present? ? "//#{Settings['base_domain']}" : '' %>
 <article class="card">
   <div class="card-body">
-    <h5 class="card-title"><%= link_to 'お知らせ', infomations_path, class: 'text-dark' %></h5>
+    <h5 class="card-title"><%= link_to 'お知らせ', "#{domain}#{infomations_path}", class: 'text-dark' %></h5>
     <ul class="list-group">
-<% @new_infomations.each do |new_infomation| %>
+<% @infomations.each do |new_infomation| %>
       <li class="list-group-item">
         <div>
           <span class="fw-bolder">
@@ -23,7 +23,7 @@
       </li>
 <% end %>
     </ul>
-<% if @new_infomations.total_pages > 1 %>
+<% if @infomations.total_pages > 1 %>
     <nav>
       <%= link_to 'もっと見る', "#{domain}#{infomations_path}", class: 'btn btn-info btn-rounded btn-sm m-2' %>
     </nav>
