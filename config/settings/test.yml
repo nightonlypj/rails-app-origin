@@ -10,12 +10,12 @@ user_name_minimum: 1  # Tips: (14+5?)以下 = "admin_user#{n}test"
 user_name_maximum: 19 # Tips: (14+5?)以上
 
 ## お知らせ
-# 新しいお知らせの最大表示件数
-new_infomations_limit: 4 # Tips: 高速化の為（4以上、下記の合計値と一致）
+# お知らせの最大表示件数
+infomations_limit: 4 # Tips: 高速化の為（4以上、下記の合計値と一致）
 test_infomations:
   all_forever_count: 1
   all_future_count: 1
   user_forever_count: 1
   user_future_count: 1
 # 一覧のデフォルト最大表示件数
-default_infomations_limit: 4 # Tips: 高速化の為（new_infomations_limitと同じ）
+default_infomations_limit: 4 # Tips: 高速化の為（infomations_limitと同じ）

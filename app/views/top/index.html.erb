@@ -1,5 +1,5 @@
 <main>
-  <div class="text-center py-2" style="background-color: #F0F2F5;">  
+  <div class="text-center py-2 mb-1" style="background-color: #F0F2F5">  
     <h1 class="h4 fw-bold my-2">＜サービスコンセプト＞</h1>
     <p class="mb-2">＜サービス説明＞</p>
     <%= link_to 'サービス概要', "#{t('my_url')}/summary", target: :_blank, rel: [:noopener, :noreferrer], class: 'btn btn-info btn-lg m-1 mb-2 px-3', role: 'button' %>
@@ -12,7 +12,7 @@
         <%= render 'sign_up' unless user_signed_in? %>
       </div>
       <div class="col-sm-6" style="padding-left: 0px; padding-right: 0px">
-        <%= render 'new_infomations' if @new_infomations.present? %>
+        <%= render 'infomations' if @infomations.present? %>
       </div>
     </div>
   </div>

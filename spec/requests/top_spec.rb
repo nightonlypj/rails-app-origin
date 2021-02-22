@@ -29,16 +29,16 @@ RSpec.describe 'Top', type: :request do
     end
   end
 
-  # 新しいお知らせ
+  # お知らせ
   # 前提条件
   #   なし
   # テストパターン
   #   未ログイン, ログイン中, ログイン中（削除予約済み） → データ＆状態作成
   #   お知らせ: ない, 最大表示数と同じ, 最大表示数より多い → データ作成
-  describe '@new_infomations' do
+  describe '@infomations' do
     # テスト内容
     shared_examples_for 'リスト表示' do
-      let!(:end_no) { Settings['new_infomations_limit'] }
+      let!(:end_no) { Settings['infomations_limit'] }
       it 'タイトルが含まれる' do
         get root_path
         (1..end_no).each do |no|
