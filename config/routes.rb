@@ -1,11 +1,12 @@
 Rails.application.routes.draw do
   # スペース
-  get   'spaces',      to: 'spaces#index', as: 'spaces'
-  post  'spaces',      to: 'spaces#create'
-  get   'spaces/new',  to: 'spaces#new',    as: 'new_space'
-  get   'spaces/edit', to: 'spaces#edit',   as: 'edit_space'
-  patch 'spaces',      to: 'spaces#update', as: 'space'
-  put   'spaces',      to: 'spaces#update'
+  get   'spaces',        to: 'spaces#index',        as: 'spaces'
+  get   'spaces/public', to: 'spaces#index_public', as: 'public_spaces'
+  post  'spaces',        to: 'spaces#create'
+  get   'spaces/new',    to: 'spaces#new',    as: 'new_space'
+  get   'spaces/edit',   to: 'spaces#edit',   as: 'edit_space'
+  patch 'spaces',        to: 'spaces#update', as: 'space'
+  put   'spaces',        to: 'spaces#update'
 
   # メンバー
   get    'members/:customer_code',                   to: 'members#index', as: 'members'

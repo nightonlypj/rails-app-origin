@@ -37,11 +37,11 @@
   sort_key: 6
   public_flag: false
 
-- id: 13
+- id: 17
   customer_id: 1
   subdomain: 'public1'
   name: '顧客1の公開スペース'
-  sort_key: 3
+  sort_key: 7
   public_flag: true
 
 # 顧客2

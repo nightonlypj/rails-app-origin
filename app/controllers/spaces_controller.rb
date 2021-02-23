@@ -14,6 +14,10 @@ class SpacesController < ApplicationController
     redirect_to @spaces.total_pages <= 1 ? spaces_path : spaces_path(page: @spaces.total_pages)
   end
 
+  def index_public
+    # TODO
+  end
+
   # GET /spaces/new（ベースドメイン） スペース作成
   def new
     @customer = Customer.new

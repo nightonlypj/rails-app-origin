@@ -33,7 +33,7 @@ default_members_limit: 25
 
 ## スペース
 # 参加スペースの最大表示件数
-join_spaces_limit: 10
+join_spaces_limit: 5
 # 公開スペースの最大表示件数
 public_spaces_limit: 5
 # 一覧のデフォルト最大表示件数

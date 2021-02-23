@@ -1,6 +1,9 @@
 <article class="card">
   <div class="card-body">
     <h5 class="card-title"><%= link_to '参加スペース', spaces_path, class: 'text-dark' %></h5>
+<% if @join_spaces.blank? %>
+    <p class="card-text"><%= link_to 'スペースを作成する', new_space_path, class: 'btn btn-primary' %></p>
+<% else %>
     <ul class="list-group">
 <% @join_spaces.each do |join_space| %>
       <li class="list-group-item">
@@ -12,6 +15,7 @@
     <nav>
       <%= link_to 'もっと見る', spaces_path, class: 'btn btn-info btn-rounded btn-sm m-2' %>
     </nav>
+<% end %>
 <% end %>
   </div>
 </article>

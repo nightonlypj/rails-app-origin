@@ -1,6 +1,6 @@
 <article class="card">
   <div class="card-body">
-    <h5 class="card-title"><%= link_to '公開スペース', spaces_path, class: 'text-dark' %></h5>
+    <h5 class="card-title"><%= link_to '公開スペース', public_spaces_path, class: 'text-dark' %></h5>
     <ul class="list-group">
 <% @public_spaces.each do |new_public_space| %>
       <li class="list-group-item">
@@ -10,7 +10,7 @@
     </ul>
 <% if @public_spaces.total_pages > 1 %>
     <nav>
-      <%= link_to 'もっと見る', spaces_path, class: 'btn btn-info btn-rounded btn-sm m-2' %>
+      <%= link_to 'もっと見る', public_spaces_path, class: 'btn btn-info btn-rounded btn-sm m-2' %>
     </nav>
 <% end %>
   </div>

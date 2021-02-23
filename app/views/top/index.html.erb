@@ -10,7 +10,7 @@
     <div class="row">
       <div class="col-sm-6" style="padding-left: 0px; padding-right: 0px">
         <%= render 'sign_up' unless user_signed_in? %>
-        <%= render 'join_spaces' if user_signed_in? && @join_spaces.present? %>
+        <%= render 'join_spaces' if user_signed_in? %>
         <%= render 'public_spaces' if @public_spaces.present? %>
       </div>
       <div class="col-sm-6" style="padding-left: 0px; padding-right: 0px">

@@ -5,6 +5,9 @@ RSpec.describe SpacesController, type: :routing do
     it 'routes to #index' do
       expect(get: '/spaces').to route_to('spaces#index')
     end
+    it 'routes to #index_public' do
+      expect(get: '/spaces/public').to route_to('spaces#index_public')
+    end
     it 'routes to #new' do
       expect(get: '/spaces/new').to route_to('spaces#new')
     end
