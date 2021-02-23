@@ -193,7 +193,7 @@ RSpec.describe User, type: :model do
     end
   end
 
-  # ユーザーの画像URLを返却
+  # 画像URLを返却
   # 前提条件
   #   なし
   # テストパターン

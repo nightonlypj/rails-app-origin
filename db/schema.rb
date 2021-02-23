@@ -87,6 +87,7 @@ ActiveRecord::Schema.define(version: 2020_12_31_131129) do
   create_table "spaces", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin", force: :cascade do |t|
     t.bigint "customer_id", null: false
     t.string "subdomain", null: false
+    t.string "image"
     t.string "name", null: false
     t.integer "sort_key", default: 0, null: false
     t.boolean "public_flag", default: false, null: false

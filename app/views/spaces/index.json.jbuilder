@@ -7,7 +7,9 @@ end
 json.spaces do
   json.array! @spaces do |space|
     json.subdomain space.subdomain
+    json.image_url "https://#{Settings['base_domain']}#{space.image_url(:small)}"
     json.name space.name
+    json.public_flag space.public_flag
     json.created_at l(space.created_at, format: :json)
     json.customer do
       json.code space.customer.code

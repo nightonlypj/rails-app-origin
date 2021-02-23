@@ -1,4 +1,5 @@
 class Space < ApplicationRecord
+  mount_uploader :image, ImageUploader
   belongs_to :customer
 
   validates :subdomain, presence: true
@@ -7,4 +8,23 @@ class Space < ApplicationRecord
   validates :subdomain, uniqueness: true
   validates :name, presence: true
   validates :name, length: { in: Settings['space_name_minimum']..Settings['space_name_maximum'] }, if: proc { |space| space.name.present? }
+
+  # 画像URLを返却
+  def image_url(version)
+    case version
+    when :mini
+      image? ? image.mini.url : "/images/space/#{version}_noimage.jpg"
+    when :small
+      image? ? image.small.url : "/images/space/#{version}_noimage.jpg"
+    when :medium
+      image? ? image.medium.url : "/images/space/#{version}_noimage.jpg"
+    when :large
+      image? ? image.large.url : "/images/space/#{version}_noimage.jpg"
+    when :xlarge
+      image? ? image.xlarge.url : "/images/space/#{version}_noimage.jpg"
+    else
+      logger.warn("[WARN]Not found: space.image_url(#{version})")
+      ''
+    end
+  end
 end

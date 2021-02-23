@@ -30,7 +30,7 @@ class User < ApplicationRecord
             destroy_schedule_at: nil)
   end
 
-  # ユーザーの画像URLを返却
+  # 画像URLを返却
   def image_url(version)
     case version
     when :mini

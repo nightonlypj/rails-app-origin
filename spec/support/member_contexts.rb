@@ -2,6 +2,12 @@ shared_context '顧客・ユーザー紐付け' do |invitationed_at, power|
   let!(:member) { FactoryBot.create(:member, customer_id: customer.id, user_id: user.id, invitationed_at: invitationed_at, power: power) }
 end
 
+shared_context '顧客・ユーザー紐付け（3顧客・権限）' do
+  let!(:member_owner) { FactoryBot.create(:member, customer_id: customers[0].id, user_id: user.id, invitationed_at: Time.current, power: :Owner) }
+  let!(:member_admin) { FactoryBot.create(:member, customer_id: customers[1].id, user_id: user.id, invitationed_at: Time.current, power: :Admin) }
+  let!(:member_member) { FactoryBot.create(:member, customer_id: customers[2].id, user_id: user.id, invitationed_at: Time.current, power: :Member) }
+end
+
 shared_context 'メンバー作成' do |owner_count, admin_count, member_count, before_count, sort = 'DESC'|
   before do
     count = owner_count + admin_count + member_count

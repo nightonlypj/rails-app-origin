@@ -7,7 +7,7 @@
     <ul class="list-group">
 <% @join_spaces.each do |join_space| %>
       <li class="list-group-item">
-        <%= link_to join_space.name, "//#{join_space.subdomain}.#{Settings['base_domain']}" %>
+        <%= link_to (image_tag join_space.image_url(:small)).html_safe + ' ' + join_space.name, "//#{join_space.subdomain}.#{Settings['base_domain']}" %>
       </li>
 <% end %>
     </ul>

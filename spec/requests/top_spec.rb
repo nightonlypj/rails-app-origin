@@ -215,33 +215,35 @@ RSpec.describe 'Top', type: :request do
   #   参加スペース: ない, 最大表示数と同じ, 最大表示数より多い → データ作成
   describe 'GET / @join_spaces' do
     let!(:headers) { BASE_HEADER }
+    include_context 'スペース作成', 1 # Tips: 未所属
+    include_context 'スペース作成', 1, true # Tips: 公開スペース
 
     # テスト内容
     shared_examples_for '対象のリスト表示' do
-      it '名前が含まれる' do
+      it 'スペース名が含まれる' do
         get root_path, headers: headers
-        (1..[@create_spaces.count, Settings['join_spaces_limit']].min).each do |n|
-          expect(response.body).to include(@create_spaces[n - 1].name)
+        (1..[@create_spaces.count, Settings['join_spaces_limit']].min).each do |no|
+          expect(response.body).to include(@create_spaces[no - 1].name)
         end
       end
       it 'パスが含まれる' do
         get root_path, headers: headers
-        (1..[@create_spaces.count, Settings['join_spaces_limit']].min).each do |n|
-          expect(response.body).to include("//#{@create_spaces[n - 1].subdomain}.#{Settings['base_domain']}")
+        (1..[@create_spaces.count, Settings['join_spaces_limit']].min).each do |no|
+          expect(response.body).to include("//#{@create_spaces[no - 1].subdomain}.#{Settings['base_domain']}")
         end
       end
     end
     shared_examples_for '対象外のリスト非表示' do
-      it '名前が含まれない' do
+      it 'スペース名が含まれない' do
         get root_path, headers: headers
-        ((Settings['join_spaces_limit'] + 1)..@create_spaces.count).each do |n|
-          expect(response.body).not_to include(@create_spaces[n - 1].name)
+        ((Settings['join_spaces_limit'] + 1)..@create_spaces.count).each do |no|
+          expect(response.body).not_to include(@create_spaces[no - 1].name)
         end
       end
       it 'パスが含まれない' do
         get root_path, headers: headers
-        ((Settings['join_spaces_limit'] + 1)..@create_spaces.count).each do |n|
-          expect(response.body).not_to include("//#{@create_spaces[n - 1].subdomain}.#{Settings['base_domain']}")
+        ((Settings['join_spaces_limit'] + 1)..@create_spaces.count).each do |no|
+          expect(response.body).not_to include("//#{@create_spaces[no - 1].subdomain}.#{Settings['base_domain']}")
         end
       end
     end
@@ -282,15 +284,15 @@ RSpec.describe 'Top', type: :request do
       it_behaves_like '作成リンク表示'
     end
     shared_examples_for '[ログイン中/削除予約済み]スペースが最大表示数と同じ' do
-      include_context 'スペース作成', Settings['join_spaces_limit']
-      include_context '顧客・ユーザー紐付け', Time.current, :Member
+      include_context 'スペース作成（3顧客）', Settings['test_spaces_owner'], Settings['test_spaces_admin'], Settings['test_spaces_member']
+      include_context '顧客・ユーザー紐付け（3顧客・権限）'
       it_behaves_like '対象のリスト表示'
       it_behaves_like '一覧リンク表示'
       it_behaves_like '作成リンク非表示'
     end
     shared_examples_for '[ログイン中/削除予約済み]スペースが最大表示数より多い' do
-      include_context 'スペース作成', Settings['join_spaces_limit'] + 1
-      include_context '顧客・ユーザー紐付け', Time.current, :Member
+      include_context 'スペース作成（3顧客）', Settings['test_spaces_owner'], Settings['test_spaces_admin'], Settings['test_spaces_member'] + 1
+      include_context '顧客・ユーザー紐付け（3顧客・権限）'
       it_behaves_like '対象のリスト表示'
       it_behaves_like '対象外のリスト非表示'
       it_behaves_like '一覧リンク表示'
@@ -324,33 +326,34 @@ RSpec.describe 'Top', type: :request do
   #   公開スペース: ない, 最大表示数と同じ, 最大表示数より多い → データ作成
   describe 'GET / @public_spaces' do
     let!(:headers) { BASE_HEADER }
+    include_context 'スペース作成', 1 # Tips: 非公開スペース
 
     # テスト内容
     shared_examples_for '対象のリスト表示' do
-      it '名前が含まれる' do
+      it 'スペース名が含まれる' do
         get root_path, headers: headers
-        (1..[@create_spaces.count, Settings['public_spaces_limit']].min).each do |n|
-          expect(response.body).to include(@create_spaces[@create_spaces.count - n].name)
+        (1..[@create_spaces.count, Settings['public_spaces_limit']].min).each do |no|
+          expect(response.body).to include(@create_spaces[@create_spaces.count - no].name)
         end
       end
       it 'パスが含まれる' do
         get root_path, headers: headers
-        (1..[@create_spaces.count, Settings['public_spaces_limit']].min).each do |n|
-          expect(response.body).to include("//#{@create_spaces[@create_spaces.count - n].subdomain}.#{Settings['base_domain']}")
+        (1..[@create_spaces.count, Settings['public_spaces_limit']].min).each do |no|
+          expect(response.body).to include("//#{@create_spaces[@create_spaces.count - no].subdomain}.#{Settings['base_domain']}")
         end
       end
     end
     shared_examples_for '対象外のリスト非表示' do
-      it '名前が含まれない' do
+      it 'スペース名が含まれない' do
         get root_path, headers: headers
-        ((Settings['public_spaces_limit'] + 1)..@create_spaces.count).each do |n|
-          expect(response.body).not_to include(@create_spaces[@create_spaces.count - n].name)
+        ((Settings['public_spaces_limit'] + 1)..@create_spaces.count).each do |no|
+          expect(response.body).not_to include(@create_spaces[@create_spaces.count - no].name)
         end
       end
       it 'パスが含まれない' do
         get root_path, headers: headers
-        ((Settings['public_spaces_limit'] + 1)..@create_spaces.count).each do |n|
-          expect(response.body).not_to include("//#{@create_spaces[@create_spaces.count - n].subdomain}.#{Settings['base_domain']}")
+        ((Settings['public_spaces_limit'] + 1)..@create_spaces.count).each do |no|
+          expect(response.body).not_to include("//#{@create_spaces[@create_spaces.count - no].subdomain}.#{Settings['base_domain']}")
         end
       end
     end

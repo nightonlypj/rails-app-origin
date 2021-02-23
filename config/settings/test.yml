@@ -43,11 +43,14 @@ test_members_member: 1
 
 ## スペース
 # 参加スペースの最大表示件数
-join_spaces_limit: 3 # Tips: 高速化の為
+join_spaces_limit: 3 # Tips: 高速化の為（3以上、default_spaces_limitと一致）
 # 公開スペースの最大表示件数
 public_spaces_limit: 3 # Tips: 高速化の為
 # 一覧のデフォルト最大表示件数
-default_spaces_limit: 3 # Tips: 高速化の為
+default_spaces_limit: 3 # Tips: 高速化の為（3以上、下記の合計値と一致）
+test_spaces_owner: 1
+test_spaces_admin: 1
+test_spaces_member: 1
 # サブドメインの最小・最大文字数
 subdomain_minimum: 1  # Tips: (7+5?)以下 = "myspace#{sort_key}"
 subdomain_maximum: 12 # Tips: (7+5?)以上

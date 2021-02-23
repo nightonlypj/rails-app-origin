@@ -1,5 +1,5 @@
 <main class="container">
-  <h3 class="pt-3">スペース一覧（β版）</h3>
+  <h3 class="pt-3">参加スペース一覧</h3>
 
   <div class="row">
     <div class="col">
@@ -22,22 +22,38 @@
     <table class="table table-sm align-middle">
       <thead>
         <tr>
+          <th scope="col" class="text-center" width="1%" nowrap>公開</th>
           <th scope="col" nowrap>スペース名 <wbr>(サブドメイン)</th>
-          <th scope="col" nowrap>顧客名 <wbr>(コード)</th>
-          <th scope="col" nowrap>作成日▼</th>
+          <th scope="col" nowrap>組織・団体名</th>
+          <th scope="col" nowrap>作成日▲</th>
         </tr>
       </thead>
       <tbody>
 <% if @spaces.blank? %>
         <tr>
-          <td scope="row" colspan="3" class="text-center">スペースがありません。</td>
+          <td scope="row" colspan="4" class="text-center">参加スペースがありません。</td>
         </tr>
 <% end %>
 <% @spaces.each do |space| %>
         <tr>
-          <td scope="row" nowrap><%= link_to space.name, "//#{space.subdomain}.#{Settings['base_domain']}" %> <wbr>(<%= space.subdomain %>)</td>
-          <td nowrap><%= link_to space.customer.name, customer_path(space.customer.code) %> <wbr>(<%= space.customer.code %>)</td>
-          <td nowrap><%= l(space.created_at.to_date) %> <wbr><%= link_to '変更', "//#{space.subdomain}.#{Settings['base_domain']}#{edit_space_path}", class: 'btn btn-outline-warning btn-rounded btn-sm float-end' %></td>
+          <td scope="row" class="text-center" nowrap>
+<% if space.public_flag %>
+            <i class="fas fa-check text-warning"></i>
+<% else %>
+            -
+<% end %>
+          </td>
+          <td nowrap>
+            <%= link_to (image_tag space.image_url(:small)).html_safe + ' ' + space.name, "//#{space.subdomain}.#{Settings['base_domain']}" %>
+            <wbr>(<%= space.subdomain %>)
+          </td>
+          <td nowrap><%= link_to space.customer.name, customer_path(space.customer.code) %></td>
+          <td nowrap>
+            <%= l(space.created_at.to_date) %>
+<% if space.customer.member.first.update_power? %>
+            <wbr><%= link_to '変更', "//#{space.subdomain}.#{Settings['base_domain']}#{edit_space_path}", class: 'btn btn-outline-warning btn-rounded btn-sm float-end' %>
+<% end %>
+          </td>
         </tr>
 <% end %>
       </tbody>
@@ -49,7 +65,4 @@
       <div class="float-sm-end"><%= paginate @spaces %></div>
     </div>
   </div>
-
-  <hr/>
-  <%= render 'links' %>
 </main>

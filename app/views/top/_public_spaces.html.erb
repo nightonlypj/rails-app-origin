@@ -2,9 +2,9 @@
   <div class="card-body">
     <h5 class="card-title"><%= link_to '公開スペース', public_spaces_path, class: 'text-dark' %></h5>
     <ul class="list-group">
-<% @public_spaces.each do |new_public_space| %>
+<% @public_spaces.each do |public_space| %>
       <li class="list-group-item">
-        <%= link_to new_public_space.name, "//#{new_public_space.subdomain}.#{Settings['base_domain']}" %>
+        <%= link_to (image_tag public_space.image_url(:small)).html_safe + ' ' + public_space.name, "//#{public_space.subdomain}.#{Settings['base_domain']}" %>
       </li>
 <% end %>
     </ul>

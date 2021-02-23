@@ -3,12 +3,13 @@ class SpacesController < ApplicationController
   before_action :redirect_base_domain_response, only: %i[index new]
   before_action :not_found_base_domain_response, only: %i[edit update]
   before_action :not_found_sub_domain_response, only: %i[create]
-  before_action :authenticate_user!, only: %i[new edit create update]
+  before_action :authenticate_user!, only: %i[index new edit create update]
 
-  # GET /spaces（ベースドメイン） スペース一覧
-  # GET /spaces.json（ベースドメイン） スペース一覧API
+  # GET /spaces（ベースドメイン） 参加スペース一覧
+  # GET /spaces.json（ベースドメイン） 参加スペース一覧API
   def index
-    @spaces = Space.order(created_at: 'DESC', id: 'DESC').page(params[:page]).per(Settings['default_spaces_limit'])
+    @spaces = Space.order(created_at: 'ASC', id: 'ASC').page(params[:page]).per(Settings['default_spaces_limit'])
+                   .eager_load(customer: :member).where(members: { user_id: current_user.id })
     return if request.format.json? || @spaces.current_page <= [@spaces.total_pages, 1].max
 
     redirect_to @spaces.total_pages <= 1 ? spaces_path : spaces_path(page: @spaces.total_pages)
