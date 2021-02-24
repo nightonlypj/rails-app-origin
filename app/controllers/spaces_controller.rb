@@ -1,6 +1,6 @@
 class SpacesController < ApplicationController
-  before_action :not_found_json_sub_domain_response, only: %i[index create]
-  before_action :redirect_base_domain_response, only: %i[index new]
+  before_action :not_found_json_sub_domain_response, only: %i[index index_public create]
+  before_action :redirect_base_domain_response, only: %i[index index_public new]
   before_action :not_found_base_domain_response, only: %i[edit update]
   before_action :not_found_sub_domain_response, only: %i[create]
   before_action :authenticate_user!, only: %i[index new edit create update]
@@ -15,8 +15,14 @@ class SpacesController < ApplicationController
     redirect_to @spaces.total_pages <= 1 ? spaces_path : spaces_path(page: @spaces.total_pages)
   end
 
+  # GET /spaces/public（ベースドメイン） 公開スペース一覧
+  # GET /spaces/public.json（ベースドメイン） 公開スペース一覧API
   def index_public
-    # TODO
+    @spaces = Space.order(created_at: 'DESC', id: 'DESC').page(params[:page]).per(Settings['default_spaces_limit'])
+                   .where(public_flag: true)
+    return if request.format.json? || @spaces.current_page <= [@spaces.total_pages, 1].max
+
+    redirect_to @spaces.total_pages <= 1 ? public_spaces_path : public_spaces_path(page: @spaces.total_pages)
   end
 
   # GET /spaces/new（ベースドメイン） スペース作成

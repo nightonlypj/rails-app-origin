@@ -101,19 +101,19 @@ RSpec.describe 'Spaces', type: :request do
     shared_examples_for 'ページ情報' do |page|
       it '(json)全件数が一致する' do
         get spaces_path(page: page, format: :json), headers: headers
-        expect(JSON.parse(response.body)['space']['total_count']).to eq(@create_spaces.count)
+        expect(JSON.parse(response.body)['join_space']['total_count']).to eq(@create_spaces.count)
       end
       it '(json)現在ページが一致する' do
         get spaces_path(page: page, format: :json), headers: headers
-        expect(JSON.parse(response.body)['space']['current_page']).to eq(page)
+        expect(JSON.parse(response.body)['join_space']['current_page']).to eq(page)
       end
       it '(json)全ページ数が一致する' do
         get spaces_path(page: page, format: :json), headers: headers
-        expect(JSON.parse(response.body)['space']['total_pages']).to eq((@create_spaces.count - 1).div(Settings['default_spaces_limit']) + 1)
+        expect(JSON.parse(response.body)['join_space']['total_pages']).to eq((@create_spaces.count - 1).div(Settings['default_spaces_limit']) + 1)
       end
       it '(json)最大表示件数が一致する' do
         get spaces_path(page: page, format: :json), headers: headers
-        expect(JSON.parse(response.body)['space']['limit_value']).to eq(Settings['default_spaces_limit'])
+        expect(JSON.parse(response.body)['join_space']['limit_value']).to eq(Settings['default_spaces_limit'])
       end
       it 'スペース作成のパスが含まれる' do
         get spaces_path(page: page), headers: headers
@@ -147,7 +147,7 @@ RSpec.describe 'Spaces', type: :request do
       let!(:end_no) { [@create_spaces.count, Settings['default_spaces_limit'] * page].min }
       it '(json)配列の件数が一致する' do
         get spaces_path(page: page, format: :json), headers: headers
-        expect(JSON.parse(response.body)['spaces'].count).to eq(end_no - start_no + 1)
+        expect(JSON.parse(response.body)['join_spaces'].count).to eq(end_no - start_no + 1)
       end
       it 'スペーストップのパスが含まれる' do
         get spaces_path(page: page), headers: headers
@@ -157,7 +157,7 @@ RSpec.describe 'Spaces', type: :request do
       end
       it '(json)サブドメインが含まれる' do
         get spaces_path(page: page, format: :json), headers: headers
-        parse_response = JSON.parse(response.body)['spaces']
+        parse_response = JSON.parse(response.body)['join_spaces']
         (start_no..end_no).each do |no|
           expect(parse_response[no - start_no]['subdomain']).to eq(@create_spaces[no - 1].subdomain)
         end
@@ -170,7 +170,7 @@ RSpec.describe 'Spaces', type: :request do
       end
       it '(json)画像URLが一致する' do
         get spaces_path(page: page, format: :json), headers: headers
-        parse_response = JSON.parse(response.body)['spaces']
+        parse_response = JSON.parse(response.body)['join_spaces']
         (start_no..end_no).each do |no|
           expect(parse_response[no - start_no]['image_url']).to eq("https://#{Settings['base_domain']}#{@create_spaces[no - 1].image_url(:small)}")
         end
@@ -183,14 +183,14 @@ RSpec.describe 'Spaces', type: :request do
       end
       it '(json)スペース名が一致する' do
         get spaces_path(page: page, format: :json), headers: headers
-        parse_response = JSON.parse(response.body)['spaces']
+        parse_response = JSON.parse(response.body)['join_spaces']
         (start_no..end_no).each do |no|
           expect(parse_response[no - start_no]['name']).to eq(@create_spaces[no - 1].name)
         end
       end
       it '(json)公開フラグが一致する' do
         get spaces_path(page: page, format: :json), headers: headers
-        parse_response = JSON.parse(response.body)['spaces']
+        parse_response = JSON.parse(response.body)['join_spaces']
         (start_no..end_no).each do |no|
           expect(parse_response[no - start_no]['public_flag']).to eq(@create_spaces[no - 1].public_flag)
         end
@@ -203,7 +203,7 @@ RSpec.describe 'Spaces', type: :request do
       end
       it '(json)作成日時が一致する' do
         get spaces_path(page: page, format: :json), headers: headers
-        parse_response = JSON.parse(response.body)['spaces']
+        parse_response = JSON.parse(response.body)['join_spaces']
         (start_no..end_no).each do |no|
           expect(parse_response[no - start_no]['created_at']).to eq(I18n.l(@create_spaces[no - 1].created_at, format: :json))
         end
@@ -214,9 +214,15 @@ RSpec.describe 'Spaces', type: :request do
           expect(response.body).to include("\"#{customer_path(@create_spaces[no - 1].customer.code)}\"")
         end
       end
+      it '顧客コードが含まれる' do # Tips: 顧客詳細のパスに含まれる為、正確ではない
+        get spaces_path(page: page), headers: headers
+        (start_no..end_no).each do |no|
+          expect(response.body).to include(@create_spaces[no - 1].customer.code)
+        end
+      end
       it '(json)顧客コードが一致する' do
         get spaces_path(page: page, format: :json), headers: headers
-        parse_response = JSON.parse(response.body)['spaces']
+        parse_response = JSON.parse(response.body)['join_spaces']
         (start_no..end_no).each do |no|
           expect(parse_response[no - start_no]['customer']['code']).to eq(@create_spaces[no - 1].customer.code)
         end
@@ -229,7 +235,7 @@ RSpec.describe 'Spaces', type: :request do
       end
       it '(json)組織・団体名が一致する' do
         get spaces_path(page: page, format: :json), headers: headers
-        parse_response = JSON.parse(response.body)['spaces']
+        parse_response = JSON.parse(response.body)['join_spaces']
         (start_no..end_no).each do |no|
           expect(parse_response[no - start_no]['customer']['name']).to eq(@create_spaces[no - 1].customer.name)
         end

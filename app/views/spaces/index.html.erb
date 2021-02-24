@@ -1,5 +1,10 @@
 <main class="container">
-  <h3 class="pt-3">参加スペース一覧</h3>
+  <h3 class="pt-3">スペース一覧</h3>
+
+  <ul class="nav nav-tabs mb-2">
+    <li class="nav-item"><div class="nav-link active">参加スペース</div></li>
+    <li class="nav-item"><%= link_to '公開スペース', public_spaces_path, class: 'nav-link' %></li>
+  </ul>
 
   <div class="row">
     <div class="col">
@@ -24,7 +29,7 @@
         <tr>
           <th scope="col" class="text-center" width="1%" nowrap>公開</th>
           <th scope="col" nowrap>スペース名 <wbr>(サブドメイン)</th>
-          <th scope="col" nowrap>組織・団体名</th>
+          <th scope="col" nowrap>組織・団体名 <wbr>(顧客コード)</th>
           <th scope="col" nowrap>作成日▲</th>
         </tr>
       </thead>
@@ -47,7 +52,10 @@
             <%= link_to (image_tag space.image_url(:small)).html_safe + ' ' + space.name, "//#{space.subdomain}.#{Settings['base_domain']}" %>
             <wbr>(<%= space.subdomain %>)
           </td>
-          <td nowrap><%= link_to space.customer.name, customer_path(space.customer.code) %></td>
+          <td nowrap>
+            <%= link_to space.customer.name, customer_path(space.customer.code) %>
+            <wbr>(<%= space.customer.code %>)
+          </td>
           <td nowrap>
             <%= l(space.created_at.to_date) %>
 <% if space.customer.member.first.update_power? %>
