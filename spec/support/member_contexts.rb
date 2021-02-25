@@ -1,6 +1,11 @@
 shared_context '顧客・ユーザー紐付け' do |invitationed_at, power|
   let!(:member) { FactoryBot.create(:member, customer_id: customer.id, user_id: user.id, invitationed_at: invitationed_at, power: power) }
 end
+shared_context '顧客・ユーザー紐付け（公開）' do |invitationed_at, power|
+  before do
+    FactoryBot.create(:member, customer_id: public_customer.id, user_id: user.id, invitationed_at: invitationed_at, power: power)
+  end
+end
 
 shared_context '顧客・ユーザー紐付け（3顧客・権限）' do
   let!(:member_owner) { FactoryBot.create(:member, customer_id: customers[0].id, user_id: user.id, invitationed_at: Time.current, power: :Owner) }

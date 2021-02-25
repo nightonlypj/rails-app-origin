@@ -1,8 +1,15 @@
-shared_context 'リクエストスペース作成' do |public_flag = false|
+shared_context 'リクエストスペース作成' do
   let!(:customer) { FactoryBot.create(:customer) }
   before do
-    @request_space = FactoryBot.create(:space, customer_id: customer.id, public_flag: public_flag)
+    @request_space = FactoryBot.create(:space, customer_id: customer.id, public_flag: false)
     @space_header = { 'Host' => "#{@request_space.subdomain}.#{Settings['base_domain']}" }
+  end
+end
+shared_context 'リクエストスペース作成（公開）' do
+  let!(:public_customer) { FactoryBot.create(:customer) }
+  before do
+    @public_request_space = FactoryBot.create(:space, customer_id: public_customer.id, public_flag: true)
+    @public_space_header = { 'Host' => "#{@public_request_space.subdomain}.#{Settings['base_domain']}" }
   end
 end
 

@@ -68,11 +68,11 @@ RSpec.describe 'Customers', type: :request do
     end
 
     # テストケース
-    shared_examples_for '[ログイン中/削除予約済み][Owner/Admin/Member][所属]ベースドメイン' do
+    shared_examples_for '[ログイン中/削除予約済み][ある][所属]ベースドメイン' do
       let!(:headers) { BASE_HEADER }
       it_behaves_like 'ToOK'
     end
-    shared_examples_for '[ログイン中/削除予約済み][Owner/Admin/Member][未所属/存在しない]ベースドメイン' do
+    shared_examples_for '[ログイン中/削除予約済み][ある][未所属/存在しない]ベースドメイン' do
       let!(:headers) { BASE_HEADER }
       it_behaves_like 'ToNG', 'errors.messages.customer.code_error'
     end
@@ -93,15 +93,15 @@ RSpec.describe 'Customers', type: :request do
       it_behaves_like 'ToBase', nil, nil, 'errors.messages.domain_error'
     end
 
-    shared_examples_for '[ログイン中/削除予約済み][Owner/Admin/Member]顧客に所属' do
+    shared_examples_for '[ログイン中/削除予約済み][ある]顧客に所属' do
       let!(:customer_code) { customer.code }
-      it_behaves_like '[ログイン中/削除予約済み][Owner/Admin/Member][所属]ベースドメイン'
+      it_behaves_like '[ログイン中/削除予約済み][ある][所属]ベースドメイン'
       it_behaves_like '[*][*][*]存在するサブドメイン'
       it_behaves_like '[*][*][*]存在しないサブドメイン'
     end
-    shared_examples_for '[ログイン中/削除予約済み][Owner/Admin/Member]顧客に未所属' do
+    shared_examples_for '[ログイン中/削除予約済み][ある]顧客に未所属' do
       let!(:customer_code) { outside_customer.code }
-      it_behaves_like '[ログイン中/削除予約済み][Owner/Admin/Member][未所属/存在しない]ベースドメイン'
+      it_behaves_like '[ログイン中/削除予約済み][ある][未所属/存在しない]ベースドメイン'
       it_behaves_like '[*][*][*]存在するサブドメイン'
       it_behaves_like '[*][*][*]存在しないサブドメイン'
     end
@@ -117,9 +117,9 @@ RSpec.describe 'Customers', type: :request do
       it_behaves_like '[*][*][*]存在するサブドメイン'
       it_behaves_like '[*][*][*]存在しないサブドメイン'
     end
-    shared_examples_for '[ログイン中/削除予約済み][Owner/Admin/Member]顧客が存在しない' do
+    shared_examples_for '[ログイン中/削除予約済み][ある]顧客が存在しない' do
       let!(:customer_code) { NOT_CUSTOMER_CODE }
-      it_behaves_like '[ログイン中/削除予約済み][Owner/Admin/Member][未所属/存在しない]ベースドメイン'
+      it_behaves_like '[ログイン中/削除予約済み][ある][未所属/存在しない]ベースドメイン'
       it_behaves_like '[*][*][*]存在するサブドメイン'
       it_behaves_like '[*][*][*]存在しないサブドメイン'
     end
@@ -138,10 +138,10 @@ RSpec.describe 'Customers', type: :request do
 
     shared_examples_for '[ログイン中/削除予約済み]権限がある' do |power|
       include_context '顧客・ユーザー紐付け', Time.current, power
-      it_behaves_like '[ログイン中/削除予約済み][Owner/Admin/Member]顧客に所属'
-      it_behaves_like '[ログイン中/削除予約済み][Owner/Admin/Member]顧客に未所属'
-      it_behaves_like '[ログイン中/削除予約済み][Owner/Admin/Member]顧客が存在しない'
-      # it_behaves_like '[ログイン中/削除予約済み][Owner/Admin/Member]顧客がない' # Tips: 先にRoutingErrorになる
+      it_behaves_like '[ログイン中/削除予約済み][ある]顧客に所属'
+      it_behaves_like '[ログイン中/削除予約済み][ある]顧客に未所属'
+      it_behaves_like '[ログイン中/削除予約済み][ある]顧客が存在しない'
+      # it_behaves_like '[ログイン中/削除予約済み][ある]顧客がない' # Tips: 先にRoutingErrorになる
     end
     shared_examples_for '[未ログイン]権限がない' do
       # it_behaves_like '[未ログイン][ない]顧客に所属' # Tips: 権限がないの為、顧客に所属がない

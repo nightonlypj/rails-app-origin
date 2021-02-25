@@ -12,7 +12,7 @@ user_name_minimum: 1
 user_name_maximum: 32
 
 ## お知らせ
-# 新しいお知らせの最大表示件数
+# お知らせの最大表示件数
 infomations_limit: 5
 # 一覧のデフォルト最大表示件数
 default_infomations_limit: 25
@@ -34,6 +34,7 @@ default_members_limit: 25
 ## スペース
 # 参加スペースの最大表示件数
 join_spaces_limit: 5
+select_join_spaces_limit: 10
 # 公開スペースの最大表示件数
 public_spaces_limit: 5
 # 一覧のデフォルト最大表示件数

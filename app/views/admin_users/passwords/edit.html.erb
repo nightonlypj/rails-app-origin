@@ -1,7 +1,7 @@
 <%= render 'admin_users/shared/error_messages', resource: resource unless resource.errors[:reset_password_token].any? %>
 <%= render 'admin_users/shared/alert_messages', messages: resource.errors[:reset_password_token] %>
 
-<main class="card" style="max-width: 480px; margin-left: auto; margin-right: auto">
+<main class="card mb-1" style="max-width: 480px; margin-left: auto; margin-right: auto">
   <div class="card-body">
     <h5 class="card-title">パスワード再設定</h5>
     <p class="card-text"><%= render 'edit_admin_user' %></p>

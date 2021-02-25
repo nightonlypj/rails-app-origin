@@ -1,8 +1,8 @@
-<article class="card">
+<article class="card mb-1">
   <div class="card-body">
     <h5 class="card-title"><%= link_to '参加スペース', spaces_path, class: 'text-dark' %></h5>
 <% if @join_spaces.blank? %>
-    <p class="card-text"><%= link_to 'スペースを作成する', new_space_path, class: 'btn btn-primary' %></p>
+    <p class="card-text"><%= link_to 'スペースを作成する', new_space_path, class: 'btn btn-primary btn-rounded' %></p>
 <% else %>
     <ul class="list-group">
 <% @join_spaces.each do |join_space| %>

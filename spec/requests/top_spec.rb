@@ -7,9 +7,11 @@ RSpec.describe 'Top', type: :request do
   #   なし
   # テストパターン
   #   未ログイン, ログイン中, ログイン中（削除予約済み） → データ＆状態作成
-  #   ベースドメイン, 存在するサブドメイン, 存在しないサブドメイン → 事前にデータ作成
+  #   権限: ある(Owner, Admin, Member), ない → データ作成
+  #   ベースドメイン, 存在するサブドメイン(公開スペース, 非公開スペース), 存在しないサブドメイン → 事前にデータ作成
   describe 'GET /index' do
     include_context 'リクエストスペース作成'
+    include_context 'リクエストスペース作成（公開）'
 
     # テスト内容
     shared_examples_for 'ToOK' do
@@ -24,50 +26,216 @@ RSpec.describe 'Top', type: :request do
         expect(response).to be_not_found
       end
     end
+    shared_examples_for 'ToLogin' do |alert, notice|
+      it 'ログインにリダイレクト' do
+        get root_path, headers: headers
+        expect(response).to redirect_to(new_user_session_path)
+        expect(flash[:alert]).to alert.present? ? eq(I18n.t(alert)) : be_nil
+        expect(flash[:notice]).to notice.present? ? eq(I18n.t(notice)) : be_nil
+      end
+    end
 
     # テストケース
-    shared_examples_for '[*]ベースドメイン' do
+    shared_examples_for '[*][*]ベースドメイン' do
       let!(:headers) { BASE_HEADER }
       it_behaves_like 'ToOK'
     end
-    shared_examples_for '[*]存在するサブドメイン' do
+    shared_examples_for '[*][*]存在するサブドメイン(公開スペース)' do
+      let!(:headers) { @public_space_header }
+      it_behaves_like 'ToOK'
+    end
+    shared_examples_for '[ログイン中/削除予約済み][ある]存在するサブドメイン(非公開スペース)' do
       let!(:headers) { @space_header }
       it_behaves_like 'ToOK'
     end
-    shared_examples_for '[*]存在しないサブドメイン' do
+    shared_examples_for '[未ログイン][ない]存在するサブドメイン(非公開スペース)' do
+      let!(:headers) { @space_header }
+      it_behaves_like 'ToLogin', 'devise.failure.unauthenticated', nil
+    end
+    shared_examples_for '[ログイン中/削除予約済み][ない]存在するサブドメイン(非公開スペース)' do
+      let!(:headers) { @space_header }
+      it_behaves_like 'ToNG'
+    end
+    shared_examples_for '[*][*]存在しないサブドメイン' do
       let!(:headers) { NOT_SPACE_HEADER }
       it_behaves_like 'ToNG'
     end
 
+    shared_examples_for '[ログイン中/削除予約済み]権限がある' do |power|
+      include_context '顧客・ユーザー紐付け', Time.current, power
+      include_context '顧客・ユーザー紐付け（公開）', Time.current, power
+      it_behaves_like '[*][*]ベースドメイン'
+      it_behaves_like '[*][*]存在するサブドメイン(公開スペース)'
+      it_behaves_like '[ログイン中/削除予約済み][ある]存在するサブドメイン(非公開スペース)'
+      it_behaves_like '[*][*]存在しないサブドメイン'
+    end
+    shared_examples_for '[未ログイン]権限がない' do
+      it_behaves_like '[*][*]ベースドメイン'
+      it_behaves_like '[*][*]存在するサブドメイン(公開スペース)'
+      it_behaves_like '[未ログイン][ない]存在するサブドメイン(非公開スペース)'
+      it_behaves_like '[*][*]存在しないサブドメイン'
+    end
+    shared_examples_for '[ログイン中/削除予約済み]権限がない' do
+      it_behaves_like '[*][*]ベースドメイン'
+      it_behaves_like '[*][*]存在するサブドメイン(公開スペース)'
+      it_behaves_like '[ログイン中/削除予約済み][ない]存在するサブドメイン(非公開スペース)'
+      it_behaves_like '[*][*]存在しないサブドメイン'
+    end
+
     context '未ログイン' do
-      it_behaves_like '[*]ベースドメイン'
-      it_behaves_like '[*]存在するサブドメイン'
-      it_behaves_like '[*]存在しないサブドメイン'
+      # it_behaves_like '[未ログイン]権限がある', :Owner # Tips: 未ログインの為、権限がない
+      # it_behaves_like '[未ログイン]権限がある', :Admin # Tips: 未ログインの為、権限がない
+      # it_behaves_like '[未ログイン]権限がある', :Member # Tips: 未ログインの為、権限がない
+      it_behaves_like '[未ログイン]権限がない'
     end
     context 'ログイン中' do
       include_context 'ログイン処理'
-      it_behaves_like '[*]ベースドメイン'
-      it_behaves_like '[*]存在するサブドメイン'
-      it_behaves_like '[*]存在しないサブドメイン'
+      it_behaves_like '[ログイン中/削除予約済み]権限がある', :Owner
+      it_behaves_like '[ログイン中/削除予約済み]権限がある', :Admin
+      it_behaves_like '[ログイン中/削除予約済み]権限がある', :Member
+      it_behaves_like '[ログイン中/削除予約済み]権限がない'
     end
     context 'ログイン中（削除予約済み）' do
       include_context 'ログイン処理', true
-      it_behaves_like '[*]ベースドメイン'
-      it_behaves_like '[*]存在するサブドメイン'
-      it_behaves_like '[*]存在しないサブドメイン'
+      it_behaves_like '[ログイン中/削除予約済み]権限がある', :Owner
+      it_behaves_like '[ログイン中/削除予約済み]権限がある', :Admin
+      it_behaves_like '[ログイン中/削除予約済み]権限がある', :Member
+      it_behaves_like '[ログイン中/削除予約済み]権限がない'
     end
   end
 
-  # 新しいお知らせ
+  # 管理メニュー
+  # 前提条件
+  #   ログイン中/削除予約済み, 存在するサブドメイン
+  # テストパターン
+  #   ログイン中, ログイン中（削除予約済み） → データ＆状態作成
+  #   権限: ある(Owner, Admin), ない(Member含む) → データ作成
+  #   存在するサブドメイン(公開スペース, 非公開スペース) → 事前にデータ作成
+  describe 'manage_space' do
+    let!(:domain) { "//#{Settings['base_domain']}" }
+    include_context 'リクエストスペース作成'
+    include_context 'リクエストスペース作成（公開）'
+
+    # テスト内容
+    shared_examples_for '管理メニュー表示' do
+      it '顧客詳細のパスが含まれる' do
+        get root_path, headers: headers
+        expect(response.body).to include("\"#{domain}#{customer_path(customer_code: target_customer.code)}\"")
+      end
+      it '顧客コードが含まれる' do # Tips: 顧客詳細のパスに含まれる為、正確ではない
+        get root_path, headers: headers
+        expect(response.body).to include(target_customer.code)
+      end
+      it '組織・団体名が含まれる' do
+        get root_path, headers: headers
+        expect(response.body).to include(target_customer.name)
+      end
+      it 'メンバー招待のパスが含まれる' do
+        get root_path, headers: headers
+        expect(response.body).to include("\"#{domain}#{new_member_path(customer_code: target_customer.code)}\"")
+      end
+      it 'メンバー一覧のパスが含まれる' do
+        get root_path, headers: headers
+        expect(response.body).to include("\"#{domain}#{members_path(customer_code: target_customer.code)}\"")
+      end
+      it 'スペース情報変更のパスが含まれる' do
+        get root_path, headers: headers
+        expect(response.body).to include("\"#{edit_space_path}\"")
+      end
+    end
+    shared_examples_for '管理メニュー非表示' do
+      it '顧客詳細のパスが含まれない' do
+        get root_path, headers: headers
+        expect(response.body).not_to include("\"#{domain}#{customer_path(customer_code: target_customer.code)}\"")
+      end
+      it '顧客コードが含まれない' do
+        get root_path, headers: headers
+        expect(response.body).not_to include(target_customer.code)
+      end
+      it '組織・団体名が含まれない' do
+        get root_path, headers: headers
+        expect(response.body).not_to include(target_customer.name)
+      end
+      it 'メンバー招待のパスが含まれない' do
+        get root_path, headers: headers
+        expect(response.body).not_to include("\"#{domain}#{new_member_path(customer_code: target_customer.code)}\"")
+      end
+      it 'メンバー一覧のパスが含まれない' do
+        get root_path, headers: headers
+        expect(response.body).not_to include("\"#{domain}#{members_path(customer_code: target_customer.code)}\"")
+      end
+      it 'スペース情報変更のパスが含まれない' do
+        get root_path, headers: headers
+        expect(response.body).not_to include("\"#{edit_space_path}\"")
+      end
+    end
+
+    # テストケース
+    shared_examples_for '[ログイン中/削除予約済み][ある]存在するサブドメイン(公開スペース)' do
+      let!(:headers) { @public_space_header }
+      let!(:target_customer) { public_customer }
+      it_behaves_like '管理メニュー表示'
+    end
+    shared_examples_for '[ログイン中/削除予約済み][ない]存在するサブドメイン(公開スペース)' do
+      let!(:headers) { @public_space_header }
+      let!(:target_customer) { public_customer }
+      it_behaves_like '管理メニュー非表示'
+    end
+    shared_examples_for '[ログイン中/削除予約済み][ある]存在するサブドメイン(非公開スペース)' do
+      let!(:headers) { @space_header }
+      let!(:target_customer) { customer }
+      it_behaves_like '管理メニュー表示'
+    end
+    shared_examples_for '[ログイン中/削除予約済み][ない]存在するサブドメイン(非公開スペース)' do
+      let!(:headers) { @space_header }
+      let!(:target_customer) { customer }
+      it_behaves_like '管理メニュー非表示'
+    end
+
+    shared_examples_for '[ログイン中/削除予約済み]権限がある' do |power|
+      include_context '顧客・ユーザー紐付け', Time.current, power
+      include_context '顧客・ユーザー紐付け（公開）', Time.current, power
+      it_behaves_like '[ログイン中/削除予約済み][ある]存在するサブドメイン(公開スペース)'
+      it_behaves_like '[ログイン中/削除予約済み][ある]存在するサブドメイン(非公開スペース)'
+    end
+    shared_examples_for '[ログイン中/削除予約済み]権限がMember' do
+      include_context '顧客・ユーザー紐付け', Time.current, :Member
+      include_context '顧客・ユーザー紐付け（公開）', Time.current, :Member
+      it_behaves_like '[ログイン中/削除予約済み][ない]存在するサブドメイン(公開スペース)'
+      it_behaves_like '[ログイン中/削除予約済み][ない]存在するサブドメイン(非公開スペース)'
+    end
+    shared_examples_for '[ログイン中/削除予約済み]権限がない' do
+      it_behaves_like '[ログイン中/削除予約済み][ない]存在するサブドメイン(公開スペース)'
+      it_behaves_like '[ログイン中/削除予約済み][ない]存在するサブドメイン(非公開スペース)'
+    end
+
+    context 'ログイン中' do
+      include_context 'ログイン処理'
+      it_behaves_like '[ログイン中/削除予約済み]権限がある', :Owner
+      it_behaves_like '[ログイン中/削除予約済み]権限がある', :Admin
+      it_behaves_like '[ログイン中/削除予約済み]権限がMember'
+      it_behaves_like '[ログイン中/削除予約済み]権限がない'
+    end
+    context 'ログイン中（削除予約済み）' do
+      include_context 'ログイン処理', true
+      it_behaves_like '[ログイン中/削除予約済み]権限がある', :Owner
+      it_behaves_like '[ログイン中/削除予約済み]権限がある', :Admin
+      it_behaves_like '[ログイン中/削除予約済み]権限がMember'
+      it_behaves_like '[ログイン中/削除予約済み]権限がない'
+    end
+  end
+
+  # お知らせ
   # 前提条件
   #   ベースドメイン/存在するサブドメイン
   # テストパターン
   #   未ログイン, ログイン中, ログイン中（削除予約済み） → データ＆状態作成
   #   お知らせ: ない, 最大表示数と同じ, 最大表示数より多い → データ作成
-  #   ベースドメイン, 存在するサブドメイン → 事前にデータ作成
+  #   ベースドメイン, 存在するサブドメイン(公開スペース, 非公開スペース) → 事前にデータ作成
   # TODO: action_title
   describe '@infomations' do
     include_context 'リクエストスペース作成'
+    include_context 'リクエストスペース作成（公開）'
 
     # テスト内容
     shared_examples_for 'リスト表示' do
@@ -140,19 +308,37 @@ RSpec.describe 'Top', type: :request do
       it_behaves_like 'リスト表示'
       it_behaves_like 'リンク表示'
     end
-    shared_examples_for '[*][ない]存在するサブドメイン' do
+    shared_examples_for '[*][ない]存在するサブドメイン(公開スペース)' do
+      let!(:headers) { @public_space_header }
+      let!(:domain) { "//#{Settings['base_domain']}" }
+      # it_behaves_like 'リスト表示' # Tips: 対象がない
+      it_behaves_like 'リンク非表示'
+    end
+    shared_examples_for '[*][ない]存在するサブドメイン(非公開スペース)' do
       let!(:headers) { @space_header }
       let!(:domain) { "//#{Settings['base_domain']}" }
       # it_behaves_like 'リスト表示' # Tips: 対象がない
       it_behaves_like 'リンク非表示'
     end
-    shared_examples_for '[*][最大表示数と同じ]存在するサブドメイン' do
+    shared_examples_for '[*][最大表示数と同じ]存在するサブドメイン(公開スペース)' do
+      let!(:headers) { @public_space_header }
+      let!(:domain) { "//#{Settings['base_domain']}" }
+      it_behaves_like 'リスト表示'
+      it_behaves_like 'リンク表示'
+    end
+    shared_examples_for '[*][最大表示数と同じ]存在するサブドメイン(非公開スペース)' do
       let!(:headers) { @space_header }
       let!(:domain) { "//#{Settings['base_domain']}" }
       it_behaves_like 'リスト表示'
       it_behaves_like 'リンク表示'
     end
-    shared_examples_for '[*][最大表示数より多い]存在するサブドメイン' do
+    shared_examples_for '[*][最大表示数より多い]存在するサブドメイン(公開スペース)' do
+      let!(:headers) { @public_space_header }
+      let!(:domain) { "//#{Settings['base_domain']}" }
+      it_behaves_like 'リスト表示'
+      it_behaves_like 'リンク表示'
+    end
+    shared_examples_for '[*][最大表示数より多い]存在するサブドメイン(非公開スペース)' do
       let!(:headers) { @space_header }
       let!(:domain) { "//#{Settings['base_domain']}" }
       it_behaves_like 'リスト表示'
@@ -161,31 +347,36 @@ RSpec.describe 'Top', type: :request do
 
     shared_examples_for '[*]お知らせがない' do
       it_behaves_like '[*][ない]ベースドメイン'
-      it_behaves_like '[*][ない]存在するサブドメイン'
+      it_behaves_like '[*][ない]存在するサブドメイン(公開スペース)'
+      it_behaves_like '[*][ない]存在するサブドメイン(非公開スペース)'
     end
     shared_examples_for '[未ログイン]お知らせが最大表示数と同じ' do
       count = Settings['test_infomations']
       include_context 'お知らせ一覧作成', count['all_forever_count'] + count['user_forever_count'], count['all_future_count'] + count['user_future_count'], 0, 0
       it_behaves_like '[*][最大表示数と同じ]ベースドメイン'
-      it_behaves_like '[*][最大表示数と同じ]存在するサブドメイン'
+      it_behaves_like '[*][最大表示数と同じ]存在するサブドメイン(公開スペース)'
+      # it_behaves_like '[*][最大表示数と同じ]存在するサブドメイン(非公開スペース)' # Tips: 未ログインの為、権限がない
     end
     shared_examples_for '[ログイン中/削除予約済み]お知らせが最大表示数と同じ' do
       count = Settings['test_infomations']
       include_context 'お知らせ一覧作成', count['all_forever_count'], count['all_future_count'], count['user_forever_count'], count['user_future_count']
       it_behaves_like '[*][最大表示数と同じ]ベースドメイン'
-      it_behaves_like '[*][最大表示数と同じ]存在するサブドメイン'
+      it_behaves_like '[*][最大表示数と同じ]存在するサブドメイン(公開スペース)'
+      it_behaves_like '[*][最大表示数と同じ]存在するサブドメイン(非公開スペース)'
     end
     shared_examples_for '[未ログイン]お知らせが最大表示数より多い' do
       count = Settings['test_infomations']
       include_context 'お知らせ一覧作成', count['all_forever_count'] + count['user_forever_count'], count['all_future_count'] + count['user_future_count'] + 1, 0, 0
       it_behaves_like '[*][最大表示数より多い]ベースドメイン'
-      it_behaves_like '[*][最大表示数より多い]存在するサブドメイン'
+      it_behaves_like '[*][最大表示数より多い]存在するサブドメイン(公開スペース)'
+      # it_behaves_like '[*][最大表示数より多い]存在するサブドメイン(非公開スペース)' # Tips: 未ログインの為、権限がない
     end
     shared_examples_for '[ログイン中/削除予約済み]お知らせが最大表示数より多い' do
       count = Settings['test_infomations']
       include_context 'お知らせ一覧作成', count['all_forever_count'], count['all_future_count'], count['user_forever_count'], count['user_future_count'] + 1
       it_behaves_like '[*][最大表示数より多い]ベースドメイン'
-      it_behaves_like '[*][最大表示数より多い]存在するサブドメイン'
+      it_behaves_like '[*][最大表示数より多い]存在するサブドメイン(公開スペース)'
+      it_behaves_like '[*][最大表示数より多い]存在するサブドメイン(非公開スペース)'
     end
 
     context '未ログイン' do
@@ -195,12 +386,16 @@ RSpec.describe 'Top', type: :request do
     end
     context 'ログイン中' do
       include_context 'ログイン処理'
+      include_context '顧客・ユーザー紐付け', Time.current, :Member
+      include_context '顧客・ユーザー紐付け（公開）', Time.current, :Member
       it_behaves_like '[*]お知らせがない'
       it_behaves_like '[ログイン中/削除予約済み]お知らせが最大表示数と同じ'
       it_behaves_like '[ログイン中/削除予約済み]お知らせが最大表示数より多い'
     end
     context 'ログイン中（削除予約済み）' do
       include_context 'ログイン処理', true
+      include_context '顧客・ユーザー紐付け', Time.current, :Member
+      include_context '顧客・ユーザー紐付け（公開）', Time.current, :Member
       it_behaves_like '[*]お知らせがない'
       it_behaves_like '[ログイン中/削除予約済み]お知らせが最大表示数と同じ'
       it_behaves_like '[ログイン中/削除予約済み]お知らせが最大表示数より多い'

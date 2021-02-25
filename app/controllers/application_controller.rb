@@ -30,6 +30,14 @@ class ApplicationController < ActionController::Base
     @request_space = request_space
   end
 
+  # 参加スペース一覧をセット
+  def set_join_spaces
+    return if current_user.blank? || @request_space.blank?
+
+    @join_spaces = Space.order(sort_key: 'ASC', id: 'ASC').page(1).per(Settings['select_join_spaces_limit'])
+                        .joins(customer: :member).where(members: { user_id: current_user.id })
+  end
+
   # ベースドメインにリダイレクト
   def redirect_base_domain_response
     redirect_to "//#{Settings['base_domain']}#{request.fullpath}" unless base_domain_request?

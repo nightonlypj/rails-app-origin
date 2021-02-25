@@ -1,1 +1,64 @@
-<mxfile host="Electron" modified="2021-02-22T08:40:55.182Z" agent="5.0 (Macintosh; Intel Mac OS X 11_2_1) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/14.1.8 Chrome/87.0.4280.88 Electron/11.1.1 Safari/537.36" etag="fsz4vcWsOHyw2heNhwlj" version="14.1.8" type="device"><diagram id="r8BipgqtkS832m_hnbsf" name="ページ1">7Vldj5s4FP01ltqHShiDMY+Qj1ntaNoZpbPZ9mVFgpPQEswQ0iT769c2hkBwJu12aFjtSCPN5doY+5xzr68dgAbr/U0WpKs7FtIYmEa4B2gITBNCA/N/wnMoPA62C8cyi0LV6eiYRH9T5TSUdxuFdNPomDMW51HadM5ZktB53vAFWcZ2zW4LFje/mgZL2nJM5kHc9k6jMF8VXmI6R/9vNFquyi9D7BYt66DsrFayWQUh29VcaATQIGMsL6z1fkBjAV6JS/He+ExrNbGMJvn3vJB+c2YHdvvpI7Q/3916j/btdPBOjfItiLdqwcDEwToFyI/5qP6KBiHNKt9S+NRy8kOJUca2SUjFZwzevFtFOZ2kwVy07rgqxDD5OuZPkJuLKI4HLGYZf05YQqsB6yspp0WznO5rLrWyG8rWNM8OvMuuRoqhkF7VCLGUL1A6WFavHqHihkLrB5AzLyC34MT2GjkVkFYZaVdD0tIg2SOc9uXy1foVbtBs42bpcDPdroDDOglK8c24oRRXOLaVY4QAgYB4YOQAdww8W3pMQFzV5FYv8UltTwfivtrgJzRxKPMmF5s8Y1/pCRsagoI4Wib8MaYLMYKgJeJJ2FPudRSG4iNa6pvieAmq4QnVqE011jHdFdHO+VyTzDZpQc/p8ynvY+APgDtQdPtjZXiWNPgfUYZXdR6dUULjU29qQ7vAxYDw923gOdLAwHWkyNSIbyuJZucG5CutDYmBh8U8R0QasDa3s0kCXk4SJ4LrQjW4rRpEfmViLSdU140KdlMFu4dKg5QI+2Wf57arH0B4ziHlG2EnGCOnjbGjgRh1BTF6poB6Dc2+hqZpXDs00TPl46tueqsb6+q6Qa+6+Q/qhlxdN7pD1qtueq4bpDljdqabyf3jn3ePU5P9PvrrBi4n8P3KfWdrZNOjs/mhufxLR/GqXPwZnO7HaPq0HR4+P/2xDbxgP6UO6ztOZ+4wvhc30hVsmoOtSiBQGT5ShmuUHhnRPDG4Mkn4I0DslwnkLk8qmh3A7eigokXa/ZdIW8AngE++yJ2e0z+k7Z4hDbWlvdywNmmQNNDDT1tx/e/Pi1D3eGO2nL2xodjATP59o2G+Pb7RuM/je7FbkufVyKuasNydbbmpGsCH0rDknR8WceRbtW26mOWZK76r040v0w3hL+VbW5KflE6te9ljdeIA3wbEkgYvfspaypfZjXMjrmh4FA6Bi6THAGSoq65ad77Niuv/cVVra9SgvZR/ATVMHx72Hx/wMCV0+uH+U/T4ZW/oflAT0efKHIoF4SLoZEoldo1qXuGOZC52JMO42QeK1sIQVTcRPcWNnSOi2Pd+LkrrHAMTLRYLcz5vCYK3hHiGbVwR12JJw+X5MMYXSxFovQxx/PH4K6tsq/1WjUb/AA==</diagram></mxfile>
+<mxfile host="65bd71144e" modified="2021-02-26T03:57:25.773Z" agent="5.0 (Macintosh; Intel Mac OS X 11_2_1) AppleWebKit/537.36 (KHTML, like Gecko) Code/1.53.2 Chrome/87.0.4280.141 Electron/11.2.1 Safari/537.36" etag="5vtgWLaLjYp6Wl9BNqQj" version="14.2.4" type="embed">
+    <diagram id="r8BipgqtkS832m_hnbsf" name="ページ1">
+        <mxGraphModel dx="755" dy="719" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+            <root>
+                <mxCell id="0"/>
+                <mxCell id="1" parent="0"/>
+                <mxCell id="pv7byoKYT15ZMKAU5KWC-1" value="&amp;lt;header&amp;gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=none;" parent="1" vertex="1">
+                    <mxGeometry width="800" height="40" as="geometry"/>
+                </mxCell>
+                <mxCell id="pv7byoKYT15ZMKAU5KWC-2" value="&amp;lt;footer&amp;gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=none;" parent="1" vertex="1">
+                    <mxGeometry y="430" width="800" height="40" as="geometry"/>
+                </mxCell>
+                <mxCell id="pv7byoKYT15ZMKAU5KWC-4" value="" style="rounded=0;whiteSpace=wrap;html=1;fillColor=none;" parent="1" vertex="1">
+                    <mxGeometry x="400" y="140" width="400" height="290" as="geometry"/>
+                </mxCell>
+                <mxCell id="pv7byoKYT15ZMKAU5KWC-6" value="&lt;b&gt;&lt;u&gt;お知らせ&lt;/u&gt;&lt;/b&gt;" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;" parent="1" vertex="1">
+                    <mxGeometry x="410" y="150" width="60" height="20" as="geometry"/>
+                </mxCell>
+                <mxCell id="pv7byoKYT15ZMKAU5KWC-7" value="&amp;nbsp;&amp;nbsp;&lt;u&gt;＜タイトル＞&lt;/u&gt;&amp;nbsp;(＜開始日＞)&lt;br&gt;&amp;nbsp; ＜概要＞" style="rounded=1;whiteSpace=wrap;html=1;align=left;" parent="1" vertex="1">
+                    <mxGeometry x="410" y="180" width="380" height="40" as="geometry"/>
+                </mxCell>
+                <mxCell id="pv7byoKYT15ZMKAU5KWC-10" value="もっと見る" style="rounded=1;whiteSpace=wrap;html=1;align=center;" parent="1" vertex="1">
+                    <mxGeometry x="410" y="390" width="70" height="30" as="geometry"/>
+                </mxCell>
+                <mxCell id="pv7byoKYT15ZMKAU5KWC-31" value="&amp;nbsp;&amp;nbsp;&lt;u&gt;＜タイトル＞&lt;/u&gt;&amp;nbsp;(＜開始日＞)&lt;br&gt;&amp;nbsp; ＜概要＞" style="rounded=1;whiteSpace=wrap;html=1;align=left;" parent="1" vertex="1">
+                    <mxGeometry x="410" y="220" width="380" height="40" as="geometry"/>
+                </mxCell>
+                <mxCell id="pv7byoKYT15ZMKAU5KWC-32" value="&amp;nbsp;&amp;nbsp;&lt;u&gt;＜タイトル＞&lt;/u&gt;&amp;nbsp;(＜開始日＞)&lt;br&gt;&amp;nbsp; ＜概要＞" style="rounded=1;whiteSpace=wrap;html=1;align=left;" parent="1" vertex="1">
+                    <mxGeometry x="410" y="260" width="380" height="40" as="geometry"/>
+                </mxCell>
+                <mxCell id="pv7byoKYT15ZMKAU5KWC-33" value="&amp;nbsp;&amp;nbsp;&lt;u&gt;＜タイトル＞&lt;/u&gt;&amp;nbsp;(＜開始日＞)&lt;br&gt;&amp;nbsp; ＜概要＞" style="rounded=1;whiteSpace=wrap;html=1;align=left;" parent="1" vertex="1">
+                    <mxGeometry x="410" y="300" width="380" height="40" as="geometry"/>
+                </mxCell>
+                <mxCell id="pv7byoKYT15ZMKAU5KWC-34" value="&amp;nbsp;&amp;nbsp;&lt;u&gt;＜タイトル＞&lt;/u&gt;&amp;nbsp;(＜開始日＞)&lt;br&gt;&amp;nbsp; ＜概要＞" style="rounded=1;whiteSpace=wrap;html=1;align=left;" parent="1" vertex="1">
+                    <mxGeometry x="410" y="340" width="380" height="40" as="geometry"/>
+                </mxCell>
+                <mxCell id="SPUXMUW2oJE_G1gS1Nh9-5" value="" style="rounded=0;whiteSpace=wrap;html=1;fillColor=none;" parent="1" vertex="1">
+                    <mxGeometry y="40" width="400" height="390" as="geometry"/>
+                </mxCell>
+                <mxCell id="PF3WquDyZqVuaAaxWe7o-5" value="" style="rounded=0;whiteSpace=wrap;html=1;fillColor=none;" parent="1" vertex="1">
+                    <mxGeometry x="400" y="40" width="400" height="100" as="geometry"/>
+                </mxCell>
+                <mxCell id="PF3WquDyZqVuaAaxWe7o-7" value="メンバー招待" style="rounded=1;whiteSpace=wrap;html=1;align=center;" parent="1" vertex="1">
+                    <mxGeometry x="410" y="100" width="90" height="30" as="geometry"/>
+                </mxCell>
+                <mxCell id="PF3WquDyZqVuaAaxWe7o-9" value="メンバー一覧" style="rounded=1;whiteSpace=wrap;html=1;align=center;" parent="1" vertex="1">
+                    <mxGeometry x="510" y="100" width="90" height="30" as="geometry"/>
+                </mxCell>
+                <mxCell id="PF3WquDyZqVuaAaxWe7o-12" value="&lt;span style=&quot;color: rgb(51 , 51 , 51)&quot;&gt;スペース情報変更&lt;/span&gt;" style="rounded=1;whiteSpace=wrap;html=1;align=center;" parent="1" vertex="1">
+                    <mxGeometry x="610" y="100" width="110" height="30" as="geometry"/>
+                </mxCell>
+                <mxCell id="PF3WquDyZqVuaAaxWe7o-13" value="&lt;b&gt;管理メニュー&lt;/b&gt;" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;" parent="1" vertex="1">
+                    <mxGeometry x="410" y="50" width="80" height="20" as="geometry"/>
+                </mxCell>
+                <mxCell id="WQQxTQ6Dp8eWOPYiUjx0-1" value="所有者・管理者のみ表示" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;" parent="1" vertex="1">
+                    <mxGeometry x="660" y="40" width="140" height="20" as="geometry"/>
+                </mxCell>
+                <mxCell id="2" value="&lt;u&gt;＜組織・団体名＞&lt;/u&gt;" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
+                    <mxGeometry x="410" y="70" width="100" height="20" as="geometry"/>
+                </mxCell>
+            </root>
+        </mxGraphModel>
+    </diagram>
+</mxfile>
