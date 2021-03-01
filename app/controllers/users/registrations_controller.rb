@@ -16,6 +16,7 @@ class Users::RegistrationsController < Devise::RegistrationsController
   def create
     params[:user][:code] = create_unique_code(User, 'code', "Users::RegistrationsController.create #{params[:user]}")
     super
+    flash[:alert] = resource.errors[:code].first if resource.errors[:code].present?
   end
 
   # GET /users/edit 登録情報変更
