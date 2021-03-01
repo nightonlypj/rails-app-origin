@@ -5,7 +5,7 @@ RSpec.describe AdminUser, type: :model do
   # 前提条件
   #   なし
   # テストパターン
-  #   最小文字数よりも少ない, 最小文字数と同じ, 最大文字数と同じ, 最大文字数よりも多い → データ作成
+  #   ない, 最小文字数よりも少ない, 最小文字数と同じ, 最大文字数と同じ, 最大文字数よりも多い → データ作成
   describe 'validates :name' do
     shared_context 'データ作成' do |name|
       let!(:admin_user) { FactoryBot.build(:admin_user, name: name) }
@@ -24,6 +24,10 @@ RSpec.describe AdminUser, type: :model do
     end
 
     # テストケース
+    context 'ない' do
+      include_context 'データ作成', ''
+      it_behaves_like 'ToNG'
+    end
     context '最小文字数よりも少ない' do
       include_context 'データ作成', 'a' * (Settings['user_name_minimum'] - 1)
       it_behaves_like 'ToNG'
