@@ -2,6 +2,8 @@
 
 ## 1.1.0
 
+- jQueryを導入したい
+  - https://dev.azure.com/nightonly/rails-app-origin/_workitems/edit/341/
 - 最低限のドキュメントを作成するようにしたい
   - https://dev.azure.com/nightonly/rails-app-origin/_workitems/edit/152/
 - フロントにマテリアルデザインを導入したい
