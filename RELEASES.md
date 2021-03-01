@@ -2,6 +2,8 @@
 
 ## 1.1.0
 
+- 最低限のドキュメントを作成するようにしたい
+  - https://dev.azure.com/nightonly/rails-app-origin/_workitems/edit/152/
 - フロントにマテリアルデザインを導入したい
   - https://dev.azure.com/nightonly/rails-app-origin/_workitems/edit/124/
 - 環境構築手順とリリースノートを作りたい
@@ -29,6 +31,10 @@
 
 ### Bug
 
+- チェックボックスが左にズレる
+  - https://dev.azure.com/nightonly/rails-app-origin/_workitems/edit/342/
+- radioボタンのバリデーションエラーでデザインが崩れる
+  - https://dev.azure.com/nightonly/rails-app-origin/_workitems/edit/298/
 - ログアウト -> No route matches [GET] "/users/sign_out"
   - https://dev.azure.com/nightonly/rails-app-origin/_workitems/edit/330/
 - ActionView::Template::Error(FATAL ERROR: wasm code commit Allocation failed - process out of memory)

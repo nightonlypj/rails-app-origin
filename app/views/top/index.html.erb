@@ -8,10 +8,10 @@
   </div>
   <div class="container">
     <div class="row">
-      <div class="col-sm-6" style="padding-left: 0px; padding-right: 0px">
+      <div class="col-sm-6 px-0">
         <%= render 'sign_up' unless user_signed_in? %>
       </div>
-      <div class="col-sm-6" style="padding-left: 0px; padding-right: 0px">
+      <div class="col-sm-6 px-0">
         <%= render 'infomations' if @infomations.present? %>
       </div>
     </div>
