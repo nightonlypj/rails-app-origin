@@ -37,7 +37,7 @@ RSpec.describe 'Users::Passwords', type: :request do
     end
   end
 
-  # POST /users/password パスワード再設定[メール送信](処理)
+  # POST /users/password/new パスワード再設定[メール送信](処理)
   # 前提条件
   #   なし
   # テストパターン
@@ -51,13 +51,13 @@ RSpec.describe 'Users::Passwords', type: :request do
     # テスト内容
     shared_examples_for 'ToOK' do
       it '成功ステータス' do
-        post user_password_path, params: { user: attributes }
+        post create_user_password_path, params: { user: attributes }
         expect(response).to be_successful
       end
     end
     shared_examples_for 'ToTop' do |alert, notice|
       it 'トップページにリダイレクト' do
-        post user_password_path, params: { user: attributes }
+        post create_user_password_path, params: { user: attributes }
         expect(response).to redirect_to(root_path)
         expect(flash[:alert]).to alert.present? ? eq(I18n.t(alert)) : be_nil
         expect(flash[:notice]).to notice.present? ? eq(I18n.t(notice)) : be_nil
@@ -65,7 +65,7 @@ RSpec.describe 'Users::Passwords', type: :request do
     end
     shared_examples_for 'ToLogin' do |alert, notice|
       it 'ログインにリダイレクト' do
-        post user_password_path, params: { user: attributes }
+        post create_user_password_path, params: { user: attributes }
         expect(response).to redirect_to(new_user_session_path)
         expect(flash[:alert]).to alert.present? ? eq(I18n.t(alert)) : be_nil
         expect(flash[:notice]).to notice.present? ? eq(I18n.t(notice)) : be_nil
@@ -201,7 +201,7 @@ RSpec.describe 'Users::Passwords', type: :request do
     end
   end
 
-  # PUT /users/password パスワード再設定(処理)
+  # PUT(PATCH) /users/password パスワード再設定(処理)
   # 前提条件
   #   なし
   # テストパターン
@@ -215,26 +215,26 @@ RSpec.describe 'Users::Passwords', type: :request do
     # テスト内容
     shared_examples_for 'OK' do
       it 'パスワードリセット送信日時がなしに変更される' do
-        put user_password_path, params: { user: attributes.merge({ reset_password_token: reset_password_token }) }
+        put update_user_password_path, params: { user: attributes.merge({ reset_password_token: reset_password_token }) }
         expect(User.find(@send_user.id).reset_password_sent_at).to be_nil
       end
     end
     shared_examples_for 'NG' do
       it 'パスワードリセット送信日時が変更されない' do
-        put user_password_path, params: { user: attributes.merge({ reset_password_token: reset_password_token }) }
+        put update_user_password_path, params: { user: attributes.merge({ reset_password_token: reset_password_token }) }
         expect(User.find(@send_user.id).reset_password_sent_at).to eq(@send_user.reset_password_sent_at)
       end
     end
 
     shared_examples_for 'ToOK' do
       it '成功ステータス' do
-        put user_password_path, params: { user: attributes.merge({ reset_password_token: reset_password_token }) }
+        put update_user_password_path, params: { user: attributes.merge({ reset_password_token: reset_password_token }) }
         expect(response).to be_successful
       end
     end
     shared_examples_for 'ToTop' do |alert, notice|
       it 'トップページにリダイレクト' do
-        put user_password_path, params: { user: attributes.merge({ reset_password_token: reset_password_token }) }
+        put update_user_password_path, params: { user: attributes.merge({ reset_password_token: reset_password_token }) }
         expect(response).to redirect_to(root_path)
         expect(flash[:alert]).to alert.present? ? eq(I18n.t(alert)) : be_nil
         expect(flash[:notice]).to notice.present? ? eq(I18n.t(notice)) : be_nil
@@ -242,7 +242,7 @@ RSpec.describe 'Users::Passwords', type: :request do
     end
     shared_examples_for 'ToNew' do |alert, notice|
       it 'パスワード再設定[メール送信]にリダイレクト' do
-        put user_password_path, params: { user: attributes.merge({ reset_password_token: reset_password_token }) }
+        put update_user_password_path, params: { user: attributes.merge({ reset_password_token: reset_password_token }) }
         expect(response).to redirect_to(new_user_password_path)
         expect(flash[:alert]).to alert.present? ? eq(I18n.t(alert)) : be_nil
         expect(flash[:notice]).to notice.present? ? eq(I18n.t(notice)) : be_nil

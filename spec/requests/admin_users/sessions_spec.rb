@@ -1,7 +1,7 @@
 require 'rails_helper'
 
 RSpec.describe 'AdminUsers::Sessions', type: :request do
-  # GET /admin_users/sign_in ログイン
+  # GET /admin/sign_in ログイン
   # 前提条件
   #   なし
   # テストパターン
@@ -33,7 +33,7 @@ RSpec.describe 'AdminUsers::Sessions', type: :request do
     end
   end
 
-  # POST /admin_users/sign_in ログイン(処理)
+  # POST /admin/sign_in ログイン(処理)
   # 前提条件
   #   なし
   # テストパターン
@@ -47,13 +47,13 @@ RSpec.describe 'AdminUsers::Sessions', type: :request do
     # テスト内容
     shared_examples_for 'ToOK' do
       it '成功ステータス' do
-        post admin_user_session_path, params: { admin_user: attributes }
+        post create_admin_user_session_path, params: { admin_user: attributes }
         expect(response).to be_successful
       end
     end
     shared_examples_for 'ToAdmin' do |alert, notice|
       it 'RailsAdminにリダイレクト' do
-        post admin_user_session_path, params: { admin_user: attributes }
+        post create_admin_user_session_path, params: { admin_user: attributes }
         expect(response).to redirect_to(rails_admin_path)
         expect(flash[:alert]).to alert.present? ? eq(I18n.t(alert)) : be_nil
         expect(flash[:notice]).to notice.present? ? eq(I18n.t(notice)) : be_nil
@@ -89,7 +89,7 @@ RSpec.describe 'AdminUsers::Sessions', type: :request do
     end
   end
 
-  # DELETE /admin_users/sign_out ログアウト(処理)
+  # DELETE(GET) /admin/sign_out ログアウト(処理)
   # 前提条件
   #   なし
   # テストパターン

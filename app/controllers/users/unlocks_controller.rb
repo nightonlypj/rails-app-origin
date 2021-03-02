@@ -6,7 +6,7 @@ class Users::UnlocksController < Devise::UnlocksController
   #   super
   # end
 
-  # POST /users/unlock アカウントロック解除[メール再送](処理)
+  # POST /users/unlock/new アカウントロック解除[メール再送](処理)
   # def create
   #   super
   # end

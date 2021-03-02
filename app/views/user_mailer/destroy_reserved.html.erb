@@ -5,4 +5,4 @@
 <br/>
 このアカウントは<%= l(@user.destroy_schedule_at.to_date) %>以降に削除されます。それまでは取り消し可能です。<br/>
 削除されるまではログインできますが、一部機能が制限されます。<br/>
-<%= link_to 'アカウント削除取り消し', users_undo_delete_url %><br/>
+<%= link_to 'アカウント削除取り消し', delete_undo_user_registration_url %><br/>

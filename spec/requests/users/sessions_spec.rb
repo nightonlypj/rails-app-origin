@@ -51,13 +51,13 @@ RSpec.describe 'Users::Sessions', type: :request do
     # テスト内容
     shared_examples_for 'ToOK' do
       it '成功ステータス' do
-        post user_session_path, params: { user: attributes }
+        post create_user_session_path, params: { user: attributes }
         expect(response).to be_successful
       end
     end
     shared_examples_for 'ToTop' do |alert, notice|
       it 'トップページにリダイレクト' do
-        post user_session_path, params: { user: attributes }
+        post create_user_session_path, params: { user: attributes }
         expect(response).to redirect_to(root_path)
         expect(flash[:alert]).to alert.present? ? eq(I18n.t(alert)) : be_nil
         expect(flash[:notice]).to notice.present? ? eq(I18n.t(notice)) : be_nil
@@ -98,7 +98,7 @@ RSpec.describe 'Users::Sessions', type: :request do
     end
   end
 
-  # DELETE /users/sign_out ログアウト(処理)
+  # DELETE(GET) /users/sign_out ログアウト(処理)
   # 前提条件
   #   なし
   # テストパターン

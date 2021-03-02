@@ -12,7 +12,7 @@ class Users::RegistrationsController < Devise::RegistrationsController
   #   super
   # end
 
-  # POST /users アカウント登録(処理)
+  # POST /users/sign_up アカウント登録(処理)
   def create
     params[:user][:code] = create_unique_code(User, 'code', "Users::RegistrationsController.create #{params[:user]}")
     super
@@ -24,12 +24,12 @@ class Users::RegistrationsController < Devise::RegistrationsController
   #   super
   # end
 
-  # PUT /users 登録情報変更(処理)
+  # PUT(PATCH) /users/edit 登録情報変更(処理)
   # def update
   #   super
   # end
 
-  # PUT /users/image 画像変更(処理)
+  # PUT(PATCH) /users/image 画像変更(処理)
   def image_update
     if params.blank? || params[:user].blank?
       resource.errors.add(:image, t('errors.messages.image_update_blank'))
@@ -57,7 +57,7 @@ class Users::RegistrationsController < Devise::RegistrationsController
   # def delete
   # end
 
-  # DELETE /users アカウント削除(処理)
+  # DELETE /users/delete アカウント削除(処理)
   def destroy
     resource.set_destroy_reserve
     UserMailer.with(user: current_user).destroy_reserved.deliver_now

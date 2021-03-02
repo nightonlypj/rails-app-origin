@@ -12,10 +12,10 @@ RSpec.describe UserMailer, type: :mailer do
       expect(mail.to).to eq([user.email])
     end
     it '本文(html)にアカウント削除取り消しのURLが含まれる' do
-      expect(mail.html_part.body).to include("\"#{users_undo_delete_url}\"")
+      expect(mail.html_part.body).to include("\"#{delete_undo_user_registration_url}\"")
     end
     it '本文(text)にアカウント削除取り消しのURLが含まれる' do
-      expect(mail.text_part.body).to include(users_undo_delete_url)
+      expect(mail.text_part.body).to include(delete_undo_user_registration_url)
     end
   end
 

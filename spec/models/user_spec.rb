@@ -5,7 +5,7 @@ RSpec.describe User, type: :model do
   # 前提条件
   #   なし
   # テストパターン
-  #   正常値, ない（異常値）, 重複 → データ作成
+  #   ない, 正常値, 重複 → データ作成
   describe 'validates :code' do
     shared_context 'データ作成' do |code|
       let!(:user) { FactoryBot.build(:user, code: code) }
@@ -28,13 +28,13 @@ RSpec.describe User, type: :model do
     end
 
     # テストケース
+    context 'ない' do
+      include_context 'データ作成', ''
+      it_behaves_like 'ToNG'
+    end
     context '正常値' do
       include_context 'データ作成', Digest::MD5.hexdigest(SecureRandom.uuid)
       it_behaves_like 'ToOK'
-    end
-    context 'ない（異常値）' do
-      include_context 'データ作成', ''
-      it_behaves_like 'ToNG'
     end
     context '重複' do
       include_context '重複データ作成', Digest::MD5.hexdigest(SecureRandom.uuid)

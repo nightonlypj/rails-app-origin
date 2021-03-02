@@ -1,7 +1,7 @@
 require 'rails_helper'
 
 RSpec.describe 'AdminUsers::Unlocks', type: :request do
-  # GET /admin_users/unlock/new アカウントロック解除[メール再送]
+  # GET /admin/unlock/new アカウントロック解除[メール再送]
   # 前提条件
   #   なし
   # テストパターン
@@ -33,7 +33,7 @@ RSpec.describe 'AdminUsers::Unlocks', type: :request do
     end
   end
 
-  # POST /admin_users/unlock アカウントロック解除[メール再送](処理)
+  # POST /admin/unlock/new アカウントロック解除[メール再送](処理)
   # 前提条件
   #   なし
   # テストパターン
@@ -47,13 +47,13 @@ RSpec.describe 'AdminUsers::Unlocks', type: :request do
     # テスト内容
     shared_examples_for 'ToOK' do
       it '成功ステータス' do
-        post admin_user_unlock_path, params: { admin_user: attributes }
+        post create_admin_user_unlock_path, params: { admin_user: attributes }
         expect(response).to be_successful
       end
     end
     shared_examples_for 'ToAdmin' do |alert, notice|
       it 'RailsAdminにリダイレクト' do
-        post admin_user_unlock_path, params: { admin_user: attributes }
+        post create_admin_user_unlock_path, params: { admin_user: attributes }
         expect(response).to redirect_to(rails_admin_path)
         expect(flash[:alert]).to alert.present? ? eq(I18n.t(alert)) : be_nil
         expect(flash[:notice]).to notice.present? ? eq(I18n.t(notice)) : be_nil
@@ -61,7 +61,7 @@ RSpec.describe 'AdminUsers::Unlocks', type: :request do
     end
     shared_examples_for 'ToLogin' do |alert, notice|
       it 'ログインにリダイレクト' do
-        post admin_user_unlock_path, params: { admin_user: attributes }
+        post create_admin_user_unlock_path, params: { admin_user: attributes }
         expect(response).to redirect_to(new_admin_user_session_path)
         expect(flash[:alert]).to alert.present? ? eq(I18n.t(alert)) : be_nil
         expect(flash[:notice]).to notice.present? ? eq(I18n.t(notice)) : be_nil
@@ -97,7 +97,7 @@ RSpec.describe 'AdminUsers::Unlocks', type: :request do
     end
   end
 
-  # GET /admin_users/unlock アカウントロック解除(処理)
+  # GET /admin/unlock アカウントロック解除(処理)
   # 前提条件
   #   なし
   # テストパターン
