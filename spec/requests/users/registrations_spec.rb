@@ -110,7 +110,7 @@ RSpec.describe 'Users::Registrations', type: :request do
         expect(response).to be_successful
       end
     end
-    shared_examples_for 'ToNG' do
+    shared_examples_for 'ToNot' do
       it '存在しないステータス' do
         post user_registration_path, params: { user: attributes }, headers: headers
         expect(response).to be_not_found
@@ -157,7 +157,7 @@ RSpec.describe 'Users::Registrations', type: :request do
     shared_examples_for '[未ログイン][*]存在するサブドメイン' do
       let!(:headers) { @space_header }
       it_behaves_like 'NG'
-      it_behaves_like 'ToNG'
+      it_behaves_like 'ToNot'
     end
     shared_examples_for '[ログイン中/削除予約済み][*]存在するサブドメイン' do
       let!(:headers) { @space_header }
@@ -167,7 +167,7 @@ RSpec.describe 'Users::Registrations', type: :request do
     shared_examples_for '[未ログイン][*]存在しないサブドメイン' do
       let!(:headers) { NOT_SPACE_HEADER }
       it_behaves_like 'NG'
-      it_behaves_like 'ToNG'
+      it_behaves_like 'ToNot'
     end
     shared_examples_for '[ログイン中/削除予約済み][*]存在しないサブドメイン' do
       let!(:headers) { NOT_SPACE_HEADER }
@@ -341,7 +341,7 @@ RSpec.describe 'Users::Registrations', type: :request do
         expect(response).to be_successful
       end
     end
-    shared_examples_for 'ToNG' do
+    shared_examples_for 'ToNot' do
       it '存在しないステータス' do
         put user_registration_path, params: { user: attributes.merge(current_password: current_password) }, headers: headers
         expect(response).to be_not_found
@@ -403,7 +403,7 @@ RSpec.describe 'Users::Registrations', type: :request do
     shared_examples_for '[ログイン中][*]存在するサブドメイン' do
       let!(:headers) { @space_header }
       it_behaves_like 'NG'
-      it_behaves_like 'ToNG'
+      it_behaves_like 'ToNot'
     end
     shared_examples_for '[削除予約済み][*]存在するサブドメイン' do
       let!(:headers) { @space_header }
@@ -418,7 +418,7 @@ RSpec.describe 'Users::Registrations', type: :request do
     shared_examples_for '[ログイン中][*]存在しないサブドメイン' do
       let!(:headers) { NOT_SPACE_HEADER }
       it_behaves_like 'NG'
-      it_behaves_like 'ToNG'
+      it_behaves_like 'ToNot'
     end
     shared_examples_for '[削除予約済み][*]存在しないサブドメイン' do
       let!(:headers) { NOT_SPACE_HEADER }
@@ -520,7 +520,7 @@ RSpec.describe 'Users::Registrations', type: :request do
         expect(response).to be_successful
       end
     end
-    shared_examples_for 'ToNG' do
+    shared_examples_for 'ToNot' do
       it '存在しないステータス' do
         put users_image_path, params: { user: attributes }, headers: headers
         expect(response).to be_not_found
@@ -593,7 +593,7 @@ RSpec.describe 'Users::Registrations', type: :request do
     shared_examples_for '[ログイン中][*]存在するサブドメイン' do
       let!(:headers) { @space_header }
       it_behaves_like 'NG'
-      it_behaves_like 'ToNG'
+      it_behaves_like 'ToNot'
     end
     shared_examples_for '[削除予約済み][*]存在するサブドメイン' do
       let!(:headers) { @space_header }
@@ -608,7 +608,7 @@ RSpec.describe 'Users::Registrations', type: :request do
     shared_examples_for '[ログイン中][*]存在しないサブドメイン' do
       let!(:headers) { NOT_SPACE_HEADER }
       it_behaves_like 'NG'
-      it_behaves_like 'ToNG'
+      it_behaves_like 'ToNot'
     end
     shared_examples_for '[削除予約済み][*]存在しないサブドメイン' do
       let!(:headers) { NOT_SPACE_HEADER }
@@ -690,7 +690,7 @@ RSpec.describe 'Users::Registrations', type: :request do
       end
     end
 
-    shared_examples_for 'ToNG' do
+    shared_examples_for 'ToNot' do
       it '存在しないステータス' do
         delete users_image_path, headers: headers
         expect(response).to be_not_found
@@ -745,7 +745,7 @@ RSpec.describe 'Users::Registrations', type: :request do
     shared_examples_for '[ログイン中]存在するサブドメイン' do
       let!(:headers) { @space_header }
       it_behaves_like 'NG'
-      it_behaves_like 'ToNG'
+      it_behaves_like 'ToNot'
     end
     shared_examples_for '[削除予約済み]存在するサブドメイン' do
       let!(:headers) { @space_header }
@@ -760,7 +760,7 @@ RSpec.describe 'Users::Registrations', type: :request do
     shared_examples_for '[ログイン中]存在しないサブドメイン' do
       let!(:headers) { NOT_SPACE_HEADER }
       it_behaves_like 'NG'
-      it_behaves_like 'ToNG'
+      it_behaves_like 'ToNot'
     end
     shared_examples_for '[削除予約済み]存在しないサブドメイン' do
       let!(:headers) { NOT_SPACE_HEADER }
@@ -917,7 +917,7 @@ RSpec.describe 'Users::Registrations', type: :request do
       end
     end
 
-    shared_examples_for 'ToNG' do
+    shared_examples_for 'ToNot' do
       it '存在しないステータス' do
         delete user_registration_path, headers: headers
         expect(response).to be_not_found
@@ -964,7 +964,7 @@ RSpec.describe 'Users::Registrations', type: :request do
     shared_examples_for '[ログイン中]存在するサブドメイン' do
       let!(:headers) { @space_header }
       it_behaves_like 'NG'
-      it_behaves_like 'ToNG'
+      it_behaves_like 'ToNot'
     end
     shared_examples_for '[削除予約済み]存在するサブドメイン' do
       let!(:headers) { @space_header }
@@ -979,7 +979,7 @@ RSpec.describe 'Users::Registrations', type: :request do
     shared_examples_for '[ログイン中]存在しないサブドメイン' do
       let!(:headers) { NOT_SPACE_HEADER }
       it_behaves_like 'NG'
-      it_behaves_like 'ToNG'
+      it_behaves_like 'ToNot'
     end
     shared_examples_for '[削除予約済み]存在しないサブドメイン' do
       let!(:headers) { NOT_SPACE_HEADER }
@@ -1130,7 +1130,7 @@ RSpec.describe 'Users::Registrations', type: :request do
       end
     end
 
-    shared_examples_for 'ToNG' do
+    shared_examples_for 'ToNot' do
       it '存在しないステータス' do
         delete users_undo_delete_path, headers: headers
         expect(response).to be_not_found
@@ -1182,7 +1182,7 @@ RSpec.describe 'Users::Registrations', type: :request do
     shared_examples_for '[削除予約済み]存在するサブドメイン' do
       let!(:headers) { @space_header }
       it_behaves_like 'NG'
-      it_behaves_like 'ToNG'
+      it_behaves_like 'ToNot'
     end
     shared_examples_for '[未ログイン]存在しないサブドメイン' do
       let!(:headers) { NOT_SPACE_HEADER }
@@ -1197,7 +1197,7 @@ RSpec.describe 'Users::Registrations', type: :request do
     shared_examples_for '[削除予約済み]存在しないサブドメイン' do
       let!(:headers) { NOT_SPACE_HEADER }
       it_behaves_like 'NG'
-      it_behaves_like 'ToNG'
+      it_behaves_like 'ToNot'
     end
 
     context '未ログイン' do

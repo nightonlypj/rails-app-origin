@@ -40,7 +40,7 @@ shared_context 'メンバー作成' do |owner_count, admin_count, member_count, 
   end
 end
 
-shared_context '対象外メンバー作成' do |sort = 'DESC'|
+shared_context 'メンバー作成（対象外）' do |sort = 'DESC'|
   let!(:outside_customer) { FactoryBot.create(:customer) }
   before do
     @create_outside_users = FactoryBot.create_list(:user, 3)

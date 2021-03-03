@@ -20,3 +20,7 @@ shared_context '顧客作成' do |owner_count, admin_count, member_count|
     raise "#{@create_customers.count} != #{count}" if @create_customers.count != count
   end
 end
+
+shared_context '顧客作成（対象外）' do
+  let!(:outside_customer) { FactoryBot.create(:customer) }
+end

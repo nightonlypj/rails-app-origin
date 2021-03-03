@@ -62,7 +62,7 @@ RSpec.describe 'Infomations', type: :request do
         expect(JSON.parse(response.body)['infomation']['target']).to eq(infomation.target)
       end
     end
-    shared_examples_for 'ToNG' do |error|
+    shared_examples_for 'ToNot' do |error|
       include_context 'データ作成'
       it '存在しないステータス' do
         get infomation_path(id: infomation.id), headers: headers
@@ -92,19 +92,19 @@ RSpec.describe 'Infomations', type: :request do
     # テストケース
     shared_examples_for '[*][全員][過去][過去]ベースドメイン' do
       let!(:headers) { BASE_HEADER }
-      it_behaves_like 'ToNG', 'errors.messages.infomation.ended'
+      it_behaves_like 'ToNot', 'errors.messages.infomation.ended'
     end
     shared_examples_for '[ログイン中/削除予約済み][自分][過去][過去]ベースドメイン' do
       let!(:headers) { BASE_HEADER }
-      it_behaves_like 'ToNG', 'errors.messages.infomation.ended'
+      it_behaves_like 'ToNot', 'errors.messages.infomation.ended'
     end
     shared_examples_for '[*][他人][過去][過去]ベースドメイン' do
       let!(:headers) { BASE_HEADER }
-      it_behaves_like 'ToNG', nil
+      it_behaves_like 'ToNot', nil
     end
     shared_examples_for '[*][*][未来][過去]ベースドメイン' do
       let!(:headers) { BASE_HEADER }
-      it_behaves_like 'ToNG', nil
+      it_behaves_like 'ToNot', nil
     end
     shared_examples_for '[*][全員][過去][未来]ベースドメイン' do
       let!(:headers) { BASE_HEADER }
@@ -116,11 +116,11 @@ RSpec.describe 'Infomations', type: :request do
     end
     shared_examples_for '[*][他人][過去][未来]ベースドメイン' do
       let!(:headers) { BASE_HEADER }
-      it_behaves_like 'ToNG', nil
+      it_behaves_like 'ToNot', nil
     end
     shared_examples_for '[*][*][未来][未来]ベースドメイン' do
       let!(:headers) { BASE_HEADER }
-      it_behaves_like 'ToNG', nil
+      it_behaves_like 'ToNot', nil
     end
     shared_examples_for '[*][全員][過去][ない]ベースドメイン' do
       let!(:headers) { BASE_HEADER }
@@ -132,11 +132,11 @@ RSpec.describe 'Infomations', type: :request do
     end
     shared_examples_for '[*][他人][過去][ない]ベースドメイン' do
       let!(:headers) { BASE_HEADER }
-      it_behaves_like 'ToNG', nil
+      it_behaves_like 'ToNot', nil
     end
     shared_examples_for '[*][*][未来][ない]ベースドメイン' do
       let!(:headers) { BASE_HEADER }
-      it_behaves_like 'ToNG', nil
+      it_behaves_like 'ToNot', nil
     end
     shared_examples_for '[*][*][*][*]存在するサブドメイン' do
       let!(:headers) { @space_header }

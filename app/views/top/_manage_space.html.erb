@@ -7,6 +7,7 @@
       <%= link_to 'メンバー招待', "#{domain}#{new_member_path(customer_code: @request_space.customer.code)}", class: 'btn btn-primary btn-rounded mb-1' %>
       <%= link_to 'メンバー一覧', "#{domain}#{members_path(@request_space.customer.code)}", class: 'btn btn-info btn-rounded mb-1' %>
       <%= link_to 'スペース情報変更', edit_space_path, class: 'btn btn-warning btn-rounded mb-1' %>
+      <%= link_to 'スペース作成', "#{domain}#{new_space_path(customer_code: @request_space.customer.code)}", class: 'btn btn-dark btn-rounded mb-1' %>
     </p>
   </div>
 </article>

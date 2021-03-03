@@ -96,7 +96,7 @@ RSpec.describe 'Users::Passwords', type: :request do
         expect(response).to be_successful
       end
     end
-    shared_examples_for 'ToNG' do
+    shared_examples_for 'ToNot' do
       it '存在しないステータス' do
         post user_password_path, params: { user: attributes }, headers: headers
         expect(response).to be_not_found
@@ -138,7 +138,7 @@ RSpec.describe 'Users::Passwords', type: :request do
     end
     shared_examples_for '[未ログイン][*]存在するサブドメイン' do
       let!(:headers) { @space_header }
-      it_behaves_like 'ToNG'
+      it_behaves_like 'ToNot'
     end
     shared_examples_for '[ログイン中/削除予約済み][*]存在するサブドメイン' do
       let!(:headers) { @space_header }
@@ -146,7 +146,7 @@ RSpec.describe 'Users::Passwords', type: :request do
     end
     shared_examples_for '[未ログイン][*]存在しないサブドメイン' do
       let!(:headers) { NOT_SPACE_HEADER }
-      it_behaves_like 'ToNG'
+      it_behaves_like 'ToNot'
     end
     shared_examples_for '[ログイン中/削除予約済み][*]存在しないサブドメイン' do
       let!(:headers) { NOT_SPACE_HEADER }
@@ -385,7 +385,7 @@ RSpec.describe 'Users::Passwords', type: :request do
         expect(response).to be_successful
       end
     end
-    shared_examples_for 'ToNG' do
+    shared_examples_for 'ToNot' do
       it '存在しないステータス' do
         put user_password_path, params: { user: attributes.merge({ reset_password_token: reset_password_token }) }, headers: headers
         expect(response).to be_not_found
@@ -462,7 +462,7 @@ RSpec.describe 'Users::Passwords', type: :request do
     shared_examples_for '[未ログイン][期限内/期限切れ][*]存在するサブドメイン' do
       let!(:headers) { @space_header }
       it_behaves_like 'NG'
-      it_behaves_like 'ToNG'
+      it_behaves_like 'ToNot'
     end
     shared_examples_for '[ログイン中/削除予約済み][期限内/期限切れ][*]存在するサブドメイン' do
       let!(:headers) { @space_header }
@@ -472,7 +472,7 @@ RSpec.describe 'Users::Passwords', type: :request do
     shared_examples_for '[未ログイン][存在しない/ない][*]存在するサブドメイン' do
       let!(:headers) { @space_header }
       # it_behaves_like 'NG' # Tips: トークンが存在しない為、送信日時がない
-      it_behaves_like 'ToNG'
+      it_behaves_like 'ToNot'
     end
     shared_examples_for '[ログイン中/削除予約済み][存在しない/ない][*]存在するサブドメイン' do
       let!(:headers) { @space_header }
@@ -482,7 +482,7 @@ RSpec.describe 'Users::Passwords', type: :request do
     shared_examples_for '[未ログイン][期限内/期限切れ][*]存在しないサブドメイン' do
       let!(:headers) { NOT_SPACE_HEADER }
       it_behaves_like 'NG'
-      it_behaves_like 'ToNG'
+      it_behaves_like 'ToNot'
     end
     shared_examples_for '[ログイン中/削除予約済み][期限内/期限切れ][*]存在しないサブドメイン' do
       let!(:headers) { NOT_SPACE_HEADER }
@@ -492,7 +492,7 @@ RSpec.describe 'Users::Passwords', type: :request do
     shared_examples_for '[未ログイン][存在しない/ない][*]存在しないサブドメイン' do
       let!(:headers) { NOT_SPACE_HEADER }
       # it_behaves_like 'NG' # Tips: トークンが存在しない為、送信日時がない
-      it_behaves_like 'ToNG'
+      it_behaves_like 'ToNot'
     end
     shared_examples_for '[ログイン中/削除予約済み][存在しない/ない][*]存在しないサブドメイン' do
       let!(:headers) { NOT_SPACE_HEADER }

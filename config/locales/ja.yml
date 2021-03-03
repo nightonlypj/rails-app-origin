@@ -26,8 +26,9 @@ ja:
         updated_at: '更新日時'
       customer:
         id: 'ID'
+        create_flag: '新規作成'
         code: '顧客コード'
-        name: '顧客名'
+        name: '組織・団体名'
         created_at: '作成日時'
         updated_at: '更新日時'
       member:
@@ -44,12 +45,24 @@ ja:
         subdomain: 'サブドメイン'
         image: '画像'
         name: 'スペース名'
-        sort_key: '並び順'
+        purpose: '目的'
         public_flag: '公開スペース'
+        sort_key: '並び順'
         created_at: '作成日時'
         updated_at: '更新日時'
     errors:
       models:
+        customer:
+          attributes:
+            create_flag:
+              inclusion: 'この値は使用できません。'
+            code:
+              blank: '選択してください。'
+              taken: '処理に失敗しました。しばらく時間をあけてから、やり直してください。'
+            name:
+              blank: '入力してください。'
+              too_short: '%{count}文字以上で入力してください。'
+              too_long: '%{count}文字以下で入力してください。'
         member:
           attributes:
             user:
@@ -67,6 +80,9 @@ ja:
               invalid: 'アルファベット(小文字)・数字・ハイフン(先頭不可)のみで入力してください。'
             name:
               blank: '入力してください。'
+              too_short: '%{count}文字以上で入力してください。'
+              too_long: '%{count}文字以下で入力してください。'
+            purpose:
               too_short: '%{count}文字以上で入力してください。'
               too_long: '%{count}文字以下で入力してください。'
   enums:
@@ -149,8 +165,9 @@ ja:
       user:
         code_error: 'ユーザーコードが存在しないか、所属していません。'
       customer:
-        code_blank: '選択してください。'
+        create_flag_blank: '選択してください。'
         code_invalid: '存在しないか、所属していません。'
+        not_create_power: '作成権限がありません。所属の管理者または所有者に依頼してください。'
         code_error: '顧客コードが存在しないか、所属していません。'
   mailer:
     user:

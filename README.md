@@ -237,7 +237,7 @@ $ rails s
 PCのhostsに下記を追加
 ```
 $ sudo vi /etc/hosts
-127.0.0.1       localhost.local customer1.localhost.local public1.localhost.local customer2.localhost.local
+127.0.0.1       localhost.local
 ```
 
 - http://localhost.local:3000

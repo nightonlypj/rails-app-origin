@@ -20,7 +20,7 @@ RSpec.describe 'Top', type: :request do
         expect(response).to be_successful
       end
     end
-    shared_examples_for 'ToNG' do
+    shared_examples_for 'ToNot' do
       it '存在しないステータス' do
         get root_path, headers: headers
         expect(response).to be_not_found
@@ -54,11 +54,11 @@ RSpec.describe 'Top', type: :request do
     end
     shared_examples_for '[ログイン中/削除予約済み][ない]存在するサブドメイン(非公開スペース)' do
       let!(:headers) { @space_header }
-      it_behaves_like 'ToNG'
+      it_behaves_like 'ToNot'
     end
     shared_examples_for '[*][*]存在しないサブドメイン' do
       let!(:headers) { NOT_SPACE_HEADER }
-      it_behaves_like 'ToNG'
+      it_behaves_like 'ToNot'
     end
 
     shared_examples_for '[ログイン中/削除予約済み]権限がある' do |power|
@@ -142,6 +142,10 @@ RSpec.describe 'Top', type: :request do
         get root_path, headers: headers
         expect(response.body).to include("\"#{edit_space_path}\"")
       end
+      it 'スペース作成のパスが含まれる' do
+        get root_path, headers: headers
+        expect(response.body).to include("\"#{domain}#{new_space_path(customer_code: target_customer.code)}\"")
+      end
     end
     shared_examples_for '管理メニュー非表示' do
       it '顧客詳細のパスが含まれない' do
@@ -167,6 +171,10 @@ RSpec.describe 'Top', type: :request do
       it 'スペース情報変更のパスが含まれない' do
         get root_path, headers: headers
         expect(response.body).not_to include("\"#{edit_space_path}\"")
+      end
+      it 'スペース作成のパスが含まれない' do
+        get root_path, headers: headers
+        expect(response.body).not_to include("\"#{domain}#{new_space_path(customer_code: target_customer.code)}\"")
       end
     end
 
@@ -418,13 +426,13 @@ RSpec.describe 'Top', type: :request do
       it 'スペース名が含まれる' do
         get root_path, headers: headers
         (1..[@create_spaces.count, Settings['join_spaces_limit']].min).each do |no|
-          expect(response.body).to include(@create_spaces[no - 1].name)
+          expect(response.body).to include(@create_spaces[@create_spaces.count - no].name)
         end
       end
       it 'パスが含まれる' do
         get root_path, headers: headers
         (1..[@create_spaces.count, Settings['join_spaces_limit']].min).each do |no|
-          expect(response.body).to include("//#{@create_spaces[no - 1].subdomain}.#{Settings['base_domain']}")
+          expect(response.body).to include("//#{@create_spaces[@create_spaces.count - no].subdomain}.#{Settings['base_domain']}")
         end
       end
     end
@@ -432,13 +440,13 @@ RSpec.describe 'Top', type: :request do
       it 'スペース名が含まれない' do
         get root_path, headers: headers
         ((Settings['join_spaces_limit'] + 1)..@create_spaces.count).each do |no|
-          expect(response.body).not_to include(@create_spaces[no - 1].name)
+          expect(response.body).not_to include(@create_spaces[@create_spaces.count - no].name)
         end
       end
       it 'パスが含まれない' do
         get root_path, headers: headers
         ((Settings['join_spaces_limit'] + 1)..@create_spaces.count).each do |no|
-          expect(response.body).not_to include("//#{@create_spaces[no - 1].subdomain}.#{Settings['base_domain']}")
+          expect(response.body).not_to include("//#{@create_spaces[@create_spaces.count - no].subdomain}.#{Settings['base_domain']}")
         end
       end
     end

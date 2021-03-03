@@ -5,7 +5,7 @@ RSpec.describe Space, type: :model do
   # 前提条件
   #   なし
   # テストパターン
-  #   最小文字数よりも少ない, 最小文字数と同じ, 最大文字数と同じ, 最大文字数よりも多い,
+  #   ない, 最小文字数よりも少ない, 最小文字数と同じ, 最大文字数と同じ, 最大文字数よりも多い,
   #     アルファベット(小文字)・数字・ハイフン(先頭不可), アルファベット(大文字),
   #     ハイフン(先頭), ハイフン(後尾), 重複（同じ顧客）, 重複（違う顧客） → データ作成
   describe 'validates :subdomain' do
@@ -31,6 +31,10 @@ RSpec.describe Space, type: :model do
     end
 
     # テストケース
+    context 'ない' do
+      include_context 'データ作成', ''
+      it_behaves_like 'ToNG'
+    end
     context '最小文字数よりも少ない' do
       include_context 'データ作成', 'a' * (Settings['subdomain_minimum'] - 1)
       it_behaves_like 'ToNG'
@@ -77,7 +81,7 @@ RSpec.describe Space, type: :model do
   # 前提条件
   #   なし
   # テストパターン
-  #   最小文字数よりも少ない, 最小文字数と同じ, 最大文字数と同じ, 最大文字数よりも多い → データ作成
+  #   ない, 最小文字数よりも少ない, 最小文字数と同じ, 最大文字数と同じ, 最大文字数よりも多い → データ作成
   describe 'validates :name' do
     let!(:customer) { FactoryBot.create(:customer) }
     shared_context 'データ作成' do |name|
@@ -97,6 +101,10 @@ RSpec.describe Space, type: :model do
     end
 
     # テストケース
+    context 'ない' do
+      include_context 'データ作成', ''
+      it_behaves_like 'ToNG'
+    end
     context '最小文字数よりも少ない' do
       include_context 'データ作成', 'a' * (Settings['space_name_minimum'] - 1)
       it_behaves_like 'ToNG'
@@ -111,6 +119,48 @@ RSpec.describe Space, type: :model do
     end
     context '最大文字数よりも多い' do
       include_context 'データ作成', 'a' * (Settings['space_name_maximum'] + 1)
+      it_behaves_like 'ToNG'
+    end
+  end
+
+  # 目的
+  # 前提条件
+  #   なし
+  # テストパターン
+  #   最小文字数よりも少ない, 最小文字数と同じ, 最大文字数と同じ, 最大文字数よりも多い → データ作成
+  describe 'validates :purpose' do
+    let!(:customer) { FactoryBot.create(:customer) }
+    shared_context 'データ作成' do |purpose|
+      let!(:space) { FactoryBot.build(:space, customer_id: customer.id, purpose: purpose) }
+    end
+
+    # テスト内容
+    shared_examples_for 'ToOK' do
+      it 'OK' do
+        expect(space).to be_valid
+      end
+    end
+    shared_examples_for 'ToNG' do
+      it 'NG' do
+        expect(space).not_to be_valid
+      end
+    end
+
+    # テストケース
+    context '最小文字数よりも少ない' do
+      include_context 'データ作成', 'a' * (Settings['space_purpose_minimum'] - 1)
+      it_behaves_like 'ToNG'
+    end
+    context '最小文字数と同じ' do
+      include_context 'データ作成', 'a' * Settings['space_purpose_minimum']
+      it_behaves_like 'ToOK'
+    end
+    context '最大文字数と同じ' do
+      include_context 'データ作成', 'a' * Settings['space_purpose_maximum']
+      it_behaves_like 'ToOK'
+    end
+    context '最大文字数よりも多い' do
+      include_context 'データ作成', 'a' * (Settings['space_purpose_maximum'] + 1)
       it_behaves_like 'ToNG'
     end
   end

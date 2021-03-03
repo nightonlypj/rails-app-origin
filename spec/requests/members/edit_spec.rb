@@ -14,7 +14,7 @@ RSpec.describe 'Members', type: :request do
   #   ベースドメイン, 存在するサブドメイン, 存在しないサブドメイン → 事前にデータ作成
   describe 'GET /edit' do
     include_context 'メンバー作成', 1, 1, 1, 0, 'ASC'
-    include_context '対象外メンバー作成', 'ASC'
+    include_context 'メンバー作成（対象外）', 'ASC'
 
     # テスト内容
     shared_examples_for 'ToOK' do
@@ -23,7 +23,7 @@ RSpec.describe 'Members', type: :request do
         expect(response).to be_successful
       end
     end
-    shared_examples_for 'ToNG' do
+    shared_examples_for 'ToNot' do
       it '存在しないステータス' do
         get edit_member_path(customer_code: customer_code, user_code: user_code), headers: headers
         expect(response).to be_not_found
@@ -93,7 +93,7 @@ RSpec.describe 'Members', type: :request do
     end
     shared_examples_for '[ログイン中/削除予約済み][*][未所属/存在しない][*]ベースドメイン' do
       let!(:headers) { BASE_HEADER }
-      it_behaves_like 'ToNG'
+      it_behaves_like 'ToNot'
     end
     shared_examples_for '[*][*][*][*]存在するサブドメイン' do
       let!(:headers) { @space_header }

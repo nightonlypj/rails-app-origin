@@ -8,7 +8,7 @@ class CustomersController < ApplicationController
   # GET /customers.json（ベースドメイン） 所属一覧API
   def index
     @customers = Customer.order(created_at: 'DESC', id: 'DESC').page(params[:page]).per(Settings['default_customers_limit'])
-                         .includes(:member).where(members: { user_id: current_user.id })
+                         .eager_load(:member).where(members: { user_id: current_user.id })
     return if request.format.json? || @customers.current_page <= [@customers.total_pages, 1].max
 
     redirect_to @customers.total_pages <= 1 ? customers_path : customers_path(page: @customers.total_pages)

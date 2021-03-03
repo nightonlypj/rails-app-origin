@@ -14,10 +14,10 @@ class RegistrationController < ApplicationController
   def create
     @user.assign_attributes(params.require(:user).permit(:name, :password, :password_confirmation))
     @user.valid?
-    if @user.errors.present?
+    if @user.errors.any?
       respond_to do |format|
         format.html { return render :new }
-        format.json { return render json: { status: 'NG', errors: @user.errors }, status: :unprocessable_entity }
+        format.json { return render json: { status: 'NG', error: @user.errors.messages }, status: :unprocessable_entity }
       end
     end
 

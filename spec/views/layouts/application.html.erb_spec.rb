@@ -71,56 +71,39 @@ RSpec.describe 'layouts/application', type: :view do
     end
   end
 
-  shared_examples_for 'スペース情報表示' do
-    it 'スペース名が含まれる' do
-      render
-      expect(rendered).to include(@request_space.name)
-    end
-    it 'スペーストップのパスが含まれる' do
-      render
-      expect(rendered).to include("\"#{root_path}\"")
-    end
-  end
-
   # テストケース
   shared_examples_for '[未ログイン]ベースドメイン' do
     let!(:domain) { '' }
     it_behaves_like '未ログイン表示'
     it_behaves_like '削除予約非表示'
-    # it_behaves_like 'スペース情報非表示' # Tips: ベースドメインの為、対象なし
   end
   shared_examples_for '[ログイン中]ベースドメイン' do
     let!(:domain) { '' }
     it_behaves_like 'ログイン中表示'
     it_behaves_like '削除予約非表示'
-    # it_behaves_like 'スペース情報非表示' # Tips: ベースドメインの為、対象なし
   end
   shared_examples_for '[削除予約済み]ベースドメイン' do
     let!(:domain) { '' }
     it_behaves_like 'ログイン中表示'
     it_behaves_like '削除予約表示'
-    # it_behaves_like 'スペース情報非表示' # Tips: ベースドメインの為、対象なし
   end
   shared_examples_for '[未ログイン]存在するサブドメイン' do
     let!(:domain) { "//#{Settings['base_domain']}" }
     include_context 'リクエストスペース作成'
     it_behaves_like '未ログイン表示'
     it_behaves_like '削除予約非表示'
-    it_behaves_like 'スペース情報表示'
   end
   shared_examples_for '[ログイン中]存在するサブドメイン' do
     let!(:domain) { "//#{Settings['base_domain']}" }
     include_context 'リクエストスペース作成'
     it_behaves_like 'ログイン中表示'
     it_behaves_like '削除予約非表示'
-    it_behaves_like 'スペース情報表示'
   end
   shared_examples_for '[削除予約済み]存在するサブドメイン' do
     let!(:domain) { "//#{Settings['base_domain']}" }
     include_context 'リクエストスペース作成'
     it_behaves_like 'ログイン中表示'
     it_behaves_like '削除予約表示'
-    it_behaves_like 'スペース情報表示'
   end
 
   context '未ログイン' do

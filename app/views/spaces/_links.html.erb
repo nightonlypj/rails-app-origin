@@ -1,14 +1,6 @@
-<% domain = "//#{Settings['base_domain']}" %>
+<% domain = @request_space.present? ? "//#{Settings['base_domain']}" : '' %>
 <nav>
   <ul>
-<% if action_name != 'index' %>
-    <li><%= link_to 'スペース一覧', "#{domain}#{spaces_path}" %></li>
-<% if action_name != 'new' && action_name != 'create' %>
-    <li><%= link_to "#{@space.customer.name}の詳細", "#{domain}#{customer_path(customer_code: @space.customer.code)}" %></li>
-<% end %>
-    <li><%= link_to '所属一覧', "#{domain}#{customers_path}" %></li>
-<% else %>
-    <li><%= link_to '所属一覧', customers_path %></li>
-<% end %>
+    <li><%= link_to '参加スペース一覧', "#{domain}#{spaces_path}" %></li>
   </ul>
 </nav>

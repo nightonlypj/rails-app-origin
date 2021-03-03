@@ -1,7 +1,7 @@
 <% validate_enabled = @space.errors.any? %>
-<%= form_with(model: @space, html: { novalidate: true }, local: true) do |form| %>
+<%= form_with(model: @space, url: update_space_path, html: { novalidate: true }, local: true) do |form| %>
   <div class="mb-3">
-    <span class="font-weight-bold">顧客名 (コード):</span> <%= @space.customer.name %> (<%= @space.customer.code %>)
+    <span class="font-weight-bold">組織・団体名 (コード):</span> <%= @space.customer.name %> (<%= @space.customer.code %>)
   </div>
 
   <div class="form-outline<%= input_size_class_name(@space, :subdomain) %>">

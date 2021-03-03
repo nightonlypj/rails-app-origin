@@ -13,7 +13,7 @@ RSpec.describe 'Members', type: :request do
   #   顧客: 所属, 未所属, 存在しない, ない → 事前にデータ作成
   #   ベースドメイン, 存在するサブドメイン, 存在しないサブドメイン → 事前にデータ作成
   describe 'GET /index' do
-    let!(:outside_customer) { FactoryBot.create(:customer) }
+    include_context '顧客作成（対象外）'
 
     # テスト内容
     shared_examples_for 'ToOK' do
@@ -26,7 +26,7 @@ RSpec.describe 'Members', type: :request do
         expect(response).to be_successful
       end
     end
-    shared_examples_for 'ToNG' do |error|
+    shared_examples_for 'ToNot' do |error|
       it '存在しないステータス' do
         get members_path(customer_code: customer_code), headers: headers
         expect(response).to be_not_found
@@ -74,7 +74,7 @@ RSpec.describe 'Members', type: :request do
     end
     shared_examples_for '[ログイン中/削除予約済み][ある][未所属/存在しない]ベースドメイン' do
       let!(:headers) { BASE_HEADER }
-      it_behaves_like 'ToNG', 'errors.messages.customer.code_error'
+      it_behaves_like 'ToNot', 'errors.messages.customer.code_error'
     end
     shared_examples_for '[未ログイン][ない][未所属/存在しない]ベースドメイン' do
       let!(:headers) { BASE_HEADER }
@@ -82,7 +82,7 @@ RSpec.describe 'Members', type: :request do
     end
     shared_examples_for '[ログイン中/削除予約済み][ない][未所属/存在しない]ベースドメイン' do
       let!(:headers) { BASE_HEADER }
-      it_behaves_like 'ToNG', 'errors.messages.customer.code_error'
+      it_behaves_like 'ToNot', 'errors.messages.customer.code_error'
     end
     shared_examples_for '[*][*][*]存在するサブドメイン' do
       let!(:headers) { @space_header }
@@ -191,11 +191,11 @@ RSpec.describe 'Members', type: :request do
 
     # テスト内容
     shared_examples_for 'ページ情報' do |page, power|
-      it '顧客名が含まれる' do
+      it '組織・団体名が含まれる' do
         get members_path(customer_code: customer_code, page: page), headers: headers
         expect(response.body).to include(customer.name)
       end
-      it '(json)顧客名が一致する' do
+      it '(json)組織・団体名が一致する' do
         get members_path(customer_code: customer_code, page: page, format: :json), headers: headers
         expect(JSON.parse(response.body)['customer']['name']).to eq(customer.name)
       end

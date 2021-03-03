@@ -96,7 +96,7 @@ RSpec.describe 'Users::Unlocks', type: :request do
         expect(response).to be_successful
       end
     end
-    shared_examples_for 'ToNG' do
+    shared_examples_for 'ToNot' do
       it '存在しないステータス' do
         post user_unlock_path, params: { user: attributes }, headers: headers
         expect(response).to be_not_found
@@ -138,7 +138,7 @@ RSpec.describe 'Users::Unlocks', type: :request do
     end
     shared_examples_for '[未ログイン][*]存在するサブドメイン' do
       let!(:headers) { @space_header }
-      it_behaves_like 'ToNG'
+      it_behaves_like 'ToNot'
     end
     shared_examples_for '[ログイン中/削除予約済み][*]存在するサブドメイン' do
       let!(:headers) { @space_header }
@@ -146,7 +146,7 @@ RSpec.describe 'Users::Unlocks', type: :request do
     end
     shared_examples_for '[未ログイン][*]存在しないサブドメイン' do
       let!(:headers) { NOT_SPACE_HEADER }
-      it_behaves_like 'ToNG'
+      it_behaves_like 'ToNot'
     end
     shared_examples_for '[ログイン中/削除予約済み][*]存在しないサブドメイン' do
       let!(:headers) { NOT_SPACE_HEADER }
@@ -221,12 +221,6 @@ RSpec.describe 'Users::Unlocks', type: :request do
       it '成功ステータス' do
         get user_unlock_path(unlock_token: unlock_token), headers: headers
         expect(response).to be_successful
-      end
-    end
-    shared_examples_for 'ToNG' do
-      it '存在しないステータス' do
-        get user_unlock_path(unlock_token: unlock_token), headers: headers
-        expect(response).to be_not_found
       end
     end
     shared_examples_for 'ToTop' do |alert, notice|

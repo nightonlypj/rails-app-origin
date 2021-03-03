@@ -1,18 +1,23 @@
 require 'rails_helper'
 
-# TODO
 RSpec.describe 'spaces/new', type: :view do
-=begin
-  let!(:customer) { FactoryBot.create(:customer) }
-  before { assign(:space, FactoryBot.build(:space, customer_id: customer.id)) }
+  before do
+    @customer = Customer.new
+    @space = Space.new
+    @customers = Customer.all
+  end
 
   it 'renders new space form' do
     render
-    assert_select 'form[action=?][method=?]', space_path, 'post' do
+    assert_select 'form[action=?][method=?]', create_space_path, 'post' do
+      assert_select 'input[name=?]', 'space[customer][create_flag]'
+      assert_select 'select[name=?]', 'space[customer][code]'
+      assert_select 'input[name=?]', 'space[customer][name]'
       assert_select 'input[name=?]', 'space[subdomain]'
+      assert_select 'input[name=?]', 'space[public_flag]'
       assert_select 'input[name=?]', 'space[name]'
+      assert_select 'input[name=?]', 'space[purpose]'
       assert_select 'input[name=?]', 'commit'
     end
   end
-=end
 end

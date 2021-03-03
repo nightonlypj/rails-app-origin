@@ -80,7 +80,7 @@ RSpec.describe 'Users::Confirmations', type: :request do
         expect(response).to be_successful
       end
     end
-    shared_examples_for 'ToNG' do
+    shared_examples_for 'ToNot' do
       it '存在しないステータス' do
         post user_confirmation_path, params: { user: attributes }, headers: headers
         expect(response).to be_not_found
@@ -106,11 +106,11 @@ RSpec.describe 'Users::Confirmations', type: :request do
     end
     shared_examples_for '[*][*]存在するサブドメイン' do
       let!(:headers) { @space_header }
-      it_behaves_like 'ToNG'
+      it_behaves_like 'ToNot'
     end
     shared_examples_for '[*][*]存在しないサブドメイン' do
       let!(:headers) { NOT_SPACE_HEADER }
-      it_behaves_like 'ToNG'
+      it_behaves_like 'ToNot'
     end
 
     shared_examples_for '[*]有効なパラメータ' do # Tips: ログイン中も出来ても良さそう

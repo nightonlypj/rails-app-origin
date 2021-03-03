@@ -14,7 +14,7 @@ class MembersController < ApplicationController
   def index
     @members = Member.order(created_at: 'DESC', id: 'DESC').page(params[:page]).per(Settings['default_members_limit'])
                      .where(customer_id: @customer.id)
-                     .includes(:user)
+                     .eager_load(:user)
     return if request.format.json? || @members.current_page <= [@members.total_pages, 1].max
 
     if @members.total_pages <= 1
@@ -63,10 +63,13 @@ class MembersController < ApplicationController
                               invitation_customer_id: @customer.id, invitation_token: invitation_token, invitation_requested_at: invitationed_at)
       @user.valid?
     end
-    if @member.errors.present? || @user.errors.present?
+    if @member.errors.any? || @user.errors.any?
       respond_to do |format|
         format.html { return render :new }
-        format.json { return render json: { status: 'NG', errors: @member.errors.merge(@user.errors) }, status: :unprocessable_entity }
+        format.json do
+          messages = @user.errors.any? ? @member.errors.messages.merge({ user: @user.errors.messages }) : @member.errors.messages
+          return render json: { status: 'NG', error: messages }, status: :unprocessable_entity
+        end
       end
     end
 
@@ -98,10 +101,10 @@ class MembersController < ApplicationController
       @member.assign_attributes(params.require(:member).permit(:power))
       @member.errors.add(:power, t('alert.member.not_update_power.owner')) unless @customer.member.first.update_power?(@member.power)
     end
-    if @member.errors.present?
+    if @member.errors.any?
       respond_to do |format|
         format.html { return render :edit }
-        format.json { return render json: { status: 'NG', errors: @member.errors }, status: :unprocessable_entity }
+        format.json { return render json: { status: 'NG', error: @member.errors.messages }, status: :unprocessable_entity }
       end
     end
 
@@ -141,7 +144,7 @@ class MembersController < ApplicationController
   # 未所属/存在しないメンバーへのアクセス禁止
   def not_found_outside_member
     @member = Member.where(customer_id: @customer.id)
-                    .includes(:user).where(users: { code: params[:user_code] }).first
+                    .eager_load(:user).where(users: { code: params[:user_code] }).first
     return if @customer.present?
     return render json: { error: t('errors.messages.user.code_error') }, status: :not_found if request.format.json?
 

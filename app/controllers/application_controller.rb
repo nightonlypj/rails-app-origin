@@ -34,7 +34,7 @@ class ApplicationController < ActionController::Base
   def set_join_spaces
     return if current_user.blank? || @request_space.blank?
 
-    @join_spaces = Space.order(sort_key: 'ASC', id: 'ASC').page(1).per(Settings['select_join_spaces_limit'])
+    @join_spaces = Space.order(created_at: 'DESC', id: 'DESC').page(1).per(Settings['select_join_spaces_limit'])
                         .joins(customer: :member).where(members: { user_id: current_user.id })
   end
 
@@ -60,13 +60,16 @@ class ApplicationController < ActionController::Base
 
   # 削除予約済みの場合、リダイレクトしてメッセージを表示
   def redirect_response_destroy_reserved
-    redirect_to root_path, notice: t('notice.user.destroy_reserved') if current_user.destroy_reserved?
+    return unless current_user.destroy_reserved?
+    return render json: { error: t('notice.user.destroy_reserved') }, status: :not_found if request.format.json?
+
+    redirect_to root_path, notice: t('notice.user.destroy_reserved')
   end
 
   # 未所属/存在しない顧客へのアクセス禁止
   def not_found_outside_customer
     @customer = Customer.where(code: params[:customer_code])
-                        .includes(:member).where(members: { user_id: current_user.id }).first
+                        .eager_load(:member).where(members: { user_id: current_user.id }).first
     return if @customer.present?
     return render json: { error: t('errors.messages.customer.code_error') }, status: :not_found if request.format.json?
 
@@ -120,10 +123,10 @@ class ApplicationController < ActionController::Base
 
   # ユニークコードを作成して返却
   # @return ハッシュ値（ユニークな値とならなかった場合は最後に作成した値を返却）
-  def create_unique_code(model, key, logger_message)
+  def create_unique_code(model, key, logger_message, hash_way = :md5)
     try_count = 1
     loop do
-      code = Digest::MD5.hexdigest(SecureRandom.uuid)
+      code = hash_way == :crc32 ? Zlib.crc32(SecureRandom.uuid) : Digest::MD5.hexdigest(SecureRandom.uuid)
       return code if model.where("#{key} = ?", code).blank?
 
       if try_count < 10

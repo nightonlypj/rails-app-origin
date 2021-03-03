@@ -158,13 +158,13 @@ RSpec.describe 'Customers', type: :request do
           expect(parse_response[no - start_no]['code']).to eq(@create_customers[no - 1].code)
         end
       end
-      it '顧客名が含まれる' do
+      it '組織・団体名が含まれる' do
         get customers_path(page: page), headers: headers
         (start_no..end_no).each do |no|
           expect(response.body).to include(@create_customers[no - 1].name)
         end
       end
-      it '(json)顧客名が一致する' do
+      it '(json)組織・団体名が一致する' do
         get customers_path(page: page, format: :json), headers: headers
         parse_response = JSON.parse(response.body)['customers']
         (start_no..end_no).each do |no|

@@ -1,24 +1,62 @@
 <% validate_enabled = @space.errors.any? || @customer.errors.any? %>
-<%= form_with(model: @space, html: { novalidate: true }, local: true) do |form| %>
+<%= form_with(model: @space, url: new_space_path, html: { novalidate: true }, local: true) do |form| %>
 
 <%= form.fields_for @customer do |form_customer| %>
-  <div class="<%= input_size_class_name(@customer, :code) %>"><%# selectはFree版未対応？(form-outlineを入れると崩れる) %>
-    <%= form_customer.label '顧客名 (コード)', class: "form-label small#{validate_text_class_name(validate_enabled, @customer, :code)}", for: 'space_customer_code' %>
-    <%= form_customer.select :code, @customers.all.collect { |customer| [ "#{customer.name} (#{customer.code})", customer.code ] }, { include_blank: true }, class: "form-control#{validate_class_name(validate_enabled, @customer, :code)}" %>
+  <div class="form-outline<%= input_size_class_name(@customer, :create_flag) %>">
+    <%= form_customer.label '組織・団体名:', class: "form-label small" %>
+    <div>
+      <%= form_customer.radio_button :create_flag, 'false', class: "form-check-input small#{validate_class_name(validate_enabled, @customer, :create_flag)}" %>
+      <%= form_customer.label '所属している組織・団体から選択', class: 'form-check-label small mb-0', for: 'space_customer_create_flag_false' %>
+    </div>
+    <div>
+      <%= form_customer.radio_button :create_flag, 'true', class: "form-check-input small#{validate_class_name(validate_enabled, @customer, :create_flag)}" %>
+      <%= form_customer.label '組織・団体を新規作成', class: 'form-check-label small mb-0', for: 'space_customer_create_flag_true' %>
+      <%= render 'users/shared/field_error_messages', messages: @customer.errors[:create_flag], add_class: 'mt-1' %>
+    </div>
+  </div>
+
+  <div id="space_customer_code_area" class="<%= input_size_class_name(@customer, :code) %><%= ' collapse' if @customer.create_flag != 'false' %>"><%# selectはFree版未対応？(form-outlineを入れると崩れる) %>
+    <%= form_customer.select :code, @customers.all.collect { |customer| [ "#{customer.name} (#{customer.code})", customer.code ] }, { include_blank: '▼ 選択してください' }, class: "form-control#{validate_class_name(validate_enabled, @customer, :code)}" %>
     <%= render 'users/shared/field_error_messages', messages: @customer.errors[:code] %>
+  </div>
+
+  <div id="space_customer_name_area" class="form-outline<%= input_size_class_name(@customer, :name) %><%= ' collapse' if @customer.create_flag != 'true' %>">
+    <%= form_customer.text_field :name, autocomplete: 'name', class: "form-control#{validate_class_name(validate_enabled, @customer, :name)}" %>
+    <%= form.label '組織・団体名', class: 'form-label', for: 'space_customer_name' %>
+    <%= render 'users/shared/field_error_messages', messages: @customer.errors[:name] %>
   </div>
 <% end %>
 
-  <div class="form-outline<%= input_size_class_name(@space, :subdomain) %>">
-    <%= form.text_field :subdomain, autocomplete: 'name', class: "form-control#{validate_class_name(validate_enabled, @space, :subdomain)}" %>
-    <%= form.label 'サブドメイン', class: 'form-label', for: 'space_subdomain' %>
-    <%= render 'users/shared/field_error_messages', messages: @space.errors[:subdomain] %>
+  <%= form.label 'スペース情報:', class: "form-label small" %>
+
+  <div class="row<%= input_size_class_name(@space, :subdomain) %>">
+    <div class="col-2 d-flex align-items-center justify-content-end"><p class="text-nowrap small mb-0">https://</p></div>
+    <div class="col-5 form-outline">
+      <%= form.text_field :subdomain, autocomplete: 'name', class: "form-control#{validate_class_name(validate_enabled, @space, :subdomain)}", style: 'margin-bottom: 0px' %>
+      <%= form.label 'サブドメイン', class: 'form-label', for: 'space_subdomain' %>
+      <%= render 'users/shared/field_error_messages', messages: @space.errors[:subdomain], add_class: 'mt-1' %>
+    </div>
+    <div class="col-5 d-flex align-items-center"><p class="text-nowrap small mb-0">.<%= Settings['base_domain'] %></p></div>
+  </div>
+
+  <div class="form-check mb-1">
+    <%= form.check_box :public_flag, class: 'form-check-input' %>
+    <%= form.label '公開スペース', class: 'form-check-label small', for: 'space_public_flag' %>
+  </div>
+  <div class="note note-info small mb-3">
+    メンバー以外に閲覧させたくない場合はチェックしないでください。
   </div>
 
   <div class="form-outline<%= input_size_class_name(@space, :name) %>">
     <%= form.text_field :name, autocomplete: 'name', class: "form-control#{validate_class_name(validate_enabled, @space, :name)}" %>
     <%= form.label 'スペース名', class: 'form-label', for: 'space_name' %>
     <%= render 'users/shared/field_error_messages', messages: @space.errors[:name] %>
+  </div>
+
+  <div class="form-outline<%= input_size_class_name(@space, :purpose) %>">
+    <%= form.text_field :purpose, autocomplete: 'purpose', class: "form-control#{validate_class_name(validate_enabled, @space, :purpose)}" %>
+    <%= form.label 'スペースの目的(任意)', class: 'form-label', for: 'space_purpose' %>
+    <%= render 'users/shared/field_error_messages', messages: @space.errors[:purpose] %>
   </div>
 
   <%= form.submit '作成', class: 'btn btn-primary' %>

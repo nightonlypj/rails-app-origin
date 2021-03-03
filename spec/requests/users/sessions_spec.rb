@@ -96,7 +96,7 @@ RSpec.describe 'Users::Sessions', type: :request do
         expect(response).to be_successful
       end
     end
-    shared_examples_for 'ToNG' do
+    shared_examples_for 'ToNot' do
       it '存在しないステータス' do
         post user_session_path, params: { user: attributes }, headers: headers
         expect(response).to be_not_found
@@ -130,7 +130,7 @@ RSpec.describe 'Users::Sessions', type: :request do
     end
     shared_examples_for '[未ログイン][*]存在するサブドメイン' do
       let!(:headers) { @space_header }
-      it_behaves_like 'ToNG'
+      it_behaves_like 'ToNot'
     end
     shared_examples_for '[ログイン中/削除予約済み][*]存在するサブドメイン' do
       let!(:headers) { @space_header }
@@ -138,7 +138,7 @@ RSpec.describe 'Users::Sessions', type: :request do
     end
     shared_examples_for '[未ログイン][*]存在しないサブドメイン' do
       let!(:headers) { NOT_SPACE_HEADER }
-      it_behaves_like 'ToNG'
+      it_behaves_like 'ToNot'
     end
     shared_examples_for '[ログイン中/削除予約済み][*]存在しないサブドメイン' do
       let!(:headers) { NOT_SPACE_HEADER }
@@ -194,7 +194,7 @@ RSpec.describe 'Users::Sessions', type: :request do
   #   ベースドメイン, 存在するサブドメイン, 存在しないサブドメイン → 事前にデータ作成
   describe 'DELETE /destroy' do
     # テスト内容
-    shared_examples_for 'ToNG' do
+    shared_examples_for 'ToNot' do
       it '存在しないステータス' do
         delete destroy_user_session_path, headers: headers
         expect(response).to be_not_found
@@ -224,7 +224,7 @@ RSpec.describe 'Users::Sessions', type: :request do
     end
     shared_examples_for '[ログイン中/削除予約済み]存在するサブドメイン' do
       let!(:headers) { @space_header }
-      it_behaves_like 'ToNG'
+      it_behaves_like 'ToNot'
     end
     shared_examples_for '[未ログイン]存在しないサブドメイン' do
       let!(:headers) { NOT_SPACE_HEADER }
@@ -232,7 +232,7 @@ RSpec.describe 'Users::Sessions', type: :request do
     end
     shared_examples_for '[ログイン中/削除予約済み]存在しないサブドメイン' do
       let!(:headers) { NOT_SPACE_HEADER }
-      it_behaves_like 'ToNG'
+      it_behaves_like 'ToNot'
     end
 
     context '未ログイン' do

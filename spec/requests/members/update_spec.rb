@@ -16,7 +16,7 @@ RSpec.describe 'Members', type: :request do
   #   ベースドメイン, 存在するサブドメイン, 存在しないサブドメイン → 事前にデータ作成
   describe 'PATCH /update' do
     include_context 'メンバー作成', 1, 1, 1, 0, 'ASC'
-    include_context '対象外メンバー作成', 'ASC'
+    include_context 'メンバー作成（対象外）', 'ASC'
     let!(:valid_attributes) { { power: 'Member' } }
     let!(:invalid_attributes) { { power: nil } }
 
@@ -42,13 +42,19 @@ RSpec.describe 'Members', type: :request do
       end
     end
 
-    shared_examples_for 'ToOK' do
-      it '成功ステータス' do
+    shared_examples_for 'ToError' do
+      it '成功ステータス' do # Tips: 再入力
         patch member_path(customer_code: customer_code, user_code: user_code), params: { member: attributes }, headers: headers
         expect(response).to be_successful
       end
+      it '(json)失敗レスポンス' do
+        patch member_path(customer_code: customer_code, user_code: user_code, format: :json), params: { member: attributes }, headers: headers
+        expect(response).to have_http_status(:unprocessable_entity)
+        expect(JSON.parse(response.body)['status']).to eq('NG')
+        expect(JSON.parse(response.body)['error'].count).not_to eq(0)
+      end
     end
-    shared_examples_for 'ToNG' do |error|
+    shared_examples_for 'ToNot' do |error|
       it '存在しないステータス' do
         patch member_path(customer_code: customer_code, user_code: user_code), params: { member: attributes }, headers: headers
         expect(response).to be_not_found
@@ -127,7 +133,7 @@ RSpec.describe 'Members', type: :request do
     shared_examples_for '[ログイン中][Owner][所属][Owner][無効]ベースドメイン' do
       let!(:headers) { BASE_HEADER }
       it_behaves_like 'NG'
-      it_behaves_like 'ToOK' # Tips: 再入力
+      it_behaves_like 'ToError'
     end
     shared_examples_for '[削除予約済み][Owner][所属][Owner][*]ベースドメイン' do
       let!(:headers) { BASE_HEADER }
@@ -147,7 +153,7 @@ RSpec.describe 'Members', type: :request do
     shared_examples_for '[ログイン中][Owner/Admin][所属][Admin/Member][無効]ベースドメイン' do
       let!(:headers) { BASE_HEADER }
       it_behaves_like 'NG'
-      it_behaves_like 'ToOK' # Tips: 再入力
+      it_behaves_like 'ToError'
     end
     shared_examples_for '[削除予約済み][Owner/Admin][所属][Admin/Member][*]ベースドメイン' do
       let!(:headers) { BASE_HEADER }
@@ -162,32 +168,32 @@ RSpec.describe 'Members', type: :request do
     shared_examples_for '[ログイン中/削除予約済み][*][未所属/存在しない][自分][*]ベースドメイン' do
       let!(:headers) { BASE_HEADER }
       # it_behaves_like 'NG' # Tips: 権限がない為、紐付かない
-      it_behaves_like 'ToNG', 'errors.messages.customer.code_error'
+      it_behaves_like 'ToNot', 'errors.messages.customer.code_error'
     end
     shared_examples_for '[ログイン中/削除予約済み][*][未所属/存在しない][Owner/Admin/Member][*]ベースドメイン' do
       let!(:headers) { BASE_HEADER }
       it_behaves_like 'NG'
-      it_behaves_like 'ToNG', 'errors.messages.customer.code_error'
+      it_behaves_like 'ToNot', 'errors.messages.customer.code_error'
     end
     shared_examples_for '[*][*][*][自分][*]存在するサブドメイン' do
       let!(:headers) { @space_header }
       # it_behaves_like 'NG' # Tips: 権限がない為、紐付かない
-      it_behaves_like 'ToNG', 'errors.messages.domain_error'
+      it_behaves_like 'ToNot', 'errors.messages.domain_error'
     end
     shared_examples_for '[*][*][*][Owner/Admin/Member][*]存在するサブドメイン' do
       let!(:headers) { @space_header }
       it_behaves_like 'NG'
-      it_behaves_like 'ToNG', 'errors.messages.domain_error'
+      it_behaves_like 'ToNot', 'errors.messages.domain_error'
     end
     shared_examples_for '[*][*][*][自分][*]存在しないサブドメイン' do
       let!(:headers) { NOT_SPACE_HEADER }
       # it_behaves_like 'NG' # Tips: 権限がない為、紐付かない
-      it_behaves_like 'ToNG', 'errors.messages.domain_error'
+      it_behaves_like 'ToNot', 'errors.messages.domain_error'
     end
     shared_examples_for '[*][*][*][Owner/Admin/Member][*]存在しないサブドメイン' do
       let!(:headers) { NOT_SPACE_HEADER }
       it_behaves_like 'NG'
-      it_behaves_like 'ToNG', 'errors.messages.domain_error'
+      it_behaves_like 'ToNot', 'errors.messages.domain_error'
     end
 
     shared_examples_for '[ログイン中/削除予約済み][Owner][所属][自分]有効なパラメータ' do

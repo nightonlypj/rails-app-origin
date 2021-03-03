@@ -15,7 +15,7 @@ RSpec.describe 'Members', type: :request do
   #   ベースドメイン, 存在するサブドメイン, 存在しないサブドメイン → 事前にデータ作成
   describe 'PATCH /destroy' do
     include_context 'メンバー作成', 1, 1, 1, 0, 'ASC'
-    include_context '対象外メンバー作成', 'ASC'
+    include_context 'メンバー作成（対象外）', 'ASC'
 
     # テスト内容
     shared_examples_for 'OK' do
@@ -47,13 +47,7 @@ RSpec.describe 'Members', type: :request do
       end
     end
 
-    shared_examples_for 'ToOK' do
-      it '成功ステータス' do
-        delete member_path(customer_code: customer_code, user_code: user_code), headers: headers
-        expect(response).to be_successful
-      end
-    end
-    shared_examples_for 'ToNG' do |error|
+    shared_examples_for 'ToNot' do |error|
       it '存在しないステータス' do
         delete member_path(customer_code: customer_code, user_code: user_code), headers: headers
         expect(response).to be_not_found
@@ -157,32 +151,32 @@ RSpec.describe 'Members', type: :request do
     shared_examples_for '[ログイン中/削除予約済み][*][未所属/存在しない][自分]ベースドメイン' do
       let!(:headers) { BASE_HEADER }
       # it_behaves_like 'NG' # Tips: 権限がない為、紐付かない
-      it_behaves_like 'ToNG', 'errors.messages.customer.code_error'
+      it_behaves_like 'ToNot', 'errors.messages.customer.code_error'
     end
     shared_examples_for '[ログイン中/削除予約済み][*][未所属/存在しない][Owner/Admin/Member]ベースドメイン' do
       let!(:headers) { BASE_HEADER }
       it_behaves_like 'NG'
-      it_behaves_like 'ToNG', 'errors.messages.customer.code_error'
+      it_behaves_like 'ToNot', 'errors.messages.customer.code_error'
     end
     shared_examples_for '[*][*][*][自分]存在するサブドメイン' do
       let!(:headers) { @space_header }
       # it_behaves_like 'NG' # Tips: 権限がない為、紐付かない
-      it_behaves_like 'ToNG', 'errors.messages.domain_error'
+      it_behaves_like 'ToNot', 'errors.messages.domain_error'
     end
     shared_examples_for '[*][*][*][Owner/Admin/Member]存在するサブドメイン' do
       let!(:headers) { @space_header }
       it_behaves_like 'NG'
-      it_behaves_like 'ToNG', 'errors.messages.domain_error'
+      it_behaves_like 'ToNot', 'errors.messages.domain_error'
     end
     shared_examples_for '[*][*][*][自分]存在しないサブドメイン' do
       let!(:headers) { NOT_SPACE_HEADER }
       # it_behaves_like 'NG' # Tips: 権限がない為、紐付かない
-      it_behaves_like 'ToNG', 'errors.messages.domain_error'
+      it_behaves_like 'ToNot', 'errors.messages.domain_error'
     end
     shared_examples_for '[*][*][*][Owner/Admin/Member]存在しないサブドメイン' do
       let!(:headers) { NOT_SPACE_HEADER }
       it_behaves_like 'NG'
-      it_behaves_like 'ToNG', 'errors.messages.domain_error'
+      it_behaves_like 'ToNot', 'errors.messages.domain_error'
     end
 
     shared_examples_for '[ログイン中/削除予約済み][Owner][所属]対象が自分' do

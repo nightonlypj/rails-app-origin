@@ -1,6 +1,6 @@
 FactoryBot.define do
   factory :customer do
-    sequence(:code) { |n| "customer#{n}test" }
-    name            { "顧客(#{code})" }
+    code            { Zlib.crc32(SecureRandom.uuid) }
+    sequence(:name) { |n| "customer#{n}test" }
   end
 end

@@ -5,9 +5,10 @@ class Space < ApplicationRecord
   validates :subdomain, presence: true
   validates :subdomain, length: { in: Settings['subdomain_minimum']..Settings['subdomain_maximum'] }, if: proc { |space| space.subdomain.present? }
   validates :subdomain, format: { with: /\A[a-z\d][a-z\d\-]*\z/ }, if: proc { |space| space.subdomain.present? }
-  validates :subdomain, uniqueness: true
+  validates :subdomain, uniqueness: true, if: proc { |space| space.subdomain.present? }
   validates :name, presence: true
   validates :name, length: { in: Settings['space_name_minimum']..Settings['space_name_maximum'] }, if: proc { |space| space.name.present? }
+  validates :purpose, length: { in: Settings['space_purpose_minimum']..Settings['space_purpose_maximum'] }, if: proc { |space| space.purpose.present? }
 
   # 画像URLを返却
   def image_url(version)

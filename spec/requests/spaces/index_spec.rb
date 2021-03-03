@@ -9,6 +9,8 @@ RSpec.describe 'Spaces', type: :request do
   #   未ログイン, ログイン中, ログイン中（削除予約済み） → データ＆状態作成
   #   ベースドメイン, 存在するサブドメイン, 存在しないサブドメイン → 事前にデータ作成
   describe 'GET /index' do
+    include_context 'リクエストスペース作成'
+
     # テスト内容
     shared_examples_for 'ToOK' do
       it '成功ステータス' do
@@ -152,107 +154,110 @@ RSpec.describe 'Spaces', type: :request do
       it 'スペーストップのパスが含まれる' do
         get spaces_path(page: page), headers: headers
         (start_no..end_no).each do |no|
-          expect(response.body).to include("//#{@create_spaces[no - 1].subdomain}.#{Settings['base_domain']}")
+          expect(response.body).to include("//#{@create_spaces[@create_spaces.count - no].subdomain}.#{Settings['base_domain']}")
         end
       end
       it '(json)サブドメインが含まれる' do
         get spaces_path(page: page, format: :json), headers: headers
         parse_response = JSON.parse(response.body)['join_spaces']
         (start_no..end_no).each do |no|
-          expect(parse_response[no - start_no]['subdomain']).to eq(@create_spaces[no - 1].subdomain)
+          expect(parse_response[no - start_no]['subdomain']).to eq(@create_spaces[@create_spaces.count - no].subdomain)
         end
       end
       it '画像URLが含まれる' do # Tips: ユニークではない為、正確ではない
         get spaces_path(page: page), headers: headers
         (start_no..end_no).each do |no|
-          expect(response.body).to include("\"#{@create_spaces[no - 1].image_url(:small)}\"")
+          expect(response.body).to include("\"#{@create_spaces[@create_spaces.count - no].image_url(:small)}\"")
         end
       end
       it '(json)画像URLが一致する' do
         get spaces_path(page: page, format: :json), headers: headers
         parse_response = JSON.parse(response.body)['join_spaces']
         (start_no..end_no).each do |no|
-          expect(parse_response[no - start_no]['image_url']).to eq("https://#{Settings['base_domain']}#{@create_spaces[no - 1].image_url(:small)}")
+          image_url = "https://#{Settings['base_domain']}#{@create_spaces[@create_spaces.count - no].image_url(:small)}"
+          expect(parse_response[no - start_no]['image_url']).to eq(image_url)
         end
       end
       it 'スペース名が含まれる' do
         get spaces_path(page: page), headers: headers
         (start_no..end_no).each do |no|
-          expect(response.body).to include(@create_spaces[no - 1].name)
+          expect(response.body).to include(@create_spaces[@create_spaces.count - no].name)
         end
       end
       it '(json)スペース名が一致する' do
         get spaces_path(page: page, format: :json), headers: headers
         parse_response = JSON.parse(response.body)['join_spaces']
         (start_no..end_no).each do |no|
-          expect(parse_response[no - start_no]['name']).to eq(@create_spaces[no - 1].name)
+          expect(parse_response[no - start_no]['name']).to eq(@create_spaces[@create_spaces.count - no].name)
         end
       end
       it '(json)公開フラグが一致する' do
         get spaces_path(page: page, format: :json), headers: headers
         parse_response = JSON.parse(response.body)['join_spaces']
         (start_no..end_no).each do |no|
-          expect(parse_response[no - start_no]['public_flag']).to eq(@create_spaces[no - 1].public_flag)
+          expect(parse_response[no - start_no]['public_flag']).to eq(@create_spaces[@create_spaces.count - no].public_flag)
         end
       end
       it '作成日が含まれる' do
         get spaces_path(page: page), headers: headers
         (start_no..end_no).each do |no|
-          expect(response.body).to include(I18n.l(@create_spaces[no - 1].created_at.to_date))
+          expect(response.body).to include(I18n.l(@create_spaces[@create_spaces.count - no].created_at.to_date))
         end
       end
       it '(json)作成日時が一致する' do
         get spaces_path(page: page, format: :json), headers: headers
         parse_response = JSON.parse(response.body)['join_spaces']
         (start_no..end_no).each do |no|
-          expect(parse_response[no - start_no]['created_at']).to eq(I18n.l(@create_spaces[no - 1].created_at, format: :json))
+          expect(parse_response[no - start_no]['created_at']).to eq(I18n.l(@create_spaces[@create_spaces.count - no].created_at, format: :json))
         end
       end
       it '顧客詳細のパスが含まれる' do
         get spaces_path(page: page), headers: headers
         (start_no..end_no).each do |no|
-          expect(response.body).to include("\"#{customer_path(@create_spaces[no - 1].customer.code)}\"")
+          expect(response.body).to include("\"#{customer_path(@create_spaces[@create_spaces.count - no].customer.code)}\"")
         end
       end
       it '顧客コードが含まれる' do # Tips: 顧客詳細のパスに含まれる為、正確ではない
         get spaces_path(page: page), headers: headers
         (start_no..end_no).each do |no|
-          expect(response.body).to include(@create_spaces[no - 1].customer.code)
+          expect(response.body).to include(@create_spaces[@create_spaces.count - no].customer.code)
         end
       end
       it '(json)顧客コードが一致する' do
         get spaces_path(page: page, format: :json), headers: headers
         parse_response = JSON.parse(response.body)['join_spaces']
         (start_no..end_no).each do |no|
-          expect(parse_response[no - start_no]['customer']['code']).to eq(@create_spaces[no - 1].customer.code)
+          expect(parse_response[no - start_no]['customer']['code']).to eq(@create_spaces[@create_spaces.count - no].customer.code)
         end
       end
       it '組織・団体名が含まれる' do
         get spaces_path(page: page), headers: headers
         (start_no..end_no).each do |no|
-          expect(response.body).to include(@create_spaces[no - 1].customer.name)
+          expect(response.body).to include(@create_spaces[@create_spaces.count - no].customer.name)
         end
       end
       it '(json)組織・団体名が一致する' do
         get spaces_path(page: page, format: :json), headers: headers
         parse_response = JSON.parse(response.body)['join_spaces']
         (start_no..end_no).each do |no|
-          expect(parse_response[no - start_no]['customer']['name']).to eq(@create_spaces[no - 1].customer.name)
+          expect(parse_response[no - start_no]['customer']['name']).to eq(@create_spaces[@create_spaces.count - no].customer.name)
         end
       end
       it 'スペース情報変更のパスが含まれる（Owner/Adminの場合）' do
         get spaces_path(page: page), headers: headers
         (start_no..end_no).each do |no|
-          if @create_spaces[no - 1].customer_id == member_owner.customer_id || @create_spaces[no - 1].customer_id == member_admin.customer_id
-            expect(response.body).to include("\"//#{@create_spaces[no - 1].subdomain}.#{Settings['base_domain']}#{edit_space_path}\"")
+          customer_id = @create_spaces[@create_spaces.count - no].customer_id
+          if customer_id == member_owner.customer_id || customer_id == member_admin.customer_id
+            expect(response.body).to include("\"//#{@create_spaces[@create_spaces.count - no].subdomain}.#{Settings['base_domain']}#{edit_space_path}\"")
           end
         end
       end
       it 'スペース情報変更のパスが含まれない（Owner/Admin以外の場合）' do
         get spaces_path(page: page), headers: headers
         (start_no..end_no).each do |no|
-          if @create_spaces[no - 1].customer_id != member_owner.customer_id && @create_spaces[no - 1].customer_id != member_admin.customer_id
-            expect(response.body).not_to include("\"//#{@create_spaces[no - 1].subdomain}.#{Settings['base_domain']}#{edit_space_path}\"")
+          customer_id = @create_spaces[@create_spaces.count - no].customer_id
+          if customer_id != member_owner.customer_id && customer_id != member_admin.customer_id
+            expect(response.body).not_to include("\"//#{@create_spaces[@create_spaces.count - no].subdomain}.#{Settings['base_domain']}#{edit_space_path}\"")
           end
         end
       end

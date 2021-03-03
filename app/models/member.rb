@@ -14,17 +14,17 @@ class Member < ApplicationRecord
     end
   end
 
-  # 招待権限があるかを返却
+  # スペース作成・メンバー招待の権限があるかを返却
   def create_power?(taget_user_power = nil)
     (power == 'Owner') || (power == 'Admin' && (taget_user_power.blank? || taget_user_power != 'Owner'))
   end
 
-  # 変更権限があるかを返却
+  # スペース情報変更・メンバー権限変更の権限があるかを返却
   def update_power?(taget_user_power = nil)
     create_power?(taget_user_power)
   end
 
-  # 解除権限があるかを返却
+  # メンバー解除の権限があるかを返却
   def destroy_power?(taget_user_power = nil)
     create_power?(taget_user_power)
   end
