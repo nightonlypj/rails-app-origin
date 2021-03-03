@@ -49,8 +49,8 @@ RSpec.describe 'Users::Passwords', type: :request do
     let!(:invalid_attributes) { FactoryBot.attributes_for(:user, email: nil) }
 
     # テスト内容
-    shared_examples_for 'ToOK' do
-      it '成功ステータス' do
+    shared_examples_for 'ToError' do
+      it '成功ステータス' do # Tips: 再入力
         post create_user_password_path, params: { user: attributes }
         expect(response).to be_successful
       end
@@ -83,7 +83,7 @@ RSpec.describe 'Users::Passwords', type: :request do
     end
     shared_examples_for '[未ログイン]無効なパラメータ' do
       let!(:attributes) { invalid_attributes }
-      it_behaves_like 'ToOK' # Tips: 再入力
+      it_behaves_like 'ToError'
     end
     shared_examples_for '[ログイン中/削除予約済み]無効なパラメータ' do
       let!(:attributes) { invalid_attributes }
@@ -226,8 +226,8 @@ RSpec.describe 'Users::Passwords', type: :request do
       end
     end
 
-    shared_examples_for 'ToOK' do
-      it '成功ステータス' do
+    shared_examples_for 'ToError' do
+      it '成功ステータス' do # Tips: 再入力
         put update_user_password_path, params: { user: attributes.merge({ reset_password_token: reset_password_token }) }
         expect(response).to be_successful
       end
@@ -278,7 +278,7 @@ RSpec.describe 'Users::Passwords', type: :request do
     shared_examples_for '[未ログイン][期限内]無効なパラメータ' do
       let!(:attributes) { invalid_attributes }
       it_behaves_like 'NG'
-      it_behaves_like 'ToOK' # Tips: 再入力
+      it_behaves_like 'ToError'
     end
     shared_examples_for '[ログイン中/削除予約済み][期限内/期限切れ]無効なパラメータ' do
       let!(:attributes) { invalid_attributes }

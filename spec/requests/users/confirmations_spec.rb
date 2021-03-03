@@ -41,8 +41,8 @@ RSpec.describe 'Users::Confirmations', type: :request do
     let!(:invalid_attributes) { FactoryBot.attributes_for(:user, email: nil) }
 
     # テスト内容
-    shared_examples_for 'ToOK' do
-      it '成功ステータス' do
+    shared_examples_for 'ToError' do
+      it '成功ステータス' do # Tips: 再入力
         post create_user_confirmation_path, params: { user: attributes }
         expect(response).to be_successful
       end
@@ -63,7 +63,7 @@ RSpec.describe 'Users::Confirmations', type: :request do
     end
     shared_examples_for '[*]無効なパラメータ' do
       let!(:attributes) { invalid_attributes }
-      it_behaves_like 'ToOK' # Tips: 再入力
+      it_behaves_like 'ToError'
     end
 
     context '未ログイン' do

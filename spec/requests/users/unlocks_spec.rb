@@ -49,8 +49,8 @@ RSpec.describe 'Users::Unlocks', type: :request do
     let!(:invalid_attributes) { FactoryBot.attributes_for(:user, email: nil) }
 
     # テスト内容
-    shared_examples_for 'ToOK' do
-      it '成功ステータス' do
+    shared_examples_for 'ToError' do
+      it '成功ステータス' do # Tips: 再入力
         post create_user_unlock_path, params: { user: attributes }
         expect(response).to be_successful
       end
@@ -83,7 +83,7 @@ RSpec.describe 'Users::Unlocks', type: :request do
     end
     shared_examples_for '[未ログイン]無効なパラメータ' do
       let!(:attributes) { invalid_attributes }
-      it_behaves_like 'ToOK' # Tips: 再入力
+      it_behaves_like 'ToError'
     end
     shared_examples_for '[ログイン中/削除予約済み]無効なパラメータ' do
       let!(:attributes) { invalid_attributes }
@@ -128,8 +128,8 @@ RSpec.describe 'Users::Unlocks', type: :request do
       end
     end
 
-    shared_examples_for 'ToOK' do
-      it '成功ステータス' do
+    shared_examples_for 'ToError' do
+      it '成功ステータス' do # Tips: 再入力
         get user_unlock_path(unlock_token: unlock_token)
         expect(response).to be_successful
       end
@@ -164,7 +164,7 @@ RSpec.describe 'Users::Unlocks', type: :request do
     end
     shared_examples_for '[未ログイン][存在しない/ない]ロック日時がない（未ロック）' do
       # it_behaves_like 'NG' # Tips: トークンが存在しない為、ロック日時がない
-      it_behaves_like 'ToOK' # Tips: 再入力
+      it_behaves_like 'ToError'
     end
     shared_examples_for '[ログイン中/削除予約済み][存在しない/ない]ロック日時がない（未ロック）' do
       # it_behaves_like 'NG' # Tips: トークンが存在しない為、ロック日時がない
