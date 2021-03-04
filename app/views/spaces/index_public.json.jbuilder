@@ -9,6 +9,7 @@ json.public_spaces do
     json.subdomain space.subdomain
     json.image_url "https://#{Settings['base_domain']}#{space.image_url(:small)}"
     json.name space.name
+    json.purpose space.purpose
     json.created_at l(space.created_at, format: :json)
   end
 end

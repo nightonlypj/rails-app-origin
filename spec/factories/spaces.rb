@@ -1,7 +1,7 @@
 FactoryBot.define do
   factory :space do
-    sequence(:sort_key) { |n| n }
-    subdomain           { "myspace#{sort_key}" }
-    name                { "マイスペース(#{sort_key})" }
+    sequence(:subdomain) { |n| "space#{n}name" }
+    name                 { "#{subdomain}のスペース名" }
+    purpose              { "#{subdomain}の目的" }
   end
 end

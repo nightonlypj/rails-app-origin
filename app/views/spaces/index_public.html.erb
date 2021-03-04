@@ -6,6 +6,12 @@
     <li class="nav-item"><div class="nav-link active">公開スペース</div></li>
   </ul>
 
+  <div class="row">
+    <div class="col">
+      <div class="float-end"><%= link_to 'スペース作成', new_space_path, class: 'btn btn-dark btn-rounded mb-1' %></div>
+    </div>
+  </div>
+
 <% if @spaces.present? %>
   <div class="row">
     <div class="col-sm-5 d-flex align-items-center">
@@ -35,7 +41,7 @@
         <tr>
           <td nowrap>
             <%= link_to (image_tag space.image_url(:small)).html_safe + ' ' + space.name, "//#{space.subdomain}.#{Settings['base_domain']}" %>
-            <wbr>(<%= space.subdomain %>)
+            <wbr>(<%= space.subdomain %>) <%= public_icon_tag(space.public_flag).html_safe %>
           </td>
           <td nowrap><%= l(space.created_at.to_date) %></td>
         </tr>

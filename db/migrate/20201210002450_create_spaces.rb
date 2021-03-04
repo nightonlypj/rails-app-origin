@@ -9,7 +9,6 @@ class CreateSpaces < ActiveRecord::Migration[6.0]
 
       t.string :purpose
       t.boolean :public_flag, null: false, default: false
-      t.integer :sort_key, null: false, default: 0
 
       t.timestamps
     end

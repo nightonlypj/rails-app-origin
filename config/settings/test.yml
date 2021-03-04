@@ -28,8 +28,8 @@ test_customers_owner: 1
 test_customers_admin: 1
 test_customers_member: 1
 # 組織・団体名の最小・最大文字数
-customer_name_minimum: 2  # 2以上、Tips: (16+5?)以下 = "顧客(#{code})"
-customer_name_maximum: 21 # Tips: (16+5?)以上
+customer_name_minimum: 2  # 2以上、Tips: (10+5?)以下 = "customer(#{n})"
+customer_name_maximum: 15 # Tips: (10+5?)以上
 
 ## メンバー
 # 一覧のデフォルト最大表示件数
@@ -49,11 +49,11 @@ test_spaces_owner: 1
 test_spaces_admin: 1
 test_spaces_member: 1
 # サブドメインの最小・最大文字数
-subdomain_minimum: 2  # Tips: 2以上、(7+5?)以下 = "myspace#{sort_key}"
-subdomain_maximum: 12 # Tips: (7+5?)以上
+subdomain_minimum: 2  # Tips: 2以上、(9+5?)以下 = "space#{n}name"
+subdomain_maximum: 14 # Tips: (9+5?)以上
 # スペース名の最小・最大文字数
-space_name_minimum: 2  # Tips: 2以上、(15+5?)以下 = "マイスペース(#{sort_key})"
-space_name_maximum: 20 # Tips: (15+5?)以上
+space_name_minimum: 2  # Tips: 2以上、(6+9+5?)以下 = "#{subdomain}のスペース名"
+space_name_maximum: 20 # Tips: (6+9+5?)以上
 # 目的の最小・最大文字数
-space_purpose_minimum: 2 # Tips: 2以上
-space_purpose_maximum: 3
+space_purpose_minimum: 2 # Tips: 2以上、(3+9+5?)以下 = "#{subdomain}の目的"
+space_purpose_maximum: 17 # Tips: (3+9+5?)以上

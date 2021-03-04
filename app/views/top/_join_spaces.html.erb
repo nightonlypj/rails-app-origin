@@ -8,6 +8,7 @@
 <% @join_spaces.each do |join_space| %>
       <li class="list-group-item">
         <%= link_to (image_tag join_space.image_url(:small)).html_safe + ' ' + join_space.name, "//#{join_space.subdomain}.#{Settings['base_domain']}" %>
+        <%= public_icon_tag(join_space.public_flag).html_safe %>
       </li>
 <% end %>
     </ul>

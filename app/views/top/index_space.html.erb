@@ -3,12 +3,15 @@
     <div class="container-fluid">
       <ul class="navbar-nav">
         <li class="nav-item dropdown d-flex align-items-center">
-          <%= link_to (image_tag @request_space.image_url(:small)).html_safe, root_path %>
-          &nbsp;<a class="dropdown-toggle nav-link" href="#" id="JoinSpaceMenuLink" role="button" data-mdb-toggle="dropdown" aria-expanded="false"><%= @request_space.name %></a>
+          <%= link_to (image_tag @request_space.image_url(:small)).html_safe, root_path %>&nbsp;
+          <a class="dropdown-toggle nav-link" href="#" id="JoinSpaceMenuLink" role="button" data-mdb-toggle="dropdown" aria-expanded="false"><%= @request_space.name %></a>&nbsp;
+          <%= public_icon_tag(@request_space.public_flag).html_safe %>&nbsp;
           <ul class="dropdown-menu" aria-labelledby="JoinSpaceMenuLink">
 <% if @join_spaces.present? %>
 <% @join_spaces.each do |join_space| %>
-            <li><%= link_to (image_tag join_space.image_url(:small)).html_safe + ' ' + join_space.name, "//#{join_space.subdomain}.#{Settings['base_domain']}", class: 'dropdown-item' %></li>
+            <li>
+              <%= link_to (image_tag join_space.image_url(:small)).html_safe + ' ' + join_space.name + ' ' + public_icon_tag(join_space.public_flag).html_safe, "//#{join_space.subdomain}.#{Settings['base_domain']}", class: 'dropdown-item' %>
+            </li>
 <% end %>
             <li><hr class="dropdown-divider" /></li>
 <% if @join_spaces.total_pages > 1 %>

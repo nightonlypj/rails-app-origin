@@ -91,7 +91,6 @@ ActiveRecord::Schema.define(version: 2020_12_31_131129) do
     t.string "name", null: false
     t.string "purpose"
     t.boolean "public_flag", default: false, null: false
-    t.integer "sort_key", default: 0, null: false
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.index ["created_at", "id"], name: "index_spaces2"

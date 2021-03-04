@@ -9,18 +9,25 @@ RSpec.describe 'top/index_space', type: :view do
 
   # テスト内容
   shared_examples_for 'スペース情報表示' do
-    it 'スペース名が含まれる' do
-      render
-      expect(rendered).to include(@request_space.name)
-    end
     it 'スペーストップのパスが含まれる' do
       render
       expect(rendered).to include("\"#{root_path}\"")
     end
+    it '画像URLが含まれる' do # Tips: ユニークではない為、正確ではない
+      render
+      expect(rendered).to include("\"#{@request_space.image_url(:small)}\"")
+    end
+    it 'スペース名が含まれる' do
+      render
+      expect(rendered).to include(@request_space.name)
+    end
+    it '目的が含まれる' do
+      render
+      expect(rendered).to include(@request_space.purpose)
+    end
   end
 
   # テストケース
-
   context '未ログイン' do
     it_behaves_like 'スペース情報表示'
   end

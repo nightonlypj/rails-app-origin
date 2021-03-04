@@ -96,6 +96,10 @@ RSpec.describe 'Spaces', type: :request do
         get public_spaces_path(page: page, format: :json), headers: headers
         expect(JSON.parse(response.body)['public_space']['limit_value']).to eq(Settings['default_spaces_limit'])
       end
+      it 'スペース作成のパスが含まれる' do
+        get public_spaces_path(page: page), headers: headers
+        expect(response.body).to include("\"#{new_space_path}\"")
+      end
     end
 
     shared_examples_for 'ページネーション表示' do |page, link_page|
@@ -164,6 +168,13 @@ RSpec.describe 'Spaces', type: :request do
         parse_response = JSON.parse(response.body)['public_spaces']
         (start_no..end_no).each do |no|
           expect(parse_response[no - start_no]['name']).to eq(@create_spaces[@create_spaces.count - no].name)
+        end
+      end
+      it '(json)目的が一致する' do
+        get public_spaces_path(page: page, format: :json), headers: headers
+        parse_response = JSON.parse(response.body)['public_spaces']
+        (start_no..end_no).each do |no|
+          expect(parse_response[no - start_no]['purpose']).to eq(@create_spaces[@create_spaces.count - no].purpose)
         end
       end
       it '作成日が含まれる' do

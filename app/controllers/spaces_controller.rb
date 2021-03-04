@@ -29,7 +29,7 @@ class SpacesController < ApplicationController
   # GET /spaces/new（ベースドメイン） スペース作成
   def new
     @customer = Customer.new
-    @customer.create_flag = 'false'
+    @customer.create_flag = @customers.blank? ? 'true' : 'false'
     @customer.code = params['customer_code'] if params['customer_code'].present?
     @space = Space.new
     render_new

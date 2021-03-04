@@ -41,4 +41,13 @@ module ApplicationHelper
   def input_size_class_name(resource, key)
     resource.errors.any? && resource.errors[key].any? ? ' mb-5' : ' mb-3'
   end
+
+  # 公開スペースのアイコンを返却
+  def public_icon_tag(public_flag)
+    if public_flag
+      '<i class="fas fa-globe text-warning" data-mdb-toggle="tooltip" title="誰でも閲覧出来ます"></i>'
+    else
+      '<i class="fas fa-lock" data-mdb-toggle="tooltip" title="メンバーのみ閲覧出来ます"></i>'
+    end
+  end
 end
