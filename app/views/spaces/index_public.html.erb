@@ -43,7 +43,9 @@
             <%= link_to (image_tag space.image_url(:small)).html_safe + ' ' + space.name, "//#{space.subdomain}.#{Settings['base_domain']}" %>
             <wbr>(<%= space.subdomain %>) <%= public_icon_tag(space.public_flag).html_safe %>
           </td>
-          <td nowrap><%= l(space.created_at.to_date) %></td>
+          <td nowrap>
+            <%= l(space.created_at.to_date) %>
+          </td>
         </tr>
 <% end %>
       </tbody>

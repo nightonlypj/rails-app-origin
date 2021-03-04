@@ -237,7 +237,7 @@ $ rails s
 PCのhostsに下記を追加
 ```
 $ sudo vi /etc/hosts
-127.0.0.1       localhost.local
+127.0.0.1	localhost.local
 ```
 
 - http://localhost.local:3000
@@ -310,12 +310,12 @@ http {
 ---- ここまで ----
 ```
 ```
-$ vi /opt/homebrew/etc/nginx/servers/localhost.local.conf
+$ vi /opt/homebrew/etc/nginx/servers/127.0.0.1.nip.io.conf
 ---- ここから ----
 ### START ###
 server {
     listen       80;
-    server_name  localhost.local *.localhost.local;
+    server_name  127.0.0.1.nip.io *.127.0.0.1.nip.io;
 
     location ~ /\.(ht|git|svn|cvs) {
         deny all;
@@ -343,15 +343,14 @@ nginx: configuration file /opt/homebrew/etc/nginx/nginx.conf test is successful
 
 $ brew services start nginx
 ```
-
 ```
-$ cp -a config/settings/development.yml,dev config/settings/development.yml  
+$ cp -a config/settings/development.yml,dev config/settings/development.yml
 overwrite config/settings/development.yml? (y/n [n]) y
 
 $ rails s
 ```
 
-- http://localhost.local
+- http://127.0.0.1.nip.io
   - メールアドレスとパスワードは、`db/seed/development/users.yml`参照
-- http://localhost.local/admin
+- http://127.0.0.1.nip.io/admin
   - メールアドレスとパスワードは、`db/seed/admin_users.yml`参照

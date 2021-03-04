@@ -1,9 +1,19 @@
+# Tips: id = 連番
 - id: 1
-  code: 'customer1'
+  code: '0000000001'
   name: '顧客1'
 - id: 2
-  code: 'customer2'
+  code: '0000000002'
   name: '顧客2'
 - id: 3
-  code: 'customer3'
+  code: '0000000003'
   name: '顧客3'
+- id: 4
+  code: '0000000004'
+  name: '顧客4'
+- id: 5
+  code: '0000000005'
+  name: '顧客5'
+- id: 6
+  code: '0000000006'
+  name: '顧客6'

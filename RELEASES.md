@@ -1,5 +1,10 @@
 # リリースノート
 
+## 1.1.0 (space branch)
+
+- スペース毎にhosts設定しなくてもアクセスできるようにしたい（spaceブランチ）
+  - https://dev.azure.com/nightonly/rails-app-origin/_workitems/edit/343/
+
 ## 1.1.0
 
 - jQueryを導入したい
