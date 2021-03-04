@@ -1,18 +1,19 @@
+# Tips: id = 連番
 - id: 1
-  code: 'code1'
-  name: 'user1'
+  code: 'code0000000000000000000000000001'
+  name: 'user1の氏名'
   email: 'user1@mydomain'
   password: 'changepassword'
   confirmed_at: '0000-01-01 00:00:00+0000'
 - id: 2
-  code: 'code2'
-  name: 'user2'
+  code: 'code0000000000000000000000000002'
+  name: 'user2の氏名'
   email: 'user2@mydomain'
   password: 'changepassword'
   confirmed_at: '0000-01-01 00:00:00+0000'
 - id: 3
-  code: 'code3'
-  name: 'user3'
+  code: 'code0000000000000000000000000003'
+  name: 'user3の氏名'
   email: 'user3@mydomain'
   password: 'changepassword'
   confirmed_at: '0000-01-01 00:00:00+0000'

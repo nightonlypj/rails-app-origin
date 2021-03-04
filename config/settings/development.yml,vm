@@ -1,5 +1,5 @@
 env_name: '【開発環境】'
-base_domain: 'localhost'
+base_domain: 'localhost.local'
 mailer_from:
   name: '%{app_name}'
   email: 'noreply@localhost'
