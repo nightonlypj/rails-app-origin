@@ -5,6 +5,7 @@ class SpacesController < ApplicationController
   before_action :not_found_sub_domain_response, only: %i[create]
   before_action :authenticate_user!, only: %i[index new edit create update]
   before_action :redirect_response_destroy_reserved, only: %i[new edit create update]
+  before_action :set_join_customers, only: %i[new]
 
   # GET /spaces（ベースドメイン） 参加スペース一覧
   # GET /spaces.json（ベースドメイン） 参加スペース一覧API
@@ -29,10 +30,9 @@ class SpacesController < ApplicationController
   # GET /spaces/new（ベースドメイン） スペース作成
   def new
     @customer = Customer.new
-    @customer.create_flag = @customers.blank? ? 'true' : 'false'
+    @customer.create_flag = @join_customers.blank? ? 'true' : 'false'
     @customer.code = params['customer_code'] if params['customer_code'].present?
     @space = Space.new
-    render_new
   end
 
   # GET /spaces/edit（サブドメイン） スペース情報変更
@@ -77,7 +77,10 @@ class SpacesController < ApplicationController
 
     if @space.errors.any? || @customer.errors.any?
       respond_to do |format|
-        format.html { return render_new }
+        format.html do
+          set_join_customers
+          return render :new
+        end
         format.json do
           messages = @customer.errors.any? ? @space.errors.messages.merge({ customer: @customer.errors.messages }) : @space.errors.messages
           return render json: { status: 'NG', error: messages }, status: :unprocessable_entity
@@ -118,10 +121,9 @@ class SpacesController < ApplicationController
 
   private
 
-  # スペース作成を表示
-  def render_new
-    @customers = Customer.order(created_at: 'DESC', id: 'DESC')
-                         .eager_load(:member).where(members: { user_id: current_user.id })
-    render :new
+  # 所属顧客を取得
+  def set_join_customers
+    @join_customers = Customer.order(created_at: 'DESC', id: 'DESC')
+                              .eager_load(:member).where(members: { user_id: current_user.id })
   end
 end

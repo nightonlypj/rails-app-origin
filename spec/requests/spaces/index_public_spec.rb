@@ -170,6 +170,12 @@ RSpec.describe 'Spaces', type: :request do
           expect(parse_response[no - start_no]['name']).to eq(@create_spaces[@create_spaces.count - no].name)
         end
       end
+      it '目的が含まれる' do
+        get public_spaces_path(page: page), headers: headers
+        (start_no..end_no).each do |no|
+          expect(response.body).to include(@create_spaces[@create_spaces.count - no].purpose)
+        end
+      end
       it '(json)目的が一致する' do
         get public_spaces_path(page: page, format: :json), headers: headers
         parse_response = JSON.parse(response.body)['public_spaces']

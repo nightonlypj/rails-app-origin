@@ -2,6 +2,8 @@
 
 ## 1.1.0 (space branch)
 
+- デフォルトでは顧客メンバー以外、スペースを閲覧できないようしたい（spaceブランチ）
+  - https://dev.azure.com/nightonly/rails-app-origin/_workitems/edit/275/
 - スペース毎にhosts設定しなくてもアクセスできるようにしたい（spaceブランチ）
   - https://dev.azure.com/nightonly/rails-app-origin/_workitems/edit/343/
 

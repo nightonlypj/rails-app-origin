@@ -4,7 +4,7 @@ RSpec.describe 'spaces/new', type: :view do
   before do
     @customer = Customer.new
     @space = Space.new
-    @customers = Customer.all
+    @join_customers = Customer.all
   end
 
   it 'renders new space form' do

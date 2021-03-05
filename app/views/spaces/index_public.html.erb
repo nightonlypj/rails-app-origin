@@ -1,14 +1,15 @@
 <main class="container">
   <h3 class="pt-3">スペース一覧</h3>
 
-  <ul class="nav nav-tabs mb-4">
-    <li class="nav-item"><%= link_to '参加スペース', spaces_path, class: 'nav-link' %></li>
-    <li class="nav-item"><div class="nav-link active">公開スペース</div></li>
-  </ul>
-
-  <div class="row">
-    <div class="col">
-      <div class="float-end"><%= link_to 'スペース作成', new_space_path, class: 'btn btn-dark btn-rounded mb-1' %></div>
+  <div class="row mb-1">
+    <div class="col-sm-11 mb-1">
+      <ul class="nav nav-tabs">
+        <li class="nav-item text-nowrap"><%= link_to '参加スペース', spaces_path, class: 'nav-link' %></li>
+        <li class="nav-item text-nowrap"><div class="nav-link active">公開スペース</div></li>
+      </ul>
+    </div>
+    <div class="col-sm-1">
+      <div class="float-end text-nowrap"><%= link_to 'スペース作成', new_space_path, class: 'btn btn-outline-dark btn-rounded btn-sm' %></div>
     </div>
   </div>
 
@@ -28,13 +29,14 @@
       <thead>
         <tr>
           <th scope="col" nowrap>スペース名 <wbr>(サブドメイン)</th>
+          <th scope="col" nowrap>目的</th>
           <th scope="col" nowrap>作成日▼</th>
         </tr>
       </thead>
       <tbody>
 <% if @spaces.blank? %>
         <tr>
-          <td scope="row" colspan="2" class="text-center">公開スペースがありません。</td>
+          <td scope="row" colspan="3" class="text-center">公開スペースがありません。</td>
         </tr>
 <% end %>
 <% @spaces.each do |space| %>
@@ -42,6 +44,9 @@
           <td nowrap>
             <%= link_to (image_tag space.image_url(:small)).html_safe + ' ' + space.name, "//#{space.subdomain}.#{Settings['base_domain']}" %>
             <wbr>(<%= space.subdomain %>) <%= public_icon_tag(space.public_flag).html_safe %>
+          </td>
+          <td>
+            <%= space.purpose %>
           </td>
           <td nowrap>
             <%= l(space.created_at.to_date) %>

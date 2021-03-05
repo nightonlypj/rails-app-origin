@@ -16,7 +16,7 @@
   </div>
 
   <div id="space_customer_code_area" class="<%= input_size_class_name(@customer, :code) %><%= ' collapse' if @customer.create_flag != 'false' %>"><%# selectはFree版未対応？(form-outlineを入れると崩れる) %>
-    <%= form_customer.select :code, @customers.all.collect { |customer| [ "#{customer.name} (#{customer.code})", customer.code ] }, { include_blank: '▼ 選択してください' }, class: "form-control#{validate_class_name(validate_enabled, @customer, :code)}" %>
+    <%= form_customer.select :code, @join_customers.all.collect { |join_customer| [ "#{join_customer.name} (#{join_customer.code})", join_customer.code ] }, { include_blank: '▼ 選択してください' }, class: "form-control#{validate_class_name(validate_enabled, @customer, :code)}" %>
     <%= render 'users/shared/field_error_messages', messages: @customer.errors[:code] %>
   </div>
 
@@ -40,7 +40,7 @@
   </div>
 
   <div class="form-check mb-1">
-    <%= form.check_box :public_flag, class: 'form-check-input' %>
+    <%= form.check_box :public_flag, class: "form-check-input#{validate_class_name(validate_enabled, @space, :public_flag)}" %>
     <%= form.label '公開スペース', class: 'form-check-label small', for: 'space_public_flag' %>
   </div>
   <div class="note note-info small mb-3">
