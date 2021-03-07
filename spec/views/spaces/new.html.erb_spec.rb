@@ -17,6 +17,7 @@ RSpec.describe 'spaces/new', type: :view do
       assert_select 'input[name=?]', 'space[public_flag]'
       assert_select 'input[name=?]', 'space[name]'
       assert_select 'input[name=?]', 'space[purpose]'
+      assert_select 'input[name=?]', 'space[image]'
       assert_select 'input[name=?]', 'commit'
     end
   end

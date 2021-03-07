@@ -1,13 +1,28 @@
-<% validate_enabled = @space.errors.any? %>
+<% validate_enabled = action_name == 'update' && @space.errors.any? %>
 <%= form_with(model: @space, url: update_space_path, html: { novalidate: true }, local: true) do |form| %>
+  <%= form.label '組織・団体名 (顧客コード):', class: "form-label small" %>
   <div class="mb-3">
-    <span class="font-weight-bold">組織・団体名 (コード):</span> <%= @space.customer.name %> (<%= @space.customer.code %>)
+    <%= @space.customer.name %> (<%= @space.customer.code %>)
   </div>
 
-  <div class="form-outline<%= input_size_class_name(@space, :subdomain) %>">
-    <%= form.text_field :subdomain, autocomplete: 'name', class: "form-control#{validate_class_name(validate_enabled, @space, :subdomain)}" %>
-    <%= form.label 'サブドメイン', class: 'form-label', for: 'space_subdomain' %>
-    <%= render 'users/shared/field_error_messages', messages: @space.errors[:subdomain] %>
+  <%= form.label 'スペース情報:', class: "form-label small" %>
+
+  <div class="row<%= input_size_class_name(@space, :subdomain) %>">
+    <div class="col-2 d-flex align-items-center justify-content-end"><p class="text-nowrap small mb-0">https://</p></div>
+    <div class="col-5 form-outline">
+      <%= form.text_field :subdomain, autocomplete: 'name', class: "form-control#{validate_class_name(validate_enabled, @space, :subdomain)}", style: 'margin-bottom: 0px' %>
+      <%= form.label 'サブドメイン', class: 'form-label', for: 'space_subdomain' %>
+      <%= render 'users/shared/field_error_messages', messages: @space.errors[:subdomain], add_class: 'mt-1' %>
+    </div>
+    <div class="col-5 d-flex align-items-center"><p class="text-nowrap small mb-0">.<%= Settings['base_domain'] %></p></div>
+  </div>
+
+  <div class="form-check mb-1">
+    <%= form.check_box :public_flag, class: "form-check-input#{validate_class_name(validate_enabled, @space, :public_flag)}" %>
+    <%= form.label '公開スペース', class: 'form-check-label small', for: 'space_public_flag' %>
+  </div>
+  <div class="note note-info small mb-3">
+    メンバー以外に閲覧させたくない場合はチェックしないでください。
   </div>
 
   <div class="form-outline<%= input_size_class_name(@space, :name) %>">
@@ -16,5 +31,11 @@
     <%= render 'users/shared/field_error_messages', messages: @space.errors[:name] %>
   </div>
 
-  <%= form.submit '変更', class: 'btn btn-warning' %>
+  <div class="form-outline<%= input_size_class_name(@space, :purpose) %>">
+    <%= form.text_field :purpose, autocomplete: 'purpose', class: "form-control#{validate_class_name(validate_enabled, @space, :purpose)}" %>
+    <%= form.label 'スペースの目的(任意)', class: 'form-label', for: 'space_purpose' %>
+    <%= render 'users/shared/field_error_messages', messages: @space.errors[:purpose] %>
+  </div>
+
+  <%= form.submit '変更', class: 'btn btn-warning mb-3' %>
 <% end %>

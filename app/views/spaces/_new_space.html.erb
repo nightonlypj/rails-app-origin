@@ -59,5 +59,11 @@
     <%= render 'users/shared/field_error_messages', messages: @space.errors[:purpose] %>
   </div>
 
+  <%= form.label 'スペースの画像(任意):', class: "form-label small" %>
+  <div class="form-outline<%= input_size_class_name(@space, :image) %>">
+    <%= form.file_field :image, class: "form-control#{validate_image_class_name(validate_enabled, @space, :image, params[:space].present? && params[:space][:image].present?)}" %>
+    <%= render 'users/shared/field_error_messages', messages: @space.errors[:image] %>
+  </div>
+
   <%= form.submit '作成', class: 'btn btn-primary' %>
 <% end %>

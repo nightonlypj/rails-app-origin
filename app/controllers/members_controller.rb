@@ -88,8 +88,8 @@ class MembersController < ApplicationController
     end
   end
 
-  # PATCH/PUT /members/:customer_code/:user_code（ベースドメイン） メンバー権限変更(処理)
-  # PATCH/PUT /members/:customer_code/:user_code.json（ベースドメイン） メンバー権限変更API
+  # PUT(PATCH) /members/:customer_code/:user_code（ベースドメイン） メンバー権限変更(処理)
+  # PUT(PATCH) /members/:customer_code/:user_code.json（ベースドメイン） メンバー権限変更API
   def update
     # validates :power # Tips: enum未定義の値はvalidatesの前にArgumentErrorやRecordInvalidになる
     if params[:member].blank? || params[:member][:power].blank?

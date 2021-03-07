@@ -1,10 +1,13 @@
 class SpacesController < ApplicationController
+  before_action :not_found_json_base_domain_response, only: %i[update]
+  before_action :not_found_base_domain_response, only: %i[edit update image_update image_destroy]
   before_action :not_found_json_sub_domain_response, only: %i[index index_public create]
   before_action :redirect_base_domain_response, only: %i[index index_public new]
-  before_action :not_found_base_domain_response, only: %i[edit update]
   before_action :not_found_sub_domain_response, only: %i[create]
-  before_action :authenticate_user!, only: %i[index new edit create update]
-  before_action :redirect_response_destroy_reserved, only: %i[new edit create update]
+  before_action :not_found_request_space_blank, only: %i[edit update image_update image_destroy]
+  before_action :authenticate_user!, only: %i[index new edit create update image_update image_destroy]
+  before_action :redirect_response_not_update_power, only: %i[edit update image_update image_destroy]
+  before_action :redirect_response_destroy_reserved, only: %i[new edit create update image_update image_destroy]
   before_action :set_join_customers, only: %i[new]
 
   # GET /spaces（ベースドメイン） 参加スペース一覧
@@ -37,7 +40,7 @@ class SpacesController < ApplicationController
 
   # GET /spaces/edit（サブドメイン） スペース情報変更
   def edit
-    @space = request_space
+    @space = Space.find(@request_space.id)
     head :not_found if @space.blank?
   end
 
@@ -71,7 +74,7 @@ class SpacesController < ApplicationController
       @customer.errors.add(:create_flag, t('errors.messages.customer.create_flag_blank'))
     end
 
-    @space = Space.new(params.require(:space).permit(:subdomain, :name, :purpose, :public_flag))
+    @space = Space.new(params.require(:space).permit(:subdomain, :image, :name, :purpose, :public_flag))
     @space.valid?
     @space.errors.messages.delete(:customer) # Tips: トランザクション範囲を狭くする為
 
@@ -102,24 +105,68 @@ class SpacesController < ApplicationController
     end
   end
 
-  # PATCH/PUT /spaces（サブドメイン） スペース情報変更(処理)
-  # PATCH/PUT /spaces.json（サブドメイン） スペース情報変更API
+  # PUT(PATCH) /spaces/edit（サブドメイン） スペース情報変更(処理)
+  # PUT(PATCH) /spaces/edit.json（サブドメイン） スペース情報変更API
   def update
-    @space = request_space
+    @space = Space.find(@request_space.id)
     return head :not_found if @space.blank?
 
     respond_to do |format|
-      if @space.update(params.require(:space).permit(:subdomain, :name))
+      if @space.update(params.require(:space).permit(:subdomain, :name, :purpose, :public_flag))
         format.html { redirect_to "//#{@space.subdomain}.#{Settings['base_domain']}", notice: t('notice.space.update') }
-        format.json { render :update, status: :ok }
+        format.json { render json: { status: 'OK', notice: t('notice.space.update') }, status: :ok }
       else
         format.html { render :edit }
-        format.json { render :update, status: :unprocessable_entity }
+        format.json { render json: { status: 'NG', error: @space.errors.messages }, status: :unprocessable_entity }
       end
     end
   end
 
+  # PUT(PATCH) /spaces/image 画像変更(処理)
+  def image_update
+    @space = Space.find(@request_space.id)
+    if params.blank? || params[:space].blank?
+      @space.errors.add(:image, t('errors.messages.image_update_blank'))
+      return render :edit
+    end
+
+    if @space.update(params.require(:space).permit(:image))
+      redirect_to edit_space_path, notice: t('notice.space.image_update')
+    else
+      render :edit
+    end
+  end
+
+  # DELETE /spaces/image 画像削除(処理)
+  def image_destroy
+    @space = Space.find(@request_space.id)
+    @space.remove_image!
+    if @space.save
+      redirect_to edit_space_path, notice: t('notice.space.image_destroy')
+    else
+      redirect_to edit_space_path, alert: t('alert.space.image_destroy_error')
+    end
+  end
+
   private
+
+  # 存在しないサブドメインへのアクセス禁止
+  def not_found_request_space_blank
+    head :not_found if @request_space.blank?
+  end
+
+  # 変更権限がない場合、リダイレクトしてメッセージを表示
+  def redirect_response_not_update_power
+    member = Member.where(customer_id: @request_space.customer_id, user_id: current_user.id).first
+    return head :not_found if member.blank?
+    return if member.update_power?
+
+    if request.format.json?
+      render json: { error: t('alert.space.not_update_power') }, status: :forbidden
+    else
+      redirect_to root_path, alert: t('alert.space.not_update_power')
+    end
+  end
 
   # 所属顧客を取得
   def set_join_customers

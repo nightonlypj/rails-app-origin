@@ -13,6 +13,7 @@ RSpec.describe 'Infomations', type: :request do
   #   ベースドメイン, 存在するサブドメイン, 存在しないサブドメイン → 事前にデータ作成
   # TODO: action_title
   describe 'GET /show' do
+    include_context 'リクエストスペース作成'
     let!(:outside_user) { FactoryBot.create(:user) }
     shared_context 'データ作成' do
       let!(:infomation) { FactoryBot.create(:infomation, started_at: started_at, ended_at: ended_at, target: target, user_id: user_id) }

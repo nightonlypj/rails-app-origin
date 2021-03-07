@@ -1,8 +1,6 @@
 require 'rails_helper'
 
 RSpec.describe 'Members', type: :request do
-  include_context 'リクエストスペース作成'
-
   # GET /members/:customer_code/:user_code/edit（ベースドメイン） メンバー権限変更
   # 前提条件
   #   なし
@@ -13,6 +11,7 @@ RSpec.describe 'Members', type: :request do
   #   対象: ない, 自分, Owner, Admin, Member → 事前にデータ作成
   #   ベースドメイン, 存在するサブドメイン, 存在しないサブドメイン → 事前にデータ作成
   describe 'GET /edit' do
+    include_context 'リクエストスペース作成'
     include_context 'メンバー作成', 1, 1, 1, 0, 'ASC'
     include_context 'メンバー作成（対象外）', 'ASC'
 

@@ -36,7 +36,7 @@ RSpec.describe 'Spaces', type: :request do
     end
 
     shared_examples_for 'ToOK' do |alert, notice|
-      it '作成したスペーストップにリダイレクト' do
+      it 'スペーストップにリダイレクト' do
         post create_space_path, params: { space: attributes }, headers: headers
         expect(response).to redirect_to("//#{attributes[:subdomain]}.#{Settings['base_domain']}")
         expect(flash[:alert]).to alert.present? ? eq(I18n.t(alert)) : be_nil
@@ -78,9 +78,9 @@ RSpec.describe 'Spaces', type: :request do
         expect(flash[:alert]).to alert.present? ? eq(I18n.t(alert)) : be_nil
         expect(flash[:notice]).to notice.present? ? eq(I18n.t(notice)) : be_nil
       end
-      it '(json)存在しないエラー' do
+      it '(json)権限エラー' do
         post create_space_path(format: :json), params: { space: attributes }, headers: headers
-        expect(response).to be_not_found
+        expect(response).to be_forbidden
         message = response.body.present? ? JSON.parse(response.body)['error'] : nil
         expect(message).to error.present? ? eq(I18n.t(error)) : be_nil
       end

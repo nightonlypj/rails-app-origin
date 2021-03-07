@@ -53,15 +53,20 @@ class ApplicationController < ActionController::Base
     head :not_found unless base_domain_request?
   end
 
+  # JSONの場合、ベースドメイン禁止
+  def not_found_json_base_domain_response
+    render json: { error: t('errors.messages.domain_error') }, status: :not_found if request.format.json? && base_domain_request?
+  end
+
   # JSONの場合、サブドメイン禁止
   def not_found_json_sub_domain_response
-    render json: { error: t('errors.messages.domain_error') }, status: :not_found if json_request? && !base_domain_request?
+    render json: { error: t('errors.messages.domain_error') }, status: :not_found if request.format.json? && !base_domain_request?
   end
 
   # 削除予約済みの場合、リダイレクトしてメッセージを表示
   def redirect_response_destroy_reserved
     return unless current_user.destroy_reserved?
-    return render json: { error: t('notice.user.destroy_reserved') }, status: :not_found if request.format.json?
+    return render json: { error: t('notice.user.destroy_reserved') }, status: :forbidden if request.format.json?
 
     redirect_to root_path, notice: t('notice.user.destroy_reserved')
   end

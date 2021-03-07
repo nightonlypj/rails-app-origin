@@ -1,12 +1,16 @@
 Rails.application.routes.draw do
   # スペース
-  get   'spaces',        to: 'spaces#index',        as: 'spaces'
-  get   'spaces/public', to: 'spaces#index_public', as: 'public_spaces'
-  get   'spaces/new',    to: 'spaces#new',          as: 'new_space'
-  post  'spaces/new',    to: 'spaces#create',       as: 'create_space'
-  get   'spaces/edit',   to: 'spaces#edit',         as: 'edit_space'
-  put   'spaces/edit',   to: 'spaces#update',       as: 'update_space'
-  patch 'spaces/edit',   to: 'spaces#update',       as: nil
+  get    'spaces',        to: 'spaces#index',        as: 'spaces'
+  get    'spaces/public', to: 'spaces#index_public', as: 'public_spaces'
+  get    'spaces/new',    to: 'spaces#new',          as: 'new_space'
+  post   'spaces/new',    to: 'spaces#create',       as: 'create_space'
+  get    'spaces/edit',   to: 'spaces#edit',         as: 'edit_space'
+  put    'spaces/edit',   to: 'spaces#update',       as: 'update_space'
+  patch  'spaces/edit',   to: 'spaces#update',       as: nil
+  get    'spaces/image',  to: 'spaces#edit',         as: nil
+  put    'spaces/image',  to: 'spaces#image_update', as: 'update_space_image'
+  patch  'spaces/image',  to: 'spaces#image_update', as: nil
+  delete 'spaces/image',  to: 'spaces#image_destroy', as: 'delete_space_image'
 
   # メンバー
   get    'members/:customer_code',                   to: 'members#index', as: 'members'

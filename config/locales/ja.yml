@@ -110,7 +110,7 @@ ja:
         email: 'N/A'
   notice:
     user:
-      image_update: '画像を更新しました。'
+      image_update: '画像を変更しました。'
       image_destroy: '画像を削除しました。'
     member:
       create: 'メンバーを招待しました。'
@@ -120,7 +120,9 @@ ja:
       create: 'メンバー登録が完了しました。'
     space:
       create: 'スペースを作成しました。'
-      update: 'スペースの情報を変更しました。'
+      update: 'スペース情報を変更しました。'
+      image_update: '画像を変更しました。'
+      image_destroy: '画像を削除しました。'
   alert:
     user:
       destroy_reserved: 'アカウント削除予定の為、この操作はできません。'
@@ -146,6 +148,9 @@ ja:
       own_destroy_power:
         owner: '自分は解除できません。所属の他の所有者に依頼してください。'
         admin: '自分は解除できません。所属の他の管理者または所有者に依頼してください。'
+    space:
+      not_update_power: '変更権限がありません。所属の管理者または所有者に依頼してください。'
+      image_destroy_error: '画像削除に失敗しました。'
   errors:
     messages:
       image_update_blank: '選択してください。'

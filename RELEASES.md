@@ -2,6 +2,8 @@
 
 ## 1.1.0 (space branch)
 
+- Owner/Admin以外、スペース作成・編集できないようにしたい（spaceブランチ）
+  - https://dev.azure.com/nightonly/rails-app-origin/_workitems/edit/276/
 - デフォルトでは顧客メンバー以外、スペースを閲覧できないようしたい（spaceブランチ）
   - https://dev.azure.com/nightonly/rails-app-origin/_workitems/edit/275/
 - スペース毎にhosts設定しなくてもアクセスできるようにしたい（spaceブランチ）

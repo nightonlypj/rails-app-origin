@@ -37,6 +37,13 @@ module ApplicationHelper
     enabled ? ' is-invalid' : ''
   end
 
+  # 画像のバリデーション表示のクラス名を返却 # Tips: 画像は再入力で復元しない為
+  def validate_image_class_name(enabled, resource, key, present)
+    return '' unless enabled
+
+    present || resource.errors[key].any? ? ' is-invalid' : ' is-valid'
+  end
+
   # 入力項目のサイズクラス名を返却
   def input_size_class_name(resource, key)
     resource.errors.any? && resource.errors[key].any? ? ' mb-5' : ' mb-3'

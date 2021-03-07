@@ -30,6 +30,14 @@ RSpec.describe SpacesController, type: :routing do
       expect(patch: '/spaces/1').not_to be_routable
       expect(patch: '/spaces/edit').to route_to('spaces#update')
     end
+    it 'routes to #image_update' do
+      expect(put: '/spaces/image').to route_to('spaces#image_update')
+      expect(patch: '/spaces/image').to route_to('spaces#image_update')
+      expect(get: '/spaces/image').to route_to('spaces#edit')
+    end
+    it 'routes to #image_destroy' do
+      expect(delete: '/spaces/image').to route_to('spaces#image_destroy')
+    end
     it 'routes to #destroy' do
       expect(delete: '/spaces/1').not_to be_routable
     end
