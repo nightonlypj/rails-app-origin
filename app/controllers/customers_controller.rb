@@ -1,8 +1,10 @@
 class CustomersController < ApplicationController
-  before_action :not_found_json_sub_domain_response
-  before_action :redirect_base_domain_response
+  before_action :redirect_base_domain_response, only: %i[index show edit]
+  before_action :not_found_sub_domain_response, only: %i[update]
   before_action :authenticate_user!
-  before_action :not_found_outside_customer, only: %i[show]
+  before_action :not_found_outside_customer, only: %i[show edit update]
+  before_action :redirect_response_not_update_power, only: %i[edit update]
+  before_action :redirect_response_destroy_reserved, only: %i[edit update]
 
   # GET /customers（ベースドメイン） 所属一覧
   # GET /customers.json（ベースドメイン） 所属一覧API
@@ -18,4 +20,38 @@ class CustomersController < ApplicationController
   # GET /customers/:customer_code.json（ベースドメイン） 顧客詳細API
   # def show
   # end
+
+  # GET /customers/:customer_code/edit（ベースドメイン） 顧客情報変更
+  # def edit
+  # end
+
+  # PUT(PATCH) /customers/:customer_code/edit（ベースドメイン） 顧客情報変更(処理)
+  # PUT(PATCH) /customers/:customer_code/edit.json（ベースドメイン） 顧客情報変更API
+  def update
+    respond_to do |format|
+      if @customer.update(params.require(:customer).permit(:name))
+        format.html { redirect_to customer_path, notice: t('notice.customer.update') }
+        format.json { render json: { status: 'OK', notice: t('notice.customer.update') }, status: :ok }
+      else
+        format.html { render :edit }
+        format.json { render json: { status: 'NG', error: @customer.errors.messages }, status: :unprocessable_entity }
+      end
+    end
+  end
+
+  private
+
+  # 変更権限がない場合、リダイレクトしてメッセージを表示
+  def redirect_response_not_update_power
+    member = Member.where(customer_id: @customer.id, user_id: current_user.id).first
+    return render json: { error: t('errors.messages.customer.code_error') }, status: :not_found if member.blank? && request.format.json?
+    return head :not_found if member.blank?
+    return if member.customer_update_power?
+
+    if request.format.json?
+      render json: { error: t('alert.customer.not_update_power') }, status: :forbidden
+    else
+      redirect_to root_path, alert: t('alert.customer.not_update_power')
+    end
+  end
 end

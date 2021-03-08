@@ -25,10 +25,12 @@ RSpec.describe 'Users::Unlocks', type: :request do
         expect(flash[:notice]).to notice.present? ? eq(I18n.t(notice)) : be_nil
       end
     end
-    shared_examples_for 'ToBase' do
+    shared_examples_for 'ToBase' do |alert, notice|
       it 'ベースドメインにリダイレクト' do
         get new_user_unlock_path, headers: headers
         expect(response).to redirect_to("//#{Settings['base_domain']}#{new_user_unlock_path}")
+        expect(flash[:alert]).to alert.present? ? eq(I18n.t(alert)) : be_nil
+        expect(flash[:notice]).to notice.present? ? eq(I18n.t(notice)) : be_nil
       end
     end
 
@@ -43,7 +45,7 @@ RSpec.describe 'Users::Unlocks', type: :request do
     end
     shared_examples_for '[未ログイン]存在するサブドメイン' do
       let!(:headers) { @space_header }
-      it_behaves_like 'ToBase'
+      it_behaves_like 'ToBase', nil, nil
     end
     shared_examples_for '[ログイン中/削除予約済み]存在するサブドメイン' do
       let!(:headers) { @space_header }
@@ -51,7 +53,7 @@ RSpec.describe 'Users::Unlocks', type: :request do
     end
     shared_examples_for '[未ログイン]存在しないサブドメイン' do
       let!(:headers) { NOT_SPACE_HEADER }
-      it_behaves_like 'ToBase'
+      it_behaves_like 'ToBase', nil, nil
     end
     shared_examples_for '[ログイン中/削除予約済み]存在しないサブドメイン' do
       let!(:headers) { NOT_SPACE_HEADER }
@@ -239,10 +241,12 @@ RSpec.describe 'Users::Unlocks', type: :request do
         expect(flash[:notice]).to notice.present? ? eq(I18n.t(notice)) : be_nil
       end
     end
-    shared_examples_for 'ToBase' do
+    shared_examples_for 'ToBase' do |alert, notice|
       it 'ベースドメインにリダイレクト' do
         get user_unlock_path(unlock_token: unlock_token), headers: headers
         expect(response).to redirect_to("//#{Settings['base_domain']}#{user_unlock_path(unlock_token: unlock_token)}")
+        expect(flash[:alert]).to alert.present? ? eq(I18n.t(alert)) : be_nil
+        expect(flash[:notice]).to notice.present? ? eq(I18n.t(notice)) : be_nil
       end
     end
 
@@ -280,7 +284,7 @@ RSpec.describe 'Users::Unlocks', type: :request do
     shared_examples_for '[未ログイン][存在する][*]存在するサブドメイン' do
       let!(:headers) { @space_header }
       it_behaves_like 'NG'
-      it_behaves_like 'ToBase'
+      it_behaves_like 'ToBase', nil, nil
     end
     shared_examples_for '[ログイン中/削除予約済み][存在する][*]存在するサブドメイン' do
       let!(:headers) { @space_header }
@@ -290,7 +294,7 @@ RSpec.describe 'Users::Unlocks', type: :request do
     shared_examples_for '[未ログイン][存在しない/ない][*]存在するサブドメイン' do
       let!(:headers) { @space_header }
       # it_behaves_like 'NG' # Tips: トークンが存在しない為、ロック日時がない
-      it_behaves_like 'ToBase'
+      it_behaves_like 'ToBase', nil, nil
     end
     shared_examples_for '[ログイン中/削除予約済み][存在しない/ない][*]存在するサブドメイン' do
       let!(:headers) { @space_header }
@@ -300,7 +304,7 @@ RSpec.describe 'Users::Unlocks', type: :request do
     shared_examples_for '[未ログイン][存在する][*]存在しないサブドメイン' do
       let!(:headers) { NOT_SPACE_HEADER }
       it_behaves_like 'NG'
-      it_behaves_like 'ToBase'
+      it_behaves_like 'ToBase', nil, nil
     end
     shared_examples_for '[ログイン中/削除予約済み][存在する][*]存在しないサブドメイン' do
       let!(:headers) { NOT_SPACE_HEADER }
@@ -310,7 +314,7 @@ RSpec.describe 'Users::Unlocks', type: :request do
     shared_examples_for '[未ログイン][存在しない/ない][*]存在しないサブドメイン' do
       let!(:headers) { NOT_SPACE_HEADER }
       # it_behaves_like 'NG' # Tips: トークンが存在しない為、ロック日時がない
-      it_behaves_like 'ToBase'
+      it_behaves_like 'ToBase', nil, nil
     end
     shared_examples_for '[ログイン中/削除予約済み][存在しない/ない][*]存在しないサブドメイン' do
       let!(:headers) { NOT_SPACE_HEADER }

@@ -8,4 +8,7 @@ json.customer do
   json.member do
     json.count @customer.member.count
   end
+  json.space do
+    json.count @customer.space.count
+  end
 end

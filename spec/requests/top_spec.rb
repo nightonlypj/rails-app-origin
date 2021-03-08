@@ -44,7 +44,7 @@ RSpec.describe 'Top', type: :request do
       let!(:headers) { @public_space_header }
       it_behaves_like 'ToOK'
     end
-    shared_examples_for '[ログイン中/削除予約済み][ある]存在するサブドメイン(非公開スペース)' do
+    shared_examples_for '[ログイン中/削除予約済み][Owner/Admin]存在するサブドメイン(非公開スペース)' do
       let!(:headers) { @space_header }
       it_behaves_like 'ToOK'
     end
@@ -52,7 +52,7 @@ RSpec.describe 'Top', type: :request do
       let!(:headers) { @space_header }
       it_behaves_like 'ToLogin', 'devise.failure.unauthenticated', nil
     end
-    shared_examples_for '[ログイン中/削除予約済み][ない]存在するサブドメイン(非公開スペース)' do
+    shared_examples_for '[ログイン中/削除予約済み][Member/ない]存在するサブドメイン(非公開スペース)' do
       let!(:headers) { @space_header }
       it_behaves_like 'ToNot'
     end
@@ -66,7 +66,7 @@ RSpec.describe 'Top', type: :request do
       include_context '顧客・ユーザー紐付け（公開）', Time.current, power
       it_behaves_like '[*][*]ベースドメイン'
       it_behaves_like '[*][*]存在するサブドメイン(公開スペース)'
-      it_behaves_like '[ログイン中/削除予約済み][ある]存在するサブドメイン(非公開スペース)'
+      it_behaves_like '[ログイン中/削除予約済み][Owner/Admin]存在するサブドメイン(非公開スペース)'
       it_behaves_like '[*][*]存在しないサブドメイン'
     end
     shared_examples_for '[未ログイン]権限がない' do
@@ -78,7 +78,7 @@ RSpec.describe 'Top', type: :request do
     shared_examples_for '[ログイン中/削除予約済み]権限がない' do
       it_behaves_like '[*][*]ベースドメイン'
       it_behaves_like '[*][*]存在するサブドメイン(公開スペース)'
-      it_behaves_like '[ログイン中/削除予約済み][ない]存在するサブドメイン(非公開スペース)'
+      it_behaves_like '[ログイン中/削除予約済み][Member/ない]存在するサブドメイン(非公開スペース)'
       it_behaves_like '[*][*]存在しないサブドメイン'
     end
 
@@ -109,7 +109,7 @@ RSpec.describe 'Top', type: :request do
   #   ログイン中/削除予約済み, 存在するサブドメイン
   # テストパターン
   #   ログイン中, ログイン中（削除予約済み） → データ＆状態作成
-  #   権限: ある(Owner, Admin), ない(Member含む) → データ作成
+  #   権限: Owner, Admin, Member, ない → データ作成
   #   存在するサブドメイン(公開スペース, 非公開スペース) → 事前にデータ作成
   describe 'manage_space' do
     let!(:domain) { "//#{Settings['base_domain']}" }
@@ -179,55 +179,61 @@ RSpec.describe 'Top', type: :request do
     end
 
     # テストケース
-    shared_examples_for '[ログイン中/削除予約済み][ある]存在するサブドメイン(公開スペース)' do
+    shared_examples_for '[ログイン中/削除予約済み][Owner/Admin]存在するサブドメイン(公開スペース)' do
       let!(:headers) { @public_space_header }
       let!(:target_customer) { public_customer }
       it_behaves_like '管理メニュー表示'
     end
-    shared_examples_for '[ログイン中/削除予約済み][ない]存在するサブドメイン(公開スペース)' do
+    shared_examples_for '[ログイン中/削除予約済み][Member/ない]存在するサブドメイン(公開スペース)' do
       let!(:headers) { @public_space_header }
       let!(:target_customer) { public_customer }
       it_behaves_like '管理メニュー非表示'
     end
-    shared_examples_for '[ログイン中/削除予約済み][ある]存在するサブドメイン(非公開スペース)' do
+    shared_examples_for '[ログイン中/削除予約済み][Owner/Admin]存在するサブドメイン(非公開スペース)' do
       let!(:headers) { @space_header }
       let!(:target_customer) { customer }
       it_behaves_like '管理メニュー表示'
     end
-    shared_examples_for '[ログイン中/削除予約済み][ない]存在するサブドメイン(非公開スペース)' do
+    shared_examples_for '[ログイン中/削除予約済み][Member/ない]存在するサブドメイン(非公開スペース)' do
       let!(:headers) { @space_header }
       let!(:target_customer) { customer }
       it_behaves_like '管理メニュー非表示'
     end
 
-    shared_examples_for '[ログイン中/削除予約済み]権限がある' do |power|
-      include_context '顧客・ユーザー紐付け', Time.current, power
-      include_context '顧客・ユーザー紐付け（公開）', Time.current, power
-      it_behaves_like '[ログイン中/削除予約済み][ある]存在するサブドメイン(公開スペース)'
-      it_behaves_like '[ログイン中/削除予約済み][ある]存在するサブドメイン(非公開スペース)'
+    shared_examples_for '[ログイン中/削除予約済み]権限がOwner' do
+      include_context '顧客・ユーザー紐付け', Time.current, :Owner
+      include_context '顧客・ユーザー紐付け（公開）', Time.current, :Owner
+      it_behaves_like '[ログイン中/削除予約済み][Owner/Admin]存在するサブドメイン(公開スペース)'
+      it_behaves_like '[ログイン中/削除予約済み][Owner/Admin]存在するサブドメイン(非公開スペース)'
+    end
+    shared_examples_for '[ログイン中/削除予約済み]権限がAdmin' do
+      include_context '顧客・ユーザー紐付け', Time.current, :Admin
+      include_context '顧客・ユーザー紐付け（公開）', Time.current, :Admin
+      it_behaves_like '[ログイン中/削除予約済み][Owner/Admin]存在するサブドメイン(公開スペース)'
+      it_behaves_like '[ログイン中/削除予約済み][Owner/Admin]存在するサブドメイン(非公開スペース)'
     end
     shared_examples_for '[ログイン中/削除予約済み]権限がMember' do
       include_context '顧客・ユーザー紐付け', Time.current, :Member
       include_context '顧客・ユーザー紐付け（公開）', Time.current, :Member
-      it_behaves_like '[ログイン中/削除予約済み][ない]存在するサブドメイン(公開スペース)'
-      it_behaves_like '[ログイン中/削除予約済み][ない]存在するサブドメイン(非公開スペース)'
+      it_behaves_like '[ログイン中/削除予約済み][Member/ない]存在するサブドメイン(公開スペース)'
+      it_behaves_like '[ログイン中/削除予約済み][Member/ない]存在するサブドメイン(非公開スペース)'
     end
     shared_examples_for '[ログイン中/削除予約済み]権限がない' do
-      it_behaves_like '[ログイン中/削除予約済み][ない]存在するサブドメイン(公開スペース)'
-      it_behaves_like '[ログイン中/削除予約済み][ない]存在するサブドメイン(非公開スペース)'
+      it_behaves_like '[ログイン中/削除予約済み][Member/ない]存在するサブドメイン(公開スペース)'
+      it_behaves_like '[ログイン中/削除予約済み][Member/ない]存在するサブドメイン(非公開スペース)'
     end
 
     context 'ログイン中' do
       include_context 'ログイン処理'
-      it_behaves_like '[ログイン中/削除予約済み]権限がある', :Owner
-      it_behaves_like '[ログイン中/削除予約済み]権限がある', :Admin
+      it_behaves_like '[ログイン中/削除予約済み]権限がOwner'
+      it_behaves_like '[ログイン中/削除予約済み]権限がAdmin'
       it_behaves_like '[ログイン中/削除予約済み]権限がMember'
       it_behaves_like '[ログイン中/削除予約済み]権限がない'
     end
     context 'ログイン中（削除予約済み）' do
       include_context 'ログイン処理', true
-      it_behaves_like '[ログイン中/削除予約済み]権限がある', :Owner
-      it_behaves_like '[ログイン中/削除予約済み]権限がある', :Admin
+      it_behaves_like '[ログイン中/削除予約済み]権限がOwner'
+      it_behaves_like '[ログイン中/削除予約済み]権限がAdmin'
       it_behaves_like '[ログイン中/削除予約済み]権限がMember'
       it_behaves_like '[ログイン中/削除予約済み]権限がない'
     end

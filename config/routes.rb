@@ -26,9 +26,12 @@ Rails.application.routes.draw do
   get    'registration/sign_up', to: 'registration#new',    as: 'registration_sign_up' # Tips: NG(new_registration)
   post   'registration/sign_up', to: 'registration#create', as: nil
 
-  # 顧客（所属）
-  get 'customers',                to: 'customers#index', as: 'customers'
-  get 'customers/:customer_code', to: 'customers#show',  as: 'customer'
+  # 顧客
+  get   'customers',                     to: 'customers#index',  as: 'customers'
+  get   'customers/:customer_code',      to: 'customers#show',   as: 'customer'
+  get   'customers/:customer_code/edit', to: 'customers#edit',   as: 'edit_customer'
+  put   'customers/:customer_code/edit', to: 'customers#update', as: 'update_customer'
+  patch 'customers/:customer_code/edit', to: 'customers#update', as: nil
 
   # お知らせ
   resources :infomations, only: %i[index show]

@@ -221,7 +221,7 @@ RSpec.describe 'Spaces', type: :request do
       it '顧客詳細のパスが含まれる' do
         get spaces_path(page: page), headers: headers
         (start_no..end_no).each do |no|
-          expect(response.body).to include("\"#{customer_path(@create_spaces[@create_spaces.count - no].customer.code)}\"")
+          expect(response.body).to include("\"#{customer_path(customer_code: @create_spaces[@create_spaces.count - no].customer.code)}\"")
         end
       end
       it '顧客コードが含まれる' do # Tips: 顧客詳細のパスに含まれる為、正確ではない

@@ -421,14 +421,14 @@ RSpec.describe 'Members', type: :request do
     end
 
     # テストケース
-    shared_examples_for '[*][権限がある]所属メンバーが最大表示数と同じ' do |power|
+    shared_examples_for '[*][ある]所属メンバーが最大表示数と同じ' do |power|
       include_context 'メンバー作成', Settings['test_customers_owner'], Settings['test_customers_admin'], Settings['test_customers_member'], 1
       it_behaves_like 'ページ情報', 1, power
       it_behaves_like 'ページネーション非表示', 1, 2
       it_behaves_like 'リスト表示', 1, power
       it_behaves_like 'リダイレクト', 2, 1
     end
-    shared_examples_for '[*][権限がある]所属メンバーが最大表示数より多い' do |power|
+    shared_examples_for '[*][ある]所属メンバーが最大表示数より多い' do |power|
       include_context 'メンバー作成', Settings['test_customers_owner'], Settings['test_customers_admin'], Settings['test_customers_member'] + 1, 1
       it_behaves_like 'ページ情報', 1, power
       it_behaves_like 'ページ情報', 2, power
@@ -441,9 +441,9 @@ RSpec.describe 'Members', type: :request do
 
     shared_examples_for '[*]権限がある' do |power|
       include_context '顧客・ユーザー紐付け', Time.current, power
-      # it_behaves_like '[*][権限がある]所属メンバーがいない', power # Tips: 自分が所属している為、1件以上
-      it_behaves_like '[*][権限がある]所属メンバーが最大表示数と同じ', power
-      it_behaves_like '[*][権限がある]所属メンバーが最大表示数より多い', power
+      # it_behaves_like '[*][ある]所属メンバーがいない', power # Tips: 自分が所属している為、1件以上
+      it_behaves_like '[*][ある]所属メンバーが最大表示数と同じ', power
+      it_behaves_like '[*][ある]所属メンバーが最大表示数より多い', power
     end
 
     context 'ログイン中' do

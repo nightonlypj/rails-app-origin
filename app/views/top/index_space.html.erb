@@ -32,7 +32,7 @@
       <div class="col-sm-6 px-0">
       </div>
       <div class="col-sm-6 px-0">
-        <%= render 'manage_space' if @member.present? && @member.first.update_power? %>
+        <%= render 'manage_space' if @member.present? && @member.first.space_update_power? %>
         <%= render 'infomations' if @infomations.present? %>
       </div>
     </div>

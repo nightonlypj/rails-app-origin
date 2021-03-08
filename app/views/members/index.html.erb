@@ -1,7 +1,7 @@
 <main class="container">
   <h3 class="pt-3"><%= @customer.name %>のメンバー一覧</h3>
 
-<% if @customer.member.first.create_power? %>
+<% if @customer.member.first.member_create_power? %>
   <div class="row">
     <div class="col">
       <div class="float-end"><%= link_to 'メンバー招待', new_member_path(customer_code: @customer.code), class: 'btn btn-primary btn-rounded mb-1' %></div>
@@ -51,14 +51,14 @@
           <td nowrap><%= member.user.email %></td>
           <td nowrap>
             <%= member.power_i18n %>
-<% if @customer.member.first.update_power? %>
+<% if @customer.member.first.member_update_power? %>
             <wbr><%= link_to '変更', edit_member_path(customer_code: @customer.code, user_code: member.user.code), class: 'btn btn-outline-warning btn-rounded btn-sm float-end' %>
 <% end %>
           </td>
           <td nowrap><%= member.invitationed_at.present? ? l(member.invitationed_at.to_date) : t('blank_word.member.invitationed_at') %></td>
           <td nowrap>
             <%= member.registrationed_at.present? ? l(member.registrationed_at.to_date) : t('blank_word.member.registrationed_at') %>
-<% if @customer.member.first.destroy_power? %>
+<% if @customer.member.first.member_destroy_power? %>
             <wbr><%= link_to '解除', delete_member_path(customer_code: @customer.code, user_code: member.user.code), class: 'btn btn-outline-danger btn-rounded btn-sm float-end' %>
 <% end %>
           </td>

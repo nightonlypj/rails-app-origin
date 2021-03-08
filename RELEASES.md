@@ -2,6 +2,8 @@
 
 ## 1.1.0 (space branch)
 
+- 顧客情報を変更できるようにしたい（spaceブランチ）
+  - https://dev.azure.com/nightonly/rails-app-origin/_workitems/edit/348/
 - Owner/Admin以外、スペース作成・編集できないようにしたい（spaceブランチ）
   - https://dev.azure.com/nightonly/rails-app-origin/_workitems/edit/276/
 - デフォルトでは顧客メンバー以外、スペースを閲覧できないようしたい（spaceブランチ）

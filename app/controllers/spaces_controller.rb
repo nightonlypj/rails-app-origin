@@ -1,8 +1,6 @@
 class SpacesController < ApplicationController
-  before_action :not_found_json_base_domain_response, only: %i[update]
-  before_action :not_found_base_domain_response, only: %i[edit update image_update image_destroy]
-  before_action :not_found_json_sub_domain_response, only: %i[index index_public create]
   before_action :redirect_base_domain_response, only: %i[index index_public new]
+  before_action :not_found_base_domain_response, only: %i[edit update image_update image_destroy]
   before_action :not_found_sub_domain_response, only: %i[create]
   before_action :not_found_request_space_blank, only: %i[edit update image_update image_destroy]
   before_action :authenticate_user!, only: %i[index new edit create update image_update image_destroy]
@@ -64,8 +62,8 @@ class SpacesController < ApplicationController
                            .eager_load(:member).where(members: { user_id: current_user.id }).first
         if customer.blank?
           @customer.errors.add(:code, t('errors.messages.customer.code_invalid'))
-        elsif !customer.member.first.create_power?
-          @customer.errors.add(:code, t('errors.messages.customer.not_create_power'))
+        elsif !customer.member.first.space_create_power?
+          @customer.errors.add(:code, t('errors.messages.space.not_create_power'))
         else
           @customer.id = customer.id
         end
@@ -152,14 +150,18 @@ class SpacesController < ApplicationController
 
   # 存在しないサブドメインへのアクセス禁止
   def not_found_request_space_blank
-    head :not_found if @request_space.blank?
+    return unless @request_space.blank?
+    return render json: { error: t('errors.messages.space.subdomain_error') }, status: :not_found if request.format.json?
+
+    head :not_found
   end
 
   # 変更権限がない場合、リダイレクトしてメッセージを表示
   def redirect_response_not_update_power
     member = Member.where(customer_id: @request_space.customer_id, user_id: current_user.id).first
+    return render json: { error: t('errors.messages.space.subdomain_error') }, status: :not_found if member.blank? && request.format.json?
     return head :not_found if member.blank?
-    return if member.update_power?
+    return if member.space_update_power?
 
     if request.format.json?
       render json: { error: t('alert.space.not_update_power') }, status: :forbidden

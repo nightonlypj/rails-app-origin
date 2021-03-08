@@ -189,7 +189,7 @@ RSpec.describe 'Customers', type: :request do
     let!(:customer_code) { customer.code }
 
     # テスト内容
-    shared_examples_for '[*][権限がある]顧客情報' do
+    shared_examples_for '顧客情報表示' do
       it '顧客コードが含まれる' do
         get customer_path(customer_code: customer_code), headers: headers
         expect(response.body).to include(customer.code)
@@ -232,27 +232,95 @@ RSpec.describe 'Customers', type: :request do
       end
       it 'メンバー一覧のパスが含まれる' do
         get customer_path(customer_code: customer_code), headers: headers
-        expect(response.body).to include("\"#{members_path(customer.code)}\"")
+        expect(response.body).to include("\"#{members_path(customer_code: customer.code)}\"")
+      end
+      it 'スペース数が含まれる' do
+        get customer_path(customer_code: customer_code), headers: headers
+        expect(response.body).to include("#{customer.space.count.to_s(:delimited)}名")
+      end
+      it '(json)スペース数が一致する' do
+        get customer_path(customer_code: customer_code, format: :json), headers: headers
+        expect(JSON.parse(response.body)['customer']['space']['count']).to eq(customer.space.count)
+      end
+      it '参加スペース一覧のパスが含まれる' do
+        get customer_path(customer_code: customer_code), headers: headers
+        expect(response.body).to include("\"#{spaces_path}\"")
+      end
+    end
+
+    shared_examples_for '顧客情報変更表示' do
+      it 'パスが含まれる' do
+        get customer_path(customer_code: customer_code), headers: headers
+        expect(response.body).to include("\"#{edit_customer_path(customer_code: customer.code)}\"")
+      end
+    end
+    shared_examples_for '顧客情報変更非表示' do
+      it 'パスが含まれない' do
+        get customer_path(customer_code: customer_code), headers: headers
+        expect(response.body).not_to include("\"#{edit_customer_path(customer_code: customer.code)}\"")
+      end
+    end
+
+    shared_examples_for 'メンバー招待表示' do
+      it 'パスが含まれる' do
+        get customer_path(customer_code: customer_code), headers: headers
+        expect(response.body).to include("\"#{new_member_path(customer_code: customer.code)}\"")
+      end
+    end
+    shared_examples_for 'メンバー招待非表示' do
+      it 'パスが含まれない' do
+        get customer_path(customer_code: customer_code), headers: headers
+        expect(response.body).not_to include("\"#{new_member_path(customer_code: customer.code)}\"")
+      end
+    end
+
+    shared_examples_for 'スペース作成表示' do
+      it 'パスが含まれる' do
+        get customer_path(customer_code: customer_code), headers: headers
+        expect(response.body).to include("\"#{new_space_path(customer_code: customer.code)}\"")
+      end
+    end
+    shared_examples_for 'スペース作成非表示' do
+      it 'パスが含まれない' do
+        get customer_path(customer_code: customer_code), headers: headers
+        expect(response.body).not_to include("\"#{new_space_path(customer_code: customer.code)}\"")
       end
     end
 
     # テストケース
-    shared_examples_for '[*]権限がある' do |power|
-      include_context '顧客・ユーザー紐付け', Time.current, power
-      it_behaves_like '[*][権限がある]顧客情報'
+    shared_examples_for '[*]権限がOwner' do
+      include_context '顧客・ユーザー紐付け', Time.current, :Owner
+      it_behaves_like '顧客情報表示'
+      it_behaves_like '顧客情報変更表示'
+      it_behaves_like 'メンバー招待表示'
+      it_behaves_like 'スペース作成表示'
+    end
+    shared_examples_for '[*]権限がAdmin' do
+      include_context '顧客・ユーザー紐付け', Time.current, :Admin
+      it_behaves_like '顧客情報表示'
+      it_behaves_like '顧客情報変更非表示'
+      it_behaves_like 'メンバー招待表示'
+      it_behaves_like 'スペース作成表示'
+    end
+    shared_examples_for '[*]権限がMember' do
+      include_context '顧客・ユーザー紐付け', Time.current, :Member
+      it_behaves_like '顧客情報表示'
+      it_behaves_like '顧客情報変更非表示'
+      it_behaves_like 'メンバー招待非表示'
+      it_behaves_like 'スペース作成非表示'
     end
 
     context 'ログイン中' do
       include_context 'ログイン処理'
-      it_behaves_like '[*]権限がある', :Owner
-      it_behaves_like '[*]権限がある', :Admin
-      it_behaves_like '[*]権限がある', :Member
+      it_behaves_like '[*]権限がOwner'
+      it_behaves_like '[*]権限がAdmin'
+      it_behaves_like '[*]権限がMember'
     end
     context 'ログイン中（削除予約済み）' do
       include_context 'ログイン処理', true
-      it_behaves_like '[*]権限がある', :Owner
-      it_behaves_like '[*]権限がある', :Admin
-      it_behaves_like '[*]権限がある', :Member
+      it_behaves_like '[*]権限がOwner'
+      it_behaves_like '[*]権限がAdmin'
+      it_behaves_like '[*]権限がMember'
     end
   end
 end

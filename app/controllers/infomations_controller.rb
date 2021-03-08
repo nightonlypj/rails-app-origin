@@ -1,5 +1,4 @@
 class InfomationsController < ApplicationController
-  before_action :not_found_json_sub_domain_response
   before_action :redirect_base_domain_response
 
   # GET /infomations（ベースドメイン） お知らせ一覧

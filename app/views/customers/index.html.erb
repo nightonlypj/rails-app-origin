@@ -35,7 +35,7 @@
           <td nowrap><%= customer.member.first.power_i18n %></td>
           <td nowrap>
             <%# TODO: 件数 %>
-            <%= link_to '一覧', members_path(customer.code), class: 'btn btn-outline-info btn-rounded btn-sm' %>
+            <%= link_to '一覧', members_path(customer_code: customer.code), class: 'btn btn-outline-info btn-rounded btn-sm' %>
             <wbr><%= link_to '招待', new_member_path(customer_code: customer.code), class: 'btn btn-outline-primary btn-rounded btn-sm' %>
           </td>
           <td nowrap>

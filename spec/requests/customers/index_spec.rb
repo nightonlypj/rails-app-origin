@@ -174,7 +174,7 @@ RSpec.describe 'Customers', type: :request do
       it '顧客詳細のパスが含まれる' do
         get customers_path(page: page), headers: headers
         (start_no..end_no).each do |no|
-          expect(response.body).to include("\"#{customer_path(@create_customers[no - 1].code)}\"")
+          expect(response.body).to include("\"#{customer_path(customer_code: create_customers[no - 1].code)}\"")
         end
       end
       it '作成日が含まれる' do # Tips: ユニークではない為、正確ではない
@@ -206,7 +206,7 @@ RSpec.describe 'Customers', type: :request do
       it 'メンバー一覧のパスが含まれる' do
         get customers_path(page: page), headers: headers
         (start_no..end_no).each do |no|
-          expect(response.body).to include("\"#{members_path(@create_customers[no - 1].code)}\"")
+          expect(response.body).to include("\"#{members_path(customer_code: @create_customers[no - 1].code)}\"")
         end
       end
     end

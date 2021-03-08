@@ -14,18 +14,33 @@ class Member < ApplicationRecord
     end
   end
 
-  # スペース作成・メンバー招待の権限があるかを返却
-  def create_power?(taget_user_power = nil)
+  # 顧客情報変更の権限があるかを返却
+  def customer_update_power?
+    power == 'Owner'
+  end
+
+  # メンバー招待の権限があるかを返却
+  def member_create_power?(taget_user_power = nil)
     (power == 'Owner') || (power == 'Admin' && (taget_user_power.blank? || taget_user_power != 'Owner'))
   end
 
-  # スペース情報変更・メンバー権限変更の権限があるかを返却
-  def update_power?(taget_user_power = nil)
-    create_power?(taget_user_power)
+  # メンバー権限変更の権限があるかを返却
+  def member_update_power?(taget_user_power = nil)
+    member_create_power?(taget_user_power)
   end
 
   # メンバー解除の権限があるかを返却
-  def destroy_power?(taget_user_power = nil)
-    create_power?(taget_user_power)
+  def member_destroy_power?(taget_user_power = nil)
+    member_create_power?(taget_user_power)
+  end
+
+  # スペース作成の権限があるかを返却
+  def space_create_power?
+    (power == 'Owner') || (power == 'Admin')
+  end
+
+  # スペース情報変更の権限があるかを返却
+  def space_update_power?
+    space_create_power?
   end
 end

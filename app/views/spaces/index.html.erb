@@ -51,7 +51,7 @@
           </td>
           <td nowrap>
             <%= l(space.created_at.to_date) %>
-<% if space.customer.member.first.update_power? %>
+<% if space.customer.member.first.space_update_power? %>
             <wbr><%= link_to '変更', "//#{space.subdomain}.#{Settings['base_domain']}#{edit_space_path}", class: 'btn btn-outline-warning btn-rounded btn-sm float-end' %>
 <% end %>
           </td>

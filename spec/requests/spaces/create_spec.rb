@@ -7,7 +7,7 @@ RSpec.describe 'Spaces', type: :request do
   #   なし
   # テストパターン
   #   未ログイン, ログイン中, ログイン中（削除予約済み） → データ＆状態作成
-  #   権限: ある(Owner, Admin), ない(Member含む) → データ作成
+  #   権限: Owner, Admin, Member, ない → データ作成
   #   顧客: 新規作成, 選択(所属, 未所属), 未選択, 不正値 → 固定値
   #   有効なパラメータ, 無効なパラメータ(顧客, スペース, 両方) → 事前にデータ作成
   #   ベースドメイン, 存在するサブドメイン, 存在しないサブドメイン → 事前にデータ作成
@@ -17,7 +17,7 @@ RSpec.describe 'Spaces', type: :request do
     let!(:valid_customer_attributes) { FactoryBot.attributes_for(:customer) }
     let!(:invalid_customer_attributes) { FactoryBot.attributes_for(:customer, code: nil, name: nil) }
     let!(:valid_space_attributes) { FactoryBot.attributes_for(:space) }
-    let!(:invalid_space_attributes) { FactoryBot.attributes_for(:space, subdomain: nil) }
+    let!(:invalid_space_attributes) { FactoryBot.attributes_for(:space, name: nil) }
 
     # テスト内容
     shared_examples_for 'OK' do
@@ -101,12 +101,12 @@ RSpec.describe 'Spaces', type: :request do
     end
 
     # テストケース
-    shared_examples_for '[ログイン中][ある][新規作成/所属][有効]ベースドメイン' do
+    shared_examples_for '[ログイン中][Owner/Admin][新規作成/所属][有効]ベースドメイン' do
       let!(:headers) { BASE_HEADER }
       it_behaves_like 'OK'
       it_behaves_like 'ToOK', nil, 'notice.space.create'
     end
-    shared_examples_for '[ログイン中][ある][新規作成/所属][無効]ベースドメイン' do
+    shared_examples_for '[ログイン中][Owner/Admin][新規作成/所属][無効]ベースドメイン' do
       let!(:headers) { BASE_HEADER }
       it_behaves_like 'NG'
       it_behaves_like 'ToError'
@@ -114,24 +114,24 @@ RSpec.describe 'Spaces', type: :request do
     shared_examples_for '[削除予約済み][*][*][*]ベースドメイン' do
       let!(:headers) { BASE_HEADER }
       it_behaves_like 'NG'
-      it_behaves_like 'ToTop', nil, 'notice.user.destroy_reserved', 'notice.user.destroy_reserved'
+      it_behaves_like 'ToTop', 'alert.user.destroy_reserved', nil, 'alert.user.destroy_reserved'
     end
     shared_examples_for '[未ログイン][ない][*][*]ベースドメイン' do
       let!(:headers) { BASE_HEADER }
       it_behaves_like 'NG'
       it_behaves_like 'ToLogin', 'devise.failure.unauthenticated', nil, 'devise.failure.unauthenticated'
     end
-    shared_examples_for '[ログイン中][ない][新規作成][有効]ベースドメイン' do
+    shared_examples_for '[ログイン中][Member/ない][新規作成][有効]ベースドメイン' do
       let!(:headers) { BASE_HEADER }
       it_behaves_like 'OK'
       it_behaves_like 'ToOK', nil, 'notice.space.create'
     end
-    shared_examples_for '[ログイン中][ない][新規作成][無効]ベースドメイン' do
+    shared_examples_for '[ログイン中][Member/ない][新規作成][無効]ベースドメイン' do
       let!(:headers) { BASE_HEADER }
       it_behaves_like 'NG'
       it_behaves_like 'ToError'
     end
-    shared_examples_for '[ログイン中][ない][所属][*]ベースドメイン' do
+    shared_examples_for '[ログイン中][Member/ない][所属][*]ベースドメイン' do
       let!(:headers) { BASE_HEADER }
       it_behaves_like 'NG'
       it_behaves_like 'ToError'
@@ -152,9 +152,9 @@ RSpec.describe 'Spaces', type: :request do
       it_behaves_like 'ToNot', 'errors.messages.domain_error'
     end
 
-    shared_examples_for '[ログイン中][ある][新規作成/所属]有効なパラメータ' do
+    shared_examples_for '[ログイン中][Owner/Admin][新規作成/所属]有効なパラメータ' do
       let!(:attributes) { valid_space_attributes.merge({ customer: valid_customer_attributes.merge({ create_flag: create_flag, code: code }) }) }
-      it_behaves_like '[ログイン中][ある][新規作成/所属][有効]ベースドメイン'
+      it_behaves_like '[ログイン中][Owner/Admin][新規作成/所属][有効]ベースドメイン'
       it_behaves_like '[*][*][*][*]存在するサブドメイン'
       it_behaves_like '[*][*][*][*]存在しないサブドメイン'
     end
@@ -170,15 +170,15 @@ RSpec.describe 'Spaces', type: :request do
       it_behaves_like '[*][*][*][*]存在するサブドメイン'
       it_behaves_like '[*][*][*][*]存在しないサブドメイン'
     end
-    shared_examples_for '[ログイン中][ない][新規作成]有効なパラメータ' do
+    shared_examples_for '[ログイン中][Member/ない][新規作成]有効なパラメータ' do
       let!(:attributes) { valid_space_attributes.merge({ customer: valid_customer_attributes.merge({ create_flag: create_flag, code: code }) }) }
-      it_behaves_like '[ログイン中][ない][新規作成][有効]ベースドメイン'
+      it_behaves_like '[ログイン中][Member/ない][新規作成][有効]ベースドメイン'
       it_behaves_like '[*][*][*][*]存在するサブドメイン'
       it_behaves_like '[*][*][*][*]存在しないサブドメイン'
     end
-    shared_examples_for '[ログイン中][ない][所属]有効なパラメータ' do
+    shared_examples_for '[ログイン中][Member/ない][所属]有効なパラメータ' do
       let!(:attributes) { valid_space_attributes.merge({ customer: valid_customer_attributes.merge({ create_flag: create_flag, code: code }) }) }
-      it_behaves_like '[ログイン中][ない][所属][*]ベースドメイン'
+      it_behaves_like '[ログイン中][Member/ない][所属][*]ベースドメイン'
       it_behaves_like '[*][*][*][*]存在するサブドメイン'
       it_behaves_like '[*][*][*][*]存在しないサブドメイン'
     end
@@ -188,9 +188,9 @@ RSpec.describe 'Spaces', type: :request do
       it_behaves_like '[*][*][*][*]存在するサブドメイン'
       it_behaves_like '[*][*][*][*]存在しないサブドメイン'
     end
-    shared_examples_for '[ログイン中][ある][新規作成/所属]無効なパラメータ(顧客)' do
+    shared_examples_for '[ログイン中][Owner/Admin][新規作成/所属]無効なパラメータ(顧客)' do
       let!(:attributes) { valid_space_attributes.merge({ customer: invalid_customer_attributes.merge({ create_flag: create_flag, code: code }) }) }
-      it_behaves_like '[ログイン中][ある][新規作成/所属][無効]ベースドメイン'
+      it_behaves_like '[ログイン中][Owner/Admin][新規作成/所属][無効]ベースドメイン'
       it_behaves_like '[*][*][*][*]存在するサブドメイン'
       it_behaves_like '[*][*][*][*]存在しないサブドメイン'
     end
@@ -206,15 +206,15 @@ RSpec.describe 'Spaces', type: :request do
       it_behaves_like '[*][*][*][*]存在するサブドメイン'
       it_behaves_like '[*][*][*][*]存在しないサブドメイン'
     end
-    shared_examples_for '[ログイン中][ない][新規作成]無効なパラメータ(顧客)' do
+    shared_examples_for '[ログイン中][Member/ない][新規作成]無効なパラメータ(顧客)' do
       let!(:attributes) { valid_space_attributes.merge({ customer: invalid_customer_attributes.merge({ create_flag: create_flag, code: code }) }) }
-      it_behaves_like '[ログイン中][ない][新規作成][無効]ベースドメイン'
+      it_behaves_like '[ログイン中][Member/ない][新規作成][無効]ベースドメイン'
       it_behaves_like '[*][*][*][*]存在するサブドメイン'
       it_behaves_like '[*][*][*][*]存在しないサブドメイン'
     end
-    shared_examples_for '[ログイン中][ない][所属]無効なパラメータ(顧客)' do
+    shared_examples_for '[ログイン中][Member/ない][所属]無効なパラメータ(顧客)' do
       let!(:attributes) { valid_space_attributes.merge({ customer: invalid_customer_attributes.merge({ create_flag: create_flag, code: code }) }) }
-      it_behaves_like '[ログイン中][ない][所属][*]ベースドメイン'
+      it_behaves_like '[ログイン中][Member/ない][所属][*]ベースドメイン'
       it_behaves_like '[*][*][*][*]存在するサブドメイン'
       it_behaves_like '[*][*][*][*]存在しないサブドメイン'
     end
@@ -224,9 +224,9 @@ RSpec.describe 'Spaces', type: :request do
       it_behaves_like '[*][*][*][*]存在するサブドメイン'
       it_behaves_like '[*][*][*][*]存在しないサブドメイン'
     end
-    shared_examples_for '[ログイン中][ある][新規作成/所属]無効なパラメータ(スペース)' do
+    shared_examples_for '[ログイン中][Owner/Admin][新規作成/所属]無効なパラメータ(スペース)' do
       let!(:attributes) { invalid_space_attributes.merge({ customer: valid_customer_attributes.merge({ create_flag: create_flag, code: code }) }) }
-      it_behaves_like '[ログイン中][ある][新規作成/所属][無効]ベースドメイン'
+      it_behaves_like '[ログイン中][Owner/Admin][新規作成/所属][無効]ベースドメイン'
       it_behaves_like '[*][*][*][*]存在するサブドメイン'
       it_behaves_like '[*][*][*][*]存在しないサブドメイン'
     end
@@ -242,15 +242,15 @@ RSpec.describe 'Spaces', type: :request do
       it_behaves_like '[*][*][*][*]存在するサブドメイン'
       it_behaves_like '[*][*][*][*]存在しないサブドメイン'
     end
-    shared_examples_for '[ログイン中][ない][新規作成]無効なパラメータ(スペース)' do
+    shared_examples_for '[ログイン中][Member/ない][新規作成]無効なパラメータ(スペース)' do
       let!(:attributes) { invalid_space_attributes.merge({ customer: valid_customer_attributes.merge({ create_flag: create_flag, code: code }) }) }
-      it_behaves_like '[ログイン中][ない][新規作成][無効]ベースドメイン'
+      it_behaves_like '[ログイン中][Member/ない][新規作成][無効]ベースドメイン'
       it_behaves_like '[*][*][*][*]存在するサブドメイン'
       it_behaves_like '[*][*][*][*]存在しないサブドメイン'
     end
-    shared_examples_for '[ログイン中][ない][所属]無効なパラメータ(スペース)' do
+    shared_examples_for '[ログイン中][Member/ない][所属]無効なパラメータ(スペース)' do
       let!(:attributes) { invalid_space_attributes.merge({ customer: valid_customer_attributes.merge({ create_flag: create_flag, code: code }) }) }
-      it_behaves_like '[ログイン中][ない][所属][*]ベースドメイン'
+      it_behaves_like '[ログイン中][Member/ない][所属][*]ベースドメイン'
       it_behaves_like '[*][*][*][*]存在するサブドメイン'
       it_behaves_like '[*][*][*][*]存在しないサブドメイン'
     end
@@ -260,9 +260,9 @@ RSpec.describe 'Spaces', type: :request do
       it_behaves_like '[*][*][*][*]存在するサブドメイン'
       it_behaves_like '[*][*][*][*]存在しないサブドメイン'
     end
-    shared_examples_for '[ログイン中][ある][新規作成/所属]無効なパラメータ(両方)' do
+    shared_examples_for '[ログイン中][Owner/Admin][新規作成/所属]無効なパラメータ(両方)' do
       let!(:attributes) { invalid_space_attributes.merge({ customer: invalid_customer_attributes.merge({ create_flag: create_flag, code: code }) }) }
-      it_behaves_like '[ログイン中][ある][新規作成/所属][無効]ベースドメイン'
+      it_behaves_like '[ログイン中][Owner/Admin][新規作成/所属][無効]ベースドメイン'
       it_behaves_like '[*][*][*][*]存在するサブドメイン'
       it_behaves_like '[*][*][*][*]存在しないサブドメイン'
     end
@@ -278,15 +278,15 @@ RSpec.describe 'Spaces', type: :request do
       it_behaves_like '[*][*][*][*]存在するサブドメイン'
       it_behaves_like '[*][*][*][*]存在しないサブドメイン'
     end
-    shared_examples_for '[ログイン中][ない][新規作成]無効なパラメータ(両方)' do
+    shared_examples_for '[ログイン中][Member/ない][新規作成]無効なパラメータ(両方)' do
       let!(:attributes) { invalid_space_attributes.merge({ customer: invalid_customer_attributes.merge({ create_flag: create_flag, code: code }) }) }
-      it_behaves_like '[ログイン中][ない][新規作成][無効]ベースドメイン'
+      it_behaves_like '[ログイン中][Member/ない][新規作成][無効]ベースドメイン'
       it_behaves_like '[*][*][*][*]存在するサブドメイン'
       it_behaves_like '[*][*][*][*]存在しないサブドメイン'
     end
-    shared_examples_for '[ログイン中][ない][所属]無効なパラメータ(両方)' do
+    shared_examples_for '[ログイン中][Member/ない][所属]無効なパラメータ(両方)' do
       let!(:attributes) { invalid_space_attributes.merge({ customer: invalid_customer_attributes.merge({ create_flag: create_flag, code: code }) }) }
-      it_behaves_like '[ログイン中][ない][所属][*]ベースドメイン'
+      it_behaves_like '[ログイン中][Member/ない][所属][*]ベースドメイン'
       it_behaves_like '[*][*][*][*]存在するサブドメイン'
       it_behaves_like '[*][*][*][*]存在しないサブドメイン'
     end
@@ -297,13 +297,13 @@ RSpec.describe 'Spaces', type: :request do
       it_behaves_like '[*][*][*][*]存在しないサブドメイン'
     end
 
-    shared_examples_for '[ログイン中][ある]顧客を新規作成' do
+    shared_examples_for '[ログイン中][Owner/Admin]顧客を新規作成' do
       let!(:create_flag) { 'true' }
       let!(:code) { nil }
-      it_behaves_like '[ログイン中][ある][新規作成/所属]有効なパラメータ'
-      it_behaves_like '[ログイン中][ある][新規作成/所属]無効なパラメータ(顧客)'
-      it_behaves_like '[ログイン中][ある][新規作成/所属]無効なパラメータ(スペース)'
-      it_behaves_like '[ログイン中][ある][新規作成/所属]無効なパラメータ(両方)'
+      it_behaves_like '[ログイン中][Owner/Admin][新規作成/所属]有効なパラメータ'
+      it_behaves_like '[ログイン中][Owner/Admin][新規作成/所属]無効なパラメータ(顧客)'
+      it_behaves_like '[ログイン中][Owner/Admin][新規作成/所属]無効なパラメータ(スペース)'
+      it_behaves_like '[ログイン中][Owner/Admin][新規作成/所属]無効なパラメータ(両方)'
     end
     shared_examples_for '[削除予約済み][*]顧客を新規作成' do
       let!(:create_flag) { 'true' }
@@ -321,21 +321,21 @@ RSpec.describe 'Spaces', type: :request do
       it_behaves_like '[未ログイン][ない][*]無効なパラメータ(スペース)'
       it_behaves_like '[未ログイン][ない][*]無効なパラメータ(両方)'
     end
-    shared_examples_for '[ログイン中][ない]顧客を新規作成' do
+    shared_examples_for '[ログイン中][Member/ない]顧客を新規作成' do
       let!(:create_flag) { 'true' }
       let!(:code) { nil }
-      it_behaves_like '[ログイン中][ない][新規作成]有効なパラメータ'
-      it_behaves_like '[ログイン中][ない][新規作成]無効なパラメータ(顧客)'
-      it_behaves_like '[ログイン中][ない][新規作成]無効なパラメータ(スペース)'
-      it_behaves_like '[ログイン中][ない][新規作成]無効なパラメータ(両方)'
+      it_behaves_like '[ログイン中][Member/ない][新規作成]有効なパラメータ'
+      it_behaves_like '[ログイン中][Member/ない][新規作成]無効なパラメータ(顧客)'
+      it_behaves_like '[ログイン中][Member/ない][新規作成]無効なパラメータ(スペース)'
+      it_behaves_like '[ログイン中][Member/ない][新規作成]無効なパラメータ(両方)'
     end
-    shared_examples_for '[ログイン中][ある]顧客を選択(所属)' do
+    shared_examples_for '[ログイン中][Owner/Admin]顧客を選択(所属)' do
       let!(:create_flag) { 'false' }
       let!(:code) { customer.code }
-      it_behaves_like '[ログイン中][ある][新規作成/所属]有効なパラメータ'
-      # it_behaves_like '[ログイン中][ある][新規作成/所属]無効なパラメータ(顧客)' # Tips: 有効なパラメータになる為
-      it_behaves_like '[ログイン中][ある][新規作成/所属]無効なパラメータ(スペース)'
-      it_behaves_like '[ログイン中][ある][新規作成/所属]無効なパラメータ(両方)'
+      it_behaves_like '[ログイン中][Owner/Admin][新規作成/所属]有効なパラメータ'
+      # it_behaves_like '[ログイン中][Owner/Admin][新規作成/所属]無効なパラメータ(顧客)' # Tips: 有効なパラメータになる為
+      it_behaves_like '[ログイン中][Owner/Admin][新規作成/所属]無効なパラメータ(スペース)'
+      it_behaves_like '[ログイン中][Owner/Admin][新規作成/所属]無効なパラメータ(両方)'
     end
     shared_examples_for '[削除予約済み][*]顧客を選択(所属)' do
       let!(:create_flag) { 'false' }
@@ -353,13 +353,13 @@ RSpec.describe 'Spaces', type: :request do
       it_behaves_like '[未ログイン][ない][*]無効なパラメータ(スペース)'
       it_behaves_like '[未ログイン][ない][*]無効なパラメータ(両方)'
     end
-    shared_examples_for '[ログイン中][ない]顧客を選択(所属)' do
+    shared_examples_for '[ログイン中][Member/ない]顧客を選択(所属)' do
       let!(:create_flag) { 'false' }
       let!(:code) { customer.code }
-      it_behaves_like '[ログイン中][ない][所属]有効なパラメータ'
-      it_behaves_like '[ログイン中][ない][所属]無効なパラメータ(顧客)'
-      it_behaves_like '[ログイン中][ない][所属]無効なパラメータ(スペース)'
-      it_behaves_like '[ログイン中][ない][所属]無効なパラメータ(両方)'
+      it_behaves_like '[ログイン中][Member/ない][所属]有効なパラメータ'
+      it_behaves_like '[ログイン中][Member/ない][所属]無効なパラメータ(顧客)'
+      it_behaves_like '[ログイン中][Member/ない][所属]無効なパラメータ(スペース)'
+      it_behaves_like '[ログイン中][Member/ない][所属]無効なパラメータ(両方)'
     end
     shared_examples_for '[ログイン中][*]顧客を選択(未所属)' do
       let!(:create_flag) { 'false' }
@@ -434,16 +434,32 @@ RSpec.describe 'Spaces', type: :request do
       it_behaves_like '[未ログイン][ない][*]無効なパラメータ(両方)'
     end
 
-    shared_examples_for '[ログイン中]権限がある' do |power|
-      include_context '顧客・ユーザー紐付け', Time.current, power
-      it_behaves_like '[ログイン中][ある]顧客を新規作成'
-      it_behaves_like '[ログイン中][ある]顧客を選択(所属)'
+    shared_examples_for '[ログイン中]権限がOwner' do
+      include_context '顧客・ユーザー紐付け', Time.current, :Owner
+      it_behaves_like '[ログイン中][Owner/Admin]顧客を新規作成'
+      it_behaves_like '[ログイン中][Owner/Admin]顧客を選択(所属)'
       it_behaves_like '[ログイン中][*]顧客を選択(未所属)'
       it_behaves_like '[ログイン中][*]顧客が未選択'
       it_behaves_like '[ログイン中][*]顧客が不正値'
     end
-    shared_examples_for '[削除予約済み]権限がある' do |power|
-      include_context '顧客・ユーザー紐付け', Time.current, power
+    shared_examples_for '[削除予約済み]権限がOwner' do
+      include_context '顧客・ユーザー紐付け', Time.current, :Owner
+      it_behaves_like '[削除予約済み][*]顧客を新規作成'
+      it_behaves_like '[削除予約済み][*]顧客を選択(所属)'
+      it_behaves_like '[削除予約済み][*]顧客を選択(未所属)'
+      it_behaves_like '[削除予約済み][*]顧客が未選択'
+      it_behaves_like '[削除予約済み][*]顧客が不正値'
+    end
+    shared_examples_for '[ログイン中]権限がAdmin' do
+      include_context '顧客・ユーザー紐付け', Time.current, :Admin
+      it_behaves_like '[ログイン中][Owner/Admin]顧客を新規作成'
+      it_behaves_like '[ログイン中][Owner/Admin]顧客を選択(所属)'
+      it_behaves_like '[ログイン中][*]顧客を選択(未所属)'
+      it_behaves_like '[ログイン中][*]顧客が未選択'
+      it_behaves_like '[ログイン中][*]顧客が不正値'
+    end
+    shared_examples_for '[削除予約済み]権限がAdmin' do
+      include_context '顧客・ユーザー紐付け', Time.current, :Admin
       it_behaves_like '[削除予約済み][*]顧客を新規作成'
       it_behaves_like '[削除予約済み][*]顧客を選択(所属)'
       it_behaves_like '[削除予約済み][*]顧客を選択(未所属)'
@@ -452,8 +468,8 @@ RSpec.describe 'Spaces', type: :request do
     end
     shared_examples_for '[ログイン中]権限がMember' do
       include_context '顧客・ユーザー紐付け', Time.current, :Member
-      it_behaves_like '[ログイン中][ない]顧客を新規作成'
-      it_behaves_like '[ログイン中][ない]顧客を選択(所属)'
+      it_behaves_like '[ログイン中][Member/ない]顧客を新規作成'
+      it_behaves_like '[ログイン中][Member/ない]顧客を選択(所属)'
       it_behaves_like '[ログイン中][*]顧客を選択(未所属)'
       it_behaves_like '[ログイン中][*]顧客が未選択'
       it_behaves_like '[ログイン中][*]顧客が不正値'
@@ -474,8 +490,8 @@ RSpec.describe 'Spaces', type: :request do
       it_behaves_like '[未ログイン][ない]顧客が不正値'
     end
     shared_examples_for '[ログイン中]権限がない' do
-      it_behaves_like '[ログイン中][ない]顧客を新規作成'
-      it_behaves_like '[ログイン中][ない]顧客を選択(所属)'
+      it_behaves_like '[ログイン中][Member/ない]顧客を新規作成'
+      it_behaves_like '[ログイン中][Member/ない]顧客を選択(所属)'
       it_behaves_like '[ログイン中][*]顧客を選択(未所属)'
       it_behaves_like '[ログイン中][*]顧客が未選択'
       it_behaves_like '[ログイン中][*]顧客が不正値'
@@ -489,22 +505,22 @@ RSpec.describe 'Spaces', type: :request do
     end
 
     context '未ログイン' do
-      # it_behaves_like '[未ログイン]権限がある', :Owner # Tips: 未ログインの為、権限がない
-      # it_behaves_like '[未ログイン]権限がある', :Admin # Tips: 未ログインの為、権限がない
+      # it_behaves_like '[未ログイン]権限がOwner' # Tips: 未ログインの為、権限がない
+      # it_behaves_like '[未ログイン]権限がAdmin' # Tips: 未ログインの為、権限がない
       # it_behaves_like '[未ログイン]権限がMember' # Tips: 未ログインの為、権限がない
       it_behaves_like '[未ログイン]権限がない'
     end
     context 'ログイン中' do
       include_context 'ログイン処理'
-      it_behaves_like '[ログイン中]権限がある', :Owner
-      it_behaves_like '[ログイン中]権限がある', :Admin
+      it_behaves_like '[ログイン中]権限がOwner'
+      it_behaves_like '[ログイン中]権限がAdmin'
       it_behaves_like '[ログイン中]権限がMember'
       it_behaves_like '[ログイン中]権限がない'
     end
     context 'ログイン中（削除予約済み）' do
       include_context 'ログイン処理', true
-      it_behaves_like '[削除予約済み]権限がある', :Owner
-      it_behaves_like '[削除予約済み]権限がある', :Admin
+      it_behaves_like '[削除予約済み]権限がOwner'
+      it_behaves_like '[削除予約済み]権限がAdmin'
       it_behaves_like '[削除予約済み]権限がMember'
       it_behaves_like '[削除予約済み]権限がない'
     end

@@ -12,16 +12,18 @@ RSpec.describe CustomersController, type: :routing do
       expect(get: '/customers/c1').to route_to('customers#show', customer_code: 'c1')
     end
     it 'routes to #edit' do
-      expect(get: '/customers/1/edit').not_to be_routable
+      expect(get: '/customers/c1/edit').to route_to('customers#edit', customer_code: 'c1')
     end
     it 'routes to #create' do
       expect(post: '/customers').not_to be_routable
     end
     it 'routes to #update via PUT' do
       expect(put: '/customers/1').not_to be_routable
+      expect(put: '/customers/c1/edit').to route_to('customers#update', customer_code: 'c1')
     end
     it 'routes to #update via PATCH' do
       expect(patch: '/customers/1').not_to be_routable
+      expect(patch: '/customers/c1/edit').to route_to('customers#update', customer_code: 'c1')
     end
     it 'routes to #destroy' do
       expect(delete: '/customers/1').not_to be_routable

@@ -6,7 +6,7 @@ RSpec.describe 'Spaces', type: :request do
   #   なし
   # テストパターン
   #   未ログイン, ログイン中, ログイン中（削除予約済み） → データ＆状態作成
-  #   権限: ある(Owner, Admin), ない(Member含む) → データ作成
+  #   権限: Owner, Admin, Member, ない → データ作成
   #   ベースドメイン, 存在するサブドメイン, 存在しないサブドメイン → 事前にデータ作成
   describe 'GET /edit' do
     include_context 'リクエストスペース作成'
@@ -46,13 +46,13 @@ RSpec.describe 'Spaces', type: :request do
       let!(:headers) { BASE_HEADER }
       it_behaves_like 'ToNot'
     end
-    shared_examples_for '[ログイン中][ある]存在するサブドメイン' do
+    shared_examples_for '[ログイン中][Owner/Admin]存在するサブドメイン' do
       let!(:headers) { @space_header }
       it_behaves_like 'ToOK'
     end
-    shared_examples_for '[削除予約済み][ある]存在するサブドメイン' do
+    shared_examples_for '[削除予約済み][Owner/Admin]存在するサブドメイン' do
       let!(:headers) { @space_header }
-      it_behaves_like 'ToTop', nil, 'notice.user.destroy_reserved'
+      it_behaves_like 'ToTop', 'alert.user.destroy_reserved', nil
     end
     shared_examples_for '[*][Member]存在するサブドメイン' do
       let!(:headers) { @space_header }
@@ -71,16 +71,28 @@ RSpec.describe 'Spaces', type: :request do
       it_behaves_like 'ToNot'
     end
 
-    shared_examples_for '[ログイン中]権限がある' do |power|
-      include_context '顧客・ユーザー紐付け', Time.current, power
+    shared_examples_for '[ログイン中]権限がOwner' do
+      include_context '顧客・ユーザー紐付け', Time.current, :Owner
       it_behaves_like '[*][*]ベースドメイン'
-      it_behaves_like '[ログイン中][ある]存在するサブドメイン'
+      it_behaves_like '[ログイン中][Owner/Admin]存在するサブドメイン'
       it_behaves_like '[*][*]存在しないサブドメイン'
     end
-    shared_examples_for '[削除予約済み]権限がある' do |power|
-      include_context '顧客・ユーザー紐付け', Time.current, power
+    shared_examples_for '[削除予約済み]権限がOwner' do
+      include_context '顧客・ユーザー紐付け', Time.current, :Owner
       it_behaves_like '[*][*]ベースドメイン'
-      it_behaves_like '[削除予約済み][ある]存在するサブドメイン'
+      it_behaves_like '[削除予約済み][Owner/Admin]存在するサブドメイン'
+      it_behaves_like '[*][*]存在しないサブドメイン'
+    end
+    shared_examples_for '[ログイン中]権限がAdmin' do
+      include_context '顧客・ユーザー紐付け', Time.current, :Admin
+      it_behaves_like '[*][*]ベースドメイン'
+      it_behaves_like '[ログイン中][Owner/Admin]存在するサブドメイン'
+      it_behaves_like '[*][*]存在しないサブドメイン'
+    end
+    shared_examples_for '[削除予約済み]権限がAdmin' do
+      include_context '顧客・ユーザー紐付け', Time.current, :Admin
+      it_behaves_like '[*][*]ベースドメイン'
+      it_behaves_like '[削除予約済み][Owner/Admin]存在するサブドメイン'
       it_behaves_like '[*][*]存在しないサブドメイン'
     end
     shared_examples_for '[ログイン中]権限がMember' do
@@ -112,22 +124,22 @@ RSpec.describe 'Spaces', type: :request do
     end
 
     context '未ログイン' do
-      # it_behaves_like '[未ログイン]権限がある', :Owner # Tips: 未ログインの為、権限がない
-      # it_behaves_like '[未ログイン]権限がある', :Admin # Tips: 未ログインの為、権限がない
+      # it_behaves_like '[未ログイン]権限がOwner' # Tips: 未ログインの為、権限がない
+      # it_behaves_like '[未ログイン]権限がAdmin' # Tips: 未ログインの為、権限がない
       # it_behaves_like '[未ログイン]権限がMember' # Tips: 未ログインの為、権限がない
       it_behaves_like '[未ログイン]権限がない'
     end
     context 'ログイン中' do
       include_context 'ログイン処理'
-      it_behaves_like '[ログイン中]権限がある', :Owner
-      it_behaves_like '[ログイン中]権限がある', :Admin
+      it_behaves_like '[ログイン中]権限がOwner'
+      it_behaves_like '[ログイン中]権限がAdmin'
       it_behaves_like '[ログイン中]権限がMember'
       it_behaves_like '[ログイン中]権限がない'
     end
     context 'ログイン中（削除予約済み）' do
       include_context 'ログイン処理', true
-      it_behaves_like '[削除予約済み]権限がある', :Owner
-      it_behaves_like '[削除予約済み]権限がある', :Admin
+      it_behaves_like '[削除予約済み]権限がOwner'
+      it_behaves_like '[削除予約済み]権限がAdmin'
       it_behaves_like '[削除予約済み]権限がMember'
       it_behaves_like '[削除予約済み]権限がない'
     end

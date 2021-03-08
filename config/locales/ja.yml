@@ -112,6 +112,8 @@ ja:
     user:
       image_update: '画像を変更しました。'
       image_destroy: '画像を削除しました。'
+    customer:
+      update: '顧客情報を変更しました。'
     member:
       create: 'メンバーを招待しました。'
       update: 'メンバーの権限を変更しました。'
@@ -132,6 +134,8 @@ ja:
         already_sign_in: 'ログイン中の為、アクセスできません。ログアウトしてからお試しください。'
         blank: 'URLが正しくありません。やり直してください。'
         invalid: 'URLが正しくないか、既にメンバー登録が完了しています。ログインしてください。'
+    customer:
+      not_update_power: '変更権限がありません。所属の所有者に依頼してください。'
     member:
       not_create_power:
         owner: '所有者で招待する権限がありません。所属の所有者に依頼してください。'
@@ -171,8 +175,10 @@ ja:
       customer:
         create_flag_blank: '選択してください。'
         code_invalid: '存在しないか、所属していません。'
-        not_create_power: '作成権限がありません。所属の管理者または所有者に依頼してください。'
         code_error: '顧客コードが存在しないか、所属していません。'
+      space:
+        subdomain_error: 'スペースが存在しないか、所属していません。'
+        not_create_power: '作成権限がありません。所属の管理者または所有者に依頼してください。'
   mailer:
     user:
       destroy_reserved:

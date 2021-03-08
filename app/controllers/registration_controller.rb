@@ -1,5 +1,4 @@
 class RegistrationController < ApplicationController
-  before_action :not_found_json_sub_domain_response
   before_action :redirect_base_domain_response, only: %i[new]
   before_action :not_found_sub_domain_response, only: %i[create]
   before_action :alert_already_sign_in

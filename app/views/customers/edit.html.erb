@@ -1,0 +1,15 @@
+<%= render 'users/shared/error_messages', resource: @customer %>
+
+<main class="card mb-1" style="max-width: 640px; margin-left: auto; margin-right: auto">
+  <div class="card-body">
+    <h5 class="card-title">顧客情報変更</h5>
+    <p class="card-text"><%= render 'edit_customer' %></p>
+    <p class="card-footer">
+      <nav>
+        <ul>
+          <li><%= link_to '顧客詳細', customer_path(customer_code: @customer.code) %></li>
+        </ul>
+      </nav>
+    </p>
+  </div>
+</main>

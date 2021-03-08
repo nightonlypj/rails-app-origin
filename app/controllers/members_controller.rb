@@ -1,5 +1,4 @@
 class MembersController < ApplicationController
-  before_action :not_found_json_sub_domain_response
   before_action :redirect_base_domain_response, only: %i[index new edit delete]
   before_action :not_found_sub_domain_response, only: %i[create update destroy]
   before_action :authenticate_user!
@@ -48,7 +47,7 @@ class MembersController < ApplicationController
       @member.errors.add(:power, t('activerecord.errors.models.member.attributes.power.invalid'))
     else
       @member.assign_attributes(params.require(:member).permit(:power))
-      @member.errors.add(:power, t('alert.member.not_create_power.owner')) unless @customer.member.first.create_power?(@member.power)
+      @member.errors.add(:power, t('alert.member.not_create_power.owner')) unless @customer.member.first.member_create_power?(@member.power)
     end
     if exist_user.present?
       exist_member = Member.find_by(customer_id: @customer.id, user_id: exist_user.id)
@@ -99,7 +98,7 @@ class MembersController < ApplicationController
     else
       before_power = @member.power
       @member.assign_attributes(params.require(:member).permit(:power))
-      @member.errors.add(:power, t('alert.member.not_update_power.owner')) unless @customer.member.first.update_power?(@member.power)
+      @member.errors.add(:power, t('alert.member.not_update_power.owner')) unless @customer.member.first.member_update_power?(@member.power)
     end
     if @member.errors.any?
       respond_to do |format|
@@ -153,7 +152,7 @@ class MembersController < ApplicationController
 
   # 招待権限がない顧客へのアクセス禁止
   def alert_before_create_power
-    if !@customer.member.first.create_power?
+    if !@customer.member.first.member_create_power?
       key = 'alert.member.not_create_power.admin'
     elsif current_user.destroy_reserved?
       key = 'alert.user.destroy_reserved'
@@ -167,7 +166,7 @@ class MembersController < ApplicationController
 
   # 変更権限がないメンバーへのアクセス禁止
   def alert_before_update_power
-    if !@customer.member.first.update_power?(@member.power)
+    if !@customer.member.first.member_update_power?(@member.power)
       key = @member.power == 'Owner' ? 'alert.member.not_update_power.owner' : 'alert.member.not_update_power.admin'
     elsif @member.user == current_user
       key = @member.power == 'Owner' ? 'alert.member.own_update_power.owner' : 'alert.member.own_update_power.admin'
@@ -183,7 +182,7 @@ class MembersController < ApplicationController
 
   # 解除権限がないメンバーへのアクセス禁止
   def alert_before_destroy_power
-    if !@customer.member.first.destroy_power?(@member.power)
+    if !@customer.member.first.member_destroy_power?(@member.power)
       key = @member.power == 'Owner' ? 'alert.member.not_destroy_power.owner' : 'alert.member.not_destroy_power.admin'
     elsif @member.user == current_user
       key = @member.power == 'Owner' ? 'alert.member.own_destroy_power.owner' : 'alert.member.own_destroy_power.admin'

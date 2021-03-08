@@ -40,35 +40,34 @@ class ApplicationController < ActionController::Base
 
   # ベースドメインにリダイレクト
   def redirect_base_domain_response
-    redirect_to "//#{Settings['base_domain']}#{request.fullpath}" unless base_domain_request?
+    return if base_domain_request?
+    return render json: { error: t('errors.messages.domain_error') }, status: :not_found if request.format.json?
+
+    redirect_to "//#{Settings['base_domain']}#{request.fullpath}"
   end
 
   # ベースドメイン禁止
   def not_found_base_domain_response
-    head :not_found if base_domain_request?
+    return unless base_domain_request?
+    return render json: { error: t('errors.messages.domain_error') }, status: :not_found if request.format.json?
+
+    head :not_found
   end
 
   # サブドメイン禁止
   def not_found_sub_domain_response
-    head :not_found unless base_domain_request?
-  end
+    return if base_domain_request?
+    return render json: { error: t('errors.messages.domain_error') }, status: :not_found if request.format.json?
 
-  # JSONの場合、ベースドメイン禁止
-  def not_found_json_base_domain_response
-    render json: { error: t('errors.messages.domain_error') }, status: :not_found if request.format.json? && base_domain_request?
-  end
-
-  # JSONの場合、サブドメイン禁止
-  def not_found_json_sub_domain_response
-    render json: { error: t('errors.messages.domain_error') }, status: :not_found if request.format.json? && !base_domain_request?
+    head :not_found
   end
 
   # 削除予約済みの場合、リダイレクトしてメッセージを表示
   def redirect_response_destroy_reserved
     return unless current_user.destroy_reserved?
-    return render json: { error: t('notice.user.destroy_reserved') }, status: :forbidden if request.format.json?
+    return render json: { error: t('alert.user.destroy_reserved') }, status: :forbidden if request.format.json?
 
-    redirect_to root_path, notice: t('notice.user.destroy_reserved')
+    redirect_to root_path, alert: t('alert.user.destroy_reserved')
   end
 
   # 未所属/存在しない顧客へのアクセス禁止

@@ -53,15 +53,15 @@ RSpec.describe 'Spaces', type: :request do
     end
     shared_examples_for '[削除予約済み]ベースドメイン' do
       let!(:headers) { BASE_HEADER }
-      it_behaves_like 'ToTop', nil, 'notice.user.destroy_reserved'
+      it_behaves_like 'ToTop', 'alert.user.destroy_reserved', nil
     end
     shared_examples_for '[*]存在するサブドメイン' do
       let!(:headers) { @space_header }
-      it_behaves_like 'ToBase', nil, nil, 'errors.messages.domain_error'
+      it_behaves_like 'ToBase', nil, nil
     end
     shared_examples_for '[*]存在しないサブドメイン' do
       let!(:headers) { NOT_SPACE_HEADER }
-      it_behaves_like 'ToBase', nil, nil, 'errors.messages.domain_error'
+      it_behaves_like 'ToBase', nil, nil
     end
 
     context '未ログイン' do
