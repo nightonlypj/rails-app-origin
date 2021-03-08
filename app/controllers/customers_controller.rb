@@ -6,8 +6,8 @@ class CustomersController < ApplicationController
   before_action :redirect_response_not_update_power, only: %i[edit update]
   before_action :redirect_response_destroy_reserved, only: %i[edit update]
 
-  # GET /customers（ベースドメイン） 所属一覧
-  # GET /customers.json（ベースドメイン） 所属一覧API
+  # GET /customers（ベースドメイン） 顧客一覧
+  # GET /customers.json（ベースドメイン） 顧客一覧API
   def index
     @customers = Customer.order(created_at: 'DESC', id: 'DESC').page(params[:page]).per(Settings['default_customers_limit'])
                          .eager_load(:member).where(members: { user_id: current_user.id })

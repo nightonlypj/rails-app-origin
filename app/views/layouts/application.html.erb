@@ -26,7 +26,6 @@
             <ul class="navbar-nav" style="margin-left: auto">
 <% if user_signed_in? %>
               <li class="nav-item text-nowrap" style="height: 45px"><%= link_to (image_tag "#{domain}#{current_user.image_url(:small)}").html_safe + ' ' + current_user.name, "#{domain}#{edit_user_registration_path}", class: 'nav-link d-inline-block text-truncate', style: 'max-width: 400px' %></li>
-              <li class="nav-item text-nowrap"><%= link_to '所属一覧', "#{domain}#{customers_path}", class: 'nav-link', style: 'padding-top: 10px; padding-bottom: 10px' %></li>
               <li class="nav-item text-nowrap"><%= link_to 'ログアウト', "#{domain}#{destroy_user_session_path}", class: 'nav-link', style: 'padding-top: 10px; padding-bottom: 10px' %></li>
 <% else %>
               <li class="nav-item text-nowrap"><%= link_to 'ログイン', "#{domain}#{new_user_session_path}", class: 'nav-link', style: 'padding-top: 10px; padding-bottom: 10px' %></li>

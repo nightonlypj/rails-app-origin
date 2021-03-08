@@ -3,8 +3,8 @@ require 'rails_helper'
 RSpec.describe 'Customers', type: :request do
   include_context 'リクエストスペース作成'
 
-  # GET /customers（ベースドメイン） 所属一覧
-  # GET /customers.json（ベースドメイン） 所属一覧API
+  # GET /customers（ベースドメイン） 顧客一覧
+  # GET /customers.json（ベースドメイン） 顧客一覧API
   # 前提条件
   #   なし
   # テストパターン
@@ -174,16 +174,16 @@ RSpec.describe 'Customers', type: :request do
       it '顧客詳細のパスが含まれる' do
         get customers_path(page: page), headers: headers
         (start_no..end_no).each do |no|
-          expect(response.body).to include("\"#{customer_path(customer_code: create_customers[no - 1].code)}\"")
+          expect(response.body).to include("\"#{customer_path(customer_code: @create_customers[no - 1].code)}\"")
         end
       end
-      it '作成日が含まれる' do # Tips: ユニークではない為、正確ではない
+      it '登録日が含まれる' do # Tips: ユニークではない為、正確ではない
         get customers_path(page: page), headers: headers
         (start_no..end_no).each do |no|
           expect(response.body).to include(I18n.l(@create_customers[no - 1].created_at.to_date))
         end
       end
-      it '(json)作成日時が一致する' do
+      it '(json)登録日時が一致する' do
         get customers_path(page: page, format: :json), headers: headers
         parse_response = JSON.parse(response.body)['customers']
         (start_no..end_no).each do |no|
@@ -201,12 +201,6 @@ RSpec.describe 'Customers', type: :request do
         parse_response = JSON.parse(response.body)['customers']
         (start_no..end_no).each do |no|
           expect(parse_response[no - start_no]['current_user']['power']).to eq(@create_customers[no - 1].member.first.power)
-        end
-      end
-      it 'メンバー一覧のパスが含まれる' do
-        get customers_path(page: page), headers: headers
-        (start_no..end_no).each do |no|
-          expect(response.body).to include("\"#{members_path(customer_code: @create_customers[no - 1].code)}\"")
         end
       end
     end
