@@ -4,9 +4,9 @@ class MembersController < ApplicationController
   before_action :authenticate_user!
   before_action :not_found_outside_customer
   before_action :not_found_outside_member, only: %i[edit update delete destroy]
-  before_action :alert_before_create_power, only: %i[new create]
-  before_action :alert_before_update_power, only: %i[edit update]
-  before_action :alert_before_destroy_power, only: %i[delete destroy]
+  before_action :redirect_response_not_create_power, only: %i[new create]
+  before_action :redirect_response_not_update_power, only: %i[edit update]
+  before_action :redirect_response_not_destroy_power, only: %i[delete destroy]
 
   # GET /members/:customer_code（ベースドメイン） メンバー一覧
   # GET /members/:customer_code.json（ベースドメイン） メンバー一覧API
@@ -58,7 +58,7 @@ class MembersController < ApplicationController
       code = create_unique_code(User, 'code', "MembersController.create[code] #{params[:member]}")
       password = Faker::Internet.password(min_length: 8) # Tips: ダミーを設定。nameも同様
       invitation_token = create_unique_code(User, 'invitation_token', "MembersController.create[invitation_token] #{params[:member]}")
-      @user.assign_attributes(code: code, name: '-', password: password, confirmed_at: '0000-01-01 00:00:00+0000',
+      @user.assign_attributes(code: code, name: '-' * Settings['user_name_minimum'], password: password, confirmed_at: '0000-01-01 00:00:00+0000',
                               invitation_customer_id: @customer.id, invitation_token: invitation_token, invitation_requested_at: invitationed_at)
       @user.valid?
     end
@@ -144,14 +144,17 @@ class MembersController < ApplicationController
   def not_found_outside_member
     @member = Member.where(customer_id: @customer.id)
                     .eager_load(:user).where(users: { code: params[:user_code] }).first
-    return if @customer.present?
-    return render json: { error: t('errors.messages.user.code_error') }, status: :not_found if request.format.json?
+    return if @member.present?
 
-    head :not_found
+    if request.format.json?
+      render json: { error: t('errors.messages.user.code_error') }, status: :not_found
+    else
+      head :not_found
+    end
   end
 
-  # 招待権限がない顧客へのアクセス禁止
-  def alert_before_create_power
+  # 招待権限がない場合、リダイレクトしてメッセージを表示
+  def redirect_response_not_create_power
     if !@customer.member.first.member_create_power?
       key = 'alert.member.not_create_power.admin'
     elsif current_user.destroy_reserved?
@@ -159,13 +162,15 @@ class MembersController < ApplicationController
     else
       return
     end
-    return render json: { error: t(key) }, status: :forbidden if request.format.json?
-
-    redirect_to members_path(customer_code: params[:customer_code]), alert: t(key)
+    if request.format.json?
+      render json: { error: t(key) }, status: :forbidden
+    else
+      redirect_to members_path(customer_code: params[:customer_code]), alert: t(key)
+    end
   end
 
-  # 変更権限がないメンバーへのアクセス禁止
-  def alert_before_update_power
+  # 変更権限がない場合、リダイレクトしてメッセージを表示
+  def redirect_response_not_update_power
     if !@customer.member.first.member_update_power?(@member.power)
       key = @member.power == 'Owner' ? 'alert.member.not_update_power.owner' : 'alert.member.not_update_power.admin'
     elsif @member.user == current_user
@@ -175,13 +180,15 @@ class MembersController < ApplicationController
     else
       return
     end
-    return render json: { error: t(key) }, status: :forbidden if request.format.json?
-
-    redirect_to members_path(customer_code: params[:customer_code]), alert: t(key)
+    if request.format.json?
+      render json: { error: t(key) }, status: :forbidden
+    else
+      redirect_to members_path(customer_code: params[:customer_code]), alert: t(key)
+    end
   end
 
-  # 解除権限がないメンバーへのアクセス禁止
-  def alert_before_destroy_power
+  # 解除権限がない場合、リダイレクトしてメッセージを表示
+  def redirect_response_not_destroy_power
     if !@customer.member.first.member_destroy_power?(@member.power)
       key = @member.power == 'Owner' ? 'alert.member.not_destroy_power.owner' : 'alert.member.not_destroy_power.admin'
     elsif @member.user == current_user
@@ -191,8 +198,10 @@ class MembersController < ApplicationController
     else
       return
     end
-    return render json: { error: t(key) }, status: :forbidden if request.format.json?
-
-    redirect_to members_path(customer_code: params[:customer_code]), alert: t(key)
+    if request.format.json?
+      render json: { error: t(key) }, status: :forbidden
+    else
+      redirect_to members_path(customer_code: params[:customer_code]), alert: t(key)
+    end
   end
 end

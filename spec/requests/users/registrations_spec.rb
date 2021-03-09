@@ -274,25 +274,17 @@ RSpec.describe 'Users::Registrations', type: :request do
       let!(:headers) { @space_header }
       it_behaves_like 'ToLogin', 'devise.failure.unauthenticated', nil
     end
-    shared_examples_for '[ログイン中]存在するサブドメイン' do
+    shared_examples_for '[ログイン中/削除予約済み]存在するサブドメイン' do
       let!(:headers) { @space_header }
       it_behaves_like 'ToBase', nil, nil
-    end
-    shared_examples_for '[削除予約済み]存在するサブドメイン' do
-      let!(:headers) { @space_header }
-      it_behaves_like 'ToTop', 'alert.user.destroy_reserved', nil
     end
     shared_examples_for '[未ログイン]存在しないサブドメイン' do
       let!(:headers) { NOT_SPACE_HEADER }
       it_behaves_like 'ToLogin', 'devise.failure.unauthenticated', nil
     end
-    shared_examples_for '[ログイン中]存在しないサブドメイン' do
+    shared_examples_for '[ログイン中/削除予約済み]存在しないサブドメイン' do
       let!(:headers) { NOT_SPACE_HEADER }
       it_behaves_like 'ToBase', nil, nil
-    end
-    shared_examples_for '[削除予約済み]存在しないサブドメイン' do
-      let!(:headers) { NOT_SPACE_HEADER }
-      it_behaves_like 'ToTop', 'alert.user.destroy_reserved', nil
     end
 
     context '未ログイン' do
@@ -303,14 +295,14 @@ RSpec.describe 'Users::Registrations', type: :request do
     context 'ログイン中' do
       include_context 'ログイン処理'
       it_behaves_like '[ログイン中]ベースドメイン'
-      it_behaves_like '[ログイン中]存在するサブドメイン'
-      it_behaves_like '[ログイン中]存在しないサブドメイン'
+      it_behaves_like '[ログイン中/削除予約済み]存在するサブドメイン'
+      it_behaves_like '[ログイン中/削除予約済み]存在しないサブドメイン'
     end
     context 'ログイン中（削除予約済み）' do
       include_context 'ログイン処理', true
       it_behaves_like '[削除予約済み]ベースドメイン'
-      it_behaves_like '[削除予約済み]存在するサブドメイン'
-      it_behaves_like '[削除予約済み]存在しないサブドメイン'
+      it_behaves_like '[ログイン中/削除予約済み]存在するサブドメイン'
+      it_behaves_like '[ログイン中/削除予約済み]存在しないサブドメイン'
     end
   end
 
@@ -404,30 +396,20 @@ RSpec.describe 'Users::Registrations', type: :request do
       # it_behaves_like 'NG' # Tips: 未ログインの為、対象がない
       it_behaves_like 'ToLogin', 'devise.failure.unauthenticated', nil
     end
-    shared_examples_for '[ログイン中][*]存在するサブドメイン' do
+    shared_examples_for '[ログイン中/削除予約済み][*]存在するサブドメイン' do
       let!(:headers) { @space_header }
       it_behaves_like 'NG'
       it_behaves_like 'ToNot'
-    end
-    shared_examples_for '[削除予約済み][*]存在するサブドメイン' do
-      let!(:headers) { @space_header }
-      it_behaves_like 'NG'
-      it_behaves_like 'ToTop', 'alert.user.destroy_reserved', nil
     end
     shared_examples_for '[未ログイン][*]存在しないサブドメイン' do
       let!(:headers) { NOT_SPACE_HEADER }
       # it_behaves_like 'NG' # Tips: 未ログインの為、対象がない
       it_behaves_like 'ToLogin', 'devise.failure.unauthenticated', nil
     end
-    shared_examples_for '[ログイン中][*]存在しないサブドメイン' do
+    shared_examples_for '[ログイン中/削除予約済み][*]存在しないサブドメイン' do
       let!(:headers) { NOT_SPACE_HEADER }
       it_behaves_like 'NG'
       it_behaves_like 'ToNot'
-    end
-    shared_examples_for '[削除予約済み][*]存在しないサブドメイン' do
-      let!(:headers) { NOT_SPACE_HEADER }
-      it_behaves_like 'NG'
-      it_behaves_like 'ToTop', 'alert.user.destroy_reserved', nil
     end
 
     shared_examples_for '[未ログイン]有効なパラメータ' do
@@ -439,14 +421,14 @@ RSpec.describe 'Users::Registrations', type: :request do
     shared_examples_for '[ログイン中]有効なパラメータ' do
       let!(:attributes) { valid_attributes }
       it_behaves_like '[ログイン中][有効]ベースドメイン'
-      it_behaves_like '[ログイン中][*]存在するサブドメイン'
-      it_behaves_like '[ログイン中][*]存在しないサブドメイン'
+      it_behaves_like '[ログイン中/削除予約済み][*]存在するサブドメイン'
+      it_behaves_like '[ログイン中/削除予約済み][*]存在しないサブドメイン'
     end
     shared_examples_for '[削除予約済み]有効なパラメータ' do
       let!(:attributes) { valid_attributes }
       it_behaves_like '[削除予約済み][有効]ベースドメイン'
-      it_behaves_like '[削除予約済み][*]存在するサブドメイン'
-      it_behaves_like '[削除予約済み][*]存在しないサブドメイン'
+      it_behaves_like '[ログイン中/削除予約済み][*]存在するサブドメイン'
+      it_behaves_like '[ログイン中/削除予約済み][*]存在しないサブドメイン'
     end
     shared_examples_for '[未ログイン]無効なパラメータ' do
       let!(:attributes) { invalid_attributes }
@@ -457,14 +439,14 @@ RSpec.describe 'Users::Registrations', type: :request do
     shared_examples_for '[ログイン中]無効なパラメータ' do
       let!(:attributes) { invalid_attributes }
       it_behaves_like '[ログイン中][無効]ベースドメイン'
-      it_behaves_like '[ログイン中][*]存在するサブドメイン'
-      it_behaves_like '[ログイン中][*]存在しないサブドメイン'
+      it_behaves_like '[ログイン中/削除予約済み][*]存在するサブドメイン'
+      it_behaves_like '[ログイン中/削除予約済み][*]存在しないサブドメイン'
     end
     shared_examples_for '[削除予約済み]無効なパラメータ' do
       let!(:attributes) { invalid_attributes }
       it_behaves_like '[削除予約済み][無効]ベースドメイン'
-      it_behaves_like '[削除予約済み][*]存在するサブドメイン'
-      it_behaves_like '[削除予約済み][*]存在しないサブドメイン'
+      it_behaves_like '[ログイン中/削除予約済み][*]存在するサブドメイン'
+      it_behaves_like '[ログイン中/削除予約済み][*]存在しないサブドメイン'
     end
 
     context '未ログイン' do
@@ -594,30 +576,20 @@ RSpec.describe 'Users::Registrations', type: :request do
       # it_behaves_like 'NG' # Tips: 未ログインの為、対象がない
       it_behaves_like 'ToLogin', 'devise.failure.unauthenticated', nil
     end
-    shared_examples_for '[ログイン中][*]存在するサブドメイン' do
+    shared_examples_for '[ログイン中/削除予約済み][*]存在するサブドメイン' do
       let!(:headers) { @space_header }
       it_behaves_like 'NG'
       it_behaves_like 'ToNot'
-    end
-    shared_examples_for '[削除予約済み][*]存在するサブドメイン' do
-      let!(:headers) { @space_header }
-      it_behaves_like 'NG'
-      it_behaves_like 'ToTop', 'alert.user.destroy_reserved', nil
     end
     shared_examples_for '[未ログイン][*]存在しないサブドメイン' do
       let!(:headers) { NOT_SPACE_HEADER }
       # it_behaves_like 'NG' # Tips: 未ログインの為、対象がない
       it_behaves_like 'ToLogin', 'devise.failure.unauthenticated', nil
     end
-    shared_examples_for '[ログイン中][*]存在しないサブドメイン' do
+    shared_examples_for '[ログイン中/削除予約済み][*]存在しないサブドメイン' do
       let!(:headers) { NOT_SPACE_HEADER }
       it_behaves_like 'NG'
       it_behaves_like 'ToNot'
-    end
-    shared_examples_for '[削除予約済み][*]存在しないサブドメイン' do
-      let!(:headers) { NOT_SPACE_HEADER }
-      it_behaves_like 'NG'
-      it_behaves_like 'ToTop', 'alert.user.destroy_reserved', nil
     end
 
     shared_examples_for '[未ログイン]有効なパラメータ' do
@@ -629,14 +601,14 @@ RSpec.describe 'Users::Registrations', type: :request do
     shared_examples_for '[ログイン中]有効なパラメータ' do
       let!(:attributes) { valid_attributes }
       it_behaves_like '[ログイン中][有効]ベースドメイン'
-      it_behaves_like '[ログイン中][*]存在するサブドメイン'
-      it_behaves_like '[ログイン中][*]存在しないサブドメイン'
+      it_behaves_like '[ログイン中/削除予約済み][*]存在するサブドメイン'
+      it_behaves_like '[ログイン中/削除予約済み][*]存在しないサブドメイン'
     end
     shared_examples_for '[削除予約済み]有効なパラメータ' do
       let!(:attributes) { valid_attributes }
       it_behaves_like '[削除予約済み][有効]ベースドメイン'
-      it_behaves_like '[削除予約済み][*]存在するサブドメイン'
-      it_behaves_like '[削除予約済み][*]存在しないサブドメイン'
+      it_behaves_like '[ログイン中/削除予約済み][*]存在するサブドメイン'
+      it_behaves_like '[ログイン中/削除予約済み][*]存在しないサブドメイン'
     end
     shared_examples_for '[未ログイン]無効なパラメータ' do
       let!(:attributes) { invalid_attributes }
@@ -647,14 +619,14 @@ RSpec.describe 'Users::Registrations', type: :request do
     shared_examples_for '[ログイン中]無効なパラメータ' do
       let!(:attributes) { invalid_attributes }
       it_behaves_like '[ログイン中][無効]ベースドメイン'
-      it_behaves_like '[ログイン中][*]存在するサブドメイン'
-      it_behaves_like '[ログイン中][*]存在しないサブドメイン'
+      it_behaves_like '[ログイン中/削除予約済み][*]存在するサブドメイン'
+      it_behaves_like '[ログイン中/削除予約済み][*]存在しないサブドメイン'
     end
     shared_examples_for '[削除予約済み]無効なパラメータ' do
       let!(:attributes) { invalid_attributes }
       it_behaves_like '[削除予約済み][無効]ベースドメイン'
-      it_behaves_like '[削除予約済み][*]存在するサブドメイン'
-      it_behaves_like '[削除予約済み][*]存在しないサブドメイン'
+      it_behaves_like '[ログイン中/削除予約済み][*]存在するサブドメイン'
+      it_behaves_like '[ログイン中/削除予約済み][*]存在しないサブドメイン'
     end
 
     context '未ログイン' do
@@ -746,30 +718,20 @@ RSpec.describe 'Users::Registrations', type: :request do
       # it_behaves_like 'NG' # Tips: 未ログインの為、対象がない
       it_behaves_like 'ToLogin', 'devise.failure.unauthenticated', nil
     end
-    shared_examples_for '[ログイン中]存在するサブドメイン' do
+    shared_examples_for '[ログイン中/削除予約済み]存在するサブドメイン' do
       let!(:headers) { @space_header }
       it_behaves_like 'NG'
       it_behaves_like 'ToNot'
-    end
-    shared_examples_for '[削除予約済み]存在するサブドメイン' do
-      let!(:headers) { @space_header }
-      it_behaves_like 'NG'
-      it_behaves_like 'ToTop', 'alert.user.destroy_reserved', nil
     end
     shared_examples_for '[未ログイン]存在しないサブドメイン' do
       let!(:headers) { NOT_SPACE_HEADER }
       # it_behaves_like 'NG' # Tips: 未ログインの為、対象がない
       it_behaves_like 'ToLogin', 'devise.failure.unauthenticated', nil
     end
-    shared_examples_for '[ログイン中]存在しないサブドメイン' do
+    shared_examples_for '[ログイン中/削除予約済み]存在しないサブドメイン' do
       let!(:headers) { NOT_SPACE_HEADER }
       it_behaves_like 'NG'
       it_behaves_like 'ToNot'
-    end
-    shared_examples_for '[削除予約済み]存在しないサブドメイン' do
-      let!(:headers) { NOT_SPACE_HEADER }
-      it_behaves_like 'NG'
-      it_behaves_like 'ToTop', 'alert.user.destroy_reserved', nil
     end
 
     context '未ログイン' do
@@ -781,16 +743,16 @@ RSpec.describe 'Users::Registrations', type: :request do
       include_context 'ログイン処理'
       include_context '画像登録処理'
       it_behaves_like '[ログイン中]ベースドメイン'
-      it_behaves_like '[ログイン中]存在するサブドメイン'
-      it_behaves_like '[ログイン中]存在しないサブドメイン'
+      it_behaves_like '[ログイン中/削除予約済み]存在するサブドメイン'
+      it_behaves_like '[ログイン中/削除予約済み]存在しないサブドメイン'
       include_context '画像削除処理'
     end
     context 'ログイン中（削除予約済み）' do
       include_context 'ログイン処理', true
       include_context '画像登録処理'
       it_behaves_like '[削除予約済み]ベースドメイン'
-      it_behaves_like '[削除予約済み]存在するサブドメイン'
-      it_behaves_like '[削除予約済み]存在しないサブドメイン'
+      it_behaves_like '[ログイン中/削除予約済み]存在するサブドメイン'
+      it_behaves_like '[ログイン中/削除予約済み]存在しないサブドメイン'
       include_context '画像削除処理'
     end
   end
@@ -851,25 +813,17 @@ RSpec.describe 'Users::Registrations', type: :request do
       let!(:headers) { @space_header }
       it_behaves_like 'ToLogin', 'devise.failure.unauthenticated', nil
     end
-    shared_examples_for '[ログイン中]存在するサブドメイン' do
+    shared_examples_for '[ログイン中/削除予約済み]存在するサブドメイン' do
       let!(:headers) { @space_header }
       it_behaves_like 'ToBase', nil, nil
-    end
-    shared_examples_for '[削除予約済み]存在するサブドメイン' do
-      let!(:headers) { @space_header }
-      it_behaves_like 'ToTop', 'alert.user.destroy_reserved', nil
     end
     shared_examples_for '[未ログイン]存在しないサブドメイン' do
       let!(:headers) { NOT_SPACE_HEADER }
       it_behaves_like 'ToLogin', 'devise.failure.unauthenticated', nil
     end
-    shared_examples_for '[ログイン中]存在しないサブドメイン' do
+    shared_examples_for '[ログイン中/削除予約済み]存在しないサブドメイン' do
       let!(:headers) { NOT_SPACE_HEADER }
       it_behaves_like 'ToBase', nil, nil
-    end
-    shared_examples_for '[削除予約済み]存在しないサブドメイン' do
-      let!(:headers) { NOT_SPACE_HEADER }
-      it_behaves_like 'ToTop', 'alert.user.destroy_reserved', nil
     end
 
     context '未ログイン' do
@@ -880,14 +834,14 @@ RSpec.describe 'Users::Registrations', type: :request do
     context 'ログイン中' do
       include_context 'ログイン処理'
       it_behaves_like '[ログイン中]ベースドメイン'
-      it_behaves_like '[ログイン中]存在するサブドメイン'
-      it_behaves_like '[ログイン中]存在しないサブドメイン'
+      it_behaves_like '[ログイン中/削除予約済み]存在するサブドメイン'
+      it_behaves_like '[ログイン中/削除予約済み]存在しないサブドメイン'
     end
     context 'ログイン中（削除予約済み）' do
       include_context 'ログイン処理', true
       it_behaves_like '[削除予約済み]ベースドメイン'
-      it_behaves_like '[削除予約済み]存在するサブドメイン'
-      it_behaves_like '[削除予約済み]存在しないサブドメイン'
+      it_behaves_like '[ログイン中/削除予約済み]存在するサブドメイン'
+      it_behaves_like '[ログイン中/削除予約済み]存在しないサブドメイン'
     end
   end
 
@@ -967,30 +921,20 @@ RSpec.describe 'Users::Registrations', type: :request do
       # it_behaves_like 'NG' # Tips: 未ログインの為、対象がない
       it_behaves_like 'ToLogin', 'devise.failure.unauthenticated', nil
     end
-    shared_examples_for '[ログイン中]存在するサブドメイン' do
+    shared_examples_for '[ログイン中/削除予約済み]存在するサブドメイン' do
       let!(:headers) { @space_header }
       it_behaves_like 'NG'
       it_behaves_like 'ToNot'
-    end
-    shared_examples_for '[削除予約済み]存在するサブドメイン' do
-      let!(:headers) { @space_header }
-      it_behaves_like 'NG'
-      it_behaves_like 'ToTop', 'alert.user.destroy_reserved', nil
     end
     shared_examples_for '[未ログイン]存在しないサブドメイン' do
       let!(:headers) { NOT_SPACE_HEADER }
       # it_behaves_like 'NG' # Tips: 未ログインの為、対象がない
       it_behaves_like 'ToLogin', 'devise.failure.unauthenticated', nil
     end
-    shared_examples_for '[ログイン中]存在しないサブドメイン' do
+    shared_examples_for '[ログイン中/削除予約済み]存在しないサブドメイン' do
       let!(:headers) { NOT_SPACE_HEADER }
       it_behaves_like 'NG'
       it_behaves_like 'ToNot'
-    end
-    shared_examples_for '[削除予約済み]存在しないサブドメイン' do
-      let!(:headers) { NOT_SPACE_HEADER }
-      it_behaves_like 'NG'
-      it_behaves_like 'ToTop', 'alert.user.destroy_reserved', nil
     end
 
     context '未ログイン' do
@@ -1001,14 +945,14 @@ RSpec.describe 'Users::Registrations', type: :request do
     context 'ログイン中' do
       include_context 'ログイン処理'
       it_behaves_like '[ログイン中]ベースドメイン'
-      it_behaves_like '[ログイン中]存在するサブドメイン'
-      it_behaves_like '[ログイン中]存在しないサブドメイン'
+      it_behaves_like '[ログイン中/削除予約済み]存在するサブドメイン'
+      it_behaves_like '[ログイン中/削除予約済み]存在しないサブドメイン'
     end
     context 'ログイン中（削除予約済み）' do
       include_context 'ログイン処理', true
       it_behaves_like '[削除予約済み]ベースドメイン'
-      it_behaves_like '[削除予約済み]存在するサブドメイン'
-      it_behaves_like '[削除予約済み]存在しないサブドメイン'
+      it_behaves_like '[ログイン中/削除予約済み]存在するサブドメイン'
+      it_behaves_like '[ログイン中/削除予約済み]存在しないサブドメイン'
     end
   end
 
@@ -1068,11 +1012,7 @@ RSpec.describe 'Users::Registrations', type: :request do
       let!(:headers) { @space_header }
       it_behaves_like 'ToLogin', 'devise.failure.unauthenticated', nil
     end
-    shared_examples_for '[ログイン中]存在するサブドメイン' do
-      let!(:headers) { @space_header }
-      it_behaves_like 'ToTop', 'alert.user.not_destroy_reserved', nil
-    end
-    shared_examples_for '[削除予約済み]存在するサブドメイン' do
+    shared_examples_for '[ログイン中/削除予約済み]存在するサブドメイン' do
       let!(:headers) { @space_header }
       it_behaves_like 'ToBase', nil, nil
     end
@@ -1080,11 +1020,7 @@ RSpec.describe 'Users::Registrations', type: :request do
       let!(:headers) { NOT_SPACE_HEADER }
       it_behaves_like 'ToLogin', 'devise.failure.unauthenticated', nil
     end
-    shared_examples_for '[ログイン中]存在しないサブドメイン' do
-      let!(:headers) { NOT_SPACE_HEADER }
-      it_behaves_like 'ToTop', 'alert.user.not_destroy_reserved', nil
-    end
-    shared_examples_for '[削除予約済み]存在しないサブドメイン' do
+    shared_examples_for '[ログイン中/削除予約済み]存在しないサブドメイン' do
       let!(:headers) { NOT_SPACE_HEADER }
       it_behaves_like 'ToBase', nil, nil
     end
@@ -1097,14 +1033,14 @@ RSpec.describe 'Users::Registrations', type: :request do
     context 'ログイン中' do
       include_context 'ログイン処理'
       it_behaves_like '[ログイン中]ベースドメイン'
-      it_behaves_like '[ログイン中]存在するサブドメイン'
-      it_behaves_like '[ログイン中]存在しないサブドメイン'
+      it_behaves_like '[ログイン中/削除予約済み]存在するサブドメイン'
+      it_behaves_like '[ログイン中/削除予約済み]存在しないサブドメイン'
     end
     context 'ログイン中（削除予約済み）' do
       include_context 'ログイン処理', true
       it_behaves_like '[削除予約済み]ベースドメイン'
-      it_behaves_like '[削除予約済み]存在するサブドメイン'
-      it_behaves_like '[削除予約済み]存在しないサブドメイン'
+      it_behaves_like '[ログイン中/削除予約済み]存在するサブドメイン'
+      it_behaves_like '[ログイン中/削除予約済み]存在しないサブドメイン'
     end
   end
 
@@ -1182,12 +1118,7 @@ RSpec.describe 'Users::Registrations', type: :request do
       # it_behaves_like 'NG' # Tips: 未ログインの為、対象がない
       it_behaves_like 'ToLogin', 'devise.failure.unauthenticated', nil
     end
-    shared_examples_for '[ログイン中]存在するサブドメイン' do
-      let!(:headers) { @space_header }
-      it_behaves_like 'NG'
-      it_behaves_like 'ToTop', 'alert.user.not_destroy_reserved', nil
-    end
-    shared_examples_for '[削除予約済み]存在するサブドメイン' do
+    shared_examples_for '[ログイン中/削除予約済み]存在するサブドメイン' do
       let!(:headers) { @space_header }
       it_behaves_like 'NG'
       it_behaves_like 'ToNot'
@@ -1197,12 +1128,7 @@ RSpec.describe 'Users::Registrations', type: :request do
       # it_behaves_like 'NG' # Tips: 未ログインの為、対象がない
       it_behaves_like 'ToLogin', 'devise.failure.unauthenticated', nil
     end
-    shared_examples_for '[ログイン中]存在しないサブドメイン' do
-      let!(:headers) { NOT_SPACE_HEADER }
-      it_behaves_like 'NG'
-      it_behaves_like 'ToTop', 'alert.user.not_destroy_reserved', nil
-    end
-    shared_examples_for '[削除予約済み]存在しないサブドメイン' do
+    shared_examples_for '[ログイン中/削除予約済み]存在しないサブドメイン' do
       let!(:headers) { NOT_SPACE_HEADER }
       it_behaves_like 'NG'
       it_behaves_like 'ToNot'
@@ -1216,14 +1142,14 @@ RSpec.describe 'Users::Registrations', type: :request do
     context 'ログイン中' do
       include_context 'ログイン処理'
       it_behaves_like '[ログイン中]ベースドメイン'
-      it_behaves_like '[ログイン中]存在するサブドメイン'
-      it_behaves_like '[ログイン中]存在しないサブドメイン'
+      it_behaves_like '[ログイン中/削除予約済み]存在するサブドメイン'
+      it_behaves_like '[ログイン中/削除予約済み]存在しないサブドメイン'
     end
     context 'ログイン中（削除予約済み）' do
       include_context 'ログイン処理', true
       it_behaves_like '[削除予約済み]ベースドメイン'
-      it_behaves_like '[削除予約済み]存在するサブドメイン'
-      it_behaves_like '[削除予約済み]存在しないサブドメイン'
+      it_behaves_like '[ログイン中/削除予約済み]存在するサブドメイン'
+      it_behaves_like '[ログイン中/削除予約済み]存在しないサブドメイン'
     end
   end
 end

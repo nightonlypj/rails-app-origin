@@ -1,5 +1,10 @@
 <% validate_enabled = @customer.errors.any? %>
 <%= form_with(model: @customer, url: update_customer_path(customer_code: @customer.code), html: { novalidate: true }, local: true) do |form| %>
+  <%= form.label '顧客コード:', class: "form-label small" %>
+  <div class="mb-3">
+    <%= @customer.code %>
+  </div>
+
   <div class="form-outline<%= input_size_class_name(@customer, :name) %>">
     <%= form.text_field :name, autocomplete: 'name', class: "form-control#{validate_class_name(validate_enabled, @customer, :name)}" %>
     <%= form.label '組織・団体名', class: 'form-label', for: 'customer_name' %>

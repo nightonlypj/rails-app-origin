@@ -43,10 +43,7 @@ class CustomersController < ApplicationController
 
   # 変更権限がない場合、リダイレクトしてメッセージを表示
   def redirect_response_not_update_power
-    member = Member.where(customer_id: @customer.id, user_id: current_user.id).first
-    return render json: { error: t('errors.messages.customer.code_error') }, status: :not_found if member.blank? && request.format.json?
-    return head :not_found if member.blank?
-    return if member.customer_update_power?
+    return if @customer.member.first.customer_update_power?
 
     if request.format.json?
       render json: { error: t('alert.customer.not_update_power') }, status: :forbidden

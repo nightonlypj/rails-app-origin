@@ -22,32 +22,32 @@ RSpec.describe 'Members', type: :request do
     # テスト内容
     shared_examples_for 'OK' do
       it '権限が変更される' do
-        put member_path(customer_code: customer_code, user_code: user_code), params: { member: attributes }, headers: headers
+        put update_member_path(customer_code: customer_code, user_code: user_code), params: { member: attributes }, headers: headers
         expect(Member.find(target_member.id).power).to eq(attributes[:power])
       end
       it '(json)権限が変更される' do
-        put member_path(customer_code: customer_code, user_code: user_code, format: :json), params: { member: attributes }, headers: headers
+        put update_member_path(customer_code: customer_code, user_code: user_code, format: :json), params: { member: attributes }, headers: headers
         expect(Member.find(target_member.id).power).to eq(attributes[:power])
       end
     end
     shared_examples_for 'NG' do
       it '権限が変更されない' do
-        put member_path(customer_code: customer_code, user_code: user_code), params: { member: attributes }, headers: headers
+        put update_member_path(customer_code: customer_code, user_code: user_code), params: { member: attributes }, headers: headers
         expect(Member.find(target_member.id).power).to eq(target_member.power)
       end
       it '(json)権限が変更されない' do
-        put member_path(customer_code: customer_code, user_code: user_code, format: :json), params: { member: attributes }, headers: headers
+        put update_member_path(customer_code: customer_code, user_code: user_code, format: :json), params: { member: attributes }, headers: headers
         expect(Member.find(target_member.id).power).to eq(target_member.power)
       end
     end
 
     shared_examples_for 'ToError' do
       it '成功ステータス' do # Tips: 再入力
-        put member_path(customer_code: customer_code, user_code: user_code), params: { member: attributes }, headers: headers
+        put update_member_path(customer_code: customer_code, user_code: user_code), params: { member: attributes }, headers: headers
         expect(response).to be_successful
       end
       it '(json)失敗レスポンス' do
-        put member_path(customer_code: customer_code, user_code: user_code, format: :json), params: { member: attributes }, headers: headers
+        put update_member_path(customer_code: customer_code, user_code: user_code, format: :json), params: { member: attributes }, headers: headers
         expect(response).to have_http_status(:unprocessable_entity)
         expect(JSON.parse(response.body)['status']).to eq('NG')
         expect(JSON.parse(response.body)['error'].count).not_to eq(0)
@@ -55,11 +55,11 @@ RSpec.describe 'Members', type: :request do
     end
     shared_examples_for 'ToNot' do |error|
       it '存在しないステータス' do
-        put member_path(customer_code: customer_code, user_code: user_code), params: { member: attributes }, headers: headers
+        put update_member_path(customer_code: customer_code, user_code: user_code), params: { member: attributes }, headers: headers
         expect(response).to be_not_found
       end
       it '(json)存在しないエラー' do
-        put member_path(customer_code: customer_code, user_code: user_code, format: :json), params: { member: attributes }, headers: headers
+        put update_member_path(customer_code: customer_code, user_code: user_code, format: :json), params: { member: attributes }, headers: headers
         expect(response).to be_not_found
         message = response.body.present? ? JSON.parse(response.body)['error'] : nil
         expect(message).to error.present? ? eq(I18n.t(error)) : be_nil
@@ -67,13 +67,13 @@ RSpec.describe 'Members', type: :request do
     end
     shared_examples_for 'ToIndexOK' do |alert, notice|
       it '一覧にリダイレクト' do
-        put member_path(customer_code: customer_code, user_code: user_code), params: { member: attributes }, headers: headers
+        put update_member_path(customer_code: customer_code, user_code: user_code), params: { member: attributes }, headers: headers
         expect(response).to redirect_to(members_path(customer_code: customer_code))
         expect(flash[:alert]).to alert.present? ? eq(I18n.t(alert)) : be_nil
         expect(flash[:notice]).to notice.present? ? eq(I18n.t(notice)) : be_nil
       end
       it '(json)成功レスポンス' do
-        put member_path(customer_code: customer_code, user_code: user_code, format: :json), params: { member: attributes }, headers: headers
+        put update_member_path(customer_code: customer_code, user_code: user_code, format: :json), params: { member: attributes }, headers: headers
         expect(response).to be_ok
         expect(JSON.parse(response.body)['status']).to eq('OK')
         expect(JSON.parse(response.body)['notice']).to notice.present? ? eq(I18n.t(notice)) : be_nil
@@ -81,13 +81,13 @@ RSpec.describe 'Members', type: :request do
     end
     shared_examples_for 'ToIndexNG' do |alert, notice, error|
       it '一覧にリダイレクト' do
-        put member_path(customer_code: customer_code, user_code: user_code), params: { member: attributes }, headers: headers
+        put update_member_path(customer_code: customer_code, user_code: user_code), params: { member: attributes }, headers: headers
         expect(response).to redirect_to(members_path(customer_code: customer_code))
         expect(flash[:alert]).to alert.present? ? eq(I18n.t(alert)) : be_nil
         expect(flash[:notice]).to notice.present? ? eq(I18n.t(notice)) : be_nil
       end
       it '(json)権限エラー' do
-        put member_path(customer_code: customer_code, user_code: user_code, format: :json), params: { member: attributes }, headers: headers
+        put update_member_path(customer_code: customer_code, user_code: user_code, format: :json), params: { member: attributes }, headers: headers
         expect(response).to be_forbidden
         message = response.body.present? ? JSON.parse(response.body)['error'] : nil
         expect(message).to error.present? ? eq(I18n.t(error)) : be_nil
@@ -95,13 +95,13 @@ RSpec.describe 'Members', type: :request do
     end
     shared_examples_for 'ToLogin' do |alert, notice, error|
       it 'ログインにリダイレクト' do
-        put member_path(customer_code: customer_code, user_code: user_code), params: { member: attributes }, headers: headers
+        put update_member_path(customer_code: customer_code, user_code: user_code), params: { member: attributes }, headers: headers
         expect(response).to redirect_to(new_user_session_path)
         expect(flash[:alert]).to alert.present? ? eq(I18n.t(alert)) : be_nil
         expect(flash[:notice]).to notice.present? ? eq(I18n.t(notice)) : be_nil
       end
       it '(json)認証エラー' do
-        put member_path(customer_code: customer_code, user_code: user_code, format: :json), params: { member: attributes }, headers: headers
+        put update_member_path(customer_code: customer_code, user_code: user_code, format: :json), params: { member: attributes }, headers: headers
         expect(response).to be_unauthorized
         message = response.body.present? ? JSON.parse(response.body)['error'] : nil
         expect(message).to error.present? ? eq(I18n.t(error)) : be_nil

@@ -41,33 +41,34 @@ class ApplicationController < ActionController::Base
   # ベースドメインにリダイレクト
   def redirect_base_domain_response
     return if base_domain_request?
-    return render json: { error: t('errors.messages.domain_error') }, status: :not_found if request.format.json?
 
-    redirect_to "//#{Settings['base_domain']}#{request.fullpath}"
+    if request.format.json?
+      render json: { error: t('errors.messages.domain_error') }, status: :not_found
+    else
+      redirect_to "//#{Settings['base_domain']}#{request.fullpath}"
+    end
   end
 
   # ベースドメイン禁止
   def not_found_base_domain_response
     return unless base_domain_request?
-    return render json: { error: t('errors.messages.domain_error') }, status: :not_found if request.format.json?
 
-    head :not_found
+    if request.format.json?
+      render json: { error: t('errors.messages.domain_error') }, status: :not_found
+    else
+      head :not_found
+    end
   end
 
   # サブドメイン禁止
   def not_found_sub_domain_response
     return if base_domain_request?
-    return render json: { error: t('errors.messages.domain_error') }, status: :not_found if request.format.json?
 
-    head :not_found
-  end
-
-  # 削除予約済みの場合、リダイレクトしてメッセージを表示
-  def redirect_response_destroy_reserved
-    return unless current_user.destroy_reserved?
-    return render json: { error: t('alert.user.destroy_reserved') }, status: :forbidden if request.format.json?
-
-    redirect_to root_path, alert: t('alert.user.destroy_reserved')
+    if request.format.json?
+      render json: { error: t('errors.messages.domain_error') }, status: :not_found
+    else
+      head :not_found
+    end
   end
 
   # 未所属/存在しない顧客へのアクセス禁止
@@ -75,9 +76,12 @@ class ApplicationController < ActionController::Base
     @customer = Customer.where(code: params[:customer_code])
                         .eager_load(:member).where(members: { user_id: current_user.id }).first
     return if @customer.present?
-    return render json: { error: t('errors.messages.customer.code_error') }, status: :not_found if request.format.json?
 
-    head :not_found
+    if request.format.json?
+      render json: { error: t('errors.messages.customer.code_error') }, status: :not_found
+    else
+      head :not_found
+    end
   end
 
   # 有効なパスワードリセットトークンかを返却
@@ -122,6 +126,28 @@ class ApplicationController < ActionController::Base
       new_admin_user_session_path
     else
       new_user_session_path
+    end
+  end
+
+  # 削除予約済みの場合、リダイレクトしてメッセージを表示
+  def redirect_response_destroy_reserved
+    return unless current_user.destroy_reserved?
+
+    if request.format.json?
+      render json: { error: t('alert.user.destroy_reserved') }, status: :forbidden
+    else
+      redirect_to root_path, alert: t('alert.user.destroy_reserved')
+    end
+  end
+
+  # 削除予約済みでない場合、リダイレクトしてメッセージを表示
+  def redirect_response_not_destroy_reserved
+    return if current_user.destroy_reserved?
+
+    if request.format.json?
+      render json: { error: t('alert.user.not_destroy_reserved') }, status: :forbidden
+    else
+      redirect_to root_path, alert: t('alert.user.not_destroy_reserved')
     end
   end
 

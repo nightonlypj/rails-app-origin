@@ -1,8 +1,9 @@
 <% validate_enabled = @member.errors.any? %>
-<%= form_with(model: @member, url: member_path(customer_code: @customer.code, user_code: @member.user.code), html: { novalidate: true }, local: true) do |form| %>
+<%= form_with(model: @member, url: update_member_path(customer_code: @customer.code, user_code: @member.user.code), html: { novalidate: true }, local: true) do |form| %>
 <% if @member.registrationed_at.present? %>
+  <%= form.label '氏名:', class: "form-label small" %>
   <div class="mb-3">
-    <span class="font-weight-bold">氏名:</span> <%= image_tag @member.user.image_url(:small) %> <%= @member.user.name %>
+    <%= image_tag @member.user.image_url(:small) %> <%= @member.user.name %>
   </div>
 <% else %>
   <div class="note note-info mb-3">
@@ -10,14 +11,15 @@
   </div>
 <% end %>
 
+  <%= form.label 'メールアドレス:', class: "form-label small" %>
   <div class="mb-3">
-    <span class="font-weight-bold">メールアドレス:</span> <%= @member.user.email %>
+    <%= @member.user.email %>
   </div>
 
+  <%= form.label '権限:', class: "form-label small" %>
   <div class="form-outline<%= input_size_class_name(@member, :power) %>">
-    <%= form.label '権限:', class: "form-label form-check-inline font-weight-bold#{validate_text_class_name(validate_enabled, @member, :power)}" %>
     <% Member.powers.each do |power| %>
-      <div class="form-check form-check-inline<%= validate_class_name(validate_enabled, @member, :power) %>">
+      <div class="form-check form-check-inline mb-2<%= validate_class_name(validate_enabled, @member, :power) %>">
         <%= form.radio_button :power, power[0], class: "form-check-input#{validate_class_name(validate_enabled, @member, :power)}" %>
         <%= form.label Member.powers_i18n[power[0]], class: 'form-check-label', for: "member_power_#{power[0].downcase}" %>
       </div>

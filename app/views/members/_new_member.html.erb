@@ -1,5 +1,5 @@
 <% validate_enabled = @member.errors.any? || @user.errors.any? %>
-<%= form_with(model: @member, url: members_path(customer_code: @customer.code), html: { novalidate: true }, local: true) do |form| %>
+<%= form_with(model: @member, url: create_member_path(customer_code: @customer.code), html: { novalidate: true }, local: true) do |form| %>
 <%= form.fields_for @user do |form_user| %>
   <div class="form-outline<%= input_size_class_name(@user, :email) %>">
     <%= form_user.email_field :email, autocomplete: 'email', class: "form-control#{validate_class_name(validate_enabled, @user, :email)}" %>
@@ -8,10 +8,10 @@
   </div>
 <% end %>
 
+  <%= form.label '権限:', class: "form-label small" %>
   <div class="form-outline<%= input_size_class_name(@member, :power) %>">
-    <%= form.label '権限:', class: "form-label form-check-inline font-weight-bold#{validate_text_class_name(validate_enabled, @member, :power)}" %>
     <% Member.powers.each do |power| %>
-      <div class="form-check form-check-inline<%= validate_class_name(validate_enabled, @member, :power) %>">
+      <div class="form-check form-check-inline mb-2<%= validate_class_name(validate_enabled, @member, :power) %>">
         <%= form.radio_button :power, power[0], class: "form-check-input#{validate_class_name(validate_enabled, @member, :power)}" %>
         <%= form.label Member.powers_i18n[power[0]], class: 'form-check-label', for: "member_power_#{power[0].downcase}" %>
       </div>

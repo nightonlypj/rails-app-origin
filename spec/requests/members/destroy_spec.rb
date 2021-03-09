@@ -20,12 +20,12 @@ RSpec.describe 'Members', type: :request do
     shared_examples_for 'OK' do
       it 'メンバーが削除される' do
         expect do
-          delete member_path(customer_code: customer_code, user_code: user_code), headers: headers
+          delete destroy_member_path(customer_code: customer_code, user_code: user_code), headers: headers
         end.to change(Member, :count).by(-1)
       end
       it '(json)メンバーが削除される' do
         expect do
-          delete member_path(customer_code: customer_code, user_code: user_code, format: :json), headers: headers
+          delete destroy_member_path(customer_code: customer_code, user_code: user_code, format: :json), headers: headers
         end.to change(Member, :count).by(-1)
       end
     end
@@ -33,14 +33,14 @@ RSpec.describe 'Members', type: :request do
       it 'メンバーが削除されない（対象が存在する場合）' do
         if target_member.present?
           expect do
-            delete member_path(customer_code: customer_code, user_code: user_code), headers: headers
+            delete destroy_member_path(customer_code: customer_code, user_code: user_code), headers: headers
           end.to change(Member, :count).by(0)
         end
       end
       it '(json)メンバーが削除されない（対象が存在する場合）' do
         if target_member.present?
           expect do
-            delete member_path(customer_code: customer_code, user_code: user_code, format: :json), headers: headers
+            delete destroy_member_path(customer_code: customer_code, user_code: user_code, format: :json), headers: headers
           end.to change(Member, :count).by(0)
         end
       end
@@ -48,11 +48,11 @@ RSpec.describe 'Members', type: :request do
 
     shared_examples_for 'ToNot' do |error|
       it '存在しないステータス' do
-        delete member_path(customer_code: customer_code, user_code: user_code), headers: headers
+        delete destroy_member_path(customer_code: customer_code, user_code: user_code), headers: headers
         expect(response).to be_not_found
       end
       it '(json)存在しないエラー' do
-        delete member_path(customer_code: customer_code, user_code: user_code, format: :json), headers: headers
+        delete destroy_member_path(customer_code: customer_code, user_code: user_code, format: :json), headers: headers
         expect(response).to be_not_found
         message = response.body.present? ? JSON.parse(response.body)['error'] : nil
         expect(message).to error.present? ? eq(I18n.t(error)) : be_nil
@@ -60,13 +60,13 @@ RSpec.describe 'Members', type: :request do
     end
     shared_examples_for 'ToIndexOK' do |alert, notice|
       it '一覧にリダイレクト' do
-        delete member_path(customer_code: customer_code, user_code: user_code), headers: headers
+        delete destroy_member_path(customer_code: customer_code, user_code: user_code), headers: headers
         expect(response).to redirect_to(members_path(customer_code: customer_code))
         expect(flash[:alert]).to alert.present? ? eq(I18n.t(alert)) : be_nil
         expect(flash[:notice]).to notice.present? ? eq(I18n.t(notice)) : be_nil
       end
       it '(json)成功レスポンス' do
-        delete member_path(customer_code: customer_code, user_code: user_code, format: :json), headers: headers
+        delete destroy_member_path(customer_code: customer_code, user_code: user_code, format: :json), headers: headers
         expect(response).to be_ok
         expect(JSON.parse(response.body)['status']).to eq('OK')
         expect(JSON.parse(response.body)['notice']).to notice.present? ? eq(I18n.t(notice)) : be_nil
@@ -74,13 +74,13 @@ RSpec.describe 'Members', type: :request do
     end
     shared_examples_for 'ToIndexNG' do |alert, notice, error|
       it '一覧にリダイレクト' do
-        delete member_path(customer_code: customer_code, user_code: user_code), headers: headers
+        delete destroy_member_path(customer_code: customer_code, user_code: user_code), headers: headers
         expect(response).to redirect_to(members_path(customer_code: customer_code))
         expect(flash[:alert]).to alert.present? ? eq(I18n.t(alert)) : be_nil
         expect(flash[:notice]).to notice.present? ? eq(I18n.t(notice)) : be_nil
       end
       it '(json)権限エラー' do
-        delete member_path(customer_code: customer_code, user_code: user_code, format: :json), headers: headers
+        delete destroy_member_path(customer_code: customer_code, user_code: user_code, format: :json), headers: headers
         expect(response).to be_forbidden
         message = response.body.present? ? JSON.parse(response.body)['error'] : nil
         expect(message).to error.present? ? eq(I18n.t(error)) : be_nil
@@ -88,13 +88,13 @@ RSpec.describe 'Members', type: :request do
     end
     shared_examples_for 'ToLogin' do |alert, notice, error|
       it 'ログインにリダイレクト' do
-        delete member_path(customer_code: customer_code, user_code: user_code), headers: headers
+        delete destroy_member_path(customer_code: customer_code, user_code: user_code), headers: headers
         expect(response).to redirect_to(new_user_session_path)
         expect(flash[:alert]).to alert.present? ? eq(I18n.t(alert)) : be_nil
         expect(flash[:notice]).to notice.present? ? eq(I18n.t(notice)) : be_nil
       end
       it '(json)認証エラー' do
-        delete member_path(customer_code: customer_code, user_code: user_code, format: :json), headers: headers
+        delete destroy_member_path(customer_code: customer_code, user_code: user_code, format: :json), headers: headers
         expect(response).to be_unauthorized
         message = response.body.present? ? JSON.parse(response.body)['error'] : nil
         expect(message).to error.present? ? eq(I18n.t(error)) : be_nil

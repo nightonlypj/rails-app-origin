@@ -4,8 +4,9 @@
     <p class="card-text">
 
 <% if @member.registrationed_at.present? %>
+      <label class="form-label small">氏名:</label>
       <div class="mb-3">
-        <span class="font-weight-bold">氏名:</span> <%= image_tag @member.user.image_url(:small) %> <%= @member.user.name %>
+        <%= image_tag @member.user.image_url(:small) %> <%= @member.user.name %>
       </div>
 <% else %>
       <div class="note note-info mb-3">
@@ -13,15 +14,17 @@
       </div>
 <% end %>
 
+      <label class="form-label small">メールアドレス:</label>
       <div class="mb-3">
-        <span class="font-weight-bold">メールアドレス:</span> <%= @member.user.email %>
+        <%= @member.user.email %>
       </div>
 
+      <label class="form-label small">権限:</label>
       <div class="mb-3">
-        <span class="font-weight-bold">権限:</span> <%= @member.power_i18n %>
+        <%= @member.power_i18n %>
       </div>
 
-      <p><%= button_to '解除', member_path(customer_code: @customer.code, user_code: @member.user.code), data: { confirm: '本当に解除しますか？' }, method: :delete, class: 'btn btn-danger' %></p>
+      <p><%= button_to '解除', destroy_member_path(customer_code: @customer.code, user_code: @member.user.code), data: { confirm: '本当に解除しますか？' }, method: :delete, class: 'btn btn-danger' %></p>
     </p>
     <p class="card-footer"><%= render 'links' %></p>
   </div>

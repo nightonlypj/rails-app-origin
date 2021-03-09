@@ -1,8 +1,8 @@
 <nav>
   <ul>
 <% if action_name != 'index' %>
-    <li><%= link_to "#{@customer.name}のメンバー一覧", members_path(customer_code: @customer.code) %></li>
+    <li><%= link_to 'メンバー一覧', members_path(customer_code: @customer.code) %></li>
 <% end %>
-    <li><%= link_to "#{@customer.name}の詳細", customer_path(customer_code: @customer.code) %></li>
+    <li><%= link_to '顧客詳細', customer_path(customer_code: @customer.code) %></li>
   </ul>
 </nav>

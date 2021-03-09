@@ -9,8 +9,9 @@ RSpec.describe 'members/edit', type: :view do
 
   it 'renders the edit member form' do
     render
-    assert_select 'form[action=?][method=?]', member_path(customer_code: @customer.code, user_code: @member.user.code), 'post' do
+    assert_select 'form[action=?][method=?]', update_member_path(customer_code: @customer.code, user_code: @member.user.code), 'post' do
       assert_select 'input[name=?]', 'member[power]'
+      assert_select 'input[name=?]', 'commit'
     end
   end
 end

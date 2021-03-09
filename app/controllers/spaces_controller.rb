@@ -4,6 +4,7 @@ class SpacesController < ApplicationController
   before_action :not_found_sub_domain_response, only: %i[create]
   before_action :not_found_request_space_blank, only: %i[edit update image_update image_destroy]
   before_action :authenticate_user!, only: %i[index new edit create update image_update image_destroy]
+  before_action :not_found_outside_space, only: %i[edit update image_update image_destroy]
   before_action :redirect_response_not_update_power, only: %i[edit update image_update image_destroy]
   before_action :redirect_response_destroy_reserved, only: %i[new edit create update image_update image_destroy]
   before_action :set_join_customers, only: %i[new]
@@ -120,7 +121,7 @@ class SpacesController < ApplicationController
     end
   end
 
-  # PUT(PATCH) /spaces/image 画像変更(処理)
+  # PUT(PATCH) /spaces/image（サブドメイン） 画像変更(処理)
   def image_update
     @space = Space.find(@request_space.id)
     if params.blank? || params[:space].blank?
@@ -135,7 +136,7 @@ class SpacesController < ApplicationController
     end
   end
 
-  # DELETE /spaces/image 画像削除(処理)
+  # DELETE /spaces/image（サブドメイン） 画像削除(処理)
   def image_destroy
     @space = Space.find(@request_space.id)
     @space.remove_image!
@@ -150,18 +151,30 @@ class SpacesController < ApplicationController
 
   # 存在しないサブドメインへのアクセス禁止
   def not_found_request_space_blank
-    return unless @request_space.blank?
-    return render json: { error: t('errors.messages.space.subdomain_error') }, status: :not_found if request.format.json?
+    return if @request_space.present?
 
-    head :not_found
+    if request.format.json?
+      render json: { error: t('errors.messages.space.subdomain_error') }, status: :not_found
+    else
+      head :not_found
+    end
+  end
+
+  # 未所属のサブドメインへのアクセス禁止
+  def not_found_outside_space
+    @member = Member.where(customer_id: @request_space.customer_id, user_id: current_user.id).first
+    return if @member.present?
+
+    if request.format.json?
+      render json: { error: t('errors.messages.space.subdomain_error') }, status: :not_found
+    else
+      head :not_found
+    end
   end
 
   # 変更権限がない場合、リダイレクトしてメッセージを表示
   def redirect_response_not_update_power
-    member = Member.where(customer_id: @request_space.customer_id, user_id: current_user.id).first
-    return render json: { error: t('errors.messages.space.subdomain_error') }, status: :not_found if member.blank? && request.format.json?
-    return head :not_found if member.blank?
-    return if member.space_update_power?
+    return if @member.space_update_power?
 
     if request.format.json?
       render json: { error: t('alert.space.not_update_power') }, status: :forbidden

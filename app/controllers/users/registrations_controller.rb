@@ -1,11 +1,11 @@
 # frozen_string_literal: true
 
 class Users::RegistrationsController < Devise::RegistrationsController
+  before_action :redirect_base_domain_response, only: %i[new edit delete undo_delete]
+  before_action :not_found_sub_domain_response, only: %i[create update image_update image_destroy destroy undo_destroy]
   prepend_before_action :authenticate_scope!, only: %i[edit update image_update image_destroy delete destroy undo_delete undo_destroy]
   before_action :redirect_response_destroy_reserved, only: %i[edit update image_update image_destroy delete destroy]
   before_action :redirect_response_not_destroy_reserved, only: %i[undo_delete undo_destroy]
-  before_action :redirect_base_domain_response, only: %i[new edit delete undo_delete]
-  before_action :not_found_sub_domain_response, only: %i[create update image_update image_destroy destroy undo_destroy]
   before_action :configure_sign_up_params, only: %i[create]
   before_action :configure_account_update_params, only: %i[update]
 

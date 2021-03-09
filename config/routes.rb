@@ -13,14 +13,14 @@ Rails.application.routes.draw do
   delete 'spaces/image',  to: 'spaces#image_destroy', as: 'delete_space_image'
 
   # メンバー
-  get    'members/:customer_code',                   to: 'members#index', as: 'members'
-  post   'members/:customer_code',                   to: 'members#create'
-  get    'members/:customer_code/new',               to: 'members#new',    as: 'new_member'
-  get    'members/:customer_code/:user_code/edit',   to: 'members#edit',   as: 'edit_member'
-  patch  'members/:customer_code/:user_code',        to: 'members#update', as: 'member'
-  put    'members/:customer_code/:user_code',        to: 'members#update'
-  get    'members/:customer_code/:user_code/delete', to: 'members#delete', as: 'delete_member'
-  delete 'members/:customer_code/:user_code',        to: 'members#destroy'
+  get    'members/:customer_code',                   to: 'members#index',   as: 'members'
+  get    'members/:customer_code/new',               to: 'members#new',     as: 'new_member'
+  post   'members/:customer_code/new',               to: 'members#create',  as: 'create_member'
+  get    'members/:customer_code/:user_code/edit',   to: 'members#edit',    as: 'edit_member'
+  put    'members/:customer_code/:user_code/edit',   to: 'members#update',  as: 'update_member'
+  patch  'members/:customer_code/:user_code/edit',   to: 'members#update',  as: nil
+  get    'members/:customer_code/:user_code/delete', to: 'members#delete',  as: 'delete_member'
+  delete 'members/:customer_code/:user_code/delete', to: 'members#destroy', as: 'destroy_member'
 
   # メンバー登録
   get    'registration/sign_up', to: 'registration#new',    as: 'registration_sign_up' # Tips: NG(new_registration)
