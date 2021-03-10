@@ -1,13 +1,14 @@
 <% validate_enabled = @user.errors.any? %>
-<%= form_with(model: @user, url: registration_sign_up_path(invitation_token: params[:invitation_token]), method: :post, html: { novalidate: true }, local: true) do |form| %>
+<%= form_with(model: @user, url: create_member_registration_path(invitation_token: params[:invitation_token]), method: :post, html: { novalidate: true }, local: true) do |form| %>
+  <%= form.label 'メールアドレス:', class: "form-label small" %>
+  <div class="mb-3">
+    <%= @user.email %>
+  </div>
+
   <div class="form-outline<%= input_size_class_name(@user, :name) %>">
     <%= form.text_field :name, autocomplete: 'name', class: "form-control#{validate_class_name(validate_enabled, @user, :name)}" %>
     <%= form.label '氏名', class: 'form-label', for: 'user_name' %>
     <%= render 'users/shared/field_error_messages', messages: @user.errors[:name] %>
-  </div>
-
-  <div class="mb-3">
-    <span class="font-weight-bold">メールアドレス:</span> <%= @user.email %>
   </div>
 
   <div class="form-outline<%= input_size_class_name(@user, :password) %>">

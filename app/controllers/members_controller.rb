@@ -146,10 +146,9 @@ class MembersController < ApplicationController
                     .eager_load(:user).where(users: { code: params[:user_code] }).first
     return if @member.present?
 
-    if request.format.json?
-      render json: { error: t('errors.messages.user.code_error') }, status: :not_found
-    else
-      head :not_found
+    respond_to do |format|
+      format.html { head :not_found }
+      format.json { render json: { error: t('errors.messages.user.code_error') }, status: :not_found }
     end
   end
 
@@ -162,10 +161,9 @@ class MembersController < ApplicationController
     else
       return
     end
-    if request.format.json?
-      render json: { error: t(key) }, status: :forbidden
-    else
-      redirect_to members_path(customer_code: params[:customer_code]), alert: t(key)
+    respond_to do |format|
+      format.html { redirect_to members_path(customer_code: params[:customer_code]), alert: t(key) }
+      format.json { render json: { error: t(key) }, status: :forbidden }
     end
   end
 
@@ -180,10 +178,9 @@ class MembersController < ApplicationController
     else
       return
     end
-    if request.format.json?
-      render json: { error: t(key) }, status: :forbidden
-    else
-      redirect_to members_path(customer_code: params[:customer_code]), alert: t(key)
+    respond_to do |format|
+      format.html { redirect_to members_path(customer_code: params[:customer_code]), alert: t(key) }
+      format.json { render json: { error: t(key) }, status: :forbidden }
     end
   end
 
@@ -198,10 +195,9 @@ class MembersController < ApplicationController
     else
       return
     end
-    if request.format.json?
-      render json: { error: t(key) }, status: :forbidden
-    else
-      redirect_to members_path(customer_code: params[:customer_code]), alert: t(key)
+    respond_to do |format|
+      format.html { redirect_to members_path(customer_code: params[:customer_code]), alert: t(key) }
+      format.json { render json: { error: t(key) }, status: :forbidden }
     end
   end
 end

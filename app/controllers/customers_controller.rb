@@ -45,10 +45,9 @@ class CustomersController < ApplicationController
   def redirect_response_not_update_power
     return if @customer.member.first.customer_update_power?
 
-    if request.format.json?
-      render json: { error: t('alert.customer.not_update_power') }, status: :forbidden
-    else
-      redirect_to root_path, alert: t('alert.customer.not_update_power')
+    respond_to do |format|
+      format.html { redirect_to root_path, alert: t('alert.customer.not_update_power') }
+      format.json { render json: { error: t('alert.customer.not_update_power') }, status: :forbidden }
     end
   end
 end

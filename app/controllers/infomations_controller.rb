@@ -20,10 +20,9 @@ class InfomationsController < ApplicationController
     return head :not_found if @infomation.blank? || !@infomation.target_user?(current_user) || @infomation.started_at > Time.current
     return if @infomation.ended_at.blank? || @infomation.ended_at >= Time.current
 
-    if request.format.json?
-      render json: { error: t('errors.messages.infomation.ended') }, status: :not_found
-    else
-      head :not_found
+    respond_to do |format|
+      format.html { head :not_found }
+      format.json { render json: { error: t('errors.messages.infomation.ended') }, status: :not_found }
     end
   end
 end

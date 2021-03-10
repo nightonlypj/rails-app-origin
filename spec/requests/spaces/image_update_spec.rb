@@ -1,8 +1,8 @@
 require 'rails_helper'
 
 RSpec.describe 'Spaces', type: :request do
-  # PUT(PATCH) /spaces/edit（サブドメイン） スペース情報変更(処理)
-  # PUT(PATCH) /spaces/edit.json（サブドメイン） スペース情報変更API
+  # PUT(PATCH) /spaces/image（サブドメイン） スペース画像変更(処理)
+  # PUT(PATCH) /spaces/image.json（サブドメイン） スペース画像変更API
   # 前提条件
   #   なし
   # テストパターン
@@ -10,42 +10,48 @@ RSpec.describe 'Spaces', type: :request do
   #   権限: Owner, Admin, Member, ない → データ作成
   #   有効なパラメータ, 無効なパラメータ → 事前にデータ作成
   #   ベースドメイン, 存在するサブドメイン, 存在しないサブドメイン → 事前にデータ作成
-  describe 'PUT /update' do
+  describe 'PUT /image_update' do
     include_context 'リクエストスペース作成'
-    let!(:valid_attributes) { FactoryBot.attributes_for(:space) }
-    let!(:invalid_attributes) { FactoryBot.attributes_for(:space, name: nil) }
+    let!(:valid_attributes) { { image: fixture_file_upload(TEST_IMAGE_FILE, TEST_IMAGE_TYPE) } }
+    let!(:invalid_attributes) { nil }
 
     # テスト内容
     shared_examples_for 'OK' do
-      it 'スペース名が変更される' do
-        put update_space_path, params: { space: attributes }, headers: headers
-        expect(Space.find(@request_space.id).name).to eq(attributes[:name])
+      it '画像が変更される' do
+        put update_space_image_path, params: { space: attributes }, headers: headers
+        after_space = Space.find(@request_space.id)
+        expect(after_space.image.url).not_to eq(@request_space.image.url)
+        after_space.remove_image!
+        after_space.save!
       end
-      it '(json)スペース名が変更される' do
-        put update_space_path(format: :json), params: { space: attributes }, headers: headers
-        expect(Space.find(@request_space.id).name).to eq(attributes[:name])
+      it '(json)画像が変更される' do
+        put update_space_image_path(format: :json), params: { space: attributes }, headers: headers
+        after_space = Space.find(@request_space.id)
+        expect(after_space.image.url).not_to eq(@request_space.image.url)
+        after_space.remove_image!
+        after_space.save!
       end
     end
     shared_examples_for 'NG' do
-      it 'スペース名が変更されない' do
-        put update_space_path, params: { space: attributes }, headers: headers
-        expect(Space.find(@request_space.id).name).to eq(@request_space.name)
+      it '画像が変更されない' do
+        put update_space_image_path, params: { space: attributes }, headers: headers
+        expect(Space.find(@request_space.id).image.url).to eq(@request_space.image.url)
       end
-      it '(json)スペース名が変更されない' do
-        put update_space_path(format: :json), params: { space: attributes }, headers: headers
-        expect(Space.find(@request_space.id).name).to eq(@request_space.name)
+      it '(json)画像が変更されない' do
+        put update_space_image_path(format: :json), params: { space: attributes }, headers: headers
+        expect(Space.find(@request_space.id).image.url).to eq(@request_space.image.url)
       end
     end
 
-    shared_examples_for 'ToOK' do |alert, notice|
-      it 'スペーストップにリダイレクト' do
-        put update_space_path, params: { space: attributes }, headers: headers
-        expect(response).to redirect_to("//#{attributes[:subdomain]}.#{Settings['base_domain']}")
+    shared_examples_for 'ToEdit' do |alert, notice|
+      it 'スペース情報変更にリダイレクト' do
+        put update_space_image_path, params: { space: attributes }, headers: headers
+        expect(response).to redirect_to(edit_space_path)
         expect(flash[:alert]).to alert.present? ? eq(I18n.t(alert)) : be_nil
         expect(flash[:notice]).to notice.present? ? eq(I18n.t(notice)) : be_nil
       end
       it '(json)成功ステータス' do
-        put update_space_path(format: :json), params: { space: attributes }, headers: headers
+        put update_space_image_path(format: :json), params: { space: attributes }, headers: headers
         expect(response).to be_ok
         expect(JSON.parse(response.body)['status']).to eq('OK')
         expect(JSON.parse(response.body)['notice']).to notice.present? ? eq(I18n.t(notice)) : be_nil
@@ -53,11 +59,11 @@ RSpec.describe 'Spaces', type: :request do
     end
     shared_examples_for 'ToError' do
       it '成功ステータス' do # Tips: 再入力
-        put update_space_path, params: { space: attributes }, headers: headers
+        put update_space_image_path, params: { space: attributes }, headers: headers
         expect(response).to be_successful
       end
       it '(json)失敗レスポンス' do
-        put update_space_path(format: :json), params: { space: attributes }, headers: headers
+        put update_space_image_path(format: :json), params: { space: attributes }, headers: headers
         expect(response).to have_http_status(:unprocessable_entity)
         expect(JSON.parse(response.body)['status']).to eq('NG')
         expect(JSON.parse(response.body)['error'].count).not_to eq(0)
@@ -65,11 +71,11 @@ RSpec.describe 'Spaces', type: :request do
     end
     shared_examples_for 'ToNot' do |error|
       it '存在しないステータス' do
-        put update_space_path, params: { space: attributes }, headers: headers
+        put update_space_image_path, params: { space: attributes }, headers: headers
         expect(response).to be_not_found
       end
       it '(json)存在しないエラー' do
-        put update_space_path(format: :json), params: { space: attributes }, headers: headers
+        put update_space_image_path(format: :json), params: { space: attributes }, headers: headers
         expect(response).to be_not_found
         message = response.body.present? ? JSON.parse(response.body)['error'] : nil
         expect(message).to error.present? ? eq(I18n.t(error)) : be_nil
@@ -77,13 +83,13 @@ RSpec.describe 'Spaces', type: :request do
     end
     shared_examples_for 'ToTop' do |alert, notice, error|
       it 'スペーストップにリダイレクト' do
-        put update_space_path, params: { space: attributes }, headers: headers
+        put update_space_image_path, params: { space: attributes }, headers: headers
         expect(response).to redirect_to(root_path)
         expect(flash[:alert]).to alert.present? ? eq(I18n.t(alert)) : be_nil
         expect(flash[:notice]).to notice.present? ? eq(I18n.t(notice)) : be_nil
       end
       it '(json)権限エラー' do
-        put update_space_path(format: :json), params: { space: attributes }, headers: headers
+        put update_space_image_path(format: :json), params: { space: attributes }, headers: headers
         expect(response).to be_forbidden
         message = response.body.present? ? JSON.parse(response.body)['error'] : nil
         expect(message).to error.present? ? eq(I18n.t(error)) : be_nil
@@ -91,13 +97,13 @@ RSpec.describe 'Spaces', type: :request do
     end
     shared_examples_for 'ToLogin' do |alert, notice, error|
       it 'ログインにリダイレクト' do
-        put update_space_path, params: { space: attributes }, headers: headers
+        put update_space_image_path, params: { space: attributes }, headers: headers
         expect(response).to redirect_to(new_user_session_path)
         expect(flash[:alert]).to alert.present? ? eq(I18n.t(alert)) : be_nil
         expect(flash[:notice]).to notice.present? ? eq(I18n.t(notice)) : be_nil
       end
       it '(json)認証エラー' do
-        put update_space_path(format: :json), params: { space: attributes }, headers: headers
+        put update_space_image_path(format: :json), params: { space: attributes }, headers: headers
         expect(response).to be_unauthorized
         message = response.body.present? ? JSON.parse(response.body)['error'] : nil
         expect(message).to error.present? ? eq(I18n.t(error)) : be_nil
@@ -113,7 +119,7 @@ RSpec.describe 'Spaces', type: :request do
     shared_examples_for '[ログイン中][Owner/Admin][有効]存在するサブドメイン' do
       let!(:headers) { @space_header }
       it_behaves_like 'OK'
-      it_behaves_like 'ToOK', nil, 'notice.space.update'
+      it_behaves_like 'ToEdit', nil, 'notice.space.image_update'
     end
     shared_examples_for '[削除予約済み][*][*]存在するサブドメイン' do
       let!(:headers) { @space_header }

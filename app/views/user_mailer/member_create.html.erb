@@ -5,4 +5,4 @@
 <br/>
 下記のリンクをクリックして、メンバー登録を行なってください。<br/>
 招待者や「<%= @customer.name %>」にお心当たりがない場合は、このメールを無視してください。<br/>
-<%= link_to 'メンバー登録', registration_sign_up_url(invitation_token: @user.invitation_token) %><br/>
+<%= link_to 'メンバー登録', new_member_registration_url(invitation_token: @user.invitation_token) %><br/>

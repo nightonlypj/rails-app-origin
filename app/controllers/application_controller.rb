@@ -42,10 +42,9 @@ class ApplicationController < ActionController::Base
   def redirect_base_domain_response
     return if base_domain_request?
 
-    if request.format.json?
-      render json: { error: t('errors.messages.domain_error') }, status: :not_found
-    else
-      redirect_to "//#{Settings['base_domain']}#{request.fullpath}"
+    respond_to do |format|
+      format.html { redirect_to "//#{Settings['base_domain']}#{request.fullpath}" }
+      format.json { render json: { error: t('errors.messages.domain_error') }, status: :not_found }
     end
   end
 
@@ -53,10 +52,9 @@ class ApplicationController < ActionController::Base
   def not_found_base_domain_response
     return unless base_domain_request?
 
-    if request.format.json?
-      render json: { error: t('errors.messages.domain_error') }, status: :not_found
-    else
-      head :not_found
+    respond_to do |format|
+      format.html { head :not_found }
+      format.json { render json: { error: t('errors.messages.domain_error') }, status: :not_found }
     end
   end
 
@@ -64,10 +62,9 @@ class ApplicationController < ActionController::Base
   def not_found_sub_domain_response
     return if base_domain_request?
 
-    if request.format.json?
-      render json: { error: t('errors.messages.domain_error') }, status: :not_found
-    else
-      head :not_found
+    respond_to do |format|
+      format.html { head :not_found }
+      format.json { render json: { error: t('errors.messages.domain_error') }, status: :not_found }
     end
   end
 
@@ -77,10 +74,9 @@ class ApplicationController < ActionController::Base
                         .eager_load(:member).where(members: { user_id: current_user.id }).first
     return if @customer.present?
 
-    if request.format.json?
-      render json: { error: t('errors.messages.customer.code_error') }, status: :not_found
-    else
-      head :not_found
+    respond_to do |format|
+      format.html { head :not_found }
+      format.json { render json: { error: t('errors.messages.customer.code_error') }, status: :not_found }
     end
   end
 
@@ -133,10 +129,9 @@ class ApplicationController < ActionController::Base
   def redirect_response_destroy_reserved
     return unless current_user.destroy_reserved?
 
-    if request.format.json?
-      render json: { error: t('alert.user.destroy_reserved') }, status: :forbidden
-    else
-      redirect_to root_path, alert: t('alert.user.destroy_reserved')
+    respond_to do |format|
+      format.html { redirect_to root_path, alert: t('alert.user.destroy_reserved') }
+      format.json { render json: { error: t('alert.user.destroy_reserved') }, status: :forbidden }
     end
   end
 
@@ -144,10 +139,9 @@ class ApplicationController < ActionController::Base
   def redirect_response_not_destroy_reserved
     return if current_user.destroy_reserved?
 
-    if request.format.json?
-      render json: { error: t('alert.user.not_destroy_reserved') }, status: :forbidden
-    else
-      redirect_to root_path, alert: t('alert.user.not_destroy_reserved')
+    respond_to do |format|
+      format.html { redirect_to root_path, alert: t('alert.user.not_destroy_reserved') }
+      format.json { render json: { error: t('alert.user.not_destroy_reserved') }, status: :forbidden }
     end
   end
 

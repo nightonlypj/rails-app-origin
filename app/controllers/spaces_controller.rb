@@ -2,7 +2,7 @@ class SpacesController < ApplicationController
   before_action :redirect_base_domain_response, only: %i[index index_public new]
   before_action :not_found_base_domain_response, only: %i[edit update image_update image_destroy]
   before_action :not_found_sub_domain_response, only: %i[create]
-  before_action :not_found_request_space_blank, only: %i[edit update image_update image_destroy]
+  before_action :not_found_blank_request_space, only: %i[edit update image_update image_destroy]
   before_action :authenticate_user!, only: %i[index new edit create update image_update image_destroy]
   before_action :not_found_outside_space, only: %i[edit update image_update image_destroy]
   before_action :redirect_response_not_update_power, only: %i[edit update image_update image_destroy]
@@ -121,42 +121,50 @@ class SpacesController < ApplicationController
     end
   end
 
-  # PUT(PATCH) /spaces/image（サブドメイン） 画像変更(処理)
+  # PUT(PATCH) /spaces/image（サブドメイン） スペース画像変更(処理)
+  # PUT(PATCH) /spaces/image.json（サブドメイン） スペース画像変更API
   def image_update
     @space = Space.find(@request_space.id)
     if params.blank? || params[:space].blank?
       @space.errors.add(:image, t('errors.messages.image_update_blank'))
-      return render :edit
+      respond_to do |format|
+        format.html { return render :edit }
+        format.json { return render json: { status: 'NG', error: @space.errors.messages }, status: :unprocessable_entity }
+      end
     end
 
-    if @space.update(params.require(:space).permit(:image))
-      redirect_to edit_space_path, notice: t('notice.space.image_update')
-    else
-      render :edit
+    respond_to do |format|
+      if @space.update(params.require(:space).permit(:image))
+        format.html { redirect_to edit_space_path, notice: t('notice.space.image_update') }
+        format.json { render json: { status: 'OK', notice: t('notice.space.image_update') }, status: :ok }
+      else
+        format.html { render :edit }
+        format.json { render json: { status: 'NG', error: @space.errors.messages }, status: :unprocessable_entity }
+      end
     end
   end
 
-  # DELETE /spaces/image（サブドメイン） 画像削除(処理)
+  # DELETE /spaces/image（サブドメイン） スペース画像削除(処理)
+  # DELETE /spaces/image.json（サブドメイン） スペース画像削除API
   def image_destroy
     @space = Space.find(@request_space.id)
     @space.remove_image!
-    if @space.save
-      redirect_to edit_space_path, notice: t('notice.space.image_destroy')
-    else
-      redirect_to edit_space_path, alert: t('alert.space.image_destroy_error')
+    @space.save!
+    respond_to do |format|
+      format.html { redirect_to edit_space_path, notice: t('notice.space.image_destroy') }
+      format.json { render json: { status: 'OK', notice: t('notice.space.image_destroy') }, status: :ok }
     end
   end
 
   private
 
   # 存在しないサブドメインへのアクセス禁止
-  def not_found_request_space_blank
+  def not_found_blank_request_space
     return if @request_space.present?
 
-    if request.format.json?
-      render json: { error: t('errors.messages.space.subdomain_error') }, status: :not_found
-    else
-      head :not_found
+    respond_to do |format|
+      format.html { head :not_found }
+      format.json { render json: { error: t('errors.messages.space.subdomain_error') }, status: :not_found }
     end
   end
 
@@ -165,10 +173,9 @@ class SpacesController < ApplicationController
     @member = Member.where(customer_id: @request_space.customer_id, user_id: current_user.id).first
     return if @member.present?
 
-    if request.format.json?
-      render json: { error: t('errors.messages.space.subdomain_error') }, status: :not_found
-    else
-      head :not_found
+    respond_to do |format|
+      format.html { head :not_found }
+      format.json { render json: { error: t('errors.messages.space.subdomain_error') }, status: :not_found }
     end
   end
 
@@ -176,10 +183,9 @@ class SpacesController < ApplicationController
   def redirect_response_not_update_power
     return if @member.space_update_power?
 
-    if request.format.json?
-      render json: { error: t('alert.space.not_update_power') }, status: :forbidden
-    else
-      redirect_to root_path, alert: t('alert.space.not_update_power')
+    respond_to do |format|
+      format.html { redirect_to root_path, alert: t('alert.space.not_update_power') }
+      format.json { render json: { error: t('alert.space.not_update_power') }, status: :forbidden }
     end
   end
 

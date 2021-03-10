@@ -12,5 +12,5 @@
   <%= form.submit 'アップロード', class: "btn btn-primary #{@request_space.image? ? 'mb-3' : 'mb-4'}" %>
 <% end %>
 <% if @request_space.image? %>
-  <%= button_to '画像削除', delete_space_image_path, data: { confirm: '本当に削除しますか？' }, method: :delete, class: 'btn btn-warning mb-4' %>
+  <%= button_to '画像削除', destroy_space_image_path, data: { confirm: '本当に削除しますか？' }, method: :delete, class: 'btn btn-warning mb-4' %>
 <% end %>

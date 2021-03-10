@@ -61,3 +61,12 @@ shared_context 'アカウントロック解除トークン解除' do
     @send_user.save!
   end
 end
+
+shared_context '招待トークン作成' do
+  let!(:invitation_token) { Faker::Internet.password(min_length: 20, max_length: 20) }
+  let!(:invitation_completed_at) { completed ? Time.current : nil }
+  before do
+    @send_user = FactoryBot.create(:user, invitation_token: invitation_token,
+                                          invitation_requested_at: Time.current, invitation_completed_at: invitation_completed_at)
+  end
+end
