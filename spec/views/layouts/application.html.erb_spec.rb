@@ -48,13 +48,13 @@ RSpec.describe 'layouts/application', type: :view do
   shared_examples_for '削除予約表示' do
     it 'アカウント削除取り消しのパスが含まれる' do
       render
-      expect(rendered).to include("\"#{users_undo_delete_path}\"")
+      expect(rendered).to include("\"#{delete_undo_user_registration_path}\"")
     end
   end
   shared_examples_for '削除予約非表示' do
     it 'アカウント削除取り消しのパスが含まれない' do
       render
-      expect(rendered).not_to include("\"#{users_undo_delete_path}\"")
+      expect(rendered).not_to include("\"#{delete_undo_user_registration_path}\"")
     end
   end
 

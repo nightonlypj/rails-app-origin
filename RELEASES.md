@@ -2,6 +2,8 @@
 
 ## 1.1.0
 
+- deviseのページ：POST後のURLをGETした時にRouting Errorや違うページに行かないようにしたい
+  - https://dev.azure.com/nightonly/rails-app-origin/_workitems/edit/345/
 - jQueryを導入したい
   - https://dev.azure.com/nightonly/rails-app-origin/_workitems/edit/341/
 - 最低限のドキュメントを作成するようにしたい

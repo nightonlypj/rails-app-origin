@@ -46,6 +46,16 @@ class ApplicationController < ActionController::Base
     end
   end
 
+  # 削除予約済みの場合、リダイレクトしてメッセージを表示
+  def redirect_response_destroy_reserved
+    redirect_to root_path, alert: t('alert.user.destroy_reserved') if current_user.destroy_reserved?
+  end
+
+  # 削除予約済みでない場合、リダイレクトしてメッセージを表示
+  def redirect_response_not_destroy_reserved
+    redirect_to root_path, alert: t('alert.user.not_destroy_reserved') unless current_user.destroy_reserved?
+  end
+
   # ユニークコードを作成して返却
   # @return ハッシュ値（ユニークな値とならなかった場合は最後に作成した値を返却）
   def create_unique_code(model, key, logger_message)

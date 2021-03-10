@@ -6,7 +6,7 @@ class Users::ConfirmationsController < Devise::ConfirmationsController
   #   super
   # end
 
-  # POST /users/confirmation メールアドレス確認[メール再送](処理)
+  # POST /users/confirmation/new メールアドレス確認[メール再送](処理)
   # def create
   #   super
   # end

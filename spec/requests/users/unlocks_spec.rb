@@ -6,7 +6,7 @@ RSpec.describe 'Users::Unlocks', type: :request do
   #   なし
   # テストパターン
   #   未ログイン, ログイン中, ログイン中（削除予約済み） → データ＆状態作成
-  describe 'GET /new' do
+  describe 'GET #new' do
     # テスト内容
     shared_examples_for 'ToOK' do
       it '成功ステータス' do
@@ -37,27 +37,27 @@ RSpec.describe 'Users::Unlocks', type: :request do
     end
   end
 
-  # POST /users/unlock アカウントロック解除[メール再送](処理)
+  # POST /users/unlock/new アカウントロック解除[メール再送](処理)
   # 前提条件
   #   なし
   # テストパターン
   #   未ログイン, ログイン中, ログイン中（削除予約済み） → データ＆状態作成
   #   有効なパラメータ, 無効なパラメータ → 事前にデータ作成
-  describe 'POST /create' do
+  describe 'POST #create' do
     include_context 'アカウントロック解除トークン作成'
     let!(:valid_attributes) { FactoryBot.attributes_for(:user, email: @send_user.email) }
     let!(:invalid_attributes) { FactoryBot.attributes_for(:user, email: nil) }
 
     # テスト内容
-    shared_examples_for 'ToOK' do
-      it '成功ステータス' do
-        post user_unlock_path, params: { user: attributes }
+    shared_examples_for 'ToError' do
+      it '成功ステータス' do # Tips: 再入力
+        post create_user_unlock_path, params: { user: attributes }
         expect(response).to be_successful
       end
     end
     shared_examples_for 'ToTop' do |alert, notice|
       it 'トップページにリダイレクト' do
-        post user_unlock_path, params: { user: attributes }
+        post create_user_unlock_path, params: { user: attributes }
         expect(response).to redirect_to(root_path)
         expect(flash[:alert]).to alert.present? ? eq(I18n.t(alert)) : be_nil
         expect(flash[:notice]).to notice.present? ? eq(I18n.t(notice)) : be_nil
@@ -65,7 +65,7 @@ RSpec.describe 'Users::Unlocks', type: :request do
     end
     shared_examples_for 'ToLogin' do |alert, notice|
       it 'ログインにリダイレクト' do
-        post user_unlock_path, params: { user: attributes }
+        post create_user_unlock_path, params: { user: attributes }
         expect(response).to redirect_to(new_user_session_path)
         expect(flash[:alert]).to alert.present? ? eq(I18n.t(alert)) : be_nil
         expect(flash[:notice]).to notice.present? ? eq(I18n.t(notice)) : be_nil
@@ -83,7 +83,7 @@ RSpec.describe 'Users::Unlocks', type: :request do
     end
     shared_examples_for '[未ログイン]無効なパラメータ' do
       let!(:attributes) { invalid_attributes }
-      it_behaves_like 'ToOK' # Tips: 再入力
+      it_behaves_like 'ToError'
     end
     shared_examples_for '[ログイン中/削除予約済み]無効なパラメータ' do
       let!(:attributes) { invalid_attributes }
@@ -113,7 +113,7 @@ RSpec.describe 'Users::Unlocks', type: :request do
   #   未ログイン, ログイン中, ログイン中（削除予約済み） → データ＆状態作成
   #   トークン: 存在する, 存在しない, ない → データ作成
   #   ロック日時: ない（未ロック）, ある（ロック中） → データ作成
-  describe 'GET /show' do
+  describe 'GET #show' do
     # テスト内容
     shared_examples_for 'OK' do
       it 'アカウントロック日時がなしに変更される' do
@@ -128,8 +128,8 @@ RSpec.describe 'Users::Unlocks', type: :request do
       end
     end
 
-    shared_examples_for 'ToOK' do
-      it '成功ステータス' do
+    shared_examples_for 'ToError' do
+      it '成功ステータス' do # Tips: 再入力
         get user_unlock_path(unlock_token: unlock_token)
         expect(response).to be_successful
       end
@@ -164,7 +164,7 @@ RSpec.describe 'Users::Unlocks', type: :request do
     end
     shared_examples_for '[未ログイン][存在しない/ない]ロック日時がない（未ロック）' do
       # it_behaves_like 'NG' # Tips: トークンが存在しない為、ロック日時がない
-      it_behaves_like 'ToOK' # Tips: 再入力
+      it_behaves_like 'ToError'
     end
     shared_examples_for '[ログイン中/削除予約済み][存在しない/ない]ロック日時がない（未ロック）' do
       # it_behaves_like 'NG' # Tips: トークンが存在しない為、ロック日時がない

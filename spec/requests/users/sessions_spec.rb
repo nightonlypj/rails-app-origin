@@ -6,7 +6,7 @@ RSpec.describe 'Users::Sessions', type: :request do
   #   なし
   # テストパターン
   #   未ログイン, ログイン中, ログイン中（削除予約済み） → データ＆状態作成
-  describe 'GET /new' do
+  describe 'GET #new' do
     # テスト内容
     shared_examples_for 'ToOK' do
       it '成功ステータス' do
@@ -43,21 +43,21 @@ RSpec.describe 'Users::Sessions', type: :request do
   # テストパターン
   #   未ログイン, ログイン中, ログイン中（削除予約済み） → データ＆状態作成
   #   有効なパラメータ, 無効なパラメータ → 事前にデータ作成
-  describe 'POST /create' do
+  describe 'POST #create' do
     let!(:login_user) { FactoryBot.create(:user) }
     let!(:valid_attributes) { FactoryBot.attributes_for(:user, email: login_user.email, password: login_user.password) }
     let!(:invalid_attributes) { FactoryBot.attributes_for(:user, email: login_user.email, password: nil) }
 
     # テスト内容
-    shared_examples_for 'ToOK' do
-      it '成功ステータス' do
-        post user_session_path, params: { user: attributes }
+    shared_examples_for 'ToError' do
+      it '成功ステータス' do # Tips: 再入力
+        post create_user_session_path, params: { user: attributes }
         expect(response).to be_successful
       end
     end
     shared_examples_for 'ToTop' do |alert, notice|
       it 'トップページにリダイレクト' do
-        post user_session_path, params: { user: attributes }
+        post create_user_session_path, params: { user: attributes }
         expect(response).to redirect_to(root_path)
         expect(flash[:alert]).to alert.present? ? eq(I18n.t(alert)) : be_nil
         expect(flash[:notice]).to notice.present? ? eq(I18n.t(notice)) : be_nil
@@ -75,7 +75,7 @@ RSpec.describe 'Users::Sessions', type: :request do
     end
     shared_examples_for '[未ログイン]無効なパラメータ' do
       let!(:attributes) { invalid_attributes }
-      it_behaves_like 'ToOK' # Tips: 再入力
+      it_behaves_like 'ToError'
     end
     shared_examples_for '[ログイン中/削除予約済み]無効なパラメータ' do
       let!(:attributes) { invalid_attributes }
@@ -98,12 +98,12 @@ RSpec.describe 'Users::Sessions', type: :request do
     end
   end
 
-  # DELETE /users/sign_out ログアウト(処理)
+  # DELETE(GET) /users/sign_out ログアウト(処理)
   # 前提条件
   #   なし
   # テストパターン
   #   未ログイン, ログイン中, ログイン中（削除予約済み） → データ＆状態作成
-  describe 'DELETE /destroy' do
+  describe 'DELETE #destroy' do
     # テスト内容
     shared_examples_for 'ToLogin' do |alert, notice|
       it 'ログインにリダイレクト' do

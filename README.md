@@ -304,12 +304,12 @@ http {
 ---- ここまで ----
 ```
 ```
-$ vi /opt/homebrew/etc/nginx/servers/localhost.local.conf
+$ vi /opt/homebrew/etc/nginx/servers/localhost.conf
 ---- ここから ----
 ### START ###
 server {
     listen       80;
-    server_name  localhost.local;
+    server_name  localhost;
 
     location ~ /\.(ht|git|svn|cvs) {
         deny all;
@@ -337,15 +337,6 @@ nginx: configuration file /opt/homebrew/etc/nginx/nginx.conf test is successful
 
 $ brew services start nginx
 ```
-
-PCのhostsに下記を追加
-```
-$ sudo vi /etc/hosts
----- ここから ----
-127.0.0.1       localhost.local
----- ここまで ----
-```
-
 ```
 $ cp -a config/settings/development.yml,dev config/settings/development.yml
 overwrite config/settings/development.yml? (y/n [n]) y
@@ -353,7 +344,7 @@ overwrite config/settings/development.yml? (y/n [n]) y
 $ rails s
 ```
 
-- http://localhost.local
+- http://localhost
   - メールアドレスとパスワードは、`db/seed/development/users.yml`参照
-- http://localhost.local/admin
+- http://localhost/admin
   - メールアドレスとパスワードは、`db/seed/admin_users.yml`参照

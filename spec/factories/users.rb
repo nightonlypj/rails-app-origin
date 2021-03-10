@@ -2,7 +2,7 @@ FactoryBot.define do
   factory :user do
     pass = Faker::Internet.password(min_length: 8)
     code                  { Digest::MD5.hexdigest(SecureRandom.uuid) }
-    sequence(:name)       { |n| "user#{n}test" }
+    sequence(:name)       { |n| "user(#{n})" }
     email                 { Faker::Internet.email }
     password              { pass }
     password_confirmation { pass }

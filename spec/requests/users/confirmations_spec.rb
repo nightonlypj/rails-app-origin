@@ -6,7 +6,7 @@ RSpec.describe 'Users::Confirmations', type: :request do
   #   なし
   # テストパターン
   #   未ログイン, ログイン中, ログイン中（削除予約済み） → データ＆状態作成
-  describe 'GET /new' do
+  describe 'GET #new' do
     # テスト内容
     shared_examples_for 'ToOK' do
       it '成功ステータス' do
@@ -29,27 +29,27 @@ RSpec.describe 'Users::Confirmations', type: :request do
     end
   end
 
-  # POST /users/confirmation メールアドレス確認[メール再送](処理)
+  # POST /users/confirmation/new メールアドレス確認[メール再送](処理)
   # 前提条件
   #   なし
   # テストパターン
   #   未ログイン, ログイン中, ログイン中（削除予約済み） → データ＆状態作成
   #   有効なパラメータ, 無効なパラメータ → 事前にデータ作成
-  describe 'POST /create' do
+  describe 'POST #create' do
     let!(:send_user) { FactoryBot.create(:user, confirmed_at: nil) }
     let!(:valid_attributes) { FactoryBot.attributes_for(:user, email: send_user.email) }
     let!(:invalid_attributes) { FactoryBot.attributes_for(:user, email: nil) }
 
     # テスト内容
-    shared_examples_for 'ToOK' do
-      it '成功ステータス' do
-        post user_confirmation_path, params: { user: attributes }
+    shared_examples_for 'ToError' do
+      it '成功ステータス' do # Tips: 再入力
+        post create_user_confirmation_path, params: { user: attributes }
         expect(response).to be_successful
       end
     end
     shared_examples_for 'ToLogin' do |alert, notice|
       it 'ログインにリダイレクト' do
-        post user_confirmation_path, params: { user: attributes }
+        post create_user_confirmation_path, params: { user: attributes }
         expect(response).to redirect_to(new_user_session_path)
         expect(flash[:alert]).to alert.present? ? eq(I18n.t(alert)) : be_nil
         expect(flash[:notice]).to notice.present? ? eq(I18n.t(notice)) : be_nil
@@ -63,7 +63,7 @@ RSpec.describe 'Users::Confirmations', type: :request do
     end
     shared_examples_for '[*]無効なパラメータ' do
       let!(:attributes) { invalid_attributes }
-      it_behaves_like 'ToOK' # Tips: 再入力
+      it_behaves_like 'ToError'
     end
 
     context '未ログイン' do
@@ -89,7 +89,7 @@ RSpec.describe 'Users::Confirmations', type: :request do
   #   未ログイン, ログイン中, ログイン中（削除予約済み） → データ＆状態作成
   #   トークン: 期限内, 期限切れ, 存在しない, ない → データ作成
   #   確認日時: ない（未確認）, 確認送信日時より前（未確認）, 確認送信日時より後（確認済み） → データ作成
-  describe 'GET /show' do
+  describe 'GET #show' do
     # テスト内容
     shared_examples_for 'OK' do
       let!(:start_time) { Time.now.utc - 1.second }

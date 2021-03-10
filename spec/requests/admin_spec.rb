@@ -6,7 +6,7 @@ RSpec.describe 'Admin', type: :request do
   #   なし
   # テストパターン
   #   未ログイン, ログイン中, ログイン中（削除予約済み）, ログイン中（管理者） → データ＆状態作成
-  describe 'GET /' do
+  describe 'GET rails_admin' do
     # テスト内容
     shared_examples_for 'ToOK' do
       it '成功ステータス' do

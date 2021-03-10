@@ -37,7 +37,7 @@
     </header>
 <% if destroy_reserved_message? %>
     <aside>
-      <p class="note note-warning m-1">このアカウントは<%= l(current_user.destroy_schedule_at.to_date) %>以降に削除されます。<%= link_to '取り消しはこちら', users_undo_delete_path %></p>
+      <p class="note note-warning m-1">このアカウントは<%= l(current_user.destroy_schedule_at.to_date) %>以降に削除されます。<%= link_to '取り消しはこちら', delete_undo_user_registration_path %></p>
     </aside>
 <% end %>
 <% if alert.present? %>
