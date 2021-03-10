@@ -10,9 +10,20 @@ class Users::ConfirmationsController < Devise::ConfirmationsController
   # end
 
   # POST /users/confirmation メールアドレス確認[メール再送](処理)
-  # def create
-  #   super
-  # end
+  def create
+    if params.present? && params[:user].present?
+      user = User.find_by(email: params[:user][:email])
+      if user.present? && user.invitation_requested_at.present? && user.invitation_completed_at.blank?
+        member = Member.where(customer_id: user.invitation_customer_id, user_id: user.id).first
+        customer = member.present? ? Customer.find_by(id: member.customer_id) : nil
+        invitation_user = member.present? ? User.find_by(id: member.invitation_user_id) : nil
+        UserMailer.with(user: user, member: member, customer: customer, invitation_user: invitation_user).member_create.deliver_now
+        return redirect_to new_user_session_path, notice: t('notice.user.invitation_token.send_instructions')
+      end
+    end
+
+    super
+  end
 
   # GET /users/confirmation メールアドレス確認(処理)
   def show

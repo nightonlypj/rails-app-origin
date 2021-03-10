@@ -11,9 +11,16 @@ class Users::SessionsController < Devise::SessionsController
   # end
 
   # POST /users/sign_in ログイン(処理)
-  # def create
-  #   super
-  # end
+  def create
+    if params.present? && params[:user].present?
+      user = User.find_by(email: params[:user][:email])
+      if user.present? && user.invitation_requested_at.present? && user.invitation_completed_at.blank?
+        return redirect_to new_user_confirmation_path, alert: t('alert.user.invitation_completed_at.blank')
+      end
+    end
+
+    super
+  end
 
   # DELETE /users/sign_out ログアウト(処理)
   # def destroy

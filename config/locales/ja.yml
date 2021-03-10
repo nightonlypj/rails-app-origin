@@ -36,6 +36,7 @@ ja:
         customer: '顧客'
         user: 'ユーザー'
         power: '権限'
+        invitation_user_id: '招待者'
         invitationed_at: '招待日時'
         created_at: '作成日時'
         updated_at: '更新日時'
@@ -112,6 +113,8 @@ ja:
     user:
       image_update: '画像を変更しました。'
       image_destroy: '画像を削除しました。'
+      invitation_token:
+        send_instructions: 'メンバー登録のメールを送信しました。メールを確認してください。'
     customer:
       update: '顧客情報を変更しました。'
     member:
@@ -134,6 +137,8 @@ ja:
         already_sign_in: 'ログイン中の為、アクセスできません。ログアウトしてからお試しください。'
         blank: 'URLが正しくありません。やり直してください。'
         invalid: 'URLが正しくないか、既にメンバー登録が完了しています。ログインしてください。'
+      invitation_completed_at:
+        blank: 'メンバー登録が完了していません。メールが届いていない場合は[メールアドレス確認]をしてください。'
     customer:
       not_update_power: '変更権限がありません。所属の所有者に依頼してください。'
     member:

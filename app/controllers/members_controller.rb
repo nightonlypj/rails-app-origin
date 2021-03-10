@@ -79,7 +79,7 @@ class MembersController < ApplicationController
       @member.save!
       Infomation.new(started_at: invitationed_at, target: :User, user_id: @member.user_id,
                      action: 'MemberCreate', action_user_id: current_user.id, customer_id: @customer.id).save!
-      UserMailer.with(user: @user, member: @member, customer: @customer, current_user: current_user).member_create.deliver_now if exist_user.blank?
+      UserMailer.with(user: @user, member: @member, customer: @customer, invitation_user: current_user).member_create.deliver_now if exist_user.blank?
     end
     respond_to do |format|
       format.html { redirect_to members_path(customer_code: @customer.code), notice: t('notice.member.create') }

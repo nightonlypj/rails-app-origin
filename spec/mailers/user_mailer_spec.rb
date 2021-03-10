@@ -44,17 +44,59 @@ RSpec.describe UserMailer, type: :mailer do
   end
 
   # メンバー登録のお願い
+  # 前提条件
+  #   なし
+  # テストパターン
+  #   メンバー: いる, いない（解除済み） → データ作成
+  #   招待者: いる, いない（削除済み） → データ作成
+  #   顧客: ある, ない（削除済み） → データ作成
   describe 'member_create' do
-    let(:user) { FactoryBot.build_stubbed(:user, name: '-', invitation_token: Digest::MD5.hexdigest(SecureRandom.uuid), invitation_requested_at: Time.current) }
-    let(:member) { FactoryBot.build_stubbed(:member, power: :Member, invitationed_at: Time.current) }
-    let(:customer) { FactoryBot.build_stubbed(:customer) }
-    let(:current_user) { FactoryBot.build_stubbed(:user) }
-    let(:mail) { UserMailer.with(user: user, member: member, customer: customer, current_user: current_user).member_create }
-    it '送信者のメールアドレスが設定と一致' do
-      expect(mail.from).to eq([Settings['mailer_from']['email']])
+    let(:user) do
+      FactoryBot.build_stubbed(:user, name: '-' * Settings['user_name_minimum'], invitation_token: Digest::MD5.hexdigest(SecureRandom.uuid),
+                                      invitation_requested_at: Time.current)
     end
-    it '宛先がユーザーのメールアドレスと一致' do
-      expect(mail.to).to eq([user.email])
+
+    # テスト内容
+    shared_examples_for '[*][*][*]メール送信' do
+      let(:mail) { UserMailer.with(user: user, member: member, customer: customer, invitation_user: invitation_user).member_create }
+      it '送信者のメールアドレスが設定と一致' do
+        expect(mail.from).to eq([Settings['mailer_from']['email']])
+      end
+      it '宛先がユーザーのメールアドレスと一致' do
+        expect(mail.to).to eq([user.email])
+      end
+    end
+
+    # テストケース
+    shared_examples_for '[*][*]顧客がある' do
+      let(:customer) { FactoryBot.build_stubbed(:customer) }
+      it_behaves_like '[*][*][*]メール送信'
+    end
+    shared_examples_for '[*][*]顧客がない' do
+      let(:customer) { nil }
+      it_behaves_like '[*][*][*]メール送信'
+    end
+
+    shared_examples_for '[*]招待者がいる' do
+      let(:invitation_user) { FactoryBot.build_stubbed(:user) }
+      it_behaves_like '[*][*]顧客がある'
+      it_behaves_like '[*][*]顧客がない'
+    end
+    shared_examples_for '[*]招待者がいない' do
+      let(:invitation_user) { nil }
+      it_behaves_like '[*][*]顧客がある'
+      it_behaves_like '[*][*]顧客がない'
+    end
+
+    context 'メンバーにいる' do
+      let(:member) { FactoryBot.build_stubbed(:member, power: :Member, invitationed_at: Time.current) }
+      it_behaves_like '[*]招待者がいる'
+      it_behaves_like '[*]招待者がいない'
+    end
+    context 'メンバーにいない' do
+      let(:member) { nil }
+      it_behaves_like '[*]招待者がいる'
+      it_behaves_like '[*]招待者がいない'
     end
   end
 end

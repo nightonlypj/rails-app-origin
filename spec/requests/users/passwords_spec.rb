@@ -84,12 +84,24 @@ RSpec.describe 'Users::Passwords', type: :request do
   #   なし
   # テストパターン
   #   未ログイン, ログイン中, ログイン中（削除予約済み） → データ＆状態作成
+  #   招待依頼日時: ない, ある → データ作成
+  #   招待完了日時: ない, ある → データ作成
   #   有効なパラメータ, 無効なパラメータ → 事前にデータ作成
   #   ベースドメイン, 存在するサブドメイン, 存在しないサブドメイン → 事前にデータ作成
   describe 'POST /create' do
     let!(:send_user) { FactoryBot.create(:user) }
     let!(:valid_attributes) { FactoryBot.attributes_for(:user, email: send_user.email) }
     let!(:invalid_attributes) { FactoryBot.attributes_for(:user, email: nil) }
+
+    shared_context '招待依頼・完了日時変更' do |completed_at|
+      before do
+        if requested_at.present? || completed_at.present?
+          send_user.invitation_requested_at = requested_at
+          send_user.invitation_completed_at = completed_at
+          send_user.save!
+        end
+      end
+    end
 
     # テスト内容
     shared_examples_for 'ToOK' do
@@ -120,79 +132,155 @@ RSpec.describe 'Users::Passwords', type: :request do
         expect(flash[:notice]).to notice.present? ? eq(I18n.t(notice)) : be_nil
       end
     end
+    shared_examples_for 'ToConfirmation' do |alert, notice|
+      it 'メールアドレス確認にリダイレクト' do
+        post user_password_path, params: { user: attributes }, headers: headers
+        expect(response).to redirect_to(new_user_confirmation_path)
+        expect(flash[:alert]).to alert.present? ? eq(I18n.t(alert)) : be_nil
+        expect(flash[:notice]).to notice.present? ? eq(I18n.t(notice)) : be_nil
+      end
+    end
 
     # テストケース
-    shared_examples_for '[未ログイン][有効]ベースドメイン' do
+    shared_examples_for '[未ログイン][ない][*][有効]ベースドメイン' do
       let!(:headers) { BASE_HEADER }
       it_behaves_like 'ToLogin', nil, 'devise.passwords.send_instructions'
     end
-    shared_examples_for '[ログイン中/削除予約済み][有効]ベースドメイン' do
+    shared_examples_for '[未ログイン][ある][ない][有効]ベースドメイン' do
+      let!(:headers) { BASE_HEADER }
+      it_behaves_like 'ToConfirmation', 'alert.user.invitation_completed_at.blank', nil
+    end
+    shared_examples_for '[未ログイン][ある][ある][有効]ベースドメイン' do
+      let!(:headers) { BASE_HEADER }
+      it_behaves_like 'ToLogin', nil, 'devise.passwords.send_instructions'
+    end
+    shared_examples_for '[ログイン中/削除予約済み][*][*][*]ベースドメイン' do
       let!(:headers) { BASE_HEADER }
       it_behaves_like 'ToTop', 'devise.failure.already_authenticated', nil
     end
-    shared_examples_for '[未ログイン][無効]ベースドメイン' do
+    shared_examples_for '[未ログイン][*][*][無効]ベースドメイン' do
       let!(:headers) { BASE_HEADER }
       it_behaves_like 'ToOK' # Tips: 再入力
     end
-    shared_examples_for '[ログイン中/削除予約済み][無効]ベースドメイン' do
-      let!(:headers) { BASE_HEADER }
-      it_behaves_like 'ToTop', 'devise.failure.already_authenticated', nil
-    end
-    shared_examples_for '[未ログイン][*]存在するサブドメイン' do
+    shared_examples_for '[未ログイン][*][*][*]存在するサブドメイン' do
       let!(:headers) { @space_header }
       it_behaves_like 'ToNot'
     end
-    shared_examples_for '[ログイン中/削除予約済み][*]存在するサブドメイン' do
+    shared_examples_for '[ログイン中/削除予約済み][*][*][*]存在するサブドメイン' do
       let!(:headers) { @space_header }
       it_behaves_like 'ToTop', 'devise.failure.already_authenticated', nil
     end
-    shared_examples_for '[未ログイン][*]存在しないサブドメイン' do
+    shared_examples_for '[未ログイン][*][*][*]存在しないサブドメイン' do
       let!(:headers) { NOT_SPACE_HEADER }
       it_behaves_like 'ToNot'
     end
-    shared_examples_for '[ログイン中/削除予約済み][*]存在しないサブドメイン' do
+    shared_examples_for '[ログイン中/削除予約済み][*][*][*]存在しないサブドメイン' do
       let!(:headers) { NOT_SPACE_HEADER }
       it_behaves_like 'ToTop', 'devise.failure.already_authenticated', nil
     end
 
-    shared_examples_for '[未ログイン]有効なパラメータ' do
+    shared_examples_for '[未ログイン][ない][*]有効なパラメータ' do
       let!(:attributes) { valid_attributes }
-      it_behaves_like '[未ログイン][有効]ベースドメイン'
-      it_behaves_like '[未ログイン][*]存在するサブドメイン'
-      it_behaves_like '[未ログイン][*]存在しないサブドメイン'
+      it_behaves_like '[未ログイン][ない][*][有効]ベースドメイン'
+      it_behaves_like '[未ログイン][*][*][*]存在するサブドメイン'
+      it_behaves_like '[未ログイン][*][*][*]存在しないサブドメイン'
     end
-    shared_examples_for '[ログイン中/削除予約済み]有効なパラメータ' do
+    shared_examples_for '[未ログイン][ある][ない]有効なパラメータ' do
       let!(:attributes) { valid_attributes }
-      it_behaves_like '[ログイン中/削除予約済み][有効]ベースドメイン'
-      it_behaves_like '[ログイン中/削除予約済み][*]存在するサブドメイン'
-      it_behaves_like '[ログイン中/削除予約済み][*]存在しないサブドメイン'
+      it_behaves_like '[未ログイン][ある][ない][有効]ベースドメイン'
+      it_behaves_like '[未ログイン][*][*][*]存在するサブドメイン'
+      it_behaves_like '[未ログイン][*][*][*]存在しないサブドメイン'
     end
-    shared_examples_for '[未ログイン]無効なパラメータ' do
-      let!(:attributes) { invalid_attributes }
-      it_behaves_like '[未ログイン][無効]ベースドメイン'
-      it_behaves_like '[未ログイン][*]存在するサブドメイン'
-      it_behaves_like '[未ログイン][*]存在しないサブドメイン'
+    shared_examples_for '[未ログイン][ある][ある]有効なパラメータ' do
+      let!(:attributes) { valid_attributes }
+      it_behaves_like '[未ログイン][ある][ある][有効]ベースドメイン'
+      it_behaves_like '[未ログイン][*][*][*]存在するサブドメイン'
+      it_behaves_like '[未ログイン][*][*][*]存在しないサブドメイン'
     end
-    shared_examples_for '[ログイン中/削除予約済み]無効なパラメータ' do
+    shared_examples_for '[ログイン中/削除予約済み][*][*]有効なパラメータ' do
+      let!(:attributes) { valid_attributes }
+      it_behaves_like '[ログイン中/削除予約済み][*][*][*]ベースドメイン'
+      it_behaves_like '[ログイン中/削除予約済み][*][*][*]存在するサブドメイン'
+      it_behaves_like '[ログイン中/削除予約済み][*][*][*]存在しないサブドメイン'
+    end
+    shared_examples_for '[未ログイン][*][*]無効なパラメータ' do
       let!(:attributes) { invalid_attributes }
-      it_behaves_like '[ログイン中/削除予約済み][無効]ベースドメイン'
-      it_behaves_like '[ログイン中/削除予約済み][*]存在するサブドメイン'
-      it_behaves_like '[ログイン中/削除予約済み][*]存在しないサブドメイン'
+      it_behaves_like '[未ログイン][*][*][無効]ベースドメイン'
+      it_behaves_like '[未ログイン][*][*][*]存在するサブドメイン'
+      it_behaves_like '[未ログイン][*][*][*]存在しないサブドメイン'
+    end
+    shared_examples_for '[ログイン中/削除予約済み][*][*]無効なパラメータ' do
+      let!(:attributes) { invalid_attributes }
+      it_behaves_like '[ログイン中/削除予約済み][*][*][*]ベースドメイン'
+      it_behaves_like '[ログイン中/削除予約済み][*][*][*]存在するサブドメイン'
+      it_behaves_like '[ログイン中/削除予約済み][*][*][*]存在しないサブドメイン'
+    end
+
+    shared_examples_for '[未ログイン][ない]招待完了日時がない' do
+      include_context '招待依頼・完了日時変更', nil
+      it_behaves_like '[未ログイン][ない][*]有効なパラメータ'
+      it_behaves_like '[未ログイン][*][*]無効なパラメータ'
+    end
+    shared_examples_for '[未ログイン][ある]招待完了日時がない' do
+      include_context '招待依頼・完了日時変更', nil
+      it_behaves_like '[未ログイン][ある][ない]有効なパラメータ'
+      it_behaves_like '[未ログイン][*][*]無効なパラメータ'
+    end
+    shared_examples_for '[ログイン中/削除予約済み][*]招待完了日時がない' do
+      include_context '招待依頼・完了日時変更', nil
+      it_behaves_like '[ログイン中/削除予約済み][*][*]有効なパラメータ'
+      it_behaves_like '[ログイン中/削除予約済み][*][*]無効なパラメータ'
+    end
+    shared_examples_for '[未ログイン][ない]招待完了日時がある' do
+      include_context '招待依頼・完了日時変更', Time.current
+      it_behaves_like '[未ログイン][ない][*]有効なパラメータ'
+      it_behaves_like '[未ログイン][*][*]無効なパラメータ'
+    end
+    shared_examples_for '[未ログイン][ある]招待完了日時がある' do
+      include_context '招待依頼・完了日時変更', Time.current
+      it_behaves_like '[未ログイン][ある][ある]有効なパラメータ'
+      it_behaves_like '[未ログイン][*][*]無効なパラメータ'
+    end
+    shared_examples_for '[ログイン中/削除予約済み][*]招待完了日時がある' do
+      include_context '招待依頼・完了日時変更', Time.current
+      it_behaves_like '[ログイン中/削除予約済み][*][*]有効なパラメータ'
+      it_behaves_like '[ログイン中/削除予約済み][*][*]無効なパラメータ'
+    end
+
+    shared_examples_for '[未ログイン]招待依頼日時がない' do
+      let!(:requested_at) { nil }
+      it_behaves_like '[未ログイン][ない]招待完了日時がない'
+      it_behaves_like '[未ログイン][ない]招待完了日時がある'
+    end
+    shared_examples_for '[ログイン中/削除予約済み]招待依頼日時がない' do
+      let!(:requested_at) { nil }
+      it_behaves_like '[ログイン中/削除予約済み][*]招待完了日時がない'
+      it_behaves_like '[ログイン中/削除予約済み][*]招待完了日時がある'
+    end
+    shared_examples_for '[未ログイン]招待依頼日時がある' do
+      let!(:requested_at) { Time.current - 1.second }
+      it_behaves_like '[未ログイン][ある]招待完了日時がない'
+      it_behaves_like '[未ログイン][ある]招待完了日時がある'
+    end
+    shared_examples_for '[ログイン中/削除予約済み]招待依頼日時がある' do
+      let!(:requested_at) { Time.current - 1.second }
+      it_behaves_like '[ログイン中/削除予約済み][*]招待完了日時がない'
+      it_behaves_like '[ログイン中/削除予約済み][*]招待完了日時がある'
     end
 
     context '未ログイン' do
-      it_behaves_like '[未ログイン]有効なパラメータ'
-      it_behaves_like '[未ログイン]無効なパラメータ'
+      it_behaves_like '[未ログイン]招待依頼日時がない'
+      it_behaves_like '[未ログイン]招待依頼日時がある'
     end
     context 'ログイン中' do
       include_context 'ログイン処理'
-      it_behaves_like '[ログイン中/削除予約済み]有効なパラメータ'
-      it_behaves_like '[ログイン中/削除予約済み]無効なパラメータ'
+      it_behaves_like '[ログイン中/削除予約済み]招待依頼日時がない'
+      it_behaves_like '[ログイン中/削除予約済み]招待依頼日時がある'
     end
     context 'ログイン中（削除予約済み）' do
       include_context 'ログイン処理', true
-      it_behaves_like '[ログイン中/削除予約済み]有効なパラメータ'
-      it_behaves_like '[ログイン中/削除予約済み]無効なパラメータ'
+      it_behaves_like '[ログイン中/削除予約済み]招待依頼日時がない'
+      it_behaves_like '[ログイン中/削除予約済み]招待依頼日時がある'
     end
   end
 

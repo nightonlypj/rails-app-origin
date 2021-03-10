@@ -68,12 +68,24 @@ RSpec.describe 'Users::Confirmations', type: :request do
   #   なし
   # テストパターン
   #   未ログイン, ログイン中, ログイン中（削除予約済み） → データ＆状態作成
+  #   招待依頼日時: ない, ある → データ作成
+  #   招待完了日時: ない, ある → データ作成
   #   有効なパラメータ, 無効なパラメータ → 事前にデータ作成
   #   ベースドメイン, 存在するサブドメイン, 存在しないサブドメイン → 事前にデータ作成
   describe 'POST /create' do
     let!(:send_user) { FactoryBot.create(:user, confirmed_at: nil) }
     let!(:valid_attributes) { FactoryBot.attributes_for(:user, email: send_user.email) }
     let!(:invalid_attributes) { FactoryBot.attributes_for(:user, email: nil) }
+
+    shared_context '招待依頼・完了日時変更' do |completed_at|
+      before do
+        if requested_at.present? || completed_at.present?
+          send_user.invitation_requested_at = requested_at
+          send_user.invitation_completed_at = completed_at
+          send_user.save!
+        end
+      end
+    end
 
     # テスト内容
     shared_examples_for 'ToOK' do
@@ -98,49 +110,101 @@ RSpec.describe 'Users::Confirmations', type: :request do
     end
 
     # テストケース
-    shared_examples_for '[*][有効]ベースドメイン' do
+    shared_examples_for '[*][ない][*][有効]ベースドメイン' do
       let!(:headers) { BASE_HEADER }
       it_behaves_like 'ToLogin', nil, 'devise.confirmations.send_instructions'
     end
-    shared_examples_for '[*][無効]ベースドメイン' do
+    shared_examples_for '[*][ある][ない][有効]ベースドメイン' do
+      let!(:headers) { BASE_HEADER }
+      it_behaves_like 'ToLogin', nil, 'notice.user.invitation_token.send_instructions'
+    end
+    shared_examples_for '[*][ある][ある][有効]ベースドメイン' do
+      let!(:headers) { BASE_HEADER }
+      it_behaves_like 'ToLogin', nil, 'devise.confirmations.send_instructions'
+    end
+    shared_examples_for '[*][*][*][無効]ベースドメイン' do
       let!(:headers) { BASE_HEADER }
       it_behaves_like 'ToOK' # Tips: 再入力
     end
-    shared_examples_for '[*][*]存在するサブドメイン' do
+    shared_examples_for '[*][*][*][*]存在するサブドメイン' do
       let!(:headers) { @space_header }
       it_behaves_like 'ToNot'
     end
-    shared_examples_for '[*][*]存在しないサブドメイン' do
+    shared_examples_for '[*][*][*][*]存在しないサブドメイン' do
       let!(:headers) { NOT_SPACE_HEADER }
       it_behaves_like 'ToNot'
     end
 
-    shared_examples_for '[*]有効なパラメータ' do # Tips: ログイン中も出来ても良さそう
+    shared_examples_for '[*][ない][*]有効なパラメータ' do # Tips: ログイン中も出来ても良さそう
       let!(:attributes) { valid_attributes }
-      it_behaves_like '[*][有効]ベースドメイン'
-      it_behaves_like '[*][*]存在するサブドメイン'
-      it_behaves_like '[*][*]存在しないサブドメイン'
+      it_behaves_like '[*][ない][*][有効]ベースドメイン'
+      it_behaves_like '[*][*][*][*]存在するサブドメイン'
+      it_behaves_like '[*][*][*][*]存在しないサブドメイン'
     end
-    shared_examples_for '[*]無効なパラメータ' do
+    shared_examples_for '[*][ある][ない]有効なパラメータ' do
+      let!(:attributes) { valid_attributes }
+      it_behaves_like '[*][ある][ない][有効]ベースドメイン'
+      it_behaves_like '[*][*][*][*]存在するサブドメイン'
+      it_behaves_like '[*][*][*][*]存在しないサブドメイン'
+    end
+    shared_examples_for '[*][ある][ある]有効なパラメータ' do
+      let!(:attributes) { valid_attributes }
+      it_behaves_like '[*][ある][ある][有効]ベースドメイン'
+      it_behaves_like '[*][*][*][*]存在するサブドメイン'
+      it_behaves_like '[*][*][*][*]存在しないサブドメイン'
+    end
+    shared_examples_for '[*][*][*]無効なパラメータ' do
       let!(:attributes) { invalid_attributes }
-      it_behaves_like '[*][無効]ベースドメイン'
-      it_behaves_like '[*][*]存在するサブドメイン'
-      it_behaves_like '[*][*]存在しないサブドメイン'
+      it_behaves_like '[*][*][*][無効]ベースドメイン'
+      it_behaves_like '[*][*][*][*]存在するサブドメイン'
+      it_behaves_like '[*][*][*][*]存在しないサブドメイン'
+    end
+
+    shared_examples_for '[*][ない]招待完了日時がない' do
+      include_context '招待依頼・完了日時変更', nil
+      it_behaves_like '[*][ない][*]有効なパラメータ'
+      it_behaves_like '[*][*][*]無効なパラメータ'
+    end
+    shared_examples_for '[*][ある]招待完了日時がない' do
+      include_context '招待依頼・完了日時変更', nil
+      it_behaves_like '[*][ある][ない]有効なパラメータ'
+      it_behaves_like '[*][*][*]無効なパラメータ'
+    end
+    shared_examples_for '[*][ない]招待完了日時がある' do
+      include_context '招待依頼・完了日時変更', Time.current
+      it_behaves_like '[*][ない][*]有効なパラメータ'
+      it_behaves_like '[*][*][*]無効なパラメータ'
+    end
+    shared_examples_for '[*][ある]招待完了日時がある' do
+      include_context '招待依頼・完了日時変更', Time.current
+      it_behaves_like '[*][ある][ある]有効なパラメータ'
+      it_behaves_like '[*][*][*]無効なパラメータ'
+    end
+
+    shared_examples_for '[*]招待依頼日時がない' do
+      let!(:requested_at) { nil }
+      it_behaves_like '[*][ない]招待完了日時がない'
+      it_behaves_like '[*][ない]招待完了日時がある'
+    end
+    shared_examples_for '[*]招待依頼日時がある' do
+      let!(:requested_at) { Time.current - 1.second }
+      it_behaves_like '[*][ある]招待完了日時がない'
+      it_behaves_like '[*][ある]招待完了日時がある'
     end
 
     context '未ログイン' do
-      it_behaves_like '[*]有効なパラメータ'
-      it_behaves_like '[*]無効なパラメータ'
+      it_behaves_like '[*]招待依頼日時がない'
+      it_behaves_like '[*]招待依頼日時がある'
     end
     context 'ログイン中' do
       include_context 'ログイン処理'
-      it_behaves_like '[*]有効なパラメータ'
-      it_behaves_like '[*]無効なパラメータ'
+      it_behaves_like '[*]招待依頼日時がない'
+      it_behaves_like '[*]招待依頼日時がある'
     end
     context 'ログイン中（削除予約済み）' do
       include_context 'ログイン処理', true
-      it_behaves_like '[*]有効なパラメータ'
-      it_behaves_like '[*]無効なパラメータ'
+      it_behaves_like '[*]招待依頼日時がない'
+      it_behaves_like '[*]招待依頼日時がある'
     end
   end
 
