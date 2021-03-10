@@ -6,7 +6,7 @@ RSpec.describe 'AdminUsers::Sessions', type: :request do
   #   なし
   # テストパターン
   #   未ログイン, ログイン中 → データ＆状態作成
-  describe 'GET /new' do
+  describe 'GET #new' do
     # テスト内容
     shared_examples_for 'ToOK' do
       it '成功ステータス' do
@@ -39,7 +39,7 @@ RSpec.describe 'AdminUsers::Sessions', type: :request do
   # テストパターン
   #   未ログイン, ログイン中 → データ＆状態作成
   #   有効なパラメータ, 無効なパラメータ → 事前にデータ作成
-  describe 'POST /create' do
+  describe 'POST #create' do
     let!(:login_admin_user) { FactoryBot.create(:admin_user) }
     let!(:valid_attributes) { FactoryBot.attributes_for(:admin_user, email: login_admin_user.email, password: login_admin_user.password) }
     let!(:invalid_attributes) { FactoryBot.attributes_for(:admin_user, email: login_admin_user.email, password: nil) }
@@ -94,7 +94,7 @@ RSpec.describe 'AdminUsers::Sessions', type: :request do
   #   なし
   # テストパターン
   #   未ログイン, ログイン中 → データ＆状態作成
-  describe 'DELETE /destroy' do
+  describe 'DELETE #destroy' do
     # テスト内容
     shared_examples_for 'ToLogin' do |alert, notice|
       it 'ログインにリダイレクト' do

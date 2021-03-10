@@ -6,7 +6,7 @@ RSpec.describe 'Users::Registrations', type: :request do
   #   なし
   # テストパターン
   #   未ログイン, ログイン中, ログイン中（削除予約済み） → データ＆状態作成
-  describe 'GET /new' do
+  describe 'GET #new' do
     # テスト内容
     shared_examples_for 'ToOK' do
       it '成功ステータス' do
@@ -43,7 +43,7 @@ RSpec.describe 'Users::Registrations', type: :request do
   # テストパターン
   #   未ログイン, ログイン中, ログイン中（削除予約済み） → データ＆状態作成
   #   有効なパラメータ, 無効なパラメータ → 事前にデータ作成
-  describe 'POST /create' do
+  describe 'POST #create' do
     let!(:valid_attributes) { FactoryBot.attributes_for(:user) }
     let!(:invalid_attributes) { FactoryBot.attributes_for(:user, email: nil) }
 
@@ -129,7 +129,7 @@ RSpec.describe 'Users::Registrations', type: :request do
   #   なし
   # テストパターン
   #   未ログイン, ログイン中, ログイン中（削除予約済み） → データ＆状態作成
-  describe 'GET /edit' do
+  describe 'GET #edit' do
     # テスト内容
     shared_examples_for 'ToOK' do
       it '成功ステータス' do
@@ -174,7 +174,7 @@ RSpec.describe 'Users::Registrations', type: :request do
   # テストパターン
   #   未ログイン, ログイン中, ログイン中（削除予約済み） → データ＆状態作成
   #   有効なパラメータ, 無効なパラメータ → 事前にデータ作成
-  describe 'PUT /update' do
+  describe 'PUT #update' do
     let!(:valid_attributes) { FactoryBot.attributes_for(:user) }
     let!(:invalid_attributes) { FactoryBot.attributes_for(:user, email: nil) }
 
@@ -276,7 +276,7 @@ RSpec.describe 'Users::Registrations', type: :request do
   # テストパターン
   #   未ログイン, ログイン中, ログイン中（削除予約済み） → データ＆状態作成
   #   有効なパラメータ, 無効なパラメータ → 事前にデータ作成
-  describe 'PUT /image_update' do
+  describe 'PUT #image_update' do
     let!(:valid_attributes) { { image: fixture_file_upload(TEST_IMAGE_FILE, TEST_IMAGE_TYPE) } }
     let!(:invalid_attributes) { nil }
 
@@ -384,7 +384,7 @@ RSpec.describe 'Users::Registrations', type: :request do
   #   なし
   # テストパターン
   #   未ログイン, ログイン中, ログイン中（削除予約済み） → データ＆状態作成
-  describe 'DELETE /image_destroy' do
+  describe 'DELETE #image_destroy' do
     # テスト内容
     shared_examples_for 'OK' do
       it '画像が削除される' do
@@ -450,7 +450,7 @@ RSpec.describe 'Users::Registrations', type: :request do
   #   なし
   # テストパターン
   #   未ログイン, ログイン中, ログイン中（削除予約済み） → データ＆状態作成
-  describe 'GET /delete' do
+  describe 'GET #delete' do
     # テスト内容
     shared_examples_for 'ToOK' do
       it '成功ステータス' do
@@ -494,7 +494,7 @@ RSpec.describe 'Users::Registrations', type: :request do
   #   なし
   # テストパターン
   #   未ログイン, ログイン中, ログイン中（削除予約済み） → データ＆状態作成
-  describe 'DELETE /destroy' do
+  describe 'DELETE #destroy' do
     # テスト内容
     shared_examples_for 'OK' do
       let!(:start_time) { Time.current - 1.second }
@@ -559,7 +559,7 @@ RSpec.describe 'Users::Registrations', type: :request do
   #   なし
   # テストパターン
   #   未ログイン, ログイン中, ログイン中（削除予約済み） → データ＆状態作成
-  describe 'GET /undo_delete' do
+  describe 'GET #undo_delete' do
     # テスト内容
     shared_examples_for 'ToOK' do
       it '成功ステータス' do
@@ -603,7 +603,7 @@ RSpec.describe 'Users::Registrations', type: :request do
   #   なし
   # テストパターン
   #   未ログイン, ログイン中, ログイン中（削除予約済み） → データ＆状態作成
-  describe 'DELETE /undo_destroy' do
+  describe 'DELETE #undo_destroy' do
     # テスト内容
     shared_examples_for 'OK' do
       it '削除依頼日時がなしに変更される' do

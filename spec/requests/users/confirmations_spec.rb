@@ -6,7 +6,7 @@ RSpec.describe 'Users::Confirmations', type: :request do
   #   なし
   # テストパターン
   #   未ログイン, ログイン中, ログイン中（削除予約済み） → データ＆状態作成
-  describe 'GET /new' do
+  describe 'GET #new' do
     # テスト内容
     shared_examples_for 'ToOK' do
       it '成功ステータス' do
@@ -35,7 +35,7 @@ RSpec.describe 'Users::Confirmations', type: :request do
   # テストパターン
   #   未ログイン, ログイン中, ログイン中（削除予約済み） → データ＆状態作成
   #   有効なパラメータ, 無効なパラメータ → 事前にデータ作成
-  describe 'POST /create' do
+  describe 'POST #create' do
     let!(:send_user) { FactoryBot.create(:user, confirmed_at: nil) }
     let!(:valid_attributes) { FactoryBot.attributes_for(:user, email: send_user.email) }
     let!(:invalid_attributes) { FactoryBot.attributes_for(:user, email: nil) }
@@ -89,7 +89,7 @@ RSpec.describe 'Users::Confirmations', type: :request do
   #   未ログイン, ログイン中, ログイン中（削除予約済み） → データ＆状態作成
   #   トークン: 期限内, 期限切れ, 存在しない, ない → データ作成
   #   確認日時: ない（未確認）, 確認送信日時より前（未確認）, 確認送信日時より後（確認済み） → データ作成
-  describe 'GET /show' do
+  describe 'GET #show' do
     # テスト内容
     shared_examples_for 'OK' do
       let!(:start_time) { Time.now.utc - 1.second }

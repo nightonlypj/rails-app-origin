@@ -6,7 +6,7 @@ RSpec.describe 'Top', type: :request do
   #   なし
   # テストパターン
   #   未ログイン, ログイン中, ログイン中（削除予約済み） → データ＆状態作成
-  describe 'GET /index' do
+  describe 'GET #index' do
     # テスト内容
     shared_examples_for 'ToOK' do
       it '成功ステータス' do

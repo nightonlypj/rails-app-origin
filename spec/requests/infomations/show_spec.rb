@@ -10,7 +10,7 @@ RSpec.describe 'Infomations', type: :request do
   #   対象: 全員, 自分, 他人
   #   開始日時: 過去, 未来
   #   終了日時: 過去, 未来, ない → まとめてデータ作成
-  describe 'GET /show' do
+  describe 'GET #show' do
     let!(:outside_user) { FactoryBot.create(:user) }
     shared_context 'データ作成' do
       let!(:infomation) { FactoryBot.create(:infomation, started_at: started_at, ended_at: ended_at, target: target, user_id: user_id) }

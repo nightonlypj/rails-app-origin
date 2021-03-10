@@ -24,13 +24,12 @@ ja:
         User: '対象ユーザーのみ'
   notice:
     user:
-      image_update: '画像を更新しました。'
+      image_update: '画像を変更しました。'
       image_destroy: '画像を削除しました。'
   alert:
     user:
       destroy_reserved: 'アカウント削除予定の為、この操作はできません。'
       not_destroy_reserved: '既に取り消し済みか、アカウント削除していません。'
-      image_destroy_error: '画像削除に失敗しました。'
   errors:
     messages:
       image_update_blank: '選択してください。'

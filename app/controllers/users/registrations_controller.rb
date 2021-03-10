@@ -37,20 +37,19 @@ class Users::RegistrationsController < Devise::RegistrationsController
     end
 
     @user = User.find(current_user.id)
-    return render :edit unless @user.update(params.require(:user).permit(:image))
-
-    redirect_to edit_user_registration_path, notice: t('notice.user.image_update')
+    if @user.update(params.require(:user).permit(:image))
+      redirect_to edit_user_registration_path, notice: t('notice.user.image_update')
+    else
+      render :edit
+    end
   end
 
   # DELETE /users/image 画像削除(処理)
   def image_destroy
     @user = User.find(current_user.id)
     @user.remove_image!
-    if @user.save
-      redirect_to edit_user_registration_path, notice: t('notice.user.image_destroy')
-    else
-      redirect_to edit_user_registration_path, alert: t('alert.user.image_destroy_error')
-    end
+    @user.save!
+    redirect_to edit_user_registration_path, notice: t('notice.user.image_destroy')
   end
 
   # GET /users/delete アカウント削除
@@ -110,17 +109,5 @@ class Users::RegistrationsController < Devise::RegistrationsController
   # The path used after sign up for inactive accounts.
   def after_inactive_sign_up_path_for(_resource)
     new_user_session_path
-  end
-
-  private
-
-  # 削除予約済みの場合、リダイレクトしてメッセージを表示
-  def redirect_response_destroy_reserved
-    redirect_to root_path, alert: t('alert.user.destroy_reserved') if current_user.destroy_reserved?
-  end
-
-  # 削除予約済みでない場合、リダイレクトしてメッセージを表示
-  def redirect_response_not_destroy_reserved
-    redirect_to root_path, alert: t('alert.user.not_destroy_reserved') unless current_user.destroy_reserved?
   end
 end

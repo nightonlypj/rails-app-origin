@@ -6,7 +6,7 @@ RSpec.describe 'Users::Sessions', type: :request do
   #   なし
   # テストパターン
   #   未ログイン, ログイン中, ログイン中（削除予約済み） → データ＆状態作成
-  describe 'GET /new' do
+  describe 'GET #new' do
     # テスト内容
     shared_examples_for 'ToOK' do
       it '成功ステータス' do
@@ -43,7 +43,7 @@ RSpec.describe 'Users::Sessions', type: :request do
   # テストパターン
   #   未ログイン, ログイン中, ログイン中（削除予約済み） → データ＆状態作成
   #   有効なパラメータ, 無効なパラメータ → 事前にデータ作成
-  describe 'POST /create' do
+  describe 'POST #create' do
     let!(:login_user) { FactoryBot.create(:user) }
     let!(:valid_attributes) { FactoryBot.attributes_for(:user, email: login_user.email, password: login_user.password) }
     let!(:invalid_attributes) { FactoryBot.attributes_for(:user, email: login_user.email, password: nil) }
@@ -103,7 +103,7 @@ RSpec.describe 'Users::Sessions', type: :request do
   #   なし
   # テストパターン
   #   未ログイン, ログイン中, ログイン中（削除予約済み） → データ＆状態作成
-  describe 'DELETE /destroy' do
+  describe 'DELETE #destroy' do
     # テスト内容
     shared_examples_for 'ToLogin' do |alert, notice|
       it 'ログインにリダイレクト' do

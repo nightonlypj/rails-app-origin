@@ -6,7 +6,7 @@ RSpec.describe 'Users::Passwords', type: :request do
   #   なし
   # テストパターン
   #   未ログイン, ログイン中, ログイン中（削除予約済み） → データ＆状態作成
-  describe 'GET /new' do
+  describe 'GET #new' do
     # テスト内容
     shared_examples_for 'ToOK' do
       it '成功ステータス' do
@@ -43,7 +43,7 @@ RSpec.describe 'Users::Passwords', type: :request do
   # テストパターン
   #   未ログイン, ログイン中, ログイン中（削除予約済み） → データ＆状態作成
   #   有効なパラメータ, 無効なパラメータ → 事前にデータ作成
-  describe 'POST /create' do
+  describe 'POST #create' do
     let!(:send_user) { FactoryBot.create(:user) }
     let!(:valid_attributes) { FactoryBot.attributes_for(:user, email: send_user.email) }
     let!(:invalid_attributes) { FactoryBot.attributes_for(:user, email: nil) }
@@ -112,7 +112,7 @@ RSpec.describe 'Users::Passwords', type: :request do
   # テストパターン
   #   未ログイン, ログイン中, ログイン中（削除予約済み） → データ＆状態作成
   #   トークン: 期限内, 期限切れ, 存在しない, ない → データ作成
-  describe 'GET /edit' do
+  describe 'GET #edit' do
     # テスト内容
     shared_examples_for 'ToOK' do
       it '成功ステータス' do
@@ -208,7 +208,7 @@ RSpec.describe 'Users::Passwords', type: :request do
   #   未ログイン, ログイン中, ログイン中（削除予約済み） → データ＆状態作成
   #   トークン: 期限内, 期限切れ, 存在しない, ない → データ作成
   #   有効なパラメータ, 無効なパラメータ → 事前にデータ作成
-  describe 'PUT /update' do
+  describe 'PUT #update' do
     let!(:valid_attributes) { FactoryBot.attributes_for(:user) }
     let!(:invalid_attributes) { FactoryBot.attributes_for(:user, password: nil) }
 

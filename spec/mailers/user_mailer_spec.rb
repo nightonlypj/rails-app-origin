@@ -2,6 +2,10 @@ require 'rails_helper'
 
 RSpec.describe UserMailer, type: :mailer do
   # アカウント削除受け付けのお知らせ
+  # 前提条件
+  #   削除予約済み  
+  # テストパターン
+  #   なし
   describe 'destroy_reserved' do
     let(:user) { FactoryBot.create(:user, destroy_schedule_at: Time.current + Settings['destroy_schedule_days'].days) }
     let(:mail) { UserMailer.with(user: user).destroy_reserved }
@@ -20,6 +24,10 @@ RSpec.describe UserMailer, type: :mailer do
   end
 
   # アカウント削除取り消し完了のお知らせ
+  # 前提条件
+  #   なし
+  # テストパターン
+  #   なし
   describe 'undo_destroy_reserved' do
     let(:user) { FactoryBot.create(:user) }
     let(:mail) { UserMailer.with(user: user).undo_destroy_reserved }
@@ -32,6 +40,10 @@ RSpec.describe UserMailer, type: :mailer do
   end
 
   # アカウント削除完了のお知らせ
+  # 前提条件
+  #   なし
+  # テストパターン
+  #   なし
   describe 'destroy_completed' do
     let(:user) { FactoryBot.create(:user) }
     let(:mail) { UserMailer.with(user: user).destroy_completed }

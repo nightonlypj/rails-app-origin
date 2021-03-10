@@ -6,7 +6,7 @@ RSpec.describe 'AdminUsers::Unlocks', type: :request do
   #   なし
   # テストパターン
   #   未ログイン, ログイン中 → データ＆状態作成
-  describe 'GET /new' do
+  describe 'GET #new' do
     # テスト内容
     shared_examples_for 'ToOK' do
       it '成功ステータス' do
@@ -39,7 +39,7 @@ RSpec.describe 'AdminUsers::Unlocks', type: :request do
   # テストパターン
   #   未ログイン, ログイン中 → データ＆状態作成
   #   有効なパラメータ, 無効なパラメータ → 事前にデータ作成
-  describe 'POST /create' do
+  describe 'POST #create' do
     include_context 'アカウントロック解除トークン作成（管理者）'
     let!(:valid_attributes) { FactoryBot.attributes_for(:admin_user, email: @send_admin_user.email) }
     let!(:invalid_attributes) { FactoryBot.attributes_for(:admin_user, email: nil) }
@@ -104,7 +104,7 @@ RSpec.describe 'AdminUsers::Unlocks', type: :request do
   #   未ログイン, ログイン中 → データ＆状態作成
   #   トークン: 存在する, 存在しない, ない → データ作成
   #   ロック日時: ない（未ロック）, ある（ロック中） → データ作成
-  describe 'GET /show' do
+  describe 'GET #show' do
     # テスト内容
     shared_examples_for 'OK' do
       it 'アカウントロック日時がなしに変更される' do
