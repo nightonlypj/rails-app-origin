@@ -9,7 +9,7 @@ RSpec.describe 'Spaces', type: :request do
   #   未ログイン, ログイン中, ログイン中（削除予約済み） → データ＆状態作成
   #   権限: Owner, Admin, Member, ない → データ作成
   #   ベースドメイン, 存在するサブドメイン, 存在しないサブドメイン → 事前にデータ作成
-  describe 'DELETE /image_destroy' do
+  describe 'DELETE #image_destroy' do
     include_context 'リクエストスペース作成'
 
     # テスト内容

@@ -1,6 +1,6 @@
 <% validate_enabled = action_name == 'update' && resource.errors.any? %>
 <% validate_password_enabled = validate_enabled && (params[:user][:password].present? || params[:user][:password_confirmation].present?) %>
-<%= form_for(resource, as: resource_name, url: registration_path(resource_name), html: { method: :put, novalidate: true }, local: true) do |form| %>
+<%= form_for(resource, as: resource_name, url: update_user_registration_path, html: { method: :put, novalidate: true }, local: true) do |form| %>
   <div class="form-outline<%= input_size_class_name(resource, :name) %>">
     <%= form.text_field :name, autocomplete: 'name', class: "form-control#{validate_class_name(validate_enabled, resource, :name)}" %>
     <%= form.label '氏名', class: 'form-label', for: 'user_name' %>

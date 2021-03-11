@@ -12,7 +12,7 @@ RSpec.describe 'Members', type: :request do
   #   アカウント未登録, メンバー未登録, メンバー登録済み
   #   有効なパラメータ, 無効なパラメータ → 事前にデータ作成
   #   ベースドメイン, 存在するサブドメイン, 存在しないサブドメイン → 事前にデータ作成
-  describe 'POST /create' do
+  describe 'POST #create' do
     include_context 'リクエストスペース作成'
     include_context 'メンバー作成', 0, 0, 1, 0, 'ASC'
     include_context 'メンバー作成（対象外）', 'ASC'

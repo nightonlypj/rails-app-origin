@@ -11,7 +11,7 @@ RSpec.describe 'Customers', type: :request do
   #   顧客: 所属, 未所属, 存在しない, ない → 事前にデータ作成
   #   有効なパラメータ, 無効なパラメータ → 事前にデータ作成
   #   ベースドメイン, 存在するサブドメイン, 存在しないサブドメイン → 事前にデータ作成
-  describe 'PUT /update' do
+  describe 'PUT #update' do
     include_context 'リクエストスペース作成'
     include_context '顧客作成（対象外）'
     let!(:valid_attributes) { FactoryBot.attributes_for(:customer) }

@@ -3,13 +3,13 @@ require 'rails_helper'
 RSpec.describe 'Users::Passwords', type: :request do
   include_context 'リクエストスペース作成'
 
-  # GET /users/password/new パスワード再設定[メール送信]
+  # GET /users/password/new（ベースドメイン） パスワード再設定[メール送信]
   # 前提条件
   #   なし
   # テストパターン
   #   未ログイン, ログイン中, ログイン中（削除予約済み） → データ＆状態作成
   #   ベースドメイン, 存在するサブドメイン, 存在しないサブドメイン → 事前にデータ作成
-  describe 'GET /new' do
+  describe 'GET #new' do
     # テスト内容
     shared_examples_for 'ToOK' do
       it '成功ステータス' do
@@ -79,7 +79,7 @@ RSpec.describe 'Users::Passwords', type: :request do
     end
   end
 
-  # POST /users/password パスワード再設定[メール送信](処理)
+  # POST /users/password/new（ベースドメイン） パスワード再設定[メール送信](処理)
   # 前提条件
   #   なし
   # テストパターン
@@ -88,7 +88,7 @@ RSpec.describe 'Users::Passwords', type: :request do
   #   招待完了日時: ない, ある → データ作成
   #   有効なパラメータ, 無効なパラメータ → 事前にデータ作成
   #   ベースドメイン, 存在するサブドメイン, 存在しないサブドメイン → 事前にデータ作成
-  describe 'POST /create' do
+  describe 'POST #create' do
     let!(:send_user) { FactoryBot.create(:user) }
     let!(:valid_attributes) { FactoryBot.attributes_for(:user, email: send_user.email) }
     let!(:invalid_attributes) { FactoryBot.attributes_for(:user, email: nil) }
@@ -104,21 +104,21 @@ RSpec.describe 'Users::Passwords', type: :request do
     end
 
     # テスト内容
-    shared_examples_for 'ToOK' do
-      it '成功ステータス' do
-        post user_password_path, params: { user: attributes }, headers: headers
+    shared_examples_for 'ToError' do
+      it '成功ステータス' do # Tips: 再入力
+        post create_user_password_path, params: { user: attributes }, headers: headers
         expect(response).to be_successful
       end
     end
     shared_examples_for 'ToNot' do
       it '存在しないステータス' do
-        post user_password_path, params: { user: attributes }, headers: headers
+        post create_user_password_path, params: { user: attributes }, headers: headers
         expect(response).to be_not_found
       end
     end
     shared_examples_for 'ToTop' do |alert, notice|
       it 'トップページにリダイレクト' do
-        post user_password_path, params: { user: attributes }, headers: headers
+        post create_user_password_path, params: { user: attributes }, headers: headers
         expect(response).to redirect_to(root_path)
         expect(flash[:alert]).to alert.present? ? eq(I18n.t(alert)) : be_nil
         expect(flash[:notice]).to notice.present? ? eq(I18n.t(notice)) : be_nil
@@ -126,7 +126,7 @@ RSpec.describe 'Users::Passwords', type: :request do
     end
     shared_examples_for 'ToLogin' do |alert, notice|
       it 'ログインにリダイレクト' do
-        post user_password_path, params: { user: attributes }, headers: headers
+        post create_user_password_path, params: { user: attributes }, headers: headers
         expect(response).to redirect_to(new_user_session_path)
         expect(flash[:alert]).to alert.present? ? eq(I18n.t(alert)) : be_nil
         expect(flash[:notice]).to notice.present? ? eq(I18n.t(notice)) : be_nil
@@ -134,7 +134,7 @@ RSpec.describe 'Users::Passwords', type: :request do
     end
     shared_examples_for 'ToConfirmation' do |alert, notice|
       it 'メールアドレス確認にリダイレクト' do
-        post user_password_path, params: { user: attributes }, headers: headers
+        post create_user_password_path, params: { user: attributes }, headers: headers
         expect(response).to redirect_to(new_user_confirmation_path)
         expect(flash[:alert]).to alert.present? ? eq(I18n.t(alert)) : be_nil
         expect(flash[:notice]).to notice.present? ? eq(I18n.t(notice)) : be_nil
@@ -160,7 +160,7 @@ RSpec.describe 'Users::Passwords', type: :request do
     end
     shared_examples_for '[未ログイン][*][*][無効]ベースドメイン' do
       let!(:headers) { BASE_HEADER }
-      it_behaves_like 'ToOK' # Tips: 再入力
+      it_behaves_like 'ToError'
     end
     shared_examples_for '[未ログイン][*][*][*]存在するサブドメイン' do
       let!(:headers) { @space_header }
@@ -284,14 +284,14 @@ RSpec.describe 'Users::Passwords', type: :request do
     end
   end
 
-  # GET /users/password/edit パスワード再設定
+  # GET /users/password/edit（ベースドメイン） パスワード再設定
   # 前提条件
   #   なし
   # テストパターン
   #   未ログイン, ログイン中, ログイン中（削除予約済み） → データ＆状態作成
   #   トークン: 期限内, 期限切れ, 存在しない, ない → データ作成
   #   ベースドメイン, 存在するサブドメイン, 存在しないサブドメイン → 事前にデータ作成
-  describe 'GET /edit' do
+  describe 'GET #edit' do
     # テスト内容
     shared_examples_for 'ToOK' do
       it '成功ステータス' do
@@ -445,7 +445,7 @@ RSpec.describe 'Users::Passwords', type: :request do
     end
   end
 
-  # PUT /users/password パスワード再設定(処理)
+  # PUT(PATCH) /users/password（ベースドメイン） パスワード再設定(処理)
   # 前提条件
   #   なし
   # テストパターン
@@ -453,39 +453,39 @@ RSpec.describe 'Users::Passwords', type: :request do
   #   トークン: 期限内, 期限切れ, 存在しない, ない → データ作成
   #   有効なパラメータ, 無効なパラメータ → 事前にデータ作成
   #   ベースドメイン, 存在するサブドメイン, 存在しないサブドメイン → 事前にデータ作成
-  describe 'PUT /update' do
+  describe 'PUT #update' do
     let!(:valid_attributes) { FactoryBot.attributes_for(:user) }
     let!(:invalid_attributes) { FactoryBot.attributes_for(:user, password: nil) }
 
     # テスト内容
     shared_examples_for 'OK' do
       it 'パスワードリセット送信日時がなしに変更される' do
-        put user_password_path, params: { user: attributes.merge({ reset_password_token: reset_password_token }) }, headers: headers
+        put update_user_password_path, params: { user: attributes.merge({ reset_password_token: reset_password_token }) }, headers: headers
         expect(User.find(@send_user.id).reset_password_sent_at).to be_nil
       end
     end
     shared_examples_for 'NG' do
       it 'パスワードリセット送信日時が変更されない' do
-        put user_password_path, params: { user: attributes.merge({ reset_password_token: reset_password_token }) }, headers: headers
+        put update_user_password_path, params: { user: attributes.merge({ reset_password_token: reset_password_token }) }, headers: headers
         expect(User.find(@send_user.id).reset_password_sent_at).to eq(@send_user.reset_password_sent_at)
       end
     end
 
-    shared_examples_for 'ToOK' do
-      it '成功ステータス' do
-        put user_password_path, params: { user: attributes.merge({ reset_password_token: reset_password_token }) }, headers: headers
+    shared_examples_for 'ToError' do
+      it '成功ステータス' do # Tips: 再入力
+        put update_user_password_path, params: { user: attributes.merge({ reset_password_token: reset_password_token }) }, headers: headers
         expect(response).to be_successful
       end
     end
     shared_examples_for 'ToNot' do
       it '存在しないステータス' do
-        put user_password_path, params: { user: attributes.merge({ reset_password_token: reset_password_token }) }, headers: headers
+        put update_user_password_path, params: { user: attributes.merge({ reset_password_token: reset_password_token }) }, headers: headers
         expect(response).to be_not_found
       end
     end
     shared_examples_for 'ToTop' do |alert, notice|
       it 'トップページにリダイレクト' do
-        put user_password_path, params: { user: attributes.merge({ reset_password_token: reset_password_token }) }, headers: headers
+        put update_user_password_path, params: { user: attributes.merge({ reset_password_token: reset_password_token }) }, headers: headers
         expect(response).to redirect_to(root_path)
         expect(flash[:alert]).to alert.present? ? eq(I18n.t(alert)) : be_nil
         expect(flash[:notice]).to notice.present? ? eq(I18n.t(notice)) : be_nil
@@ -493,7 +493,7 @@ RSpec.describe 'Users::Passwords', type: :request do
     end
     shared_examples_for 'ToNew' do |alert, notice|
       it 'パスワード再設定[メール送信]にリダイレクト' do
-        put user_password_path, params: { user: attributes.merge({ reset_password_token: reset_password_token }) }, headers: headers
+        put update_user_password_path, params: { user: attributes.merge({ reset_password_token: reset_password_token }) }, headers: headers
         expect(response).to redirect_to(new_user_password_path)
         expect(flash[:alert]).to alert.present? ? eq(I18n.t(alert)) : be_nil
         expect(flash[:notice]).to notice.present? ? eq(I18n.t(notice)) : be_nil
@@ -529,7 +529,7 @@ RSpec.describe 'Users::Passwords', type: :request do
     shared_examples_for '[未ログイン][期限内][無効]ベースドメイン' do
       let!(:headers) { BASE_HEADER }
       it_behaves_like 'NG'
-      it_behaves_like 'ToOK' # Tips: 再入力
+      it_behaves_like 'ToError'
     end
     shared_examples_for '[ログイン中/削除予約済み][期限内/期限切れ][無効]ベースドメイン' do
       let!(:headers) { BASE_HEADER }

@@ -12,7 +12,7 @@ RSpec.describe 'Members', type: :request do
   #   権限: ある(Owner, Admin, Member), ない → データ作成
   #   顧客: 所属, 未所属, 存在しない, ない → 事前にデータ作成
   #   ベースドメイン, 存在するサブドメイン, 存在しないサブドメイン → 事前にデータ作成
-  describe 'GET /index' do
+  describe 'GET #index' do
     include_context '顧客作成（対象外）'
 
     # テスト内容

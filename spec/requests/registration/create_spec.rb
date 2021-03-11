@@ -11,7 +11,7 @@ RSpec.describe 'Registration', type: :request do
   #   トークン: 存在する, 存在しない, ない → データ作成
   #   有効なパラメータ, 無効なパラメータ → 事前にデータ作成
   #   ベースドメイン, 存在するサブドメイン, 存在しないサブドメイン → 事前にデータ作成
-  describe 'POST /create' do
+  describe 'POST #create' do
     include_context 'リクエストスペース作成'
     let!(:valid_attributes) { FactoryBot.attributes_for(:user) }
     let!(:invalid_attributes) { FactoryBot.attributes_for(:user, name: nil) }

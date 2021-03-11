@@ -3,13 +3,13 @@ require 'rails_helper'
 RSpec.describe 'Users::Sessions', type: :request do
   include_context 'リクエストスペース作成'
 
-  # GET /users/sign_in ログイン
+  # GET /users/sign_in（ベースドメイン） ログイン
   # 前提条件
   #   なし
   # テストパターン
   #   未ログイン, ログイン中, ログイン中（削除予約済み） → データ＆状態作成
   #   ベースドメイン, 存在するサブドメイン, 存在しないサブドメイン → 事前にデータ作成
-  describe 'GET /new' do
+  describe 'GET #new' do
     # テスト内容
     shared_examples_for 'ToOK' do
       it '成功ステータス' do
@@ -79,7 +79,7 @@ RSpec.describe 'Users::Sessions', type: :request do
     end
   end
 
-  # POST /users/sign_in ログイン(処理)
+  # POST /users/sign_in（ベースドメイン） ログイン(処理)
   # 前提条件
   #   なし
   # テストパターン
@@ -88,7 +88,7 @@ RSpec.describe 'Users::Sessions', type: :request do
   #   招待完了日時: ない, ある → データ作成
   #   有効なパラメータ, 無効なパラメータ → 事前にデータ作成
   #   ベースドメイン, 存在するサブドメイン, 存在しないサブドメイン → 事前にデータ作成
-  describe 'POST /create' do
+  describe 'POST #create' do
     let!(:login_user) { FactoryBot.create(:user) }
     let!(:valid_attributes) { FactoryBot.attributes_for(:user, email: login_user.email, password: login_user.password) }
     let!(:invalid_attributes) { FactoryBot.attributes_for(:user, email: login_user.email, password: nil) }
@@ -104,21 +104,21 @@ RSpec.describe 'Users::Sessions', type: :request do
     end
 
     # テスト内容
-    shared_examples_for 'ToOK' do
-      it '成功ステータス' do
-        post user_session_path, params: { user: attributes }, headers: headers
+    shared_examples_for 'ToError' do
+      it '成功ステータス' do # Tips: 再入力
+        post create_user_session_path, params: { user: attributes }, headers: headers
         expect(response).to be_successful
       end
     end
     shared_examples_for 'ToNot' do
       it '存在しないステータス' do
-        post user_session_path, params: { user: attributes }, headers: headers
+        post create_user_session_path, params: { user: attributes }, headers: headers
         expect(response).to be_not_found
       end
     end
     shared_examples_for 'ToTop' do |alert, notice|
       it 'トップページにリダイレクト' do
-        post user_session_path, params: { user: attributes }, headers: headers
+        post create_user_session_path, params: { user: attributes }, headers: headers
         expect(response).to redirect_to(root_path)
         expect(flash[:alert]).to alert.present? ? eq(I18n.t(alert)) : be_nil
         expect(flash[:notice]).to notice.present? ? eq(I18n.t(notice)) : be_nil
@@ -126,7 +126,7 @@ RSpec.describe 'Users::Sessions', type: :request do
     end
     shared_examples_for 'ToConfirmation' do |alert, notice|
       it 'メールアドレス確認にリダイレクト' do
-        post user_session_path, params: { user: attributes }, headers: headers
+        post create_user_session_path, params: { user: attributes }, headers: headers
         expect(response).to redirect_to(new_user_confirmation_path)
         expect(flash[:alert]).to alert.present? ? eq(I18n.t(alert)) : be_nil
         expect(flash[:notice]).to notice.present? ? eq(I18n.t(notice)) : be_nil
@@ -152,11 +152,11 @@ RSpec.describe 'Users::Sessions', type: :request do
     end
     shared_examples_for '[未ログイン][ない][*][無効]ベースドメイン' do
       let!(:headers) { BASE_HEADER }
-      it_behaves_like 'ToOK' # Tips: 再入力
+      it_behaves_like 'ToError'
     end
     shared_examples_for '[未ログイン][ある][ある][無効]ベースドメイン' do
       let!(:headers) { BASE_HEADER }
-      it_behaves_like 'ToOK' # Tips: 再入力
+      it_behaves_like 'ToError'
     end
     shared_examples_for '[未ログイン][*][*][*]存在するサブドメイン' do
       let!(:headers) { @space_header }
@@ -292,13 +292,13 @@ RSpec.describe 'Users::Sessions', type: :request do
     end
   end
 
-  # DELETE /users/sign_out ログアウト(処理)
+  # DELETE(GET) /users/sign_out（ベースドメイン） ログアウト(処理)
   # 前提条件
   #   なし
   # テストパターン
   #   未ログイン, ログイン中, ログイン中（削除予約済み） → データ＆状態作成
   #   ベースドメイン, 存在するサブドメイン, 存在しないサブドメイン → 事前にデータ作成
-  describe 'DELETE /destroy' do
+  describe 'DELETE #destroy' do
     # テスト内容
     shared_examples_for 'ToNot' do
       it '存在しないステータス' do

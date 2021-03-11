@@ -10,7 +10,7 @@ RSpec.describe 'Spaces', type: :request do
   #   権限: Owner, Admin, Member, ない → データ作成
   #   有効なパラメータ, 無効なパラメータ → 事前にデータ作成
   #   ベースドメイン, 存在するサブドメイン, 存在しないサブドメイン → 事前にデータ作成
-  describe 'PUT /image_update' do
+  describe 'PUT #image_update' do
     include_context 'リクエストスペース作成'
     let!(:valid_attributes) { { image: fixture_file_upload(TEST_IMAGE_FILE, TEST_IMAGE_TYPE) } }
     let!(:invalid_attributes) { nil }

@@ -1,12 +1,12 @@
 require 'rails_helper'
 
 RSpec.describe 'AdminUsers::Sessions', type: :request do
-  # GET /admin_users/sign_in ログイン
+  # GET /admin/sign_in ログイン
   # 前提条件
   #   なし
   # テストパターン
   #   未ログイン, ログイン中 → データ＆状態作成
-  describe 'GET /new' do
+  describe 'GET #new' do
     # テスト内容
     shared_examples_for 'ToOK' do
       it '成功ステータス' do
@@ -33,27 +33,27 @@ RSpec.describe 'AdminUsers::Sessions', type: :request do
     end
   end
 
-  # POST /admin_users/sign_in ログイン(処理)
+  # POST /admin/sign_in ログイン(処理)
   # 前提条件
   #   なし
   # テストパターン
   #   未ログイン, ログイン中 → データ＆状態作成
   #   有効なパラメータ, 無効なパラメータ → 事前にデータ作成
-  describe 'POST /create' do
+  describe 'POST #create' do
     let!(:login_admin_user) { FactoryBot.create(:admin_user) }
     let!(:valid_attributes) { FactoryBot.attributes_for(:admin_user, email: login_admin_user.email, password: login_admin_user.password) }
     let!(:invalid_attributes) { FactoryBot.attributes_for(:admin_user, email: login_admin_user.email, password: nil) }
 
     # テスト内容
-    shared_examples_for 'ToOK' do
-      it '成功ステータス' do
-        post admin_user_session_path, params: { admin_user: attributes }
+    shared_examples_for 'ToError' do
+      it '成功ステータス' do # Tips: 再入力
+        post create_admin_user_session_path, params: { admin_user: attributes }
         expect(response).to be_successful
       end
     end
     shared_examples_for 'ToAdmin' do |alert, notice|
       it 'RailsAdminにリダイレクト' do
-        post admin_user_session_path, params: { admin_user: attributes }
+        post create_admin_user_session_path, params: { admin_user: attributes }
         expect(response).to redirect_to(rails_admin_path)
         expect(flash[:alert]).to alert.present? ? eq(I18n.t(alert)) : be_nil
         expect(flash[:notice]).to notice.present? ? eq(I18n.t(notice)) : be_nil
@@ -71,7 +71,7 @@ RSpec.describe 'AdminUsers::Sessions', type: :request do
     end
     shared_examples_for '[未ログイン]無効なパラメータ' do
       let!(:attributes) { invalid_attributes }
-      it_behaves_like 'ToOK' # Tips: 再入力
+      it_behaves_like 'ToError'
     end
     shared_examples_for '[ログイン中]無効なパラメータ' do
       let!(:attributes) { invalid_attributes }
@@ -89,12 +89,12 @@ RSpec.describe 'AdminUsers::Sessions', type: :request do
     end
   end
 
-  # DELETE /admin_users/sign_out ログアウト(処理)
+  # DELETE(GET) /admin/sign_out ログアウト(処理)
   # 前提条件
   #   なし
   # テストパターン
   #   未ログイン, ログイン中 → データ＆状態作成
-  describe 'DELETE /destroy' do
+  describe 'DELETE #destroy' do
     # テスト内容
     shared_examples_for 'ToLogin' do |alert, notice|
       it 'ログインにリダイレクト' do

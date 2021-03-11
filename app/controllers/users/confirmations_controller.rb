@@ -4,12 +4,12 @@ class Users::ConfirmationsController < Devise::ConfirmationsController
   before_action :redirect_base_domain_response, only: %i[new show]
   before_action :not_found_sub_domain_response, only: %i[create]
 
-  # GET /users/confirmation/new メールアドレス確認[メール再送]
+  # GET /users/confirmation/new（ベースドメイン） メールアドレス確認[メール再送]
   # def new
   #   super
   # end
 
-  # POST /users/confirmation メールアドレス確認[メール再送](処理)
+  # POST /users/confirmation/new（ベースドメイン） メールアドレス確認[メール再送](処理)
   def create
     if params.present? && params[:user].present?
       user = User.find_by(email: params[:user][:email])
@@ -25,7 +25,7 @@ class Users::ConfirmationsController < Devise::ConfirmationsController
     super
   end
 
-  # GET /users/confirmation メールアドレス確認(処理)
+  # GET /users/confirmation（ベースドメイン） メールアドレス確認(処理)
   def show
     return redirect_to new_user_session_path, alert: already_confirmed_message if already_confirmed?(params[:confirmation_token])
     return redirect_to new_user_confirmation_path, alert: invalid_token_message unless valid_confirmation_token?(params[:confirmation_token])

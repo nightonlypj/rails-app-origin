@@ -7,7 +7,7 @@ RSpec.describe Infomation, type: :model do
   # テストパターン
   #   未ログイン, ログイン中, ログイン中（削除予約済み） → データ作成
   #   対象: 全員, 自分, 他人 → データ作成
-  describe 'def target_user?' do
+  describe 'target_user?' do
     let!(:outside_user) { FactoryBot.create(:user) }
     shared_context 'データ作成' do |target|
       let!(:infomation) { FactoryBot.create(:infomation, target: target, user_id: user_id) }
@@ -69,7 +69,7 @@ RSpec.describe Infomation, type: :model do
   #   ログイン中, ログイン中（削除予約済み） → データ作成
   #   アクションユーザー: いる, いない（削除済み） → 事前にデータ作成
   #   アクション: ある(MemberCreate, MemberUpdate, MemberDestroy, RegistrationCreate), ない, 未定義 → データ作成
-  describe 'def action_title' do
+  describe 'action_title' do
     let!(:action_user) { FactoryBot.create(:user) }
     let!(:customer) { FactoryBot.create(:customer) }
     shared_context 'データ作成' do |action|

@@ -1,4 +1,5 @@
 class User < ApplicationRecord
+  has_many :infomation, dependent: :destroy
   mount_uploader :image, ImageUploader
 
   validates :code, presence: true

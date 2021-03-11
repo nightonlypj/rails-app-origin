@@ -9,7 +9,7 @@ RSpec.describe 'Top', type: :request do
   #   未ログイン, ログイン中, ログイン中（削除予約済み） → データ＆状態作成
   #   権限: ある(Owner, Admin, Member), ない → データ作成
   #   ベースドメイン, 存在するサブドメイン(公開スペース, 非公開スペース), 存在しないサブドメイン → 事前にデータ作成
-  describe 'GET /index' do
+  describe 'GET #index' do
     include_context 'リクエストスペース作成'
     include_context 'リクエストスペース作成（公開）'
 
@@ -422,7 +422,7 @@ RSpec.describe 'Top', type: :request do
   # テストパターン
   #   未ログイン, ログイン中, ログイン中（削除予約済み） → データ＆状態作成
   #   参加スペース: ない, 最大表示数と同じ, 最大表示数より多い → データ作成
-  describe 'GET / @join_spaces' do
+  describe '@join_spaces' do
     let!(:headers) { BASE_HEADER }
     include_context 'スペース作成', 1 # Tips: 未所属
     include_context 'スペース作成', 1, true # Tips: 公開スペース
@@ -533,7 +533,7 @@ RSpec.describe 'Top', type: :request do
   # テストパターン
   #   未ログイン, ログイン中, ログイン中（削除予約済み） → データ＆状態作成
   #   公開スペース: ない, 最大表示数と同じ, 最大表示数より多い → データ作成
-  describe 'GET / @public_spaces' do
+  describe '@public_spaces' do
     let!(:headers) { BASE_HEADER }
     include_context 'スペース作成', 1 # Tips: 非公開スペース
 

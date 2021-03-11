@@ -10,7 +10,7 @@ RSpec.describe 'Customers', type: :request do
   # テストパターン
   #   未ログイン, ログイン中, ログイン中（削除予約済み） → データ＆状態作成
   #   ベースドメイン, 存在するサブドメイン, 存在しないサブドメイン → 事前にデータ作成
-  describe 'GET /index' do
+  describe 'GET #index' do
     # テスト内容
     shared_examples_for 'ToOK' do
       it '成功ステータス' do
@@ -94,7 +94,7 @@ RSpec.describe 'Customers', type: :request do
   # テストパターン
   #   ログイン中, ログイン中（削除予約済み） → データ＆状態作成
   #   所属する顧客: ない, 最大表示数と同じ, 最大表示数より多い → データ作成
-  describe 'GET /index @customers' do
+  describe '@customers' do
     let!(:headers) { BASE_HEADER }
 
     # テスト内容

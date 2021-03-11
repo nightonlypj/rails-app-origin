@@ -11,7 +11,7 @@ RSpec.describe 'Members', type: :request do
   #   顧客: 所属, 未所属, 存在しない, ない → 事前にデータ作成
   #   対象: ない, 自分, Owner, Admin, Member → 事前にデータ作成
   #   ベースドメイン, 存在するサブドメイン, 存在しないサブドメイン → 事前にデータ作成
-  describe 'DELETE /destroy' do
+  describe 'DELETE #destroy' do
     include_context 'リクエストスペース作成'
     include_context 'メンバー作成', 1, 1, 1, 0, 'ASC'
     include_context 'メンバー作成（対象外）', 'ASC'

@@ -8,7 +8,7 @@ RSpec.describe 'Infomations', type: :request do
   # テストパターン
   #   未ログイン, ログイン中, ログイン中（削除予約済み） → データ＆状態作成
   #   ベースドメイン, 存在するサブドメイン, 存在しないサブドメイン → 事前にデータ作成
-  describe 'GET /index' do
+  describe 'GET #index' do
     include_context 'リクエストスペース作成'
 
     # テスト内容

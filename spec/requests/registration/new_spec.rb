@@ -9,7 +9,7 @@ RSpec.describe 'Registration', type: :request do
   #   招待完了日時: ない（未登録）, ある（登録済み） → データ作成
   #   トークン: 存在する, 存在しない, ない → データ作成
   #   ベースドメイン, 存在するサブドメイン, 存在しないサブドメイン → 事前にデータ作成
-  describe 'GET /new' do
+  describe 'GET #new' do
     include_context 'リクエストスペース作成'
 
     # テスト内容

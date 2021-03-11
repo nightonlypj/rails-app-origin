@@ -11,7 +11,7 @@ RSpec.describe 'Spaces', type: :request do
   #   顧客: 新規作成, 選択(所属, 未所属), 未選択, 不正値 → 固定値
   #   有効なパラメータ, 無効なパラメータ(顧客, スペース, 両方) → 事前にデータ作成
   #   ベースドメイン, 存在するサブドメイン, 存在しないサブドメイン → 事前にデータ作成
-  describe 'POST /create' do
+  describe 'POST #create' do
     include_context 'リクエストスペース作成'
     include_context '顧客作成（対象外）'
     let!(:valid_customer_attributes) { FactoryBot.attributes_for(:customer) }

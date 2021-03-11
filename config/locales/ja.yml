@@ -132,7 +132,6 @@ ja:
     user:
       destroy_reserved: 'アカウント削除予定の為、この操作はできません。'
       not_destroy_reserved: '既に取り消し済みか、アカウント削除していません。'
-      image_destroy_error: '画像削除に失敗しました。'
       invitation_token:
         already_sign_in: 'ログイン中の為、アクセスできません。ログアウトしてからお試しください。'
         blank: 'URLが正しくありません。やり直してください。'

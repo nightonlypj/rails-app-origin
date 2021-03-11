@@ -12,7 +12,7 @@ RSpec.describe 'Members', type: :request do
   #   対象: ない, 自分, Owner, Admin, Member → 事前にデータ作成
   #   有効なパラメータ, 無効なパラメータ → 事前にデータ作成
   #   ベースドメイン, 存在するサブドメイン, 存在しないサブドメイン → 事前にデータ作成
-  describe 'PUT /update' do
+  describe 'PUT #update' do
     include_context 'リクエストスペース作成'
     include_context 'メンバー作成', 1, 1, 1, 0, 'ASC'
     include_context 'メンバー作成（対象外）', 'ASC'
