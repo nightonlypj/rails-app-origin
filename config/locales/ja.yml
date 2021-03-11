@@ -101,14 +101,18 @@ ja:
       registrationed_at: '登録待ち'
   infomation:
     action:
-      member_create: '%{action_user_name} さんが %{customer_name} (%{customer_code})に招待しました。'
-      member_update: '%{action_user_name} さんが %{customer_name} (%{customer_code})の権限を変更しました。'
-      member_destroy: '%{action_user_name} さんが %{customer_name} (%{customer_code})から解除しました。'
-      registration_create: '招待した %{action_user_email} (%{action_user_name} さん)が %{customer_name} (%{customer_code})に参加しました。'
+      member_create: '%{action_user_name}さんが%{customer_name}(%{customer_code})に招待しました。'
+      member_update: '%{action_user_name}さんが%{customer_name}(%{customer_code})の権限を変更しました。'
+      member_destroy: '%{action_user_name}さんが%{customer_name}(%{customer_code})から解除しました。'
+      registration_create: '招待した%{action_user_email}(%{action_user_name}さん)が%{customer_name}(%{customer_code})に参加しました。'
     action_user:
       blank:
-        name: '管理者または所有者'
+        name: '[削除済み]'
         email: 'N/A'
+    customer:
+      blank:
+        name: '[削除済み]'
+        code: 'N/A'
   notice:
     user:
       image_update: '画像を変更しました。'

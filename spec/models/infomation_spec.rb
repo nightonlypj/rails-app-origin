@@ -68,13 +68,15 @@ RSpec.describe Infomation, type: :model do
   # テストパターン
   #   ログイン中, ログイン中（削除予約済み） → データ作成
   #   アクションユーザー: いる, いない（削除済み） → 事前にデータ作成
+  #   顧客: ある, ない（削除済み） → 事前にデータ作成
   #   アクション: ある(MemberCreate, MemberUpdate, MemberDestroy, RegistrationCreate), ない, 未定義 → データ作成
   describe 'action_title' do
     let!(:action_user) { FactoryBot.create(:user) }
     let!(:customer) { FactoryBot.create(:customer) }
+
     shared_context 'データ作成' do |action|
       let!(:infomation) do
-        FactoryBot.create(:infomation, target: :User, user_id: user.id, action: action, action_user_id: action_user_id, customer_id: customer.id)
+        FactoryBot.create(:infomation, target: :User, user_id: user.id, action: action, action_user_id: action_user_id, customer_id: customer_id)
       end
     end
 
@@ -83,10 +85,12 @@ RSpec.describe Infomation, type: :model do
       it 'アクションのメッセージが返却される' do
         action_user_name = action_user_id.present? ? action_user.name : I18n.t('infomation.action_user.blank.name')
         action_user_email = action_user_id.present? ? action_user.email : I18n.t('infomation.action_user.blank.email')
+        customer_name = customer_id.present? ? customer.name : I18n.t('infomation.customer.blank.name')
+        customer_code = customer_id.present? ? customer.code : I18n.t('infomation.customer.blank.code')
         expect(infomation.action_title).to eq(I18n.t(key).gsub(/%{action_user_name}/, action_user_name)
                                                          .gsub(/%{action_user_email}/, action_user_email)
-                                                         .gsub(/%{customer_name}/, customer.name)
-                                                         .gsub(/%{customer_code}/, customer.code))
+                                                         .gsub(/%{customer_name}/, customer_name)
+                                                         .gsub(/%{customer_code}/, customer_code))
       end
     end
     shared_examples_for 'ToTitle' do
@@ -101,36 +105,47 @@ RSpec.describe Infomation, type: :model do
     end
 
     # テストケース
-    shared_examples_for '[*][*]アクションがある' do |action, key|
+    shared_examples_for '[*][*][*]アクションがある' do |action, key|
       include_context 'データ作成', action
       it_behaves_like 'ToOK', key
     end
-    shared_examples_for '[*][*]アクションがない' do
+    shared_examples_for '[*][*][*]アクションがない' do
       include_context 'データ作成', nil
       it_behaves_like 'ToTitle'
     end
-    shared_examples_for '[*][*]アクションが未定義' do
+    shared_examples_for '[*][*][*]アクションが未定義' do
       include_context 'データ作成', 'not'
       it_behaves_like 'ToNG'
     end
 
+    shared_examples_for '[*][*]顧客がある' do
+      let!(:customer_id) { customer.id }
+      it_behaves_like '[*][*][*]アクションがある', 'MemberCreate', 'infomation.action.member_create'
+      it_behaves_like '[*][*][*]アクションがある', 'MemberUpdate', 'infomation.action.member_update'
+      it_behaves_like '[*][*][*]アクションがある', 'MemberDestroy', 'infomation.action.member_destroy'
+      it_behaves_like '[*][*][*]アクションがある', 'RegistrationCreate', 'infomation.action.registration_create'
+      it_behaves_like '[*][*][*]アクションがない'
+      it_behaves_like '[*][*][*]アクションが未定義'
+    end
+    shared_examples_for '[*][*]顧客がない' do
+      let!(:customer_id) { nil }
+      it_behaves_like '[*][*][*]アクションがある', 'MemberCreate', 'infomation.action.member_create'
+      it_behaves_like '[*][*][*]アクションがある', 'MemberUpdate', 'infomation.action.member_update'
+      it_behaves_like '[*][*][*]アクションがある', 'MemberDestroy', 'infomation.action.member_destroy'
+      it_behaves_like '[*][*][*]アクションがある', 'RegistrationCreate', 'infomation.action.registration_create'
+      it_behaves_like '[*][*][*]アクションがない'
+      it_behaves_like '[*][*][*]アクションが未定義'
+    end
+
     shared_examples_for '[*]アクションユーザーがいる' do
       let!(:action_user_id) { action_user.id }
-      it_behaves_like '[*][*]アクションがある', 'MemberCreate', 'infomation.action.member_create'
-      it_behaves_like '[*][*]アクションがある', 'MemberUpdate', 'infomation.action.member_update'
-      it_behaves_like '[*][*]アクションがある', 'MemberDestroy', 'infomation.action.member_destroy'
-      it_behaves_like '[*][*]アクションがある', 'RegistrationCreate', 'infomation.action.registration_create'
-      it_behaves_like '[*][*]アクションがない'
-      it_behaves_like '[*][*]アクションが未定義'
+      it_behaves_like '[*][*]顧客がある'
+      it_behaves_like '[*][*]顧客がない'
     end
     shared_examples_for '[*]アクションユーザーがいない（削除済み）' do
       let!(:action_user_id) { nil }
-      it_behaves_like '[*][*]アクションがある', 'MemberCreate', 'infomation.action.member_create'
-      it_behaves_like '[*][*]アクションがある', 'MemberUpdate', 'infomation.action.member_update'
-      it_behaves_like '[*][*]アクションがある', 'MemberDestroy', 'infomation.action.member_destroy'
-      it_behaves_like '[*][*]アクションがある', 'RegistrationCreate', 'infomation.action.registration_create'
-      it_behaves_like '[*][*]アクションがない'
-      it_behaves_like '[*][*]アクションが未定義'
+      it_behaves_like '[*][*]顧客がある'
+      it_behaves_like '[*][*]顧客がない'
     end
 
     context 'ログイン中' do
