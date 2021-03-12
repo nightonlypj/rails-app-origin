@@ -1,75 +1,7 @@
-# Tips: id = customer.id & members.power
-# 顧客1
-- id: 11
-  code: 'code11'
-  name: '顧客1のOwner'
-  email: 'owner@customer1'
-  password: 'changepassword'
-  confirmed_at: '0000-01-01 00:00:00+0000'
-  invitation_customer_id: null
-  invitation_token: null
-  invitation_requested_at: null
-  invitation_completed_at: null
-- id: 12
-  code: 'code12'
-  name: '顧客1のAdmin'
-  email: 'admin@customer1'
-  password: 'changepassword'
-  confirmed_at: '0000-01-01 00:00:00+0000'
-  invitation_customer_id: 1
-  invitation_token: null
-  invitation_requested_at: '2020-01-01 00:00:00+0900'
-  invitation_completed_at: '2020-01-02 00:00:00+0900'
-- id: 13
-  code: 'code13'
-  name: '顧客1のMember'
-  email: 'member@customer1'
-  password: 'changepassword'
-  confirmed_at: '0000-01-01 00:00:00+0000'
-  invitation_customer_id: 1
-  invitation_token: 'invitation_token13'
-  invitation_requested_at: '2020-01-03 00:00:00+0900'
-  invitation_completed_at: null
-
-# 顧客2
-- id: 21
-  code: 'code21'
-  name: '顧客2のOwner'
-  email: 'owner@customer2'
-  password: 'changepassword'
-  confirmed_at: '0000-01-01 00:00:00+0000'
-  invitation_customer_id: null
-  invitation_token: null
-  invitation_requested_at: null
-  invitation_completed_at: null
-- id: 23
-  code: 'code23'
-  name: '顧客2のMember'
-  email: 'member@customer2'
-  password: 'changepassword'
-  confirmed_at: '0000-01-01 00:00:00+0000'
-  invitation_customer_id: 2
-  invitation_token: null
-  invitation_requested_at: '2020-02-01 00:00:00+0900'
-  invitation_completed_at: '2020-02-02 00:00:00+0900'
-
-# 顧客3
-- id: 31
-  code: 'code31'
-  name: '顧客3のOwner/顧客2のMember'
-  email: 'owner@customer3'
-  password: 'changepassword'
-  confirmed_at: '0000-01-01 00:00:00+0000'
-  invitation_customer_id: 2
-  invitation_token: null
-  invitation_requested_at: '2020-02-03 00:00:00+0900'
-  invitation_completed_at: '2020-02-04 00:00:00+0900'
-
 # Tips: id = 連番
-# その他
 - id: 1
-  code: 'code1'
-  name: '未所属'
+  code: 'code0000000000000000000000000001'
+  name: 'user1の氏名'
   email: 'user1@mydomain'
   password: 'changepassword'
   confirmed_at: '0000-01-01 00:00:00+0000'
@@ -78,19 +10,39 @@
   invitation_requested_at: null
   invitation_completed_at: null
 - id: 2
-  code: 'code2'
-  name: '顧客1の外部Member'
+  code: 'code0000000000000000000000000002'
+  name: 'user2の氏名'
   email: 'user2@mydomain'
   password: 'changepassword'
   confirmed_at: '0000-01-01 00:00:00+0000'
   invitation_customer_id: 1
-  invitation_token: 'invitation_token2'
-  invitation_requested_at: '2020-01-04 00:00:00+0900'
-  invitation_completed_at: null
+  invitation_token: 'token2'
+  invitation_requested_at: '2020-01-02 00:00:00+0900'
+  invitation_completed_at: '2020-01-03 00:00:00+0900'
 - id: 3
-  code: 'code3'
-  name: '顧客1・2の外部Member'
+  code: 'code0000000000000000000000000003'
+  name: 'user3の氏名'
   email: 'user3@mydomain'
+  password: 'changepassword'
+  confirmed_at: '0000-01-01 00:00:00+0000'
+  invitation_customer_id: 1
+  invitation_token: 'token3'
+  invitation_requested_at: '2020-01-03 00:00:00+0900'
+  invitation_completed_at: '2020-01-04 00:00:00+0900'
+- id: 4
+  code: 'code0000000000000000000000000004'
+  name: '--'
+  email: 'user4@mydomain'
+  password: 'changepassword'
+  confirmed_at: '0000-01-01 00:00:00+0000'
+  invitation_customer_id: 1
+  invitation_token: 'token4'
+  invitation_requested_at: '2020-01-04 00:00:00+0900'
+  invitation_completed_at: nil
+- id: 5
+  code: 'code0000000000000000000000000005'
+  name: 'user5の氏名'
+  email: 'user5@mydomain'
   password: 'changepassword'
   confirmed_at: '0000-01-01 00:00:00+0000'
   invitation_customer_id: null

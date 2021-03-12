@@ -18,7 +18,7 @@ class UserMailer < ApplicationMailer
   def member_create
     @customer = params[:customer]
     @member = params[:member]
-    @current_user = params[:current_user]
+    @invitation_user = params[:invitation_user]
     send_mail('mailer.user.member_create.subject')
   end
 end

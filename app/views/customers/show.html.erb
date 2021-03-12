@@ -1,0 +1,49 @@
+<main class="container">
+  <h3 class="pt-3">顧客詳細</h3>
+
+  <div class="table-responsive">
+    <table class="table table-sm align-middle">
+      <tr>
+        <th width="20%" scope="col" nowrap>顧客コード</th>
+        <td width="80%" scope="col"><%= @customer.code %></td>
+      </tr>
+      <tr>
+        <th scope="row" nowrap>組織・団体名</th>
+        <td>
+          <%= @customer.name %>
+<% if @customer.member.first.customer_update_power? %>
+          <%= link_to '変更', edit_customer_path(customer_code: @customer.code), class: 'btn btn-outline-warning btn-rounded btn-sm' %>
+<% end %>
+        </td>
+      </tr>
+      <tr>
+        <th scope="row" nowrap>あなたの権限</th>
+        <td><%= @customer.member.first.power_i18n %></td>
+      </tr>
+      <tr>
+        <th scope="row" nowrap>メンバー</th>
+        <td>
+          <%= @customer.member.count.to_s(:delimited) %>名
+          <%= link_to '一覧', members_path(customer_code: @customer.code), class: 'btn btn-outline-info btn-rounded btn-sm' %>
+<% if @customer.member.first.member_create_power? %>
+          <%= link_to '招待', new_member_path(customer_code: @customer.code), class: 'btn btn-outline-primary btn-rounded btn-sm' %>
+<% end %>
+        </td>
+      </tr>
+      <tr>
+        <th scope="row" nowrap>スペース</th>
+        <td>
+          <%= @customer.space.count.to_s(:delimited) %>個
+          <%= link_to '参加スペース一覧', spaces_path, class: 'btn btn-outline-info btn-rounded btn-sm' %>
+<% if @customer.member.first.space_create_power? %>
+          <%= link_to '作成', new_space_path(customer_code: @customer.code), class: 'btn btn-outline-primary btn-rounded btn-sm' %>
+<% end %>
+        </td>
+      </tr>
+      <tr>
+        <th scope="row" nowrap>登録日時</th>
+        <td><%= l(@customer.created_at) %></td>
+      </tr>
+    </table>
+  </div>
+</main>

@@ -12,15 +12,6 @@ class Infomation < ApplicationRecord
 
   # アクションに応じたタイトルを返却
   def action_title
-    def get_title(key)
-      action_user = User.find_by(id: action_user_id)
-      I18n.t(key)
-          .gsub(/%{action_user_name}/, action_user.present? ? action_user.name : I18n.t('infomation.action_user.blank.name'))
-          .gsub(/%{action_user_email}/, action_user.present? ? action_user.email : I18n.t('infomation.action_user.blank.email'))
-          .gsub(/%{customer_name}/, customer.name)
-          .gsub(/%{customer_code}/, customer.code)
-    end
-
     case action
     when 'MemberCreate' # メンバー招待
       get_title('infomation.action.member_create')
@@ -36,5 +27,16 @@ class Infomation < ApplicationRecord
       logger.warn("[WARN]Not found: Infomation.action_title(#{action})")
       nil
     end
+  end
+
+  private
+
+  # タイトルの動的要素を置き換えて返却
+  def get_title(key)
+    I18n.t(key)
+        .gsub(/%{action_user_name}/, action_user.present? ? action_user.name : I18n.t('infomation.action_user.blank.name'))
+        .gsub(/%{action_user_email}/, action_user.present? ? action_user.email : I18n.t('infomation.action_user.blank.email'))
+        .gsub(/%{customer_name}/, customer.present? ? customer.name : I18n.t('infomation.customer.blank.name'))
+        .gsub(/%{customer_code}/, customer.present? ? customer.code : I18n.t('infomation.customer.blank.code'))
   end
 end

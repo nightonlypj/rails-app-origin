@@ -1,46 +1,79 @@
-<h2><%= @customer.name %>のメンバー一覧</h2>
+<main class="container">
+  <h3 class="pt-3"><%= @customer.name %>のメンバー一覧</h3>
 
-<% if @customer.member.first.create_power? %>
-<%= link_to '招待', new_member_path(customer_code: @customer.code) %>
+<% if @customer.member.first.member_create_power? %>
+  <div class="row">
+    <div class="col">
+      <div class="float-end"><%= link_to 'メンバー招待', new_member_path(customer_code: @customer.code), class: 'btn btn-primary btn-rounded mb-1' %></div>
+    </div>
+  </div>
 <% end %>
 
-<p><%= page_entries_info @members %></p>
-<p><%= paginate @members %></p>
-<table>
-  <thead>
-    <tr>
-      <th colspan="2">表示名</th>
-      <th>メールアドレス</th>
-      <% if @customer.member.first.update_power? %>
-        <th colspan="2">権限</th>
-      <% else %>
-        <th>権限</th>
-      <% end %>
-      <th>招待日</th>
-      <% if @customer.member.first.destroy_power? %>
-        <th colspan="2">登録日</th>
-      <% else %>
-        <th>登録日</th>
-      <% end %>
-    </tr>
-  </thead>
-  <tbody>
-    <% @members.each do |member| %>
-      <tr>
-        <td><%= image_tag member.user.image_url(:small) %></td>
-        <td><%= member.user.name %></td>
-        <td><%= member.user.email %></td>
-        <td><%= member.power_i18n %></td>
-        <% if @customer.member.first.update_power? %>
-          <td><%= link_to '変更', edit_member_path(customer_code: @customer.code, user_code: member.user.code) %></td>
-        <% end %>
-        <td><%= member.invitationed_at.present? ? l(member.invitationed_at.to_date) : t('blank_word.member.invitationed_at') %></td>
-        <td><%= member.registrationed_at.present? ? l(member.registrationed_at.to_date) : t('blank_word.member.registrationed_at') %></td>
-        <% if @customer.member.first.destroy_power? %>
-          <td><%= link_to '解除', delete_member_path(customer_code: @customer.code, user_code: member.user.code) %></td>
-        <% end %>
-      </tr>
-    <% end %>
-  </tbody>
-</table>
-<p><%= paginate @members %></p>
+<% if @members.present? %>
+  <div class="row">
+    <div class="col-sm-5 d-flex align-items-center">
+      <%= page_entries_info @members %>
+    </div>
+    <div class="col-sm-7">
+      <div class="float-sm-end"><%= paginate @members %></div>
+    </div>
+  </div>
+<% end %>
+
+  <div class="table-responsive">
+    <table class="table table-sm align-middle">
+      <thead>
+        <tr>
+          <th scope="col" nowrap>氏名</th>
+          <th scope="col" nowrap>メールアドレス</th>
+          <th scope="col" nowrap>権限</th>
+          <th scope="col" nowrap>招待日▼</th>
+          <th scope="col" nowrap>登録日</th>
+        </tr>
+      </thead>
+      <tbody>
+<% if @members.blank? %>
+        <tr>
+          <td scope="row" colspan="5" class="text-center">メンバーがいません。</td>
+        </tr>
+<% end %>
+<% @members.each do |member| %>
+<% if member.user == current_user %>
+        <tr class="table-active">
+<% else %>
+        <tr>
+<% end %>
+          <td scope="row" nowrap>
+<% if member.registrationed_at.present? %>
+            <%= image_tag member.user.image_url(:small) %> <%= member.user.name %>
+<% end %>
+          </td>
+          <td nowrap><%= member.user.email %></td>
+          <td nowrap>
+            <%= member.power_i18n %>
+<% if @customer.member.first.member_update_power? %>
+            <wbr><%= link_to '変更', edit_member_path(customer_code: @customer.code, user_code: member.user.code), class: 'btn btn-outline-warning btn-rounded btn-sm float-end' %>
+<% end %>
+          </td>
+          <td nowrap><%= member.invitationed_at.present? ? l(member.invitationed_at.to_date) : t('blank_word.member.invitationed_at') %></td>
+          <td nowrap>
+            <%= member.registrationed_at.present? ? l(member.registrationed_at.to_date) : t('blank_word.member.registrationed_at') %>
+<% if @customer.member.first.member_destroy_power? %>
+            <wbr><%= link_to '解除', delete_member_path(customer_code: @customer.code, user_code: member.user.code), class: 'btn btn-outline-danger btn-rounded btn-sm float-end' %>
+<% end %>
+          </td>
+        </tr>
+<% end %>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="row">
+    <div class="col">
+      <div class="float-sm-end"><%= paginate @members %></div>
+    </div>
+  </div>
+
+  <hr/>
+  <%= render 'links' %>
+</main>

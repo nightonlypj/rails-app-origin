@@ -1,5 +1,6 @@
-cookie_domain: 'localhost.local'
-base_domain: 'localhost.local'
+env_name: '【開発環境】'
+base_domain: '127.0.0.1.nip.io'
+cookie_domain: '127.0.0.1.nip.io'
 mailer_from:
   name: '%{app_name}'
-  email: 'noreply@localhost.local'
+  email: 'noreply@localhost'

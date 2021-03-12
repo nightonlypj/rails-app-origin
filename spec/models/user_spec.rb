@@ -5,7 +5,7 @@ RSpec.describe User, type: :model do
   # 前提条件
   #   なし
   # テストパターン
-  #   正常値, ない（異常値）, 重複 → データ作成
+  #   ない, 正常値, 重複 → データ作成
   describe 'validates :code' do
     shared_context 'データ作成' do |code|
       let!(:user) { FactoryBot.build(:user, code: code) }
@@ -28,13 +28,13 @@ RSpec.describe User, type: :model do
     end
 
     # テストケース
+    context 'ない' do
+      include_context 'データ作成', ''
+      it_behaves_like 'ToNG'
+    end
     context '正常値' do
       include_context 'データ作成', Digest::MD5.hexdigest(SecureRandom.uuid)
       it_behaves_like 'ToOK'
-    end
-    context 'ない（異常値）' do
-      include_context 'データ作成', ''
-      it_behaves_like 'ToNG'
     end
     context '重複' do
       include_context '重複データ作成', Digest::MD5.hexdigest(SecureRandom.uuid)
@@ -42,11 +42,11 @@ RSpec.describe User, type: :model do
     end
   end
 
-  # 表示名
+  # 氏名
   # 前提条件
   #   なし
   # テストパターン
-  #   最小文字数よりも少ない, 最小文字数と同じ, 最大文字数と同じ, 最大文字数よりも多い → データ作成
+  #   ない, 最小文字数よりも少ない, 最小文字数と同じ, 最大文字数と同じ, 最大文字数よりも多い → データ作成
   describe 'validates :name' do
     shared_context 'データ作成' do |name|
       let!(:user) { FactoryBot.build(:user, name: name) }
@@ -65,6 +65,10 @@ RSpec.describe User, type: :model do
     end
 
     # テストケース
+    context 'ない' do
+      include_context 'データ作成', ''
+      it_behaves_like 'ToNG'
+    end
     context '最小文字数よりも少ない' do
       include_context 'データ作成', 'a' * (Settings['user_name_minimum'] - 1)
       it_behaves_like 'ToNG'
@@ -125,7 +129,7 @@ RSpec.describe User, type: :model do
   #   なし
   # テストパターン
   #   削除予定日時: ない（未予約）, ある（予約済み） → データ作成
-  describe 'def destroy_reserved?' do
+  describe 'destroy_reserved?' do
     shared_context 'データ作成' do |destroy_schedule_at|
       let!(:user) { FactoryBot.create(:user, destroy_schedule_at: destroy_schedule_at) }
     end
@@ -150,7 +154,7 @@ RSpec.describe User, type: :model do
   #   削除予定日時: ない
   # テストパターン
   #   なし
-  describe 'def set_destroy_reserve' do
+  describe 'set_destroy_reserve' do
     let!(:user) { FactoryBot.create(:user) }
 
     # テストケース・内容
@@ -175,7 +179,7 @@ RSpec.describe User, type: :model do
   #   削除予定日時: ある
   # テストパターン
   #   なし
-  describe 'def set_undo_destroy_reserve' do
+  describe 'set_undo_destroy_reserve' do
     let!(:user) { FactoryBot.create(:user, destroy_requested_at: Time.current, destroy_schedule_at: Time.current + Settings['destroy_schedule_days'].days) }
 
     # テストケース・内容
@@ -193,13 +197,13 @@ RSpec.describe User, type: :model do
     end
   end
 
-  # ユーザーの画像URLを返却
+  # 画像URLを返却
   # 前提条件
   #   なし
   # テストパターン
   #   画像: ない, ある
-  #   mini, small, medium, large, 未定義
-  describe 'def image_url' do
+  #   mini, small, medium, large, xlarge, 未定義
+  describe 'image_url' do
     let!(:user) { FactoryBot.create(:user) }
 
     # テスト内容
@@ -220,6 +224,7 @@ RSpec.describe User, type: :model do
       it_behaves_like 'ToOK', :small
       it_behaves_like 'ToOK', :medium
       it_behaves_like 'ToOK', :large
+      it_behaves_like 'ToOK', :xlarge
       it_behaves_like 'ToNG', nil
     end
     context '画像がある' do
@@ -228,6 +233,7 @@ RSpec.describe User, type: :model do
       it_behaves_like 'ToOK', :small
       it_behaves_like 'ToOK', :medium
       it_behaves_like 'ToOK', :large
+      it_behaves_like 'ToOK', :xlarge
       it_behaves_like 'ToNG', nil
       include_context '画像削除処理'
     end

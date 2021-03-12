@@ -1,0 +1,31 @@
+<% validate_enabled = @member.errors.any? %>
+<%= form_with(model: @member, url: update_member_path(customer_code: @customer.code, user_code: @member.user.code), html: { novalidate: true }, local: true) do |form| %>
+<% if @member.registrationed_at.present? %>
+  <%= form.label '氏名:', class: "form-label small" %>
+  <div class="mb-3">
+    <%= image_tag @member.user.image_url(:small) %> <%= @member.user.name %>
+  </div>
+<% else %>
+  <div class="note note-info mb-3">
+    登録待ちのメンバーです。
+  </div>
+<% end %>
+
+  <%= form.label 'メールアドレス:', class: "form-label small" %>
+  <div class="mb-3">
+    <%= @member.user.email %>
+  </div>
+
+  <%= form.label '権限:', class: "form-label small" %>
+  <div class="form-outline<%= input_size_class_name(@member, :power) %>">
+    <% Member.powers.each do |power| %>
+      <div class="form-check form-check-inline mb-2<%= validate_class_name(validate_enabled, @member, :power) %>">
+        <%= form.radio_button :power, power[0], class: "form-check-input#{validate_class_name(validate_enabled, @member, :power)}" %>
+        <%= form.label Member.powers_i18n[power[0]], class: 'form-check-label', for: "member_power_#{power[0].downcase}" %>
+      </div>
+    <% end %>
+    <%= render 'users/shared/field_error_messages', messages: @member.errors[:power] %>
+  </div>
+
+  <%= form.submit '変更', class: 'btn btn-warning' %>
+<% end %>

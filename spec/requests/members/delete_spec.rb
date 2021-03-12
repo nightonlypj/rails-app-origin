@@ -1,8 +1,6 @@
 require 'rails_helper'
 
 RSpec.describe 'Members', type: :request do
-  include_context 'リクエストスペース作成'
-
   # GET /members/:customer_code/:user_code/delete（ベースドメイン） メンバー解除
   # 前提条件
   #   なし
@@ -12,9 +10,10 @@ RSpec.describe 'Members', type: :request do
   #   顧客: 所属, 未所属, 存在しない, ない → 事前にデータ作成
   #   対象: ない, 自分, Owner, Admin, Member → 事前にデータ作成
   #   ベースドメイン, 存在するサブドメイン, 存在しないサブドメイン → 事前にデータ作成
-  describe 'GET /delete' do
+  describe 'GET #delete' do
+    include_context 'リクエストスペース作成'
     include_context 'メンバー作成', 1, 1, 1, 0, 'ASC'
-    include_context '対象外メンバー作成', 'ASC'
+    include_context 'メンバー作成（対象外）', 'ASC'
 
     # テスト内容
     shared_examples_for 'ToOK' do
@@ -23,7 +22,7 @@ RSpec.describe 'Members', type: :request do
         expect(response).to be_successful
       end
     end
-    shared_examples_for 'ToNG' do
+    shared_examples_for 'ToNot' do
       it '存在しないステータス' do
         get delete_member_path(customer_code: customer_code, user_code: user_code), headers: headers
         expect(response).to be_not_found
@@ -93,7 +92,7 @@ RSpec.describe 'Members', type: :request do
     end
     shared_examples_for '[ログイン中/削除予約済み][*][未所属/存在しない][*]ベースドメイン' do
       let!(:headers) { BASE_HEADER }
-      it_behaves_like 'ToNG'
+      it_behaves_like 'ToNot'
     end
     shared_examples_for '[*][*][*][*]存在するサブドメイン' do
       let!(:headers) { @space_header }

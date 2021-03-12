@@ -6,7 +6,7 @@ RSpec.describe Member, type: :model do
   #   なし
   # テストパターン
   #   招待日時: ない, ある → データ作成
-  #   招待顧客ID・依頼日時・完了日時: ない・ない・ない, 一致・ある・ない, 不一致・ある・ない, 一致・ある・ある, 不一致・ある・ある → データ作成
+  #   招待顧客・依頼日時・完了日時: ない・ない・ない, 一致・ある・ない, 不一致・ある・ない, 一致・ある・ある, 不一致・ある・ある → データ作成
   describe 'registrationed_at' do
     let!(:customers) { FactoryBot.create_list(:customer, 2) }
     shared_context 'データ作成' do |invitationed_flag, customer_flag, requested_flag, completed_flag|
@@ -56,55 +56,55 @@ RSpec.describe Member, type: :model do
     end
 
     # テストケース
-    context '招待日時：ない、招待顧客ID・依頼日時・完了日時：ない・ない・ない' do
+    context '招待日時：ない、招待顧客・依頼日時・完了日時：ない・ない・ない' do
       include_context 'データ作成', nil, nil, nil, nil
       it_behaves_like '自分で顧客作成'
     end
-    context '招待日時：ない、招待顧客ID・依頼日時・完了日時：一致・ある・ない' do # Tips: 不整合（招待したのに招待日時がない）
+    context '招待日時：ない、招待顧客・依頼日時・完了日時：一致・ある・ない' do # Tips: 不整合（招待したのに招待日時がない）
       include_context 'データ作成', nil, true, true, nil
       it_behaves_like 'この顧客で招待・登録未完了'
     end
-    context '招待日時：ない、招待顧客ID・依頼日時・完了日時：不一致・ある・ない' do # Tips: 不整合（未登録で顧客作成できない）
+    context '招待日時：ない、招待顧客・依頼日時・完了日時：不一致・ある・ない' do # Tips: 不整合（未登録で顧客作成できない）
       include_context 'データ作成', nil, false, true, nil
       it_behaves_like '他の顧客で招待・登録未完了'
     end
-    context '招待日時：ない、招待顧客ID・依頼日時・完了日時：一致・ある・ある' do # Tips: 不整合（招待したのに招待日時がない）
+    context '招待日時：ない、招待顧客・依頼日時・完了日時：一致・ある・ある' do # Tips: 不整合（招待したのに招待日時がない）
       include_context 'データ作成', nil, true, true, true
       it_behaves_like 'この顧客で招待・登録完了'
     end
-    context '招待日時：ない、招待顧客ID・依頼日時・完了日時：不一致・ある・ある' do # Tips: 他で招待された後に自分で顧客作成
+    context '招待日時：ない、招待顧客・依頼日時・完了日時：不一致・ある・ある' do # Tips: 他で招待された後に自分で顧客作成
       include_context 'データ作成', nil, false, true, true
       it_behaves_like '他の顧客で招待・登録完了'
     end
 
-    context '招待日時：ある、招待顧客ID・依頼日時・完了日時：ない・ない・ない' do
+    context '招待日時：ある、招待顧客・依頼日時・完了日時：ない・ない・ない' do
       include_context 'データ作成', true, nil, nil, nil
       it_behaves_like '招待前にアカウント作成'
     end
-    context '招待日時：ある、招待顧客ID・依頼日時・完了日時：一致・ある・ない' do
+    context '招待日時：ある、招待顧客・依頼日時・完了日時：一致・ある・ない' do
       include_context 'データ作成', true, true, true, nil
       it_behaves_like 'この顧客で招待・登録未完了'
     end
-    context '招待日時：ある、招待顧客ID・依頼日時・完了日時：不一致・ある・ない' do
+    context '招待日時：ある、招待顧客・依頼日時・完了日時：不一致・ある・ない' do
       include_context 'データ作成', true, false, true, nil
       it_behaves_like '他の顧客で招待・登録未完了'
     end
-    context '招待日時：ある、招待顧客ID・依頼日時・完了日時：一致・ある・ある' do
+    context '招待日時：ある、招待顧客・依頼日時・完了日時：一致・ある・ある' do
       include_context 'データ作成', true, true, true, true
       it_behaves_like 'この顧客で招待・登録完了'
     end
-    context '招待日時：ある、招待顧客ID・依頼日時・完了日時：不一致・ある・ある' do
+    context '招待日時：ある、招待顧客・依頼日時・完了日時：不一致・ある・ある' do
       include_context 'データ作成', true, false, true, true
       it_behaves_like '他の顧客で招待・登録完了'
     end
   end
 
-  # 招待権限があるかを返却
+  # 顧客情報変更の権限があるかを返却
   # 前提条件
-  #   引数なし
+  #   なし
   # テストパターン
   #   権限: Owner, Admin, Member → データ作成
-  describe 'create_power?' do
+  describe 'customer_update_power?' do
     let!(:customer) { FactoryBot.create(:customer) }
     shared_context 'データ作成' do |power|
       let!(:user) { FactoryBot.create(:user) }
@@ -114,12 +114,51 @@ RSpec.describe Member, type: :model do
     # テスト内容
     shared_examples_for 'ToOK' do
       it 'trueが返却される' do
-        expect(member.create_power?).to eq(true)
+        expect(member.customer_update_power?).to eq(true)
       end
     end
     shared_examples_for 'ToNG' do
       it 'falseが返却される' do
-        expect(member.create_power?).to eq(false)
+        expect(member.customer_update_power?).to eq(false)
+      end
+    end
+
+    # テストケース
+    context '権限がOwner' do
+      include_context 'データ作成', :Owner
+      it_behaves_like 'ToOK'
+    end
+    context '権限がAdmin' do
+      include_context 'データ作成', :Admin
+      it_behaves_like 'ToNG'
+    end
+    context '権限がMember' do
+      include_context 'データ作成', :Member
+      it_behaves_like 'ToNG'
+    end
+  end
+
+  # メンバー招待の権限があるかを返却
+  # 前提条件
+  #   引数なし
+  # テストパターン
+  #   権限: Owner, Admin, Member → データ作成
+  describe 'member_create_power?' do
+    let!(:customer) { FactoryBot.create(:customer) }
+    shared_context 'データ作成' do |power|
+      let!(:user) { FactoryBot.create(:user) }
+      let!(:member) { FactoryBot.create(:member, customer_id: customer.id, user_id: user.id, power: power) }
+    end
+
+    # テスト内容
+    shared_examples_for 'ToOK' do
+      it 'trueが返却される' do
+        expect(member.member_create_power?).to eq(true)
+      end
+    end
+    shared_examples_for 'ToNG' do
+      it 'falseが返却される' do
+        expect(member.member_create_power?).to eq(false)
       end
     end
 
@@ -138,13 +177,13 @@ RSpec.describe Member, type: :model do
     end
   end
 
-  # 招待権限があるかを返却
+  # メンバー招待の権限があるかを返却
   # 前提条件
   #   引数あり
   # テストパターン
   #   権限: Owner, Admin, Member → データ作成
   #   対象: Owner, Admin, Member
-  describe 'create_power?(taget_user_power)' do
+  describe 'member_create_power?(taget_user_power)' do
     let!(:customer) { FactoryBot.create(:customer) }
     shared_context 'データ作成' do |power|
       let!(:user) { FactoryBot.create(:user) }
@@ -154,12 +193,12 @@ RSpec.describe Member, type: :model do
     # テスト内容
     shared_examples_for 'ToOK' do
       it 'trueが返却される' do
-        expect(member.create_power?(taget_user_power)).to eq(true)
+        expect(member.member_create_power?(taget_user_power)).to eq(true)
       end
     end
     shared_examples_for 'ToNG' do
       it 'falseが返却される' do
-        expect(member.create_power?(taget_user_power)).to eq(false)
+        expect(member.member_create_power?(taget_user_power)).to eq(false)
       end
     end
 
@@ -209,12 +248,12 @@ RSpec.describe Member, type: :model do
     end
   end
 
-  # 変更権限があるかを返却
+  # メンバー権限変更の権限があるかを返却
   # 前提条件
   #   引数なし
   # テストパターン
   #   権限: Owner, Admin, Member → データ作成
-  describe 'update_power?' do
+  describe 'member_update_power?' do
     let!(:customer) { FactoryBot.create(:customer) }
     shared_context 'データ作成' do |power|
       let!(:user) { FactoryBot.create(:user) }
@@ -224,12 +263,12 @@ RSpec.describe Member, type: :model do
     # テスト内容
     shared_examples_for 'ToOK' do
       it 'trueが返却される' do
-        expect(member.update_power?).to eq(true)
+        expect(member.member_update_power?).to eq(true)
       end
     end
     shared_examples_for 'ToNG' do
       it 'falseが返却される' do
-        expect(member.update_power?).to eq(false)
+        expect(member.member_update_power?).to eq(false)
       end
     end
 
@@ -248,13 +287,13 @@ RSpec.describe Member, type: :model do
     end
   end
 
-  # 変更権限があるかを返却
+  # メンバー権限変更の権限があるかを返却
   # 前提条件
   #   引数あり
   # テストパターン
   #   権限: Owner, Admin, Member → データ作成
   #   対象: Owner, Admin, Member
-  describe 'update_power?(taget_user_power)' do
+  describe 'member_update_power?(taget_user_power)' do
     let!(:customer) { FactoryBot.create(:customer) }
     shared_context 'データ作成' do |power|
       let!(:user) { FactoryBot.create(:user) }
@@ -264,12 +303,12 @@ RSpec.describe Member, type: :model do
     # テスト内容
     shared_examples_for 'ToOK' do
       it 'trueが返却される' do
-        expect(member.update_power?(taget_user_power)).to eq(true)
+        expect(member.member_update_power?(taget_user_power)).to eq(true)
       end
     end
     shared_examples_for 'ToNG' do
       it 'falseが返却される' do
-        expect(member.update_power?(taget_user_power)).to eq(false)
+        expect(member.member_update_power?(taget_user_power)).to eq(false)
       end
     end
 
@@ -319,12 +358,12 @@ RSpec.describe Member, type: :model do
     end
   end
 
-  # 解除権限があるかを返却
+  # メンバー解除の権限があるかを返却
   # 前提条件
   #   引数なし
   # テストパターン
   #   権限: Owner, Admin, Member → データ作成
-  describe 'destroy_power?' do
+  describe 'member_destroy_power?' do
     let!(:customer) { FactoryBot.create(:customer) }
     shared_context 'データ作成' do |power|
       let!(:user) { FactoryBot.create(:user) }
@@ -334,12 +373,12 @@ RSpec.describe Member, type: :model do
     # テスト内容
     shared_examples_for 'ToOK' do
       it 'trueが返却される' do
-        expect(member.destroy_power?).to eq(true)
+        expect(member.member_destroy_power?).to eq(true)
       end
     end
     shared_examples_for 'ToNG' do
       it 'falseが返却される' do
-        expect(member.destroy_power?).to eq(false)
+        expect(member.member_destroy_power?).to eq(false)
       end
     end
 
@@ -358,13 +397,13 @@ RSpec.describe Member, type: :model do
     end
   end
 
-  # 解除権限があるかを返却
+  # メンバー解除の権限があるかを返却
   # 前提条件
   #   引数あり
   # テストパターン
   #   権限: Owner, Admin, Member → データ作成
   #   対象: Owner, Admin, Member
-  describe 'destroy_power?(taget_user_power)' do
+  describe 'member_destroy_power?(taget_user_power)' do
     let!(:customer) { FactoryBot.create(:customer) }
     shared_context 'データ作成' do |power|
       let!(:user) { FactoryBot.create(:user) }
@@ -374,12 +413,12 @@ RSpec.describe Member, type: :model do
     # テスト内容
     shared_examples_for 'ToOK' do
       it 'trueが返却される' do
-        expect(member.destroy_power?(taget_user_power)).to eq(true)
+        expect(member.member_destroy_power?(taget_user_power)).to eq(true)
       end
     end
     shared_examples_for 'ToNG' do
       it 'falseが返却される' do
-        expect(member.destroy_power?(taget_user_power)).to eq(false)
+        expect(member.member_destroy_power?(taget_user_power)).to eq(false)
       end
     end
 
@@ -426,6 +465,84 @@ RSpec.describe Member, type: :model do
       it_behaves_like '[Admin/Member]対象がOwner'
       it_behaves_like '[Member]対象がAdmin'
       it_behaves_like '[Member]対象がMember'
+    end
+  end
+
+  # スペース作成の権限があるかを返却
+  # 前提条件
+  #   なし
+  # テストパターン
+  #   権限: Owner, Admin, Member → データ作成
+  describe 'space_create_power?' do
+    let!(:customer) { FactoryBot.create(:customer) }
+    shared_context 'データ作成' do |power|
+      let!(:user) { FactoryBot.create(:user) }
+      let!(:member) { FactoryBot.create(:member, customer_id: customer.id, user_id: user.id, power: power) }
+    end
+
+    # テスト内容
+    shared_examples_for 'ToOK' do
+      it 'trueが返却される' do
+        expect(member.space_create_power?).to eq(true)
+      end
+    end
+    shared_examples_for 'ToNG' do
+      it 'falseが返却される' do
+        expect(member.space_create_power?).to eq(false)
+      end
+    end
+
+    # テストケース
+    context '権限がOwner' do
+      include_context 'データ作成', :Owner
+      it_behaves_like 'ToOK'
+    end
+    context '権限がAdmin' do
+      include_context 'データ作成', :Admin
+      it_behaves_like 'ToOK'
+    end
+    context '権限がMember' do
+      include_context 'データ作成', :Member
+      it_behaves_like 'ToNG'
+    end
+  end
+
+  # スペース情報変更の権限があるかを返却
+  # 前提条件
+  #   なし
+  # テストパターン
+  #   権限: Owner, Admin, Member → データ作成
+  describe 'space_update_power?' do
+    let!(:customer) { FactoryBot.create(:customer) }
+    shared_context 'データ作成' do |power|
+      let!(:user) { FactoryBot.create(:user) }
+      let!(:member) { FactoryBot.create(:member, customer_id: customer.id, user_id: user.id, power: power) }
+    end
+
+    # テスト内容
+    shared_examples_for 'ToOK' do
+      it 'trueが返却される' do
+        expect(member.space_update_power?).to eq(true)
+      end
+    end
+    shared_examples_for 'ToNG' do
+      it 'falseが返却される' do
+        expect(member.space_update_power?).to eq(false)
+      end
+    end
+
+    # テストケース
+    context '権限がOwner' do
+      include_context 'データ作成', :Owner
+      it_behaves_like 'ToOK'
+    end
+    context '権限がAdmin' do
+      include_context 'データ作成', :Admin
+      it_behaves_like 'ToOK'
+    end
+    context '権限がMember' do
+      include_context 'データ作成', :Member
+      it_behaves_like 'ToNG'
     end
   end
 end

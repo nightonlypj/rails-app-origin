@@ -16,15 +16,11 @@ RSpec.describe 'layouts/application', type: :view do
       render
       expect(rendered).to include("\"#{domain}#{new_user_registration_path}\"")
     end
-    # it 'ログインユーザーの表示名が含まれない' do # Tips: 未ログインの為、対象なし
+    # it 'ログインユーザーの氏名が含まれない' do # Tips: 未ログインの為、対象なし
     # end
     it '登録情報変更のパスが含まれない' do
       render
       expect(rendered).not_to include("\"#{domain}#{edit_user_registration_path}\"")
-    end
-    it '所属一覧のパスが含まれない' do
-      render
-      expect(rendered).not_to include("\"#{domain}#{customers_path}\"")
     end
     it 'ログアウトのパスが含まれない' do
       render
@@ -40,17 +36,13 @@ RSpec.describe 'layouts/application', type: :view do
       render
       expect(rendered).not_to include("\"#{domain}#{new_user_registration_path}\"")
     end
-    it 'ログインユーザーの表示名が含まれる' do
+    it 'ログインユーザーの氏名が含まれる' do
       render
       expect(rendered).to include(user.name)
     end
     it '登録情報変更のパスが含まれる' do
       render
       expect(rendered).to include("\"#{domain}#{edit_user_registration_path}\"")
-    end
-    it '所属一覧のパスが含まれる' do
-      render
-      expect(rendered).to include("\"#{domain}#{customers_path}\"")
     end
     it 'ログアウトのパスが含まれる' do
       render
@@ -61,24 +53,13 @@ RSpec.describe 'layouts/application', type: :view do
   shared_examples_for '削除予約表示' do
     it 'アカウント削除取り消しのパスが含まれる' do
       render
-      expect(rendered).to include("\"#{domain}#{users_undo_delete_path}\"")
+      expect(rendered).to include("\"#{domain}#{delete_undo_user_registration_path}\"")
     end
   end
   shared_examples_for '削除予約非表示' do
     it 'アカウント削除取り消しのパスが含まれない' do
       render
-      expect(rendered).not_to include("\"#{domain}#{users_undo_delete_path}\"")
-    end
-  end
-
-  shared_examples_for 'スペース情報表示' do
-    it 'スペース名が含まれる' do
-      render
-      expect(rendered).to include(@request_space.name)
-    end
-    it 'スペース編集のパスが含まれる' do
-      render
-      expect(rendered).to include("\"#{edit_space_path}\"")
+      expect(rendered).not_to include("\"#{domain}#{delete_undo_user_registration_path}\"")
     end
   end
 
@@ -87,40 +68,34 @@ RSpec.describe 'layouts/application', type: :view do
     let!(:domain) { '' }
     it_behaves_like '未ログイン表示'
     it_behaves_like '削除予約非表示'
-    # it_behaves_like 'スペース情報非表示' # Tips: ベースドメインの為、対象なし
   end
   shared_examples_for '[ログイン中]ベースドメイン' do
     let!(:domain) { '' }
     it_behaves_like 'ログイン中表示'
     it_behaves_like '削除予約非表示'
-    # it_behaves_like 'スペース情報非表示' # Tips: ベースドメインの為、対象なし
   end
   shared_examples_for '[削除予約済み]ベースドメイン' do
     let!(:domain) { '' }
     it_behaves_like 'ログイン中表示'
     it_behaves_like '削除予約表示'
-    # it_behaves_like 'スペース情報非表示' # Tips: ベースドメインの為、対象なし
   end
   shared_examples_for '[未ログイン]存在するサブドメイン' do
     let!(:domain) { "//#{Settings['base_domain']}" }
     include_context 'リクエストスペース作成'
     it_behaves_like '未ログイン表示'
     it_behaves_like '削除予約非表示'
-    it_behaves_like 'スペース情報表示'
   end
   shared_examples_for '[ログイン中]存在するサブドメイン' do
     let!(:domain) { "//#{Settings['base_domain']}" }
     include_context 'リクエストスペース作成'
     it_behaves_like 'ログイン中表示'
     it_behaves_like '削除予約非表示'
-    it_behaves_like 'スペース情報表示'
   end
   shared_examples_for '[削除予約済み]存在するサブドメイン' do
     let!(:domain) { "//#{Settings['base_domain']}" }
     include_context 'リクエストスペース作成'
     it_behaves_like 'ログイン中表示'
     it_behaves_like '削除予約表示'
-    it_behaves_like 'スペース情報表示'
   end
 
   context '未ログイン' do

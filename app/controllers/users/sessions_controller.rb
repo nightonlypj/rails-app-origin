@@ -5,17 +5,24 @@ class Users::SessionsController < Devise::SessionsController
   before_action :not_found_sub_domain_response, only: %i[create destroy]
   # before_action :configure_sign_in_params, only: %i[create]
 
-  # GET /users/sign_in ログイン
+  # GET /users/sign_in（ベースドメイン） ログイン
   # def new
   #   super
   # end
 
-  # POST /users/sign_in ログイン(処理)
-  # def create
-  #   super
-  # end
+  # POST /users/sign_in（ベースドメイン） ログイン(処理)
+  def create
+    if params.present? && params[:user].present?
+      user = User.find_by(email: params[:user][:email])
+      if user.present? && user.invitation_requested_at.present? && user.invitation_completed_at.blank?
+        return redirect_to new_user_confirmation_path, alert: t('alert.user.invitation_completed_at.blank')
+      end
+    end
 
-  # DELETE /users/sign_out ログアウト(処理)
+    super
+  end
+
+  # DELETE(GET) /users/sign_out（ベースドメイン） ログアウト(処理)
   # def destroy
   #   super
   # end

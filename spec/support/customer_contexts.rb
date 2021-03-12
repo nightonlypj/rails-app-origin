@@ -15,8 +15,12 @@ shared_context '顧客作成' do |owner_count, admin_count, member_count|
       FactoryBot.create(:member, customer_id: customers[index].id, user_id: user.id, power: :Member)
       index += 1
     end
-    @create_customers = Customer.order(created_at: 'ASC', id: 'ASC')
+    @create_customers = Customer.order(created_at: 'DESC', id: 'DESC')
                                 .includes(:member).where(members: { user_id: user.id })
     raise "#{@create_customers.count} != #{count}" if @create_customers.count != count
   end
+end
+
+shared_context '顧客作成（対象外）' do
+  let!(:outside_customer) { FactoryBot.create(:customer) }
 end

@@ -1,68 +1,78 @@
 # Tips: id = customer_id & user_id
 # 顧客1
-- id: 111
+- id: 11
   customer_id: 1
-  user_id: 11 # 顧客1のOwner
+  user_id: 1
   power: 1
   invitation_user_id: null
   invitationed_at: null
-- id: 112
+- id: 12
   customer_id: 1
-  user_id: 12 # 顧客1のAdmin
+  user_id: 2
   power: 2
-  invitation_user_id: 11 # 顧客1のOwner
-  invitationed_at: '2020-01-01 00:00:00+0900'
-- id: 113
+  invitation_user_id: 1
+  invitationed_at: '2020-01-02 00:00:00+0900'
+- id: 14
   customer_id: 1
-  user_id: 13 # 顧客1のMember
+  user_id: 4
   power: 3
-  invitation_user_id: 12 # 顧客1のAdmin
-  invitationed_at: '2020-01-03 00:00:00+0900'
+  invitation_user_id: 2
+  invitationed_at: '2020-01-04 00:00:00+0900'
 
 # 顧客2
-- id: 221
+- id: 22
   customer_id: 2
-  user_id: 21 # 顧客2のOwner
+  user_id: 2
   power: 1
   invitation_user_id: null
   invitationed_at: null
-- id: 223
+- id: 21
   customer_id: 2
-  user_id: 23 # 顧客2のMember
-  power: 3
-  invitation_user_id: 21 # 顧客2のOwner
+  user_id: 1
+  power: 2
+  invitation_user_id: 2
   invitationed_at: '2020-02-01 00:00:00+0900'
 
 # 顧客3
-- id: 331
+- id: 33
   customer_id: 3
-  user_id: 31 # 顧客3のOwner/顧客2のMember
+  user_id: 3
   power: 1
   invitation_user_id: null
   invitationed_at: null
-- id: 231
-  customer_id: 2
-  user_id: 31 # 顧客3のOwner/顧客2のMember
+- id: 31
+  customer_id: 3
+  user_id: 1
   power: 3
-  invitation_user_id: 21 # 顧客2のOwner
-  invitationed_at: '2020-02-03 00:00:00+0900'
+  invitation_user_id: 3
+  invitationed_at: '2020-03-01 00:00:00+0900'
 
-# その他
-- id: 11
-  customer_id: 1
-  user_id: 2 # 顧客1の外部Member
-  power: 3
-  invitation_user_id: 12 # 顧客1のAdmin
-  invitationed_at: '2020-01-04 00:00:00+0900'
-- id: 13
-  customer_id: 1
-  user_id: 3 # 顧客1・2の外部Member
-  power: 3
-  invitation_user_id: 12 # 顧客1のAdmin
-  invitationed_at: '2020-01-05 00:00:00+0900'
-- id: 23
-  customer_id: 2
-  user_id: 3 # 顧客1・2の外部Member
-  power: 3
+# 顧客4
+- id: 41
+  customer_id: 4
+  user_id: 1
+  power: 1
   invitation_user_id: null
   invitationed_at: null
+- id: 42
+  customer_id: 4
+  user_id: 2
+  power: 3
+  invitation_user_id: 1
+  invitationed_at: '2020-04-02 00:00:00+0900'
+
+# 顧客5
+- id: 51
+  customer_id: 5
+  user_id: 1
+  power: 2
+  invitation_user_id: null
+  invitationed_at: null
+- id: 52
+  customer_id: 5
+  user_id: 2
+  power: 3
+  invitation_user_id: 1
+  invitationed_at: '2020-05-02 00:00:00+0900'
+
+# 顧客6 -> なし

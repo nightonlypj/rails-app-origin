@@ -1,10 +1,8 @@
 require 'rails_helper'
 
 RSpec.describe 'Members', type: :request do
-  include_context 'リクエストスペース作成'
-
-  # PATCH/PUT /members/:customer_code/:user_code（ベースドメイン） メンバー権限変更(処理)
-  # PATCH/PUT /members/:customer_code/:user_code.json（ベースドメイン） メンバー権限変更API
+  # PUT(PATCH) /members/:customer_code/:user_code（ベースドメイン） メンバー権限変更(処理)
+  # PUT(PATCH) /members/:customer_code/:user_code.json（ベースドメイン） メンバー権限変更API
   # 前提条件
   #   なし
   # テストパターン
@@ -14,47 +12,54 @@ RSpec.describe 'Members', type: :request do
   #   対象: ない, 自分, Owner, Admin, Member → 事前にデータ作成
   #   有効なパラメータ, 無効なパラメータ → 事前にデータ作成
   #   ベースドメイン, 存在するサブドメイン, 存在しないサブドメイン → 事前にデータ作成
-  describe 'PATCH /update' do
+  describe 'PUT #update' do
+    include_context 'リクエストスペース作成'
     include_context 'メンバー作成', 1, 1, 1, 0, 'ASC'
-    include_context '対象外メンバー作成', 'ASC'
+    include_context 'メンバー作成（対象外）', 'ASC'
     let!(:valid_attributes) { { power: 'Member' } }
     let!(:invalid_attributes) { { power: nil } }
 
     # テスト内容
     shared_examples_for 'OK' do
       it '権限が変更される' do
-        patch member_path(customer_code: customer_code, user_code: user_code), params: { member: attributes }, headers: headers
+        put update_member_path(customer_code: customer_code, user_code: user_code), params: { member: attributes }, headers: headers
         expect(Member.find(target_member.id).power).to eq(attributes[:power])
       end
       it '(json)権限が変更される' do
-        patch member_path(customer_code: customer_code, user_code: user_code, format: :json), params: { member: attributes }, headers: headers
+        put update_member_path(customer_code: customer_code, user_code: user_code, format: :json), params: { member: attributes }, headers: headers
         expect(Member.find(target_member.id).power).to eq(attributes[:power])
       end
     end
     shared_examples_for 'NG' do
       it '権限が変更されない' do
-        patch member_path(customer_code: customer_code, user_code: user_code), params: { member: attributes }, headers: headers
+        put update_member_path(customer_code: customer_code, user_code: user_code), params: { member: attributes }, headers: headers
         expect(Member.find(target_member.id).power).to eq(target_member.power)
       end
       it '(json)権限が変更されない' do
-        patch member_path(customer_code: customer_code, user_code: user_code, format: :json), params: { member: attributes }, headers: headers
+        put update_member_path(customer_code: customer_code, user_code: user_code, format: :json), params: { member: attributes }, headers: headers
         expect(Member.find(target_member.id).power).to eq(target_member.power)
       end
     end
 
-    shared_examples_for 'ToOK' do
-      it '成功ステータス' do
-        patch member_path(customer_code: customer_code, user_code: user_code), params: { member: attributes }, headers: headers
+    shared_examples_for 'ToError' do
+      it '成功ステータス' do # Tips: 再入力
+        put update_member_path(customer_code: customer_code, user_code: user_code), params: { member: attributes }, headers: headers
         expect(response).to be_successful
       end
+      it '(json)失敗レスポンス' do
+        put update_member_path(customer_code: customer_code, user_code: user_code, format: :json), params: { member: attributes }, headers: headers
+        expect(response).to have_http_status(:unprocessable_entity)
+        expect(JSON.parse(response.body)['status']).to eq('NG')
+        expect(JSON.parse(response.body)['error'].count).not_to eq(0)
+      end
     end
-    shared_examples_for 'ToNG' do |error|
+    shared_examples_for 'ToNot' do |error|
       it '存在しないステータス' do
-        patch member_path(customer_code: customer_code, user_code: user_code), params: { member: attributes }, headers: headers
+        put update_member_path(customer_code: customer_code, user_code: user_code), params: { member: attributes }, headers: headers
         expect(response).to be_not_found
       end
       it '(json)存在しないエラー' do
-        patch member_path(customer_code: customer_code, user_code: user_code, format: :json), params: { member: attributes }, headers: headers
+        put update_member_path(customer_code: customer_code, user_code: user_code, format: :json), params: { member: attributes }, headers: headers
         expect(response).to be_not_found
         message = response.body.present? ? JSON.parse(response.body)['error'] : nil
         expect(message).to error.present? ? eq(I18n.t(error)) : be_nil
@@ -62,13 +67,13 @@ RSpec.describe 'Members', type: :request do
     end
     shared_examples_for 'ToIndexOK' do |alert, notice|
       it '一覧にリダイレクト' do
-        patch member_path(customer_code: customer_code, user_code: user_code), params: { member: attributes }, headers: headers
+        put update_member_path(customer_code: customer_code, user_code: user_code), params: { member: attributes }, headers: headers
         expect(response).to redirect_to(members_path(customer_code: customer_code))
         expect(flash[:alert]).to alert.present? ? eq(I18n.t(alert)) : be_nil
         expect(flash[:notice]).to notice.present? ? eq(I18n.t(notice)) : be_nil
       end
       it '(json)成功レスポンス' do
-        patch member_path(customer_code: customer_code, user_code: user_code, format: :json), params: { member: attributes }, headers: headers
+        put update_member_path(customer_code: customer_code, user_code: user_code, format: :json), params: { member: attributes }, headers: headers
         expect(response).to be_ok
         expect(JSON.parse(response.body)['status']).to eq('OK')
         expect(JSON.parse(response.body)['notice']).to notice.present? ? eq(I18n.t(notice)) : be_nil
@@ -76,13 +81,13 @@ RSpec.describe 'Members', type: :request do
     end
     shared_examples_for 'ToIndexNG' do |alert, notice, error|
       it '一覧にリダイレクト' do
-        patch member_path(customer_code: customer_code, user_code: user_code), params: { member: attributes }, headers: headers
+        put update_member_path(customer_code: customer_code, user_code: user_code), params: { member: attributes }, headers: headers
         expect(response).to redirect_to(members_path(customer_code: customer_code))
         expect(flash[:alert]).to alert.present? ? eq(I18n.t(alert)) : be_nil
         expect(flash[:notice]).to notice.present? ? eq(I18n.t(notice)) : be_nil
       end
       it '(json)権限エラー' do
-        patch member_path(customer_code: customer_code, user_code: user_code, format: :json), params: { member: attributes }, headers: headers
+        put update_member_path(customer_code: customer_code, user_code: user_code, format: :json), params: { member: attributes }, headers: headers
         expect(response).to be_forbidden
         message = response.body.present? ? JSON.parse(response.body)['error'] : nil
         expect(message).to error.present? ? eq(I18n.t(error)) : be_nil
@@ -90,13 +95,13 @@ RSpec.describe 'Members', type: :request do
     end
     shared_examples_for 'ToLogin' do |alert, notice, error|
       it 'ログインにリダイレクト' do
-        patch member_path(customer_code: customer_code, user_code: user_code), params: { member: attributes }, headers: headers
+        put update_member_path(customer_code: customer_code, user_code: user_code), params: { member: attributes }, headers: headers
         expect(response).to redirect_to(new_user_session_path)
         expect(flash[:alert]).to alert.present? ? eq(I18n.t(alert)) : be_nil
         expect(flash[:notice]).to notice.present? ? eq(I18n.t(notice)) : be_nil
       end
       it '(json)認証エラー' do
-        patch member_path(customer_code: customer_code, user_code: user_code, format: :json), params: { member: attributes }, headers: headers
+        put update_member_path(customer_code: customer_code, user_code: user_code, format: :json), params: { member: attributes }, headers: headers
         expect(response).to be_unauthorized
         message = response.body.present? ? JSON.parse(response.body)['error'] : nil
         expect(message).to error.present? ? eq(I18n.t(error)) : be_nil
@@ -127,7 +132,7 @@ RSpec.describe 'Members', type: :request do
     shared_examples_for '[ログイン中][Owner][所属][Owner][無効]ベースドメイン' do
       let!(:headers) { BASE_HEADER }
       it_behaves_like 'NG'
-      it_behaves_like 'ToOK' # Tips: 再入力
+      it_behaves_like 'ToError'
     end
     shared_examples_for '[削除予約済み][Owner][所属][Owner][*]ベースドメイン' do
       let!(:headers) { BASE_HEADER }
@@ -147,7 +152,7 @@ RSpec.describe 'Members', type: :request do
     shared_examples_for '[ログイン中][Owner/Admin][所属][Admin/Member][無効]ベースドメイン' do
       let!(:headers) { BASE_HEADER }
       it_behaves_like 'NG'
-      it_behaves_like 'ToOK' # Tips: 再入力
+      it_behaves_like 'ToError'
     end
     shared_examples_for '[削除予約済み][Owner/Admin][所属][Admin/Member][*]ベースドメイン' do
       let!(:headers) { BASE_HEADER }
@@ -162,32 +167,32 @@ RSpec.describe 'Members', type: :request do
     shared_examples_for '[ログイン中/削除予約済み][*][未所属/存在しない][自分][*]ベースドメイン' do
       let!(:headers) { BASE_HEADER }
       # it_behaves_like 'NG' # Tips: 権限がない為、紐付かない
-      it_behaves_like 'ToNG', 'errors.messages.customer.code_error'
+      it_behaves_like 'ToNot', 'errors.messages.customer.code_error'
     end
     shared_examples_for '[ログイン中/削除予約済み][*][未所属/存在しない][Owner/Admin/Member][*]ベースドメイン' do
       let!(:headers) { BASE_HEADER }
       it_behaves_like 'NG'
-      it_behaves_like 'ToNG', 'errors.messages.customer.code_error'
+      it_behaves_like 'ToNot', 'errors.messages.customer.code_error'
     end
     shared_examples_for '[*][*][*][自分][*]存在するサブドメイン' do
       let!(:headers) { @space_header }
       # it_behaves_like 'NG' # Tips: 権限がない為、紐付かない
-      it_behaves_like 'ToNG', 'errors.messages.domain_error'
+      it_behaves_like 'ToNot', 'errors.messages.domain_error'
     end
     shared_examples_for '[*][*][*][Owner/Admin/Member][*]存在するサブドメイン' do
       let!(:headers) { @space_header }
       it_behaves_like 'NG'
-      it_behaves_like 'ToNG', 'errors.messages.domain_error'
+      it_behaves_like 'ToNot', 'errors.messages.domain_error'
     end
     shared_examples_for '[*][*][*][自分][*]存在しないサブドメイン' do
       let!(:headers) { NOT_SPACE_HEADER }
       # it_behaves_like 'NG' # Tips: 権限がない為、紐付かない
-      it_behaves_like 'ToNG', 'errors.messages.domain_error'
+      it_behaves_like 'ToNot', 'errors.messages.domain_error'
     end
     shared_examples_for '[*][*][*][Owner/Admin/Member][*]存在しないサブドメイン' do
       let!(:headers) { NOT_SPACE_HEADER }
       it_behaves_like 'NG'
-      it_behaves_like 'ToNG', 'errors.messages.domain_error'
+      it_behaves_like 'ToNot', 'errors.messages.domain_error'
     end
 
     shared_examples_for '[ログイン中/削除予約済み][Owner][所属][自分]有効なパラメータ' do

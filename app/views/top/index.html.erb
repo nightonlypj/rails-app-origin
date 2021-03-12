@@ -1,14 +1,21 @@
-<%= render 'new_infomations' %>
-
-<h3>新しいスペース</h3>
-<% if @new_spaces.blank? %>
-<p>Not found</p>
-<% else %>
-<ul>
-<% @new_spaces.each do |new_space| %>
-  <li><%= link_to new_space.name, "//#{new_space.subdomain}.#{Settings['base_domain']}" %></li>
-<% end %>
-</ul>
-<p><%= link_to 'もっと見る', spaces_path %></p>
-<% end %>
-<p><%= link_to 'スペース作成', new_space_path %></p>
+<main>
+  <div class="text-center py-2 mb-1" style="background-color: #F0F2F5">
+    <h1 class="h4 fw-bold my-2">＜サービスコンセプト＞</h1>
+    <p class="mb-2">＜サービス説明＞</p>
+    <%= link_to 'サービス概要', "#{t('my_url')}/summary", target: :_blank, rel: [:noopener, :noreferrer], class: 'btn btn-info btn-lg m-1 mb-2 px-3', role: 'button' %>
+    <%= link_to '料金プラン', "#{t('my_url')}/plan", target: :_blank, rel: [:noopener, :noreferrer], class: 'btn btn-info btn-lg m-1 mb-2 px-3', role: 'button' %>
+    <%= link_to 'お問い合わせ', "#{t('my_url')}/contact", target: :_blank, rel: [:noopener, :noreferrer], class: 'btn btn-dark btn-lg m-1 mb-2 px-3', role: 'button' %>
+  </div>
+  <div class="container">
+    <div class="row">
+      <div class="col-sm-6 px-0">
+        <%= render 'sign_up' unless user_signed_in? %>
+        <%= render 'join_spaces' if user_signed_in? %>
+        <%= render 'public_spaces' if @public_spaces.present? %>
+      </div>
+      <div class="col-sm-6 px-0">
+        <%= render 'infomations' if @infomations.present? %>
+      </div>
+    </div>
+  </div>
+</main>

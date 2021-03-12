@@ -1,6 +1,17 @@
 shared_context '顧客・ユーザー紐付け' do |invitationed_at, power|
   let!(:member) { FactoryBot.create(:member, customer_id: customer.id, user_id: user.id, invitationed_at: invitationed_at, power: power) }
 end
+shared_context '顧客・ユーザー紐付け（公開）' do |invitationed_at, power|
+  before do
+    FactoryBot.create(:member, customer_id: public_customer.id, user_id: user.id, invitationed_at: invitationed_at, power: power)
+  end
+end
+
+shared_context '顧客・ユーザー紐付け（3顧客・権限）' do
+  let!(:member_owner) { FactoryBot.create(:member, customer_id: customers[0].id, user_id: user.id, invitationed_at: Time.current, power: :Owner) }
+  let!(:member_admin) { FactoryBot.create(:member, customer_id: customers[1].id, user_id: user.id, invitationed_at: Time.current, power: :Admin) }
+  let!(:member_member) { FactoryBot.create(:member, customer_id: customers[2].id, user_id: user.id, invitationed_at: Time.current, power: :Member) }
+end
 
 shared_context 'メンバー作成' do |owner_count, admin_count, member_count, before_count, sort = 'DESC'|
   before do
@@ -22,10 +33,14 @@ shared_context 'メンバー作成' do |owner_count, admin_count, member_count, 
     @create_members = Member.where(customer_id: customer.id).order(created_at: sort, id: sort)
                             .includes(:user)
     raise "#{@create_members.count} != #{count} + #{before_count}" if @create_members.count != count + before_count
+
+    # Tips: 登録待ち(member.registrationed_atがnil)のユーザー
+    @create_users[count - 1].invitation_requested_at = Time.current
+    @create_users[count - 1].save!
   end
 end
 
-shared_context '対象外メンバー作成' do |sort = 'DESC'|
+shared_context 'メンバー作成（対象外）' do |sort = 'DESC'|
   let!(:outside_customer) { FactoryBot.create(:customer) }
   before do
     @create_outside_users = FactoryBot.create_list(:user, 3)

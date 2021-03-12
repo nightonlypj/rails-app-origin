@@ -4,17 +4,28 @@ class Users::ConfirmationsController < Devise::ConfirmationsController
   before_action :redirect_base_domain_response, only: %i[new show]
   before_action :not_found_sub_domain_response, only: %i[create]
 
-  # GET /users/confirmation/new メールアドレス確認メール再送
+  # GET /users/confirmation/new（ベースドメイン） メールアドレス確認[メール再送]
   # def new
   #   super
   # end
 
-  # POST /users/confirmation メールアドレス確認メール再送(処理)
-  # def create
-  #   super
-  # end
+  # POST /users/confirmation/new（ベースドメイン） メールアドレス確認[メール再送](処理)
+  def create
+    if params.present? && params[:user].present?
+      user = User.find_by(email: params[:user][:email])
+      if user.present? && user.invitation_requested_at.present? && user.invitation_completed_at.blank?
+        member = Member.where(customer_id: user.invitation_customer_id, user_id: user.id).first
+        customer = member.present? ? Customer.find_by(id: member.customer_id) : nil
+        invitation_user = member.present? ? User.find_by(id: member.invitation_user_id) : nil
+        UserMailer.with(user: user, member: member, customer: customer, invitation_user: invitation_user).member_create.deliver_now
+        return redirect_to new_user_session_path, notice: t('notice.user.invitation_token.send_instructions')
+      end
+    end
 
-  # GET /users/confirmation メールアドレス確認(処理)
+    super
+  end
+
+  # GET /users/confirmation（ベースドメイン） メールアドレス確認(処理)
   def show
     return redirect_to new_user_session_path, alert: already_confirmed_message if already_confirmed?(params[:confirmation_token])
     return redirect_to new_user_confirmation_path, alert: invalid_token_message unless valid_confirmation_token?(params[:confirmation_token])

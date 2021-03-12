@@ -1,0 +1,27 @@
+<% validate_enabled = @user.errors.any? %>
+<%= form_with(model: @user, url: create_member_registration_path(invitation_token: params[:invitation_token]), method: :post, html: { novalidate: true }, local: true) do |form| %>
+  <%= form.label 'メールアドレス:', class: "form-label small" %>
+  <div class="mb-3">
+    <%= @user.email %>
+  </div>
+
+  <div class="form-outline<%= input_size_class_name(@user, :name) %>">
+    <%= form.text_field :name, autocomplete: 'name', class: "form-control#{validate_class_name(validate_enabled, @user, :name)}" %>
+    <%= form.label '氏名', class: 'form-label', for: 'user_name' %>
+    <%= render 'users/shared/field_error_messages', messages: @user.errors[:name] %>
+  </div>
+
+  <div class="form-outline<%= input_size_class_name(@user, :password) %>">
+    <%= form.password_field :password, autocomplete: 'new-password', class: "form-control#{validate_password_class_name(validate_enabled)}" %>
+    <%= form.label "パスワード#{" [#{@minimum_password_length}文字以上]" if @minimum_password_length}", class: 'form-label', for: 'user_password' %>
+    <%= render 'users/shared/field_error_messages', messages: @user.errors[:password] %>
+  </div>
+
+  <div class="form-outline<%= input_size_class_name(@user, :password_confirmation) %>">
+    <%= form.password_field :password_confirmation, autocomplete: 'new-password', class: "form-control#{validate_password_class_name(validate_enabled)}" %>
+    <%= form.label 'パスワード(確認)', class: 'form-label', for: 'user_password_confirmation' %>
+    <%= render 'users/shared/field_error_messages', messages: @user.errors[:password_confirmation] %>
+  </div>
+
+  <%= form.submit '登録', class: 'btn btn-primary' %>
+<% end %>

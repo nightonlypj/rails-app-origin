@@ -14,5 +14,7 @@
  *= require_self
  */
 
-.field_error_messages {
-  color: red; } 
+ /* Tips: MDB5 3.1.0 バグ対応 */
+.form-check .form-check-input {
+    margin-left: -1.5em !important;
+}

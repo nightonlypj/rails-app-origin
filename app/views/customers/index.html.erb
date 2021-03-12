@@ -1,35 +1,46 @@
-<h2>所属一覧</h2>
+<main class="container">
+  <h3 class="pt-3">顧客一覧</h3>
 
-<% if @customers.blank? %>
-所属先がありません。
-<% else %>
 <% if @customers.total_count > @customers.limit_value %>
-<p><%= page_entries_info @customers %></p>
+  <div class="row">
+    <div class="col-sm-5 d-flex align-items-center">
+      <%= page_entries_info @customers %>
+    </div>
+    <div class="col-sm-7">
+      <div class="float-sm-end"><%= paginate @customers %></div>
+    </div>
+  </div>
 <% end %>
-<p><%= paginate @customers %></p>
-<table>
-  <thead>
-    <tr>
-      <th>顧客コード</th>
-      <th>顧客名</th>
-      <th>あなたの権限</th>
-      <th>メンバー</th>
-    </tr>
-  </thead>
-  <tbody>
+
+  <div class="table-responsive">
+    <table class="table table-sm align-middle">
+      <thead>
+        <tr>
+          <th scope="col" nowrap>組織・団体名 <wbr>(顧客コード)</th>
+          <th scope="col" nowrap>あなたの権限</th>
+          <th scope="col" nowrap>登録日▼</th>
+        </tr>
+      </thead>
+      <tbody>
+<% if @customers.blank? %>
+        <tr>
+          <td scope="row" colspan="3" class="text-center">所属先がありません。</td>
+        </tr>
+<% end %>
 <% @customers.each do |customer| %>
-    <tr>
-      <td><%= customer.code %></td>
-      <td><%= customer.name %></td>
-      <td>
-<% customer.member.each do |member| %>
-      <%= member.power_i18n %><br/>
+        <tr>
+          <td scope="row" nowrap><%= link_to customer.name, customer_path(customer.code) %> <wbr>(<%= customer.code %>)</td>
+          <td nowrap><%= customer.member.first.power_i18n %></td>
+          <td nowrap><%= l(customer.created_at.to_date) %></td>
+        </tr>
 <% end %>
-      </td>
-      <td><%= link_to '一覧', members_path(customer.code) %></td>
-    </tr>
-<% end %>
-  </tbody>
-</table>
-<p><%= paginate @customers %></p>
-<% end %>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="row">
+    <div class="col">
+      <div class="float-sm-end"><%= paginate @customers %></div>
+    </div>
+  </div>
+</main>

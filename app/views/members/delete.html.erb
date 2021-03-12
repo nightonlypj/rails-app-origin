@@ -1,22 +1,31 @@
-<h2><%= @customer.name %>のメンバー解除</h2>
+<main class="card mb-1" style="max-width: 640px; margin-left: auto; margin-right: auto">
+  <div class="card-body">
+    <h5 class="card-title"><%= @customer.name %>のメンバー解除</h5>
+    <p class="card-text">
 
-<div class="field">
-  <label>表示名</label>
-  <%= image_tag @member.user.image_url(:small) %> <%= @member.user.name %>
-</div>
+<% if @member.registrationed_at.present? %>
+      <label class="form-label small">氏名:</label>
+      <div class="mb-3">
+        <%= image_tag @member.user.image_url(:small) %> <%= @member.user.name %>
+      </div>
+<% else %>
+      <div class="note note-info mb-3">
+        登録待ちのメンバーです。
+      </div>
+<% end %>
 
-<div class="field">
-  <label>メールアドレス</label>
-  <%= @member.user.email %>
-</div>
+      <label class="form-label small">メールアドレス:</label>
+      <div class="mb-3">
+        <%= @member.user.email %>
+      </div>
 
-<div class="field">
-  <label>権限</label>
-  <%= @member.power_i18n %>
-</div>
+      <label class="form-label small">権限:</label>
+      <div class="mb-3">
+        <%= @member.power_i18n %>
+      </div>
 
-<p><%= button_to '解除確認', member_path(customer_code: @customer.code, user_code: @member.user.code), data: { confirm: '本当に解除しますか？' }, method: :delete %></p>
-
-<ul>
-  <li><%= link_to 'メンバー一覧', members_path(customer_code: @customer.code) %></li>
-</ul>
+      <p><%= button_to '解除', destroy_member_path(customer_code: @customer.code, user_code: @member.user.code), data: { confirm: '本当に解除しますか？' }, method: :delete, class: 'btn btn-danger' %></p>
+    </p>
+    <p class="card-footer"><%= render 'links' %></p>
+  </div>
+</main>

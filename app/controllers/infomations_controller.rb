@@ -1,5 +1,4 @@
 class InfomationsController < ApplicationController
-  before_action :not_found_json_sub_domain_response
   before_action :redirect_base_domain_response
 
   # GET /infomations（ベースドメイン） お知らせ一覧
@@ -9,6 +8,9 @@ class InfomationsController < ApplicationController
     @infomations = Infomation.order(started_at: 'DESC', id: 'DESC').page(params[:page]).per(Settings['default_infomations_limit'])
                              .where('started_at <= ? AND (ended_at IS NULL OR ended_at >= ?)', Time.current, Time.current)
                              .where('target = ? OR (target = ? AND user_id = ?)', Infomation.targets[:All], Infomation.targets[:User], user_id)
+    return if request.format.json? || @infomations.current_page <= [@infomations.total_pages, 1].max
+
+    redirect_to @infomations.total_pages <= 1 ? infomations_path : infomations_path(page: @infomations.total_pages)
   end
 
   # GET /infomations/1（ベースドメイン） お知らせ詳細
@@ -17,8 +19,10 @@ class InfomationsController < ApplicationController
     @infomation = Infomation.find(params[:id])
     return head :not_found if @infomation.blank? || !@infomation.target_user?(current_user) || @infomation.started_at > Time.current
     return if @infomation.ended_at.blank? || @infomation.ended_at >= Time.current
-    return render json: { error: t('errors.messages.infomation.ended') }, status: :not_found if request.format.json?
 
-    head :not_found
+    respond_to do |format|
+      format.html { head :not_found }
+      format.json { render json: { error: t('errors.messages.infomation.ended') }, status: :not_found }
+    end
   end
 end

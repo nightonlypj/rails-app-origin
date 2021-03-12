@@ -12,8 +12,8 @@ RSpec.describe 'Members', type: :request do
   #   権限: ある(Owner, Admin, Member), ない → データ作成
   #   顧客: 所属, 未所属, 存在しない, ない → 事前にデータ作成
   #   ベースドメイン, 存在するサブドメイン, 存在しないサブドメイン → 事前にデータ作成
-  describe 'GET /index' do
-    let!(:outside_customer) { FactoryBot.create(:customer) }
+  describe 'GET #index' do
+    include_context '顧客作成（対象外）'
 
     # テスト内容
     shared_examples_for 'ToOK' do
@@ -26,7 +26,7 @@ RSpec.describe 'Members', type: :request do
         expect(response).to be_successful
       end
     end
-    shared_examples_for 'ToNG' do |error|
+    shared_examples_for 'ToNot' do |error|
       it '存在しないステータス' do
         get members_path(customer_code: customer_code), headers: headers
         expect(response).to be_not_found
@@ -68,13 +68,13 @@ RSpec.describe 'Members', type: :request do
     end
 
     # テストケース
-    shared_examples_for '[ログイン中/削除予約済み][Owner/Admin/Member][所属]ベースドメイン' do
+    shared_examples_for '[ログイン中/削除予約済み][ある][所属]ベースドメイン' do
       let!(:headers) { BASE_HEADER }
       it_behaves_like 'ToOK'
     end
-    shared_examples_for '[ログイン中/削除予約済み][Owner/Admin/Member][未所属/存在しない]ベースドメイン' do
+    shared_examples_for '[ログイン中/削除予約済み][ある][未所属/存在しない]ベースドメイン' do
       let!(:headers) { BASE_HEADER }
-      it_behaves_like 'ToNG', 'errors.messages.customer.code_error'
+      it_behaves_like 'ToNot', 'errors.messages.customer.code_error'
     end
     shared_examples_for '[未ログイン][ない][未所属/存在しない]ベースドメイン' do
       let!(:headers) { BASE_HEADER }
@@ -82,7 +82,7 @@ RSpec.describe 'Members', type: :request do
     end
     shared_examples_for '[ログイン中/削除予約済み][ない][未所属/存在しない]ベースドメイン' do
       let!(:headers) { BASE_HEADER }
-      it_behaves_like 'ToNG', 'errors.messages.customer.code_error'
+      it_behaves_like 'ToNot', 'errors.messages.customer.code_error'
     end
     shared_examples_for '[*][*][*]存在するサブドメイン' do
       let!(:headers) { @space_header }
@@ -93,15 +93,15 @@ RSpec.describe 'Members', type: :request do
       it_behaves_like 'ToBase', nil, nil, 'errors.messages.domain_error'
     end
 
-    shared_examples_for '[ログイン中/削除予約済み][Owner/Admin/Member]顧客に所属' do
+    shared_examples_for '[ログイン中/削除予約済み][ある]顧客に所属' do
       let!(:customer_code) { customer.code }
-      it_behaves_like '[ログイン中/削除予約済み][Owner/Admin/Member][所属]ベースドメイン'
+      it_behaves_like '[ログイン中/削除予約済み][ある][所属]ベースドメイン'
       it_behaves_like '[*][*][*]存在するサブドメイン'
       it_behaves_like '[*][*][*]存在しないサブドメイン'
     end
-    shared_examples_for '[ログイン中/削除予約済み][Owner/Admin/Member]顧客に未所属' do
+    shared_examples_for '[ログイン中/削除予約済み][ある]顧客に未所属' do
       let!(:customer_code) { outside_customer.code }
-      it_behaves_like '[ログイン中/削除予約済み][Owner/Admin/Member][未所属/存在しない]ベースドメイン'
+      it_behaves_like '[ログイン中/削除予約済み][ある][未所属/存在しない]ベースドメイン'
       it_behaves_like '[*][*][*]存在するサブドメイン'
       it_behaves_like '[*][*][*]存在しないサブドメイン'
     end
@@ -117,9 +117,9 @@ RSpec.describe 'Members', type: :request do
       it_behaves_like '[*][*][*]存在するサブドメイン'
       it_behaves_like '[*][*][*]存在しないサブドメイン'
     end
-    shared_examples_for '[ログイン中/削除予約済み][Owner/Admin/Member]顧客が存在しない' do
+    shared_examples_for '[ログイン中/削除予約済み][ある]顧客が存在しない' do
       let!(:customer_code) { NOT_CUSTOMER_CODE }
-      it_behaves_like '[ログイン中/削除予約済み][Owner/Admin/Member][未所属/存在しない]ベースドメイン'
+      it_behaves_like '[ログイン中/削除予約済み][ある][未所属/存在しない]ベースドメイン'
       it_behaves_like '[*][*][*]存在するサブドメイン'
       it_behaves_like '[*][*][*]存在しないサブドメイン'
     end
@@ -138,10 +138,10 @@ RSpec.describe 'Members', type: :request do
 
     shared_examples_for '[ログイン中/削除予約済み]権限がある' do |power|
       include_context '顧客・ユーザー紐付け', Time.current, power
-      it_behaves_like '[ログイン中/削除予約済み][Owner/Admin/Member]顧客に所属'
-      it_behaves_like '[ログイン中/削除予約済み][Owner/Admin/Member]顧客に未所属'
-      it_behaves_like '[ログイン中/削除予約済み][Owner/Admin/Member]顧客が存在しない'
-      # it_behaves_like '[ログイン中/削除予約済み][Owner/Admin/Member]顧客がない' # Tips: 先にRoutingErrorになる
+      it_behaves_like '[ログイン中/削除予約済み][ある]顧客に所属'
+      it_behaves_like '[ログイン中/削除予約済み][ある]顧客に未所属'
+      it_behaves_like '[ログイン中/削除予約済み][ある]顧客が存在しない'
+      # it_behaves_like '[ログイン中/削除予約済み][ある]顧客がない' # Tips: 先にRoutingErrorになる
     end
     shared_examples_for '[未ログイン]権限がない' do
       # it_behaves_like '[未ログイン][ない]顧客に所属' # Tips: 権限がないの為、顧客に所属がない
@@ -183,7 +183,7 @@ RSpec.describe 'Members', type: :request do
   #   ベースドメイン, 顧客に所属, ログイン中/削除予約済み, Owner/Admin/Member
   # テストパターン
   #   ログイン中, ログイン中（削除予約済み） → データ＆状態作成
-  #   権限: Owner, Admin, Member → データ作成
+  #   権限: ある(Owner, Admin, Member) → データ作成
   #   所属メンバー: いない, 最大表示数と同じ, 最大表示数より多い → データ作成
   describe '@customer/@members' do
     let!(:headers) { BASE_HEADER }
@@ -191,11 +191,11 @@ RSpec.describe 'Members', type: :request do
 
     # テスト内容
     shared_examples_for 'ページ情報' do |page, power|
-      it '顧客名が含まれる' do
+      it '組織・団体名が含まれる' do
         get members_path(customer_code: customer_code, page: page), headers: headers
         expect(response.body).to include(customer.name)
       end
-      it '(json)顧客名が一致する' do
+      it '(json)組織・団体名が一致する' do
         get members_path(customer_code: customer_code, page: page, format: :json), headers: headers
         expect(JSON.parse(response.body)['customer']['name']).to eq(customer.name)
       end
@@ -268,27 +268,35 @@ RSpec.describe 'Members', type: :request do
       it '画像URLが含まれる' do # Tips: ユニークではない為、正確ではない
         get members_path(customer_code: customer_code, page: page), headers: headers
         (start_no..end_no).each do |no|
-          expect(response.body).to include("\"#{@create_members[no - 1].user.image_url(:small)}\"")
+          expect(response.body).to include("\"#{@create_members[no - 1].user.image_url(:small)}\"") if @create_members[no - 1].registrationed_at.present?
         end
       end
       it '(json)画像URLが一致する' do
         get members_path(customer_code: customer_code, page: page, format: :json), headers: headers
         parse_response = JSON.parse(response.body)['members']
         (start_no..end_no).each do |no|
-          expect(parse_response[no - start_no]['image_url']).to eq("https://#{Settings['base_domain']}#{@create_members[no - 1].user.image_url(:small)}")
+          if @create_members[no - 1].registrationed_at.present?
+            expect(parse_response[no - start_no]['image_url']).to eq("https://#{Settings['base_domain']}#{@create_members[no - 1].user.image_url(:small)}")
+          else
+            expect(parse_response[no - start_no]['image_url']).to be_nil
+          end
         end
       end
-      it '表示名が含まれる' do
+      it '氏名が含まれる' do
         get members_path(customer_code: customer_code, page: page), headers: headers
         (start_no..end_no).each do |no|
-          expect(response.body).to include(@create_members[no - 1].user.name)
+          expect(response.body).to include(@create_members[no - 1].user.name) if @create_members[no - 1].registrationed_at.present?
         end
       end
-      it '(json)表示名が一致する' do
+      it '(json)氏名が一致する' do
         get members_path(customer_code: customer_code, page: page, format: :json), headers: headers
         parse_response = JSON.parse(response.body)['members']
         (start_no..end_no).each do |no|
-          expect(parse_response[no - start_no]['name']).to eq(@create_members[no - 1].user.name)
+          if @create_members[no - 1].registrationed_at.present?
+            expect(parse_response[no - start_no]['name']).to eq(@create_members[no - 1].user.name)
+          else
+            expect(parse_response[no - start_no]['name']).to be_nil
+          end
         end
       end
       it 'メールアドレスが含まれる' do
@@ -397,14 +405,30 @@ RSpec.describe 'Members', type: :request do
       end
     end
 
+    shared_examples_for 'リダイレクト' do |page, redirect_page|
+      it '最終ページにリダイレクト' do
+        get members_path(customer_code: customer_code, page: page), headers: headers
+        if redirect_page == 1
+          expect(response).to redirect_to(members_path(customer_code: customer_code))
+        else
+          expect(response).to redirect_to(members_path(customer_code: customer_code, page: redirect_page))
+        end
+      end
+      it '(json)リダイレクトしない' do
+        get members_path(customer_code: customer_code, page: page, format: :json), headers: headers
+        expect(response).to be_successful
+      end
+    end
+
     # テストケース
-    shared_examples_for '[*][権限が]所属メンバーが最大表示数と同じ' do |power|
+    shared_examples_for '[*][ある]所属メンバーが最大表示数と同じ' do |power|
       include_context 'メンバー作成', Settings['test_customers_owner'], Settings['test_customers_admin'], Settings['test_customers_member'], 1
       it_behaves_like 'ページ情報', 1, power
       it_behaves_like 'ページネーション非表示', 1, 2
       it_behaves_like 'リスト表示', 1, power
+      it_behaves_like 'リダイレクト', 2, 1
     end
-    shared_examples_for '[*][権限が]所属メンバーが最大表示数より多い' do |power|
+    shared_examples_for '[*][ある]所属メンバーが最大表示数より多い' do |power|
       include_context 'メンバー作成', Settings['test_customers_owner'], Settings['test_customers_admin'], Settings['test_customers_member'] + 1, 1
       it_behaves_like 'ページ情報', 1, power
       it_behaves_like 'ページ情報', 2, power
@@ -412,13 +436,14 @@ RSpec.describe 'Members', type: :request do
       it_behaves_like 'ページネーション表示', 2, 1
       it_behaves_like 'リスト表示', 1, power
       it_behaves_like 'リスト表示', 2, power
+      it_behaves_like 'リダイレクト', 3, 2
     end
 
     shared_examples_for '[*]権限がある' do |power|
       include_context '顧客・ユーザー紐付け', Time.current, power
-      # it_behaves_like '[*][権限が]所属メンバーがいない', power # Tips: 自分が所属している為、1件以上
-      it_behaves_like '[*][権限が]所属メンバーが最大表示数と同じ', power
-      it_behaves_like '[*][権限が]所属メンバーが最大表示数より多い', power
+      # it_behaves_like '[*][ある]所属メンバーがいない', power # Tips: 自分が所属している為、1件以上
+      it_behaves_like '[*][ある]所属メンバーが最大表示数と同じ', power
+      it_behaves_like '[*][ある]所属メンバーが最大表示数より多い', power
     end
 
     context 'ログイン中' do

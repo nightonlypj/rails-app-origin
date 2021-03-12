@@ -1,37 +1,8 @@
-<h2>メンバー登録（β版）</h2>
+<%= render 'users/shared/error_messages', resource: @user %>
 
-<%= form_with(model: @user, url: registration_sign_up_path(invitation_token: params[:invitation_token]), method: :post, local: true) do |form| %>
-  <%= render 'users/shared/error_messages', resource: @user %>
-
-  <div class="field">
-    <%= form.label :name %> <em>(必須)</em><br/>
-    <%= form.text_field :name, autofocus: true, autocomplete: 'name' %>
-    <%= render 'users/shared/field_error_messages', messages: @user.errors[:name] %>
+<main class="card mb-1" style="max-width: 480px; margin-left: auto; margin-right: auto">
+  <div class="card-body">
+    <h5 class="card-title">メンバー登録</h5>
+    <p class="card-text"><%= render 'new_user' %></p>
   </div>
-
-  <div class="field">
-    <%= form.label :email %>
-    <%= @user.email %>
-  </div>
-
-  <div class="field">
-    <%= form.label :password %>
-    <% if User.password_length.min %>
-      <em>(必須、<%= User.password_length.min %>文字以上)</em><br/>
-    <% else %>
-      <em>(必須)</em><br/>
-    <% end %>
-    <%= form.password_field :password, autocomplete: 'new-password' %>
-    <%= render 'users/shared/field_error_messages', messages: @user.errors[:password] %>
-  </div>
-
-  <div class="field">
-    <%= form.label :password_confirmation %> <em>(必須)</em><br/>
-    <%= form.password_field :password_confirmation, autocomplete: 'new-password' %>
-    <%= render 'users/shared/field_error_messages', messages: @user.errors[:password_confirmation] %>
-  </div>
-
-  <div class="actions">
-    <%= form.submit '登録' %>
-  </div>
-<% end %>
+</main>

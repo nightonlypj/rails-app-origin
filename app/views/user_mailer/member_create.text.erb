@@ -1,8 +1,26 @@
 <%= @user.email %> 様
 
-<%= @current_user.name %> さん( <%= @current_user.email %> )が、
+<% if @invitation_user.present? %>
+<%= @invitation_user.name %> さん( <%= @invitation_user.email %> )が、
+<% else %>
+<%= t('infomation.action_user.blank.name') %> さんが、
+<% end %>
+<% if @customer.present? && @member.present? %>
 <%= t('app_name') %> の「<%= @customer.name %>」(<%= @customer.code %>)の<%= @member.power_i18n %>に招待しました。
+<% elsif @customer.present? %>
+<%= t('app_name') %> の「<%= @customer.name %>」(<%= @customer.code %>)に招待しました。
+<% else %>
+<%= t('app_name') %> に招待しました。
+<% end %>
 
 下記のURLをクリックして、メンバー登録を行なってください。
+<% if @invitation_user.present? && @customer.present? %>
 招待者や「<%= @customer.name %>」にお心当たりがない場合は、このメールを無視してください。
-<%= registration_sign_up_url(invitation_token: @user.invitation_token) %>
+<% elsif @invitation_user.present? %>
+招待者にお心当たりがない場合は、このメールを無視してください。
+<% elsif @customer.present? %>
+「<%= @customer.name %>」にお心当たりがない場合は、このメールを無視してください。
+<% else %>
+お心当たりがない場合は、このメールを無視してください。
+<% end %>
+<%= new_member_registration_url(invitation_token: @user.invitation_token) %>

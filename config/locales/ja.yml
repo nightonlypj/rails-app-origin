@@ -26,8 +26,9 @@ ja:
         updated_at: '更新日時'
       customer:
         id: 'ID'
+        create_flag: '新規作成'
         code: '顧客コード'
-        name: '顧客名'
+        name: '組織・団体名'
         created_at: '作成日時'
         updated_at: '更新日時'
       member:
@@ -35,6 +36,7 @@ ja:
         customer: '顧客'
         user: 'ユーザー'
         power: '権限'
+        invitation_user_id: '招待者'
         invitationed_at: '招待日時'
         created_at: '作成日時'
         updated_at: '更新日時'
@@ -42,17 +44,29 @@ ja:
         id: 'ID'
         customer: '顧客'
         subdomain: 'サブドメイン'
+        image: '画像'
         name: 'スペース名'
-        sort_key: '並び順'
-        public_flag: '公開'
+        purpose: '目的'
+        public_flag: '公開スペース'
         created_at: '作成日時'
         updated_at: '更新日時'
     errors:
       models:
+        customer:
+          attributes:
+            create_flag:
+              inclusion: 'この値は使用できません。'
+            code:
+              blank: '選択してください。'
+              taken: '処理に失敗しました。しばらく時間をあけてから、やり直してください。'
+            name:
+              blank: '入力してください。'
+              too_short: '%{count}文字以上で入力してください。'
+              too_long: '%{count}文字以下で入力してください。'
         member:
           attributes:
             user:
-              taken: '既に招待されています。'
+              taken: '既に招待しています。'
             power:
               blank: '選択してください。'
               invalid: 'この値は使用できません。'
@@ -66,6 +80,9 @@ ja:
               invalid: 'アルファベット(小文字)・数字・ハイフン(先頭不可)のみで入力してください。'
             name:
               blank: '入力してください。'
+              too_short: '%{count}文字以上で入力してください。'
+              too_long: '%{count}文字以下で入力してください。'
+            purpose:
               too_short: '%{count}文字以上で入力してください。'
               too_long: '%{count}文字以下で入力してください。'
   enums:
@@ -82,42 +99,51 @@ ja:
     member:
       invitationed_at: 'なし'
       registrationed_at: '登録待ち'
-  helpers:
-    submit:
-      create: '登録'
-      update: '更新'
   infomation:
     action:
-      member_create: '%{action_user_name} さんが「%{customer_name}」(%{customer_code})に招待しました。'
-      member_update: '%{action_user_name} さんが「%{customer_name}」(%{customer_code})の権限を変更しました。'
-      member_destroy: '%{action_user_name} さんが「%{customer_name}」(%{customer_code})から解除しました。'
-      registration_create: '招待した %{action_user_name} さん( %{action_user_email} )が「%{customer_name}」(%{customer_code})に参加しました。'
+      member_create: '%{action_user_name}さんが%{customer_name}(%{customer_code})に招待しました。'
+      member_update: '%{action_user_name}さんが%{customer_name}(%{customer_code})の権限を変更しました。'
+      member_destroy: '%{action_user_name}さんが%{customer_name}(%{customer_code})から解除しました。'
+      registration_create: '招待した%{action_user_email}(%{action_user_name}さん)が%{customer_name}(%{customer_code})に参加しました。'
     action_user:
       blank:
-        name: '所有者または管理者'
+        name: '[削除済み]'
         email: 'N/A'
+    customer:
+      blank:
+        name: '[削除済み]'
+        code: 'N/A'
   notice:
     user:
-      image_update: '画像を更新しました。'
+      image_update: '画像を変更しました。'
       image_destroy: '画像を削除しました。'
+      invitation_token:
+        send_instructions: 'メンバー登録のメールを送信しました。メールを確認してください。'
+    customer:
+      update: '顧客情報を変更しました。'
     member:
       create: 'メンバーを招待しました。'
       update: 'メンバーの権限を変更しました。'
       destroy: 'メンバーを解除しました。'
     registration:
-      create: 'メンバー登録が完了しました。先ずはお知らせを確認してみてください。'
+      create: 'メンバー登録が完了しました。'
     space:
       create: 'スペースを作成しました。'
-      update: 'スペースを更新しました。'
+      update: 'スペース情報を変更しました。'
+      image_update: '画像を変更しました。'
+      image_destroy: '画像を削除しました。'
   alert:
     user:
       destroy_reserved: 'アカウント削除予定の為、この操作はできません。'
       not_destroy_reserved: '既に取り消し済みか、アカウント削除していません。'
-      image_destroy_error: '画像削除に失敗しました。'
       invitation_token:
         already_sign_in: 'ログイン中の為、アクセスできません。ログアウトしてからお試しください。'
         blank: 'URLが正しくありません。やり直してください。'
         invalid: 'URLが正しくないか、既にメンバー登録が完了しています。ログインしてください。'
+      invitation_completed_at:
+        blank: 'メンバー登録が完了していません。メールが届いていない場合は[メールアドレス確認]をしてください。'
+    customer:
+      not_update_power: '変更権限がありません。所属の所有者に依頼してください。'
     member:
       not_create_power:
         owner: '所有者で招待する権限がありません。所属の所有者に依頼してください。'
@@ -134,6 +160,8 @@ ja:
       own_destroy_power:
         owner: '自分は解除できません。所属の他の所有者に依頼してください。'
         admin: '自分は解除できません。所属の他の管理者または所有者に依頼してください。'
+    space:
+      not_update_power: '変更権限がありません。所属の管理者または所有者に依頼してください。'
   errors:
     messages:
       image_update_blank: '選択してください。'
@@ -152,14 +180,19 @@ ja:
       user:
         code_error: 'ユーザーコードが存在しないか、所属していません。'
       customer:
+        create_flag_blank: '選択してください。'
+        code_invalid: '存在しないか、所属していません。'
         code_error: '顧客コードが存在しないか、所属していません。'
+      space:
+        subdomain_error: 'スペースが存在しないか、所属していません。'
+        not_create_power: '作成権限がありません。所属の管理者または所有者に依頼してください。'
   mailer:
     user:
       destroy_reserved:
-        subject: '【%{app_name}】アカウント削除受け付けのお知らせ'
+        subject: '%{env_name}【%{app_name}】アカウント削除受け付けのお知らせ'
       undo_destroy_reserved:
-        subject: '【%{app_name}】アカウント削除取り消し完了のお知らせ'
+        subject: '%{env_name}【%{app_name}】アカウント削除取り消し完了のお知らせ'
       destroy_completed:
-        subject: '【%{app_name}】アカウント削除完了のお知らせ'
+        subject: '%{env_name}【%{app_name}】アカウント削除完了のお知らせ'
       member_create:
-        subject: '【%{app_name}】メンバー登録のお願い'
+        subject: '%{env_name}【%{app_name}】メンバー登録のお願い'

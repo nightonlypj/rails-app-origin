@@ -1,21 +1,18 @@
 require 'rails_helper'
 
-# TODO
 RSpec.describe 'members/new', type: :view do
-=begin
-  let!(:user) { FactoryBot.create(:user) }
   before do
     @customer = FactoryBot.create(:customer)
-    assign(:member, FactoryBot.build(:member, customer_id: @customer.id, user_id: user.id, power: :Owner))
+    @member = Member.new
+    @user = User.new
   end
 
   it 'renders new member form' do
     render
-    assert_select 'form[action=?][method=?]', members_path(customer_code: @customer.code), 'post' do
-      assert_select 'input[name=?]', 'member[customer_id]'
-      assert_select 'input[name=?]', 'member[user_id]'
-      assert_select 'select[name=?]', 'member[power]'
+    assert_select 'form[action=?][method=?]', create_member_path(customer_code: @customer.code), 'post' do
+      assert_select 'input[name=?]', 'member[user][email]'
+      assert_select 'input[name=?]', 'member[power]'
+      assert_select 'input[name=?]', 'commit'
     end
   end
-=end
 end

@@ -1,5 +1,6 @@
-cookie_domain: 'stg.mydomain'
+env_name: '【STG環境】'
 base_domain: 'stg.mydomain'
+cookie_domain: 'stg.mydomain'
 mailer_from:
   name: '%{app_name}'
   email: 'noreply@stg.mydomain'

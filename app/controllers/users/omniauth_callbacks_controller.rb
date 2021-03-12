@@ -13,12 +13,12 @@ class Users::OmniauthCallbacksController < Devise::OmniauthCallbacksController
   # More info at:
   # https://github.com/heartcombo/devise#omniauth
 
-  # GET|POST /users/auth/twitter
+  # GET(POST) /users/auth/twitter（ベースドメイン）
   # def passthru
   #   super
   # end
 
-  # GET|POST /users/auth/twitter/callback
+  # GET(POST) /users/auth/twitter/callback（ベースドメイン）
   # def failure
   #   super
   # end

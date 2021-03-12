@@ -1,7 +1,9 @@
 <% if messages.any? %>
-  <p class="alert">
-    <% messages.each do |message| %>
-      <%= message %><br/>
-    <% end %>
+<aside>
+  <p class="note note-danger m-1">
+<% messages.each do |message| %>
+    <%= message %><br/>
+<% end %>
   </p>
+</aside>
 <% end %>

@@ -1,0 +1,271 @@
+require 'rails_helper'
+
+RSpec.describe 'Spaces', type: :request do
+  # PUT(PATCH) /spaces/image（サブドメイン） スペース画像変更(処理)
+  # PUT(PATCH) /spaces/image.json（サブドメイン） スペース画像変更API
+  # 前提条件
+  #   なし
+  # テストパターン
+  #   未ログイン, ログイン中, ログイン中（削除予約済み） → データ＆状態作成
+  #   権限: Owner, Admin, Member, ない → データ作成
+  #   有効なパラメータ, 無効なパラメータ → 事前にデータ作成
+  #   ベースドメイン, 存在するサブドメイン, 存在しないサブドメイン → 事前にデータ作成
+  describe 'PUT #image_update' do
+    include_context 'リクエストスペース作成'
+    let!(:valid_attributes) { { image: fixture_file_upload(TEST_IMAGE_FILE, TEST_IMAGE_TYPE) } }
+    let!(:invalid_attributes) { nil }
+
+    # テスト内容
+    shared_examples_for 'OK' do
+      it '画像が変更される' do
+        put update_space_image_path, params: { space: attributes }, headers: headers
+        after_space = Space.find(@request_space.id)
+        expect(after_space.image.url).not_to eq(@request_space.image.url)
+        after_space.remove_image!
+        after_space.save!
+      end
+      it '(json)画像が変更される' do
+        put update_space_image_path(format: :json), params: { space: attributes }, headers: headers
+        after_space = Space.find(@request_space.id)
+        expect(after_space.image.url).not_to eq(@request_space.image.url)
+        after_space.remove_image!
+        after_space.save!
+      end
+    end
+    shared_examples_for 'NG' do
+      it '画像が変更されない' do
+        put update_space_image_path, params: { space: attributes }, headers: headers
+        expect(Space.find(@request_space.id).image.url).to eq(@request_space.image.url)
+      end
+      it '(json)画像が変更されない' do
+        put update_space_image_path(format: :json), params: { space: attributes }, headers: headers
+        expect(Space.find(@request_space.id).image.url).to eq(@request_space.image.url)
+      end
+    end
+
+    shared_examples_for 'ToEdit' do |alert, notice|
+      it 'スペース情報変更にリダイレクト' do
+        put update_space_image_path, params: { space: attributes }, headers: headers
+        expect(response).to redirect_to(edit_space_path)
+        expect(flash[:alert]).to alert.present? ? eq(I18n.t(alert)) : be_nil
+        expect(flash[:notice]).to notice.present? ? eq(I18n.t(notice)) : be_nil
+      end
+      it '(json)成功ステータス' do
+        put update_space_image_path(format: :json), params: { space: attributes }, headers: headers
+        expect(response).to be_ok
+        expect(JSON.parse(response.body)['status']).to eq('OK')
+        expect(JSON.parse(response.body)['notice']).to notice.present? ? eq(I18n.t(notice)) : be_nil
+      end
+    end
+    shared_examples_for 'ToError' do
+      it '成功ステータス' do # Tips: 再入力
+        put update_space_image_path, params: { space: attributes }, headers: headers
+        expect(response).to be_successful
+      end
+      it '(json)失敗レスポンス' do
+        put update_space_image_path(format: :json), params: { space: attributes }, headers: headers
+        expect(response).to have_http_status(:unprocessable_entity)
+        expect(JSON.parse(response.body)['status']).to eq('NG')
+        expect(JSON.parse(response.body)['error'].count).not_to eq(0)
+      end
+    end
+    shared_examples_for 'ToNot' do |error|
+      it '存在しないステータス' do
+        put update_space_image_path, params: { space: attributes }, headers: headers
+        expect(response).to be_not_found
+      end
+      it '(json)存在しないエラー' do
+        put update_space_image_path(format: :json), params: { space: attributes }, headers: headers
+        expect(response).to be_not_found
+        message = response.body.present? ? JSON.parse(response.body)['error'] : nil
+        expect(message).to error.present? ? eq(I18n.t(error)) : be_nil
+      end
+    end
+    shared_examples_for 'ToTop' do |alert, notice, error|
+      it 'スペーストップにリダイレクト' do
+        put update_space_image_path, params: { space: attributes }, headers: headers
+        expect(response).to redirect_to(root_path)
+        expect(flash[:alert]).to alert.present? ? eq(I18n.t(alert)) : be_nil
+        expect(flash[:notice]).to notice.present? ? eq(I18n.t(notice)) : be_nil
+      end
+      it '(json)権限エラー' do
+        put update_space_image_path(format: :json), params: { space: attributes }, headers: headers
+        expect(response).to be_forbidden
+        message = response.body.present? ? JSON.parse(response.body)['error'] : nil
+        expect(message).to error.present? ? eq(I18n.t(error)) : be_nil
+      end
+    end
+    shared_examples_for 'ToLogin' do |alert, notice, error|
+      it 'ログインにリダイレクト' do
+        put update_space_image_path, params: { space: attributes }, headers: headers
+        expect(response).to redirect_to(new_user_session_path)
+        expect(flash[:alert]).to alert.present? ? eq(I18n.t(alert)) : be_nil
+        expect(flash[:notice]).to notice.present? ? eq(I18n.t(notice)) : be_nil
+      end
+      it '(json)認証エラー' do
+        put update_space_image_path(format: :json), params: { space: attributes }, headers: headers
+        expect(response).to be_unauthorized
+        message = response.body.present? ? JSON.parse(response.body)['error'] : nil
+        expect(message).to error.present? ? eq(I18n.t(error)) : be_nil
+      end
+    end
+
+    # テストケース
+    shared_examples_for '[*][*][*]ベースドメイン' do
+      let!(:headers) { BASE_HEADER }
+      it_behaves_like 'NG'
+      it_behaves_like 'ToNot', 'errors.messages.domain_error'
+    end
+    shared_examples_for '[ログイン中][Owner/Admin][有効]存在するサブドメイン' do
+      let!(:headers) { @space_header }
+      it_behaves_like 'OK'
+      it_behaves_like 'ToEdit', nil, 'notice.space.image_update'
+    end
+    shared_examples_for '[削除予約済み][*][*]存在するサブドメイン' do
+      let!(:headers) { @space_header }
+      it_behaves_like 'NG'
+      it_behaves_like 'ToTop', 'alert.user.destroy_reserved', nil, 'alert.user.destroy_reserved'
+    end
+    shared_examples_for '[ログイン中/削除予約済み][Member][*]存在するサブドメイン' do
+      let!(:headers) { @space_header }
+      it_behaves_like 'NG'
+      it_behaves_like 'ToTop', 'alert.space.not_update_power', nil, 'alert.space.not_update_power'
+    end
+    shared_examples_for '[ログイン中/削除予約済み][ない][*]存在するサブドメイン' do
+      let!(:headers) { @space_header }
+      it_behaves_like 'NG'
+      it_behaves_like 'ToNot', 'errors.messages.space.subdomain_error'
+    end
+    shared_examples_for '[未ログイン][ない][*]存在するサブドメイン' do
+      let!(:headers) { @space_header }
+      it_behaves_like 'NG'
+      it_behaves_like 'ToLogin', 'devise.failure.unauthenticated', nil, 'devise.failure.unauthenticated'
+    end
+    shared_examples_for '[ログイン中][Owner/Admin][無効]存在するサブドメイン' do
+      let!(:headers) { @space_header }
+      it_behaves_like 'NG'
+      it_behaves_like 'ToError'
+    end
+    shared_examples_for '[*][*][*]存在しないサブドメイン' do
+      let!(:headers) { NOT_SPACE_HEADER }
+      it_behaves_like 'NG'
+      it_behaves_like 'ToNot', 'errors.messages.space.subdomain_error'
+    end
+
+    shared_examples_for '[ログイン中][Owner/Admin]有効なパラメータ' do
+      let!(:attributes) { valid_attributes }
+      it_behaves_like '[*][*][*]ベースドメイン'
+      it_behaves_like '[ログイン中][Owner/Admin][有効]存在するサブドメイン'
+      it_behaves_like '[*][*][*]存在しないサブドメイン'
+    end
+    shared_examples_for '[削除予約済み][Owner/Admin]有効なパラメータ' do
+      let!(:attributes) { valid_attributes }
+      it_behaves_like '[*][*][*]ベースドメイン'
+      it_behaves_like '[削除予約済み][*][*]存在するサブドメイン'
+      it_behaves_like '[*][*][*]存在しないサブドメイン'
+    end
+    shared_examples_for '[ログイン中/削除予約済み][Member]有効なパラメータ' do
+      let!(:attributes) { valid_attributes }
+      it_behaves_like '[*][*][*]ベースドメイン'
+      it_behaves_like '[ログイン中/削除予約済み][Member][*]存在するサブドメイン'
+      it_behaves_like '[*][*][*]存在しないサブドメイン'
+    end
+    shared_examples_for '[ログイン中/削除予約済み][ない]有効なパラメータ' do
+      let!(:attributes) { valid_attributes }
+      it_behaves_like '[*][*][*]ベースドメイン'
+      it_behaves_like '[ログイン中/削除予約済み][ない][*]存在するサブドメイン'
+      it_behaves_like '[*][*][*]存在しないサブドメイン'
+    end
+    shared_examples_for '[未ログイン][ない]有効なパラメータ' do
+      let!(:attributes) { valid_attributes }
+      it_behaves_like '[*][*][*]ベースドメイン'
+      it_behaves_like '[未ログイン][ない][*]存在するサブドメイン'
+      it_behaves_like '[*][*][*]存在しないサブドメイン'
+    end
+    shared_examples_for '[ログイン中][Owner/Admin]無効なパラメータ' do
+      let!(:attributes) { invalid_attributes }
+      it_behaves_like '[*][*][*]ベースドメイン'
+      it_behaves_like '[ログイン中][Owner/Admin][無効]存在するサブドメイン'
+      it_behaves_like '[*][*][*]存在しないサブドメイン'
+    end
+    shared_examples_for '[削除予約済み][Owner/Admin]無効なパラメータ' do
+      let!(:attributes) { invalid_attributes }
+      it_behaves_like '[*][*][*]ベースドメイン'
+      it_behaves_like '[削除予約済み][*][*]存在するサブドメイン'
+      it_behaves_like '[*][*][*]存在しないサブドメイン'
+    end
+    shared_examples_for '[ログイン中/削除予約済み][Member]無効なパラメータ' do
+      let!(:attributes) { invalid_attributes }
+      it_behaves_like '[*][*][*]ベースドメイン'
+      it_behaves_like '[ログイン中/削除予約済み][Member][*]存在するサブドメイン'
+      it_behaves_like '[*][*][*]存在しないサブドメイン'
+    end
+    shared_examples_for '[未ログイン][ない]無効なパラメータ' do
+      let!(:attributes) { invalid_attributes }
+      it_behaves_like '[*][*][*]ベースドメイン'
+      it_behaves_like '[未ログイン][ない][*]存在するサブドメイン'
+      it_behaves_like '[*][*][*]存在しないサブドメイン'
+    end
+    shared_examples_for '[ログイン中/削除予約済み][ない]無効なパラメータ' do
+      let!(:attributes) { invalid_attributes }
+      it_behaves_like '[*][*][*]ベースドメイン'
+      it_behaves_like '[ログイン中/削除予約済み][ない][*]存在するサブドメイン'
+      it_behaves_like '[*][*][*]存在しないサブドメイン'
+    end
+
+    shared_examples_for '[ログイン中]権限がOwner' do
+      include_context '顧客・ユーザー紐付け', Time.current, :Owner
+      it_behaves_like '[ログイン中][Owner/Admin]有効なパラメータ'
+      it_behaves_like '[ログイン中][Owner/Admin]無効なパラメータ'
+    end
+    shared_examples_for '[削除予約済み]権限がOwner' do
+      include_context '顧客・ユーザー紐付け', Time.current, :Owner
+      it_behaves_like '[削除予約済み][Owner/Admin]有効なパラメータ'
+      it_behaves_like '[削除予約済み][Owner/Admin]無効なパラメータ'
+    end
+    shared_examples_for '[ログイン中]権限がAdmin' do
+      include_context '顧客・ユーザー紐付け', Time.current, :Admin
+      it_behaves_like '[ログイン中][Owner/Admin]有効なパラメータ'
+      it_behaves_like '[ログイン中][Owner/Admin]無効なパラメータ'
+    end
+    shared_examples_for '[削除予約済み]権限がAdmin' do
+      include_context '顧客・ユーザー紐付け', Time.current, :Admin
+      it_behaves_like '[削除予約済み][Owner/Admin]有効なパラメータ'
+      it_behaves_like '[削除予約済み][Owner/Admin]無効なパラメータ'
+    end
+    shared_examples_for '[ログイン中/削除予約済み]権限がMember' do
+      include_context '顧客・ユーザー紐付け', Time.current, :Member
+      it_behaves_like '[ログイン中/削除予約済み][Member]有効なパラメータ'
+      it_behaves_like '[ログイン中/削除予約済み][Member]無効なパラメータ'
+    end
+    shared_examples_for '[未ログイン]権限がない' do
+      it_behaves_like '[未ログイン][ない]有効なパラメータ'
+      it_behaves_like '[未ログイン][ない]無効なパラメータ'
+    end
+    shared_examples_for '[ログイン中/削除予約済み]権限がない' do
+      it_behaves_like '[ログイン中/削除予約済み][ない]有効なパラメータ'
+      it_behaves_like '[ログイン中/削除予約済み][ない]無効なパラメータ'
+    end
+
+    context '未ログイン' do
+      # it_behaves_like '[未ログイン]権限がOwner' # Tips: 未ログインの為、権限がない
+      # it_behaves_like '[未ログイン]権限がAdmin' # Tips: 未ログインの為、権限がない
+      # it_behaves_like '[未ログイン]権限がMember' # Tips: 未ログインの為、権限がない
+      it_behaves_like '[未ログイン]権限がない'
+    end
+    context 'ログイン中' do
+      include_context 'ログイン処理'
+      it_behaves_like '[ログイン中]権限がOwner'
+      it_behaves_like '[ログイン中]権限がAdmin'
+      it_behaves_like '[ログイン中/削除予約済み]権限がMember'
+      it_behaves_like '[ログイン中/削除予約済み]権限がない'
+    end
+    context 'ログイン中（削除予約済み）' do
+      include_context 'ログイン処理', true
+      it_behaves_like '[削除予約済み]権限がOwner'
+      it_behaves_like '[削除予約済み]権限がAdmin'
+      it_behaves_like '[ログイン中/削除予約済み]権限がMember'
+      it_behaves_like '[ログイン中/削除予約済み]権限がない'
+    end
+  end
+end

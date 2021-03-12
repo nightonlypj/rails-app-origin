@@ -1,0 +1,6 @@
+<% domain = @request_space.present? ? "//#{Settings['base_domain']}" : '' %>
+<nav>
+  <ul>
+    <li><%= link_to '参加スペース一覧', "#{domain}#{spaces_path}" %></li>
+  </ul>
+</nav>

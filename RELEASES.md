@@ -1,7 +1,30 @@
 # リリースノート
 
+## 1.1.0 (space branch)
+
+- 顧客メンバーを招待したい（spaceブランチ）
+  - https://dev.azure.com/nightonly/rails-app-origin/_workitems/edit/273/
+- 顧客メンバーを管理したい（spaceブランチ）
+  - https://dev.azure.com/nightonly/rails-app-origin/_workitems/edit/274/
+- 顧客情報を変更できるようにしたい（spaceブランチ）
+  - https://dev.azure.com/nightonly/rails-app-origin/_workitems/edit/348/
+- Owner/Admin以外、スペース作成・編集できないようにしたい（spaceブランチ）
+  - https://dev.azure.com/nightonly/rails-app-origin/_workitems/edit/276/
+- デフォルトでは顧客メンバー以外、スペースを閲覧できないようしたい（spaceブランチ）
+  - https://dev.azure.com/nightonly/rails-app-origin/_workitems/edit/275/
+- スペース毎にhosts設定しなくてもアクセスできるようにしたい（spaceブランチ）
+  - https://dev.azure.com/nightonly/rails-app-origin/_workitems/edit/343/
+
 ## 1.1.0
 
+- deviseのページ：POST後のURLをGETした時にRouting Errorや違うページに行かないようにしたい
+  - https://dev.azure.com/nightonly/rails-app-origin/_workitems/edit/345/
+- jQueryを導入したい
+  - https://dev.azure.com/nightonly/rails-app-origin/_workitems/edit/341/
+- 最低限のドキュメントを作成するようにしたい
+  - https://dev.azure.com/nightonly/rails-app-origin/_workitems/edit/152/
+- フロントにマテリアルデザインを導入したい
+  - https://dev.azure.com/nightonly/rails-app-origin/_workitems/edit/124/
 - 環境構築手順とリリースノートを作りたい
   - https://dev.azure.com/nightonly/rails-app-origin/_workitems/edit/304/
 - Ruby3.0に対応したい（Gemのバージョンアップも）
@@ -27,6 +50,14 @@
 
 ### Bug
 
+- チェックボックスが左にズレる
+  - https://dev.azure.com/nightonly/rails-app-origin/_workitems/edit/342/
+- radioボタンのバリデーションエラーでデザインが崩れる
+  - https://dev.azure.com/nightonly/rails-app-origin/_workitems/edit/298/
+- ログアウト -> No route matches [GET] "/users/sign_out"
+  - https://dev.azure.com/nightonly/rails-app-origin/_workitems/edit/330/
+- ActionView::Template::Error(FATAL ERROR: wasm code commit Allocation failed - process out of memory)
+  - https://dev.azure.com/nightonly/rails-app-origin/_workitems/edit/328/
 - RSpecでユーザー名が重複して失敗する事がある
   - https://dev.azure.com/nightonly/rails-app-origin/_workitems/edit/285/
 - ActionMailer Previewでユーザーが作成される

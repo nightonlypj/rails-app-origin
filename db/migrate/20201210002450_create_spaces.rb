@@ -4,9 +4,10 @@ class CreateSpaces < ActiveRecord::Migration[6.0]
       t.references :customer, null: false, foreign_key: true, type: :bigint
 
       t.string :subdomain, null: false
+      t.string :image # json: PostgreSQL/MySQL, string: SQLite/MariaDB(MySQLでもOK)
       t.string :name, null: false
 
-      t.integer :sort_key, null: false, default: 0
+      t.string :purpose
       t.boolean :public_flag, null: false, default: false
 
       t.timestamps

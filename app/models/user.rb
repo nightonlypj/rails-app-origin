@@ -1,4 +1,6 @@
 class User < ApplicationRecord
+  has_many :infomation, dependent: :destroy
+  has_many :member, dependent: :destroy
   mount_uploader :image, ImageUploader
 
   validates :code, presence: true
@@ -30,7 +32,7 @@ class User < ApplicationRecord
             destroy_schedule_at: nil)
   end
 
-  # ユーザーの画像URLを返却
+  # 画像URLを返却
   def image_url(version)
     case version
     when :mini
@@ -41,6 +43,8 @@ class User < ApplicationRecord
       image? ? image.medium.url : "/images/user/#{version}_noimage.jpg"
     when :large
       image? ? image.large.url : "/images/user/#{version}_noimage.jpg"
+    when :xlarge
+      image? ? image.xlarge.url : "/images/user/#{version}_noimage.jpg"
     else
       logger.warn("[WARN]Not found: User.image_url(#{version})")
       ''

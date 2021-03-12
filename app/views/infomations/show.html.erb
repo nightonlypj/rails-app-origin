@@ -1,7 +1,14 @@
-<h2><%= @infomation.action_title %> (<%= l(@infomation.started_at.to_date) %>)</h2>
+<main class="container pt-3">
+  <h3><%= @infomation.action_title %> (<%= l(@infomation.started_at.to_date) %>)</h3>
 
-<p><%= @infomation.body.html_safe if @infomation.body.present? %></p>
+<% if @infomation.body.present? %>
+  <p class="border p-3"><%= @infomation.body.html_safe %></p>
+<% end %>
 
-<ul>
-  <li><%= link_to 'お知らせ一覧', infomations_path %></li>
-</ul>
+  <hr/>
+  <nav>
+    <ul>
+      <li><%= link_to 'お知らせ一覧', infomations_path %></li>
+    </ul>
+  </nav>
+</main>

@@ -37,13 +37,14 @@ group :development, :test do
   gem 'rspec-rails', '>= 4.0.0' # Tips: https://qiita.com/amatsukix/items/578f85cf4565ca2a797c
   gem 'spring-commands-rspec'
   gem 'factory_bot_rails'
-  gem 'faker'
   # Use RuboCop
   gem 'rubocop'
   gem 'rubocop-rails'
   # Use Brakeman
   gem 'brakeman'
 end
+gem 'faker' # Tips: テスト以外でも使えるように
+gem 'rexml' # Tips: rails aborted! LoadError: cannot load such file -- rexml/document
 
 group :development do
   # Access an interactive console on exception pages or by calling 'console' anywhere in the code.

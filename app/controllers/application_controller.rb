@@ -30,29 +30,54 @@ class ApplicationController < ActionController::Base
     @request_space = request_space
   end
 
+  # 参加スペース一覧をセット
+  def set_join_spaces
+    return if current_user.blank? || @request_space.blank?
+
+    @join_spaces = Space.order(created_at: 'DESC', id: 'DESC').page(1).per(Settings['select_join_spaces_limit'])
+                        .joins(customer: :member).where(members: { user_id: current_user.id })
+  end
+
   # ベースドメインにリダイレクト
   def redirect_base_domain_response
-    redirect_to "//#{Settings['base_domain']}#{request.fullpath}" unless base_domain_request?
+    return if base_domain_request?
+
+    respond_to do |format|
+      format.html { redirect_to "//#{Settings['base_domain']}#{request.fullpath}" }
+      format.json { render json: { error: t('errors.messages.domain_error') }, status: :not_found }
+    end
   end
 
   # ベースドメイン禁止
   def not_found_base_domain_response
-    head :not_found if base_domain_request?
+    return unless base_domain_request?
+
+    respond_to do |format|
+      format.html { head :not_found }
+      format.json { render json: { error: t('errors.messages.domain_error') }, status: :not_found }
+    end
   end
 
   # サブドメイン禁止
   def not_found_sub_domain_response
-    head :not_found unless base_domain_request?
+    return if base_domain_request?
+
+    respond_to do |format|
+      format.html { head :not_found }
+      format.json { render json: { error: t('errors.messages.domain_error') }, status: :not_found }
+    end
   end
 
-  # JSONの場合、サブドメイン禁止
-  def not_found_json_sub_domain_response
-    render json: { error: t('errors.messages.domain_error') }, status: :not_found if json_request? && !base_domain_request?
-  end
+  # 未所属/存在しない顧客へのアクセス禁止
+  def not_found_outside_customer
+    @customer = Customer.where(code: params[:customer_code])
+                        .eager_load(:member).where(members: { user_id: current_user.id }).first
+    return if @customer.present?
 
-  # 削除予約済みの場合、リダイレクトしてメッセージを表示
-  def redirect_response_destroy_reserved
-    redirect_to root_path, notice: t('notice.user.destroy_reserved') if current_user.destroy_reserved?
+    respond_to do |format|
+      format.html { head :not_found }
+      format.json { render json: { error: t('errors.messages.customer.code_error') }, status: :not_found }
+    end
   end
 
   # 有効なパスワードリセットトークンかを返却
@@ -100,12 +125,32 @@ class ApplicationController < ActionController::Base
     end
   end
 
+  # 削除予約済みの場合、リダイレクトしてメッセージを表示
+  def redirect_response_destroy_reserved
+    return unless current_user.destroy_reserved?
+
+    respond_to do |format|
+      format.html { redirect_to root_path, alert: t('alert.user.destroy_reserved') }
+      format.json { render json: { error: t('alert.user.destroy_reserved') }, status: :forbidden }
+    end
+  end
+
+  # 削除予約済みでない場合、リダイレクトしてメッセージを表示
+  def redirect_response_not_destroy_reserved
+    return if current_user.destroy_reserved?
+
+    respond_to do |format|
+      format.html { redirect_to root_path, alert: t('alert.user.not_destroy_reserved') }
+      format.json { render json: { error: t('alert.user.not_destroy_reserved') }, status: :forbidden }
+    end
+  end
+
   # ユニークコードを作成して返却
   # @return ハッシュ値（ユニークな値とならなかった場合は最後に作成した値を返却）
-  def create_unique_code(model, key, logger_message)
+  def create_unique_code(model, key, logger_message, hash_way = :md5)
     try_count = 1
     loop do
-      code = Digest::MD5.hexdigest(SecureRandom.uuid)
+      code = hash_way == :crc32 ? Zlib.crc32(SecureRandom.uuid) : Digest::MD5.hexdigest(SecureRandom.uuid)
       return code if model.where("#{key} = ?", code).blank?
 
       if try_count < 10
