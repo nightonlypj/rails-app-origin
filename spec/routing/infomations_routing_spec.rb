@@ -5,11 +5,11 @@ RSpec.describe InfomationsController, type: :routing do
     it 'routes to #index' do
       expect(get: '/infomations').to route_to('infomations#index')
     end
-    it 'routes to #new' do
-      # expect(get: '/infomations/new').not_to be_routable # Tips: infomations#show(new)
-    end
     it 'routes to #show' do
       expect(get: '/infomations/1').to route_to('infomations#show', id: '1')
+    end
+    it 'routes to #new' do
+      # expect(get: '/infomations/new').not_to be_routable # Tips: infomations#show(new)
     end
     it 'routes to #edit' do
       expect(get: '/infomations/1/edit').not_to be_routable
