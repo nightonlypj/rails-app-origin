@@ -1,8 +1,8 @@
-<main class="container">
-  <h3 class="pt-3">顧客一覧</h3>
+<main class="container mb-1">
+  <h3 class="pt-2">所属顧客一覧</h3>
 
 <% if @customers.total_count > @customers.limit_value %>
-  <div class="row">
+  <div class="row bg-light m-0">
     <div class="col-sm-5 d-flex align-items-center">
       <%= page_entries_info @customers %>
     </div>
@@ -13,7 +13,7 @@
 <% end %>
 
   <div class="table-responsive">
-    <table class="table table-sm align-middle">
+    <table class="table table-sm align-middle mb-2">
       <thead>
         <tr>
           <th scope="col" nowrap>組織・団体名 <wbr>(顧客コード)</th>
@@ -38,9 +38,11 @@
     </table>
   </div>
 
-  <div class="row">
+<% if @customers.total_pages > 1 %>
+  <div class="row m-0">
     <div class="col">
       <div class="float-sm-end"><%= paginate @customers %></div>
     </div>
   </div>
+<% end %>
 </main>

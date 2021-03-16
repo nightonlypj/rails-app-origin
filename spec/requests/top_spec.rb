@@ -118,11 +118,11 @@ RSpec.describe 'Top', type: :request do
 
     # テスト内容
     shared_examples_for '管理メニュー表示' do
-      it '顧客詳細のパスが含まれる' do
+      it '顧客情報のパスが含まれる' do
         get root_path, headers: headers
         expect(response.body).to include("\"#{domain}#{customer_path(customer_code: target_customer.code)}\"")
       end
-      it '顧客コードが含まれる' do # Tips: 顧客詳細のパスに含まれる為、正確ではない
+      it '顧客コードが含まれる' do # Tips: 顧客情報のパスに含まれる為、正確ではない
         get root_path, headers: headers
         expect(response.body).to include(target_customer.code)
       end
@@ -148,7 +148,7 @@ RSpec.describe 'Top', type: :request do
       end
     end
     shared_examples_for '管理メニュー非表示' do
-      it '顧客詳細のパスが含まれない' do
+      it '顧客情報のパスが含まれない' do
         get root_path, headers: headers
         expect(response.body).not_to include("\"#{domain}#{customer_path(customer_code: target_customer.code)}\"")
       end

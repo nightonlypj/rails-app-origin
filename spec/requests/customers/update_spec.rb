@@ -40,7 +40,7 @@ RSpec.describe 'Customers', type: :request do
     end
 
     shared_examples_for 'ToOK' do |alert, notice|
-      it '顧客詳細にリダイレクト' do
+      it '顧客情報にリダイレクト' do
         put update_customer_path(customer_code: customer_code), params: { customer: attributes }, headers: headers
         expect(response).to redirect_to(customer_path)
         expect(flash[:alert]).to alert.present? ? eq(I18n.t(alert)) : be_nil

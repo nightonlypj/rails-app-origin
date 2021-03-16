@@ -3,8 +3,8 @@ require 'rails_helper'
 RSpec.describe 'Customers', type: :request do
   include_context 'リクエストスペース作成'
 
-  # GET /customers/:customer_code（ベースドメイン） 顧客詳細
-  # GET /customers/:customer_code.json（ベースドメイン） 顧客詳細API
+  # GET /customers/:customer_code（ベースドメイン） 顧客情報
+  # GET /customers/:customer_code.json（ベースドメイン） 顧客情報API
   # 前提条件
   #   なし
   # テストパターン

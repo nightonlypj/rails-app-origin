@@ -6,13 +6,13 @@ RSpec.describe MembersController, type: :routing do
       expect(get: '/members').not_to be_routable
       expect(get: '/members/c1').to route_to('members#index', customer_code: 'c1')
     end
-    it 'routes to #new' do
-      # expect(get: '/members/new').not_to be_routable # Tips: members#index(new)
-      expect(get: '/members/c1/new').to route_to('members#new', customer_code: 'c1')
-    end
     it 'routes to #show' do
       # expect(get: '/members/1').not_to be_routable # Tips: members#index(1)
       expect(get: '/members/c1/u1').not_to be_routable
+    end
+    it 'routes to #new' do
+      # expect(get: '/members/new').not_to be_routable # Tips: members#index(new)
+      expect(get: '/members/c1/new').to route_to('members#new', customer_code: 'c1')
     end
     it 'routes to #edit' do
       expect(get: '/members/1/edit').not_to be_routable

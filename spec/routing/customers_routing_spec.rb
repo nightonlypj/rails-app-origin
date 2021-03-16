@@ -5,11 +5,11 @@ RSpec.describe CustomersController, type: :routing do
     it 'routes to #index' do
       expect(get: '/customers').to route_to('customers#index')
     end
-    it 'routes to #new' do
-      # expect(get: '/customers/new').not_to be_routable # Tips: customers#show(new)
-    end
     it 'routes to #show' do
       expect(get: '/customers/c1').to route_to('customers#show', customer_code: 'c1')
+    end
+    it 'routes to #new' do
+      # expect(get: '/customers/new').not_to be_routable # Tips: customers#show(new)
     end
     it 'routes to #edit' do
       expect(get: '/customers/c1/edit').to route_to('customers#edit', customer_code: 'c1')
