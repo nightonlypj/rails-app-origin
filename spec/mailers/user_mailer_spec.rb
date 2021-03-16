@@ -3,7 +3,7 @@ require 'rails_helper'
 RSpec.describe UserMailer, type: :mailer do
   # アカウント削除受け付けのお知らせ
   # 前提条件
-  #   削除予約済み  
+  #   削除予約済み
   # テストパターン
   #   なし
   describe 'destroy_reserved' do

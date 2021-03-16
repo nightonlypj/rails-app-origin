@@ -33,20 +33,22 @@ class ImageUploader < CarrierWave::Uploader::Base
   # end
 
   # Create different versions of your uploaded files:
+  BASE_WIDTH = 16
+  BASE_HEIGHT = 16
   version :mini do
-    process resize_to_fit: [16, 16]
+    process resize_and_pad: [BASE_WIDTH * 1.5, BASE_HEIGHT * 1.5]
   end
   version :small do
-    process resize_to_fit: [32, 32]
+    process resize_and_pad: [BASE_WIDTH * 2, BASE_HEIGHT * 2]
   end
   version :medium do
-    process resize_to_fit: [64, 64]
+    process resize_and_pad: [BASE_WIDTH * 4, BASE_HEIGHT * 4]
   end
   version :large do
-    process resize_to_fit: [128, 128]
+    process resize_and_pad: [BASE_WIDTH * 8, BASE_HEIGHT * 8]
   end
   version :xlarge do
-    process resize_to_fit: [256, 256]
+    process resize_and_pad: [BASE_WIDTH * 16, BASE_HEIGHT * 16]
   end
 
   # Add a white list of extensions which are allowed to be uploaded.
@@ -69,10 +71,10 @@ class ImageUploader < CarrierWave::Uploader::Base
     "#{secure_token}.#{file.extension}" if original_filename.present?
   end
 
-  protected
+  private
 
   def secure_token
     var = :"@#{mounted_as}_secure_token"
-    model.instance_variable_get(var) or model.instance_variable_set(var, SecureRandom.uuid)
+    model.instance_variable_get(var) or model.instance_variable_set(var, Digest::MD5.hexdigest(SecureRandom.uuid))
   end
 end

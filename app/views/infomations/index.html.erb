@@ -1,8 +1,8 @@
-<main class="container pt-3 mb-3">
-  <h3>お知らせ一覧</h3>
+<main class="container mb-1">
+  <h3 class="pt-2">お知らせ一覧</h3>
 
 <% if @infomations.total_count > @infomations.limit_value %>
-  <div class="row">
+  <div class="row bg-light m-0">
     <div class="col-sm-5 d-flex align-items-center">
       <%= page_entries_info @infomations %>
     </div>
@@ -39,9 +39,11 @@
 <% end %>
   </ul>
 
-  <div class="row">
+<% if @infomations.total_pages > 1 %>
+  <div class="row m-0">
     <div class="col">
       <div class="float-sm-end"><%= paginate @infomations %></div>
     </div>
   </div>
+<% end %>
 </main>
