@@ -38,7 +38,7 @@
   invitation_customer_id: 1
   invitation_token: 'token4'
   invitation_requested_at: '2020-01-04 00:00:00+0900'
-  invitation_completed_at: nil
+  invitation_completed_at: null
 - id: 5
   code: 'code0000000000000000000000000005'
   name: 'user5の氏名'

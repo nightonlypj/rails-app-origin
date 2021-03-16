@@ -6,12 +6,14 @@
   name: '顧客1のスペース1'
   purpose: '顧客1のスペース1の目的'
   public_flag: false
+  created_at: '2099-12-31 23:59:59+0900'
 - id: 12
   customer_id: 1
   subdomain: 'c1-space2'
   name: '顧客1のスペース2'
   purpose: '顧客1のスペース2の目的'
   public_flag: true
+  created_at: '2099-12-31 23:59:59+0900'
 - id: 13
   customer_id: 1
   subdomain: 'c1-space3'
@@ -68,6 +70,7 @@
   name: '顧客2のスペース1'
   purpose: '顧客2のスペース1の目的'
   public_flag: false
+  created_at: '2099-12-31 23:59:59+0900'
 - id: 22
   customer_id: 2
   subdomain: 'c2-space2'
@@ -100,6 +103,7 @@
   name: '顧客3のスペース1'
   purpose: '顧客3のスペース1の目的'
   public_flag: true
+  created_at: '2099-12-31 23:59:59+0900'
 - id: 32
   customer_id: 3
   subdomain: 'c3-space2'
@@ -196,6 +200,7 @@
   name: '顧客6のスペース1'
   purpose: '顧客6のスペース1の目的'
   public_flag: true
+  created_at: '2099-12-31 23:59:59+0900'
 - id: 62
   customer_id: 6
   subdomain: 'c6-space2'

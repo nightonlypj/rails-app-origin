@@ -1,8 +1,8 @@
 class Customer < ApplicationRecord
   attr_accessor :create_flag
 
-  has_many :member
-  has_many :space
+  has_many :member, dependent: :destroy
+  has_many :space, dependent: :destroy
 
   validates :create_flag, inclusion: { in: [nil, 'true', 'false'] }
   validates :code, presence: true, if: proc { |customer| [nil, 'true', 'false'].include?(customer.create_flag) }

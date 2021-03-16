@@ -1,5 +1,5 @@
-<main class="container">
-  <h3 class="pt-3"><%= @customer.name %>のメンバー一覧</h3>
+<main class="container mb-1">
+  <h3 class="pt-2"><%= @customer.name %>のメンバー一覧</h3>
 
 <% if @customer.member.first.member_create_power? %>
   <div class="row">
@@ -10,7 +10,7 @@
 <% end %>
 
 <% if @members.present? %>
-  <div class="row">
+  <div class="row bg-light m-0">
     <div class="col-sm-5 d-flex align-items-center">
       <%= page_entries_info @members %>
     </div>
@@ -21,7 +21,7 @@
 <% end %>
 
   <div class="table-responsive">
-    <table class="table table-sm align-middle">
+    <table class="table table-sm align-middle mb-2">
       <thead>
         <tr>
           <th scope="col" nowrap>氏名</th>
@@ -68,11 +68,13 @@
     </table>
   </div>
 
-  <div class="row">
+<% if @members.total_pages > 1 %>
+  <div class="row m-0">
     <div class="col">
       <div class="float-sm-end"><%= paginate @members %></div>
     </div>
   </div>
+<% end %>
 
   <hr/>
   <%= render 'links' %>

@@ -164,4 +164,47 @@ RSpec.describe Space, type: :model do
       it_behaves_like 'ToNG'
     end
   end
+
+  # 画像URLを返却
+  # 前提条件
+  #   なし
+  # テストパターン
+  #   画像: ない, ある
+  #   mini, small, medium, large, xlarge, 未定義
+  describe 'image_url' do
+    let!(:customer) { FactoryBot.create(:customer) }
+    let!(:space) { FactoryBot.create(:space, customer_id: customer.id) }
+
+    # テスト内容
+    shared_examples_for 'ToOK' do |version|
+      it 'URLが返却される' do
+        expect(space.image_url(version)).not_to be_nil
+      end
+    end
+    shared_examples_for 'ToNG' do |version|
+      it 'URLが返却されない' do
+        expect(space.image_url(version)).to eq('')
+      end
+    end
+
+    # テストケース
+    context '画像がない' do
+      it_behaves_like 'ToOK', :mini
+      it_behaves_like 'ToOK', :small
+      it_behaves_like 'ToOK', :medium
+      it_behaves_like 'ToOK', :large
+      it_behaves_like 'ToOK', :xlarge
+      it_behaves_like 'ToNG', nil
+    end
+    context '画像がある' do
+      include_context '画像登録処理（スペース）'
+      it_behaves_like 'ToOK', :mini
+      it_behaves_like 'ToOK', :small
+      it_behaves_like 'ToOK', :medium
+      it_behaves_like 'ToOK', :large
+      it_behaves_like 'ToOK', :xlarge
+      it_behaves_like 'ToNG', nil
+      include_context '画像削除処理（スペース）'
+    end
+  end
 end

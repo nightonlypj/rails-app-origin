@@ -31,8 +31,8 @@ class ApplicationController < ActionController::Base
   end
 
   # 参加スペース一覧をセット
-  def set_join_spaces
-    return if current_user.blank? || @request_space.blank?
+  def set_select_join_spaces
+    return if current_user.blank?
 
     @join_spaces = Space.order(created_at: 'DESC', id: 'DESC').page(1).per(Settings['select_join_spaces_limit'])
                         .joins(customer: :member).where(members: { user_id: current_user.id })

@@ -31,3 +31,16 @@ shared_context 'スペース作成（3顧客）' do |owner_count, admin_count, m
     raise "#{@create_spaces.count} != #{count}" if @create_spaces.count != count
   end
 end
+
+shared_context '画像登録処理（スペース）' do
+  before do
+    space.image = fixture_file_upload(TEST_IMAGE_FILE, TEST_IMAGE_TYPE)
+    space.save!
+  end
+end
+shared_context '画像削除処理（スペース）' do
+  after do
+    space.remove_image!
+    space.save!
+  end
+end

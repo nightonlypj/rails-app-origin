@@ -1,7 +1,8 @@
 class TopController < ApplicationController
   before_action :authenticate_user!, if: :need_authenticate?
   before_action :not_found_outside_private_space
-  before_action :set_join_spaces
+  before_action :set_select_join_spaces, unless: :base_domain_request?
+  before_action :set_spaces, if: :base_domain_request?
 
   # GET /（ベースドメイン） トップページ
   # GET /（サブドメイン） スペーストップ
@@ -11,12 +12,6 @@ class TopController < ApplicationController
                              .where('started_at <= ? AND (ended_at IS NULL OR ended_at >= ?)', Time.current, Time.current)
                              .where('target = ? OR (target = ? AND user_id = ?)', Infomation.targets[:All], Infomation.targets[:User], user_id)
     return render :index_space unless base_domain_request?
-
-    @public_spaces = Space.where(public_flag: true).order(created_at: 'DESC', id: 'DESC').page(1).per(Settings['public_spaces_limit'])
-    return if current_user.blank?
-
-    @join_spaces = Space.order(created_at: 'DESC', id: 'DESC').page(1).per(Settings['join_spaces_limit'])
-                        .joins(customer: :member).where(members: { user_id: current_user.id })
   end
 
   private
@@ -30,5 +25,14 @@ class TopController < ApplicationController
   def not_found_outside_private_space
     @member = @request_space.present? && current_user.present? ? Member.where(customer_id: @request_space.customer_id, user_id: current_user.id) : nil
     return head :not_found if !base_domain_request? && (@request_space.blank? || (!@request_space.public_flag && @member.count.zero?))
+  end
+
+  # スペース情報をセット
+  def set_spaces
+    @public_spaces = Space.where(public_flag: true).order(created_at: 'DESC', id: 'DESC').page(1).per(Settings['public_spaces_limit'])
+    return if current_user.blank?
+
+    @join_spaces = Space.order(created_at: 'DESC', id: 'DESC').page(1).per(Settings['join_spaces_limit'])
+                        .joins(customer: :member).where(members: { user_id: current_user.id })
   end
 end

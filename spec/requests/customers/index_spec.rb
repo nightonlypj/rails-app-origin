@@ -3,8 +3,8 @@ require 'rails_helper'
 RSpec.describe 'Customers', type: :request do
   include_context 'リクエストスペース作成'
 
-  # GET /customers（ベースドメイン） 顧客一覧
-  # GET /customers.json（ベースドメイン） 顧客一覧API
+  # GET /customers（ベースドメイン） 所属顧客一覧
+  # GET /customers.json（ベースドメイン） 所属顧客一覧API
   # 前提条件
   #   なし
   # テストパターン
@@ -171,7 +171,7 @@ RSpec.describe 'Customers', type: :request do
           expect(parse_response[no - start_no]['name']).to eq(@create_customers[no - 1].name)
         end
       end
-      it '顧客詳細のパスが含まれる' do
+      it '顧客情報のパスが含まれる' do
         get customers_path(page: page), headers: headers
         (start_no..end_no).each do |no|
           expect(response.body).to include("\"#{customer_path(customer_code: @create_customers[no - 1].code)}\"")

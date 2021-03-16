@@ -1,20 +1,18 @@
-<main class="container">
-  <h3 class="pt-3">スペース一覧</h3>
-
-  <div class="row mb-1">
-    <div class="col-sm-11 mb-1">
+<main class="container mb-1">
+  <div class="row mb-2">
+    <div class="col-sm-11">
       <ul class="nav nav-tabs">
         <li class="nav-item text-nowrap"><%= link_to '参加スペース', spaces_path, class: 'nav-link' %></li>
         <li class="nav-item text-nowrap"><div class="nav-link active">公開スペース</div></li>
       </ul>
     </div>
     <div class="col-sm-1">
-      <div class="float-end text-nowrap"><%= link_to 'スペース作成', new_space_path, class: 'btn btn-outline-dark btn-rounded btn-sm' %></div>
+      <div class="float-end text-nowrap mt-2"><%= link_to 'スペース作成', new_space_path, class: 'btn btn-outline-dark btn-rounded btn-sm' %></div>
     </div>
   </div>
 
 <% if @spaces.present? %>
-  <div class="row">
+  <div class="row bg-light m-0">
     <div class="col-sm-5 d-flex align-items-center">
       <%= page_entries_info @spaces %>
     </div>
@@ -25,7 +23,7 @@
 <% end %>
 
   <div class="table-responsive">
-    <table class="table table-sm align-middle">
+    <table class="table table-sm align-middle mb-2">
       <thead>
         <tr>
           <th scope="col" nowrap>スペース名 <wbr>(サブドメイン)</th>
@@ -57,9 +55,11 @@
     </table>
   </div>
 
-  <div class="row">
+<% if @spaces.total_pages > 1 %>
+  <div class="row m-0">
     <div class="col">
       <div class="float-sm-end"><%= paginate @spaces %></div>
     </div>
   </div>
+<% end %>
 </main>
