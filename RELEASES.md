@@ -1,5 +1,10 @@
 # リリースノート
 
+## 1.2.0
+
+- モデルベースのER図を自動生成したい
+  - https://dev.azure.com/nightonly/rails-app-origin/_workitems/edit/377/
+
 ## 1.1.0
 
 - deviseのページ：POST後のURLをGETした時にRouting Errorや違うページに行かないようにしたい

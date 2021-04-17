@@ -59,6 +59,8 @@ group :development do
   gem 'yard'
   # Use LetterOpenerWeb
   # gem 'letter_opener_web' # Tips: NameError: uninitialized constant LetterOpenerWeb
+  # Use Rails ERD
+  gem 'rails-erd'
 end
 gem 'listen', '>= 3.0.5', '< 3.2'
 gem 'letter_opener_web'

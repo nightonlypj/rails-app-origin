@@ -1,0 +1,6 @@
+filename: db/erd
+inheritance: true
+exclude:
+  - ActiveRecord::InternalMetadata
+  - ActiveRecord::SchemaMigration
+  - primary::SchemaMigration

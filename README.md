@@ -44,6 +44,16 @@ Version: ImageMagick 7.0.10-58 Q16 arm 2021-01-16 https://imagemagick.org
 ※バージョンは異なっても良い
 ```
 
+### Graphvizインストール
+
+```
+$ brew install graphviz
+
+$ dot -V
+dot - graphviz version 2.47.0 (20210316.0004)
+※バージョンは異なっても良い
+```
+
 ### Rubyインストール
 
 ```
