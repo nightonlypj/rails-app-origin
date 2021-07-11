@@ -61,6 +61,8 @@ group :development do
   # gem 'letter_opener_web' # Tips: NameError: uninitialized constant LetterOpenerWeb
   # Use Rails ERD
   gem 'rails-erd'
+  # Use Bullet
+  gem 'bullet'
 end
 gem 'listen', '>= 3.0.5', '< 3.2'
 gem 'letter_opener_web'
@@ -79,6 +81,8 @@ gem 'tzinfo-data', platforms: [:mingw, :mswin, :x64_mingw, :jruby]
 # Use Devise
 gem 'devise'
 gem 'devise-i18n'
+gem 'devise_token_auth'
+gem 'rack-cors'
 
 # Use RailsAdmin
 gem 'rails_admin'
