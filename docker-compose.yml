@@ -22,3 +22,9 @@ services:
       - 3000:3000
     depends_on:
       - db
+  jdk:
+    build: schemaspy/
+    volumes:
+      - ./schemaspy:/workdir/schemaspy
+    depends_on:
+      - db

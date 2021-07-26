@@ -1,6 +1,6 @@
 # https://hub.docker.com/_/ruby
 FROM ruby:3.0.0-alpine
-RUN apk update && apk add --no-cache --update build-base tzdata bash yarn python2 imagemagick graphviz mysql-dev mysql-client
+RUN apk update && apk add --no-cache --update build-base tzdata bash yarn python2 imagemagick graphviz ttf-freefont mysql-dev mysql-client
 
 WORKDIR /workdir
 ENV LANG="ja_JP.UTF-8"

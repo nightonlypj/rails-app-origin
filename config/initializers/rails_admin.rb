@@ -1,3 +1,7 @@
+# Tips: Error occurred while loading application: uninitialized constant NestedForm::BuilderMixin (NameError)
+require 'nested_form/engine'
+require 'nested_form/builder_mixin'
+
 RailsAdmin.config do |config|
   ### Popular gems integration
 
