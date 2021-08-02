@@ -1,0 +1,7 @@
+<schemaMeta xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://schemaspy.org/xsd/6/schemameta.xsd" >
+    <tables>
+        <table name="users" comments="ユーザー" />
+        <table name="admin_users" comments="管理者" />
+        <table name="infomations" comments="お知らせ" />
+    </tables>
+</schemaMeta>

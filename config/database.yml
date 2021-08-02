@@ -1,3 +1,15 @@
+# SQLite. Versions 3.8.0 and up are supported.
+#   gem install sqlite3
+#
+#   Ensure the SQLite 3 gem is defined in your Gemfile
+#   gem 'sqlite3'
+#
+#default: &default
+default-sqlite3: &default-sqlite3
+  adapter: sqlite3
+  pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
+  timeout: 5000
+
 # MySQL. Versions 5.5.8 and up are supported.
 #
 # Install the MySQL driver
@@ -10,6 +22,7 @@
 #   https://dev.mysql.com/doc/refman/5.7/en/password-hashing.html
 #
 default: &default
+#default-mysql: &default-mysql
   adapter: mysql2
   # encoding: utf8
   # collation: utf8_bin
@@ -21,10 +34,44 @@ default: &default
   # host: localhost
   username: root
   password: xyz789
-  host: db
+  host: 127.0.0.1
+#  host: db
+
+# PostgreSQL. Versions 9.3 and up are supported.
+#
+# Install the pg driver:
+#   gem install pg
+# On macOS with Homebrew:
+#   gem install pg -- --with-pg-config=/usr/local/bin/pg_config
+# On macOS with MacPorts:
+#   gem install pg -- --with-pg-config=/opt/local/lib/postgresql84/bin/pg_config
+# On Windows:
+#   gem install pg
+#       Choose the win32 build.
+#       Install PostgreSQL and put its /bin directory on your path.
+#
+# Configure Using Gemfile
+# gem 'pg'
+#
+#default: &default
+default-pg: &default-pg
+  adapter: postgresql
+  encoding: unicode
+  # For details on connection pooling, see Rails configuration guide
+  # https://guides.rubyonrails.org/configuring.html#database-pooling
+  pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
+  # username: rails_app
+  # password: abc123
+  # host: localhost
+  username: postgres
+  password: xyz789
+  host: 127.0.0.1
+#  host: db
+#  host: pg
 
 development:
   <<: *default
+#  database: db/development.sqlite3
   database: rails_app_development
 
 # Warning: The database defined as "test" will be erased and
@@ -32,6 +79,7 @@ development:
 # Do not set this db to the same as development or production.
 test:
   <<: *default
+#  database: db/test.sqlite3
   database: rails_app_test
   # username: rails_app_test
 
@@ -56,4 +104,5 @@ test:
 #
 production:
   <<: *default
+#  database: db/production.sqlite3
   url: <%= ENV['DATABASE_URL'] %>
