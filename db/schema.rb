@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_12_31_131129) do
+ActiveRecord::Schema.define(version: 2021_08_06_000715) do
 
   create_table "admin_users", charset: "utf8mb4", collation: "utf8mb4_bin", force: :cascade do |t|
     t.string "name", null: false, comment: "氏名"
@@ -80,11 +80,17 @@ ActiveRecord::Schema.define(version: 2020_12_31_131129) do
     t.datetime "destroy_schedule_at", comment: "削除予定日時"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
+    t.string "provider", default: "email", null: false, comment: "認証方法"
+    t.string "uid", default: "", null: false, comment: "UID"
+    t.boolean "allow_password_change", default: false, comment: "パスワード変更許可"
+    t.string "nickname", comment: "ニックネーム"
+    t.text "tokens", comment: "トークン"
     t.index ["code"], name: "index_users5", unique: true
     t.index ["confirmation_token"], name: "index_users3", unique: true
     t.index ["destroy_schedule_at"], name: "index_users6"
     t.index ["email"], name: "index_users1", unique: true
     t.index ["reset_password_token"], name: "index_users2", unique: true
+    t.index ["uid", "provider"], name: "index_users7", unique: true
     t.index ["unlock_token"], name: "index_users4", unique: true
   end
 

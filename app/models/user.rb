@@ -1,9 +1,4 @@
 class User < ApplicationRecord
-            # Include default devise modules.
-            devise :database_authenticatable, :registerable,
-                    :recoverable, :rememberable, :trackable, :validatable,
-                    :confirmable, :omniauthable
-            include DeviseTokenAuth::Concerns::User
   has_many :infomation, dependent: :destroy
   mount_uploader :image, ImageUploader
 
@@ -17,6 +12,7 @@ class User < ApplicationRecord
   devise :database_authenticatable, :registerable,
          :recoverable, :rememberable, :validatable,
          :confirmable, :lockable, :timeoutable, :trackable
+  include DeviseTokenAuth::Concerns::User
 
   # 削除予約済みか返却
   def destroy_reserved?

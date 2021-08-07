@@ -1,5 +1,6 @@
 class ApplicationController < ActionController::Base
-        include DeviseTokenAuth::Concerns::SetUserByToken
+  include DeviseTokenAuth::Concerns::SetUserByToken
+
   private
 
   # 有効なパスワードリセットトークンかを返却
