@@ -1,5 +1,4 @@
 Rails.application.routes.draw do
-  # mount_devise_token_auth_for 'User', at: 'auth'
   # お知らせ
   resources :infomations, only: %i[index show]
 
@@ -51,6 +50,16 @@ Rails.application.routes.draw do
     get    'users/password',         to: 'users/passwords#edit',              as: 'edit_user_password'
     put    'users/password',         to: 'users/passwords#update',            as: 'update_user_password'
     patch  'users/password',         to: 'users/passwords#update',            as: nil
+  end
+  namespace :users do
+    mount_devise_token_auth_for 'User', at: 'auth', controllers: {
+      registrations: 'users/auth/registrations',
+      confirmations: 'users/auth/confirmations',
+      sessions: 'users/auth/sessions',
+      unlocks: 'users/auth/unlocks',
+      passwords: 'users/auth/passwords',
+      token_validations: 'users/auth/token_validations'
+    }
   end
 
   # トップ
