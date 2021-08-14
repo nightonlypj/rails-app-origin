@@ -57,4 +57,15 @@ DeviseTokenAuth.setup do |config|
   # devise confirmable module. If you want to use devise confirmable module and
   # send email, set it to true. (This is a setting for compatibility)
   config.send_confirmation_email = true
+
+  config.redirect_whitelist = Settings['redirect_whitelist']
+  config.default_confirm_success_url = Settings['default_confirm_success_url']
+  config.default_password_reset_url = Settings['default_password_reset_url']
+
+  config.require_client_password_reset_token = true
+  # config.remove_tokens_after_password_reset = false
+  # config.cookie_enabled = false
+  # config.cookie_name = 'auth_cookie'
+  # config.cookie_attributes = {}
+  # config.bypass_sign_in = true
 end

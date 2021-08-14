@@ -15,9 +15,11 @@ class Users::RegistrationsController < Devise::RegistrationsController
   # POST /users/sign_up アカウント登録(処理)
   def create
     params[:user][:code] = create_unique_code(User, 'code', "Users::RegistrationsController.create #{params[:user]}")
-    super
-    flash[:alert] = resource.errors[:code].first if resource.errors[:code].present?
-    resource.send_confirmation_instructions if resource.errors.blank? # Tips: devise_token_auth導入後、送信されなくなった為
+    ActiveRecord::Base.transaction do
+      super
+      flash[:alert] = resource.errors[:code].first if resource.errors[:code].present?
+      resource.send_confirmation_instructions if resource.errors.blank? # Tips: devise_token_auth導入後、送信されなくなった為
+    end
   end
 
   # GET /users/edit 登録情報変更

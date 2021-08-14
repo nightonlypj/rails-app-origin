@@ -1,0 +1,15 @@
+# Tips: 不足分や文言変更したい場合のみ記載。デフォルト: gems/devise_token_auth-*/config/locales/ja.yml
+ja:
+  devise_token_auth:
+    confirmations:
+      missing_email: 'メールアドレスが与えられていません。'
+      sended_paranoid: 'ユーザーが見つかりません。' # Tips: user_not_foundで、config.paranoid = trueの場合
+      user_not_found: 'ユーザーが見つかりません。'
+      sended: "'%{email}' にメールアドレス確認の案内が送信されました。"
+    unlocks:
+      missing_email: 'メールアドレスが与えられていません。'
+      sended_paranoid: 'ユーザーが見つかりません。' # Tips: user_not_foundで、config.paranoid = trueの場合
+      user_not_found: 'ユーザーが見つかりません。'
+      sended: "'%{email}' にアカウントロック解除の案内が送信されました。"
+      missing_redirect_url: "リダイレクト URL が与えられていません。"
+      not_allowed_redirect_url: "'%{redirect_url}' へのリダイレクトは許可されていません。"

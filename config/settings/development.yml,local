@@ -1,5 +1,9 @@
 env_name: '【開発環境】'
 base_domain: 'localhost:3000'
+redirect_whitelist: ['http://localhost:5000/*']
+default_confirm_success_url: ''
+default_password_reset_url: ''
+default_unlock_success_url: ''
 mailer_from:
   name: '%{app_name}'
   email: 'noreply@localhost'

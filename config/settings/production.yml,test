@@ -1,5 +1,9 @@
 env_name: '【テスト環境】'
 base_domain: 'test.mydomain'
+redirect_whitelist: ['https://test-front.mydomain/*']
+default_confirm_success_url: ''
+default_password_reset_url: ''
+default_unlock_success_url: ''
 mailer_from:
   name: '%{app_name}'
   email: 'noreply@test.mydomain'
