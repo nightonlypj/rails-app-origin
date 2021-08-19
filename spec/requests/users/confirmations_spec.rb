@@ -37,10 +37,25 @@ RSpec.describe 'Users::Confirmations', type: :request do
   #   有効なパラメータ, 無効なパラメータ → 事前にデータ作成
   describe 'POST #create' do
     let!(:send_user) { FactoryBot.create(:user, confirmed_at: nil) }
-    let!(:valid_attributes) { FactoryBot.attributes_for(:user, email: send_user.email) }
-    let!(:invalid_attributes) { FactoryBot.attributes_for(:user, email: nil) }
+    let!(:valid_attributes) { { email: send_user.email } }
+    let!(:invalid_attributes) { { email: nil } }
 
     # テスト内容
+    shared_examples_for 'OK' do
+      it 'メールが送信される' do
+        before_count = ActionMailer::Base.deliveries.count
+        post create_user_confirmation_path, params: { user: attributes }
+        expect(ActionMailer::Base.deliveries.count).to eq(before_count + 1) # メールアドレス確認のお願い
+      end
+    end
+    shared_examples_for 'NG' do
+      it 'メールが送信されない' do
+        before_count = ActionMailer::Base.deliveries.count
+        post create_user_confirmation_path, params: { user: attributes }
+        expect(ActionMailer::Base.deliveries.count).to eq(before_count)
+      end
+    end
+
     shared_examples_for 'ToError' do
       it '成功ステータス' do # Tips: 再入力
         post create_user_confirmation_path, params: { user: attributes }
@@ -59,10 +74,12 @@ RSpec.describe 'Users::Confirmations', type: :request do
     # テストケース
     shared_examples_for '[*]有効なパラメータ' do # Tips: ログイン中も出来ても良さそう
       let!(:attributes) { valid_attributes }
+      it_behaves_like 'OK'
       it_behaves_like 'ToLogin', nil, 'devise.confirmations.send_instructions'
     end
     shared_examples_for '[*]無効なパラメータ' do
       let!(:attributes) { invalid_attributes }
+      it_behaves_like 'NG'
       it_behaves_like 'ToError'
     end
 
@@ -135,7 +152,7 @@ RSpec.describe 'Users::Confirmations', type: :request do
       it_behaves_like 'OK'
       it_behaves_like 'ToLogin', nil, 'devise.confirmations.confirmed'
     end
-    shared_examples_for '[ログイン中][期限内]確認日時がない（未確認）' do # Tips: ログイン中も出来ても良さそう
+    shared_examples_for '[ログイン中/削除予約済み][期限内]確認日時がない（未確認）' do # Tips: ログイン中も出来ても良さそう
       it_behaves_like 'OK'
       it_behaves_like 'ToTop', nil, 'devise.confirmations.confirmed'
     end
@@ -152,7 +169,7 @@ RSpec.describe 'Users::Confirmations', type: :request do
       it_behaves_like 'OK'
       it_behaves_like 'ToLogin', nil, 'devise.confirmations.confirmed'
     end
-    shared_examples_for '[ログイン中][期限内]確認日時が確認送信日時より前（未確認）' do # Tips: ログイン中も出来ても良さそう
+    shared_examples_for '[ログイン中/削除予約済み][期限内]確認日時が確認送信日時より前（未確認）' do # Tips: ログイン中も出来ても良さそう
       include_context 'メールアドレス確認トークン確認', true
       it_behaves_like 'OK'
       it_behaves_like 'ToTop', nil, 'devise.confirmations.confirmed'
@@ -167,7 +184,7 @@ RSpec.describe 'Users::Confirmations', type: :request do
       it_behaves_like 'NG'
       it_behaves_like 'ToLogin', 'errors.messages.already_confirmed', nil
     end
-    shared_examples_for '[ログイン中][期限内]確認日時が確認送信日時より後（確認済み）' do
+    shared_examples_for '[ログイン中/削除予約済み][期限内]確認日時が確認送信日時より後（確認済み）' do
       include_context 'メールアドレス確認トークン確認', false
       it_behaves_like 'NG'
       it_behaves_like 'ToLogin', 'errors.messages.already_confirmed', nil # Tips: ログインからトップにリダイレクト
@@ -186,9 +203,9 @@ RSpec.describe 'Users::Confirmations', type: :request do
     end
     shared_examples_for '[ログイン中/削除予約済み]トークンが期限内' do
       include_context 'メールアドレス確認トークン作成', true
-      it_behaves_like '[ログイン中][期限内]確認日時がない（未確認）'
-      it_behaves_like '[ログイン中][期限内]確認日時が確認送信日時より前（未確認）'
-      it_behaves_like '[ログイン中][期限内]確認日時が確認送信日時より後（確認済み）'
+      it_behaves_like '[ログイン中/削除予約済み][期限内]確認日時がない（未確認）'
+      it_behaves_like '[ログイン中/削除予約済み][期限内]確認日時が確認送信日時より前（未確認）'
+      it_behaves_like '[ログイン中/削除予約済み][期限内]確認日時が確認送信日時より後（確認済み）'
     end
     shared_examples_for '[*]トークンが期限切れ' do
       include_context 'メールアドレス確認トークン作成', false

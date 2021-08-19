@@ -1,5 +1,9 @@
-shared_context 'ログイン処理（管理者）' do
+shared_context 'ユーザー作成（管理者）' do
   let!(:admin_user) { FactoryBot.create(:admin_user) }
+end
+
+shared_context 'ログイン処理（管理者）' do
+  include_context 'ユーザー作成（管理者）'
   before { sign_in admin_user }
 end
 

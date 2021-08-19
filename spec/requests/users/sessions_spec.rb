@@ -41,12 +41,15 @@ RSpec.describe 'Users::Sessions', type: :request do
   # 前提条件
   #   なし
   # テストパターン
-  #   未ログイン, ログイン中, ログイン中（削除予約済み） → データ＆状態作成
+  #   未ログイン, 未ログイン（削除予約済み）, ログイン中, ログイン中（削除予約済み） → データ＆状態作成
   #   有効なパラメータ, 無効なパラメータ → 事前にデータ作成
   describe 'POST #create' do
-    let!(:login_user) { FactoryBot.create(:user) }
-    let!(:valid_attributes) { FactoryBot.attributes_for(:user, email: login_user.email, password: login_user.password) }
-    let!(:invalid_attributes) { FactoryBot.attributes_for(:user, email: login_user.email, password: nil) }
+    shared_context '有効なパラメータ' do
+      let!(:attributes) { { email: user.email, password: user.password } }
+    end
+    shared_context '無効なパラメータ' do
+      let!(:attributes) { { email: user.email, password: nil } }
+    end
 
     # テスト内容
     shared_examples_for 'ToError' do
@@ -66,23 +69,29 @@ RSpec.describe 'Users::Sessions', type: :request do
 
     # テストケース
     shared_examples_for '[未ログイン]有効なパラメータ' do
-      let!(:attributes) { valid_attributes }
+      include_context '有効なパラメータ'
       it_behaves_like 'ToTop', nil, 'devise.sessions.signed_in'
     end
     shared_examples_for '[ログイン中/削除予約済み]有効なパラメータ' do
-      let!(:attributes) { valid_attributes }
+      include_context '有効なパラメータ'
       it_behaves_like 'ToTop', 'devise.failure.already_authenticated', nil
     end
     shared_examples_for '[未ログイン]無効なパラメータ' do
-      let!(:attributes) { invalid_attributes }
+      include_context '無効なパラメータ'
       it_behaves_like 'ToError'
     end
     shared_examples_for '[ログイン中/削除予約済み]無効なパラメータ' do
-      let!(:attributes) { invalid_attributes }
+      include_context '無効なパラメータ'
       it_behaves_like 'ToTop', 'devise.failure.already_authenticated', nil
     end
 
     context '未ログイン' do
+      include_context 'ユーザー作成'
+      it_behaves_like '[未ログイン]有効なパラメータ'
+      it_behaves_like '[未ログイン]無効なパラメータ'
+    end
+    context '未ログイン（削除予約済み）' do
+      include_context 'ユーザー作成', true
       it_behaves_like '[未ログイン]有効なパラメータ'
       it_behaves_like '[未ログイン]無効なパラメータ'
     end

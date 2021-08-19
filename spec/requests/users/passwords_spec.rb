@@ -45,10 +45,25 @@ RSpec.describe 'Users::Passwords', type: :request do
   #   有効なパラメータ, 無効なパラメータ → 事前にデータ作成
   describe 'POST #create' do
     let!(:send_user) { FactoryBot.create(:user) }
-    let!(:valid_attributes) { FactoryBot.attributes_for(:user, email: send_user.email) }
-    let!(:invalid_attributes) { FactoryBot.attributes_for(:user, email: nil) }
+    let!(:valid_attributes) { { email: send_user.email } }
+    let!(:invalid_attributes) { { email: nil } }
 
     # テスト内容
+    shared_examples_for 'OK' do
+      it 'メールが送信される' do
+        before_count = ActionMailer::Base.deliveries.count
+        post create_user_password_path, params: { user: attributes }
+        expect(ActionMailer::Base.deliveries.count).to eq(before_count + 1) # パスワード再設定方法のお知らせ
+      end
+    end
+    shared_examples_for 'NG' do
+      it 'メールが送信されない' do
+        before_count = ActionMailer::Base.deliveries.count
+        post create_user_password_path, params: { user: attributes }
+        expect(ActionMailer::Base.deliveries.count).to eq(before_count)
+      end
+    end
+
     shared_examples_for 'ToError' do
       it '成功ステータス' do # Tips: 再入力
         post create_user_password_path, params: { user: attributes }
@@ -75,18 +90,22 @@ RSpec.describe 'Users::Passwords', type: :request do
     # テストケース
     shared_examples_for '[未ログイン]有効なパラメータ' do
       let!(:attributes) { valid_attributes }
+      it_behaves_like 'OK'
       it_behaves_like 'ToLogin', nil, 'devise.passwords.send_instructions'
     end
     shared_examples_for '[ログイン中/削除予約済み]有効なパラメータ' do
       let!(:attributes) { valid_attributes }
+      it_behaves_like 'NG'
       it_behaves_like 'ToTop', 'devise.failure.already_authenticated', nil
     end
     shared_examples_for '[未ログイン]無効なパラメータ' do
       let!(:attributes) { invalid_attributes }
+      it_behaves_like 'NG'
       it_behaves_like 'ToError'
     end
     shared_examples_for '[ログイン中/削除予約済み]無効なパラメータ' do
       let!(:attributes) { invalid_attributes }
+      it_behaves_like 'NG'
       it_behaves_like 'ToTop', 'devise.failure.already_authenticated', nil
     end
 
@@ -218,11 +237,21 @@ RSpec.describe 'Users::Passwords', type: :request do
         put update_user_password_path, params: { user: attributes.merge({ reset_password_token: reset_password_token }) }
         expect(User.find(@send_user.id).reset_password_sent_at).to be_nil
       end
+      it 'メールが送信される' do
+        before_count = ActionMailer::Base.deliveries.count
+        put update_user_password_path, params: { user: attributes.merge({ reset_password_token: reset_password_token }) }
+        expect(ActionMailer::Base.deliveries.count).to eq(before_count + 1) # パスワード変更完了のお知らせ
+      end
     end
     shared_examples_for 'NG' do
       it 'パスワードリセット送信日時が変更されない' do
         put update_user_password_path, params: { user: attributes.merge({ reset_password_token: reset_password_token }) }
         expect(User.find(@send_user.id).reset_password_sent_at).to eq(@send_user.reset_password_sent_at)
+      end
+      it 'メールが送信されない' do
+        before_count = ActionMailer::Base.deliveries.count
+        put update_user_password_path, params: { user: attributes.merge({ reset_password_token: reset_password_token }) }
+        expect(ActionMailer::Base.deliveries.count).to eq(before_count)
       end
     end
 

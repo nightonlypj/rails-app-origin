@@ -45,10 +45,25 @@ RSpec.describe 'Users::Unlocks', type: :request do
   #   有効なパラメータ, 無効なパラメータ → 事前にデータ作成
   describe 'POST #create' do
     include_context 'アカウントロック解除トークン作成'
-    let!(:valid_attributes) { FactoryBot.attributes_for(:user, email: @send_user.email) }
-    let!(:invalid_attributes) { FactoryBot.attributes_for(:user, email: nil) }
+    let!(:valid_attributes) { { email: @send_user.email } }
+    let!(:invalid_attributes) { { email: nil } }
 
     # テスト内容
+    shared_examples_for 'OK' do
+      it 'メールが送信される' do
+        before_count = ActionMailer::Base.deliveries.count
+        post create_user_unlock_path, params: { user: attributes }
+        expect(ActionMailer::Base.deliveries.count).to eq(before_count + 1) # アカウントロックのお知らせ
+      end
+    end
+    shared_examples_for 'NG' do
+      it 'メールが送信されない' do
+        before_count = ActionMailer::Base.deliveries.count
+        post create_user_unlock_path, params: { user: attributes }
+        expect(ActionMailer::Base.deliveries.count).to eq(before_count)
+      end
+    end
+
     shared_examples_for 'ToError' do
       it '成功ステータス' do # Tips: 再入力
         post create_user_unlock_path, params: { user: attributes }
@@ -75,18 +90,22 @@ RSpec.describe 'Users::Unlocks', type: :request do
     # テストケース
     shared_examples_for '[未ログイン]有効なパラメータ' do
       let!(:attributes) { valid_attributes }
+      it_behaves_like 'OK'
       it_behaves_like 'ToLogin', nil, 'devise.unlocks.send_instructions'
     end
     shared_examples_for '[ログイン中/削除予約済み]有効なパラメータ' do
       let!(:attributes) { valid_attributes }
+      it_behaves_like 'NG'
       it_behaves_like 'ToTop', 'devise.failure.already_authenticated', nil
     end
     shared_examples_for '[未ログイン]無効なパラメータ' do
       let!(:attributes) { invalid_attributes }
+      it_behaves_like 'NG'
       it_behaves_like 'ToError'
     end
     shared_examples_for '[ログイン中/削除予約済み]無効なパラメータ' do
       let!(:attributes) { invalid_attributes }
+      it_behaves_like 'NG'
       it_behaves_like 'ToTop', 'devise.failure.already_authenticated', nil
     end
 

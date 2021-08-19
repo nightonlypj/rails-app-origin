@@ -44,21 +44,38 @@ RSpec.describe 'Users::Registrations', type: :request do
   #   未ログイン, ログイン中, ログイン中（削除予約済み） → データ＆状態作成
   #   有効なパラメータ, 無効なパラメータ → 事前にデータ作成
   describe 'POST #create' do
-    let!(:valid_attributes) { FactoryBot.attributes_for(:user) }
-    let!(:invalid_attributes) { FactoryBot.attributes_for(:user, email: nil) }
+    let!(:new_user) { FactoryBot.attributes_for(:user) }
+    let!(:valid_attributes) do
+      {
+        name: new_user[:name],
+        email: new_user[:email],
+        password: new_user[:password]
+      }
+    end
+    let!(:invalid_attributes) do
+      {
+        name: new_user[:name],
+        email: nil,
+        password: new_user[:password]
+      }
+    end
 
     # テスト内容
     shared_examples_for 'OK' do
-      it '作成される' do
+      it '作成・メールが送信される' do
         expect do
+          before_count = ActionMailer::Base.deliveries.count
           post create_user_registration_path, params: { user: attributes }
+          expect(ActionMailer::Base.deliveries.count).to eq(before_count + 1) # メールアドレス確認のお願い
         end.to change(User, :count).by(1)
       end
     end
     shared_examples_for 'NG' do
-      it '作成されない' do
+      it '作成・メールが送信されない' do
         expect do
+          before_count = ActionMailer::Base.deliveries.count
           post create_user_registration_path, params: { user: attributes }
+          expect(ActionMailer::Base.deliveries.count).to eq(before_count)
         end.to change(User, :count).by(0)
       end
     end
@@ -180,15 +197,27 @@ RSpec.describe 'Users::Registrations', type: :request do
 
     # テスト内容
     shared_examples_for 'OK' do
-      it '氏名が変更される' do
+      it '確認待ちメールアドレス・氏名が変更される' do
         put update_user_registration_path, params: { user: attributes.merge(current_password: current_password) }
+        expect(User.find(user.id).unconfirmed_email).to eq(attributes[:email])
         expect(User.find(user.id).name).to eq(attributes[:name])
+      end
+      it 'メールが送信される' do
+        before_count = ActionMailer::Base.deliveries.count
+        put update_user_registration_path, params: { user: attributes.merge(current_password: current_password) }
+        expect(ActionMailer::Base.deliveries.count).to eq(before_count + 3) # メールアドレス変更受け付けのお知らせ、パスワード変更完了のお知らせ、メールアドレス確認のお願い
       end
     end
     shared_examples_for 'NG' do
-      it '氏名が変更されない' do
+      it '確認待ちメールアドレス・氏名が変更されない' do
         put update_user_registration_path, params: { user: attributes.merge(current_password: current_password) }
+        expect(User.find(user.id).unconfirmed_email).to eq(user.unconfirmed_email)
         expect(User.find(user.id).name).to eq(user.name)
+      end
+      it 'メールが送信されない' do
+        before_count = ActionMailer::Base.deliveries.count
+        put update_user_registration_path, params: { user: attributes.merge(current_password: current_password) }
+        expect(ActionMailer::Base.deliveries.count).to eq(before_count)
       end
     end
 

@@ -7,8 +7,8 @@ RSpec.describe UserMailer, type: :mailer do
   # テストパターン
   #   なし
   describe 'destroy_reserved' do
-    let(:user) { FactoryBot.create(:user, destroy_schedule_at: Time.current + Settings['destroy_schedule_days'].days) }
-    let(:mail) { UserMailer.with(user: user).destroy_reserved }
+    let!(:user) { FactoryBot.create(:user, destroy_schedule_at: Time.current + Settings['destroy_schedule_days'].days) }
+    let!(:mail) { UserMailer.with(user: user).destroy_reserved }
     it '送信者のメールアドレスが設定と一致' do
       expect(mail.from).to eq([Settings['mailer_from']['email']])
     end
@@ -29,8 +29,8 @@ RSpec.describe UserMailer, type: :mailer do
   # テストパターン
   #   なし
   describe 'undo_destroy_reserved' do
-    let(:user) { FactoryBot.create(:user) }
-    let(:mail) { UserMailer.with(user: user).undo_destroy_reserved }
+    let!(:user) { FactoryBot.create(:user) }
+    let!(:mail) { UserMailer.with(user: user).undo_destroy_reserved }
     it '送信者のメールアドレスが設定と一致' do
       expect(mail.from).to eq([Settings['mailer_from']['email']])
     end
@@ -45,8 +45,8 @@ RSpec.describe UserMailer, type: :mailer do
   # テストパターン
   #   なし
   describe 'destroy_completed' do
-    let(:user) { FactoryBot.create(:user) }
-    let(:mail) { UserMailer.with(user: user).destroy_completed }
+    let!(:user) { FactoryBot.create(:user) }
+    let!(:mail) { UserMailer.with(user: user).destroy_completed }
     it '送信者のメールアドレスが設定と一致' do
       expect(mail.from).to eq([Settings['mailer_from']['email']])
     end

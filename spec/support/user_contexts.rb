@@ -1,4 +1,4 @@
-shared_context 'ログイン処理' do |destroy_reserved_flag = false|
+shared_context 'ユーザー作成' do |destroy_reserved_flag = false|
   let!(:user) { FactoryBot.create(:user) }
   before do
     if destroy_reserved_flag
@@ -6,8 +6,12 @@ shared_context 'ログイン処理' do |destroy_reserved_flag = false|
       user.destroy_schedule_at = Time.now.utc + Settings['destroy_schedule_days'].days
       user.save!
     end
-    sign_in user
   end
+end
+
+shared_context 'ログイン処理' do |destroy_reserved_flag = false|
+  include_context 'ユーザー作成', destroy_reserved_flag
+  before { sign_in user }
 end
 
 shared_context '画像登録処理' do

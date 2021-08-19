@@ -40,9 +40,12 @@ RSpec.describe 'AdminUsers::Sessions', type: :request do
   #   未ログイン, ログイン中 → データ＆状態作成
   #   有効なパラメータ, 無効なパラメータ → 事前にデータ作成
   describe 'POST #create' do
-    let!(:login_admin_user) { FactoryBot.create(:admin_user) }
-    let!(:valid_attributes) { FactoryBot.attributes_for(:admin_user, email: login_admin_user.email, password: login_admin_user.password) }
-    let!(:invalid_attributes) { FactoryBot.attributes_for(:admin_user, email: login_admin_user.email, password: nil) }
+    shared_context '有効なパラメータ' do
+      let!(:attributes) { { email: admin_user.email, password: admin_user.password } }
+    end
+    shared_context '無効なパラメータ' do
+      let!(:attributes) { { email: admin_user.email, password: nil } }
+    end
 
     # テスト内容
     shared_examples_for 'ToError' do
@@ -62,23 +65,24 @@ RSpec.describe 'AdminUsers::Sessions', type: :request do
 
     # テストケース
     shared_examples_for '[未ログイン]有効なパラメータ' do
-      let!(:attributes) { valid_attributes }
+      include_context '有効なパラメータ'
       it_behaves_like 'ToAdmin', nil, 'devise.sessions.signed_in'
     end
     shared_examples_for '[ログイン中]有効なパラメータ' do
-      let!(:attributes) { valid_attributes }
+      include_context '有効なパラメータ'
       it_behaves_like 'ToAdmin', 'devise.failure.already_authenticated', nil
     end
     shared_examples_for '[未ログイン]無効なパラメータ' do
-      let!(:attributes) { invalid_attributes }
+      include_context '無効なパラメータ'
       it_behaves_like 'ToError'
     end
     shared_examples_for '[ログイン中]無効なパラメータ' do
-      let!(:attributes) { invalid_attributes }
+      include_context '無効なパラメータ'
       it_behaves_like 'ToAdmin', 'devise.failure.already_authenticated', nil
     end
 
     context '未ログイン' do
+      include_context 'ユーザー作成（管理者）'
       it_behaves_like '[未ログイン]有効なパラメータ'
       it_behaves_like '[未ログイン]無効なパラメータ'
     end
