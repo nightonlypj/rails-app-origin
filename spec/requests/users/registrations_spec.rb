@@ -67,6 +67,10 @@ RSpec.describe 'Users::Registrations', type: :request do
           before_count = ActionMailer::Base.deliveries.count
           post create_user_registration_path, params: { user: attributes }
           expect(ActionMailer::Base.deliveries.count).to eq(before_count + 1) # メールアドレス確認のお願い
+
+          after_user = User.find_by(email: new_user[:email])
+          expect(after_user).not_to be_nil
+          expect(after_user.name).to eq(new_user[:name])
         end.to change(User, :count).by(1)
       end
     end
@@ -199,8 +203,9 @@ RSpec.describe 'Users::Registrations', type: :request do
     shared_examples_for 'OK' do
       it '確認待ちメールアドレス・氏名が変更される' do
         put update_user_registration_path, params: { user: attributes.merge(current_password: current_password) }
-        expect(User.find(user.id).unconfirmed_email).to eq(attributes[:email])
-        expect(User.find(user.id).name).to eq(attributes[:name])
+        after_user = User.find(user.id)
+        expect(after_user.unconfirmed_email).to eq(attributes[:email])
+        expect(after_user.name).to eq(attributes[:name])
       end
       it 'メールが送信される' do
         before_count = ActionMailer::Base.deliveries.count
@@ -211,8 +216,9 @@ RSpec.describe 'Users::Registrations', type: :request do
     shared_examples_for 'NG' do
       it '確認待ちメールアドレス・氏名が変更されない' do
         put update_user_registration_path, params: { user: attributes.merge(current_password: current_password) }
-        expect(User.find(user.id).unconfirmed_email).to eq(user.unconfirmed_email)
-        expect(User.find(user.id).name).to eq(user.name)
+        after_user = User.find(user.id)
+        expect(after_user.unconfirmed_email).to eq(user.unconfirmed_email)
+        expect(after_user.name).to eq(user.name)
       end
       it 'メールが送信されない' do
         before_count = ActionMailer::Base.deliveries.count

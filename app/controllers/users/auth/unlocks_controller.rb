@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class Users::Auth::UnlocksController < DeviseTokenAuth::UnlocksController
   include DeviseTokenAuth::Concerns::SetUserByToken
   skip_before_action :verify_authenticity_token

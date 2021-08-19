@@ -13,3 +13,6 @@ ja:
       sended: "'%{email}' にアカウントロック解除の案内が送信されました。"
       missing_redirect_url: "リダイレクト URL が与えられていません。"
       not_allowed_redirect_url: "'%{redirect_url}' へのリダイレクトは許可されていません。"
+  errors:
+    messages:
+      not_email: '形式が正しくありません。' # "は有効ではありません"

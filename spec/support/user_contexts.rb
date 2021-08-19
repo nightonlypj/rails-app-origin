@@ -13,6 +13,17 @@ shared_context 'ログイン処理' do |destroy_reserved_flag = false|
   include_context 'ユーザー作成', destroy_reserved_flag
   before { sign_in user }
 end
+shared_context 'authログイン処理' do |destroy_reserved_flag = false|
+  include_context 'ユーザー作成', destroy_reserved_flag
+  let!(:auth_token) { user.create_new_auth_token }
+  let!(:auth_headers) do
+    {
+      'uid' => auth_token['uid'],
+      'client' => auth_token['client'],
+      'access-token' => auth_token['access-token']
+    }
+  end
+end
 
 shared_context '画像登録処理' do
   before do

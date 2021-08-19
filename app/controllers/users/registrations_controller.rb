@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 class Users::RegistrationsController < Devise::RegistrationsController
+  include Users::RegistrationsConcern
   prepend_before_action :authenticate_scope!, only: %i[edit update image_update image_destroy delete destroy undo_delete undo_destroy]
   before_action :redirect_response_destroy_reserved, only: %i[edit update image_update image_destroy delete destroy]
   before_action :redirect_response_not_destroy_reserved, only: %i[undo_delete undo_destroy]
@@ -93,16 +94,6 @@ class Users::RegistrationsController < Devise::RegistrationsController
   # end
 
   protected
-
-  # If you have extra params to permit, append them to the sanitizer.
-  def configure_sign_up_params
-    devise_parameter_sanitizer.permit(:sign_up, keys: %i[code name])
-  end
-
-  # If you have extra params to permit, append them to the sanitizer.
-  def configure_account_update_params
-    devise_parameter_sanitizer.permit(:account_update, keys: [:name])
-  end
 
   # The path used after sign up.
   # def after_sign_up_path_for(resource)
