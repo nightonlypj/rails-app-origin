@@ -1,3 +1,4 @@
+<% unless user_signed_in? %>
 <nav>
   <ul>
 <% if controller_name != 'sessions' %>
@@ -22,3 +23,4 @@
 <% end %>
   </ul>
 </nav>
+<% end %>

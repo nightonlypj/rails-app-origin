@@ -7,17 +7,17 @@ RSpec.describe 'Users::Registrations', type: :request do
   # テストパターン
   #   未ログイン, ログイン中, ログイン中（削除予約済み） → データ＆状態作成
   describe 'GET #new' do
+    subject { get new_user_registration_path }
+
     # テスト内容
     shared_examples_for 'ToOK' do
       it '成功ステータス' do
-        get new_user_registration_path
-        expect(response).to be_successful
+        is_expected.to eq(200)
       end
     end
     shared_examples_for 'ToTop' do |alert, notice|
-      it 'トップページにリダイレクト' do
-        get new_user_registration_path
-        expect(response).to redirect_to(root_path)
+      it 'トップページにリダイレクトする' do
+        is_expected.to redirect_to(root_path)
         expect(flash[:alert]).to alert.present? ? eq(I18n.t(alert)) : be_nil
         expect(flash[:notice]).to notice.present? ? eq(I18n.t(notice)) : be_nil
       end
@@ -32,7 +32,7 @@ RSpec.describe 'Users::Registrations', type: :request do
       it_behaves_like 'ToTop', 'devise.failure.already_authenticated', nil
     end
     context 'ログイン中（削除予約済み）' do
-      include_context 'ログイン処理', true
+      include_context 'ログイン処理', :user_destroy_reserved
       it_behaves_like 'ToTop', 'devise.failure.already_authenticated', nil
     end
   end
@@ -44,64 +44,46 @@ RSpec.describe 'Users::Registrations', type: :request do
   #   未ログイン, ログイン中, ログイン中（削除予約済み） → データ＆状態作成
   #   有効なパラメータ, 無効なパラメータ → 事前にデータ作成
   describe 'POST #create' do
-    let!(:new_user) { FactoryBot.attributes_for(:user) }
-    let!(:valid_attributes) do
-      {
-        name: new_user[:name],
-        email: new_user[:email],
-        password: new_user[:password]
-      }
-    end
-    let!(:invalid_attributes) do
-      {
-        name: new_user[:name],
-        email: nil,
-        password: new_user[:password]
-      }
-    end
+    subject { post create_user_registration_path, params: { user: attributes } }
+    let(:new_user)   { FactoryBot.attributes_for(:user) }
+    let(:exist_user) { FactoryBot.create(:user) }
+    let(:valid_attributes)   { { name: new_user[:name], email: new_user[:email], password: new_user[:password] } }
+    let(:invalid_attributes) { { name: exist_user.name, email: exist_user.email, password: exist_user.password } }
 
     # テスト内容
     shared_examples_for 'OK' do
-      it '作成・メールが送信される' do
+      it '作成・対象項目が設定される。メールが送信される' do
         expect do
-          before_count = ActionMailer::Base.deliveries.count
-          post create_user_registration_path, params: { user: attributes }
-          expect(ActionMailer::Base.deliveries.count).to eq(before_count + 1) # メールアドレス確認のお願い
+          subject
+          expect(User.find_by(email: attributes[:email]).name).to eq(attributes[:name]) # 氏名
 
-          after_user = User.find_by(email: new_user[:email])
-          expect(after_user).not_to be_nil
-          expect(after_user.name).to eq(new_user[:name])
+          expect(ActionMailer::Base.deliveries.count).to eq(1)
+          expect(ActionMailer::Base.deliveries[0].subject).to eq(get_subject('devise.mailer.confirmation_instructions.subject')) # メールアドレス確認のお願い
         end.to change(User, :count).by(1)
       end
     end
     shared_examples_for 'NG' do
-      it '作成・メールが送信されない' do
-        expect do
-          before_count = ActionMailer::Base.deliveries.count
-          post create_user_registration_path, params: { user: attributes }
-          expect(ActionMailer::Base.deliveries.count).to eq(before_count)
-        end.to change(User, :count).by(0)
+      it '作成されない。メールが送信されない' do
+        expect { subject }.to change(User, :count).by(0) && change(ActionMailer::Base.deliveries, :count).by(0)
       end
     end
 
-    shared_examples_for 'ToError' do
-      it '成功ステータス' do # Tips: 再入力
-        post create_user_registration_path, params: { user: attributes }
-        expect(response).to be_successful
+    shared_examples_for 'ToError' do |error_msg|
+      it '成功ステータス。対象のエラーメッセージが含まれる' do # Tips: 再入力
+        is_expected.to eq(200)
+        expect(response.body).to include(I18n.t(error_msg))
       end
     end
     shared_examples_for 'ToTop' do |alert, notice|
-      it 'トップページにリダイレクト' do
-        post create_user_registration_path, params: { user: attributes }
-        expect(response).to redirect_to(root_path)
+      it 'トップページにリダイレクトする' do
+        is_expected.to redirect_to(root_path)
         expect(flash[:alert]).to alert.present? ? eq(I18n.t(alert)) : be_nil
         expect(flash[:notice]).to notice.present? ? eq(I18n.t(notice)) : be_nil
       end
     end
     shared_examples_for 'ToLogin' do |alert, notice|
-      it 'ログインにリダイレクト' do
-        post create_user_registration_path, params: { user: attributes }
-        expect(response).to redirect_to(new_user_session_path)
+      it 'ログインにリダイレクトする' do
+        is_expected.to redirect_to(new_user_session_path)
         expect(flash[:alert]).to alert.present? ? eq(I18n.t(alert)) : be_nil
         expect(flash[:notice]).to notice.present? ? eq(I18n.t(notice)) : be_nil
       end
@@ -109,22 +91,22 @@ RSpec.describe 'Users::Registrations', type: :request do
 
     # テストケース
     shared_examples_for '[未ログイン]有効なパラメータ' do
-      let!(:attributes) { valid_attributes }
+      let(:attributes) { valid_attributes }
       it_behaves_like 'OK'
       it_behaves_like 'ToLogin', nil, 'devise.registrations.signed_up_but_unconfirmed'
     end
     shared_examples_for '[ログイン中/削除予約済み]有効なパラメータ' do
-      let!(:attributes) { valid_attributes }
+      let(:attributes) { valid_attributes }
       it_behaves_like 'NG'
       it_behaves_like 'ToTop', 'devise.failure.already_authenticated', nil
     end
     shared_examples_for '[未ログイン]無効なパラメータ' do
-      let!(:attributes) { invalid_attributes }
+      let(:attributes) { invalid_attributes }
       it_behaves_like 'NG'
-      it_behaves_like 'ToError'
+      it_behaves_like 'ToError', 'activerecord.errors.models.user.attributes.email.taken'
     end
     shared_examples_for '[ログイン中/削除予約済み]無効なパラメータ' do
-      let!(:attributes) { invalid_attributes }
+      let(:attributes) { invalid_attributes }
       it_behaves_like 'NG'
       it_behaves_like 'ToTop', 'devise.failure.already_authenticated', nil
     end
@@ -139,7 +121,7 @@ RSpec.describe 'Users::Registrations', type: :request do
       it_behaves_like '[ログイン中/削除予約済み]無効なパラメータ'
     end
     context 'ログイン中（削除予約済み）' do
-      include_context 'ログイン処理', true
+      include_context 'ログイン処理', :user_destroy_reserved
       it_behaves_like '[ログイン中/削除予約済み]有効なパラメータ'
       it_behaves_like '[ログイン中/削除予約済み]無効なパラメータ'
     end
@@ -151,25 +133,24 @@ RSpec.describe 'Users::Registrations', type: :request do
   # テストパターン
   #   未ログイン, ログイン中, ログイン中（削除予約済み） → データ＆状態作成
   describe 'GET #edit' do
+    subject { get edit_user_registration_path }
+
     # テスト内容
     shared_examples_for 'ToOK' do
       it '成功ステータス' do
-        get edit_user_registration_path
-        expect(response).to be_successful
+        is_expected.to eq(200)
       end
     end
     shared_examples_for 'ToTop' do |alert, notice|
-      it 'トップページにリダイレクト' do
-        get edit_user_registration_path
-        expect(response).to redirect_to(root_path)
+      it 'トップページにリダイレクトする' do
+        is_expected.to redirect_to(root_path)
         expect(flash[:alert]).to alert.present? ? eq(I18n.t(alert)) : be_nil
         expect(flash[:notice]).to notice.present? ? eq(I18n.t(notice)) : be_nil
       end
     end
     shared_examples_for 'ToLogin' do |alert, notice|
-      it 'ログインにリダイレクト' do
-        get edit_user_registration_path
-        expect(response).to redirect_to(new_user_session_path)
+      it 'ログインにリダイレクトする' do
+        is_expected.to redirect_to(new_user_session_path)
         expect(flash[:alert]).to alert.present? ? eq(I18n.t(alert)) : be_nil
         expect(flash[:notice]).to notice.present? ? eq(I18n.t(notice)) : be_nil
       end
@@ -184,7 +165,7 @@ RSpec.describe 'Users::Registrations', type: :request do
       it_behaves_like 'ToOK'
     end
     context 'ログイン中（削除予約済み）' do
-      include_context 'ログイン処理', true
+      include_context 'ログイン処理', :user_destroy_reserved
       it_behaves_like 'ToTop', 'alert.user.destroy_reserved', nil
     end
   end
@@ -196,55 +177,53 @@ RSpec.describe 'Users::Registrations', type: :request do
   #   未ログイン, ログイン中, ログイン中（削除予約済み） → データ＆状態作成
   #   有効なパラメータ, 無効なパラメータ → 事前にデータ作成
   describe 'PUT #update' do
-    let!(:valid_attributes) { FactoryBot.attributes_for(:user) }
-    let!(:invalid_attributes) { FactoryBot.attributes_for(:user, email: nil) }
+    subject { put update_user_registration_path, params: { user: attributes.merge(current_password: current_password) } }
+    let(:new_user)   { FactoryBot.attributes_for(:user) }
+    let(:exist_user) { FactoryBot.create(:user) }
+    let(:valid_attributes)   { { name: new_user[:name], email: new_user[:email], password: new_user[:password] } }
+    let(:invalid_attributes) { { name: exist_user.name, email: exist_user.email, password: exist_user.password } }
 
     # テスト内容
     shared_examples_for 'OK' do
-      it '確認待ちメールアドレス・氏名が変更される' do
-        put update_user_registration_path, params: { user: attributes.merge(current_password: current_password) }
+      it '確認待ちメールアドレス・対象項目が変更される。メールが送信される' do
+        subject
         after_user = User.find(user.id)
-        expect(after_user.unconfirmed_email).to eq(attributes[:email])
-        expect(after_user.name).to eq(attributes[:name])
-      end
-      it 'メールが送信される' do
-        before_count = ActionMailer::Base.deliveries.count
-        put update_user_registration_path, params: { user: attributes.merge(current_password: current_password) }
-        expect(ActionMailer::Base.deliveries.count).to eq(before_count + 3) # メールアドレス変更受け付けのお知らせ、パスワード変更完了のお知らせ、メールアドレス確認のお願い
+        expect(after_user.unconfirmed_email).to eq(attributes[:email]) # 確認待ちメールアドレス
+        expect(after_user.name).to eq(attributes[:name]) # 氏名
+
+        expect(ActionMailer::Base.deliveries.count).to eq(3)
+        expect(ActionMailer::Base.deliveries[0].subject).to eq(get_subject('devise.mailer.email_changed.subject')) # メールアドレス変更受け付けのお知らせ
+        expect(ActionMailer::Base.deliveries[1].subject).to eq(get_subject('devise.mailer.password_change.subject')) # パスワード変更完了のお知らせ
+        expect(ActionMailer::Base.deliveries[2].subject).to eq(get_subject('devise.mailer.confirmation_instructions.subject')) # メールアドレス確認のお願い
       end
     end
     shared_examples_for 'NG' do
-      it '確認待ちメールアドレス・氏名が変更されない' do
-        put update_user_registration_path, params: { user: attributes.merge(current_password: current_password) }
+      it '確認待ちメールアドレス・対象項目が変更されない。メールが送信されない' do
+        subject
         after_user = User.find(user.id)
         expect(after_user.unconfirmed_email).to eq(user.unconfirmed_email)
         expect(after_user.name).to eq(user.name)
-      end
-      it 'メールが送信されない' do
-        before_count = ActionMailer::Base.deliveries.count
-        put update_user_registration_path, params: { user: attributes.merge(current_password: current_password) }
-        expect(ActionMailer::Base.deliveries.count).to eq(before_count)
+
+        expect(ActionMailer::Base.deliveries.count).to eq(0)
       end
     end
 
-    shared_examples_for 'ToError' do
-      it '成功ステータス' do # Tips: 再入力
-        put update_user_registration_path, params: { user: attributes.merge(current_password: current_password) }
-        expect(response).to be_successful
+    shared_examples_for 'ToError' do |error_msg|
+      it '成功ステータス。対象のエラーメッセージが含まれる' do # Tips: 再入力
+        is_expected.to eq(200)
+        expect(response.body).to include(I18n.t(error_msg))
       end
     end
     shared_examples_for 'ToTop' do |alert, notice|
-      it 'トップページにリダイレクト' do
-        put update_user_registration_path, params: { user: attributes.merge(current_password: current_password) }
-        expect(response).to redirect_to(root_path)
+      it 'トップページにリダイレクトする' do
+        is_expected.to redirect_to(root_path)
         expect(flash[:alert]).to alert.present? ? eq(I18n.t(alert)) : be_nil
         expect(flash[:notice]).to notice.present? ? eq(I18n.t(notice)) : be_nil
       end
     end
     shared_examples_for 'ToLogin' do |alert, notice|
-      it 'ログインにリダイレクト' do
-        put update_user_registration_path, params: { user: attributes.merge(current_password: current_password) }
-        expect(response).to redirect_to(new_user_session_path)
+      it 'ログインにリダイレクトする' do
+        is_expected.to redirect_to(new_user_session_path)
         expect(flash[:alert]).to alert.present? ? eq(I18n.t(alert)) : be_nil
         expect(flash[:notice]).to notice.present? ? eq(I18n.t(notice)) : be_nil
       end
@@ -252,56 +231,54 @@ RSpec.describe 'Users::Registrations', type: :request do
 
     # テストケース
     shared_examples_for '[未ログイン]有効なパラメータ' do
-      let!(:attributes) { valid_attributes }
+      let(:attributes) { valid_attributes }
       # it_behaves_like 'NG' # Tips: 未ログインの為、対象がない
       it_behaves_like 'ToLogin', 'devise.failure.unauthenticated', nil
     end
     shared_examples_for '[ログイン中]有効なパラメータ' do
-      let!(:attributes) { valid_attributes }
+      let(:attributes) { valid_attributes }
       it_behaves_like 'OK'
       it_behaves_like 'ToTop', nil, 'devise.registrations.update_needs_confirmation'
     end
     shared_examples_for '[削除予約済み]有効なパラメータ' do
-      let!(:attributes) { valid_attributes }
+      let(:attributes) { valid_attributes }
       it_behaves_like 'NG'
       it_behaves_like 'ToTop', 'alert.user.destroy_reserved', nil
     end
     shared_examples_for '[未ログイン]無効なパラメータ' do
-      let!(:attributes) { invalid_attributes }
+      let(:attributes) { invalid_attributes }
       # it_behaves_like 'NG' # Tips: 未ログインの為、対象がない
       it_behaves_like 'ToLogin', 'devise.failure.unauthenticated', nil
     end
     shared_examples_for '[ログイン中]無効なパラメータ' do
-      let!(:attributes) { invalid_attributes }
-      it_behaves_like 'NG'
-      it_behaves_like 'ToError'
+      let(:attributes) { invalid_attributes }
+      it_behaves_like 'OK'
+      # it_behaves_like 'NG'
+      it_behaves_like 'ToTop', nil, 'devise.registrations.update_needs_confirmation'
+      # it_behaves_like 'ToError', 'TODO: 他の人が使っている。確認に失敗する'
     end
     shared_examples_for '[削除予約済み]無効なパラメータ' do
-      let!(:attributes) { invalid_attributes }
+      let(:attributes) { invalid_attributes }
       it_behaves_like 'NG'
       it_behaves_like 'ToTop', 'alert.user.destroy_reserved', nil
     end
 
     context '未ログイン' do
-      let!(:current_password) { nil }
+      let(:current_password) { nil }
       it_behaves_like '[未ログイン]有効なパラメータ'
       it_behaves_like '[未ログイン]無効なパラメータ'
     end
     context 'ログイン中' do
-      include_context 'ログイン処理'
-      include_context '画像登録処理'
-      let!(:current_password) { user.password }
+      include_context 'ログイン処理', :user, true
+      let(:current_password) { user.password }
       it_behaves_like '[ログイン中]有効なパラメータ'
       it_behaves_like '[ログイン中]無効なパラメータ'
-      include_context '画像削除処理'
     end
     context 'ログイン中（削除予約済み）' do
-      include_context 'ログイン処理', true
-      include_context '画像登録処理'
-      let!(:current_password) { user.password }
+      include_context 'ログイン処理', :user_destroy_reserved, true
+      let(:current_password) { user.password }
       it_behaves_like '[削除予約済み]有効なパラメータ'
       it_behaves_like '[削除予約済み]無効なパラメータ'
-      include_context '画像削除処理'
     end
   end
 
@@ -312,13 +289,14 @@ RSpec.describe 'Users::Registrations', type: :request do
   #   未ログイン, ログイン中, ログイン中（削除予約済み） → データ＆状態作成
   #   有効なパラメータ, 無効なパラメータ → 事前にデータ作成
   describe 'PUT #image_update' do
-    let!(:valid_attributes) { { image: fixture_file_upload(TEST_IMAGE_FILE, TEST_IMAGE_TYPE) } }
-    let!(:invalid_attributes) { nil }
+    subject { put update_user_image_registration_path, params: { user: attributes } }
+    let(:valid_attributes)   { { image: fixture_file_upload(TEST_IMAGE_FILE, TEST_IMAGE_TYPE) } }
+    let(:invalid_attributes) { nil }
 
     # テスト内容
     shared_examples_for 'OK' do
       it '画像が変更される' do
-        put update_user_image_registration_path, params: { user: attributes }
+        subject
         after_user = User.find(user.id)
         expect(after_user.image.url).not_to eq(user.image.url)
         after_user.remove_image!
@@ -327,37 +305,34 @@ RSpec.describe 'Users::Registrations', type: :request do
     end
     shared_examples_for 'NG' do
       it '画像が変更されない' do
-        put update_user_image_registration_path, params: { user: attributes }
+        subject
         expect(User.find(user.id).image.url).to eq(user.image.url)
       end
     end
 
-    shared_examples_for 'ToError' do
-      it '成功ステータス' do # Tips: 再入力
-        put update_user_image_registration_path, params: { user: attributes }
-        expect(response).to be_successful
+    shared_examples_for 'ToError' do |error_msg|
+      it '成功ステータス。対象のエラーメッセージが含まれる' do # Tips: 再入力
+        is_expected.to eq(200)
+        expect(response.body).to include(I18n.t(error_msg))
       end
     end
     shared_examples_for 'ToTop' do |alert, notice|
-      it 'トップページにリダイレクト' do
-        put update_user_image_registration_path, params: { user: attributes }
-        expect(response).to redirect_to(root_path)
+      it 'トップページにリダイレクトする' do
+        is_expected.to redirect_to(root_path)
         expect(flash[:alert]).to alert.present? ? eq(I18n.t(alert)) : be_nil
         expect(flash[:notice]).to notice.present? ? eq(I18n.t(notice)) : be_nil
       end
     end
     shared_examples_for 'ToLogin' do |alert, notice|
-      it 'ログインにリダイレクト' do
-        put update_user_image_registration_path, params: { user: attributes }
-        expect(response).to redirect_to(new_user_session_path)
+      it 'ログインにリダイレクトする' do
+        is_expected.to redirect_to(new_user_session_path)
         expect(flash[:alert]).to alert.present? ? eq(I18n.t(alert)) : be_nil
         expect(flash[:notice]).to notice.present? ? eq(I18n.t(notice)) : be_nil
       end
     end
     shared_examples_for 'ToEdit' do |alert, notice|
-      it '登録情報変更にリダイレクト' do
-        put update_user_image_registration_path, params: { user: attributes }
-        expect(response).to redirect_to(edit_user_registration_path)
+      it '登録情報変更にリダイレクトする' do
+        is_expected.to redirect_to(edit_user_registration_path)
         after_user = User.find(user.id)
         after_user.remove_image!
         after_user.save!
@@ -368,32 +343,32 @@ RSpec.describe 'Users::Registrations', type: :request do
 
     # テストケース
     shared_examples_for '[未ログイン]有効なパラメータ' do
-      let!(:attributes) { valid_attributes }
+      let(:attributes) { valid_attributes }
       # it_behaves_like 'NG' # Tips: 未ログインの為、対象がない
       it_behaves_like 'ToLogin', 'devise.failure.unauthenticated', nil
     end
     shared_examples_for '[ログイン中]有効なパラメータ' do
-      let!(:attributes) { valid_attributes }
+      let(:attributes) { valid_attributes }
       it_behaves_like 'OK'
       it_behaves_like 'ToEdit', nil, 'notice.user.image_update'
     end
     shared_examples_for '[削除予約済み]有効なパラメータ' do
-      let!(:attributes) { valid_attributes }
+      let(:attributes) { valid_attributes }
       it_behaves_like 'NG'
       it_behaves_like 'ToTop', 'alert.user.destroy_reserved', nil
     end
     shared_examples_for '[未ログイン]無効なパラメータ' do
-      let!(:attributes) { invalid_attributes }
+      let(:attributes) { invalid_attributes }
       # it_behaves_like 'NG' # Tips: 未ログインの為、対象がない
       it_behaves_like 'ToLogin', 'devise.failure.unauthenticated', nil
     end
     shared_examples_for '[ログイン中]無効なパラメータ' do
-      let!(:attributes) { invalid_attributes }
+      let(:attributes) { invalid_attributes }
       it_behaves_like 'NG'
-      it_behaves_like 'ToError'
+      it_behaves_like 'ToError', 'errors.messages.image_update_blank'
     end
     shared_examples_for '[削除予約済み]無効なパラメータ' do
-      let!(:attributes) { invalid_attributes }
+      let(:attributes) { invalid_attributes }
       it_behaves_like 'NG'
       it_behaves_like 'ToTop', 'alert.user.destroy_reserved', nil
     end
@@ -408,7 +383,7 @@ RSpec.describe 'Users::Registrations', type: :request do
       it_behaves_like '[ログイン中]無効なパラメータ'
     end
     context 'ログイン中（削除予約済み）' do
-      include_context 'ログイン処理', true
+      include_context 'ログイン処理', :user_destroy_reserved
       it_behaves_like '[削除予約済み]有効なパラメータ'
       it_behaves_like '[削除予約済み]無効なパラメータ'
     end
@@ -420,40 +395,39 @@ RSpec.describe 'Users::Registrations', type: :request do
   # テストパターン
   #   未ログイン, ログイン中, ログイン中（削除予約済み） → データ＆状態作成
   describe 'DELETE #image_destroy' do
+    subject { delete delete_user_image_registration_path }
+
     # テスト内容
     shared_examples_for 'OK' do
       it '画像が削除される' do
-        delete delete_user_image_registration_path
+        subject
         expect(User.find(user.id).image.url).to be_nil
       end
     end
     shared_examples_for 'NG' do
       it '画像が変更されない' do
-        delete delete_user_image_registration_path
+        subject
         expect(User.find(user.id).image.url).to eq(user.image.url)
       end
     end
 
     shared_examples_for 'ToTop' do |alert, notice|
-      it 'トップページにリダイレクト' do
-        delete delete_user_image_registration_path
-        expect(response).to redirect_to(root_path)
+      it 'トップページにリダイレクトする' do
+        is_expected.to redirect_to(root_path)
         expect(flash[:alert]).to alert.present? ? eq(I18n.t(alert)) : be_nil
         expect(flash[:notice]).to notice.present? ? eq(I18n.t(notice)) : be_nil
       end
     end
     shared_examples_for 'ToLogin' do |alert, notice|
-      it 'ログインにリダイレクト' do
-        delete delete_user_image_registration_path
-        expect(response).to redirect_to(new_user_session_path)
+      it 'ログインにリダイレクトする' do
+        is_expected.to redirect_to(new_user_session_path)
         expect(flash[:alert]).to alert.present? ? eq(I18n.t(alert)) : be_nil
         expect(flash[:notice]).to notice.present? ? eq(I18n.t(notice)) : be_nil
       end
     end
     shared_examples_for 'ToEdit' do |alert, notice|
-      it '登録情報変更にリダイレクト' do
-        delete delete_user_image_registration_path
-        expect(response).to redirect_to(edit_user_registration_path)
+      it '登録情報変更にリダイレクトする' do
+        is_expected.to redirect_to(edit_user_registration_path)
         expect(flash[:alert]).to alert.present? ? eq(I18n.t(alert)) : be_nil
         expect(flash[:notice]).to notice.present? ? eq(I18n.t(notice)) : be_nil
       end
@@ -465,18 +439,14 @@ RSpec.describe 'Users::Registrations', type: :request do
       it_behaves_like 'ToLogin', 'devise.failure.unauthenticated', nil
     end
     context 'ログイン中' do
-      include_context 'ログイン処理'
-      include_context '画像登録処理'
+      include_context 'ログイン処理', :user, true
       it_behaves_like 'OK'
       it_behaves_like 'ToEdit', nil, 'notice.user.image_destroy'
-      include_context '画像削除処理'
     end
     context 'ログイン中（削除予約済み）' do
-      include_context 'ログイン処理', true
-      include_context '画像登録処理'
+      include_context 'ログイン処理', :user_destroy_reserved, true
       it_behaves_like 'NG'
       it_behaves_like 'ToTop', 'alert.user.destroy_reserved', nil
-      include_context '画像削除処理'
     end
   end
 
@@ -486,25 +456,24 @@ RSpec.describe 'Users::Registrations', type: :request do
   # テストパターン
   #   未ログイン, ログイン中, ログイン中（削除予約済み） → データ＆状態作成
   describe 'GET #delete' do
+    subject { get delete_user_registration_path }
+
     # テスト内容
     shared_examples_for 'ToOK' do
       it '成功ステータス' do
-        get delete_user_registration_path
-        expect(response).to be_successful
+        is_expected.to eq(200)
       end
     end
     shared_examples_for 'ToTop' do |alert, notice|
-      it 'トップページにリダイレクト' do
-        get delete_user_registration_path
-        expect(response).to redirect_to(root_path)
+      it 'トップページにリダイレクトする' do
+        is_expected.to redirect_to(root_path)
         expect(flash[:alert]).to alert.present? ? eq(I18n.t(alert)) : be_nil
         expect(flash[:notice]).to notice.present? ? eq(I18n.t(notice)) : be_nil
       end
     end
     shared_examples_for 'ToLogin' do |alert, notice|
-      it 'ログインにリダイレクト' do
-        get delete_user_registration_path
-        expect(response).to redirect_to(new_user_session_path)
+      it 'ログインにリダイレクトする' do
+        is_expected.to redirect_to(new_user_session_path)
         expect(flash[:alert]).to alert.present? ? eq(I18n.t(alert)) : be_nil
         expect(flash[:notice]).to notice.present? ? eq(I18n.t(notice)) : be_nil
       end
@@ -519,7 +488,7 @@ RSpec.describe 'Users::Registrations', type: :request do
       it_behaves_like 'ToOK'
     end
     context 'ログイン中（削除予約済み）' do
-      include_context 'ログイン処理', true
+      include_context 'ログイン処理', :user_destroy_reserved
       it_behaves_like 'ToTop', 'alert.user.destroy_reserved', nil
     end
   end
@@ -530,43 +499,38 @@ RSpec.describe 'Users::Registrations', type: :request do
   # テストパターン
   #   未ログイン, ログイン中, ログイン中（削除予約済み） → データ＆状態作成
   describe 'DELETE #destroy' do
+    subject { delete destroy_user_registration_path }
+
     # テスト内容
     shared_examples_for 'OK' do
       let!(:start_time) { Time.current - 1.second }
-      it '削除依頼日時が現在日時に変更される' do
-        delete destroy_user_registration_path
+      it "削除依頼日時が現在日時に、削除予定日時が#{Settings['destroy_schedule_days']}日後に変更される" do
+        subject
         expect(user.destroy_requested_at).to be_between(start_time, Time.current)
-      end
-      it "削除予定日時が#{Settings['destroy_schedule_days']}日後に変更される" do
-        delete destroy_user_registration_path
         expect(user.destroy_schedule_at).to be_between(start_time + Settings['destroy_schedule_days'].days,
                                                        Time.current + Settings['destroy_schedule_days'].days)
       end
     end
     shared_examples_for 'NG' do
-      let!(:before_user) { user }
-      it '削除依頼日時が変更されない' do
-        delete destroy_user_registration_path
-        expect(user.destroy_requested_at).to eq(before_user.destroy_requested_at)
-      end
-      it '削除予定日時が変更されない' do
-        delete destroy_user_registration_path
-        expect(user.destroy_schedule_at).to eq(before_user.destroy_schedule_at)
+      let!(:before_destroy_requested_at) { user.destroy_requested_at }
+      let!(:before_destroy_schedule_at)  { user.destroy_schedule_at }
+      it '削除依頼日時・削除予定日時が変更されない' do
+        subject
+        expect(user.destroy_requested_at).to eq(before_destroy_requested_at)
+        expect(user.destroy_schedule_at).to eq(before_destroy_schedule_at)
       end
     end
 
     shared_examples_for 'ToTop' do |alert, notice|
-      it 'トップページにリダイレクト' do
-        delete destroy_user_registration_path
-        expect(response).to redirect_to(root_path)
+      it 'トップページにリダイレクトする' do
+        is_expected.to redirect_to(root_path)
         expect(flash[:alert]).to alert.present? ? eq(I18n.t(alert)) : be_nil
         expect(flash[:notice]).to notice.present? ? eq(I18n.t(notice)) : be_nil
       end
     end
     shared_examples_for 'ToLogin' do |alert, notice|
-      it 'ログインにリダイレクト' do
-        delete destroy_user_registration_path
-        expect(response).to redirect_to(new_user_session_path)
+      it 'ログインにリダイレクトする' do
+        is_expected.to redirect_to(new_user_session_path)
         expect(flash[:alert]).to alert.present? ? eq(I18n.t(alert)) : be_nil
         expect(flash[:notice]).to notice.present? ? eq(I18n.t(notice)) : be_nil
       end
@@ -583,7 +547,7 @@ RSpec.describe 'Users::Registrations', type: :request do
       it_behaves_like 'ToLogin', nil, 'devise.registrations.destroy_reserved'
     end
     context 'ログイン中（削除予約済み）' do
-      include_context 'ログイン処理', true
+      include_context 'ログイン処理', :user_destroy_reserved
       it_behaves_like 'NG'
       it_behaves_like 'ToTop', 'alert.user.destroy_reserved', nil
     end
@@ -595,25 +559,24 @@ RSpec.describe 'Users::Registrations', type: :request do
   # テストパターン
   #   未ログイン, ログイン中, ログイン中（削除予約済み） → データ＆状態作成
   describe 'GET #undo_delete' do
+    subject { get delete_undo_user_registration_path }
+
     # テスト内容
     shared_examples_for 'ToOK' do
       it '成功ステータス' do
-        get delete_undo_user_registration_path
-        expect(response).to be_successful
+        is_expected.to eq(200)
       end
     end
     shared_examples_for 'ToTop' do |alert, notice|
-      it 'トップページにリダイレクト' do
-        get delete_undo_user_registration_path
-        expect(response).to redirect_to(root_path)
+      it 'トップページにリダイレクトする' do
+        is_expected.to redirect_to(root_path)
         expect(flash[:alert]).to alert.present? ? eq(I18n.t(alert)) : be_nil
         expect(flash[:notice]).to notice.present? ? eq(I18n.t(notice)) : be_nil
       end
     end
     shared_examples_for 'ToLogin' do |alert, notice|
-      it 'ログインにリダイレクト' do
-        get delete_undo_user_registration_path
-        expect(response).to redirect_to(new_user_session_path)
+      it 'ログインにリダイレクトする' do
+        is_expected.to redirect_to(new_user_session_path)
         expect(flash[:alert]).to alert.present? ? eq(I18n.t(alert)) : be_nil
         expect(flash[:notice]).to notice.present? ? eq(I18n.t(notice)) : be_nil
       end
@@ -628,7 +591,7 @@ RSpec.describe 'Users::Registrations', type: :request do
       it_behaves_like 'ToTop', 'alert.user.not_destroy_reserved', nil
     end
     context 'ログイン中（削除予約済み）' do
-      include_context 'ログイン処理', true
+      include_context 'ログイン処理', :user_destroy_reserved
       it_behaves_like 'ToOK'
     end
   end
@@ -639,41 +602,36 @@ RSpec.describe 'Users::Registrations', type: :request do
   # テストパターン
   #   未ログイン, ログイン中, ログイン中（削除予約済み） → データ＆状態作成
   describe 'DELETE #undo_destroy' do
+    subject { delete destroy_undo_user_registration_path }
+
     # テスト内容
     shared_examples_for 'OK' do
-      it '削除依頼日時がなしに変更される' do
-        delete destroy_undo_user_registration_path
+      it '削除依頼日時・削除予定日時がなしに変更される' do
+        subject
         expect(user.destroy_requested_at).to be_nil
-      end
-      it '削除予定日時がなしに変更される' do
-        delete destroy_undo_user_registration_path
         expect(user.destroy_schedule_at).to be_nil
       end
     end
     shared_examples_for 'NG' do
-      let!(:before_user) { user }
-      it '削除依頼日時が変更されない' do
-        delete destroy_undo_user_registration_path
-        expect(user.destroy_requested_at).to eq(before_user.destroy_requested_at)
-      end
-      it '削除予定日時が変更されない' do
-        delete destroy_undo_user_registration_path
-        expect(user.destroy_schedule_at).to eq(before_user.destroy_schedule_at)
+      let!(:before_destroy_requested_at) { user.destroy_requested_at }
+      let!(:before_destroy_schedule_at)  { user.destroy_schedule_at }
+      it '削除依頼日時・削除予定日時が変更されない' do
+        subject
+        expect(user.destroy_requested_at).to eq(before_destroy_requested_at)
+        expect(user.destroy_schedule_at).to eq(before_destroy_schedule_at)
       end
     end
 
     shared_examples_for 'ToTop' do |alert, notice|
-      it 'トップページにリダイレクト' do
-        delete destroy_undo_user_registration_path
-        expect(response).to redirect_to(root_path)
+      it 'トップページにリダイレクトする' do
+        is_expected.to redirect_to(root_path)
         expect(flash[:alert]).to alert.present? ? eq(I18n.t(alert)) : be_nil
         expect(flash[:notice]).to notice.present? ? eq(I18n.t(notice)) : be_nil
       end
     end
     shared_examples_for 'ToLogin' do |alert, notice|
-      it 'ログインにリダイレクト' do
-        delete destroy_undo_user_registration_path
-        expect(response).to redirect_to(new_user_session_path)
+      it 'ログインにリダイレクトする' do
+        is_expected.to redirect_to(new_user_session_path)
         expect(flash[:alert]).to alert.present? ? eq(I18n.t(alert)) : be_nil
         expect(flash[:notice]).to notice.present? ? eq(I18n.t(notice)) : be_nil
       end
@@ -690,7 +648,7 @@ RSpec.describe 'Users::Registrations', type: :request do
       it_behaves_like 'ToTop', 'alert.user.not_destroy_reserved', nil
     end
     context 'ログイン中（削除予約済み）' do
-      include_context 'ログイン処理', true
+      include_context 'ログイン処理', :user_destroy_reserved
       it_behaves_like 'OK'
       it_behaves_like 'ToTop', nil, 'devise.registrations.undo_destroy_reserved'
     end

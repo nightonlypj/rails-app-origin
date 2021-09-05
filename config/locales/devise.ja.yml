@@ -80,7 +80,7 @@ ja:
               too_short: '%{count}文字以上で入力してください。'
               too_long: '%{count}文字以下で入力してください。'
             password_confirmation:
-              confirmation: '%{attribute}と一致しません。'
+              confirmation: 'パスワードと一致しません。' # '%{attribute}と一致しません。'
             current_password:
               blank: '入力してください。'
               invalid: 'パスワードが違います。'
@@ -110,7 +110,7 @@ ja:
               too_short: '%{count}文字以上で入力してください。'
               too_long: '%{count}文字以下で入力してください。'
             password_confirmation:
-              confirmation: '%{attribute}と一致しません。'
+              confirmation: 'パスワードと一致しません。' # '%{attribute}と一致しません。'
             current_password:
               blank: '入力してください。'
               invalid: 'パスワードが違います。'
@@ -128,7 +128,7 @@ ja:
       already_confirmed: 'メールアドレス確認済みです。ログインしてください。'
       confirmation_period_expired: '有効期限が切れています。'
       expired: '有効期限が切れています。最初からやり直してください。'
-      not_found: '見つかりません。'
+      not_found: 'ユーザーが見つかりません。'
       not_locked: 'ロックされていません。'
       not_saved:
         one: '入力内容を確認してください。'
@@ -167,10 +167,10 @@ ja:
     failure:
       already_authenticated: '既にログインしています。'
       inactive: 'メールアドレスが確認されていません。メールが届いていない場合は[メールアドレス確認]をしてください。'
-      invalid: '%{authentication_keys}またはパスワードが違います。'
+      invalid: 'メールアドレスまたはパスワードが違います。' # '%{authentication_keys}またはパスワードが違います。'
       last_attempt: '注意：もう一回間違えるとアカウントがロックされます。'
       locked: 'アカウントがロックされています。メールが届いていない場合は[アカウントロック解除]をしてください。'
-      not_found_in_database: '%{authentication_keys}またはパスワードが違います。'
+      not_found_in_database: 'メールアドレスまたはパスワードが違います。' # '%{authentication_keys}またはパスワードが違います。'
       timeout: 'セッションがタイムアウトしました。ログインし直してください。'
       unauthenticated: 'ログインしてください。'
       unconfirmed: 'メールアドレスの確認が必要です。メールが届いていない場合は[メールアドレス確認]をしてください。'

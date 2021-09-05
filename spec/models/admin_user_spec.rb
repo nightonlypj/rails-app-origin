@@ -7,9 +7,7 @@ RSpec.describe AdminUser, type: :model do
   # テストパターン
   #   ない, 最小文字数よりも少ない, 最小文字数と同じ, 最大文字数と同じ, 最大文字数よりも多い → データ作成
   describe 'validates :name' do
-    shared_context 'データ作成' do |name|
-      let!(:admin_user) { FactoryBot.build(:admin_user, name: name) }
-    end
+    let(:admin_user) { FactoryBot.build(:admin_user, name: name) }
 
     # テスト内容
     shared_examples_for 'ToOK' do
@@ -25,23 +23,23 @@ RSpec.describe AdminUser, type: :model do
 
     # テストケース
     context 'ない' do
-      include_context 'データ作成', ''
+      let(:name) { nil }
       it_behaves_like 'ToNG'
     end
     context '最小文字数よりも少ない' do
-      include_context 'データ作成', 'a' * (Settings['user_name_minimum'] - 1)
+      let(:name) { 'a' * (Settings['user_name_minimum'] - 1) }
       it_behaves_like 'ToNG'
     end
     context '最小文字数と同じ' do
-      include_context 'データ作成', 'a' * Settings['user_name_minimum']
+      let(:name) { 'a' * Settings['user_name_minimum'] }
       it_behaves_like 'ToOK'
     end
     context '最大文字数と同じ' do
-      include_context 'データ作成', 'a' * Settings['user_name_maximum']
+      let(:name) { 'a' * Settings['user_name_maximum'] }
       it_behaves_like 'ToOK'
     end
     context '最大文字数よりも多い' do
-      include_context 'データ作成', 'a' * (Settings['user_name_maximum'] + 1)
+      let(:name) { 'a' * (Settings['user_name_maximum'] + 1) }
       it_behaves_like 'ToNG'
     end
   end

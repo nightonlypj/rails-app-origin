@@ -1,3 +1,4 @@
+json.success true
 json.infomation do
   json.total_count @infomations.total_count
   json.current_page @infomations.current_page

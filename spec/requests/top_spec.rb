@@ -7,11 +7,12 @@ RSpec.describe 'Top', type: :request do
   # テストパターン
   #   未ログイン, ログイン中, ログイン中（削除予約済み） → データ＆状態作成
   describe 'GET #index' do
+    subject { get root_path }
+
     # テスト内容
     shared_examples_for 'ToOK' do
       it '成功ステータス' do
-        get root_path
-        expect(response).to be_successful
+        is_expected.to eq(200)
       end
     end
 
@@ -24,7 +25,7 @@ RSpec.describe 'Top', type: :request do
       it_behaves_like 'ToOK'
     end
     context 'ログイン中（削除予約済み）' do
-      include_context 'ログイン処理', true
+      include_context 'ログイン処理', :user_destroy_reserved
       it_behaves_like 'ToOK'
     end
   end
@@ -36,54 +37,35 @@ RSpec.describe 'Top', type: :request do
   #   未ログイン, ログイン中, ログイン中（削除予約済み） → データ＆状態作成
   #   お知らせ: ない, 最大表示数と同じ, 最大表示数より多い → データ作成
   describe '@infomations' do
+    subject { get root_path }
+
     # テスト内容
     shared_examples_for 'リスト表示' do
-      let!(:end_no) { Settings['infomations_limit'] }
-      it 'タイトルが含まれる' do
-        get root_path
-        (1..end_no).each do |no|
-          expect(response.body).to include(@infomations[@infomations.count - no].title)
-        end
-      end
-      it '概要が含まれる（ありの場合）' do
-        get root_path
-        (1..end_no).each do |no|
-          expect(response.body).to include(@infomations[@infomations.count - no].summary) if @infomations[@infomations.count - no].summary.present?
-        end
-      end
-      it 'お知らせ詳細のパスが含まれる（本文ありの場合）' do
-        get root_path
-        (1..end_no).each do |no|
-          if @infomations[@infomations.count - no].body.present?
-            expect(response.body).to include("\"#{infomation_path(@infomations[@infomations.count - no])}\"")
+      it '対象項目が含まれる' do
+        subject
+        (1..Settings['infomations_limit']).each do |no|
+          info = @infomations[@infomations.count - no]
+          expect(response.body).to include(info.title) # タイトル
+          expect(response.body).to include(info.summary) if info.summary.present? # 概要
+          if info.body.present?
+            expect(response.body).to include("\"#{infomation_path(info)}\"") # お知らせ詳細のパス
+          else
+            expect(response.body).not_to include("\"#{infomation_path(info)}\"") # Tips: 本文がない場合は表示しない
           end
-        end
-      end
-      it 'お知らせ詳細のパスが含まれない（本文なしの場合）' do
-        get root_path
-        (1..end_no).each do |no|
-          unless @infomations[@infomations.count - no].body.present?
-            expect(response.body).not_to include("\"#{infomation_path(@infomations[@infomations.count - no])}\"")
-          end
-        end
-      end
-      it '掲載開始日が含まれる' do # Tips: ユニークではない為、正確ではない
-        get root_path
-        (1..end_no).each do |no|
-          expect(response.body).to include(I18n.l(@infomations[@infomations.count - no].started_at.to_date))
+          expect(response.body).to include(I18n.l(info.started_at.to_date)) # 掲載開始日 # Tips: ユニークではない為、正確ではない
         end
       end
     end
 
     shared_examples_for 'リンク表示' do
       it 'お知らせ一覧のパスが含まれる' do
-        get root_path
+        subject
         expect(response.body).to include("\"#{infomations_path}\"")
       end
     end
     shared_examples_for 'リンク非表示' do
       it 'お知らせ一覧のパスが含まれない' do
-        get root_path
+        subject
         expect(response.body).not_to include("\"#{infomations_path}\"")
       end
     end
@@ -129,7 +111,7 @@ RSpec.describe 'Top', type: :request do
       it_behaves_like '[ログイン中/削除予約済み]お知らせが最大表示数より多い'
     end
     context 'ログイン中（削除予約済み）' do
-      include_context 'ログイン処理', true
+      include_context 'ログイン処理', :user_destroy_reserved
       it_behaves_like '[*]お知らせがない'
       it_behaves_like '[ログイン中/削除予約済み]お知らせが最大表示数と同じ'
       it_behaves_like '[ログイン中/削除予約済み]お知らせが最大表示数より多い'

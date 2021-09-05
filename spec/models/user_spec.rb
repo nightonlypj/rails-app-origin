@@ -7,13 +7,8 @@ RSpec.describe User, type: :model do
   # テストパターン
   #   ない, 正常値, 重複 → データ作成
   describe 'validates :code' do
-    shared_context 'データ作成' do |code|
-      let!(:user) { FactoryBot.build(:user, code: code) }
-    end
-    shared_context '重複データ作成' do |code|
-      before { FactoryBot.create(:user, code: code) }
-      let!(:user) { FactoryBot.build(:user, code: code) }
-    end
+    let(:user) { FactoryBot.build(:user, code: code) }
+    let(:valid_code) { Digest::MD5.hexdigest(SecureRandom.uuid) }
 
     # テスト内容
     shared_examples_for 'ToOK' do
@@ -29,15 +24,16 @@ RSpec.describe User, type: :model do
 
     # テストケース
     context 'ない' do
-      include_context 'データ作成', ''
+      let(:code) { nil }
       it_behaves_like 'ToNG'
     end
     context '正常値' do
-      include_context 'データ作成', Digest::MD5.hexdigest(SecureRandom.uuid)
+      let(:code) { valid_code }
       it_behaves_like 'ToOK'
     end
     context '重複' do
-      include_context '重複データ作成', Digest::MD5.hexdigest(SecureRandom.uuid)
+      before { FactoryBot.create(:user, code: code) }
+      let(:code) { valid_code }
       it_behaves_like 'ToNG'
     end
   end
@@ -48,9 +44,7 @@ RSpec.describe User, type: :model do
   # テストパターン
   #   ない, 最小文字数よりも少ない, 最小文字数と同じ, 最大文字数と同じ, 最大文字数よりも多い → データ作成
   describe 'validates :name' do
-    shared_context 'データ作成' do |name|
-      let!(:user) { FactoryBot.build(:user, name: name) }
-    end
+    let(:user) { FactoryBot.build(:user, name: name) }
 
     # テスト内容
     shared_examples_for 'ToOK' do
@@ -66,23 +60,23 @@ RSpec.describe User, type: :model do
 
     # テストケース
     context 'ない' do
-      include_context 'データ作成', ''
+      let(:name) { nil }
       it_behaves_like 'ToNG'
     end
     context '最小文字数よりも少ない' do
-      include_context 'データ作成', 'a' * (Settings['user_name_minimum'] - 1)
+      let(:name) { 'a' * (Settings['user_name_minimum'] - 1) }
       it_behaves_like 'ToNG'
     end
     context '最小文字数と同じ' do
-      include_context 'データ作成', 'a' * Settings['user_name_minimum']
+      let(:name) { 'a' * Settings['user_name_minimum'] }
       it_behaves_like 'ToOK'
     end
     context '最大文字数と同じ' do
-      include_context 'データ作成', 'a' * Settings['user_name_maximum']
+      let(:name) { 'a' * Settings['user_name_maximum'] }
       it_behaves_like 'ToOK'
     end
     context '最大文字数よりも多い' do
-      include_context 'データ作成', 'a' * (Settings['user_name_maximum'] + 1)
+      let(:name) { 'a' * (Settings['user_name_maximum'] + 1) }
       it_behaves_like 'ToNG'
     end
   end
@@ -91,22 +85,19 @@ RSpec.describe User, type: :model do
   # 前提条件
   #   なし
   # テストパターン
-  #   削除予定日時: ない（未予約）, ある（予約済み） → データ作成
+  #   削除予定日時: ない（予約なし）, ある（予約済み） → データ作成
   describe 'destroy_reserved?' do
-    shared_context 'データ作成' do |destroy_schedule_at|
-      let!(:user) { FactoryBot.create(:user, destroy_schedule_at: destroy_schedule_at) }
-    end
+    let(:user) { FactoryBot.create(:user, destroy_schedule_at: destroy_schedule_at) }
 
-    # テストケース・内容
-    context '削除予定日時がない（未予約）' do
-      include_context 'データ作成', nil
-      it 'falseが返却される' do
+    context '削除予定日時がない（予約なし）' do
+      let(:destroy_schedule_at) { nil }
+      it 'false' do
         expect(user.destroy_reserved?).to eq(false)
       end
     end
     context '削除予定日時がある（予約済み）' do
-      include_context 'データ作成', Time.current
-      it 'trueが返却される' do
+      let(:destroy_schedule_at) { Time.current }
+      it 'true' do
         expect(user.destroy_reserved?).to eq(true)
       end
     end
@@ -114,13 +105,12 @@ RSpec.describe User, type: :model do
 
   # 削除予約
   # 前提条件
-  #   削除予定日時: ない
+  #   削除予約なし
   # テストパターン
   #   なし
   describe 'set_destroy_reserve' do
-    let!(:user) { FactoryBot.create(:user) }
+    let(:user) { FactoryBot.create(:user) }
 
-    # テストケース・内容
     context '削除依頼日時' do
       let!(:start_time) { Time.current - 1.second }
       it '現在日時に変更される' do
@@ -139,13 +129,12 @@ RSpec.describe User, type: :model do
 
   # 削除予約取り消し
   # 前提条件
-  #   削除予定日時: ある
+  #   削除予約済み
   # テストパターン
   #   なし
   describe 'set_undo_destroy_reserve' do
-    let!(:user) { FactoryBot.create(:user, destroy_requested_at: Time.current, destroy_schedule_at: Time.current + Settings['destroy_schedule_days'].days) }
+    let(:user) { FactoryBot.create(:user_destroy_reserved) }
 
-    # テストケース・内容
     context '削除依頼日時' do
       it 'なしに変更される' do
         user.set_undo_destroy_reserve
@@ -167,38 +156,45 @@ RSpec.describe User, type: :model do
   #   画像: ない, ある
   #   mini, small, medium, large, xlarge, 未定義
   describe 'image_url' do
-    let!(:user) { FactoryBot.create(:user) }
+    let(:user) { FactoryBot.create(:user, image: image) }
 
     # テスト内容
     shared_examples_for 'ToOK' do |version|
-      it 'URLが返却される' do
+      it 'デフォルトではないURL' do
         expect(user.image_url(version)).not_to be_nil
+        expect(user.image_url(version)).not_to include('_noimage.jpg')
+      end
+    end
+    shared_examples_for 'ToNot' do |version|
+      it 'デフォルトのURL' do
+        expect(user.image_url(version)).to include('_noimage.jpg')
       end
     end
     shared_examples_for 'ToNG' do |version|
       it 'URLが返却されない' do
-        expect(user.image_url(version)).to eq('')
+        expect(user.image_url(version)).to be_blank
       end
     end
 
     # テストケース
     context '画像がない' do
-      it_behaves_like 'ToOK', :mini
-      it_behaves_like 'ToOK', :small
-      it_behaves_like 'ToOK', :medium
-      it_behaves_like 'ToOK', :large
-      it_behaves_like 'ToOK', :xlarge
+      let(:image) { nil }
+      it_behaves_like 'ToNot', :mini, true
+      it_behaves_like 'ToNot', :small, true
+      it_behaves_like 'ToNot', :medium, true
+      it_behaves_like 'ToNot', :large, true
+      it_behaves_like 'ToNot', :xlarge, true
       it_behaves_like 'ToNG', nil
     end
     context '画像がある' do
-      include_context '画像登録処理'
-      it_behaves_like 'ToOK', :mini
-      it_behaves_like 'ToOK', :small
-      it_behaves_like 'ToOK', :medium
-      it_behaves_like 'ToOK', :large
-      it_behaves_like 'ToOK', :xlarge
-      it_behaves_like 'ToNG', nil
+      let(:image) { fixture_file_upload(TEST_IMAGE_FILE, TEST_IMAGE_TYPE) }
       include_context '画像削除処理'
+      it_behaves_like 'ToOK', :mini, false
+      it_behaves_like 'ToOK', :small, false
+      it_behaves_like 'ToOK', :medium, false
+      it_behaves_like 'ToOK', :large, false
+      it_behaves_like 'ToOK', :xlarge, false
+      it_behaves_like 'ToNG', nil
     end
   end
 end

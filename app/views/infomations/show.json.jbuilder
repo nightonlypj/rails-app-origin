@@ -1,3 +1,4 @@
+json.success true
 json.infomation do
   json.title @infomation.title
   json.body @infomation.body.present? ? @infomation.body : ''

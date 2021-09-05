@@ -1,57 +1,56 @@
 require 'rails_helper'
 
 RSpec.describe UserMailer, type: :mailer do
+  # テスト内容
+  shared_examples_for 'header' do
+    it 'タイトル・送信者のメールアドレスが設定と、宛先がユーザーのメールアドレスと一致する' do
+      expect(mail.subject).to eq(get_subject(subject))
+      expect(mail.from).to eq([Settings['mailer_from']['email']])
+      expect(mail.to).to eq([user.email])
+    end
+  end
+
   # アカウント削除受け付けのお知らせ
   # 前提条件
   #   削除予約済み
   # テストパターン
   #   なし
   describe 'destroy_reserved' do
-    let!(:user) { FactoryBot.create(:user, destroy_schedule_at: Time.current + Settings['destroy_schedule_days'].days) }
-    let!(:mail) { UserMailer.with(user: user).destroy_reserved }
-    it '送信者のメールアドレスが設定と一致' do
-      expect(mail.from).to eq([Settings['mailer_from']['email']])
-    end
-    it '宛先がユーザーのメールアドレスと一致' do
-      expect(mail.to).to eq([user.email])
-    end
-    it '本文(html)にアカウント削除取り消しのURLが含まれる' do
-      expect(mail.html_part.body).to include("\"#{delete_undo_user_registration_url}\"")
-    end
-    it '本文(text)にアカウント削除取り消しのURLが含まれる' do
-      expect(mail.text_part.body).to include(delete_undo_user_registration_url)
+    let(:user)    { FactoryBot.create(:user_destroy_reserved) }
+    let(:mail)    { UserMailer.with(user: user).destroy_reserved }
+    let(:subject) { 'mailer.user.destroy_reserved.subject' }
+    let(:url)     { delete_undo_user_registration_url }
+
+    it_behaves_like 'header'
+    it 'アカウント削除取り消しのURLが含まれる' do
+      expect(mail.html_part.body).to include("\"#{url}\"")
+      expect(mail.text_part.body).to include(url)
     end
   end
 
   # アカウント削除取り消し完了のお知らせ
   # 前提条件
-  #   なし
+  #   削除予約なし
   # テストパターン
   #   なし
   describe 'undo_destroy_reserved' do
-    let!(:user) { FactoryBot.create(:user) }
-    let!(:mail) { UserMailer.with(user: user).undo_destroy_reserved }
-    it '送信者のメールアドレスが設定と一致' do
-      expect(mail.from).to eq([Settings['mailer_from']['email']])
-    end
-    it '宛先がユーザーのメールアドレスと一致' do
-      expect(mail.to).to eq([user.email])
-    end
+    let(:user)    { FactoryBot.create(:user) }
+    let(:mail)    { UserMailer.with(user: user).undo_destroy_reserved }
+    let(:subject) { 'mailer.user.undo_destroy_reserved.subject' }
+
+    it_behaves_like 'header'
   end
 
   # アカウント削除完了のお知らせ
   # 前提条件
-  #   なし
+  #   削除予約済み
   # テストパターン
   #   なし
   describe 'destroy_completed' do
-    let!(:user) { FactoryBot.create(:user) }
-    let!(:mail) { UserMailer.with(user: user).destroy_completed }
-    it '送信者のメールアドレスが設定と一致' do
-      expect(mail.from).to eq([Settings['mailer_from']['email']])
-    end
-    it '宛先がユーザーのメールアドレスと一致' do
-      expect(mail.to).to eq([user.email])
-    end
+    let(:user)    { FactoryBot.create(:user_destroy_reserved) }
+    let(:mail)    { UserMailer.with(user: user).destroy_completed }
+    let(:subject) { 'mailer.user.destroy_completed.subject' }
+
+    it_behaves_like 'header'
   end
 end

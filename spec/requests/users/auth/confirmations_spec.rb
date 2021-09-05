@@ -6,106 +6,153 @@ RSpec.describe 'Users::Auth::Confirmations', type: :request do
   #   なし
   # テストパターン
   #   未ログイン, ログイン中, ログイン中（削除予約済み） → データ＆状態作成
-  #   パラメータなし, 有効なパラメータ, 無効なパラメータ, ホワイトリストにないURL → 事前にデータ作成
+  #   パラメータなし, 有効なパラメータ（メール未確認, メール確認済み, メールアドレス変更中）, 無効なパラメータ, URLがない, URLがホワイトリストにない → 事前にデータ作成
   describe 'POST #create' do
-    let!(:send_user) { FactoryBot.create(:user, confirmed_at: nil) }
-    let!(:valid_params) { { email: send_user.email, confirm_success_url: "#{FRONT_SITE_URL}sign_in" } }
-    let!(:invalid_params) { { email: nil, confirm_success_url: "#{FRONT_SITE_URL}sign_in" } }
-    let!(:invalid_url_params) { { email: send_user.email, confirm_success_url: "#{BAD_SITE_URL}sign_in" } }
+    subject { post create_user_auth_confirmation_path, params: attributes, headers: auth_headers }
+    let(:send_user_unconfirmed)   { FactoryBot.create(:user_unconfirmed) }
+    let(:send_user_confirmed)     { FactoryBot.create(:user) }
+    let(:send_user_email_changed) { FactoryBot.create(:user_email_changed) }
+    let(:not_user)                { FactoryBot.attributes_for(:user) }
+    let(:valid_attributes)       { { email: send_user.email, confirm_success_url: FRONT_SITE_URL } }
+    let(:invalid_attributes)     { { email: not_user[:email], confirm_success_url: FRONT_SITE_URL } }
+    let(:invalid_nil_attributes) { { email: send_user_unconfirmed.email, confirm_success_url: nil } }
+    let(:invalid_bad_attributes) { { email: send_user_unconfirmed.email, confirm_success_url: BAD_SITE_URL } }
 
     # テスト内容
     shared_examples_for 'OK' do
       it 'メールが送信される' do
-        before_count = ActionMailer::Base.deliveries.count
-        post create_user_auth_confirmation_path, params: params, headers: headers
-        expect(ActionMailer::Base.deliveries.count).to eq(before_count + 1) # メールアドレス確認のお願い
+        subject
+        expect(ActionMailer::Base.deliveries.count).to eq(1)
+        expect(ActionMailer::Base.deliveries[0].subject).to eq(get_subject('devise.mailer.confirmation_instructions.subject')) # メールアドレス確認のお願い
       end
     end
     shared_examples_for 'NG' do
       it 'メールが送信されない' do
-        before_count = ActionMailer::Base.deliveries.count
-        post create_user_auth_registration_path, params: params, headers: headers
-        expect(ActionMailer::Base.deliveries.count).to eq(before_count)
+        expect { subject }.to change(ActionMailer::Base.deliveries, :count).by(0)
       end
     end
 
-    shared_examples_for 'ToOK' do # |alert, notice|
-      it '成功ステータス・JSONデータ' do
-        post create_user_auth_confirmation_path, params: params, headers: headers
-        expect(response).to be_successful
-
-        response_json = JSON.parse(response.body)
-        expect(response_json['success']).to eq(true)
-        expect(response_json['errors']).to be_nil
-        expect(response_json['message']).not_to be_nil
-        # expect(response_json['message']).to be_nil
-
-        # expect(response_json['alert']).to alert.present? ? eq(I18n.t(alert)) : be_nil
-        # expect(response_json['notice']).to notice.present? ? eq(I18n.t(notice)) : be_nil
+    shared_examples_for 'ToOK' do
+      it '成功ステータス。対象項目が一致する' do
+        is_expected.to eq(200)
+        expect(JSON.parse(response.body)['success']).to eq(true)
       end
     end
-    shared_examples_for 'ToNG' do # |alert, notice|
-      it '失敗ステータス・JSONデータ' do
-        post create_user_auth_confirmation_path, params: params, headers: headers
-        expect(response).to have_http_status(401)
-        # expect(response).to have_http_status(422)
-
+    shared_examples_for 'ToNG' do |code|
+      it '失敗ステータス。対象項目が一致する' do
+        is_expected.to eq(code) # 方針(優先順): 400:パラメータなし, 422: 無効なパラメータ・状態
+        expect(JSON.parse(response.body)['success']).to eq(false)
+      end
+    end
+    shared_examples_for 'ToMsg' do |error_class, errors_count, error_msg, message, alert, notice|
+      it '対象のメッセージと一致する。認証ヘッダがない' do
+        subject
         response_json = JSON.parse(response.body)
-        expect(response_json['success']).to eq(false)
-        expect(response_json['errors']).not_to be_nil
-        expect(response_json['message']).to be_nil
+        expect(response_json['errors'].to_s).to error_msg.present? ? include(I18n.t(error_msg)) : be_blank
+        expect(response_json['errors'].class).to eq(error_class) # 方針: バリデーション(Hash)のみ、他はalertへ
+        expect(response_json['errors']&.count).to errors_count.positive? ? eq(errors_count) : be_nil
+        expect(response_json['message']).to message.present? ? eq(I18n.t(message)) : be_nil # 方針: 廃止して、noticeへ
 
-        # expect(response_json['alert']).to alert.present? ? eq(I18n.t(alert)) : be_nil
-        # expect(response_json['notice']).to notice.present? ? eq(I18n.t(notice)) : be_nil
+        expect(response_json['alert']).to alert.present? ? eq(I18n.t(alert)) : be_nil # 方針: 追加
+        expect(response_json['notice']).to notice.present? ? eq(I18n.t(notice)) : be_nil # 方針: 追加
+
+        expect(response.header['uid']).to be_nil
+        expect(response.header['client']).to be_nil
+        expect(response.header['access-token']).to be_nil
       end
     end
 
     # テストケース
     shared_examples_for '[*]パラメータなし' do
-      let!(:params) { nil }
+      let(:attributes) { nil }
       it_behaves_like 'NG'
-      it_behaves_like 'ToNG', nil, nil
+      it_behaves_like 'ToNG', 401
+      # it_behaves_like 'ToNG', 400
+      it_behaves_like 'ToMsg', Array, 1, 'devise_token_auth.confirmations.missing_email', nil, nil, nil
+      # it_behaves_like 'ToMsg', NilClass, 0, nil, nil, 'errors.messages.validate_confirmation_params', nil
     end
-    shared_examples_for '[*]有効なパラメータ' do # Tips: ログイン中も出来ても良さそう
-      let!(:params) { valid_params }
+    shared_examples_for '[*]有効なパラメータ（メール未確認）' do # Tips: ログイン中も出来ても良さそう
+      let(:send_user)  { send_user_unconfirmed }
+      let(:attributes) { valid_attributes }
       it_behaves_like 'OK'
-      it_behaves_like 'ToOK', nil, 'devise.confirmations.send_instructions'
+      it_behaves_like 'ToOK'
+      it_behaves_like 'ToMsg', NilClass, 0, nil, 'devise_token_auth.confirmations.sended', nil, nil
+      # it_behaves_like 'ToMsg', NilClass, 0, nil, nil, nil, 'devise_token_auth.confirmations.sended'
+    end
+    shared_examples_for '[*]有効なパラメータ（メール確認済み）' do
+      let(:send_user)  { send_user_confirmed }
+      let(:attributes) { valid_attributes }
+      it_behaves_like 'OK'
+      # it_behaves_like 'NG'
+      it_behaves_like 'ToOK'
+      # it_behaves_like 'ToNG', 422
+      it_behaves_like 'ToMsg', NilClass, 0, nil, 'devise_token_auth.confirmations.sended', nil, nil
+      # it_behaves_like 'ToMsg', NilClass, 0, nil, nil, 'errors.messages.already_confirmed', nil
+    end
+    shared_examples_for '[*]有効なパラメータ（メールアドレス変更中）' do # Tips: ログイン中でも再送したい
+      let(:send_user)  { send_user_email_changed }
+      let(:attributes) { valid_attributes }
+      it_behaves_like 'OK'
+      it_behaves_like 'ToOK'
+      it_behaves_like 'ToMsg', NilClass, 0, nil, 'devise_token_auth.confirmations.sended', nil, nil
+      # it_behaves_like 'ToMsg', NilClass, 0, nil, nil, nil, 'devise_token_auth.confirmations.sended'
     end
     shared_examples_for '[*]無効なパラメータ' do
-      let!(:params) { invalid_params }
+      let(:attributes) { invalid_attributes }
       it_behaves_like 'NG'
-      it_behaves_like 'ToNG', nil, nil
+      it_behaves_like 'ToNG', 404
+      # it_behaves_like 'ToNG', 422
+      it_behaves_like 'ToMsg', Array, 1, 'devise_token_auth.confirmations.user_not_found', nil, nil, nil
+      # it_behaves_like 'ToMsg', Hash, 2, 'devise_token_auth.confirmations.user_not_found', nil, 'errors.messages.not_saved.one', nil
     end
-    shared_examples_for '[*]ホワイトリストにないURL' do
-      let!(:params) { invalid_url_params }
+    shared_examples_for '[*]URLがない' do
+      let(:attributes) { invalid_nil_attributes }
       it_behaves_like 'OK'
-      it_behaves_like 'ToOK', nil, nil
       # it_behaves_like 'NG'
-      # it_behaves_like 'ToNG', nil, nil
+      it_behaves_like 'ToOK'
+      # it_behaves_like 'ToNG', 422
+      it_behaves_like 'ToMsg', NilClass, 0, nil, 'devise_token_auth.confirmations.sended', nil, nil
+      # it_behaves_like 'ToMsg', NilClass, 0, nil, nil, 'devise_token_auth.confirmations.missing_confirm_success_url', nil
+    end
+    shared_examples_for '[*]URLがホワイトリストにない' do
+      let(:attributes) { invalid_bad_attributes }
+      it_behaves_like 'OK'
+      # it_behaves_like 'NG'
+      it_behaves_like 'ToOK'
+      # it_behaves_like 'ToNG', 422
+      it_behaves_like 'ToMsg', NilClass, 0, nil, 'devise_token_auth.confirmations.sended', nil, nil
+      # it_behaves_like 'ToMsg', NilClass, 0, nil, nil, 'devise_token_auth.confirmations.redirect_url_not_allowed', nil
     end
 
     context '未ログイン' do
-      let!(:headers) { nil }
+      let(:auth_headers) { nil }
       it_behaves_like '[*]パラメータなし'
-      it_behaves_like '[*]有効なパラメータ'
+      it_behaves_like '[*]有効なパラメータ（メール未確認）'
+      it_behaves_like '[*]有効なパラメータ（メール確認済み）'
+      it_behaves_like '[*]有効なパラメータ（メールアドレス変更中）'
       it_behaves_like '[*]無効なパラメータ'
-      it_behaves_like '[*]ホワイトリストにないURL'
+      it_behaves_like '[*]URLがない'
+      it_behaves_like '[*]URLがホワイトリストにない'
     end
     context 'ログイン中' do
       include_context 'authログイン処理'
-      let!(:headers) { auth_headers }
       it_behaves_like '[*]パラメータなし'
-      it_behaves_like '[*]有効なパラメータ'
+      it_behaves_like '[*]有効なパラメータ（メール未確認）'
+      it_behaves_like '[*]有効なパラメータ（メール確認済み）'
+      it_behaves_like '[*]有効なパラメータ（メールアドレス変更中）'
       it_behaves_like '[*]無効なパラメータ'
-      it_behaves_like '[*]ホワイトリストにないURL'
+      it_behaves_like '[*]URLがない'
+      it_behaves_like '[*]URLがホワイトリストにない'
     end
     context 'ログイン中（削除予約済み）' do
-      include_context 'authログイン処理', true
-      let!(:headers) { auth_headers }
+      include_context 'authログイン処理', :user_destroy_reserved
       it_behaves_like '[*]パラメータなし'
-      it_behaves_like '[*]有効なパラメータ'
+      it_behaves_like '[*]有効なパラメータ（メール未確認）'
+      it_behaves_like '[*]有効なパラメータ（メール確認済み）'
+      it_behaves_like '[*]有効なパラメータ（メールアドレス変更中）'
       it_behaves_like '[*]無効なパラメータ'
-      it_behaves_like '[*]ホワイトリストにないURL'
+      it_behaves_like '[*]URLがない'
+      it_behaves_like '[*]URLがホワイトリストにない'
     end
   end
 
@@ -114,164 +161,176 @@ RSpec.describe 'Users::Auth::Confirmations', type: :request do
   #   なし
   # テストパターン
   #   未ログイン, ログイン中, ログイン中（削除予約済み） → データ＆状態作成
-  #   トークン: 期限内, 期限切れ, 存在しない, ない → データ作成
+  #   トークン: 期限内, 期限切れ, 存在しない, ない, 空 → データ作成
   #   確認日時: ない（未確認）, 確認送信日時より前（未確認）, 確認送信日時より後（確認済み） → データ作成
   #   ＋リダイレクトURL: ある, ない, ホワイトリストにない
   describe 'GET #show' do
-    let!(:valid_redirect_url) { "#{FRONT_SITE_URL}sign_in" }
-    let!(:invalid_redirect_url) { "#{BAD_SITE_URL}sign_in" }
+    subject { get user_auth_confirmation_path(confirmation_token: confirmation_token, redirect_url: @redirect_url) }
 
     # テスト内容
     shared_examples_for 'OK' do
       let!(:start_time) { Time.now.utc - 1.second }
       it '[リダイレクトURLがある]確認日時が現在日時に変更される' do
-        get user_auth_confirmation_path(confirmation_token: confirmation_token, redirect_url: valid_redirect_url)
-        expect(User.find(@send_user.id).confirmed_at).to be_between(start_time, Time.now.utc)
+        @redirect_url = FRONT_SITE_URL
+        subject
+        expect(User.find(send_user.id).confirmed_at).to be_between(start_time, Time.now.utc)
       end
       it '[リダイレクトURLがない]確認日時が現在日時に変更される' do
-        get user_auth_confirmation_path(confirmation_token: confirmation_token, redirect_url: nil)
-        expect(User.find(@send_user.id).confirmed_at).to be_between(start_time, Time.now.utc)
+        @redirect_url = nil
+        subject
+        expect(User.find(send_user.id).confirmed_at).to be_between(start_time, Time.now.utc)
       end
       it '[リダイレクトURLがホワイトリストにない]確認日時が現在日時に変更される' do
-        get user_auth_confirmation_path(confirmation_token: confirmation_token, redirect_url: invalid_redirect_url)
-        expect(User.find(@send_user.id).confirmed_at).to be_between(start_time, Time.now.utc)
+        @redirect_url = BAD_SITE_URL
+        subject
+        expect(User.find(send_user.id).confirmed_at).to be_between(start_time, Time.now.utc)
       end
     end
     shared_examples_for 'NG' do
       it '[リダイレクトURLがある]確認日時が変更されない' do
-        get user_auth_confirmation_path(confirmation_token: confirmation_token, redirect_url: valid_redirect_url)
-        expect(User.find(@send_user.id).confirmed_at).to eq(@send_user.confirmed_at)
+        @redirect_url = FRONT_SITE_URL
+        subject
+        expect(User.find(send_user.id).confirmed_at).to eq(send_user.confirmed_at)
       end
       it '[リダイレクトURLがない]確認日時が変更されない' do
-        get user_auth_confirmation_path(confirmation_token: confirmation_token, redirect_url: nil)
-        expect(User.find(@send_user.id).confirmed_at).to eq(@send_user.confirmed_at)
+        @redirect_url = nil
+        subject
+        expect(User.find(send_user.id).confirmed_at).to eq(send_user.confirmed_at)
       end
       it '[リダイレクトURLがホワイトリストにない]確認日時が変更されない' do
-        get user_auth_confirmation_path(confirmation_token: confirmation_token, redirect_url: invalid_redirect_url)
-        expect(User.find(@send_user.id).confirmed_at).to eq(@send_user.confirmed_at)
+        @redirect_url = BAD_SITE_URL
+        subject
+        expect(User.find(send_user.id).confirmed_at).to eq(send_user.confirmed_at)
       end
     end
 
+    let(:not_redirect_url) { 'http://www.example.com://' }
     shared_examples_for 'ToOK' do # |alert, notice|
-      it '[リダイレクトURLがある]指定URL（成功パラメータ）にリダイレクト' do
-        get user_auth_confirmation_path(confirmation_token: confirmation_token, redirect_url: valid_redirect_url)
-        expect(response).to redirect_to(/^#{valid_redirect_url}\?.*account_confirmation_success=true.*$/) # Tips: ログイン中はaccess-token等も入る
+      it '[リダイレクトURLがある]指定URL（成功パラメータ）にリダイレクトする' do
+        @redirect_url = FRONT_SITE_URL
+        is_expected.to redirect_to(/^#{@redirect_url}\?.*account_confirmation_success=true.*$/) # Tips: ログイン中はaccess-token等も入る
         # param = '?account_confirmation_success=true'
         # param += "&alert=#{I18n.t(alert)}" if alert.present?
         # param += "&notice=#{I18n.t(notice)}" if notice.present?
-        # expect(response).to redirect_to("#{valid_redirect_url}#{param}")
+        # is_expected.to redirect_to("#{@redirect_url}#{param}")
       end
-      it '[リダイレクトURLがない]成功ページにリダイレクト' do
-        get user_auth_confirmation_path(confirmation_token: confirmation_token, redirect_url: nil)
-        not_redirect_url = 'http://www.example.com://'
-        expect(response).to redirect_to(/^#{not_redirect_url}\?.*account_confirmation_success=true.*$/) # Tips: ログイン中はaccess-token等も入る
-        # expect(response).to redirect_to('/confirmation_success.html?not')
+      it '[リダイレクトURLがない]成功ページにリダイレクトする' do
+        @redirect_url = nil
+        is_expected.to redirect_to(/^#{not_redirect_url}\?.*account_confirmation_success=true.*$/) # Tips: ログイン中はaccess-token等も入る
+        # is_expected.to redirect_to('/confirmation_success.html?not')
       end
-      it '[リダイレクトURLがホワイトリストにない]成功ページにリダイレクト' do
-        get user_auth_confirmation_path(confirmation_token: confirmation_token, redirect_url: invalid_redirect_url)
-        expect(response).to redirect_to(/^#{invalid_redirect_url}\?.*account_confirmation_success=true.*$/) # Tips: ログイン中はaccess-token等も入る
-        # expect(response).to redirect_to('/confirmation_success.html?bad')
+      it '[リダイレクトURLがホワイトリストにない]成功ページにリダイレクトする' do
+        @redirect_url = BAD_SITE_URL
+        is_expected.to redirect_to(/^#{@redirect_url}\?.*account_confirmation_success=true.*$/) # Tips: ログイン中はaccess-token等も入る
+        # is_expected.to redirect_to('/confirmation_success.html?bad')
       end
     end
     shared_examples_for 'ToNG' do |alert, notice|
-      it '[リダイレクトURLがある]指定URL（失敗パラメータ）にリダイレクト' do
-        get user_auth_confirmation_path(confirmation_token: confirmation_token, redirect_url: valid_redirect_url)
+      it '[リダイレクトURLがある]指定URL（失敗パラメータ）にリダイレクトする' do
+        @redirect_url = FRONT_SITE_URL
         param = '?account_confirmation_success=false'
         param += "&alert=#{I18n.t(alert)}" if alert.present?
         param += "&notice=#{I18n.t(notice)}" if notice.present?
-        expect(response).to redirect_to("#{valid_redirect_url}#{param}")
+        is_expected.to redirect_to("#{FRONT_SITE_URL}#{param}")
       end
-      it '[リダイレクトURLがない]エラーページにリダイレクト' do
-        get user_auth_confirmation_path(confirmation_token: confirmation_token, redirect_url: nil)
-        not_redirect_url = 'http://www.example.com://'
-        expect(response).to redirect_to(/^#{not_redirect_url}\?.*account_confirmation_success=true.*$/) # Tips: ログイン中はaccess-token等も入る
-        # expect(response).to redirect_to('/confirmation_error.html?not')
+      it '[リダイレクトURLがない]エラーページにリダイレクトする' do
+        @redirect_url = nil
+        is_expected.to redirect_to(/^#{not_redirect_url}\?.*account_confirmation_success=true.*$/) # Tips: ログイン中はaccess-token等も入る
+        # is_expected.to redirect_to('/confirmation_error.html?not')
       end
-      it '[リダイレクトURLがホワイトリストにない]エラーページにリダイレクト' do
-        get user_auth_confirmation_path(confirmation_token: confirmation_token, redirect_url: invalid_redirect_url)
-        expect(response).to redirect_to(/^#{invalid_redirect_url}\?.*account_confirmation_success=true.*$/) # Tips: ログイン中はaccess-token等も入る
-        # expect(response).to redirect_to('/confirmation_error.html?bad')
+      it '[リダイレクトURLがホワイトリストにない]エラーページにリダイレクトする' do
+        @redirect_url = BAD_SITE_URL
+        is_expected.to redirect_to(/^#{BAD_SITE_URL}\?.*account_confirmation_success=true.*$/) # Tips: ログイン中はaccess-token等も入る
+        # is_expected.to redirect_to('/confirmation_error.html?bad')
       end
     end
 
     # テストケース
     shared_examples_for '[未ログイン][期限内]確認日時がない（未確認）' do
+      include_context 'メールアドレス確認トークン作成', false, nil
       it_behaves_like 'OK'
       it_behaves_like 'ToOK', nil, 'devise.confirmations.confirmed'
     end
     shared_examples_for '[ログイン中/削除予約済み][期限内]確認日時がない（未確認）' do # Tips: ログイン中も出来ても良さそう
+      include_context 'メールアドレス確認トークン作成', false, nil
       it_behaves_like 'OK'
       it_behaves_like 'ToOK', nil, 'devise.confirmations.confirmed'
     end
     shared_examples_for '[*][期限切れ]確認日時がない（未確認）' do
+      include_context 'メールアドレス確認トークン作成', false, nil
       # Tips: ActionController::RoutingError: Not Found
       # it_behaves_like 'NG'
       # it_behaves_like 'ToNG', 'activerecord.errors.models.user.attributes.confirmation_token.invalid', nil
     end
-    shared_examples_for '[*][存在しない/ない]確認日時がない（未確認）' do
+    shared_examples_for '[*][存在しない/ない/空]確認日時がない（未確認）' do
       # Tips: ActionController::RoutingError: Not Found
       # it_behaves_like 'NG' # Tips: トークンが存在しない為、確認日時がない
       # it_behaves_like 'ToNG', 'activerecord.errors.models.user.attributes.confirmation_token.invalid', nil
     end
     shared_examples_for '[未ログイン][期限内]確認日時が確認送信日時より前（未確認）' do
-      include_context 'メールアドレス確認トークン確認', true
+      include_context 'メールアドレス確認トークン作成', true, true
       it_behaves_like 'OK'
       it_behaves_like 'ToOK', nil, 'devise.confirmations.confirmed'
     end
     shared_examples_for '[ログイン中/削除予約済み][期限内]確認日時が確認送信日時より前（未確認）' do # Tips: ログイン中も出来ても良さそう
-      include_context 'メールアドレス確認トークン確認', true
+      include_context 'メールアドレス確認トークン作成', true, true
       it_behaves_like 'OK'
       it_behaves_like 'ToOK', nil, 'devise.confirmations.confirmed'
     end
     shared_examples_for '[*][期限切れ]確認日時が確認送信日時より前（未確認）' do
-      include_context 'メールアドレス確認トークン確認', true
+      include_context 'メールアドレス確認トークン作成', true, true
       # Tips: ActionController::RoutingError: Not Found
       # it_behaves_like 'NG'
       # it_behaves_like 'ToNG', 'activerecord.errors.models.user.attributes.confirmation_token.invalid', nil
     end
     shared_examples_for '[*][期限内]確認日時が確認送信日時より後（確認済み）' do
-      include_context 'メールアドレス確認トークン確認', false
-      it_behaves_like 'OK'
-      it_behaves_like 'ToOK'
+      include_context 'メールアドレス確認トークン作成', true, false
+      # Tips: ActionController::RoutingError: Not Found
       # it_behaves_like 'NG'
       # it_behaves_like 'ToNG', 'errors.messages.already_confirmed', nil
     end
     shared_examples_for '[*][期限切れ]確認日時が確認送信日時より後（確認済み）' do
-      include_context 'メールアドレス確認トークン確認', false
+      include_context 'メールアドレス確認トークン作成', true, false
       # Tips: ActionController::RoutingError: Not Found
       # it_behaves_like 'NG'
-      # it_behaves_like 'ToNG', 'activerecord.errors.models.user.attributes.confirmation_token.invalid', nil
+      # it_behaves_like 'ToNG', 'errors.messages.already_confirmed', nil
     end
 
     shared_examples_for '[未ログイン]トークンが期限内' do
-      include_context 'メールアドレス確認トークン作成', true
+      let(:confirmation_sent_at) { Time.now.utc }
       it_behaves_like '[未ログイン][期限内]確認日時がない（未確認）'
       it_behaves_like '[未ログイン][期限内]確認日時が確認送信日時より前（未確認）'
       it_behaves_like '[*][期限内]確認日時が確認送信日時より後（確認済み）'
     end
     shared_examples_for '[ログイン中/削除予約済み]トークンが期限内' do
-      include_context 'メールアドレス確認トークン作成', true
+      let(:confirmation_sent_at) { Time.now.utc }
       it_behaves_like '[ログイン中/削除予約済み][期限内]確認日時がない（未確認）'
       it_behaves_like '[ログイン中/削除予約済み][期限内]確認日時が確認送信日時より前（未確認）'
       it_behaves_like '[*][期限内]確認日時が確認送信日時より後（確認済み）'
     end
     shared_examples_for '[*]トークンが期限切れ' do
-      include_context 'メールアドレス確認トークン作成', false
+      let(:confirmation_sent_at) { Time.now.utc - User.confirm_within - 1.hour }
       it_behaves_like '[*][期限切れ]確認日時がない（未確認）'
       it_behaves_like '[*][期限切れ]確認日時が確認送信日時より前（未確認）'
       it_behaves_like '[*][期限切れ]確認日時が確認送信日時より後（確認済み）'
     end
     shared_examples_for '[*]トークンが存在しない' do
-      let!(:confirmation_token) { NOT_TOKEN }
-      it_behaves_like '[*][存在しない/ない]確認日時がない（未確認）'
+      let(:confirmation_token) { NOT_TOKEN }
+      it_behaves_like '[*][存在しない/ない/空]確認日時がない（未確認）'
       # it_behaves_like '[*][存在しない]確認日時が確認送信日時より前（未確認）' # Tips: トークンが存在しない為、確認日時がない
       # it_behaves_like '[*][存在しない]確認日時が確認送信日時より後（確認済み）' # Tips: トークンが存在しない為、確認日時がない
     end
     shared_examples_for '[*]トークンがない' do
-      let!(:confirmation_token) { NO_TOKEN }
-      it_behaves_like '[*][存在しない/ない]確認日時がない（未確認）'
+      let(:confirmation_token) { nil }
+      it_behaves_like '[*][存在しない/ない/空]確認日時がない（未確認）'
       # it_behaves_like '[*][ない]確認日時が確認送信日時より前（未確認）' # Tips: トークンが存在しない為、確認日時がない
       # it_behaves_like '[*][ない]確認日時が確認送信日時より後（確認済み）' # Tips: トークンが存在しない為、確認日時がない
+    end
+    shared_examples_for '[*]トークンが空' do
+      let(:confirmation_token) { '' }
+      it_behaves_like '[*][存在しない/ない/空]確認日時がない（未確認）'
+      # it_behaves_like '[*][空]確認日時が確認送信日時より前（未確認）' # Tips: トークンが存在しない為、確認日時がない
+      # it_behaves_like '[*][空]確認日時が確認送信日時より後（確認済み）' # Tips: トークンが存在しない為、確認日時がない
     end
 
     context '未ログイン' do
@@ -279,6 +338,7 @@ RSpec.describe 'Users::Auth::Confirmations', type: :request do
       it_behaves_like '[*]トークンが期限切れ'
       it_behaves_like '[*]トークンが存在しない'
       it_behaves_like '[*]トークンがない'
+      it_behaves_like '[*]トークンが空'
     end
     context 'ログイン中' do
       include_context 'ログイン処理'
@@ -286,13 +346,15 @@ RSpec.describe 'Users::Auth::Confirmations', type: :request do
       it_behaves_like '[*]トークンが期限切れ'
       it_behaves_like '[*]トークンが存在しない'
       it_behaves_like '[*]トークンがない'
+      it_behaves_like '[*]トークンが空'
     end
     context 'ログイン中（削除予約済み）' do
-      include_context 'ログイン処理', true
+      include_context 'ログイン処理', :user_destroy_reserved
       it_behaves_like '[ログイン中/削除予約済み]トークンが期限内'
       it_behaves_like '[*]トークンが期限切れ'
       it_behaves_like '[*]トークンが存在しない'
       it_behaves_like '[*]トークンがない'
+      it_behaves_like '[*]トークンが空'
     end
   end
 end

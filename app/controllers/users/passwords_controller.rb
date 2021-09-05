@@ -22,6 +22,7 @@ class Users::PasswordsController < Devise::PasswordsController
   def update
     return redirect_to new_user_password_path, alert: invalid_token_message unless valid_reset_password_token?(resource_params[:reset_password_token])
 
+    params[:user][:password_confirmation] = '' if params[:user][:password_confirmation].nil? # Tips: nilだとチェックされずに保存される為
     super
   end
 

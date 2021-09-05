@@ -1,22 +1,15 @@
-shared_context 'ユーザー作成' do |destroy_reserved_flag = false|
-  let!(:user) { FactoryBot.create(:user) }
-  before do
-    if destroy_reserved_flag
-      user.destroy_requested_at = Time.now.utc
-      user.destroy_schedule_at = Time.now.utc + Settings['destroy_schedule_days'].days
-      user.save!
-    end
-  end
-end
-
-shared_context 'ログイン処理' do |destroy_reserved_flag = false|
-  include_context 'ユーザー作成', destroy_reserved_flag
+shared_context 'ログイン処理' do |target = :user, use_image = false|
+  let(:image) { use_image ? fixture_file_upload(TEST_IMAGE_FILE, TEST_IMAGE_TYPE) : nil }
+  let!(:user) { FactoryBot.create(target, image: image) }
+  include_context '画像削除処理' if use_image
   before { sign_in user }
 end
-shared_context 'authログイン処理' do |destroy_reserved_flag = false|
-  include_context 'ユーザー作成', destroy_reserved_flag
-  let!(:auth_token) { user.create_new_auth_token }
-  let!(:auth_headers) do
+shared_context 'authログイン処理' do |target = :user, use_image = false|
+  let(:image) { use_image ? fixture_file_upload(TEST_IMAGE_FILE, TEST_IMAGE_TYPE) : nil }
+  let!(:user) { FactoryBot.create(target, image: image) }
+  include_context '画像削除処理' if use_image
+  let(:auth_token) { user.create_new_auth_token }
+  let(:auth_headers) do
     {
       'uid' => auth_token['uid'],
       'client' => auth_token['client'],
@@ -25,12 +18,6 @@ shared_context 'authログイン処理' do |destroy_reserved_flag = false|
   end
 end
 
-shared_context '画像登録処理' do
-  before do
-    user.image = fixture_file_upload(TEST_IMAGE_FILE, TEST_IMAGE_TYPE)
-    user.save!
-  end
-end
 shared_context '画像削除処理' do
   after do
     user.remove_image!
@@ -38,41 +25,36 @@ shared_context '画像削除処理' do
   end
 end
 
-shared_context 'パスワードリセットトークン作成' do |valid_flag|
-  let!(:reset_password_token) { Faker::Internet.password(min_length: 20, max_length: 20) }
-  before do
-    digest_token = Devise.token_generator.digest(self, :reset_password_token, reset_password_token)
-    sent_at = valid_flag ? Time.now.utc : '0000-01-01 00:00:00+0000'
-    @send_user = FactoryBot.create(:user, reset_password_token: digest_token, reset_password_sent_at: sent_at)
+shared_context 'パスワードリセットトークン作成' do |valid, locked = false, unconfirmed = false|
+  let(:reset_password_token) { SecureRandom.uuid }
+  let(:digest_token)         { Devise.token_generator.digest(self, :reset_password_token, reset_password_token) }
+  let(:sent_at)              { valid ? Time.now.utc - 1.minute : '0000-01-01 00:00:00+0000' }
+  let(:unlock_token)         { locked ? SecureRandom.uuid : nil }
+  let(:locked_at)            { locked ? Time.now.utc - 1.minute : '0000-01-01 00:00:00+0000' }
+  let(:confirmation_token)   { unconfirmed ? Devise.token_generator.digest(self, :confirmation_token, SecureRandom.uuid) : nil }
+  let(:confirmation_sent_at) { unconfirmed ? Time.now.utc - 1.minute : nil }
+  let(:confirmed_at)         { unconfirmed ? nil : '0000-01-01 00:00:00+0000' }
+  let!(:send_user) do
+    FactoryBot.create(:user, reset_password_token: digest_token, reset_password_sent_at: sent_at,
+                             unlock_token: unlock_token, locked_at: locked_at,
+                             confirmation_token: confirmation_token, confirmation_sent_at: confirmation_sent_at, confirmed_at: confirmed_at)
   end
 end
 
-shared_context 'メールアドレス確認トークン作成' do |valid_flag|
-  let!(:confirmation_token) { Faker::Internet.password(min_length: 20, max_length: 20) }
-  before do
-    @send_user = FactoryBot.build(:user, confirmation_token: confirmation_token, confirmed_at: nil)
-    @send_user.confirmation_sent_at = valid_flag ? Time.now.utc : Time.now.utc - @send_user.class.confirm_within - 1.hour
-    @send_user.save!
-  end
-end
-shared_context 'メールアドレス確認トークン確認' do |confirmed_before_flag|
-  before do
-    @send_user.confirmed_at = @send_user.confirmation_sent_at + (confirmed_before_flag ? -1.hour : 1.hour)
-    @send_user.unconfirmed_email = "a#{@send_user.email}"
-    @send_user.save!
+shared_context 'メールアドレス確認トークン作成' do |confirmed, before|
+  let(:confirmation_token) { Devise.token_generator.digest(self, :confirmation_token, SecureRandom.uuid) }
+  let(:set_confirmed_at)   { confirmation_sent_at + (before ? -1.minute : 1.minute) }
+  let(:confirmed_at)       { confirmed ? set_confirmed_at : nil }
+  let(:unconfirmed_email)  { confirmed && before ? Faker::Internet.safe_email : nil }
+  let!(:send_user) do
+    FactoryBot.create(:user, confirmation_token: confirmation_token, confirmation_sent_at: confirmation_sent_at,
+                             confirmed_at: confirmed_at, unconfirmed_email: unconfirmed_email)
   end
 end
 
-shared_context 'アカウントロック解除トークン作成' do
-  let!(:unlock_token) { Faker::Internet.password(min_length: 20, max_length: 20) }
-  before do
-    digest_token = Devise.token_generator.digest(self, :unlock_token, unlock_token)
-    @send_user = FactoryBot.create(:user, locked_at: Time.now.utc, unlock_token: digest_token)
-  end
-end
-shared_context 'アカウントロック解除トークン解除' do
-  before do
-    @send_user.locked_at = nil
-    @send_user.save!
-  end
+shared_context 'アカウントロック解除トークン作成' do |locked|
+  let(:unlock_token) { SecureRandom.uuid }
+  let(:digest_token) { Devise.token_generator.digest(self, :unlock_token, unlock_token) }
+  let(:locked_at)    { locked ? Time.now.utc - 1.minute : nil }
+  let!(:send_user)   { FactoryBot.create(:user, unlock_token: digest_token, locked_at: locked_at) }
 end

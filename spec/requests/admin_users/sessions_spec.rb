@@ -7,17 +7,17 @@ RSpec.describe 'AdminUsers::Sessions', type: :request do
   # テストパターン
   #   未ログイン, ログイン中 → データ＆状態作成
   describe 'GET #new' do
+    subject { get new_admin_user_session_path }
+
     # テスト内容
     shared_examples_for 'ToOK' do
       it '成功ステータス' do
-        get new_admin_user_session_path
-        expect(response).to be_successful
+        is_expected.to eq(200)
       end
     end
     shared_examples_for 'ToAdmin' do |alert, notice|
-      it 'RailsAdminにリダイレクト' do
-        get new_admin_user_session_path
-        expect(response).to redirect_to(rails_admin_path)
+      it 'RailsAdminにリダイレクトする' do
+        is_expected.to redirect_to(rails_admin_path)
         expect(flash[:alert]).to alert.present? ? eq(I18n.t(alert)) : be_nil
         expect(flash[:notice]).to notice.present? ? eq(I18n.t(notice)) : be_nil
       end
@@ -38,57 +38,69 @@ RSpec.describe 'AdminUsers::Sessions', type: :request do
   #   なし
   # テストパターン
   #   未ログイン, ログイン中 → データ＆状態作成
-  #   有効なパラメータ, 無効なパラメータ → 事前にデータ作成
+  #   有効なパラメータ（未ロック, ロック中）, 無効なパラメータ → 事前にデータ作成
   describe 'POST #create' do
-    shared_context '有効なパラメータ' do
-      let!(:attributes) { { email: admin_user.email, password: admin_user.password } }
-    end
-    shared_context '無効なパラメータ' do
-      let!(:attributes) { { email: admin_user.email, password: nil } }
-    end
+    subject { post create_admin_user_session_path, params: { admin_user: attributes } }
+    let(:send_admin_user_unlocked) { FactoryBot.create(:admin_user) }
+    let(:send_admin_user_locked)   { FactoryBot.create(:admin_user_locked) }
+    let(:not_admin_user)           { FactoryBot.attributes_for(:admin_user) }
+    let(:valid_attributes)   { { email: send_admin_user.email, password: send_admin_user.password } }
+    let(:invalid_attributes) { { email: not_admin_user[:email], password: not_admin_user[:password] } }
 
     # テスト内容
-    shared_examples_for 'ToError' do
-      it '成功ステータス' do # Tips: 再入力
-        post create_admin_user_session_path, params: { admin_user: attributes }
-        expect(response).to be_successful
+    shared_examples_for 'ToError' do |error_msg|
+      it '成功ステータス。対象のエラーメッセージが含まれる' do # Tips: 再入力
+        is_expected.to eq(200)
+        expect(response.body).to include(I18n.t(error_msg))
       end
     end
     shared_examples_for 'ToAdmin' do |alert, notice|
-      it 'RailsAdminにリダイレクト' do
-        post create_admin_user_session_path, params: { admin_user: attributes }
-        expect(response).to redirect_to(rails_admin_path)
+      it 'RailsAdminにリダイレクトする' do
+        is_expected.to redirect_to(rails_admin_path)
         expect(flash[:alert]).to alert.present? ? eq(I18n.t(alert)) : be_nil
         expect(flash[:notice]).to notice.present? ? eq(I18n.t(notice)) : be_nil
       end
     end
 
     # テストケース
-    shared_examples_for '[未ログイン]有効なパラメータ' do
-      include_context '有効なパラメータ'
+    shared_examples_for '[未ログイン]有効なパラメータ（未ロック）' do
+      let(:send_admin_user) { send_admin_user_unlocked }
+      let(:attributes)      { valid_attributes }
       it_behaves_like 'ToAdmin', nil, 'devise.sessions.signed_in'
     end
-    shared_examples_for '[ログイン中]有効なパラメータ' do
-      include_context '有効なパラメータ'
+    shared_examples_for '[ログイン中]有効なパラメータ（未ロック）' do
+      let(:send_admin_user) { send_admin_user_unlocked }
+      let(:attributes)      { valid_attributes }
+      it_behaves_like 'ToAdmin', 'devise.failure.already_authenticated', nil
+    end
+    shared_examples_for '[未ログイン]有効なパラメータ（ロック中）' do
+      let(:send_admin_user) { send_admin_user_locked }
+      let(:attributes)      { valid_attributes }
+      it_behaves_like 'ToError', 'devise.failure.locked'
+    end
+    shared_examples_for '[ログイン中]有効なパラメータ（ロック中）' do
+      let(:send_admin_user) { send_admin_user_locked }
+      let(:attributes)      { valid_attributes }
       it_behaves_like 'ToAdmin', 'devise.failure.already_authenticated', nil
     end
     shared_examples_for '[未ログイン]無効なパラメータ' do
-      include_context '無効なパラメータ'
-      it_behaves_like 'ToError'
+      let(:attributes) { invalid_attributes }
+      it_behaves_like 'ToError', 'devise.failure.invalid'
     end
     shared_examples_for '[ログイン中]無効なパラメータ' do
-      include_context '無効なパラメータ'
+      let(:attributes) { invalid_attributes }
       it_behaves_like 'ToAdmin', 'devise.failure.already_authenticated', nil
     end
 
     context '未ログイン' do
-      include_context 'ユーザー作成（管理者）'
-      it_behaves_like '[未ログイン]有効なパラメータ'
+      it_behaves_like '[未ログイン]有効なパラメータ（未ロック）'
+      it_behaves_like '[未ログイン]有効なパラメータ（ロック中）'
       it_behaves_like '[未ログイン]無効なパラメータ'
     end
     context 'ログイン中' do
       include_context 'ログイン処理（管理者）'
-      it_behaves_like '[ログイン中]有効なパラメータ'
+      it_behaves_like '[ログイン中]有効なパラメータ（未ロック）'
+      it_behaves_like '[ログイン中]有効なパラメータ（ロック中）'
       it_behaves_like '[ログイン中]無効なパラメータ'
     end
   end
@@ -99,11 +111,12 @@ RSpec.describe 'AdminUsers::Sessions', type: :request do
   # テストパターン
   #   未ログイン, ログイン中 → データ＆状態作成
   describe 'DELETE #destroy' do
+    subject { delete destroy_admin_user_session_path }
+
     # テスト内容
     shared_examples_for 'ToLogin' do |alert, notice|
-      it 'ログインにリダイレクト' do
-        delete destroy_admin_user_session_path
-        expect(response).to redirect_to(new_admin_user_session_path)
+      it 'ログインにリダイレクトする' do
+        is_expected.to redirect_to(new_admin_user_session_path)
         expect(flash[:alert]).to alert.present? ? eq(I18n.t(alert)) : be_nil
         expect(flash[:notice]).to notice.present? ? eq(I18n.t(notice)) : be_nil
       end

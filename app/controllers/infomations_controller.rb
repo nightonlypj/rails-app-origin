@@ -17,7 +17,7 @@ class InfomationsController < ApplicationController
     @infomation = Infomation.find(params[:id])
     return head :not_found if @infomation.blank? || !@infomation.target_user?(current_user) || @infomation.started_at > Time.current
     return if @infomation.ended_at.blank? || @infomation.ended_at >= Time.current
-    return render json: { error: t('errors.messages.infomation.ended') }, status: :not_found if request.format.json?
+    return render json: { success: false, alert: t('errors.messages.infomation.ended') }, status: :not_found if request.format.json?
 
     head :not_found
   end

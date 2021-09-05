@@ -21,14 +21,13 @@ class User < ApplicationRecord
 
   # 削除予約
   def set_destroy_reserve
-    update!(destroy_requested_at: Time.current,
-            destroy_schedule_at: Time.current + Settings['destroy_schedule_days'].days)
+    now = Time.current
+    update!(destroy_requested_at: now, destroy_schedule_at: now + Settings['destroy_schedule_days'].days)
   end
 
   # 削除予約取り消し
   def set_undo_destroy_reserve
-    update!(destroy_requested_at: nil,
-            destroy_schedule_at: nil)
+    update!(destroy_requested_at: nil, destroy_schedule_at: nil)
   end
 
   # 画像URLを返却
