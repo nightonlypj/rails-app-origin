@@ -5,13 +5,13 @@ RSpec.describe 'Admin', type: :request do
   # 前提条件
   #   なし
   # テストパターン
-  #   未ログイン, ログイン中, ログイン中（削除予約済み）, ログイン中（管理者） → データ＆状態作成
+  #   未ログイン, ログイン中, ログイン中（削除予約済み）, ログイン中（管理者）
   describe 'GET rails_admin' do
     subject { get rails_admin_path }
 
     # テスト内容
     shared_examples_for 'ToOK' do
-      it '成功ステータス' do
+      it 'HTTPステータスが200' do
         is_expected.to eq(200)
       end
     end

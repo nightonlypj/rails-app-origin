@@ -5,13 +5,13 @@ RSpec.describe 'Users::Passwords', type: :request do
   # 前提条件
   #   なし
   # テストパターン
-  #   未ログイン, ログイン中, ログイン中（削除予約済み） → データ＆状態作成
+  #   未ログイン, ログイン中
   describe 'GET #new' do
     subject { get new_user_password_path }
 
     # テスト内容
     shared_examples_for 'ToOK' do
-      it '成功ステータス' do
+      it 'HTTPステータスが200' do
         is_expected.to eq(200)
       end
     end
@@ -31,24 +31,20 @@ RSpec.describe 'Users::Passwords', type: :request do
       include_context 'ログイン処理'
       it_behaves_like 'ToTop', 'devise.failure.already_authenticated', nil
     end
-    context 'ログイン中（削除予約済み）' do
-      include_context 'ログイン処理', :user_destroy_reserved
-      it_behaves_like 'ToTop', 'devise.failure.already_authenticated', nil
-    end
   end
 
   # POST /users/password/new パスワード再設定[メール送信](処理)
   # 前提条件
   #   なし
   # テストパターン
-  #   未ログイン, ログイン中, ログイン中（削除予約済み） → データ＆状態作成
-  #   有効なパラメータ（未ロック, ロック中, メール未確認）, 無効なパラメータ → 事前にデータ作成
+  #   未ログイン, ログイン中
+  #   有効なパラメータ（未ロック, ロック中, メール未確認）, 無効なパラメータ
   describe 'POST #create' do
     subject { post create_user_password_path, params: { user: attributes } }
     let(:send_user_unlocked)    { FactoryBot.create(:user) }
     let(:send_user_locked)      { FactoryBot.create(:user_locked) }
     let(:send_user_unconfirmed) { FactoryBot.create(:user_unconfirmed) }
-    let(:not_user)               { FactoryBot.attributes_for(:user) }
+    let(:not_user)              { FactoryBot.attributes_for(:user) }
     let(:valid_attributes)   { { email: send_user.email } }
     let(:invalid_attributes) { { email: not_user[:email] } }
 
@@ -67,7 +63,7 @@ RSpec.describe 'Users::Passwords', type: :request do
     end
 
     shared_examples_for 'ToError' do |error_msg|
-      it '成功ステータス。対象のエラーメッセージが含まれる' do # Tips: 再入力
+      it 'HTTPステータスが200。対象のエラーメッセージが含まれる' do # Tips: 再入力
         is_expected.to eq(200)
         expect(response.body).to include(I18n.t(error_msg))
       end
@@ -94,7 +90,7 @@ RSpec.describe 'Users::Passwords', type: :request do
       it_behaves_like 'OK'
       it_behaves_like 'ToLogin', nil, 'devise.passwords.send_instructions'
     end
-    shared_examples_for '[ログイン中/削除予約済み]有効なパラメータ（未ロック）' do
+    shared_examples_for '[ログイン中]有効なパラメータ（未ロック）' do
       let(:send_user)  { send_user_unlocked }
       let(:attributes) { valid_attributes }
       it_behaves_like 'NG'
@@ -106,7 +102,7 @@ RSpec.describe 'Users::Passwords', type: :request do
       it_behaves_like 'OK'
       it_behaves_like 'ToLogin', nil, 'devise.passwords.send_instructions'
     end
-    shared_examples_for '[ログイン中/削除予約済み]有効なパラメータ（ロック中）' do
+    shared_examples_for '[ログイン中]有効なパラメータ（ロック中）' do
       let(:send_user)  { send_user_locked }
       let(:attributes) { valid_attributes }
       it_behaves_like 'NG'
@@ -118,7 +114,7 @@ RSpec.describe 'Users::Passwords', type: :request do
       it_behaves_like 'OK'
       it_behaves_like 'ToLogin', nil, 'devise.passwords.send_instructions'
     end
-    shared_examples_for '[ログイン中/削除予約済み]有効なパラメータ（メール未確認）' do
+    shared_examples_for '[ログイン中]有効なパラメータ（メール未確認）' do
       let(:send_user)  { send_user_unconfirmed }
       let(:attributes) { valid_attributes }
       it_behaves_like 'NG'
@@ -129,7 +125,7 @@ RSpec.describe 'Users::Passwords', type: :request do
       it_behaves_like 'NG'
       it_behaves_like 'ToError', 'errors.messages.not_found'
     end
-    shared_examples_for '[ログイン中/削除予約済み]無効なパラメータ' do
+    shared_examples_for '[ログイン中]無効なパラメータ' do
       let(:attributes) { invalid_attributes }
       it_behaves_like 'NG'
       it_behaves_like 'ToTop', 'devise.failure.already_authenticated', nil
@@ -143,17 +139,10 @@ RSpec.describe 'Users::Passwords', type: :request do
     end
     context 'ログイン中' do
       include_context 'ログイン処理'
-      it_behaves_like '[ログイン中/削除予約済み]有効なパラメータ（未ロック）'
-      it_behaves_like '[ログイン中/削除予約済み]有効なパラメータ（ロック中）'
-      it_behaves_like '[ログイン中/削除予約済み]有効なパラメータ（メール未確認）'
-      it_behaves_like '[ログイン中/削除予約済み]無効なパラメータ'
-    end
-    context 'ログイン中（削除予約済み）' do
-      include_context 'ログイン処理', :user_destroy_reserved
-      it_behaves_like '[ログイン中/削除予約済み]有効なパラメータ（未ロック）'
-      it_behaves_like '[ログイン中/削除予約済み]有効なパラメータ（ロック中）'
-      it_behaves_like '[ログイン中/削除予約済み]有効なパラメータ（メール未確認）'
-      it_behaves_like '[ログイン中/削除予約済み]無効なパラメータ'
+      it_behaves_like '[ログイン中]有効なパラメータ（未ロック）'
+      it_behaves_like '[ログイン中]有効なパラメータ（ロック中）'
+      it_behaves_like '[ログイン中]有効なパラメータ（メール未確認）'
+      it_behaves_like '[ログイン中]無効なパラメータ'
     end
   end
 
@@ -161,14 +150,14 @@ RSpec.describe 'Users::Passwords', type: :request do
   # 前提条件
   #   なし
   # テストパターン
-  #   未ログイン, ログイン中, ログイン中（削除予約済み） → データ＆状態作成
-  #   トークン: 期限内（未ロック, ロック中, メール未確認）, 期限切れ, 存在しない, ない → データ作成
+  #   未ログイン, ログイン中
+  #   トークン: 期限内（未ロック, ロック中, メール未確認）, 期限切れ, 存在しない, ない
   describe 'GET #edit' do
     subject { get edit_user_password_path(reset_password_token: reset_password_token) }
 
     # テスト内容
     shared_examples_for 'ToOK' do
-      it '成功ステータス' do
+      it 'HTTPステータスが200' do
         is_expected.to eq(200)
       end
     end
@@ -199,7 +188,7 @@ RSpec.describe 'Users::Passwords', type: :request do
       include_context 'パスワードリセットトークン作成', true
       it_behaves_like 'ToOK'
     end
-    shared_examples_for '[ログイン中/削除予約済み]トークンが期限内（未ロック）' do
+    shared_examples_for '[ログイン中]トークンが期限内（未ロック）' do
       include_context 'パスワードリセットトークン作成', true
       it_behaves_like 'ToTop', 'devise.failure.already_authenticated', nil
     end
@@ -207,7 +196,7 @@ RSpec.describe 'Users::Passwords', type: :request do
       include_context 'パスワードリセットトークン作成', true, true
       it_behaves_like 'ToOK'
     end
-    shared_examples_for '[ログイン中/削除予約済み]トークンが期限内（ロック中）' do
+    shared_examples_for '[ログイン中]トークンが期限内（ロック中）' do
       include_context 'パスワードリセットトークン作成', true, true
       it_behaves_like 'ToTop', 'devise.failure.already_authenticated', nil
     end
@@ -215,7 +204,7 @@ RSpec.describe 'Users::Passwords', type: :request do
       include_context 'パスワードリセットトークン作成', true, false, true
       it_behaves_like 'ToOK'
     end
-    shared_examples_for '[ログイン中/削除予約済み]トークンが期限内（メール未確認）' do
+    shared_examples_for '[ログイン中]トークンが期限内（メール未確認）' do
       include_context 'パスワードリセットトークン作成', true, false, true
       it_behaves_like 'ToTop', 'devise.failure.already_authenticated', nil
     end
@@ -223,7 +212,7 @@ RSpec.describe 'Users::Passwords', type: :request do
       include_context 'パスワードリセットトークン作成', false
       it_behaves_like 'ToNew', 'activerecord.errors.models.user.attributes.reset_password_token.invalid', nil
     end
-    shared_examples_for '[ログイン中/削除予約済み]トークンが期限切れ' do
+    shared_examples_for '[ログイン中]トークンが期限切れ' do
       include_context 'パスワードリセットトークン作成', false
       it_behaves_like 'ToTop', 'devise.failure.already_authenticated', nil
     end
@@ -231,7 +220,7 @@ RSpec.describe 'Users::Passwords', type: :request do
       let(:reset_password_token) { NOT_TOKEN }
       it_behaves_like 'ToNew', 'activerecord.errors.models.user.attributes.reset_password_token.invalid', nil
     end
-    shared_examples_for '[ログイン中/削除予約済み]トークンが存在しない' do
+    shared_examples_for '[ログイン中]トークンが存在しない' do
       let(:reset_password_token) { NOT_TOKEN }
       it_behaves_like 'ToTop', 'devise.failure.already_authenticated', nil
     end
@@ -239,7 +228,7 @@ RSpec.describe 'Users::Passwords', type: :request do
       let(:reset_password_token) { nil }
       it_behaves_like 'ToLogin', 'devise.passwords.no_token', nil
     end
-    shared_examples_for '[ログイン中/削除予約済み]トークンがない' do
+    shared_examples_for '[ログイン中]トークンがない' do
       let(:reset_password_token) { nil }
       it_behaves_like 'ToTop', 'devise.failure.already_authenticated', nil
     end
@@ -254,21 +243,12 @@ RSpec.describe 'Users::Passwords', type: :request do
     end
     context 'ログイン中' do
       include_context 'ログイン処理'
-      it_behaves_like '[ログイン中/削除予約済み]トークンが期限内（未ロック）'
-      it_behaves_like '[ログイン中/削除予約済み]トークンが期限内（ロック中）'
-      it_behaves_like '[ログイン中/削除予約済み]トークンが期限内（メール未確認）'
-      it_behaves_like '[ログイン中/削除予約済み]トークンが期限切れ'
-      it_behaves_like '[ログイン中/削除予約済み]トークンが存在しない'
-      it_behaves_like '[ログイン中/削除予約済み]トークンがない'
-    end
-    context 'ログイン中（削除予約済み）' do
-      include_context 'ログイン処理', :user_destroy_reserved
-      it_behaves_like '[ログイン中/削除予約済み]トークンが期限内（未ロック）'
-      it_behaves_like '[ログイン中/削除予約済み]トークンが期限内（ロック中）'
-      it_behaves_like '[ログイン中/削除予約済み]トークンが期限内（メール未確認）'
-      it_behaves_like '[ログイン中/削除予約済み]トークンが期限切れ'
-      it_behaves_like '[ログイン中/削除予約済み]トークンが存在しない'
-      it_behaves_like '[ログイン中/削除予約済み]トークンがない'
+      it_behaves_like '[ログイン中]トークンが期限内（未ロック）'
+      it_behaves_like '[ログイン中]トークンが期限内（ロック中）'
+      it_behaves_like '[ログイン中]トークンが期限内（メール未確認）'
+      it_behaves_like '[ログイン中]トークンが期限切れ'
+      it_behaves_like '[ログイン中]トークンが存在しない'
+      it_behaves_like '[ログイン中]トークンがない'
     end
   end
 
@@ -276,9 +256,9 @@ RSpec.describe 'Users::Passwords', type: :request do
   # 前提条件
   #   なし
   # テストパターン
-  #   未ログイン, ログイン中, ログイン中（削除予約済み） → データ＆状態作成
-  #   トークン: 期限内（未ロック, ロック中, メール未確認）, 期限切れ, 存在しない, ない → データ作成
-  #   有効なパラメータ, 無効なパラメータ → 事前にデータ作成
+  #   未ログイン, ログイン中
+  #   トークン: 期限内（未ロック, ロック中, メール未確認）, 期限切れ, 存在しない, ない
+  #   有効なパラメータ, 無効なパラメータ
   describe 'PUT #update' do
     subject { put update_user_password_path, params: { user: attributes } }
     let(:new_password) { Faker::Internet.password(min_length: 8) }
@@ -287,7 +267,7 @@ RSpec.describe 'Users::Passwords', type: :request do
 
     # テスト内容
     shared_examples_for 'OK' do |check_confirmed = false|
-      let!(:start_time) { Time.current - 1.second }
+      let!(:start_time) { Time.current.floor }
       it "パスワードリセット送信日時がなし#{'・メールアドレス確認日時が現在日時' if check_confirmed}に変更される。メールが送信される" do
         subject
         expect(User.find(send_user.id).reset_password_sent_at).to be_nil
@@ -307,7 +287,7 @@ RSpec.describe 'Users::Passwords', type: :request do
     end
 
     shared_examples_for 'ToError' do |error_msg|
-      it '成功ステータス。対象のエラーメッセージが含まれる' do # Tips: 再入力
+      it 'HTTPステータスが200。対象のエラーメッセージが含まれる' do # Tips: 再入力
         is_expected.to eq(200)
         expect(response.body).to include(I18n.t(error_msg))
       end
@@ -347,7 +327,7 @@ RSpec.describe 'Users::Passwords', type: :request do
       it_behaves_like 'ToLogin', 'devise.failure.unconfirmed', 'devise.passwords.updated'
       # it_behaves_like 'ToTop', nil, 'devise.passwords.updated'
     end
-    shared_examples_for '[ログイン中/削除予約済み][期限内/期限切れ]有効なパラメータ' do
+    shared_examples_for '[ログイン中][期限内/期限切れ]有効なパラメータ' do
       let(:attributes) { valid_attributes }
       it_behaves_like 'NG'
       it_behaves_like 'ToTop', 'devise.failure.already_authenticated', nil
@@ -362,7 +342,7 @@ RSpec.describe 'Users::Passwords', type: :request do
       # it_behaves_like 'NG' # Tips: トークンが存在しない為、送信日時がない
       it_behaves_like 'ToNew', 'activerecord.errors.models.user.attributes.reset_password_token.invalid', nil
     end
-    shared_examples_for '[ログイン中/削除予約済み][存在しない/ない]有効なパラメータ' do
+    shared_examples_for '[ログイン中][存在しない/ない]有効なパラメータ' do
       let(:attributes) { valid_attributes }
       # it_behaves_like 'NG' # Tips: トークンが存在しない為、送信日時がない
       it_behaves_like 'ToTop', 'devise.failure.already_authenticated', nil
@@ -372,7 +352,7 @@ RSpec.describe 'Users::Passwords', type: :request do
       it_behaves_like 'NG'
       it_behaves_like 'ToError', 'activerecord.errors.models.user.attributes.password_confirmation.confirmation'
     end
-    shared_examples_for '[ログイン中/削除予約済み][期限内/期限切れ]無効なパラメータ' do
+    shared_examples_for '[ログイン中][期限内/期限切れ]無効なパラメータ' do
       let(:attributes) { invalid_attributes }
       it_behaves_like 'NG'
       it_behaves_like 'ToTop', 'devise.failure.already_authenticated', nil
@@ -387,7 +367,7 @@ RSpec.describe 'Users::Passwords', type: :request do
       # it_behaves_like 'NG' # Tips: トークンが存在しない為、送信日時がない
       it_behaves_like 'ToNew', 'activerecord.errors.models.user.attributes.reset_password_token.invalid', nil
     end
-    shared_examples_for '[ログイン中/削除予約済み][存在しない/ない]無効なパラメータ' do
+    shared_examples_for '[ログイン中][存在しない/ない]無効なパラメータ' do
       let(:attributes) { invalid_attributes }
       # it_behaves_like 'NG' # Tips: トークンが存在しない為、送信日時がない
       it_behaves_like 'ToTop', 'devise.failure.already_authenticated', nil
@@ -398,60 +378,60 @@ RSpec.describe 'Users::Passwords', type: :request do
       it_behaves_like '[未ログイン][期限内]有効なパラメータ'
       it_behaves_like '[未ログイン][期限内]無効なパラメータ'
     end
-    shared_examples_for '[ログイン中/削除予約済み]トークンが期限内（未ロック）' do
+    shared_examples_for '[ログイン中]トークンが期限内（未ロック）' do
       include_context 'パスワードリセットトークン作成', true
-      it_behaves_like '[ログイン中/削除予約済み][期限内/期限切れ]有効なパラメータ'
-      it_behaves_like '[ログイン中/削除予約済み][期限内/期限切れ]無効なパラメータ'
+      it_behaves_like '[ログイン中][期限内/期限切れ]有効なパラメータ'
+      it_behaves_like '[ログイン中][期限内/期限切れ]無効なパラメータ'
     end
     shared_examples_for '[未ログイン]トークンが期限内（ロック中）' do
       include_context 'パスワードリセットトークン作成', true, true
       it_behaves_like '[未ログイン][期限内]有効なパラメータ'
       it_behaves_like '[未ログイン][期限内]無効なパラメータ'
     end
-    shared_examples_for '[ログイン中/削除予約済み]トークンが期限内（ロック中）' do
+    shared_examples_for '[ログイン中]トークンが期限内（ロック中）' do
       include_context 'パスワードリセットトークン作成', true, true
-      it_behaves_like '[ログイン中/削除予約済み][期限内/期限切れ]有効なパラメータ'
-      it_behaves_like '[ログイン中/削除予約済み][期限内/期限切れ]無効なパラメータ'
+      it_behaves_like '[ログイン中][期限内/期限切れ]有効なパラメータ'
+      it_behaves_like '[ログイン中][期限内/期限切れ]無効なパラメータ'
     end
     shared_examples_for '[未ログイン]トークンが期限内（メール未確認）' do
       include_context 'パスワードリセットトークン作成', true, false, true
       it_behaves_like '[未ログイン][期限内（メール未確認）]有効なパラメータ'
       it_behaves_like '[未ログイン][期限内]無効なパラメータ'
     end
-    shared_examples_for '[ログイン中/削除予約済み]トークンが期限内（メール未確認）' do
+    shared_examples_for '[ログイン中]トークンが期限内（メール未確認）' do
       include_context 'パスワードリセットトークン作成', true, false, true
-      it_behaves_like '[ログイン中/削除予約済み][期限内/期限切れ]有効なパラメータ'
-      it_behaves_like '[ログイン中/削除予約済み][期限内/期限切れ]無効なパラメータ'
+      it_behaves_like '[ログイン中][期限内/期限切れ]有効なパラメータ'
+      it_behaves_like '[ログイン中][期限内/期限切れ]無効なパラメータ'
     end
     shared_examples_for '[未ログイン]トークンが期限切れ' do
       include_context 'パスワードリセットトークン作成', false
       it_behaves_like '[未ログイン][期限切れ]有効なパラメータ'
       it_behaves_like '[未ログイン][期限切れ]無効なパラメータ'
     end
-    shared_examples_for '[ログイン中/削除予約済み]トークンが期限切れ' do
+    shared_examples_for '[ログイン中]トークンが期限切れ' do
       include_context 'パスワードリセットトークン作成', false
-      it_behaves_like '[ログイン中/削除予約済み][期限内/期限切れ]有効なパラメータ'
-      it_behaves_like '[ログイン中/削除予約済み][期限内/期限切れ]無効なパラメータ'
+      it_behaves_like '[ログイン中][期限内/期限切れ]有効なパラメータ'
+      it_behaves_like '[ログイン中][期限内/期限切れ]無効なパラメータ'
     end
     shared_examples_for '[未ログイン]トークンが存在しない' do
       let(:reset_password_token) { NOT_TOKEN }
       it_behaves_like '[未ログイン][存在しない/ない]有効なパラメータ'
       it_behaves_like '[未ログイン][存在しない/ない]無効なパラメータ'
     end
-    shared_examples_for '[ログイン中/削除予約済み]トークンが存在しない' do
+    shared_examples_for '[ログイン中]トークンが存在しない' do
       let(:reset_password_token) { NOT_TOKEN }
-      it_behaves_like '[ログイン中/削除予約済み][存在しない/ない]有効なパラメータ'
-      it_behaves_like '[ログイン中/削除予約済み][存在しない/ない]無効なパラメータ'
+      it_behaves_like '[ログイン中][存在しない/ない]有効なパラメータ'
+      it_behaves_like '[ログイン中][存在しない/ない]無効なパラメータ'
     end
     shared_examples_for '[未ログイン]トークンがない' do
       let(:reset_password_token) { nil }
       it_behaves_like '[未ログイン][存在しない/ない]有効なパラメータ'
       it_behaves_like '[未ログイン][存在しない/ない]無効なパラメータ'
     end
-    shared_examples_for '[ログイン中/削除予約済み]トークンがない' do
+    shared_examples_for '[ログイン中]トークンがない' do
       let(:reset_password_token) { nil }
-      it_behaves_like '[ログイン中/削除予約済み][存在しない/ない]有効なパラメータ'
-      it_behaves_like '[ログイン中/削除予約済み][存在しない/ない]無効なパラメータ'
+      it_behaves_like '[ログイン中][存在しない/ない]有効なパラメータ'
+      it_behaves_like '[ログイン中][存在しない/ない]無効なパラメータ'
     end
 
     context '未ログイン' do
@@ -464,21 +444,12 @@ RSpec.describe 'Users::Passwords', type: :request do
     end
     context 'ログイン中' do
       include_context 'ログイン処理'
-      it_behaves_like '[ログイン中/削除予約済み]トークンが期限内（未ロック）'
-      it_behaves_like '[ログイン中/削除予約済み]トークンが期限内（ロック中）'
-      it_behaves_like '[ログイン中/削除予約済み]トークンが期限内（メール未確認）'
-      it_behaves_like '[ログイン中/削除予約済み]トークンが期限切れ'
-      it_behaves_like '[ログイン中/削除予約済み]トークンが存在しない'
-      it_behaves_like '[ログイン中/削除予約済み]トークンがない'
-    end
-    context 'ログイン中（削除予約済み）' do
-      include_context 'ログイン処理', :user_destroy_reserved
-      it_behaves_like '[ログイン中/削除予約済み]トークンが期限内（未ロック）'
-      it_behaves_like '[ログイン中/削除予約済み]トークンが期限内（ロック中）'
-      it_behaves_like '[ログイン中/削除予約済み]トークンが期限内（メール未確認）'
-      it_behaves_like '[ログイン中/削除予約済み]トークンが期限切れ'
-      it_behaves_like '[ログイン中/削除予約済み]トークンが存在しない'
-      it_behaves_like '[ログイン中/削除予約済み]トークンがない'
+      it_behaves_like '[ログイン中]トークンが期限内（未ロック）'
+      it_behaves_like '[ログイン中]トークンが期限内（ロック中）'
+      it_behaves_like '[ログイン中]トークンが期限内（メール未確認）'
+      it_behaves_like '[ログイン中]トークンが期限切れ'
+      it_behaves_like '[ログイン中]トークンが存在しない'
+      it_behaves_like '[ログイン中]トークンがない'
     end
   end
 end

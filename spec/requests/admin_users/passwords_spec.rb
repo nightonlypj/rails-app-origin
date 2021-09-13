@@ -5,13 +5,13 @@ RSpec.describe 'AdminUsers::Passwords', type: :request do
   # 前提条件
   #   なし
   # テストパターン
-  #   未ログイン, ログイン中 → データ＆状態作成
+  #   未ログイン, ログイン中
   describe 'GET #new' do
     subject { get new_admin_user_password_path }
 
     # テスト内容
     shared_examples_for 'ToOK' do
-      it '成功ステータス' do
+      it 'HTTPステータスが200' do
         is_expected.to eq(200)
       end
     end
@@ -37,8 +37,8 @@ RSpec.describe 'AdminUsers::Passwords', type: :request do
   # 前提条件
   #   なし
   # テストパターン
-  #   未ログイン, ログイン中 → データ＆状態作成
-  #   有効なパラメータ（未ロック, ロック中）, 無効なパラメータ → 事前にデータ作成
+  #   未ログイン, ログイン中
+  #   有効なパラメータ（未ロック, ロック中）, 無効なパラメータ
   describe 'POST #create' do
     subject { post create_admin_user_password_path, params: { admin_user: attributes } }
     let(:send_admin_user_unlocked) { FactoryBot.create(:admin_user) }
@@ -62,7 +62,7 @@ RSpec.describe 'AdminUsers::Passwords', type: :request do
     end
 
     shared_examples_for 'ToError' do |error_msg|
-      it '成功ステータス。対象のエラーメッセージが含まれる' do # Tips: 再入力
+      it 'HTTPステータスが200。対象のエラーメッセージが含まれる' do # Tips: 再入力
         is_expected.to eq(200)
         expect(response.body).to include(I18n.t(error_msg))
       end
@@ -135,14 +135,14 @@ RSpec.describe 'AdminUsers::Passwords', type: :request do
   # 前提条件
   #   なし
   # テストパターン
-  #   未ログイン, ログイン中 → データ＆状態作成
-  #   トークン: 期限内（未ロック, ロック中）, 期限切れ, 存在しない, ない → データ作成
+  #   未ログイン, ログイン中
+  #   トークン: 期限内（未ロック, ロック中）, 期限切れ, 存在しない, ない
   describe 'GET #edit' do
     subject { get edit_admin_user_password_path(reset_password_token: reset_password_token) }
 
     # テスト内容
     shared_examples_for 'ToOK' do
-      it '成功ステータス' do
+      it 'HTTPステータスが200' do
         is_expected.to eq(200)
       end
     end
@@ -231,9 +231,9 @@ RSpec.describe 'AdminUsers::Passwords', type: :request do
   # 前提条件
   #   なし
   # テストパターン
-  #   未ログイン, ログイン中 → データ＆状態作成
-  #   トークン: 期限内（未ロック, ロック中）, 期限切れ, 存在しない, ない → データ作成
-  #   有効なパラメータ, 無効なパラメータ → 事前にデータ作成
+  #   未ログイン, ログイン中
+  #   トークン: 期限内（未ロック, ロック中）, 期限切れ, 存在しない, ない
+  #   有効なパラメータ, 無効なパラメータ
   describe 'PUT #update' do
     subject { put update_admin_user_password_path, params: { admin_user: attributes } }
     let(:new_password) { Faker::Internet.password(min_length: 8) }
@@ -260,7 +260,7 @@ RSpec.describe 'AdminUsers::Passwords', type: :request do
     end
 
     shared_examples_for 'ToError' do |error_msg|
-      it '成功ステータス。対象のエラーメッセージが含まれる' do # Tips: 再入力
+      it 'HTTPステータスが200。対象のエラーメッセージが含まれる' do # Tips: 再入力
         is_expected.to eq(200)
         expect(response.body).to include(I18n.t(error_msg))
       end

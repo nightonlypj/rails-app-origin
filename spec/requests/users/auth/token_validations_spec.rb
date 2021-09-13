@@ -1,17 +1,35 @@
 require 'rails_helper'
 
 RSpec.describe 'Users::Auth::TokenValidations', type: :request do
-  # GET /users/auth/validate_token トークン検証(処理)
+  # GET /users/auth/validate_token(.json) トークン検証API(処理)
   # 前提条件
-  #   なし
+  #   Acceptヘッダがない
   # テストパターン
-  #   未ログイン, ログイン中, ログイン中（削除予約済み） → データ＆状態作成
+  #   URLの拡張子: ない, .json
   describe 'GET #validate_token' do
-    subject { get user_auth_validate_token_path, headers: auth_headers }
+    subject { get user_auth_validate_token_path(format: subject_format) }
+
+    # テストケース
+    context 'URLの拡張子がない' do
+      let(:subject_format) { nil }
+      it_behaves_like 'To406'
+    end
+    context 'URLの拡張子が.json' do
+      let(:subject_format) { :json }
+      it_behaves_like 'To406'
+    end
+  end
+  # 前提条件
+  #   AcceptヘッダがJSON
+  # テストパターン
+  #   URLの拡張子: ない, .json
+  #   未ログイン, ログイン中, APIログイン中
+  describe 'GET #validate_token(json)' do
+    subject { get user_auth_validate_token_path(format: subject_format), headers: auth_headers.merge(ACCEPT_JSON) }
 
     # テスト内容
     shared_examples_for 'ToOK' do |id_present|
-      it '成功ステータス。対象項目が一致する。認証ヘッダがある' do
+      it 'HTTPステータスが200。対象項目が一致する。認証ヘッダがある' do
         is_expected.to eq(200)
         response_json = JSON.parse(response.body)
         expect(response_json['success']).to eq(true)
@@ -25,7 +43,7 @@ RSpec.describe 'Users::Auth::TokenValidations', type: :request do
       end
     end
     shared_examples_for 'ToNG' do |code|
-      it '失敗ステータス。対象項目が一致する。認証ヘッダがない' do
+      it "HTTPステータスが#{code}。対象項目が一致する。認証ヘッダがない" do
         is_expected.to eq(code) # 方針: 401: 未ログイン
         response_json = JSON.parse(response.body)
         expect(response_json['success']).to eq(false)
@@ -49,23 +67,36 @@ RSpec.describe 'Users::Auth::TokenValidations', type: :request do
     end
 
     # テストケース
-    context '未ログイン' do
-      let(:auth_headers) { nil }
+    shared_examples_for '未ログイン' do
+      include_context '未ログイン処理'
       it_behaves_like 'ToNG', 401
       it_behaves_like 'ToMsg', 'devise_token_auth.token_validations.invalid', nil, nil
       # it_behaves_like 'ToMsg', nil, 'devise_token_auth.token_validations.invalid', nil
     end
-    context 'ログイン中' do
-      include_context 'authログイン処理'
+    shared_examples_for 'ログイン中' do
+      include_context 'ログイン処理'
+      it_behaves_like 'ToNG', 401
+      it_behaves_like 'ToMsg', 'devise_token_auth.token_validations.invalid', nil, nil
+      # it_behaves_like 'ToMsg', nil, 'devise_token_auth.token_validations.invalid', nil
+    end
+    shared_examples_for 'APIログイン中' do
+      include_context 'APIログイン処理'
       it_behaves_like 'ToOK', true
       # it_behaves_like 'ToOK', false
       it_behaves_like 'ToMsg', nil, nil, nil
     end
-    context 'ログイン中（削除予約済み）' do
-      include_context 'authログイン処理', :user_destroy_reserved
-      it_behaves_like 'ToOK', true
-      # it_behaves_like 'ToOK', false
-      it_behaves_like 'ToMsg', nil, nil, nil
+
+    context 'URLの拡張子がない' do
+      let(:subject_format) { nil }
+      it_behaves_like '未ログイン'
+      it_behaves_like 'ログイン中'
+      it_behaves_like 'APIログイン中'
+    end
+    context 'URLの拡張子が.json' do
+      let(:subject_format) { :json }
+      it_behaves_like '未ログイン'
+      it_behaves_like 'ログイン中'
+      it_behaves_like 'APIログイン中'
     end
   end
 end

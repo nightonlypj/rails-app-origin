@@ -1,14 +1,32 @@
 require 'rails_helper'
 
 RSpec.describe 'Users::Auth::Confirmations', type: :request do
-  # POST /users/auth/confirmation メールアドレス確認[メール再送](処理)
+  # POST /users/auth/confirmation(.json) メールアドレス確認API[メール再送](処理)
   # 前提条件
-  #   なし
+  #   Acceptヘッダがない
   # テストパターン
-  #   未ログイン, ログイン中, ログイン中（削除予約済み） → データ＆状態作成
-  #   パラメータなし, 有効なパラメータ（メール未確認, メール確認済み, メールアドレス変更中）, 無効なパラメータ, URLがない, URLがホワイトリストにない → 事前にデータ作成
+  #   URLの拡張子: ない, .json
   describe 'POST #create' do
-    subject { post create_user_auth_confirmation_path, params: attributes, headers: auth_headers }
+    subject { post create_user_auth_confirmation_path(format: subject_format) }
+
+    # テストケース
+    context 'URLの拡張子がない' do
+      let(:subject_format) { nil }
+      it_behaves_like 'To406'
+    end
+    context 'URLの拡張子が.json' do
+      let(:subject_format) { :json }
+      it_behaves_like 'To406'
+    end
+  end
+  # 前提条件
+  #   AcceptヘッダがJSON
+  # テストパターン
+  #   URLの拡張子: ない, .json
+  #   未ログイン, ログイン中, APIログイン中
+  #   パラメータなし, 有効なパラメータ（メール未確認, メール確認済み, メールアドレス変更中）, 無効なパラメータ, URLがない, URLがホワイトリストにない
+  describe 'POST #create(json)' do
+    subject { post create_user_auth_confirmation_path(format: subject_format), params: attributes, headers: auth_headers.merge(ACCEPT_JSON) }
     let(:send_user_unconfirmed)   { FactoryBot.create(:user_unconfirmed) }
     let(:send_user_confirmed)     { FactoryBot.create(:user) }
     let(:send_user_email_changed) { FactoryBot.create(:user_email_changed) }
@@ -33,13 +51,13 @@ RSpec.describe 'Users::Auth::Confirmations', type: :request do
     end
 
     shared_examples_for 'ToOK' do
-      it '成功ステータス。対象項目が一致する' do
+      it 'HTTPステータスが200。対象項目が一致する' do
         is_expected.to eq(200)
         expect(JSON.parse(response.body)['success']).to eq(true)
       end
     end
     shared_examples_for 'ToNG' do |code|
-      it '失敗ステータス。対象項目が一致する' do
+      it "HTTPステータスが#{code}。対象項目が一致する" do
         is_expected.to eq(code) # 方針(優先順): 400:パラメータなし, 422: 無効なパラメータ・状態
         expect(JSON.parse(response.body)['success']).to eq(false)
       end
@@ -124,8 +142,8 @@ RSpec.describe 'Users::Auth::Confirmations', type: :request do
       # it_behaves_like 'ToMsg', NilClass, 0, nil, nil, 'devise_token_auth.confirmations.redirect_url_not_allowed', nil
     end
 
-    context '未ログイン' do
-      let(:auth_headers) { nil }
+    shared_examples_for '未ログイン' do
+      include_context '未ログイン処理'
       it_behaves_like '[*]パラメータなし'
       it_behaves_like '[*]有効なパラメータ（メール未確認）'
       it_behaves_like '[*]有効なパラメータ（メール確認済み）'
@@ -134,8 +152,8 @@ RSpec.describe 'Users::Auth::Confirmations', type: :request do
       it_behaves_like '[*]URLがない'
       it_behaves_like '[*]URLがホワイトリストにない'
     end
-    context 'ログイン中' do
-      include_context 'authログイン処理'
+    shared_examples_for 'ログイン中' do
+      include_context 'ログイン処理'
       it_behaves_like '[*]パラメータなし'
       it_behaves_like '[*]有効なパラメータ（メール未確認）'
       it_behaves_like '[*]有効なパラメータ（メール確認済み）'
@@ -144,8 +162,8 @@ RSpec.describe 'Users::Auth::Confirmations', type: :request do
       it_behaves_like '[*]URLがない'
       it_behaves_like '[*]URLがホワイトリストにない'
     end
-    context 'ログイン中（削除予約済み）' do
-      include_context 'authログイン処理', :user_destroy_reserved
+    shared_examples_for 'APIログイン中' do
+      include_context 'APIログイン処理'
       it_behaves_like '[*]パラメータなし'
       it_behaves_like '[*]有効なパラメータ（メール未確認）'
       it_behaves_like '[*]有効なパラメータ（メール確認済み）'
@@ -153,23 +171,61 @@ RSpec.describe 'Users::Auth::Confirmations', type: :request do
       it_behaves_like '[*]無効なパラメータ'
       it_behaves_like '[*]URLがない'
       it_behaves_like '[*]URLがホワイトリストにない'
+    end
+
+    context 'URLの拡張子がない' do
+      let(:subject_format) { nil }
+      it_behaves_like '未ログイン'
+      it_behaves_like 'ログイン中'
+      it_behaves_like 'APIログイン中'
+    end
+    context 'URLの拡張子が.json' do
+      let(:subject_format) { :json }
+      it_behaves_like '未ログイン'
+      it_behaves_like 'ログイン中'
+      it_behaves_like 'APIログイン中'
     end
   end
 
   # GET /users/auth/confirmation メールアドレス確認(処理)
   # 前提条件
-  #   なし
+  #   以外（URLの拡張子がない, Acceptヘッダがない）
   # テストパターン
-  #   未ログイン, ログイン中, ログイン中（削除予約済み） → データ＆状態作成
-  #   トークン: 期限内, 期限切れ, 存在しない, ない, 空 → データ作成
-  #   確認日時: ない（未確認）, 確認送信日時より前（未確認）, 確認送信日時より後（確認済み） → データ作成
+  #   URLの拡張子: ない, .json
+  #   Acceptヘッダ: ない, JSON
+  describe 'GET #show(json)' do
+    subject { get user_auth_confirmation_path(format: subject_format), headers: accept_headers }
+
+    # テストケース
+    context 'URLの拡張子がない, AcceptヘッダがJSON' do
+      let(:subject_format) { nil }
+      let(:accept_headers) { ACCEPT_JSON }
+      it_behaves_like 'To406'
+    end
+    context 'URLの拡張子が.json, Acceptヘッダがない' do
+      let(:subject_format) { :json }
+      let(:accept_headers) { nil }
+      it_behaves_like 'To406'
+    end
+    context 'URLの拡張子が.json, AcceptヘッダがJSON' do
+      let(:subject_format) { :json }
+      let(:accept_headers) { ACCEPT_JSON }
+      it_behaves_like 'To406'
+    end
+  end
+  # 前提条件
+  #   URLの拡張子がない, Acceptヘッダがない
+  # テストパターン
+  #   未ログイン, ログイン中, APIログイン中
+  #   トークン: 期限内, 期限切れ, 存在しない, ない, 空
+  #   確認日時: ない（未確認）, 確認送信日時より前（未確認）, 確認送信日時より後（確認済み）
   #   ＋リダイレクトURL: ある, ない, ホワイトリストにない
   describe 'GET #show' do
-    subject { get user_auth_confirmation_path(confirmation_token: confirmation_token, redirect_url: @redirect_url) }
+    subject { get user_auth_confirmation_path(confirmation_token: confirmation_token, redirect_url: @redirect_url), headers: auth_headers }
 
     # テスト内容
     shared_examples_for 'OK' do
-      let!(:start_time) { Time.now.utc - 1.second }
+      let!(:start_time) { Time.now.utc.floor }
       it '[リダイレクトURLがある]確認日時が現在日時に変更される' do
         @redirect_url = FRONT_SITE_URL
         subject
@@ -251,7 +307,7 @@ RSpec.describe 'Users::Auth::Confirmations', type: :request do
       it_behaves_like 'OK'
       it_behaves_like 'ToOK', nil, 'devise.confirmations.confirmed'
     end
-    shared_examples_for '[ログイン中/削除予約済み][期限内]確認日時がない（未確認）' do # Tips: ログイン中も出来ても良さそう
+    shared_examples_for '[ログイン中][期限内]確認日時がない（未確認）' do # Tips: ログイン中も出来ても良さそう
       include_context 'メールアドレス確認トークン作成', false, nil
       it_behaves_like 'OK'
       it_behaves_like 'ToOK', nil, 'devise.confirmations.confirmed'
@@ -272,7 +328,7 @@ RSpec.describe 'Users::Auth::Confirmations', type: :request do
       it_behaves_like 'OK'
       it_behaves_like 'ToOK', nil, 'devise.confirmations.confirmed'
     end
-    shared_examples_for '[ログイン中/削除予約済み][期限内]確認日時が確認送信日時より前（未確認）' do # Tips: ログイン中も出来ても良さそう
+    shared_examples_for '[ログイン中][期限内]確認日時が確認送信日時より前（未確認）' do # Tips: ログイン中も出来ても良さそう
       include_context 'メールアドレス確認トークン作成', true, true
       it_behaves_like 'OK'
       it_behaves_like 'ToOK', nil, 'devise.confirmations.confirmed'
@@ -302,10 +358,10 @@ RSpec.describe 'Users::Auth::Confirmations', type: :request do
       it_behaves_like '[未ログイン][期限内]確認日時が確認送信日時より前（未確認）'
       it_behaves_like '[*][期限内]確認日時が確認送信日時より後（確認済み）'
     end
-    shared_examples_for '[ログイン中/削除予約済み]トークンが期限内' do
+    shared_examples_for '[ログイン中]トークンが期限内' do
       let(:confirmation_sent_at) { Time.now.utc }
-      it_behaves_like '[ログイン中/削除予約済み][期限内]確認日時がない（未確認）'
-      it_behaves_like '[ログイン中/削除予約済み][期限内]確認日時が確認送信日時より前（未確認）'
+      it_behaves_like '[ログイン中][期限内]確認日時がない（未確認）'
+      it_behaves_like '[ログイン中][期限内]確認日時が確認送信日時より前（未確認）'
       it_behaves_like '[*][期限内]確認日時が確認送信日時より後（確認済み）'
     end
     shared_examples_for '[*]トークンが期限切れ' do
@@ -334,6 +390,7 @@ RSpec.describe 'Users::Auth::Confirmations', type: :request do
     end
 
     context '未ログイン' do
+      include_context '未ログイン処理'
       it_behaves_like '[未ログイン]トークンが期限内'
       it_behaves_like '[*]トークンが期限切れ'
       it_behaves_like '[*]トークンが存在しない'
@@ -342,15 +399,15 @@ RSpec.describe 'Users::Auth::Confirmations', type: :request do
     end
     context 'ログイン中' do
       include_context 'ログイン処理'
-      it_behaves_like '[ログイン中/削除予約済み]トークンが期限内'
+      it_behaves_like '[ログイン中]トークンが期限内'
       it_behaves_like '[*]トークンが期限切れ'
       it_behaves_like '[*]トークンが存在しない'
       it_behaves_like '[*]トークンがない'
       it_behaves_like '[*]トークンが空'
     end
-    context 'ログイン中（削除予約済み）' do
-      include_context 'ログイン処理', :user_destroy_reserved
-      it_behaves_like '[ログイン中/削除予約済み]トークンが期限内'
+    context 'APIログイン中' do
+      include_context 'APIログイン処理'
+      it_behaves_like '[ログイン中]トークンが期限内'
       it_behaves_like '[*]トークンが期限切れ'
       it_behaves_like '[*]トークンが存在しない'
       it_behaves_like '[*]トークンがない'

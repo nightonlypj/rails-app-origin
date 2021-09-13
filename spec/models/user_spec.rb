@@ -5,9 +5,9 @@ RSpec.describe User, type: :model do
   # 前提条件
   #   なし
   # テストパターン
-  #   ない, 正常値, 重複 → データ作成
+  #   ない, 正常値, 重複
   describe 'validates :code' do
-    let(:user) { FactoryBot.build(:user, code: code) }
+    let(:user)       { FactoryBot.build_stubbed(:user, code: code) }
     let(:valid_code) { Digest::MD5.hexdigest(SecureRandom.uuid) }
 
     # テスト内容
@@ -42,9 +42,9 @@ RSpec.describe User, type: :model do
   # 前提条件
   #   なし
   # テストパターン
-  #   ない, 最小文字数よりも少ない, 最小文字数と同じ, 最大文字数と同じ, 最大文字数よりも多い → データ作成
+  #   ない, 最小文字数よりも少ない, 最小文字数と同じ, 最大文字数と同じ, 最大文字数よりも多い
   describe 'validates :name' do
-    let(:user) { FactoryBot.build(:user, name: name) }
+    let(:user) { FactoryBot.build_stubbed(:user, name: name) }
 
     # テスト内容
     shared_examples_for 'ToOK' do
@@ -85,9 +85,9 @@ RSpec.describe User, type: :model do
   # 前提条件
   #   なし
   # テストパターン
-  #   削除予定日時: ない（予約なし）, ある（予約済み） → データ作成
+  #   削除予定日時: ない（予約なし）, ある（予約済み）
   describe 'destroy_reserved?' do
-    let(:user) { FactoryBot.create(:user, destroy_schedule_at: destroy_schedule_at) }
+    let(:user) { FactoryBot.build_stubbed(:user, destroy_schedule_at: destroy_schedule_at) }
 
     context '削除予定日時がない（予約なし）' do
       let(:destroy_schedule_at) { nil }
@@ -112,14 +112,14 @@ RSpec.describe User, type: :model do
     let(:user) { FactoryBot.create(:user) }
 
     context '削除依頼日時' do
-      let!(:start_time) { Time.current - 1.second }
+      let!(:start_time) { Time.current.floor }
       it '現在日時に変更される' do
         user.set_destroy_reserve
         expect(user.destroy_requested_at).to be_between(start_time, Time.current)
       end
     end
     context '削除予定日時' do
-      let!(:start_time) { Time.current - 1.second + Settings['destroy_schedule_days'].days }
+      let!(:start_time) { Time.current.floor + Settings['destroy_schedule_days'].days }
       it '現在日時＋設定日数に変更される' do
         user.set_destroy_reserve
         expect(user.destroy_schedule_at).to be_between(start_time, Time.current + Settings['destroy_schedule_days'].days)

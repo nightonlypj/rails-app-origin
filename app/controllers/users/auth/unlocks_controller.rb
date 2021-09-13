@@ -3,9 +3,11 @@
 class Users::Auth::UnlocksController < DeviseTokenAuth::UnlocksController
   include DeviseTokenAuth::Concerns::SetUserByToken
   skip_before_action :verify_authenticity_token
+  prepend_before_action :not_acceptable_response_not_api_accept, only: %i[create]
+  prepend_before_action :not_acceptable_response_not_html_accept, only: %i[show]
   before_action :validate_redirect_url_param, only: %i[create show]
 
-  # POST /users/auth/unlock アカウントロック解除[メール再送](処理)
+  # POST /users/auth/unlock(.json) アカウントロック解除API[メール再送](処理)
   def create
     return render_create_error_missing_email unless resource_params[:email]
 

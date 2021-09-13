@@ -1,13 +1,13 @@
-shared_context 'ログイン処理' do |target = :user, use_image = false|
-  let(:image) { use_image ? fixture_file_upload(TEST_IMAGE_FILE, TEST_IMAGE_TYPE) : nil }
-  let!(:user) { FactoryBot.create(target, image: image) }
-  include_context '画像削除処理' if use_image
-  before { sign_in user }
+shared_context '未ログイン処理' do
+  let(:auth_headers) { {} }
 end
-shared_context 'authログイン処理' do |target = :user, use_image = false|
-  let(:image) { use_image ? fixture_file_upload(TEST_IMAGE_FILE, TEST_IMAGE_TYPE) : nil }
-  let!(:user) { FactoryBot.create(target, image: image) }
-  include_context '画像削除処理' if use_image
+shared_context 'ログイン処理' do |target = :user, use_image = false|
+  include_context 'ユーザー作成', target, use_image
+  before { sign_in user }
+  let(:auth_headers) { {} }
+end
+shared_context 'APIログイン処理' do |target = :user, use_image = false|
+  include_context 'ユーザー作成', target, use_image
   let(:auth_token) { user.create_new_auth_token }
   let(:auth_headers) do
     {
@@ -16,6 +16,12 @@ shared_context 'authログイン処理' do |target = :user, use_image = false|
       'access-token' => auth_token['access-token']
     }
   end
+end
+
+shared_context 'ユーザー作成' do |target, use_image|
+  let(:image) { use_image ? fixture_file_upload(TEST_IMAGE_FILE, TEST_IMAGE_TYPE) : nil }
+  let!(:user) { FactoryBot.create(target, image: image) }
+  include_context '画像削除処理' if use_image
 end
 
 shared_context '画像削除処理' do

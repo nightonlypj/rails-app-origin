@@ -5,13 +5,13 @@ RSpec.describe 'Top', type: :request do
   # 前提条件
   #   なし
   # テストパターン
-  #   未ログイン, ログイン中, ログイン中（削除予約済み） → データ＆状態作成
+  #   未ログイン, ログイン中, ログイン中（削除予約済み）
   describe 'GET #index' do
     subject { get root_path }
 
     # テスト内容
     shared_examples_for 'ToOK' do
-      it '成功ステータス' do
+      it 'HTTPステータスが200' do
         is_expected.to eq(200)
       end
     end
@@ -34,8 +34,8 @@ RSpec.describe 'Top', type: :request do
   # 前提条件
   #   なし
   # テストパターン
-  #   未ログイン, ログイン中, ログイン中（削除予約済み） → データ＆状態作成
-  #   お知らせ: ない, 最大表示数と同じ, 最大表示数より多い → データ作成
+  #   未ログイン, ログイン中, ログイン中（削除予約済み）
+  #   お知らせ: ない, 最大表示数と同じ, 最大表示数より多い
   describe '@infomations' do
     subject { get root_path }
 
@@ -44,7 +44,7 @@ RSpec.describe 'Top', type: :request do
       it '対象項目が含まれる' do
         subject
         (1..Settings['infomations_limit']).each do |no|
-          info = @infomations[@infomations.count - no]
+          info = @user_infomations[@user_infomations.count - no]
           expect(response.body).to include(info.title) # タイトル
           expect(response.body).to include(info.summary) if info.summary.present? # 概要
           if info.body.present?

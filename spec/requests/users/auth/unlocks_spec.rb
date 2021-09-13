@@ -1,14 +1,32 @@
 require 'rails_helper'
 
 RSpec.describe 'Users::Auth::Unlocks', type: :request do
-  # POST /users/auth/unlock アカウントロック解除[メール再送](処理)
+  # POST /users/auth/unlock(.json) アカウントロック解除API[メール再送](処理)
   # 前提条件
-  #   なし
+  #   Acceptヘッダがない
   # テストパターン
-  #   未ログイン, ログイン中, ログイン中（削除予約済み） → データ＆状態作成
-  #   パラメータなし, 有効なパラメータ（ロック中, 未ロック）, 無効なパラメータ, URLがない, URLがホワイトリストにない → 事前にデータ作成
+  #   URLの拡張子: ない, .json
   describe 'POST #create' do
-    subject { post create_user_auth_unlock_path, params: attributes, headers: auth_headers }
+    subject { post create_user_auth_unlock_path(format: subject_format) }
+
+    # テストケース
+    context 'URLの拡張子がない' do
+      let(:subject_format) { nil }
+      it_behaves_like 'To406'
+    end
+    context 'URLの拡張子が.json' do
+      let(:subject_format) { :json }
+      it_behaves_like 'To406'
+    end
+  end
+  # 前提条件
+  #   AcceptヘッダがJSON
+  # テストパターン
+  #   URLの拡張子: ない, .json
+  #   未ログイン, ログイン中, APIログイン中
+  #   パラメータなし, 有効なパラメータ（ロック中, 未ロック）, 無効なパラメータ, URLがない, URLがホワイトリストにない
+  describe 'POST #create(json)' do
+    subject { post create_user_auth_unlock_path(format: subject_format), params: attributes, headers: auth_headers.merge(ACCEPT_JSON) }
     let(:send_user_locked)   { FactoryBot.create(:user_locked) }
     let(:send_user_unlocked) { FactoryBot.create(:user) }
     let(:not_user)           { FactoryBot.attributes_for(:user) }
@@ -32,13 +50,13 @@ RSpec.describe 'Users::Auth::Unlocks', type: :request do
     end
 
     shared_examples_for 'ToOK' do
-      it '成功ステータス。対象項目が一致する' do
+      it 'HTTPステータスが200。対象項目が一致する' do
         is_expected.to eq(200)
         expect(JSON.parse(response.body)['success']).to eq(true)
       end
     end
     shared_examples_for 'ToNG' do |code|
-      it '失敗ステータス。対象項目が一致する' do
+      it "HTTPステータスが#{code}。対象項目が一致する" do
         is_expected.to eq(code) # 方針(優先順): 401: ログイン中, 400:パラメータなし, 422: 無効なパラメータ・状態
         expect(JSON.parse(response.body)['success']).to eq(false)
       end
@@ -62,7 +80,7 @@ RSpec.describe 'Users::Auth::Unlocks', type: :request do
     end
 
     # テストケース
-    shared_examples_for '[未ログイン]パラメータなし' do
+    shared_examples_for '[未ログイン/ログイン中]パラメータなし' do
       let(:attributes) { nil }
       it_behaves_like 'NG'
       it_behaves_like 'ToNG', 422
@@ -70,7 +88,7 @@ RSpec.describe 'Users::Auth::Unlocks', type: :request do
       it_behaves_like 'ToMsg', Array, 1, 'devise_token_auth.unlocks.not_allowed_redirect_url', nil, nil, nil
       # it_behaves_like 'ToMsg', NilClass, 0, nil, nil, 'errors.messages.validate_unlock_params', nil
     end
-    shared_examples_for '[ログイン中/削除予約済み]パラメータなし' do
+    shared_examples_for '[APIログイン中]パラメータなし' do
       let(:attributes) { nil }
       it_behaves_like 'NG'
       it_behaves_like 'ToNG', 422
@@ -78,7 +96,7 @@ RSpec.describe 'Users::Auth::Unlocks', type: :request do
       it_behaves_like 'ToMsg', Array, 1, 'devise_token_auth.unlocks.not_allowed_redirect_url', nil, nil, nil
       # it_behaves_like 'ToMsg', NilClass, 0, nil, nil, 'devise.failure.already_authenticated', nil
     end
-    shared_examples_for '[未ログイン]有効なパラメータ（ロック中）' do
+    shared_examples_for '[未ログイン/ログイン中]有効なパラメータ（ロック中）' do
       let(:send_user)  { send_user_locked }
       let(:attributes) { valid_attributes }
       it_behaves_like 'OK'
@@ -86,7 +104,7 @@ RSpec.describe 'Users::Auth::Unlocks', type: :request do
       it_behaves_like 'ToMsg', NilClass, 0, nil, 'devise_token_auth.unlocks.sended', nil, nil
       # it_behaves_like 'ToMsg', NilClass, 0, nil, nil, nil, 'devise_token_auth.unlocks.sended'
     end
-    shared_examples_for '[ログイン中/削除予約済み]有効なパラメータ（ロック中）' do
+    shared_examples_for '[APIログイン中]有効なパラメータ（ロック中）' do
       let(:send_user)  { send_user_locked }
       let(:attributes) { valid_attributes }
       it_behaves_like 'OK'
@@ -96,7 +114,7 @@ RSpec.describe 'Users::Auth::Unlocks', type: :request do
       it_behaves_like 'ToMsg', NilClass, 0, nil, 'devise_token_auth.unlocks.sended', nil, nil
       # it_behaves_like 'ToMsg', NilClass, 0, nil, nil, 'devise.failure.already_authenticated', nil
     end
-    shared_examples_for '[未ログイン]有効なパラメータ（未ロック）' do
+    shared_examples_for '[未ログイン/ログイン中]有効なパラメータ（未ロック）' do
       let(:send_user)  { send_user_unlocked }
       let(:attributes) { valid_attributes }
       it_behaves_like 'OK'
@@ -106,7 +124,7 @@ RSpec.describe 'Users::Auth::Unlocks', type: :request do
       it_behaves_like 'ToMsg', NilClass, 0, nil, 'devise_token_auth.unlocks.sended', nil, nil
       # it_behaves_like 'ToMsg', NilClass, 0, nil, nil, 'errors.messages.not_locked', nil
     end
-    shared_examples_for '[ログイン中/削除予約済み]有効なパラメータ（未ロック）' do
+    shared_examples_for '[APIログイン中]有効なパラメータ（未ロック）' do
       let(:send_user)  { send_user_unlocked }
       let(:attributes) { valid_attributes }
       it_behaves_like 'OK'
@@ -116,7 +134,7 @@ RSpec.describe 'Users::Auth::Unlocks', type: :request do
       it_behaves_like 'ToMsg', NilClass, 0, nil, 'devise_token_auth.unlocks.sended', nil, nil
       # it_behaves_like 'ToMsg', NilClass, 0, nil, nil, 'devise.failure.already_authenticated', nil
     end
-    shared_examples_for '[未ログイン]無効なパラメータ' do
+    shared_examples_for '[未ログイン/ログイン中]無効なパラメータ' do
       let(:attributes) { invalid_attributes }
       it_behaves_like 'NG'
       it_behaves_like 'ToNG', 404
@@ -124,7 +142,7 @@ RSpec.describe 'Users::Auth::Unlocks', type: :request do
       it_behaves_like 'ToMsg', Array, 1, 'devise_token_auth.unlocks.user_not_found', nil, nil, nil
       # it_behaves_like 'ToMsg', Hash, 2, 'devise_token_auth.unlocks.user_not_found', nil, 'errors.messages.not_saved.one', nil
     end
-    shared_examples_for '[ログイン中/削除予約済み]無効なパラメータ' do
+    shared_examples_for '[APIログイン中]無効なパラメータ' do
       let(:attributes) { invalid_attributes }
       it_behaves_like 'NG'
       it_behaves_like 'ToNG', 404
@@ -132,7 +150,7 @@ RSpec.describe 'Users::Auth::Unlocks', type: :request do
       it_behaves_like 'ToMsg', Array, 1, 'devise_token_auth.unlocks.user_not_found', nil, nil, nil
       # it_behaves_like 'ToMsg', NilClass, 0, nil, nil, 'devise.failure.already_authenticated', nil
     end
-    shared_examples_for '[未ログイン]URLがない' do
+    shared_examples_for '[未ログイン/ログイン中]URLがない' do
       let(:attributes) { invalid_nil_attributes }
       it_behaves_like 'NG'
       it_behaves_like 'ToNG', 401
@@ -140,21 +158,21 @@ RSpec.describe 'Users::Auth::Unlocks', type: :request do
       it_behaves_like 'ToMsg', Array, 1, 'devise_token_auth.unlocks.missing_redirect_url', nil, nil, nil
       # it_behaves_like 'ToMsg', NilClass, 0, nil, nil, 'devise_token_auth.unlocks.missing_redirect_url', nil
     end
-    shared_examples_for '[ログイン中/削除予約済み]URLがない' do
+    shared_examples_for '[APIログイン中]URLがない' do
       let(:attributes) { invalid_nil_attributes }
       it_behaves_like 'NG'
       it_behaves_like 'ToNG', 401
       it_behaves_like 'ToMsg', Array, 1, 'devise_token_auth.unlocks.missing_redirect_url', nil, nil, nil
       # it_behaves_like 'ToMsg', NilClass, 0, nil, nil, 'devise.failure.already_authenticated', nil
     end
-    shared_examples_for '[未ログイン]URLがホワイトリストにない' do
+    shared_examples_for '[未ログイン/ログイン中]URLがホワイトリストにない' do
       let(:attributes) { invalid_bad_attributes }
       it_behaves_like 'NG'
       it_behaves_like 'ToNG', 422
       it_behaves_like 'ToMsg', Array, 1, 'devise_token_auth.unlocks.not_allowed_redirect_url', nil, nil, nil
       # it_behaves_like 'ToMsg', NilClass, 0, nil, nil, 'devise_token_auth.unlocks.not_allowed_redirect_url', nil
     end
-    shared_examples_for '[ログイン中/削除予約済み]URLがホワイトリストにない' do
+    shared_examples_for '[APIログイン中]URLがホワイトリストにない' do
       let(:attributes) { invalid_bad_attributes }
       it_behaves_like 'NG'
       it_behaves_like 'ToNG', 422
@@ -163,45 +181,83 @@ RSpec.describe 'Users::Auth::Unlocks', type: :request do
       # it_behaves_like 'ToMsg', NilClass, 0, nil, nil, 'devise.failure.already_authenticated', nil
     end
 
-    context '未ログイン' do
-      let(:auth_headers) { nil }
-      it_behaves_like '[未ログイン]パラメータなし'
-      it_behaves_like '[未ログイン]有効なパラメータ（ロック中）'
-      it_behaves_like '[未ログイン]有効なパラメータ（未ロック）'
-      it_behaves_like '[未ログイン]無効なパラメータ'
-      it_behaves_like '[未ログイン]URLがない'
-      it_behaves_like '[未ログイン]URLがホワイトリストにない'
+    shared_examples_for '未ログイン' do
+      include_context '未ログイン処理'
+      it_behaves_like '[未ログイン/ログイン中]パラメータなし'
+      it_behaves_like '[未ログイン/ログイン中]有効なパラメータ（ロック中）'
+      it_behaves_like '[未ログイン/ログイン中]有効なパラメータ（未ロック）'
+      it_behaves_like '[未ログイン/ログイン中]無効なパラメータ'
+      it_behaves_like '[未ログイン/ログイン中]URLがない'
+      it_behaves_like '[未ログイン/ログイン中]URLがホワイトリストにない'
     end
-    context 'ログイン中' do
-      include_context 'authログイン処理'
-      it_behaves_like '[ログイン中/削除予約済み]パラメータなし'
-      it_behaves_like '[ログイン中/削除予約済み]有効なパラメータ（ロック中）'
-      it_behaves_like '[ログイン中/削除予約済み]有効なパラメータ（未ロック）'
-      it_behaves_like '[ログイン中/削除予約済み]無効なパラメータ'
-      it_behaves_like '[ログイン中/削除予約済み]URLがない'
-      it_behaves_like '[ログイン中/削除予約済み]URLがホワイトリストにない'
+    shared_examples_for 'ログイン中' do
+      include_context 'ログイン処理'
+      it_behaves_like '[未ログイン/ログイン中]パラメータなし'
+      it_behaves_like '[未ログイン/ログイン中]有効なパラメータ（ロック中）'
+      it_behaves_like '[未ログイン/ログイン中]有効なパラメータ（未ロック）'
+      it_behaves_like '[未ログイン/ログイン中]無効なパラメータ'
+      it_behaves_like '[未ログイン/ログイン中]URLがない'
+      it_behaves_like '[未ログイン/ログイン中]URLがホワイトリストにない'
     end
-    context 'ログイン中（削除予約済み）' do
-      include_context 'authログイン処理', :user_destroy_reserved
-      it_behaves_like '[ログイン中/削除予約済み]パラメータなし'
-      it_behaves_like '[ログイン中/削除予約済み]有効なパラメータ（ロック中）'
-      it_behaves_like '[ログイン中/削除予約済み]有効なパラメータ（未ロック）'
-      it_behaves_like '[ログイン中/削除予約済み]無効なパラメータ'
-      it_behaves_like '[ログイン中/削除予約済み]URLがない'
-      it_behaves_like '[ログイン中/削除予約済み]URLがホワイトリストにない'
+    shared_examples_for 'APIログイン中' do
+      include_context 'APIログイン処理'
+      it_behaves_like '[APIログイン中]パラメータなし'
+      it_behaves_like '[APIログイン中]有効なパラメータ（ロック中）'
+      it_behaves_like '[APIログイン中]有効なパラメータ（未ロック）'
+      it_behaves_like '[APIログイン中]無効なパラメータ'
+      it_behaves_like '[APIログイン中]URLがない'
+      it_behaves_like '[APIログイン中]URLがホワイトリストにない'
+    end
+
+    context 'URLの拡張子がない' do
+      let(:subject_format) { nil }
+      it_behaves_like '未ログイン'
+      it_behaves_like 'ログイン中'
+      it_behaves_like 'APIログイン中'
+    end
+    context 'URLの拡張子が.json' do
+      let(:subject_format) { :json }
+      it_behaves_like '未ログイン'
+      it_behaves_like 'ログイン中'
+      it_behaves_like 'APIログイン中'
     end
   end
 
   # GET /users/auth/unlock アカウントロック解除(処理)
   # 前提条件
-  #   なし
+  #   以外（URLの拡張子がない, Acceptヘッダがない）
   # テストパターン
-  #   未ログイン, ログイン中, ログイン中（削除予約済み） → データ＆状態作成
-  #   トークン: 存在する, 存在しない, ない, 空 → データ作成
-  #   ロック日時: ない（未ロック）, ある（ロック中） → データ作成
+  #   URLの拡張子: ない, .json
+  #   Acceptヘッダ: ない, JSON
+  describe 'GET #show(json)' do
+    subject { get user_auth_unlock_path(format: subject_format), headers: accept_headers }
+
+    # テストケース
+    context 'URLの拡張子がない, AcceptヘッダがJSON' do
+      let(:subject_format) { nil }
+      let(:accept_headers) { ACCEPT_JSON }
+      it_behaves_like 'To406'
+    end
+    context 'URLの拡張子が.json, Acceptヘッダがない' do
+      let(:subject_format) { :json }
+      let(:accept_headers) { nil }
+      it_behaves_like 'To406'
+    end
+    context 'URLの拡張子が.json, AcceptヘッダがJSON' do
+      let(:subject_format) { :json }
+      let(:accept_headers) { ACCEPT_JSON }
+      it_behaves_like 'To406'
+    end
+  end
+  # 前提条件
+  #   URLの拡張子がない, Acceptヘッダがない
+  # テストパターン
+  #   未ログイン, ログイン中, APIログイン中
+  #   トークン: 存在する, 存在しない, ない, 空
+  #   ロック日時: ない（未ロック）, ある（ロック中）
   #   ＋リダイレクトURL: ある, ない, ホワイトリストにない
   describe 'GET #show' do
-    subject { get user_auth_unlock_path(unlock_token: unlock_token, redirect_url: @redirect_url) }
+    subject { get user_auth_unlock_path(unlock_token: unlock_token, redirect_url: @redirect_url), headers: auth_headers }
 
     # テスト内容
     shared_examples_for 'OK' do
@@ -251,7 +307,7 @@ RSpec.describe 'Users::Auth::Unlocks', type: :request do
         # param += "&notice=#{I18n.t(notice)}" if notice.present?
         is_expected.to redirect_to("#{FRONT_SITE_URL}#{param}")
       end
-      it '[リダイレクトURLがない]失敗ステータス。対象項目が一致する' do
+      it '[リダイレクトURLがない]HTTPステータスが422。対象項目が一致する' do
         # it '[リダイレクトURLがない]成功ページにリダイレクトする' do
         @redirect_url = nil
         is_expected.to eq(422)
@@ -261,7 +317,7 @@ RSpec.describe 'Users::Auth::Unlocks', type: :request do
         expect(response_json['message']).to be_nil
         # is_expected.to redirect_to('/unlock_success.html?not')
       end
-      it '[リダイレクトURLがホワイトリストにない]失敗ステータス。対象項目が一致する' do
+      it '[リダイレクトURLがホワイトリストにない]HTTPステータスが422。対象項目が一致する' do
         # it '[リダイレクトURLがホワイトリストにない]成功ページにリダイレクトする' do
         @redirect_url = BAD_SITE_URL
         is_expected.to eq(422)
@@ -280,7 +336,7 @@ RSpec.describe 'Users::Auth::Unlocks', type: :request do
         param += "&notice=#{I18n.t(notice)}" if notice.present?
         is_expected.to redirect_to("#{FRONT_SITE_URL}#{param}")
       end
-      it '[リダイレクトURLがない]失敗ステータス。対象項目が一致する' do
+      it '[リダイレクトURLがない]HTTPステータスが422。対象項目が一致する' do
         # it '[リダイレクトURLがない]エラーページにリダイレクトする' do
         @redirect_url = nil
         is_expected.to eq(422)
@@ -290,7 +346,7 @@ RSpec.describe 'Users::Auth::Unlocks', type: :request do
         expect(response_json['message']).to be_nil
         # is_expected.to redirect_to('/unlock_error.html?not')
       end
-      it '[リダイレクトURLがホワイトリストにない]失敗ステータス。対象項目が一致する' do
+      it '[リダイレクトURLがホワイトリストにない]HTTPステータスが422。対象項目が一致する' do
         # it '[リダイレクトURLがホワイトリストにない]エラーページにリダイレクトする' do
         @redirect_url = BAD_SITE_URL
         is_expected.to eq(422)
@@ -303,44 +359,44 @@ RSpec.describe 'Users::Auth::Unlocks', type: :request do
     end
 
     # テストケース
-    shared_examples_for '[未ログイン][存在する]ロック日時がない（未ロック）' do
+    shared_examples_for '[未ログイン/APIログイン中][存在する]ロック日時がない（未ロック）' do
       include_context 'アカウントロック解除トークン作成', false
       # it_behaves_like 'NG' # Tips: 元々、ロック日時がない
       it_behaves_like 'ToOK', nil, nil
       # it_behaves_like 'ToNG', nil, 'devise.unlocks.unlocked' # Tips: 既に解除済み
     end
-    shared_examples_for '[ログイン中/削除予約済み][存在する]ロック日時がない（未ロック）' do
+    shared_examples_for '[ログイン中][存在する]ロック日時がない（未ロック）' do
       include_context 'アカウントロック解除トークン作成', false
       # it_behaves_like 'NG' # Tips: 元々、ロック日時がない
       it_behaves_like 'ToOK', nil, nil
       # it_behaves_like 'ToNG', 'devise.failure.already_authenticated', nil
     end
-    shared_examples_for '[未ログイン][存在しない]ロック日時がない（未ロック）' do
+    shared_examples_for '[未ログイン/APIログイン中][存在しない]ロック日時がない（未ロック）' do
       # it_behaves_like 'NG' # Tips: トークンが存在しない為、ロック日時がない
       # Tips: ActionController::RoutingError: Not Found
       # it_behaves_like 'ToNG', 'activerecord.errors.models.user.attributes.unlock_token.invalid', nil
     end
-    shared_examples_for '[ログイン中/削除予約済み][存在しない]ロック日時がない（未ロック）' do
+    shared_examples_for '[ログイン中][存在しない]ロック日時がない（未ロック）' do
       # it_behaves_like 'NG' # Tips: トークンが存在しない為、ロック日時がない
       # Tips: ActionController::RoutingError: Not Found
       # it_behaves_like 'ToNG', 'devise.failure.already_authenticated', nil
     end
-    shared_examples_for '[未ログイン][ない/空]ロック日時がない（未ロック）' do
+    shared_examples_for '[未ログイン/APIログイン中][ない/空]ロック日時がない（未ロック）' do
       # it_behaves_like 'NG' # Tips: トークンが存在しない為、ロック日時がない
       # Tips: ActionController::RoutingError: Not Found
       # it_behaves_like 'ToNG', 'activerecord.errors.models.user.attributes.unlock_token.blank', nil
     end
-    shared_examples_for '[ログイン中/削除予約済み][ない/空]ロック日時がない（未ロック）' do
+    shared_examples_for '[ログイン中][ない/空]ロック日時がない（未ロック）' do
       # it_behaves_like 'NG' # Tips: トークンが存在しない為、ロック日時がない
       # Tips: ActionController::RoutingError: Not Found
       # it_behaves_like 'ToNG', 'devise.failure.already_authenticated', nil
     end
-    shared_examples_for '[未ログイン][存在する]ロック日時がある（ロック中）' do
+    shared_examples_for '[未ログイン/APIログイン中][存在する]ロック日時がある（ロック中）' do
       include_context 'アカウントロック解除トークン作成', true
       it_behaves_like 'OK'
       it_behaves_like 'ToOK', nil, 'devise.unlocks.unlocked'
     end
-    shared_examples_for '[ログイン中/削除予約済み][存在する]ロック日時がある（ロック中）' do
+    shared_examples_for '[ログイン中][存在する]ロック日時がある（ロック中）' do
       include_context 'アカウントロック解除トークン作成', true
       it_behaves_like 'OK'
       it_behaves_like 'ToOK', nil, nil
@@ -348,64 +404,65 @@ RSpec.describe 'Users::Auth::Unlocks', type: :request do
       # it_behaves_like 'ToNG', 'devise.failure.already_authenticated', nil
     end
 
-    shared_examples_for '[未ログイン]トークンが存在する' do
-      it_behaves_like '[未ログイン][存在する]ロック日時がない（未ロック）'
-      it_behaves_like '[未ログイン][存在する]ロック日時がある（ロック中）'
+    shared_examples_for '[未ログイン/APIログイン中]トークンが存在する' do
+      it_behaves_like '[未ログイン/APIログイン中][存在する]ロック日時がない（未ロック）'
+      it_behaves_like '[未ログイン/APIログイン中][存在する]ロック日時がある（ロック中）'
     end
-    shared_examples_for '[ログイン中/削除予約済み]トークンが存在する' do
-      it_behaves_like '[ログイン中/削除予約済み][存在する]ロック日時がない（未ロック）'
-      it_behaves_like '[ログイン中/削除予約済み][存在する]ロック日時がある（ロック中）'
+    shared_examples_for '[ログイン中]トークンが存在する' do
+      it_behaves_like '[ログイン中][存在する]ロック日時がない（未ロック）'
+      it_behaves_like '[ログイン中][存在する]ロック日時がある（ロック中）'
     end
-    shared_examples_for '[未ログイン]トークンが存在しない' do
+    shared_examples_for '[未ログイン/APIログイン中]トークンが存在しない' do
       let(:unlock_token) { NOT_TOKEN }
-      it_behaves_like '[未ログイン][存在しない]ロック日時がない（未ロック）'
-      # it_behaves_like '[未ログイン][存在しない]ロック日時がある（ロック中）' # Tips: トークンが存在しない為、ロック日時がない
+      it_behaves_like '[未ログイン/APIログイン中][存在しない]ロック日時がない（未ロック）'
+      # it_behaves_like '[未ログイン/APIログイン中][存在しない]ロック日時がある（ロック中）' # Tips: トークンが存在しない為、ロック日時がない
     end
-    shared_examples_for '[ログイン中/削除予約済み]トークンが存在しない' do
+    shared_examples_for '[ログイン中]トークンが存在しない' do
       let(:unlock_token) { NOT_TOKEN }
-      it_behaves_like '[ログイン中/削除予約済み][存在しない]ロック日時がない（未ロック）'
-      # it_behaves_like '[ログイン中/削除予約済み][存在しない]ロック日時がある（ロック中）' # Tips: トークンが存在しない為、ロック日時がない
+      it_behaves_like '[ログイン中][存在しない]ロック日時がない（未ロック）'
+      # it_behaves_like '[ログイン中][存在しない]ロック日時がある（ロック中）' # Tips: トークンが存在しない為、ロック日時がない
     end
-    shared_examples_for '[未ログイン]トークンがない' do
+    shared_examples_for '[未ログイン/APIログイン中]トークンがない' do
       let(:unlock_token) { nil }
-      it_behaves_like '[未ログイン][ない/空]ロック日時がない（未ロック）'
-      # it_behaves_like '[未ログイン][ない]ロック日時がある（ロック中）' # Tips: トークンが存在しない為、ロック日時がない
+      it_behaves_like '[未ログイン/APIログイン中][ない/空]ロック日時がない（未ロック）'
+      # it_behaves_like '[未ログイン/APIログイン中][ない]ロック日時がある（ロック中）' # Tips: トークンが存在しない為、ロック日時がない
     end
-    shared_examples_for '[ログイン中/削除予約済み]トークンがない' do
+    shared_examples_for '[ログイン中]トークンがない' do
       let(:unlock_token) { nil }
-      it_behaves_like '[ログイン中/削除予約済み][ない/空]ロック日時がない（未ロック）'
-      # it_behaves_like '[ログイン中/削除予約済み][ない]ロック日時がある（ロック中）' # Tips: トークンが存在しない為、ロック日時がない
+      it_behaves_like '[ログイン中][ない/空]ロック日時がない（未ロック）'
+      # it_behaves_like '[ログイン中][ない]ロック日時がある（ロック中）' # Tips: トークンが存在しない為、ロック日時がない
     end
-    shared_examples_for '[未ログイン]トークンが空' do
+    shared_examples_for '[未ログイン/APIログイン中]トークンが空' do
       let(:unlock_token) { '' }
-      it_behaves_like '[未ログイン][ない/空]ロック日時がない（未ロック）'
-      # it_behaves_like '[未ログイン][空]ロック日時がある（ロック中）' # Tips: トークンが存在しない為、ロック日時がない
+      it_behaves_like '[未ログイン/APIログイン中][ない/空]ロック日時がない（未ロック）'
+      # it_behaves_like '[未ログイン/APIログイン中][空]ロック日時がある（ロック中）' # Tips: トークンが存在しない為、ロック日時がない
     end
-    shared_examples_for '[ログイン中/削除予約済み]トークンが空' do
+    shared_examples_for '[ログイン中]トークンが空' do
       let(:unlock_token) { '' }
-      it_behaves_like '[ログイン中/削除予約済み][ない/空]ロック日時がない（未ロック）'
-      # it_behaves_like '[ログイン中/削除予約済み][空]ロック日時がある（ロック中）' # Tips: トークンが存在しない為、ロック日時がない
+      it_behaves_like '[ログイン中][ない/空]ロック日時がない（未ロック）'
+      # it_behaves_like '[ログイン中][空]ロック日時がある（ロック中）' # Tips: トークンが存在しない為、ロック日時がない
     end
 
     context '未ログイン' do
-      it_behaves_like '[未ログイン]トークンが存在する'
-      it_behaves_like '[未ログイン]トークンが存在しない'
-      it_behaves_like '[未ログイン]トークンがない'
-      it_behaves_like '[未ログイン]トークンが空'
+      include_context '未ログイン処理'
+      it_behaves_like '[未ログイン/APIログイン中]トークンが存在する'
+      it_behaves_like '[未ログイン/APIログイン中]トークンが存在しない'
+      it_behaves_like '[未ログイン/APIログイン中]トークンがない'
+      it_behaves_like '[未ログイン/APIログイン中]トークンが空'
     end
     context 'ログイン中' do
       include_context 'ログイン処理'
-      it_behaves_like '[ログイン中/削除予約済み]トークンが存在する'
-      it_behaves_like '[ログイン中/削除予約済み]トークンが存在しない'
-      it_behaves_like '[ログイン中/削除予約済み]トークンがない'
-      it_behaves_like '[ログイン中/削除予約済み]トークンが空'
+      it_behaves_like '[ログイン中]トークンが存在する'
+      it_behaves_like '[ログイン中]トークンが存在しない'
+      it_behaves_like '[ログイン中]トークンがない'
+      it_behaves_like '[ログイン中]トークンが空'
     end
-    context 'ログイン中（削除予約済み）' do
-      include_context 'ログイン処理', :user_destroy_reserved
-      it_behaves_like '[ログイン中/削除予約済み]トークンが存在する'
-      it_behaves_like '[ログイン中/削除予約済み]トークンが存在しない'
-      it_behaves_like '[ログイン中/削除予約済み]トークンがない'
-      it_behaves_like '[ログイン中/削除予約済み]トークンが空'
+    context 'APIログイン中' do
+      include_context 'APIログイン処理'
+      it_behaves_like '[未ログイン/APIログイン中]トークンが存在する'
+      it_behaves_like '[未ログイン/APIログイン中]トークンが存在しない'
+      it_behaves_like '[未ログイン/APIログイン中]トークンがない'
+      it_behaves_like '[未ログイン/APIログイン中]トークンが空'
     end
   end
 end

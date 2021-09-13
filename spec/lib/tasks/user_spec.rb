@@ -5,12 +5,12 @@ RSpec.describe User do
   # 前提条件
   #   なし
   # テストパターン
-  #   2件（削除予約1件、削除対象0件）, 3件（削除予約1件、削除対象1件）, 4件（削除予約1件、削除対象2件） → データ作成
+  #   2件（削除予約1件、削除対象0件）, 3件（削除予約1件、削除対象1件）, 4件（削除予約1件、削除対象2件）
   describe 'user:destroy' do
     let(:task)    { Rake.application['user:destroy'] }
     let(:dry_run) { 'false' }
-    let!(:user1) { FactoryBot.create(:user) }
-    let!(:user2) { FactoryBot.create(:user_destroy_reserved) }
+    let!(:user1)  { FactoryBot.create(:user) }
+    let!(:user2)  { FactoryBot.create(:user_destroy_reserved) }
     before do
       FactoryBot.create(:infomation) # :All
       FactoryBot.create(:infomation, target: :User, user_id: user1.id)
@@ -31,14 +31,14 @@ RSpec.describe User do
     shared_examples_for '削除件数' do |user_count, infomation_count|
       it "ユーザーが#{user_count}件・お知らせが#{infomation_count}件削除される" do
         expect do
-          expect(task.invoke(dry_run)).to be_truthy
+          task.invoke(dry_run)
         end.to change(User, :count).by(user_count * -1) && change(Infomation, :count).by(infomation_count * -1)
       end
     end
 
     shared_examples_for 'ユーザー1・2未削除' do
       it 'ユーザー1・2、ユーザー1・2向けのお知らせが削除されない' do
-        expect(task.invoke(dry_run)).to be_truthy
+        task.invoke(dry_run)
         expect(User.find_by(id: user1.id)).not_to be_nil
         expect(User.find_by(id: user2.id)).not_to be_nil
         expect(Infomation.find_by(user_id: user1.id)).not_to be_nil
@@ -47,13 +47,13 @@ RSpec.describe User do
     end
     shared_examples_for 'ユーザー3削除' do
       it 'ユーザー3が削除される' do
-        expect(task.invoke(dry_run)).to be_truthy
+        task.invoke(dry_run)
         expect(User.find_by(id: user3.id)).to be_nil
       end
     end
     shared_examples_for 'ユーザー3・4削除' do
       it 'ユーザー3・4、ユーザー4向けのお知らせが削除される' do
-        expect(task.invoke(dry_run)).to be_truthy
+        task.invoke(dry_run)
         expect(User.find_by(id: user3.id)).to be_nil
         expect(User.find_by(id: user4.id)).to be_nil
         expect(Infomation.find_by(user_id: user4.id)).to be_nil

@@ -5,13 +5,13 @@ RSpec.describe 'AdminUsers::Sessions', type: :request do
   # 前提条件
   #   なし
   # テストパターン
-  #   未ログイン, ログイン中 → データ＆状態作成
+  #   未ログイン, ログイン中
   describe 'GET #new' do
     subject { get new_admin_user_session_path }
 
     # テスト内容
     shared_examples_for 'ToOK' do
-      it '成功ステータス' do
+      it 'HTTPステータスが200' do
         is_expected.to eq(200)
       end
     end
@@ -37,8 +37,8 @@ RSpec.describe 'AdminUsers::Sessions', type: :request do
   # 前提条件
   #   なし
   # テストパターン
-  #   未ログイン, ログイン中 → データ＆状態作成
-  #   有効なパラメータ（未ロック, ロック中）, 無効なパラメータ → 事前にデータ作成
+  #   未ログイン, ログイン中
+  #   有効なパラメータ（未ロック, ロック中）, 無効なパラメータ
   describe 'POST #create' do
     subject { post create_admin_user_session_path, params: { admin_user: attributes } }
     let(:send_admin_user_unlocked) { FactoryBot.create(:admin_user) }
@@ -49,7 +49,7 @@ RSpec.describe 'AdminUsers::Sessions', type: :request do
 
     # テスト内容
     shared_examples_for 'ToError' do |error_msg|
-      it '成功ステータス。対象のエラーメッセージが含まれる' do # Tips: 再入力
+      it 'HTTPステータスが200。対象のエラーメッセージが含まれる' do # Tips: 再入力
         is_expected.to eq(200)
         expect(response.body).to include(I18n.t(error_msg))
       end
@@ -109,7 +109,7 @@ RSpec.describe 'AdminUsers::Sessions', type: :request do
   # 前提条件
   #   なし
   # テストパターン
-  #   未ログイン, ログイン中 → データ＆状態作成
+  #   未ログイン, ログイン中
   describe 'DELETE #destroy' do
     subject { delete destroy_admin_user_session_path }
 

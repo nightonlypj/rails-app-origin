@@ -5,13 +5,13 @@ RSpec.describe 'Users::Unlocks', type: :request do
   # 前提条件
   #   なし
   # テストパターン
-  #   未ログイン, ログイン中, ログイン中（削除予約済み） → データ＆状態作成
+  #   未ログイン, ログイン中
   describe 'GET #new' do
     subject { get new_user_unlock_path }
 
     # テスト内容
     shared_examples_for 'ToOK' do
-      it '成功ステータス' do
+      it 'HTTPステータスが200' do
         is_expected.to eq(200)
       end
     end
@@ -31,18 +31,14 @@ RSpec.describe 'Users::Unlocks', type: :request do
       include_context 'ログイン処理'
       it_behaves_like 'ToTop', 'devise.failure.already_authenticated', nil
     end
-    context 'ログイン中（削除予約済み）' do
-      include_context 'ログイン処理', :user_destroy_reserved
-      it_behaves_like 'ToTop', 'devise.failure.already_authenticated', nil
-    end
   end
 
   # POST /users/unlock/new アカウントロック解除[メール再送](処理)
   # 前提条件
   #   なし
   # テストパターン
-  #   未ログイン, ログイン中, ログイン中（削除予約済み） → データ＆状態作成
-  #   有効なパラメータ（ロック中, 未ロック）, 無効なパラメータ → 事前にデータ作成
+  #   未ログイン, ログイン中
+  #   有効なパラメータ（ロック中, 未ロック）, 無効なパラメータ
   describe 'POST #create' do
     subject { post create_user_unlock_path, params: { user: attributes } }
     let(:send_user_locked)   { FactoryBot.create(:user_locked) }
@@ -66,7 +62,7 @@ RSpec.describe 'Users::Unlocks', type: :request do
     end
 
     shared_examples_for 'ToError' do |error_msg|
-      it '成功ステータス。対象のエラーメッセージが含まれる' do # Tips: 再入力
+      it 'HTTPステータスが200。対象のエラーメッセージが含まれる' do # Tips: 再入力
         is_expected.to eq(200)
         expect(response.body).to include(I18n.t(error_msg))
       end
@@ -93,7 +89,7 @@ RSpec.describe 'Users::Unlocks', type: :request do
       it_behaves_like 'OK'
       it_behaves_like 'ToLogin', nil, 'devise.unlocks.send_instructions'
     end
-    shared_examples_for '[ログイン中/削除予約済み]有効なパラメータ（ロック中）' do
+    shared_examples_for '[ログイン中]有効なパラメータ（ロック中）' do
       let(:send_user)  { send_user_locked }
       let(:attributes) { valid_attributes }
       it_behaves_like 'NG'
@@ -105,7 +101,7 @@ RSpec.describe 'Users::Unlocks', type: :request do
       it_behaves_like 'NG'
       it_behaves_like 'ToError', 'errors.messages.not_locked', nil
     end
-    shared_examples_for '[ログイン中/削除予約済み]有効なパラメータ（未ロック）' do
+    shared_examples_for '[ログイン中]有効なパラメータ（未ロック）' do
       let(:send_user)  { send_user_unlocked }
       let(:attributes) { valid_attributes }
       it_behaves_like 'NG'
@@ -116,7 +112,7 @@ RSpec.describe 'Users::Unlocks', type: :request do
       it_behaves_like 'NG'
       it_behaves_like 'ToError', 'errors.messages.not_found'
     end
-    shared_examples_for '[ログイン中/削除予約済み]無効なパラメータ' do
+    shared_examples_for '[ログイン中]無効なパラメータ' do
       let(:attributes) { invalid_attributes }
       it_behaves_like 'NG'
       it_behaves_like 'ToTop', 'devise.failure.already_authenticated', nil
@@ -129,15 +125,9 @@ RSpec.describe 'Users::Unlocks', type: :request do
     end
     context 'ログイン中' do
       include_context 'ログイン処理'
-      it_behaves_like '[ログイン中/削除予約済み]有効なパラメータ（ロック中）'
-      it_behaves_like '[ログイン中/削除予約済み]有効なパラメータ（未ロック）'
-      it_behaves_like '[ログイン中/削除予約済み]無効なパラメータ'
-    end
-    context 'ログイン中（削除予約済み）' do
-      include_context 'ログイン処理', :user_destroy_reserved
-      it_behaves_like '[ログイン中/削除予約済み]有効なパラメータ（ロック中）'
-      it_behaves_like '[ログイン中/削除予約済み]有効なパラメータ（未ロック）'
-      it_behaves_like '[ログイン中/削除予約済み]無効なパラメータ'
+      it_behaves_like '[ログイン中]有効なパラメータ（ロック中）'
+      it_behaves_like '[ログイン中]有効なパラメータ（未ロック）'
+      it_behaves_like '[ログイン中]無効なパラメータ'
     end
   end
 
@@ -145,9 +135,9 @@ RSpec.describe 'Users::Unlocks', type: :request do
   # 前提条件
   #   なし
   # テストパターン
-  #   未ログイン, ログイン中, ログイン中（削除予約済み） → データ＆状態作成
-  #   トークン: 存在する, 存在しない, ない → データ作成
-  #   ロック日時: ない（未ロック）, ある（ロック中） → データ作成
+  #   未ログイン, ログイン中
+  #   トークン: 存在する, 存在しない, ない
+  #   ロック日時: ない（未ロック）, ある（ロック中）
   describe 'GET #show' do
     subject { get user_unlock_path(unlock_token: unlock_token) }
 
@@ -166,7 +156,7 @@ RSpec.describe 'Users::Unlocks', type: :request do
     end
 
     shared_examples_for 'ToError' do |error_msg|
-      it '成功ステータス。対象のエラーメッセージが含まれる' do # Tips: 再入力
+      it 'HTTPステータスが200。対象のエラーメッセージが含まれる' do # Tips: 再入力
         is_expected.to eq(200)
         expect(response.body).to include(I18n.t(error_msg))
       end
@@ -192,7 +182,7 @@ RSpec.describe 'Users::Unlocks', type: :request do
       # it_behaves_like 'NG' # Tips: 元々、ロック日時がない
       it_behaves_like 'ToLogin', nil, 'devise.unlocks.unlocked' # Tips: 既に解除済み
     end
-    shared_examples_for '[ログイン中/削除予約済み][存在する]ロック日時がない（未ロック）' do
+    shared_examples_for '[ログイン中][存在する]ロック日時がない（未ロック）' do
       include_context 'アカウントロック解除トークン作成', false
       # it_behaves_like 'NG' # Tips: 元々、ロック日時がない
       it_behaves_like 'ToTop', 'devise.failure.already_authenticated', nil
@@ -201,7 +191,7 @@ RSpec.describe 'Users::Unlocks', type: :request do
       # it_behaves_like 'NG' # Tips: トークンが存在しない為、ロック日時がない
       it_behaves_like 'ToError', 'activerecord.errors.models.user.attributes.unlock_token.invalid'
     end
-    shared_examples_for '[ログイン中/削除予約済み][存在しない]ロック日時がない（未ロック）' do
+    shared_examples_for '[ログイン中][存在しない]ロック日時がない（未ロック）' do
       # it_behaves_like 'NG' # Tips: トークンが存在しない為、ロック日時がない
       it_behaves_like 'ToTop', 'devise.failure.already_authenticated', nil
     end
@@ -209,7 +199,7 @@ RSpec.describe 'Users::Unlocks', type: :request do
       # it_behaves_like 'NG' # Tips: トークンが存在しない為、ロック日時がない
       it_behaves_like 'ToError', 'activerecord.errors.models.user.attributes.unlock_token.blank'
     end
-    shared_examples_for '[ログイン中/削除予約済み][ない]ロック日時がない（未ロック）' do
+    shared_examples_for '[ログイン中][ない]ロック日時がない（未ロック）' do
       # it_behaves_like 'NG' # Tips: トークンが存在しない為、ロック日時がない
       it_behaves_like 'ToTop', 'devise.failure.already_authenticated', nil
     end
@@ -218,7 +208,7 @@ RSpec.describe 'Users::Unlocks', type: :request do
       it_behaves_like 'OK'
       it_behaves_like 'ToLogin', nil, 'devise.unlocks.unlocked'
     end
-    shared_examples_for '[ログイン中/削除予約済み][存在する]ロック日時がある（ロック中）' do
+    shared_examples_for '[ログイン中][存在する]ロック日時がある（ロック中）' do
       include_context 'アカウントロック解除トークン作成', true
       it_behaves_like 'NG'
       it_behaves_like 'ToTop', 'devise.failure.already_authenticated', nil
@@ -228,29 +218,29 @@ RSpec.describe 'Users::Unlocks', type: :request do
       it_behaves_like '[未ログイン][存在する]ロック日時がない（未ロック）'
       it_behaves_like '[未ログイン][存在する]ロック日時がある（ロック中）'
     end
-    shared_examples_for '[ログイン中/削除予約済み]トークンが存在する' do
-      it_behaves_like '[ログイン中/削除予約済み][存在する]ロック日時がない（未ロック）'
-      it_behaves_like '[ログイン中/削除予約済み][存在する]ロック日時がある（ロック中）'
+    shared_examples_for '[ログイン中]トークンが存在する' do
+      it_behaves_like '[ログイン中][存在する]ロック日時がない（未ロック）'
+      it_behaves_like '[ログイン中][存在する]ロック日時がある（ロック中）'
     end
     shared_examples_for '[未ログイン]トークンが存在しない' do
       let(:unlock_token) { NOT_TOKEN }
       it_behaves_like '[未ログイン][存在しない]ロック日時がない（未ロック）'
       # it_behaves_like '[未ログイン][存在しない]ロック日時がある（ロック中）' # Tips: トークンが存在しない為、ロック日時がない
     end
-    shared_examples_for '[ログイン中/削除予約済み]トークンが存在しない' do
+    shared_examples_for '[ログイン中]トークンが存在しない' do
       let(:unlock_token) { NOT_TOKEN }
-      it_behaves_like '[ログイン中/削除予約済み][存在しない]ロック日時がない（未ロック）'
-      # it_behaves_like '[ログイン中/削除予約済み][存在しない]ロック日時がある（ロック中）' # Tips: トークンが存在しない為、ロック日時がない
+      it_behaves_like '[ログイン中][存在しない]ロック日時がない（未ロック）'
+      # it_behaves_like '[ログイン中][存在しない]ロック日時がある（ロック中）' # Tips: トークンが存在しない為、ロック日時がない
     end
     shared_examples_for '[未ログイン]トークンがない' do
       let(:unlock_token) { nil }
       it_behaves_like '[未ログイン][ない]ロック日時がない（未ロック）'
       # it_behaves_like '[未ログイン][ない]ロック日時がある（ロック中）' # Tips: トークンが存在しない為、ロック日時がない
     end
-    shared_examples_for '[ログイン中/削除予約済み]トークンがない' do
+    shared_examples_for '[ログイン中]トークンがない' do
       let(:unlock_token) { nil }
-      it_behaves_like '[ログイン中/削除予約済み][ない]ロック日時がない（未ロック）'
-      # it_behaves_like '[ログイン中/削除予約済み][ない]ロック日時がある（ロック中）' # Tips: トークンが存在しない為、ロック日時がない
+      it_behaves_like '[ログイン中][ない]ロック日時がない（未ロック）'
+      # it_behaves_like '[ログイン中][ない]ロック日時がある（ロック中）' # Tips: トークンが存在しない為、ロック日時がない
     end
 
     context '未ログイン' do
@@ -260,15 +250,9 @@ RSpec.describe 'Users::Unlocks', type: :request do
     end
     context 'ログイン中' do
       include_context 'ログイン処理'
-      it_behaves_like '[ログイン中/削除予約済み]トークンが存在する'
-      it_behaves_like '[ログイン中/削除予約済み]トークンが存在しない'
-      it_behaves_like '[ログイン中/削除予約済み]トークンがない'
-    end
-    context 'ログイン中（削除予約済み）' do
-      include_context 'ログイン処理', :user_destroy_reserved
-      it_behaves_like '[ログイン中/削除予約済み]トークンが存在する'
-      it_behaves_like '[ログイン中/削除予約済み]トークンが存在しない'
-      it_behaves_like '[ログイン中/削除予約済み]トークンがない'
+      it_behaves_like '[ログイン中]トークンが存在する'
+      it_behaves_like '[ログイン中]トークンが存在しない'
+      it_behaves_like '[ログイン中]トークンがない'
     end
   end
 end

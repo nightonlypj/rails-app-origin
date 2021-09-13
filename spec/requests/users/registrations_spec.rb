@@ -5,13 +5,13 @@ RSpec.describe 'Users::Registrations', type: :request do
   # 前提条件
   #   なし
   # テストパターン
-  #   未ログイン, ログイン中, ログイン中（削除予約済み） → データ＆状態作成
+  #   未ログイン, ログイン中
   describe 'GET #new' do
     subject { get new_user_registration_path }
 
     # テスト内容
     shared_examples_for 'ToOK' do
-      it '成功ステータス' do
+      it 'HTTPステータスが200' do
         is_expected.to eq(200)
       end
     end
@@ -31,18 +31,14 @@ RSpec.describe 'Users::Registrations', type: :request do
       include_context 'ログイン処理'
       it_behaves_like 'ToTop', 'devise.failure.already_authenticated', nil
     end
-    context 'ログイン中（削除予約済み）' do
-      include_context 'ログイン処理', :user_destroy_reserved
-      it_behaves_like 'ToTop', 'devise.failure.already_authenticated', nil
-    end
   end
 
   # POST /users/sign_up アカウント登録(処理)
   # 前提条件
   #   なし
   # テストパターン
-  #   未ログイン, ログイン中, ログイン中（削除予約済み） → データ＆状態作成
-  #   有効なパラメータ, 無効なパラメータ → 事前にデータ作成
+  #   未ログイン, ログイン中
+  #   有効なパラメータ, 無効なパラメータ
   describe 'POST #create' do
     subject { post create_user_registration_path, params: { user: attributes } }
     let(:new_user)   { FactoryBot.attributes_for(:user) }
@@ -69,7 +65,7 @@ RSpec.describe 'Users::Registrations', type: :request do
     end
 
     shared_examples_for 'ToError' do |error_msg|
-      it '成功ステータス。対象のエラーメッセージが含まれる' do # Tips: 再入力
+      it 'HTTPステータスが200。対象のエラーメッセージが含まれる' do # Tips: 再入力
         is_expected.to eq(200)
         expect(response.body).to include(I18n.t(error_msg))
       end
@@ -95,7 +91,7 @@ RSpec.describe 'Users::Registrations', type: :request do
       it_behaves_like 'OK'
       it_behaves_like 'ToLogin', nil, 'devise.registrations.signed_up_but_unconfirmed'
     end
-    shared_examples_for '[ログイン中/削除予約済み]有効なパラメータ' do
+    shared_examples_for '[ログイン中]有効なパラメータ' do
       let(:attributes) { valid_attributes }
       it_behaves_like 'NG'
       it_behaves_like 'ToTop', 'devise.failure.already_authenticated', nil
@@ -105,7 +101,7 @@ RSpec.describe 'Users::Registrations', type: :request do
       it_behaves_like 'NG'
       it_behaves_like 'ToError', 'activerecord.errors.models.user.attributes.email.taken'
     end
-    shared_examples_for '[ログイン中/削除予約済み]無効なパラメータ' do
+    shared_examples_for '[ログイン中]無効なパラメータ' do
       let(:attributes) { invalid_attributes }
       it_behaves_like 'NG'
       it_behaves_like 'ToTop', 'devise.failure.already_authenticated', nil
@@ -117,13 +113,8 @@ RSpec.describe 'Users::Registrations', type: :request do
     end
     context 'ログイン中' do
       include_context 'ログイン処理'
-      it_behaves_like '[ログイン中/削除予約済み]有効なパラメータ'
-      it_behaves_like '[ログイン中/削除予約済み]無効なパラメータ'
-    end
-    context 'ログイン中（削除予約済み）' do
-      include_context 'ログイン処理', :user_destroy_reserved
-      it_behaves_like '[ログイン中/削除予約済み]有効なパラメータ'
-      it_behaves_like '[ログイン中/削除予約済み]無効なパラメータ'
+      it_behaves_like '[ログイン中]有効なパラメータ'
+      it_behaves_like '[ログイン中]無効なパラメータ'
     end
   end
 
@@ -131,13 +122,13 @@ RSpec.describe 'Users::Registrations', type: :request do
   # 前提条件
   #   なし
   # テストパターン
-  #   未ログイン, ログイン中, ログイン中（削除予約済み） → データ＆状態作成
+  #   未ログイン, ログイン中, ログイン中（削除予約済み）
   describe 'GET #edit' do
     subject { get edit_user_registration_path }
 
     # テスト内容
     shared_examples_for 'ToOK' do
-      it '成功ステータス' do
+      it 'HTTPステータスが200' do
         is_expected.to eq(200)
       end
     end
@@ -174,8 +165,8 @@ RSpec.describe 'Users::Registrations', type: :request do
   # 前提条件
   #   なし
   # テストパターン
-  #   未ログイン, ログイン中, ログイン中（削除予約済み） → データ＆状態作成
-  #   有効なパラメータ, 無効なパラメータ → 事前にデータ作成
+  #   未ログイン, ログイン中, ログイン中（削除予約済み）
+  #   有効なパラメータ, 無効なパラメータ
   describe 'PUT #update' do
     subject { put update_user_registration_path, params: { user: attributes.merge(current_password: current_password) } }
     let(:new_user)   { FactoryBot.attributes_for(:user) }
@@ -190,6 +181,7 @@ RSpec.describe 'Users::Registrations', type: :request do
         after_user = User.find(user.id)
         expect(after_user.unconfirmed_email).to eq(attributes[:email]) # 確認待ちメールアドレス
         expect(after_user.name).to eq(attributes[:name]) # 氏名
+        expect(after_user.image.url).to eq(user.image.url) # 画像 # Tips: 変更されない
 
         expect(ActionMailer::Base.deliveries.count).to eq(3)
         expect(ActionMailer::Base.deliveries[0].subject).to eq(get_subject('devise.mailer.email_changed.subject')) # メールアドレス変更受け付けのお知らせ
@@ -201,15 +193,16 @@ RSpec.describe 'Users::Registrations', type: :request do
       it '確認待ちメールアドレス・対象項目が変更されない。メールが送信されない' do
         subject
         after_user = User.find(user.id)
-        expect(after_user.unconfirmed_email).to eq(user.unconfirmed_email)
-        expect(after_user.name).to eq(user.name)
+        expect(after_user.unconfirmed_email).to eq(user.unconfirmed_email) # 確認待ちメールアドレス
+        expect(after_user.name).to eq(user.name) # 氏名
+        expect(after_user.image.url).to eq(user.image.url) # 画像
 
         expect(ActionMailer::Base.deliveries.count).to eq(0)
       end
     end
 
     shared_examples_for 'ToError' do |error_msg|
-      it '成功ステータス。対象のエラーメッセージが含まれる' do # Tips: 再入力
+      it 'HTTPステータスが200。対象のエラーメッセージが含まれる' do # Tips: 再入力
         is_expected.to eq(200)
         expect(response.body).to include(I18n.t(error_msg))
       end
@@ -286,8 +279,8 @@ RSpec.describe 'Users::Registrations', type: :request do
   # 前提条件
   #   なし
   # テストパターン
-  #   未ログイン, ログイン中, ログイン中（削除予約済み） → データ＆状態作成
-  #   有効なパラメータ, 無効なパラメータ → 事前にデータ作成
+  #   未ログイン, ログイン中, ログイン中（削除予約済み）
+  #   有効なパラメータ, 無効なパラメータ
   describe 'PUT #image_update' do
     subject { put update_user_image_registration_path, params: { user: attributes } }
     let(:valid_attributes)   { { image: fixture_file_upload(TEST_IMAGE_FILE, TEST_IMAGE_TYPE) } }
@@ -311,7 +304,7 @@ RSpec.describe 'Users::Registrations', type: :request do
     end
 
     shared_examples_for 'ToError' do |error_msg|
-      it '成功ステータス。対象のエラーメッセージが含まれる' do # Tips: 再入力
+      it 'HTTPステータスが200。対象のエラーメッセージが含まれる' do # Tips: 再入力
         is_expected.to eq(200)
         expect(response.body).to include(I18n.t(error_msg))
       end
@@ -393,7 +386,7 @@ RSpec.describe 'Users::Registrations', type: :request do
   # 前提条件
   #   なし
   # テストパターン
-  #   未ログイン, ログイン中, ログイン中（削除予約済み） → データ＆状態作成
+  #   未ログイン, ログイン中, ログイン中（削除予約済み）
   describe 'DELETE #image_destroy' do
     subject { delete delete_user_image_registration_path }
 
@@ -454,13 +447,13 @@ RSpec.describe 'Users::Registrations', type: :request do
   # 前提条件
   #   なし
   # テストパターン
-  #   未ログイン, ログイン中, ログイン中（削除予約済み） → データ＆状態作成
+  #   未ログイン, ログイン中, ログイン中（削除予約済み）
   describe 'GET #delete' do
     subject { get delete_user_registration_path }
 
     # テスト内容
     shared_examples_for 'ToOK' do
-      it '成功ステータス' do
+      it 'HTTPステータスが200' do
         is_expected.to eq(200)
       end
     end
@@ -497,13 +490,13 @@ RSpec.describe 'Users::Registrations', type: :request do
   # 前提条件
   #   なし
   # テストパターン
-  #   未ログイン, ログイン中, ログイン中（削除予約済み） → データ＆状態作成
+  #   未ログイン, ログイン中, ログイン中（削除予約済み）
   describe 'DELETE #destroy' do
     subject { delete destroy_user_registration_path }
 
     # テスト内容
     shared_examples_for 'OK' do
-      let!(:start_time) { Time.current - 1.second }
+      let!(:start_time) { Time.current.floor }
       it "削除依頼日時が現在日時に、削除予定日時が#{Settings['destroy_schedule_days']}日後に変更される" do
         subject
         expect(user.destroy_requested_at).to be_between(start_time, Time.current)
@@ -557,13 +550,13 @@ RSpec.describe 'Users::Registrations', type: :request do
   # 前提条件
   #   なし
   # テストパターン
-  #   未ログイン, ログイン中, ログイン中（削除予約済み） → データ＆状態作成
+  #   未ログイン, ログイン中, ログイン中（削除予約済み）
   describe 'GET #undo_delete' do
     subject { get delete_undo_user_registration_path }
 
     # テスト内容
     shared_examples_for 'ToOK' do
-      it '成功ステータス' do
+      it 'HTTPステータスが200' do
         is_expected.to eq(200)
       end
     end
@@ -600,7 +593,7 @@ RSpec.describe 'Users::Registrations', type: :request do
   # 前提条件
   #   なし
   # テストパターン
-  #   未ログイン, ログイン中, ログイン中（削除予約済み） → データ＆状態作成
+  #   未ログイン, ログイン中, ログイン中（削除予約済み）
   describe 'DELETE #undo_destroy' do
     subject { delete destroy_undo_user_registration_path }
 

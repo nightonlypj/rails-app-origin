@@ -5,13 +5,13 @@ RSpec.describe 'AdminUsers::Unlocks', type: :request do
   # 前提条件
   #   なし
   # テストパターン
-  #   未ログイン, ログイン中 → データ＆状態作成
+  #   未ログイン, ログイン中
   describe 'GET #new' do
     subject { get new_admin_user_unlock_path }
 
     # テスト内容
     shared_examples_for 'ToOK' do
-      it '成功ステータス' do
+      it 'HTTPステータスが200' do
         is_expected.to eq(200)
       end
     end
@@ -37,8 +37,8 @@ RSpec.describe 'AdminUsers::Unlocks', type: :request do
   # 前提条件
   #   なし
   # テストパターン
-  #   未ログイン, ログイン中 → データ＆状態作成
-  #   有効なパラメータ（ロック中, 未ロック）, 無効なパラメータ → 事前にデータ作成
+  #   未ログイン, ログイン中
+  #   有効なパラメータ（ロック中, 未ロック）, 無効なパラメータ
   describe 'POST #create' do
     subject { post create_admin_user_unlock_path, params: { admin_user: attributes } }
     let(:send_admin_user_locked)   { FactoryBot.create(:admin_user_locked) }
@@ -62,7 +62,7 @@ RSpec.describe 'AdminUsers::Unlocks', type: :request do
     end
 
     shared_examples_for 'ToError' do |error_msg|
-      it '成功ステータス。対象のエラーメッセージが含まれる' do # Tips: 再入力
+      it 'HTTPステータスが200。対象のエラーメッセージが含まれる' do # Tips: 再入力
         is_expected.to eq(200)
         expect(response.body).to include(I18n.t(error_msg))
       end
@@ -135,9 +135,9 @@ RSpec.describe 'AdminUsers::Unlocks', type: :request do
   # 前提条件
   #   なし
   # テストパターン
-  #   未ログイン, ログイン中 → データ＆状態作成
-  #   トークン: 存在する, 存在しない, ない → データ作成
-  #   ロック日時: ない（未ロック）, ある（ロック中） → データ作成
+  #   未ログイン, ログイン中
+  #   トークン: 存在する, 存在しない, ない
+  #   ロック日時: ない（未ロック）, ある（ロック中）
   describe 'GET #show' do
     subject { get admin_user_unlock_path(unlock_token: unlock_token) }
 
@@ -156,7 +156,7 @@ RSpec.describe 'AdminUsers::Unlocks', type: :request do
     end
 
     shared_examples_for 'ToError' do |error_msg|
-      it '成功ステータス。対象のエラーメッセージが含まれる' do # Tips: 再入力
+      it 'HTTPステータスが200。対象のエラーメッセージが含まれる' do # Tips: 再入力
         is_expected.to eq(200)
         expect(response.body).to include(I18n.t(error_msg))
       end

@@ -5,9 +5,9 @@ RSpec.describe AdminUser, type: :model do
   # 前提条件
   #   なし
   # テストパターン
-  #   ない, 最小文字数よりも少ない, 最小文字数と同じ, 最大文字数と同じ, 最大文字数よりも多い → データ作成
+  #   ない, 最小文字数よりも少ない, 最小文字数と同じ, 最大文字数と同じ, 最大文字数よりも多い
   describe 'validates :name' do
-    let(:admin_user) { FactoryBot.build(:admin_user, name: name) }
+    let(:admin_user) { FactoryBot.build_stubbed(:admin_user, name: name) }
 
     # テスト内容
     shared_examples_for 'ToOK' do

@@ -1,0 +1,15 @@
+ja:
+  errors:
+    messages:
+      carrierwave_processing_error: '処理に失敗しました。' # failed to be processed
+      carrierwave_integrity_error: '許可されたファイルタイプではありません。別のファイルを使用してください。' # is not of an allowed file type
+      carrierwave_download_error: 'ダウンロードできません。' # could not be downloaded
+      extension_allowlist_error: '%{extension}はアップロードできません。使用できるタイプ: %{allowed_types}' # "You are not allowed to upload %{extension} files, allowed types: %{allowed_types}"
+      extension_denylist_error: "%{extension}はアップロードできません。使用できないタイプ: %{prohibited_types}" # "You are not allowed to upload %{extension} files, prohibited types: %{prohibited_types}"
+      content_type_allowlist_error: "%{content_type}はアップロードできません。使用できるタイプ: %{allowed_types}" # "You are not allowed to upload %{content_type} files, allowed types: %{allowed_types}"
+      content_type_denylist_error: '%{content_type}はアップロードできません。' # "You are not allowed to upload %{content_type} files"
+      rmagick_processing_error: '画像変換に失敗しました。別のファイルを使用してください。' # "Failed to manipulate with rmagick, maybe it is not an image?"
+      mini_magick_processing_error: '画像変換に失敗しました。別のファイルを使用してください。' # "Failed to manipulate with MiniMagick, maybe it is not an image? Original Error: %{e}"
+      vips_processing_error: "画像変換に失敗しました。別のファイルを使用してください。" # "Failed to manipulate with vips, maybe it is not an image? Original Error: %{e}"
+      min_size_error: '%{min_size}以上のファイルを使用してください。' # "File size should be greater than %{min_size}"
+      max_size_error: '%{max_size}以下のファイルを使用してください。' # "File size should be less than %{max_size}"
