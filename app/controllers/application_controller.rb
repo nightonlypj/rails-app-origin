@@ -35,13 +35,13 @@ class ApplicationController < ActionController::Base
   def valid_reset_password_token?(token)
     reset_password_token = Devise.token_generator.digest(self, :reset_password_token, token)
     resource = resource_class.find_by(reset_password_token: reset_password_token)
-    resource.present? && resource.reset_password_period_valid?
+    resource&.reset_password_period_valid?
   end
 
   # メールアドレス確認済みかを返却
   def already_confirmed?(token)
     resource = resource_class.find_by(confirmation_token: token)
-    resource.present? && resource.confirmed_at.present? && resource.confirmation_sent_at.present? && (resource.confirmed_at > resource.confirmation_sent_at)
+    resource&.confirmed_at&.present? && resource&.confirmation_sent_at&.present? && (resource.confirmed_at > resource.confirmation_sent_at)
   end
 
   # 有効なメールアドレス確認トークンかを返却
@@ -49,7 +49,7 @@ class ApplicationController < ActionController::Base
     true if resource_class.confirm_within.blank?
 
     resource = resource_class.find_by(confirmation_token: token)
-    resource.present? && resource.confirmation_sent_at.present? && (Time.now.utc <= resource.confirmation_sent_at.utc + resource_class.confirm_within)
+    resource&.confirmation_sent_at&.present? && (Time.now.utc <= resource.confirmation_sent_at.utc + resource_class.confirm_within)
   end
 
   # ログイン後の遷移先

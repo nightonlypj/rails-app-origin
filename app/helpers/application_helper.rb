@@ -6,7 +6,7 @@ module ApplicationHelper
 
   # 削除予約のメッセージを表示するかを返却
   def destroy_reserved_message?(user = current_user)
-    controller_name != 'registrations' && action_name != 'undo_delete' && user.present? && user.destroy_reserved?
+    controller_name != 'registrations' && action_name != 'undo_delete' && user&.destroy_reserved?
   end
 
   # バリデーション表示のクラス名を返却

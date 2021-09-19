@@ -1,6 +1,40 @@
 require 'rails_helper'
 
 RSpec.describe 'Users::Registrations', type: :request do
+  # テスト内容（共通）
+  shared_examples_for 'ToOK' do
+    it 'HTTPステータスが200' do
+      is_expected.to eq(200)
+    end
+  end
+  shared_examples_for 'ToError' do |error_msg|
+    it 'HTTPステータスが200。対象のエラーメッセージが含まれる' do # Tips: 再入力
+      is_expected.to eq(200)
+      expect(response.body).to include(I18n.t(error_msg))
+    end
+  end
+  shared_examples_for 'ToTop' do |alert, notice|
+    it 'トップページにリダイレクトする' do
+      is_expected.to redirect_to(root_path)
+      expect(flash[:alert]).to alert.present? ? eq(I18n.t(alert)) : be_nil
+      expect(flash[:notice]).to notice.present? ? eq(I18n.t(notice)) : be_nil
+    end
+  end
+  shared_examples_for 'ToLogin' do |alert, notice|
+    it 'ログインにリダイレクトする' do
+      is_expected.to redirect_to(new_user_session_path)
+      expect(flash[:alert]).to alert.present? ? eq(I18n.t(alert)) : be_nil
+      expect(flash[:notice]).to notice.present? ? eq(I18n.t(notice)) : be_nil
+    end
+  end
+  shared_examples_for 'ToEdit' do |alert, notice|
+    it '登録情報変更にリダイレクトする' do
+      is_expected.to redirect_to(edit_user_registration_path)
+      expect(flash[:alert]).to alert.present? ? eq(I18n.t(alert)) : be_nil
+      expect(flash[:notice]).to notice.present? ? eq(I18n.t(notice)) : be_nil
+    end
+  end
+
   # GET /users/sign_up アカウント登録
   # 前提条件
   #   なし
@@ -8,20 +42,6 @@ RSpec.describe 'Users::Registrations', type: :request do
   #   未ログイン, ログイン中
   describe 'GET #new' do
     subject { get new_user_registration_path }
-
-    # テスト内容
-    shared_examples_for 'ToOK' do
-      it 'HTTPステータスが200' do
-        is_expected.to eq(200)
-      end
-    end
-    shared_examples_for 'ToTop' do |alert, notice|
-      it 'トップページにリダイレクトする' do
-        is_expected.to redirect_to(root_path)
-        expect(flash[:alert]).to alert.present? ? eq(I18n.t(alert)) : be_nil
-        expect(flash[:notice]).to notice.present? ? eq(I18n.t(notice)) : be_nil
-      end
-    end
 
     # テストケース
     context '未ログイン' do
@@ -64,27 +84,6 @@ RSpec.describe 'Users::Registrations', type: :request do
       end
     end
 
-    shared_examples_for 'ToError' do |error_msg|
-      it 'HTTPステータスが200。対象のエラーメッセージが含まれる' do # Tips: 再入力
-        is_expected.to eq(200)
-        expect(response.body).to include(I18n.t(error_msg))
-      end
-    end
-    shared_examples_for 'ToTop' do |alert, notice|
-      it 'トップページにリダイレクトする' do
-        is_expected.to redirect_to(root_path)
-        expect(flash[:alert]).to alert.present? ? eq(I18n.t(alert)) : be_nil
-        expect(flash[:notice]).to notice.present? ? eq(I18n.t(notice)) : be_nil
-      end
-    end
-    shared_examples_for 'ToLogin' do |alert, notice|
-      it 'ログインにリダイレクトする' do
-        is_expected.to redirect_to(new_user_session_path)
-        expect(flash[:alert]).to alert.present? ? eq(I18n.t(alert)) : be_nil
-        expect(flash[:notice]).to notice.present? ? eq(I18n.t(notice)) : be_nil
-      end
-    end
-
     # テストケース
     shared_examples_for '[未ログイン]有効なパラメータ' do
       let(:attributes) { valid_attributes }
@@ -122,30 +121,9 @@ RSpec.describe 'Users::Registrations', type: :request do
   # 前提条件
   #   なし
   # テストパターン
-  #   未ログイン, ログイン中, ログイン中（削除予約済み）
+  #   未ログイン, ログイン中, ログイン中（メールアドレス変更中, 削除予約済み）
   describe 'GET #edit' do
     subject { get edit_user_registration_path }
-
-    # テスト内容
-    shared_examples_for 'ToOK' do
-      it 'HTTPステータスが200' do
-        is_expected.to eq(200)
-      end
-    end
-    shared_examples_for 'ToTop' do |alert, notice|
-      it 'トップページにリダイレクトする' do
-        is_expected.to redirect_to(root_path)
-        expect(flash[:alert]).to alert.present? ? eq(I18n.t(alert)) : be_nil
-        expect(flash[:notice]).to notice.present? ? eq(I18n.t(notice)) : be_nil
-      end
-    end
-    shared_examples_for 'ToLogin' do |alert, notice|
-      it 'ログインにリダイレクトする' do
-        is_expected.to redirect_to(new_user_session_path)
-        expect(flash[:alert]).to alert.present? ? eq(I18n.t(alert)) : be_nil
-        expect(flash[:notice]).to notice.present? ? eq(I18n.t(notice)) : be_nil
-      end
-    end
 
     # テストケース
     context '未ログイン' do
@@ -153,6 +131,10 @@ RSpec.describe 'Users::Registrations', type: :request do
     end
     context 'ログイン中' do
       include_context 'ログイン処理'
+      it_behaves_like 'ToOK'
+    end
+    context 'ログイン中（メールアドレス変更中）' do
+      include_context 'ログイン処理', :user_email_changed
       it_behaves_like 'ToOK'
     end
     context 'ログイン中（削除予約済み）' do
@@ -165,7 +147,7 @@ RSpec.describe 'Users::Registrations', type: :request do
   # 前提条件
   #   なし
   # テストパターン
-  #   未ログイン, ログイン中, ログイン中（削除予約済み）
+  #   未ログイン, ログイン中, ログイン中（メールアドレス変更中, 削除予約済み）
   #   有効なパラメータ, 無効なパラメータ
   describe 'PUT #update' do
     subject { put update_user_registration_path, params: { user: attributes.merge(current_password: current_password) } }
@@ -198,27 +180,6 @@ RSpec.describe 'Users::Registrations', type: :request do
         expect(after_user.image.url).to eq(user.image.url) # 画像
 
         expect(ActionMailer::Base.deliveries.count).to eq(0)
-      end
-    end
-
-    shared_examples_for 'ToError' do |error_msg|
-      it 'HTTPステータスが200。対象のエラーメッセージが含まれる' do # Tips: 再入力
-        is_expected.to eq(200)
-        expect(response.body).to include(I18n.t(error_msg))
-      end
-    end
-    shared_examples_for 'ToTop' do |alert, notice|
-      it 'トップページにリダイレクトする' do
-        is_expected.to redirect_to(root_path)
-        expect(flash[:alert]).to alert.present? ? eq(I18n.t(alert)) : be_nil
-        expect(flash[:notice]).to notice.present? ? eq(I18n.t(notice)) : be_nil
-      end
-    end
-    shared_examples_for 'ToLogin' do |alert, notice|
-      it 'ログインにリダイレクトする' do
-        is_expected.to redirect_to(new_user_session_path)
-        expect(flash[:alert]).to alert.present? ? eq(I18n.t(alert)) : be_nil
-        expect(flash[:notice]).to notice.present? ? eq(I18n.t(notice)) : be_nil
       end
     end
 
@@ -267,6 +228,12 @@ RSpec.describe 'Users::Registrations', type: :request do
       it_behaves_like '[ログイン中]有効なパラメータ'
       it_behaves_like '[ログイン中]無効なパラメータ'
     end
+    context 'ログイン中（メールアドレス変更中）' do
+      include_context 'ログイン処理', :user_email_changed, true
+      let(:current_password) { user.password }
+      it_behaves_like '[ログイン中]有効なパラメータ'
+      it_behaves_like '[ログイン中]無効なパラメータ'
+    end
     context 'ログイン中（削除予約済み）' do
       include_context 'ログイン処理', :user_destroy_reserved, true
       let(:current_password) { user.password }
@@ -290,47 +257,13 @@ RSpec.describe 'Users::Registrations', type: :request do
     shared_examples_for 'OK' do
       it '画像が変更される' do
         subject
-        after_user = User.find(user.id)
-        expect(after_user.image.url).not_to eq(user.image.url)
-        after_user.remove_image!
-        after_user.save!
+        expect(User.find(user.id).image.url).not_to eq(user.image.url)
       end
     end
     shared_examples_for 'NG' do
       it '画像が変更されない' do
         subject
         expect(User.find(user.id).image.url).to eq(user.image.url)
-      end
-    end
-
-    shared_examples_for 'ToError' do |error_msg|
-      it 'HTTPステータスが200。対象のエラーメッセージが含まれる' do # Tips: 再入力
-        is_expected.to eq(200)
-        expect(response.body).to include(I18n.t(error_msg))
-      end
-    end
-    shared_examples_for 'ToTop' do |alert, notice|
-      it 'トップページにリダイレクトする' do
-        is_expected.to redirect_to(root_path)
-        expect(flash[:alert]).to alert.present? ? eq(I18n.t(alert)) : be_nil
-        expect(flash[:notice]).to notice.present? ? eq(I18n.t(notice)) : be_nil
-      end
-    end
-    shared_examples_for 'ToLogin' do |alert, notice|
-      it 'ログインにリダイレクトする' do
-        is_expected.to redirect_to(new_user_session_path)
-        expect(flash[:alert]).to alert.present? ? eq(I18n.t(alert)) : be_nil
-        expect(flash[:notice]).to notice.present? ? eq(I18n.t(notice)) : be_nil
-      end
-    end
-    shared_examples_for 'ToEdit' do |alert, notice|
-      it '登録情報変更にリダイレクトする' do
-        is_expected.to redirect_to(edit_user_registration_path)
-        after_user = User.find(user.id)
-        after_user.remove_image!
-        after_user.save!
-        expect(flash[:alert]).to alert.present? ? eq(I18n.t(alert)) : be_nil
-        expect(flash[:notice]).to notice.present? ? eq(I18n.t(notice)) : be_nil
       end
     end
 
@@ -344,6 +277,11 @@ RSpec.describe 'Users::Registrations', type: :request do
       let(:attributes) { valid_attributes }
       it_behaves_like 'OK'
       it_behaves_like 'ToEdit', nil, 'notice.user.image_update'
+      after do
+        after_user = User.find(user.id)
+        after_user.remove_image!
+        after_user.save!
+      end
     end
     shared_examples_for '[削除予約済み]有効なパラメータ' do
       let(:attributes) { valid_attributes }
@@ -404,28 +342,6 @@ RSpec.describe 'Users::Registrations', type: :request do
       end
     end
 
-    shared_examples_for 'ToTop' do |alert, notice|
-      it 'トップページにリダイレクトする' do
-        is_expected.to redirect_to(root_path)
-        expect(flash[:alert]).to alert.present? ? eq(I18n.t(alert)) : be_nil
-        expect(flash[:notice]).to notice.present? ? eq(I18n.t(notice)) : be_nil
-      end
-    end
-    shared_examples_for 'ToLogin' do |alert, notice|
-      it 'ログインにリダイレクトする' do
-        is_expected.to redirect_to(new_user_session_path)
-        expect(flash[:alert]).to alert.present? ? eq(I18n.t(alert)) : be_nil
-        expect(flash[:notice]).to notice.present? ? eq(I18n.t(notice)) : be_nil
-      end
-    end
-    shared_examples_for 'ToEdit' do |alert, notice|
-      it '登録情報変更にリダイレクトする' do
-        is_expected.to redirect_to(edit_user_registration_path)
-        expect(flash[:alert]).to alert.present? ? eq(I18n.t(alert)) : be_nil
-        expect(flash[:notice]).to notice.present? ? eq(I18n.t(notice)) : be_nil
-      end
-    end
-
     # テストケース
     context '未ログイン' do
       # it_behaves_like 'NG' # Tips: 未ログインの為、対象がない
@@ -450,27 +366,6 @@ RSpec.describe 'Users::Registrations', type: :request do
   #   未ログイン, ログイン中, ログイン中（削除予約済み）
   describe 'GET #delete' do
     subject { get delete_user_registration_path }
-
-    # テスト内容
-    shared_examples_for 'ToOK' do
-      it 'HTTPステータスが200' do
-        is_expected.to eq(200)
-      end
-    end
-    shared_examples_for 'ToTop' do |alert, notice|
-      it 'トップページにリダイレクトする' do
-        is_expected.to redirect_to(root_path)
-        expect(flash[:alert]).to alert.present? ? eq(I18n.t(alert)) : be_nil
-        expect(flash[:notice]).to notice.present? ? eq(I18n.t(notice)) : be_nil
-      end
-    end
-    shared_examples_for 'ToLogin' do |alert, notice|
-      it 'ログインにリダイレクトする' do
-        is_expected.to redirect_to(new_user_session_path)
-        expect(flash[:alert]).to alert.present? ? eq(I18n.t(alert)) : be_nil
-        expect(flash[:notice]).to notice.present? ? eq(I18n.t(notice)) : be_nil
-      end
-    end
 
     # テストケース
     context '未ログイン' do
@@ -514,21 +409,6 @@ RSpec.describe 'Users::Registrations', type: :request do
       end
     end
 
-    shared_examples_for 'ToTop' do |alert, notice|
-      it 'トップページにリダイレクトする' do
-        is_expected.to redirect_to(root_path)
-        expect(flash[:alert]).to alert.present? ? eq(I18n.t(alert)) : be_nil
-        expect(flash[:notice]).to notice.present? ? eq(I18n.t(notice)) : be_nil
-      end
-    end
-    shared_examples_for 'ToLogin' do |alert, notice|
-      it 'ログインにリダイレクトする' do
-        is_expected.to redirect_to(new_user_session_path)
-        expect(flash[:alert]).to alert.present? ? eq(I18n.t(alert)) : be_nil
-        expect(flash[:notice]).to notice.present? ? eq(I18n.t(notice)) : be_nil
-      end
-    end
-
     # テストケース
     context '未ログイン' do
       # it_behaves_like 'NG' # Tips: 未ログインの為、対象がない
@@ -553,27 +433,6 @@ RSpec.describe 'Users::Registrations', type: :request do
   #   未ログイン, ログイン中, ログイン中（削除予約済み）
   describe 'GET #undo_delete' do
     subject { get delete_undo_user_registration_path }
-
-    # テスト内容
-    shared_examples_for 'ToOK' do
-      it 'HTTPステータスが200' do
-        is_expected.to eq(200)
-      end
-    end
-    shared_examples_for 'ToTop' do |alert, notice|
-      it 'トップページにリダイレクトする' do
-        is_expected.to redirect_to(root_path)
-        expect(flash[:alert]).to alert.present? ? eq(I18n.t(alert)) : be_nil
-        expect(flash[:notice]).to notice.present? ? eq(I18n.t(notice)) : be_nil
-      end
-    end
-    shared_examples_for 'ToLogin' do |alert, notice|
-      it 'ログインにリダイレクトする' do
-        is_expected.to redirect_to(new_user_session_path)
-        expect(flash[:alert]).to alert.present? ? eq(I18n.t(alert)) : be_nil
-        expect(flash[:notice]).to notice.present? ? eq(I18n.t(notice)) : be_nil
-      end
-    end
 
     # テストケース
     context '未ログイン' do
@@ -612,21 +471,6 @@ RSpec.describe 'Users::Registrations', type: :request do
         subject
         expect(user.destroy_requested_at).to eq(before_destroy_requested_at)
         expect(user.destroy_schedule_at).to eq(before_destroy_schedule_at)
-      end
-    end
-
-    shared_examples_for 'ToTop' do |alert, notice|
-      it 'トップページにリダイレクトする' do
-        is_expected.to redirect_to(root_path)
-        expect(flash[:alert]).to alert.present? ? eq(I18n.t(alert)) : be_nil
-        expect(flash[:notice]).to notice.present? ? eq(I18n.t(notice)) : be_nil
-      end
-    end
-    shared_examples_for 'ToLogin' do |alert, notice|
-      it 'ログインにリダイレクトする' do
-        is_expected.to redirect_to(new_user_session_path)
-        expect(flash[:alert]).to alert.present? ? eq(I18n.t(alert)) : be_nil
-        expect(flash[:notice]).to notice.present? ? eq(I18n.t(notice)) : be_nil
       end
     end
 

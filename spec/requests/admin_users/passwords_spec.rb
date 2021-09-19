@@ -1,6 +1,40 @@
 require 'rails_helper'
 
 RSpec.describe 'AdminUsers::Passwords', type: :request do
+  # テスト内容（共通）
+  shared_examples_for 'ToOK' do
+    it 'HTTPステータスが200' do
+      is_expected.to eq(200)
+    end
+  end
+  shared_examples_for 'ToError' do |error_msg|
+    it 'HTTPステータスが200。対象のエラーメッセージが含まれる' do # Tips: 再入力
+      is_expected.to eq(200)
+      expect(response.body).to include(I18n.t(error_msg))
+    end
+  end
+  shared_examples_for 'ToAdmin' do |alert, notice|
+    it 'RailsAdminにリダイレクトする' do
+      is_expected.to redirect_to(rails_admin_path)
+      expect(flash[:alert]).to alert.present? ? eq(I18n.t(alert)) : be_nil
+      expect(flash[:notice]).to notice.present? ? eq(I18n.t(notice)) : be_nil
+    end
+  end
+  shared_examples_for 'ToLogin' do |alert, notice|
+    it 'ログインにリダイレクトする' do
+      is_expected.to redirect_to(new_admin_user_session_path)
+      expect(flash[:alert]).to alert.present? ? eq(I18n.t(alert)) : be_nil
+      expect(flash[:notice]).to notice.present? ? eq(I18n.t(notice)) : be_nil
+    end
+  end
+  shared_examples_for 'ToNew' do |alert, notice|
+    it 'パスワード再設定[メール送信]にリダイレクトする' do
+      is_expected.to redirect_to(new_admin_user_password_path)
+      expect(flash[:alert]).to alert.present? ? eq(I18n.t(alert)) : be_nil
+      expect(flash[:notice]).to notice.present? ? eq(I18n.t(notice)) : be_nil
+    end
+  end
+
   # GET /admin/password/new パスワード再設定[メール送信]
   # 前提条件
   #   なし
@@ -8,20 +42,6 @@ RSpec.describe 'AdminUsers::Passwords', type: :request do
   #   未ログイン, ログイン中
   describe 'GET #new' do
     subject { get new_admin_user_password_path }
-
-    # テスト内容
-    shared_examples_for 'ToOK' do
-      it 'HTTPステータスが200' do
-        is_expected.to eq(200)
-      end
-    end
-    shared_examples_for 'ToAdmin' do |alert, notice|
-      it 'RailsAdminにリダイレクトする' do
-        is_expected.to redirect_to(rails_admin_path)
-        expect(flash[:alert]).to alert.present? ? eq(I18n.t(alert)) : be_nil
-        expect(flash[:notice]).to notice.present? ? eq(I18n.t(notice)) : be_nil
-      end
-    end
 
     # テストケース
     context '未ログイン' do
@@ -58,27 +78,6 @@ RSpec.describe 'AdminUsers::Passwords', type: :request do
     shared_examples_for 'NG' do
       it 'メールが送信されない' do
         expect { subject }.to change(ActionMailer::Base.deliveries, :count).by(0)
-      end
-    end
-
-    shared_examples_for 'ToError' do |error_msg|
-      it 'HTTPステータスが200。対象のエラーメッセージが含まれる' do # Tips: 再入力
-        is_expected.to eq(200)
-        expect(response.body).to include(I18n.t(error_msg))
-      end
-    end
-    shared_examples_for 'ToAdmin' do |alert, notice|
-      it 'RailsAdminにリダイレクトする' do
-        is_expected.to redirect_to(rails_admin_path)
-        expect(flash[:alert]).to alert.present? ? eq(I18n.t(alert)) : be_nil
-        expect(flash[:notice]).to notice.present? ? eq(I18n.t(notice)) : be_nil
-      end
-    end
-    shared_examples_for 'ToLogin' do |alert, notice|
-      it 'ログインにリダイレクトする' do
-        is_expected.to redirect_to(new_admin_user_session_path)
-        expect(flash[:alert]).to alert.present? ? eq(I18n.t(alert)) : be_nil
-        expect(flash[:notice]).to notice.present? ? eq(I18n.t(notice)) : be_nil
       end
     end
 
@@ -139,34 +138,6 @@ RSpec.describe 'AdminUsers::Passwords', type: :request do
   #   トークン: 期限内（未ロック, ロック中）, 期限切れ, 存在しない, ない
   describe 'GET #edit' do
     subject { get edit_admin_user_password_path(reset_password_token: reset_password_token) }
-
-    # テスト内容
-    shared_examples_for 'ToOK' do
-      it 'HTTPステータスが200' do
-        is_expected.to eq(200)
-      end
-    end
-    shared_examples_for 'ToAdmin' do |alert, notice|
-      it 'RailsAdminにリダイレクトする' do
-        is_expected.to redirect_to(rails_admin_path)
-        expect(flash[:alert]).to alert.present? ? eq(I18n.t(alert)) : be_nil
-        expect(flash[:notice]).to notice.present? ? eq(I18n.t(notice)) : be_nil
-      end
-    end
-    shared_examples_for 'ToLogin' do |alert, notice|
-      it 'ログインにリダイレクトする' do
-        is_expected.to redirect_to(new_admin_user_session_path)
-        expect(flash[:alert]).to alert.present? ? eq(I18n.t(alert)) : be_nil
-        expect(flash[:notice]).to notice.present? ? eq(I18n.t(notice)) : be_nil
-      end
-    end
-    shared_examples_for 'ToNew' do |alert, notice|
-      it 'パスワード再設定[メール送信]にリダイレクトする' do
-        is_expected.to redirect_to(new_admin_user_password_path)
-        expect(flash[:alert]).to alert.present? ? eq(I18n.t(alert)) : be_nil
-        expect(flash[:notice]).to notice.present? ? eq(I18n.t(notice)) : be_nil
-      end
-    end
 
     # テストケース
     shared_examples_for '[未ログイン]トークンが期限内（未ロック）' do
@@ -256,27 +227,6 @@ RSpec.describe 'AdminUsers::Passwords', type: :request do
         expect(AdminUser.find(send_admin_user.id).reset_password_sent_at).to eq(send_admin_user.reset_password_sent_at)
 
         expect(ActionMailer::Base.deliveries.count).to eq(0)
-      end
-    end
-
-    shared_examples_for 'ToError' do |error_msg|
-      it 'HTTPステータスが200。対象のエラーメッセージが含まれる' do # Tips: 再入力
-        is_expected.to eq(200)
-        expect(response.body).to include(I18n.t(error_msg))
-      end
-    end
-    shared_examples_for 'ToAdmin' do |alert, notice|
-      it 'RailsAdminにリダイレクトする' do
-        is_expected.to redirect_to(rails_admin_path)
-        expect(flash[:alert]).to alert.present? ? eq(I18n.t(alert)) : be_nil
-        expect(flash[:notice]).to notice.present? ? eq(I18n.t(notice)) : be_nil
-      end
-    end
-    shared_examples_for 'ToNew' do |alert, notice|
-      it 'パスワード再設定[メール送信]にリダイレクトする' do
-        is_expected.to redirect_to(new_admin_user_password_path)
-        expect(flash[:alert]).to alert.present? ? eq(I18n.t(alert)) : be_nil
-        expect(flash[:notice]).to notice.present? ? eq(I18n.t(notice)) : be_nil
       end
     end
 

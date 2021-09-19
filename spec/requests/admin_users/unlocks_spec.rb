@@ -1,6 +1,33 @@
 require 'rails_helper'
 
 RSpec.describe 'AdminUsers::Unlocks', type: :request do
+  # テスト内容（共通）
+  shared_examples_for 'ToOK' do
+    it 'HTTPステータスが200' do
+      is_expected.to eq(200)
+    end
+  end
+  shared_examples_for 'ToError' do |error_msg|
+    it 'HTTPステータスが200。対象のエラーメッセージが含まれる' do # Tips: 再入力
+      is_expected.to eq(200)
+      expect(response.body).to include(I18n.t(error_msg))
+    end
+  end
+  shared_examples_for 'ToAdmin' do |alert, notice|
+    it 'RailsAdminにリダイレクトする' do
+      is_expected.to redirect_to(rails_admin_path)
+      expect(flash[:alert]).to alert.present? ? eq(I18n.t(alert)) : be_nil
+      expect(flash[:notice]).to notice.present? ? eq(I18n.t(notice)) : be_nil
+    end
+  end
+  shared_examples_for 'ToLogin' do |alert, notice|
+    it 'ログインにリダイレクトする' do
+      is_expected.to redirect_to(new_admin_user_session_path)
+      expect(flash[:alert]).to alert.present? ? eq(I18n.t(alert)) : be_nil
+      expect(flash[:notice]).to notice.present? ? eq(I18n.t(notice)) : be_nil
+    end
+  end
+
   # GET /admin/unlock/new アカウントロック解除[メール再送]
   # 前提条件
   #   なし
@@ -8,20 +35,6 @@ RSpec.describe 'AdminUsers::Unlocks', type: :request do
   #   未ログイン, ログイン中
   describe 'GET #new' do
     subject { get new_admin_user_unlock_path }
-
-    # テスト内容
-    shared_examples_for 'ToOK' do
-      it 'HTTPステータスが200' do
-        is_expected.to eq(200)
-      end
-    end
-    shared_examples_for 'ToAdmin' do |alert, notice|
-      it 'RailsAdminにリダイレクトする' do
-        is_expected.to redirect_to(rails_admin_path)
-        expect(flash[:alert]).to alert.present? ? eq(I18n.t(alert)) : be_nil
-        expect(flash[:notice]).to notice.present? ? eq(I18n.t(notice)) : be_nil
-      end
-    end
 
     # テストケース
     context '未ログイン' do
@@ -58,27 +71,6 @@ RSpec.describe 'AdminUsers::Unlocks', type: :request do
     shared_examples_for 'NG' do
       it 'メールが送信されない' do
         expect { subject }.to change(ActionMailer::Base.deliveries, :count).by(0)
-      end
-    end
-
-    shared_examples_for 'ToError' do |error_msg|
-      it 'HTTPステータスが200。対象のエラーメッセージが含まれる' do # Tips: 再入力
-        is_expected.to eq(200)
-        expect(response.body).to include(I18n.t(error_msg))
-      end
-    end
-    shared_examples_for 'ToAdmin' do |alert, notice|
-      it 'RailsAdminにリダイレクトする' do
-        is_expected.to redirect_to(rails_admin_path)
-        expect(flash[:alert]).to alert.present? ? eq(I18n.t(alert)) : be_nil
-        expect(flash[:notice]).to notice.present? ? eq(I18n.t(notice)) : be_nil
-      end
-    end
-    shared_examples_for 'ToLogin' do |alert, notice|
-      it 'ログインにリダイレクトする' do
-        is_expected.to redirect_to(new_admin_user_session_path)
-        expect(flash[:alert]).to alert.present? ? eq(I18n.t(alert)) : be_nil
-        expect(flash[:notice]).to notice.present? ? eq(I18n.t(notice)) : be_nil
       end
     end
 
@@ -152,27 +144,6 @@ RSpec.describe 'AdminUsers::Unlocks', type: :request do
       it 'アカウントロック日時が変更されない' do
         subject
         expect(AdminUser.find(send_admin_user.id).locked_at).to eq(send_admin_user.locked_at)
-      end
-    end
-
-    shared_examples_for 'ToError' do |error_msg|
-      it 'HTTPステータスが200。対象のエラーメッセージが含まれる' do # Tips: 再入力
-        is_expected.to eq(200)
-        expect(response.body).to include(I18n.t(error_msg))
-      end
-    end
-    shared_examples_for 'ToAdmin' do |alert, notice|
-      it 'RailsAdminにリダイレクトする' do
-        is_expected.to redirect_to(rails_admin_path)
-        expect(flash[:alert]).to alert.present? ? eq(I18n.t(alert)) : be_nil
-        expect(flash[:notice]).to notice.present? ? eq(I18n.t(notice)) : be_nil
-      end
-    end
-    shared_examples_for 'ToLogin' do |alert, notice|
-      it 'ログインにリダイレクトする' do
-        is_expected.to redirect_to(new_admin_user_session_path)
-        expect(flash[:alert]).to alert.present? ? eq(I18n.t(alert)) : be_nil
-        expect(flash[:notice]).to notice.present? ? eq(I18n.t(notice)) : be_nil
       end
     end
 
