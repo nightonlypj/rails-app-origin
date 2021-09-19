@@ -48,6 +48,7 @@ Thumbs.db
 /db/erd.pdf
 /schemaspy/analysis/*
 !/schemaspy/analysis/.keep
+/coverage
 
 config/settings.local.yml
 config/settings/*.local.yml
