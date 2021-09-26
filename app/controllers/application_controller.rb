@@ -110,7 +110,7 @@ class ApplicationController < ActionController::Base
     try_count = 1
     loop do
       code = Digest::MD5.hexdigest(SecureRandom.uuid)
-      return code if model.where("#{key} = ?", code).blank?
+      return code if model.where(key => code).blank?
 
       if try_count < 10
         logger.warn("[WARN](#{try_count})Not unique code(#{code}): #{logger_message}")

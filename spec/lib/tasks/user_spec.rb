@@ -1,16 +1,16 @@
 require 'rake_helper'
 
-RSpec.describe User do
+RSpec.describe :user, type: :task do
   # 削除予定日時を過ぎたユーザーのアカウントを削除
   # 前提条件
   #   なし
   # テストパターン
   #   2件（削除予約1件、削除対象0件）, 3件（削除予約1件、削除対象1件）, 4件（削除予約1件、削除対象2件）
+  #   ドライラン: true, false
   describe 'user:destroy' do
-    let(:task)    { Rake.application['user:destroy'] }
-    let(:dry_run) { 'false' }
-    let!(:user1)  { FactoryBot.create(:user) }
-    let!(:user2)  { FactoryBot.create(:user_destroy_reserved) }
+    let(:task) { Rake.application['user:destroy'] }
+    let!(:user1) { FactoryBot.create(:user) }
+    let!(:user2) { FactoryBot.create(:user_destroy_reserved) }
     before do
       FactoryBot.create(:infomation) # :All
       FactoryBot.create(:infomation, target: :User, user_id: user1.id)
@@ -61,24 +61,50 @@ RSpec.describe User do
     end
 
     # テストケース
-    context '2件（削除予約1件、削除対象0件）' do
+    shared_examples_for '[2件]ドライランtrue' do
+      let(:dry_run) { 'true' }
+      it_behaves_like '削除件数', 0, 0
+    end
+    shared_examples_for '[3件]ドライランtrue' do
+      let(:dry_run) { 'true' }
+      it_behaves_like '削除件数', 0, 0
+    end
+    shared_examples_for '[4件]ドライランtrue' do
+      let(:dry_run) { 'true' }
+      it_behaves_like '削除件数', 0, 0
+    end
+    shared_examples_for '[2件]ドライランfalse' do
+      let(:dry_run) { 'false' }
       it_behaves_like '削除件数', 0, 0
       it_behaves_like 'ユーザー1・2未削除'
     end
-
-    context '3件（削除予約1件、削除対象1件）' do
-      include_context 'ユーザー作成3'
+    shared_examples_for '[3件]ドライランfalse' do
+      let(:dry_run) { 'false' }
       it_behaves_like '削除件数', 1, 0
       it_behaves_like 'ユーザー1・2未削除'
       it_behaves_like 'ユーザー3削除'
     end
-
-    context '4件（削除予約1件、削除対象2件）' do
-      include_context 'ユーザー作成3'
-      include_context 'ユーザー作成4'
+    shared_examples_for '[4件]ドライランfalse' do
+      let(:dry_run) { 'false' }
       it_behaves_like '削除件数', 2, 1
       it_behaves_like 'ユーザー1・2未削除'
       it_behaves_like 'ユーザー3・4削除'
+    end
+
+    context '2件（削除予約1件、削除対象0件）' do
+      it_behaves_like '[2件]ドライランtrue'
+      it_behaves_like '[2件]ドライランfalse'
+    end
+    context '3件（削除予約1件、削除対象1件）' do
+      include_context 'ユーザー作成3'
+      it_behaves_like '[3件]ドライランtrue'
+      it_behaves_like '[3件]ドライランfalse'
+    end
+    context '4件（削除予約1件、削除対象2件）' do
+      include_context 'ユーザー作成3'
+      include_context 'ユーザー作成4'
+      it_behaves_like '[4件]ドライランtrue'
+      it_behaves_like '[4件]ドライランfalse'
     end
   end
 end

@@ -15,7 +15,7 @@ RSpec.describe UserMailer, type: :mailer do
   #   削除予約済み
   # テストパターン
   #   なし
-  describe '.destroy_reserved' do
+  describe '#destroy_reserved' do
     let(:user)    { FactoryBot.create(:user_destroy_reserved) }
     let(:mail)    { UserMailer.with(user: user).destroy_reserved }
     let(:subject) { 'mailer.user.destroy_reserved.subject' }
@@ -33,7 +33,7 @@ RSpec.describe UserMailer, type: :mailer do
   #   削除予約なし
   # テストパターン
   #   なし
-  describe '.undo_destroy_reserved' do
+  describe '#undo_destroy_reserved' do
     let(:user)    { FactoryBot.create(:user) }
     let(:mail)    { UserMailer.with(user: user).undo_destroy_reserved }
     let(:subject) { 'mailer.user.undo_destroy_reserved.subject' }
@@ -46,7 +46,7 @@ RSpec.describe UserMailer, type: :mailer do
   #   削除予約済み
   # テストパターン
   #   なし
-  describe '.destroy_completed' do
+  describe '#destroy_completed' do
     let(:user)    { FactoryBot.create(:user_destroy_reserved) }
     let(:mail)    { UserMailer.with(user: user).destroy_completed }
     let(:subject) { 'mailer.user.destroy_completed.subject' }

@@ -1,7 +1,7 @@
 # Preview all emails at http://localhost:3000/rails/mailers/user_devise_mailer
 class UserDeviseMailerPreview < ActionMailer::Preview
   # メールアドレス確認のお願い
-  def confirmation_instructions(redirect_url = '')
+  def confirmation_instructions(redirect_url = nil)
     user = FactoryBot.build_stubbed(:user_unconfirmed)
     DeviseMailer.confirmation_instructions(user, token, { 'client-config': 'default', 'redirect-url': redirect_url })
   end
@@ -12,7 +12,7 @@ class UserDeviseMailerPreview < ActionMailer::Preview
   end
 
   # パスワード再設定方法のお知らせ
-  def reset_password_instructions(redirect_url = '')
+  def reset_password_instructions(redirect_url = nil)
     user = FactoryBot.build_stubbed(:user)
     DeviseMailer.reset_password_instructions(user, token, { 'client-config': 'default', 'redirect-url': redirect_url })
   end
@@ -23,7 +23,7 @@ class UserDeviseMailerPreview < ActionMailer::Preview
   end
 
   # アカウントロックのお知らせ
-  def unlock_instructions(redirect_url = '')
+  def unlock_instructions(redirect_url = nil)
     user = FactoryBot.build_stubbed(:user_locked)
     DeviseMailer.unlock_instructions(user, token, { 'client-config': 'default', 'redirect-url': redirect_url })
   end

@@ -86,7 +86,7 @@ RSpec.describe 'Infomations', type: :request do
           else
             expect(response.body).not_to include("\"#{infomation_path(info)}\"") # Tips: 本文がない場合は表示しない
           end
-          expect(response.body).to include(I18n.l(info.started_at.to_date)) # 掲載開始日 # Tips: ユニークではない為、正確ではない
+          expect(response.body).to include(I18n.l(info.started_at.to_date)) # 掲載開始日
         end
       end
     end
@@ -106,10 +106,10 @@ RSpec.describe 'Infomations', type: :request do
           info = infomations[infomations.count - no]
           expect(data['id']).to eq(info.id) # ID
           expect(data['title']).to eq(info.title) # タイトル
-          expect(data['summary']).to eq(info.summary.present? ? info.summary : '') # 概要
-          expect(data['started_at']).to eq(I18n.l(info.started_at, format: :json)) # 掲載開始日 # Tips: ユニークではない為、正確ではない
-          expect(data['ended_at']).to eq(info.ended_at.present? ? I18n.l(info.ended_at, format: :json) : '') # 掲載終了日 # Tips: ユニークではない為、正確ではない
-          expect(data['target']).to eq(info.target) # 対象 # Tips: ユニークではない為、正確ではない
+          expect(data['summary']).to eq(info.summary) # 概要
+          expect(data['started_at']).to eq(I18n.l(info.started_at, format: :json)) # 掲載開始日
+          expect(data['ended_at']).to eq(info.ended_at.present? ? I18n.l(info.ended_at, format: :json) : nil) # 掲載終了日
+          expect(data['target']).to eq(info.target) # 対象
         end
       end
     end

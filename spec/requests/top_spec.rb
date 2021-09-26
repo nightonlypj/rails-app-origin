@@ -52,7 +52,7 @@ RSpec.describe 'Top', type: :request do
           else
             expect(response.body).not_to include("\"#{infomation_path(info)}\"") # Tips: 本文がない場合は表示しない
           end
-          expect(response.body).to include(I18n.l(info.started_at.to_date)) # 掲載開始日 # Tips: ユニークではない為、正確ではない
+          expect(response.body).to include(I18n.l(info.started_at.to_date)) # 掲載開始日
         end
       end
     end

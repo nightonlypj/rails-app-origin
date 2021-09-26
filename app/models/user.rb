@@ -1,18 +1,20 @@
 class User < ApplicationRecord
-  has_many :infomation, dependent: :destroy
-  mount_uploader :image, ImageUploader
-
-  validates :code, presence: true
-  validates :code, uniqueness: { case_sensitive: true }
-  validates :name, presence: true
-  validates :name, length: { in: Settings['user_name_minimum']..Settings['user_name_maximum'] }, if: proc { |user| user.name.present? }
-
   # Include default devise modules. Others available are:
   # :confirmable, :lockable, :timeoutable, :trackable and :omniauthable
   devise :database_authenticatable, :registerable,
          :recoverable, :rememberable, :validatable,
          :confirmable, :lockable, :timeoutable, :trackable
   include DeviseTokenAuth::Concerns::User
+
+  mount_uploader :image, ImageUploader
+  has_many :infomation, dependent: :destroy
+
+  validates :code, presence: true
+  validates :code, uniqueness: { case_sensitive: true }
+  validates :name, presence: true
+  validates :name, length: { in: Settings['user_name_minimum']..Settings['user_name_maximum'] }, if: proc { |user| user.name.present? }
+
+  scope :by_destroy_reserved, -> { where('destroy_schedule_at <= ?', Time.current) }
 
   # 削除予約済みか返却
   def destroy_reserved?
@@ -21,8 +23,7 @@ class User < ApplicationRecord
 
   # 削除予約
   def set_destroy_reserve
-    now = Time.current
-    update!(destroy_requested_at: now, destroy_schedule_at: now + Settings['destroy_schedule_days'].days)
+    update!(destroy_requested_at: Time.current, destroy_schedule_at: Time.current + Settings['destroy_schedule_days'].days)
   end
 
   # 削除予約取り消し

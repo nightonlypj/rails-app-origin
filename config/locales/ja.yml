@@ -1,7 +1,7 @@
 ja:
   app_name: 'RailsAppOrigin'
   my_name: 'My name'
-  my_url: 'https://mydomain'
+  my_url: 'https://example.com'
   activerecord:
     models:
       infomation: 'お知らせ'

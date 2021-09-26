@@ -74,7 +74,7 @@ RSpec.describe User, type: :model do
   #   なし
   # テストパターン
   #   削除予定日時: ない（予約なし）, ある（予約済み）
-  describe '.destroy_reserved?' do
+  describe '#destroy_reserved?' do
     subject { user.destroy_reserved? }
     let(:user) { FactoryBot.build_stubbed(:user, destroy_schedule_at: destroy_schedule_at) }
 
@@ -97,7 +97,7 @@ RSpec.describe User, type: :model do
   #   削除予約なし
   # テストパターン
   #   なし
-  describe '.set_destroy_reserve' do
+  describe '#set_destroy_reserve' do
     subject { user.set_destroy_reserve }
     let(:user) { FactoryBot.create(:user) }
 
@@ -122,7 +122,7 @@ RSpec.describe User, type: :model do
   #   削除予約済み
   # テストパターン
   #   なし
-  describe '.set_undo_destroy_reserve' do
+  describe '#set_undo_destroy_reserve' do
     subject { user.set_undo_destroy_reserve }
     let(:user) { FactoryBot.create(:user_destroy_reserved) }
 
@@ -146,7 +146,7 @@ RSpec.describe User, type: :model do
   # テストパターン
   #   画像: ない, ある
   #   mini, small, medium, large, xlarge, 未定義
-  describe '.image_url' do
+  describe '#image_url' do
     subject { user.image_url(version) }
     let(:user) { FactoryBot.create(:user, image: image) }
 

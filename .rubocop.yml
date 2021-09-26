@@ -123,3 +123,7 @@ Metrics/ParameterLists:
 # C: [Correctable] Style/ConditionalAssignment: Use the return of the conditional for variable assignment and comparison.
 Style/ConditionalAssignment:
   Enabled: false
+
+# C: Style/GuardClause: Use a guard clause (*) instead of wrapping the code inside a conditional expression.
+Style/GuardClause:
+  Enabled: false

@@ -1,10 +1,10 @@
 env_name: ''
-base_domain: 'mydomain'
-base_image_url: 'https://mydomain'
-redirect_whitelist: ['https://front.mydomain/*']
+base_domain: 'example.com'
+base_image_url: 'https://example.com'
+redirect_whitelist: ['https://front.example.com/*']
 default_confirm_success_url: ''
 default_password_reset_url: ''
 default_unlock_success_url: ''
 mailer_from:
   name: '%{app_name}'
-  email: 'noreply@mydomain'
+  email: 'noreply@example.com'

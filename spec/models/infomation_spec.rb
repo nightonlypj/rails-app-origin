@@ -9,7 +9,7 @@ RSpec.describe Infomation, type: :model do
   # テストパターン
   #   未ログイン, ログイン中, ログイン中（削除予約済み）
   #   対象: 全員, 自分, 他人
-  describe '.target_user?' do
+  describe '#target_user?' do
     subject { infomation.target_user?(user) }
     let(:infomation)   { FactoryBot.create(:infomation, target: target, user_id: user_id) }
     let(:outside_user) { FactoryBot.create(:user) }

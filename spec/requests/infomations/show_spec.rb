@@ -26,7 +26,7 @@ RSpec.describe 'Infomations', type: :request do
         is_expected.to eq(200)
         expect(response.body).to include(infomation.title) # タイトル
         expect(response.body).to include(infomation.body) if infomation.body.present? # 本文
-        expect(response.body).to include(I18n.l(infomation.started_at.to_date)) # 掲載開始日 # Tips: ユニークではない為、正確ではない
+        expect(response.body).to include(I18n.l(infomation.started_at.to_date)) # 掲載開始日
       end
       it "[AcceptヘッダがJSON]HTTPが#{json_code}" do
         @accept_headers = ACCEPT_JSON
@@ -46,10 +46,10 @@ RSpec.describe 'Infomations', type: :request do
 
         response_json = JSON.parse(response.body)['infomation']
         expect(response_json['title']).to eq(infomation.title) # タイトル
-        expect(response_json['body']).to eq(infomation.body.present? ? infomation.body : '') # 本文
-        expect(response_json['started_at']).to eq(I18n.l(infomation.started_at, format: :json)) # 掲載開始日 # Tips: ユニークではない為、正確ではない
-        expect(response_json['ended_at']).to eq(infomation.ended_at.present? ? I18n.l(infomation.ended_at, format: :json) : '') # 掲載終了日 # Tips: ユニークではない為、正確ではない
-        expect(response_json['target']).to eq(infomation.target) # 対象 # Tips: ユニークではない為、正確ではない
+        expect(response_json['body']).to eq(infomation.body) # 本文
+        expect(response_json['started_at']).to eq(I18n.l(infomation.started_at, format: :json)) # 掲載開始日
+        expect(response_json['ended_at']).to eq(infomation.ended_at.present? ? I18n.l(infomation.ended_at, format: :json) : nil) # 掲載終了日
+        expect(response_json['target']).to eq(infomation.target) # 対象
       end
     end
     shared_examples_for 'ToNot' do
