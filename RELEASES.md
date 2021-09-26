@@ -1,6 +1,24 @@
 # リリースノート
 
-## 1.1.0
+## 1.3.0 (Sprint 8)
+
+- 認証と登録をAPIでもできるようにしたい
+  - https://dev.azure.com/nightonly/rails-app-origin/_workitems/edit/388/
+- SimpleCov導入：カバレッジを見れるようにしたい
+  - https://dev.azure.com/nightonly/rails-app-origin/_workitems/edit/395/
+- SchemaSpy導入：DB設計・ER図を自動生成したい
+  - https://dev.azure.com/nightonly/rails-app-origin/_workitems/edit/394/
+- Docker導入：環境構築を簡単にしたい
+  - https://dev.azure.com/nightonly/rails-app-origin/_workitems/edit/393/
+- Bullet導入：N+1に気付けるようにしたい
+  - https://dev.azure.com/nightonly/rails-app-origin/_workitems/edit/392/
+
+## 1.2.0 (Sprint 7)
+
+- モデルベースのER図を自動生成したい
+  - https://dev.azure.com/nightonly/rails-app-origin/_workitems/edit/377/
+
+## 1.1.0 (Sprint 4-6)
 
 - deviseのページ：POST後のURLをGETした時にRouting Errorや違うページに行かないようにしたい
   - https://dev.azure.com/nightonly/rails-app-origin/_workitems/edit/345/

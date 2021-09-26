@@ -4,4 +4,8 @@
 <br/>
 ログイン失敗が繰り返された為、アカウントがロックされました。<br/>
 アカウントロックを解除するには、下記のリンクをクリックしてください。<br/>
+<% if message['redirect-url'].to_s.present? %>
+<%= link_to 'アカウントロック解除', user_auth_unlock_url(config: message['client-config'].to_s, redirect_url: message['redirect-url'].to_s, unlock_token: @token) %><br/>
+<% else %>
 <%= link_to 'アカウントロック解除', unlock_url(@resource, unlock_token: @token) %><br/>
+<% end %>

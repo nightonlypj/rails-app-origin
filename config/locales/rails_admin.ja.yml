@@ -1,0 +1,12 @@
+# Tips: 不足分や文言変更したい場合のみ記載。デフォルト: gems/rails_admin-i18n-*/locales/ja.yml
+ja:
+  admin:
+    js:
+      too_many_objects: '対象が多過ぎます。上の検索ボックスを使用してください' # Too many objects, use search box above
+      no_objects: '対象が見つかりません' # No objects found
+    toggle_navigation: 'ナビゲーション切替' # Toggle navigation
+    misc:
+      log_out: 'ログアウト' # Log out
+      time_ago: '%{time}前' # %{time} ago
+      ago: '前' # ago
+      more: '次の %{count} 個の %{models_name}' # Plus %{count} more %{models_name}

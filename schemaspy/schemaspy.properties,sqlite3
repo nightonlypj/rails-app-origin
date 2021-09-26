@@ -1,0 +1,11 @@
+schemaspy.t=sqlite.properties
+schemaspy.dp=jdbc
+#schemaspy.host=
+#schemaspy.port=
+schemaspy.s=dumy
+schemaspy.db=../db/development.sqlite3
+schemaspy.u=dumy
+#schemaspy.p=
+schemaspy.o=analysis
+schemaspy.meta=schemaspymeta.xml
+schemaspy.cat=dumy

@@ -3,14 +3,12 @@ class AdminUserDeviseMailerPreview < ActionMailer::Preview
   # パスワード再設定方法のお知らせ
   def reset_password_instructions
     admin_user = FactoryBot.build_stubbed(:admin_user)
-    token = Faker::Internet.password(min_length: 20, max_length: 20)
     DeviseMailer.reset_password_instructions(admin_user, token)
   end
 
   # アカウントロックのお知らせ
   def unlock_instructions
-    admin_user = FactoryBot.build_stubbed(:admin_user)
-    token = Faker::Internet.password(min_length: 20, max_length: 20)
+    admin_user = FactoryBot.build_stubbed(:admin_user_locked)
     DeviseMailer.unlock_instructions(admin_user, token)
   end
 
@@ -18,5 +16,11 @@ class AdminUserDeviseMailerPreview < ActionMailer::Preview
   def password_change
     admin_user = FactoryBot.build_stubbed(:admin_user)
     DeviseMailer.password_change(admin_user)
+  end
+
+  private
+
+  def token
+    Faker::Internet.password(min_length: 20, max_length: 20)
   end
 end

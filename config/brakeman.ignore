@@ -1,0 +1,26 @@
+{
+  "ignored_warnings": [
+    {
+      "warning_type": "Redirect",
+      "warning_code": 18,
+      "fingerprint": "e48199614121dcd187f8078015873667c10fd56379c49897b28cd8c94cee0c44",
+      "check_name": "Redirect",
+      "message": "Possible unprotected redirect",
+      "file": "app/controllers/users/auth/unlocks_controller.rb",
+      "line": 61,
+      "link": "https://brakemanscanner.org/docs/warning_types/redirect/",
+      "code": "redirect_to(DeviseTokenAuth::Url.generate(params.fetch(:redirect_url, Settings[\"default_unlock_success_url\"]), :unlock => true, :notice => t(\"devise.unlocks.unlocked\")))",
+      "render_path": null,
+      "location": {
+        "type": "method",
+        "class": "Users::Auth::UnlocksController",
+        "method": "show"
+      },
+      "user_input": "params.fetch(:redirect_url, Settings[\"default_unlock_success_url\"])",
+      "confidence": "Weak",
+      "note": ""
+    }
+  ],
+  "updated": "2021-09-26 17:22:58 +0900",
+  "brakeman_version": "5.0.4"
+}

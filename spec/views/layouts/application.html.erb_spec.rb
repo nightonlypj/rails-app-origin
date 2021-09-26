@@ -3,45 +3,27 @@ require 'rails_helper'
 RSpec.describe 'layouts/application', type: :view do
   # テスト内容
   shared_examples_for '未ログイン表示' do
-    it 'ログインのパスが含まれる' do
+    it '対象のパスが含まれる' do
       render
-      expect(rendered).to include("\"#{new_user_session_path}\"")
+      expect(rendered).to include("\"#{new_user_session_path}\"") # ログイン
+      expect(rendered).to include("\"#{new_user_registration_path}\"") # アカウント登録
     end
-    it 'アカウント登録のパスが含まれる' do
+    it '対象のパスが含まれない' do
       render
-      expect(rendered).to include("\"#{new_user_registration_path}\"")
-    end
-    # it 'ログインユーザーの氏名が含まれない' do # Tips: 未ログインの為、対象なし
-    # end
-    it '登録情報変更のパスが含まれない' do
-      render
-      expect(rendered).not_to include("\"#{edit_user_registration_path}\"")
-    end
-    it 'ログアウトのパスが含まれない' do
-      render
-      expect(rendered).not_to include("\"#{destroy_user_session_path}\"")
+      expect(rendered).not_to include("\"#{edit_user_registration_path}\"") # 登録情報変更
+      expect(rendered).not_to include("\"#{destroy_user_session_path}\"") # ログアウト
     end
   end
   shared_examples_for 'ログイン中表示' do
-    it 'ログインのパスが含まれない' do
+    it '対象のパスが含まれない' do
       render
-      expect(rendered).not_to include("\"#{new_user_session_path}\"")
+      expect(rendered).not_to include("\"#{new_user_session_path}\"") # ログイン
+      expect(rendered).not_to include("\"#{new_user_registration_path}\"") # アカウント登録
     end
-    it 'アカウント登録のパスが含まれない' do
+    it '対象のパスが含まれる' do
       render
-      expect(rendered).not_to include("\"#{new_user_registration_path}\"")
-    end
-    it 'ログインユーザーの氏名が含まれる' do
-      render
-      expect(rendered).to include(user.name)
-    end
-    it '登録情報変更のパスが含まれる' do
-      render
-      expect(rendered).to include("\"#{edit_user_registration_path}\"")
-    end
-    it 'ログアウトのパスが含まれる' do
-      render
-      expect(rendered).to include("\"#{destroy_user_session_path}\"")
+      expect(rendered).to include("\"#{edit_user_registration_path}\"") # 登録情報変更
+      expect(rendered).to include("\"#{destroy_user_session_path}\"") # ログアウト
     end
   end
 
@@ -69,7 +51,7 @@ RSpec.describe 'layouts/application', type: :view do
     it_behaves_like '削除予約非表示'
   end
   context 'ログイン中（削除予約済み）' do
-    include_context 'ログイン処理', true
+    include_context 'ログイン処理', :user_destroy_reserved
     it_behaves_like 'ログイン中表示'
     it_behaves_like '削除予約表示'
   end

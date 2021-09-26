@@ -3,9 +3,41 @@ FactoryBot.define do
     pass = Faker::Internet.password(min_length: 8)
     code                  { Digest::MD5.hexdigest(SecureRandom.uuid) }
     sequence(:name)       { |n| "user(#{n})" }
-    email                 { Faker::Internet.email }
+    email                 { Faker::Internet.safe_email }
     password              { pass }
     password_confirmation { pass }
     confirmed_at          { '0000-01-01 00:00:00+0000' }
+  end
+
+  # ロック中
+  factory :user_locked, parent: :user do
+    unlock_token { Devise.token_generator.digest(self, :unlock_token, email) }
+    locked_at    { Time.now.utc - 1.minute }
+  end
+
+  # メール未確認
+  factory :user_unconfirmed, parent: :user do
+    confirmation_token   { Devise.token_generator.digest(self, :confirmation_token, email) }
+    confirmation_sent_at { Time.now.utc - 1.minute }
+    confirmed_at         { nil }
+  end
+
+  # メールアドレス変更中
+  factory :user_email_changed, parent: :user do
+    confirmation_token   { Devise.token_generator.digest(self, :confirmation_token, email) }
+    confirmation_sent_at { Time.now.utc - 1.minute }
+    unconfirmed_email    { Faker::Internet.safe_email }
+  end
+
+  # 削除予約済み
+  factory :user_destroy_reserved, parent: :user do
+    destroy_requested_at { Time.current - 1.minute }
+    destroy_schedule_at  { destroy_requested_at + Settings['destroy_schedule_days'].days }
+  end
+
+  # 削除対象
+  factory :user_destroy_targeted, parent: :user do
+    destroy_requested_at { Time.current - 1.minute - Settings['destroy_schedule_days'].days }
+    destroy_schedule_at  { destroy_requested_at + Settings['destroy_schedule_days'].days }
   end
 end

@@ -1,5 +1,10 @@
 env_name: '【STG環境】'
-base_domain: 'stg.mydomain'
+base_domain: 'stg.example.com'
+base_image_url: 'https://stg.example.com'
+redirect_whitelist: ['https://stg-front.example.com/*']
+default_confirm_success_url: ''
+default_password_reset_url: ''
+default_unlock_success_url: ''
 mailer_from:
   name: '%{app_name}'
-  email: 'noreply@stg.mydomain'
+  email: 'noreply@stg.example.com'

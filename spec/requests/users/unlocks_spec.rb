@@ -1,27 +1,40 @@
 require 'rails_helper'
 
 RSpec.describe 'Users::Unlocks', type: :request do
+  # テスト内容（共通）
+  shared_examples_for 'ToOK' do
+    it 'HTTPステータスが200' do
+      is_expected.to eq(200)
+    end
+  end
+  shared_examples_for 'ToError' do |error_msg|
+    it 'HTTPステータスが200。対象のエラーメッセージが含まれる' do # Tips: 再入力
+      is_expected.to eq(200)
+      expect(response.body).to include(I18n.t(error_msg))
+    end
+  end
+  shared_examples_for 'ToTop' do |alert, notice|
+    it 'トップページにリダイレクトする' do
+      is_expected.to redirect_to(root_path)
+      expect(flash[:alert]).to alert.present? ? eq(I18n.t(alert)) : be_nil
+      expect(flash[:notice]).to notice.present? ? eq(I18n.t(notice)) : be_nil
+    end
+  end
+  shared_examples_for 'ToLogin' do |alert, notice|
+    it 'ログインにリダイレクトする' do
+      is_expected.to redirect_to(new_user_session_path)
+      expect(flash[:alert]).to alert.present? ? eq(I18n.t(alert)) : be_nil
+      expect(flash[:notice]).to notice.present? ? eq(I18n.t(notice)) : be_nil
+    end
+  end
+
   # GET /users/unlock/new アカウントロック解除[メール再送]
   # 前提条件
   #   なし
   # テストパターン
-  #   未ログイン, ログイン中, ログイン中（削除予約済み） → データ＆状態作成
+  #   未ログイン, ログイン中
   describe 'GET #new' do
-    # テスト内容
-    shared_examples_for 'ToOK' do
-      it '成功ステータス' do
-        get new_user_unlock_path
-        expect(response).to be_successful
-      end
-    end
-    shared_examples_for 'ToTop' do |alert, notice|
-      it 'トップページにリダイレクト' do
-        get new_user_unlock_path
-        expect(response).to redirect_to(root_path)
-        expect(flash[:alert]).to alert.present? ? eq(I18n.t(alert)) : be_nil
-        expect(flash[:notice]).to notice.present? ? eq(I18n.t(notice)) : be_nil
-      end
-    end
+    subject { get new_user_unlock_path }
 
     # テストケース
     context '未ログイン' do
@@ -31,78 +44,82 @@ RSpec.describe 'Users::Unlocks', type: :request do
       include_context 'ログイン処理'
       it_behaves_like 'ToTop', 'devise.failure.already_authenticated', nil
     end
-    context 'ログイン中（削除予約済み）' do
-      include_context 'ログイン処理', true
-      it_behaves_like 'ToTop', 'devise.failure.already_authenticated', nil
-    end
   end
 
   # POST /users/unlock/new アカウントロック解除[メール再送](処理)
   # 前提条件
   #   なし
   # テストパターン
-  #   未ログイン, ログイン中, ログイン中（削除予約済み） → データ＆状態作成
-  #   有効なパラメータ, 無効なパラメータ → 事前にデータ作成
+  #   未ログイン, ログイン中
+  #   有効なパラメータ（ロック中, 未ロック）, 無効なパラメータ
   describe 'POST #create' do
-    include_context 'アカウントロック解除トークン作成'
-    let!(:valid_attributes) { FactoryBot.attributes_for(:user, email: @send_user.email) }
-    let!(:invalid_attributes) { FactoryBot.attributes_for(:user, email: nil) }
+    subject { post create_user_unlock_path, params: { user: attributes } }
+    let(:send_user_locked)   { FactoryBot.create(:user_locked) }
+    let(:send_user_unlocked) { FactoryBot.create(:user) }
+    let(:not_user)           { FactoryBot.attributes_for(:user) }
+    let(:valid_attributes)   { { email: send_user.email } }
+    let(:invalid_attributes) { { email: not_user[:email] } }
 
     # テスト内容
-    shared_examples_for 'ToError' do
-      it '成功ステータス' do # Tips: 再入力
-        post create_user_unlock_path, params: { user: attributes }
-        expect(response).to be_successful
+    shared_examples_for 'OK' do
+      it 'メールが送信される' do
+        subject
+        expect(ActionMailer::Base.deliveries.count).to eq(1)
+        expect(ActionMailer::Base.deliveries[0].subject).to eq(get_subject('devise.mailer.unlock_instructions.subject')) # アカウントロックのお知らせ
       end
     end
-    shared_examples_for 'ToTop' do |alert, notice|
-      it 'トップページにリダイレクト' do
-        post create_user_unlock_path, params: { user: attributes }
-        expect(response).to redirect_to(root_path)
-        expect(flash[:alert]).to alert.present? ? eq(I18n.t(alert)) : be_nil
-        expect(flash[:notice]).to notice.present? ? eq(I18n.t(notice)) : be_nil
-      end
-    end
-    shared_examples_for 'ToLogin' do |alert, notice|
-      it 'ログインにリダイレクト' do
-        post create_user_unlock_path, params: { user: attributes }
-        expect(response).to redirect_to(new_user_session_path)
-        expect(flash[:alert]).to alert.present? ? eq(I18n.t(alert)) : be_nil
-        expect(flash[:notice]).to notice.present? ? eq(I18n.t(notice)) : be_nil
+    shared_examples_for 'NG' do
+      it 'メールが送信されない' do
+        expect { subject }.to change(ActionMailer::Base.deliveries, :count).by(0)
       end
     end
 
     # テストケース
-    shared_examples_for '[未ログイン]有効なパラメータ' do
-      let!(:attributes) { valid_attributes }
+    shared_examples_for '[未ログイン]有効なパラメータ（ロック中）' do
+      let(:send_user)  { send_user_locked }
+      let(:attributes) { valid_attributes }
+      it_behaves_like 'OK'
       it_behaves_like 'ToLogin', nil, 'devise.unlocks.send_instructions'
     end
-    shared_examples_for '[ログイン中/削除予約済み]有効なパラメータ' do
-      let!(:attributes) { valid_attributes }
+    shared_examples_for '[ログイン中]有効なパラメータ（ロック中）' do
+      let(:send_user)  { send_user_locked }
+      let(:attributes) { valid_attributes }
+      it_behaves_like 'NG'
+      it_behaves_like 'ToTop', 'devise.failure.already_authenticated', nil
+    end
+    shared_examples_for '[未ログイン]有効なパラメータ（未ロック）' do
+      let(:send_user)  { send_user_unlocked }
+      let(:attributes) { valid_attributes }
+      it_behaves_like 'NG'
+      it_behaves_like 'ToError', 'errors.messages.not_locked', nil
+    end
+    shared_examples_for '[ログイン中]有効なパラメータ（未ロック）' do
+      let(:send_user)  { send_user_unlocked }
+      let(:attributes) { valid_attributes }
+      it_behaves_like 'NG'
       it_behaves_like 'ToTop', 'devise.failure.already_authenticated', nil
     end
     shared_examples_for '[未ログイン]無効なパラメータ' do
-      let!(:attributes) { invalid_attributes }
-      it_behaves_like 'ToError'
+      let(:attributes) { invalid_attributes }
+      it_behaves_like 'NG'
+      it_behaves_like 'ToError', 'errors.messages.not_found'
     end
-    shared_examples_for '[ログイン中/削除予約済み]無効なパラメータ' do
-      let!(:attributes) { invalid_attributes }
+    shared_examples_for '[ログイン中]無効なパラメータ' do
+      let(:attributes) { invalid_attributes }
+      it_behaves_like 'NG'
       it_behaves_like 'ToTop', 'devise.failure.already_authenticated', nil
     end
 
     context '未ログイン' do
-      it_behaves_like '[未ログイン]有効なパラメータ'
+      it_behaves_like '[未ログイン]有効なパラメータ（ロック中）'
+      it_behaves_like '[未ログイン]有効なパラメータ（未ロック）'
       it_behaves_like '[未ログイン]無効なパラメータ'
     end
     context 'ログイン中' do
       include_context 'ログイン処理'
-      it_behaves_like '[ログイン中/削除予約済み]有効なパラメータ'
-      it_behaves_like '[ログイン中/削除予約済み]無効なパラメータ'
-    end
-    context 'ログイン中（削除予約済み）' do
-      include_context 'ログイン処理', true
-      it_behaves_like '[ログイン中/削除予約済み]有効なパラメータ'
-      it_behaves_like '[ログイン中/削除予約済み]無効なパラメータ'
+      it_behaves_like '[ログイン中]有効なパラメータ（ロック中）'
+      it_behaves_like '[ログイン中]有効なパラメータ（未ロック）'
+      it_behaves_like '[ログイン中]無効なパラメータ'
     end
   end
 
@@ -110,104 +127,92 @@ RSpec.describe 'Users::Unlocks', type: :request do
   # 前提条件
   #   なし
   # テストパターン
-  #   未ログイン, ログイン中, ログイン中（削除予約済み） → データ＆状態作成
-  #   トークン: 存在する, 存在しない, ない → データ作成
-  #   ロック日時: ない（未ロック）, ある（ロック中） → データ作成
+  #   未ログイン, ログイン中
+  #   トークン: 存在する, 存在しない, ない
+  #   ロック日時: ない（未ロック）, ある（ロック中）
   describe 'GET #show' do
+    subject { get user_unlock_path(unlock_token: unlock_token) }
+    let(:current_user) { User.find(send_user.id) }
+
     # テスト内容
     shared_examples_for 'OK' do
       it 'アカウントロック日時がなしに変更される' do
-        get user_unlock_path(unlock_token: unlock_token)
-        expect(User.find(@send_user.id).locked_at).to be_nil
+        subject
+        expect(current_user.locked_at).to be_nil
       end
     end
     shared_examples_for 'NG' do
       it 'アカウントロック日時が変更されない' do
-        get user_unlock_path(unlock_token: unlock_token)
-        expect(User.find(@send_user.id).locked_at).to eq(@send_user.locked_at)
-      end
-    end
-
-    shared_examples_for 'ToError' do
-      it '成功ステータス' do # Tips: 再入力
-        get user_unlock_path(unlock_token: unlock_token)
-        expect(response).to be_successful
-      end
-    end
-    shared_examples_for 'ToTop' do |alert, notice|
-      it 'トップページにリダイレクト' do
-        get user_unlock_path(unlock_token: unlock_token)
-        expect(response).to redirect_to(root_path)
-        expect(flash[:alert]).to alert.present? ? eq(I18n.t(alert)) : be_nil
-        expect(flash[:notice]).to notice.present? ? eq(I18n.t(notice)) : be_nil
-      end
-    end
-    shared_examples_for 'ToLogin' do |alert, notice|
-      it 'ログインにリダイレクト' do
-        get user_unlock_path(unlock_token: unlock_token)
-        expect(response).to redirect_to(new_user_session_path)
-        expect(flash[:alert]).to alert.present? ? eq(I18n.t(alert)) : be_nil
-        expect(flash[:notice]).to notice.present? ? eq(I18n.t(notice)) : be_nil
+        subject
+        expect(current_user.locked_at).to eq(send_user.locked_at)
       end
     end
 
     # テストケース
     shared_examples_for '[未ログイン][存在する]ロック日時がない（未ロック）' do
-      include_context 'アカウントロック解除トークン解除'
+      include_context 'アカウントロック解除トークン作成', false
       # it_behaves_like 'NG' # Tips: 元々、ロック日時がない
       it_behaves_like 'ToLogin', nil, 'devise.unlocks.unlocked' # Tips: 既に解除済み
     end
-    shared_examples_for '[ログイン中/削除予約済み][存在する]ロック日時がない（未ロック）' do
-      include_context 'アカウントロック解除トークン解除'
+    shared_examples_for '[ログイン中][存在する]ロック日時がない（未ロック）' do
+      include_context 'アカウントロック解除トークン作成', false
       # it_behaves_like 'NG' # Tips: 元々、ロック日時がない
       it_behaves_like 'ToTop', 'devise.failure.already_authenticated', nil
     end
-    shared_examples_for '[未ログイン][存在しない/ない]ロック日時がない（未ロック）' do
+    shared_examples_for '[未ログイン][存在しない]ロック日時がない（未ロック）' do
       # it_behaves_like 'NG' # Tips: トークンが存在しない為、ロック日時がない
-      it_behaves_like 'ToError'
+      it_behaves_like 'ToError', 'activerecord.errors.models.user.attributes.unlock_token.invalid'
     end
-    shared_examples_for '[ログイン中/削除予約済み][存在しない/ない]ロック日時がない（未ロック）' do
+    shared_examples_for '[ログイン中][存在しない]ロック日時がない（未ロック）' do
+      # it_behaves_like 'NG' # Tips: トークンが存在しない為、ロック日時がない
+      it_behaves_like 'ToTop', 'devise.failure.already_authenticated', nil
+    end
+    shared_examples_for '[未ログイン][ない]ロック日時がない（未ロック）' do
+      # it_behaves_like 'NG' # Tips: トークンが存在しない為、ロック日時がない
+      it_behaves_like 'ToError', 'activerecord.errors.models.user.attributes.unlock_token.blank'
+    end
+    shared_examples_for '[ログイン中][ない]ロック日時がない（未ロック）' do
       # it_behaves_like 'NG' # Tips: トークンが存在しない為、ロック日時がない
       it_behaves_like 'ToTop', 'devise.failure.already_authenticated', nil
     end
     shared_examples_for '[未ログイン][存在する]ロック日時がある（ロック中）' do
+      include_context 'アカウントロック解除トークン作成', true
       it_behaves_like 'OK'
       it_behaves_like 'ToLogin', nil, 'devise.unlocks.unlocked'
     end
-    shared_examples_for '[ログイン中/削除予約済み][存在する]ロック日時がある（ロック中）' do
+    shared_examples_for '[ログイン中][存在する]ロック日時がある（ロック中）' do
+      include_context 'アカウントロック解除トークン作成', true
       it_behaves_like 'NG'
       it_behaves_like 'ToTop', 'devise.failure.already_authenticated', nil
     end
 
     shared_examples_for '[未ログイン]トークンが存在する' do
-      include_context 'アカウントロック解除トークン作成'
       it_behaves_like '[未ログイン][存在する]ロック日時がない（未ロック）'
       it_behaves_like '[未ログイン][存在する]ロック日時がある（ロック中）'
     end
-    shared_examples_for '[ログイン中/削除予約済み]トークンが存在する' do
-      include_context 'アカウントロック解除トークン作成'
-      it_behaves_like '[ログイン中/削除予約済み][存在する]ロック日時がない（未ロック）'
-      it_behaves_like '[ログイン中/削除予約済み][存在する]ロック日時がある（ロック中）'
+    shared_examples_for '[ログイン中]トークンが存在する' do
+      it_behaves_like '[ログイン中][存在する]ロック日時がない（未ロック）'
+      it_behaves_like '[ログイン中][存在する]ロック日時がある（ロック中）'
     end
     shared_examples_for '[未ログイン]トークンが存在しない' do
-      let!(:unlock_token) { NOT_TOKEN }
-      it_behaves_like '[未ログイン][存在しない/ない]ロック日時がない（未ロック）'
+      let(:unlock_token) { NOT_TOKEN }
+      it_behaves_like '[未ログイン][存在しない]ロック日時がない（未ロック）'
       # it_behaves_like '[未ログイン][存在しない]ロック日時がある（ロック中）' # Tips: トークンが存在しない為、ロック日時がない
     end
-    shared_examples_for '[ログイン中/削除予約済み]トークンが存在しない' do
-      let!(:unlock_token) { NOT_TOKEN }
-      it_behaves_like '[ログイン中/削除予約済み][存在しない/ない]ロック日時がない（未ロック）'
-      # it_behaves_like '[ログイン中/削除予約済み][存在しない]ロック日時がある（ロック中）' # Tips: トークンが存在しない為、ロック日時がない
+    shared_examples_for '[ログイン中]トークンが存在しない' do
+      let(:unlock_token) { NOT_TOKEN }
+      it_behaves_like '[ログイン中][存在しない]ロック日時がない（未ロック）'
+      # it_behaves_like '[ログイン中][存在しない]ロック日時がある（ロック中）' # Tips: トークンが存在しない為、ロック日時がない
     end
     shared_examples_for '[未ログイン]トークンがない' do
-      let!(:unlock_token) { NO_TOKEN }
-      it_behaves_like '[未ログイン][存在しない/ない]ロック日時がない（未ロック）'
+      let(:unlock_token) { nil }
+      it_behaves_like '[未ログイン][ない]ロック日時がない（未ロック）'
       # it_behaves_like '[未ログイン][ない]ロック日時がある（ロック中）' # Tips: トークンが存在しない為、ロック日時がない
     end
-    shared_examples_for '[ログイン中/削除予約済み]トークンがない' do
-      let!(:unlock_token) { NO_TOKEN }
-      it_behaves_like '[ログイン中/削除予約済み][存在しない/ない]ロック日時がない（未ロック）'
-      # it_behaves_like '[ログイン中/削除予約済み][ない]ロック日時がある（ロック中）' # Tips: トークンが存在しない為、ロック日時がない
+    shared_examples_for '[ログイン中]トークンがない' do
+      let(:unlock_token) { nil }
+      it_behaves_like '[ログイン中][ない]ロック日時がない（未ロック）'
+      # it_behaves_like '[ログイン中][ない]ロック日時がある（ロック中）' # Tips: トークンが存在しない為、ロック日時がない
     end
 
     context '未ログイン' do
@@ -217,15 +222,9 @@ RSpec.describe 'Users::Unlocks', type: :request do
     end
     context 'ログイン中' do
       include_context 'ログイン処理'
-      it_behaves_like '[ログイン中/削除予約済み]トークンが存在する'
-      it_behaves_like '[ログイン中/削除予約済み]トークンが存在しない'
-      it_behaves_like '[ログイン中/削除予約済み]トークンがない'
-    end
-    context 'ログイン中（削除予約済み）' do
-      include_context 'ログイン処理', true
-      it_behaves_like '[ログイン中/削除予約済み]トークンが存在する'
-      it_behaves_like '[ログイン中/削除予約済み]トークンが存在しない'
-      it_behaves_like '[ログイン中/削除予約済み]トークンがない'
+      it_behaves_like '[ログイン中]トークンが存在する'
+      it_behaves_like '[ログイン中]トークンが存在しない'
+      it_behaves_like '[ログイン中]トークンがない'
     end
   end
 end

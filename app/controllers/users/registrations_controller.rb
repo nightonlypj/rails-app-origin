@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 class Users::RegistrationsController < Devise::RegistrationsController
+  include Users::RegistrationsConcern
   prepend_before_action :authenticate_scope!, only: %i[edit update image_update image_destroy delete destroy undo_delete undo_destroy]
   before_action :redirect_response_destroy_reserved, only: %i[edit update image_update image_destroy delete destroy]
   before_action :redirect_response_not_destroy_reserved, only: %i[undo_delete undo_destroy]
@@ -15,8 +16,11 @@ class Users::RegistrationsController < Devise::RegistrationsController
   # POST /users/sign_up アカウント登録(処理)
   def create
     params[:user][:code] = create_unique_code(User, 'code', "Users::RegistrationsController.create #{params[:user]}")
-    super
-    flash[:alert] = resource.errors[:code].first if resource.errors[:code].present?
+    ActiveRecord::Base.transaction do
+      super
+      flash[:alert] = resource.errors[:code].first if resource.errors[:code].present?
+      resource.send_confirmation_instructions if resource.errors.blank? # Tips: devise_token_auth導入後、送信されなくなった為
+    end
   end
 
   # GET /users/edit 登録情報変更
@@ -25,9 +29,15 @@ class Users::RegistrationsController < Devise::RegistrationsController
   # end
 
   # PUT(PATCH) /users/edit 登録情報変更(処理)
-  # def update
-  #   super
-  # end
+  def update
+    # Tips: 存在するメールアドレスの場合はエラーにする
+    if resource.email != params[:user][:email] && User.find_by(email: params[:user][:email]).present?
+      resource.errors.add(:email, t('activerecord.errors.models.user.attributes.email.exist'))
+      return render :edit
+    end
+
+    super
+  end
 
   # PUT(PATCH) /users/image 画像変更(処理)
   def image_update
@@ -36,7 +46,7 @@ class Users::RegistrationsController < Devise::RegistrationsController
       return render :edit
     end
 
-    @user = User.find(current_user.id)
+    @user = User.find(resource.id)
     if @user.update(params.require(:user).permit(:image))
       redirect_to edit_user_registration_path, notice: t('notice.user.image_update')
     else
@@ -46,7 +56,7 @@ class Users::RegistrationsController < Devise::RegistrationsController
 
   # DELETE /users/image 画像削除(処理)
   def image_destroy
-    @user = User.find(current_user.id)
+    @user = User.find(resource.id)
     @user.remove_image!
     @user.save!
     redirect_to edit_user_registration_path, notice: t('notice.user.image_destroy')
@@ -58,8 +68,9 @@ class Users::RegistrationsController < Devise::RegistrationsController
 
   # DELETE /users/delete アカウント削除(処理)
   def destroy
+    # resource.destroy
     resource.set_destroy_reserve
-    UserMailer.with(user: current_user).destroy_reserved.deliver_now
+    UserMailer.with(user: resource).destroy_reserved.deliver_now
 
     Devise.sign_out_all_scopes ? sign_out : sign_out(resource_name)
     set_flash_message! :notice, :destroy_reserved
@@ -74,7 +85,7 @@ class Users::RegistrationsController < Devise::RegistrationsController
   # DELETE /users/undo_delete アカウント削除取り消し(処理)
   def undo_destroy
     resource.set_undo_destroy_reserve
-    UserMailer.with(user: current_user).undo_destroy_reserved.deliver_now
+    UserMailer.with(user: resource).undo_destroy_reserved.deliver_now
 
     set_flash_message! :notice, :undo_destroy_reserved
     redirect_to root_path
@@ -90,16 +101,6 @@ class Users::RegistrationsController < Devise::RegistrationsController
   # end
 
   protected
-
-  # If you have extra params to permit, append them to the sanitizer.
-  def configure_sign_up_params
-    devise_parameter_sanitizer.permit(:sign_up, keys: %i[code name])
-  end
-
-  # If you have extra params to permit, append them to the sanitizer.
-  def configure_account_update_params
-    devise_parameter_sanitizer.permit(:account_update, keys: [:name])
-  end
 
   # The path used after sign up.
   # def after_sign_up_path_for(resource)

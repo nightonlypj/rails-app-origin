@@ -1,0 +1,10 @@
+schemaspy.t=pgsql
+schemaspy.dp=jdbc
+schemaspy.host=127.0.0.1
+schemaspy.port=5432
+schemaspy.s=public
+schemaspy.db=rails_app_development
+schemaspy.u=postgres
+schemaspy.p=xyz789
+schemaspy.o=analysis
+schemaspy.meta=schemaspymeta.xml
