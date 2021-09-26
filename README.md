@@ -1,7 +1,73 @@
 # Ruby on Railsベースアプリケーション
 
 運営元が情報提供して1つのサービスを作る（BtoC向け）  
-(Ruby 3.0.0, Rails 6.0.3.4)
+(Ruby 3.0.0, Rails 6.1.4.1)
+
+## コマンドメモ
+
+| local | Docker |
+| - | - |
+| | docker-compose exec web bash<br>( bash-5.1# ) |
+| bundle install | docker-compose run web bundle install |
+| yarn install | docker-compose run web yarn install |
+| rails db:migrate | docker-compose run web rails db:migrate |
+| rails db:seed | docker-compose run web rails db:seed |
+| rails s | 不要 |
+| rails c | docker-compose run web rails c |
+| rails db | docker-compose run web rails db |
+| rspec<br>open coverage/index.html | docker-compose run web rspec<br>open coverage/index.html |
+| rubocop | docker-compose run web rubocop |
+| brakeman | docker-compose run web brakeman |
+| yard<br>open doc/index.html | docker-compose run web yard<br>open doc/index.html |
+| erd<br>open db/erd.pdf | docker-compose run web erd<br>open db/erd.pdf |
+| cd schemaspy<br>make schemaspy<br>( open analysis/index.html ) | cd schemaspy<br>make docker-schemaspy<br>( open analysis/index.html ) |
+
+## 環境構築手順（Dockerの場合）
+
+### Dockerインストール
+
+Docker Desktop for Macをダウンロードして、普通にインストール  
+https://hub.docker.com/editions/community/docker-ce-desktop-mac/
+
+### コンテナ作成＆起動
+
+```
+% cd rails-app-origin
+
+% docker-compose build
+% docker-compose up
+または % docker-compose up --build
+```
+※終了は、Ctrl+C
+
+```
+% cp -a config/settings/development.yml,local config/settings/development.yml
+
+% docker-compose run web rails db:migrate
+% docker-compose run web rails db:seed
+
+% rails s
+```
+
+- http://localhost:3000
+  - メールアドレスとパスワードは、`db/seed/development/users.yml`参照
+- http://localhost:3000/admin
+  - メールアドレスとパスワードは、`db/seed/admin_users.yml`参照
+
+### Tips: DBだけ使う
+
+DBの設定以外は、下記「環境構築手順（Macの場合）」参照
+
+```
+% docker-compose up db
+```
+
+config/database.yml
+```
+  host: db
+↓
+  host: 127.0.0.1
+```
 
 ## 環境構築手順（Macの場合）
 
@@ -10,6 +76,7 @@
 ```
 $ ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
 Warning: /opt/homebrew/bin is not in your PATH.
+（$ brew update）
 
 ※zshの場合(Catalina以降)
 % vi ~/.zshrc
@@ -30,7 +97,7 @@ $ brew doctor
 Your system is ready to brew.
 
 $ brew -v
-Homebrew 3.0.0
+Homebrew 3.2.13
 ※バージョンは異なっても良い
 ```
 
@@ -40,7 +107,7 @@ Homebrew 3.0.0
 $ brew install imagemagick
 
 $ magick -version
-Version: ImageMagick 7.0.10-58 Q16 arm 2021-01-16 https://imagemagick.org
+Version: ImageMagick 7.1.0-8 Q16-HDRI arm 2021-09-18 https://imagemagick.org
 ※バージョンは異なっても良い
 ```
 
@@ -50,7 +117,7 @@ Version: ImageMagick 7.0.10-58 Q16 arm 2021-01-16 https://imagemagick.org
 $ brew install graphviz
 
 $ dot -V
-dot - graphviz version 2.47.0 (20210316.0004)
+dot - graphviz version 2.49.1 (20210923.0004)
 ※バージョンは異なっても良い
 ```
 
@@ -63,6 +130,7 @@ gpg:           インポート: 2  (RSA: 2)
 
 $ 'curl' -sSL https://get.rvm.io | bash -s stable
 Donate: https://opencollective.com/rvm/donate
+（$ rvm get stable）
 
 $ source ~/.rvm/scripts/rvm
 $ rvm -v
@@ -107,12 +175,12 @@ $ nvm --version
 ```
 ```
 $ nvm ls-remote | grep 'Latest LTS'
-       v14.15.5   (Latest LTS: Fermium)
-$ nvm install v14.15.5
+       v14.17.6   (Latest LTS: Fermium)
+$ nvm install v14.17.6
 ※バージョンは異なっても良いが、本番の環境に合わせるのがベスト
 
 $ node -v
-v14.15.5
+v14.17.6
 ```
 
 ### yarnインストール
@@ -188,7 +256,7 @@ password = xyz789
 
 $ mysql
 ※MariaDBの場合
-Server version: 10.5.8-MariaDB Homebrew
+Server version: 10.5.9-MariaDB Homebrew
 ※MySQLの場合
 Server version: 8.0.23 Homebrew
 ※バージョンは異なっても良いが、本番と同じが理想
@@ -212,29 +280,17 @@ $ rm -f /opt/homebrew/etc/my.cnf*
 $ rm -f ~/.my.cnf
 ```
 
-### データベースとユーザー作成
-
-```
-$ mysql
-> CREATE DATABASE rails_app_development;
-> CREATE USER 'rails_app'@'%' IDENTIFIED BY 'abc123';
-> GRANT ALL PRIVILEGES ON rails_app_development.* TO 'rails_app'@'%';
-> CREATE DATABASE rails_app_test;
-> CREATE USER 'rails_app_test'@'%' IDENTIFIED BY 'abc123';
-> GRANT ALL PRIVILEGES ON rails_app_test.* TO 'rails_app_test'@'%';
-> \q
-```
-
-### Gemインストールから起動まで
+### 起動まで
 
 ```
 $ cd rails-app-origin
 $ cp -a config/settings/development.yml,local config/settings/development.yml
 
 $ bundle install
+（$ bundle update）
 Bundle complete!
 
-$ yarn
+$ yarn install
 Done
 
 $ rails db:migrate

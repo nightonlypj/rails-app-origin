@@ -72,7 +72,7 @@ RSpec.describe 'Infomations', type: :request do
     shared_examples_for 'リスト表示' do |page|
       let(:subject_page)   { page }
       let(:subject_format) { nil }
-      let(:start_no)       { Settings['default_infomations_limit'] * (page - 1) + 1 }
+      let(:start_no)       { (Settings['default_infomations_limit'] * (page - 1)) + 1 }
       let(:end_no)         { [@user_infomations.count, Settings['default_infomations_limit'] * page].min }
       it '対象項目が含まれる' do
         @accept_headers = {}
@@ -94,7 +94,7 @@ RSpec.describe 'Infomations', type: :request do
       let(:subject_page)   { page }
       let(:subject_format) { :json }
       let(:infomations)    { auth_headers.present? ? @user_infomations : @all_infomations } # Tips: APIは未ログイン扱いの為、全員のしか見れない
-      let(:start_no)       { Settings['default_infomations_limit'] * (page - 1) + 1 }
+      let(:start_no)       { (Settings['default_infomations_limit'] * (page - 1)) + 1 }
       let(:end_no)         { [infomations.count, Settings['default_infomations_limit'] * page].min }
       it '件数・対象項目が一致する' do
         @accept_headers = ACCEPT_JSON
