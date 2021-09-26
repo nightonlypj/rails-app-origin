@@ -1,5 +1,6 @@
 env_name: ''
 base_domain: 'mydomain'
+base_image_url: 'https://mydomain'
 redirect_whitelist: ['https://front.mydomain/*']
 default_confirm_success_url: ''
 default_password_reset_url: ''

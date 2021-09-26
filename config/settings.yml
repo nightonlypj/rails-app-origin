@@ -1,3 +1,15 @@
+# Devise Token Auth
+confirmation_success_url_not: '/auth/confirmation_success.html?not'
+confirmation_success_url_bad: '/auth/confirmation_success.html?bad'
+confirmation_error_url_not: '/auth/confirmation_error.html?not'
+confirmation_error_url_bad: '/auth/confirmation_error.html?bad'
+unlock_success_url_not: '/auth/unlock_success.html?not'
+unlock_success_url_bad: '/auth/unlock_success.html?bad'
+unlock_error_url_not: '/auth/unlock_error.html?not'
+unlock_error_url_bad: '/auth/unlock_error.html?bad'
+reset_password_error_url_not: '/auth/reset_password_error.html?not'
+reset_password_error_url_bad: '/auth/reset_password_error.html?bad'
+
 ## ユーザー
 # メールアドレス確認URLの有効期限（単位：時間）
 confirm_within_hours: 24

@@ -16,9 +16,7 @@ class Users::ConfirmationsController < Devise::ConfirmationsController
     return redirect_to new_user_session_path, alert: already_confirmed_message if already_confirmed?(params[:confirmation_token])
     return redirect_to new_user_confirmation_path, alert: invalid_token_message unless valid_confirmation_token?(params[:confirmation_token])
 
-    ActiveRecord::Base.transaction do
-      super
-    end
+    super
   end
 
   # protected

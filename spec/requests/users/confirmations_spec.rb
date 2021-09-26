@@ -135,19 +135,20 @@ RSpec.describe 'Users::Confirmations', type: :request do
   #   確認日時: ない（未確認）, 確認送信日時より前（未確認）, 確認送信日時より後（確認済み）
   describe 'GET #show' do
     subject { get user_confirmation_path(confirmation_token: confirmation_token) }
+    let(:current_user) { User.find(send_user.id) }
 
     # テスト内容
     shared_examples_for 'OK' do
       let!(:start_time) { Time.now.utc.floor }
       it '確認日時が現在日時に変更される' do
         subject
-        expect(User.find(send_user.id).confirmed_at).to be_between(start_time, Time.now.utc)
+        expect(current_user.confirmed_at).to be_between(start_time, Time.now.utc)
       end
     end
     shared_examples_for 'NG' do
       it '確認日時が変更されない' do
         subject
-        expect(User.find(send_user.id).confirmed_at).to eq(send_user.confirmed_at)
+        expect(current_user.confirmed_at).to eq(send_user.confirmed_at)
       end
     end
 

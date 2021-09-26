@@ -6,6 +6,9 @@ ja:
     attributes:
       user:
         id: 'ID'
+        provider: '認証方法'
+        uid: 'UID'
+        tokens: '認証トークン'
         code: 'ユーザーコード'
         image: '画像'
         name: '氏名'
@@ -15,6 +18,7 @@ ja:
         current_password: '現在のパスワード'
         reset_password_token: 'パスワードリセットトークン'
         reset_password_sent_at: 'パスワードリセット送信日時'
+        allow_password_change: 'パスワード再設定中'
         remember_me: 'ログイン状態を維持する'
         remember_created_at: 'ログイン状態維持開始日時'
         sign_in_count: 'ログイン回数'

@@ -65,13 +65,14 @@ RSpec.describe 'Users::Registrations', type: :request do
     let(:exist_user) { FactoryBot.create(:user) }
     let(:valid_attributes)   { { name: new_user[:name], email: new_user[:email], password: new_user[:password] } }
     let(:invalid_attributes) { { name: exist_user.name, email: exist_user.email, password: exist_user.password } }
+    let(:current_user) { User.find_by!(email: attributes[:email]) }
 
     # テスト内容
     shared_examples_for 'OK' do
       it '作成・対象項目が設定される。メールが送信される' do
         expect do
           subject
-          expect(User.find_by(email: attributes[:email]).name).to eq(attributes[:name]) # 氏名
+          expect(current_user.name).to eq(attributes[:name]) # メールアドレス、氏名
 
           expect(ActionMailer::Base.deliveries.count).to eq(1)
           expect(ActionMailer::Base.deliveries[0].subject).to eq(get_subject('devise.mailer.confirmation_instructions.subject')) # メールアドレス確認のお願い
@@ -148,53 +149,63 @@ RSpec.describe 'Users::Registrations', type: :request do
   #   なし
   # テストパターン
   #   未ログイン, ログイン中, ログイン中（メールアドレス変更中, 削除予約済み）
-  #   有効なパラメータ, 無効なパラメータ
+  #   有効なパラメータ（変更なし, あり）, 無効なパラメータ
   describe 'PUT #update' do
     subject { put update_user_registration_path, params: { user: attributes.merge(current_password: current_password) } }
     let(:new_user)   { FactoryBot.attributes_for(:user) }
     let(:exist_user) { FactoryBot.create(:user) }
-    let(:valid_attributes)   { { name: new_user[:name], email: new_user[:email], password: new_user[:password] } }
-    let(:invalid_attributes) { { name: exist_user.name, email: exist_user.email, password: exist_user.password } }
+    let(:nochange_attributes) { { name: user.name, email: user.email, password: user.password } }
+    let(:valid_attributes)    { { name: new_user[:name], email: new_user[:email], password: new_user[:password] } }
+    let(:invalid_attributes)  { { name: exist_user.name, email: exist_user.email, password: exist_user.password } }
+    let(:current_user) { User.find(user.id) }
 
     # テスト内容
-    shared_examples_for 'OK' do
-      it '確認待ちメールアドレス・対象項目が変更される。メールが送信される' do
+    shared_examples_for 'OK' do |change_email|
+      it '対象項目が変更される。メールが送信される' do
         subject
-        after_user = User.find(user.id)
-        expect(after_user.unconfirmed_email).to eq(attributes[:email]) # 確認待ちメールアドレス
-        expect(after_user.name).to eq(attributes[:name]) # 氏名
-        expect(after_user.image.url).to eq(user.image.url) # 画像 # Tips: 変更されない
+        expect(current_user.unconfirmed_email).to change_email ? eq(attributes[:email]) : eq(user.unconfirmed_email) # 確認待ちメールアドレス
+        expect(current_user.name).to eq(attributes[:name]) # 氏名
+        expect(current_user.image.url).to eq(user.image.url) # 画像 # Tips: 変更されない
 
-        expect(ActionMailer::Base.deliveries.count).to eq(3)
-        expect(ActionMailer::Base.deliveries[0].subject).to eq(get_subject('devise.mailer.email_changed.subject')) # メールアドレス変更受け付けのお知らせ
-        expect(ActionMailer::Base.deliveries[1].subject).to eq(get_subject('devise.mailer.password_change.subject')) # パスワード変更完了のお知らせ
-        expect(ActionMailer::Base.deliveries[2].subject).to eq(get_subject('devise.mailer.confirmation_instructions.subject')) # メールアドレス確認のお願い
+        expect(ActionMailer::Base.deliveries.count).to eq(change_email ? 3 : 1)
+        expect(ActionMailer::Base.deliveries[0].subject).to eq(get_subject('devise.mailer.email_changed.subject')) if change_email # メールアドレス変更受け付けのお知らせ
+        expect(ActionMailer::Base.deliveries[change_email ? 1 : 0].subject).to eq(get_subject('devise.mailer.password_change.subject')) # パスワード変更完了のお知らせ
+        expect(ActionMailer::Base.deliveries[2].subject).to eq(get_subject('devise.mailer.confirmation_instructions.subject')) if change_email # メールアドレス確認のお願い
       end
     end
     shared_examples_for 'NG' do
-      it '確認待ちメールアドレス・対象項目が変更されない。メールが送信されない' do
+      it '対象項目が変更されない。メールが送信されない' do
         subject
-        after_user = User.find(user.id)
-        expect(after_user.unconfirmed_email).to eq(user.unconfirmed_email) # 確認待ちメールアドレス
-        expect(after_user.name).to eq(user.name) # 氏名
-        expect(after_user.image.url).to eq(user.image.url) # 画像
+        expect(current_user.unconfirmed_email).to eq(user.unconfirmed_email) # 確認待ちメールアドレス
+        expect(current_user.name).to eq(user.name) # 氏名
+        expect(current_user.image.url).to eq(user.image.url) # 画像
 
         expect(ActionMailer::Base.deliveries.count).to eq(0)
       end
     end
 
     # テストケース
-    shared_examples_for '[未ログイン]有効なパラメータ' do
+    shared_examples_for '[ログイン中]有効なパラメータ（変更なし）' do
+      let(:attributes) { nochange_attributes }
+      it_behaves_like 'OK', false
+      it_behaves_like 'ToTop', nil, 'devise.registrations.updated'
+    end
+    shared_examples_for '[削除予約済み]有効なパラメータ（変更なし）' do
+      let(:attributes) { nochange_attributes }
+      it_behaves_like 'NG'
+      it_behaves_like 'ToTop', 'alert.user.destroy_reserved', nil
+    end
+    shared_examples_for '[未ログイン]有効なパラメータ（変更あり）' do
       let(:attributes) { valid_attributes }
       # it_behaves_like 'NG' # Tips: 未ログインの為、対象がない
       it_behaves_like 'ToLogin', 'devise.failure.unauthenticated', nil
     end
-    shared_examples_for '[ログイン中]有効なパラメータ' do
+    shared_examples_for '[ログイン中]有効なパラメータ（変更あり）' do
       let(:attributes) { valid_attributes }
-      it_behaves_like 'OK'
+      it_behaves_like 'OK', true
       it_behaves_like 'ToTop', nil, 'devise.registrations.update_needs_confirmation'
     end
-    shared_examples_for '[削除予約済み]有効なパラメータ' do
+    shared_examples_for '[削除予約済み]有効なパラメータ（変更あり）' do
       let(:attributes) { valid_attributes }
       it_behaves_like 'NG'
       it_behaves_like 'ToTop', 'alert.user.destroy_reserved', nil
@@ -206,10 +217,10 @@ RSpec.describe 'Users::Registrations', type: :request do
     end
     shared_examples_for '[ログイン中]無効なパラメータ' do
       let(:attributes) { invalid_attributes }
-      it_behaves_like 'OK'
-      # it_behaves_like 'NG'
-      it_behaves_like 'ToTop', nil, 'devise.registrations.update_needs_confirmation'
-      # it_behaves_like 'ToError', 'TODO: 他の人が使っている。確認に失敗する'
+      # it_behaves_like 'OK', true
+      it_behaves_like 'NG'
+      # it_behaves_like 'ToTop', nil, 'devise.registrations.update_needs_confirmation'
+      it_behaves_like 'ToError', 'activerecord.errors.models.user.attributes.email.exist'
     end
     shared_examples_for '[削除予約済み]無効なパラメータ' do
       let(:attributes) { invalid_attributes }
@@ -219,25 +230,29 @@ RSpec.describe 'Users::Registrations', type: :request do
 
     context '未ログイン' do
       let(:current_password) { nil }
-      it_behaves_like '[未ログイン]有効なパラメータ'
+      # it_behaves_like '[未ログイン]有効なパラメータ（変更なし）' # Tips: 未ログインの為、対象がない
+      it_behaves_like '[未ログイン]有効なパラメータ（変更あり）'
       it_behaves_like '[未ログイン]無効なパラメータ'
     end
     context 'ログイン中' do
       include_context 'ログイン処理', :user, true
       let(:current_password) { user.password }
-      it_behaves_like '[ログイン中]有効なパラメータ'
+      it_behaves_like '[ログイン中]有効なパラメータ（変更なし）'
+      it_behaves_like '[ログイン中]有効なパラメータ（変更あり）'
       it_behaves_like '[ログイン中]無効なパラメータ'
     end
     context 'ログイン中（メールアドレス変更中）' do
       include_context 'ログイン処理', :user_email_changed, true
       let(:current_password) { user.password }
-      it_behaves_like '[ログイン中]有効なパラメータ'
+      it_behaves_like '[ログイン中]有効なパラメータ（変更なし）'
+      it_behaves_like '[ログイン中]有効なパラメータ（変更あり）'
       it_behaves_like '[ログイン中]無効なパラメータ'
     end
     context 'ログイン中（削除予約済み）' do
       include_context 'ログイン処理', :user_destroy_reserved, true
       let(:current_password) { user.password }
-      it_behaves_like '[削除予約済み]有効なパラメータ'
+      it_behaves_like '[削除予約済み]有効なパラメータ（変更なし）'
+      it_behaves_like '[削除予約済み]有効なパラメータ（変更あり）'
       it_behaves_like '[削除予約済み]無効なパラメータ'
     end
   end
@@ -252,18 +267,19 @@ RSpec.describe 'Users::Registrations', type: :request do
     subject { put update_user_image_registration_path, params: { user: attributes } }
     let(:valid_attributes)   { { image: fixture_file_upload(TEST_IMAGE_FILE, TEST_IMAGE_TYPE) } }
     let(:invalid_attributes) { nil }
+    let(:current_user) { User.find(user.id) }
 
     # テスト内容
     shared_examples_for 'OK' do
       it '画像が変更される' do
         subject
-        expect(User.find(user.id).image.url).not_to eq(user.image.url)
+        expect(current_user.image.url).not_to eq(user.image.url)
       end
     end
     shared_examples_for 'NG' do
       it '画像が変更されない' do
         subject
-        expect(User.find(user.id).image.url).to eq(user.image.url)
+        expect(current_user.image.url).to eq(user.image.url)
       end
     end
 
@@ -278,9 +294,8 @@ RSpec.describe 'Users::Registrations', type: :request do
       it_behaves_like 'OK'
       it_behaves_like 'ToEdit', nil, 'notice.user.image_update'
       after do
-        after_user = User.find(user.id)
-        after_user.remove_image!
-        after_user.save!
+        current_user.remove_image!
+        current_user.save!
       end
     end
     shared_examples_for '[削除予約済み]有効なパラメータ' do
@@ -327,18 +342,19 @@ RSpec.describe 'Users::Registrations', type: :request do
   #   未ログイン, ログイン中, ログイン中（削除予約済み）
   describe 'DELETE #image_destroy' do
     subject { delete delete_user_image_registration_path }
+    let(:current_user) { User.find(user.id) }
 
     # テスト内容
     shared_examples_for 'OK' do
       it '画像が削除される' do
         subject
-        expect(User.find(user.id).image.url).to be_nil
+        expect(current_user.image.url).to be_nil
       end
     end
     shared_examples_for 'NG' do
       it '画像が変更されない' do
         subject
-        expect(User.find(user.id).image.url).to eq(user.image.url)
+        expect(current_user.image.url).to eq(user.image.url)
       end
     end
 
@@ -388,15 +404,16 @@ RSpec.describe 'Users::Registrations', type: :request do
   #   未ログイン, ログイン中, ログイン中（削除予約済み）
   describe 'DELETE #destroy' do
     subject { delete destroy_user_registration_path }
+    let(:current_user) { User.find(user.id) }
 
     # テスト内容
     shared_examples_for 'OK' do
       let!(:start_time) { Time.current.floor }
       it "削除依頼日時が現在日時に、削除予定日時が#{Settings['destroy_schedule_days']}日後に変更される" do
         subject
-        expect(user.destroy_requested_at).to be_between(start_time, Time.current)
-        expect(user.destroy_schedule_at).to be_between(start_time + Settings['destroy_schedule_days'].days,
-                                                       Time.current + Settings['destroy_schedule_days'].days)
+        expect(current_user.destroy_requested_at).to be_between(start_time, Time.current)
+        expect(current_user.destroy_schedule_at).to be_between(start_time + Settings['destroy_schedule_days'].days,
+                                                               Time.current + Settings['destroy_schedule_days'].days)
       end
     end
     shared_examples_for 'NG' do
@@ -404,8 +421,8 @@ RSpec.describe 'Users::Registrations', type: :request do
       let!(:before_destroy_schedule_at)  { user.destroy_schedule_at }
       it '削除依頼日時・削除予定日時が変更されない' do
         subject
-        expect(user.destroy_requested_at).to eq(before_destroy_requested_at)
-        expect(user.destroy_schedule_at).to eq(before_destroy_schedule_at)
+        expect(current_user.destroy_requested_at).to eq(before_destroy_requested_at)
+        expect(current_user.destroy_schedule_at).to eq(before_destroy_schedule_at)
       end
     end
 
@@ -455,22 +472,21 @@ RSpec.describe 'Users::Registrations', type: :request do
   #   未ログイン, ログイン中, ログイン中（削除予約済み）
   describe 'DELETE #undo_destroy' do
     subject { delete destroy_undo_user_registration_path }
+    let(:current_user) { User.find(user.id) }
 
     # テスト内容
     shared_examples_for 'OK' do
       it '削除依頼日時・削除予定日時がなしに変更される' do
         subject
-        expect(user.destroy_requested_at).to be_nil
-        expect(user.destroy_schedule_at).to be_nil
+        expect(current_user.destroy_requested_at).to be_nil
+        expect(current_user.destroy_schedule_at).to be_nil
       end
     end
     shared_examples_for 'NG' do
-      let!(:before_destroy_requested_at) { user.destroy_requested_at }
-      let!(:before_destroy_schedule_at)  { user.destroy_schedule_at }
       it '削除依頼日時・削除予定日時が変更されない' do
         subject
-        expect(user.destroy_requested_at).to eq(before_destroy_requested_at)
-        expect(user.destroy_schedule_at).to eq(before_destroy_schedule_at)
+        expect(current_user.destroy_requested_at).to eq(user.destroy_requested_at)
+        expect(current_user.destroy_schedule_at).to eq(user.destroy_schedule_at)
       end
     end
 

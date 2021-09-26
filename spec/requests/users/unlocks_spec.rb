@@ -132,18 +132,19 @@ RSpec.describe 'Users::Unlocks', type: :request do
   #   ロック日時: ない（未ロック）, ある（ロック中）
   describe 'GET #show' do
     subject { get user_unlock_path(unlock_token: unlock_token) }
+    let(:current_user) { User.find(send_user.id) }
 
     # テスト内容
     shared_examples_for 'OK' do
       it 'アカウントロック日時がなしに変更される' do
         subject
-        expect(User.find(send_user.id).locked_at).to be_nil
+        expect(current_user.locked_at).to be_nil
       end
     end
     shared_examples_for 'NG' do
       it 'アカウントロック日時が変更されない' do
         subject
-        expect(User.find(send_user.id).locked_at).to eq(send_user.locked_at)
+        expect(current_user.locked_at).to eq(send_user.locked_at)
       end
     end
 

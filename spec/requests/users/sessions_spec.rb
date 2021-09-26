@@ -120,7 +120,7 @@ RSpec.describe 'Users::Sessions', type: :request do
     end
     shared_examples_for '[未ログイン]無効なパラメータ' do
       let(:attributes) { invalid_attributes }
-      it_behaves_like 'ToError', 'devise.failure.invalid'
+      it_behaves_like 'ToError', 'devise.failure.not_found_in_database'
     end
     shared_examples_for '[ログイン中/削除予約済み]無効なパラメータ' do
       let(:attributes) { invalid_attributes }

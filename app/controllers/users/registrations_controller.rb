@@ -29,9 +29,15 @@ class Users::RegistrationsController < Devise::RegistrationsController
   # end
 
   # PUT(PATCH) /users/edit 登録情報変更(処理)
-  # def update
-  #   super
-  # end
+  def update
+    # Tips: 存在するメールアドレスの場合はエラーにする
+    if resource.email != params[:user][:email] && User.find_by(email: params[:user][:email]).present?
+      resource.errors.add(:email, t('activerecord.errors.models.user.attributes.email.exist'))
+      return render :edit
+    end
+
+    super
+  end
 
   # PUT(PATCH) /users/image 画像変更(処理)
   def image_update
@@ -40,7 +46,7 @@ class Users::RegistrationsController < Devise::RegistrationsController
       return render :edit
     end
 
-    @user = User.find(current_user.id)
+    @user = User.find(resource.id)
     if @user.update(params.require(:user).permit(:image))
       redirect_to edit_user_registration_path, notice: t('notice.user.image_update')
     else
@@ -50,7 +56,7 @@ class Users::RegistrationsController < Devise::RegistrationsController
 
   # DELETE /users/image 画像削除(処理)
   def image_destroy
-    @user = User.find(current_user.id)
+    @user = User.find(resource.id)
     @user.remove_image!
     @user.save!
     redirect_to edit_user_registration_path, notice: t('notice.user.image_destroy')
@@ -62,8 +68,9 @@ class Users::RegistrationsController < Devise::RegistrationsController
 
   # DELETE /users/delete アカウント削除(処理)
   def destroy
+    # resource.destroy
     resource.set_destroy_reserve
-    UserMailer.with(user: current_user).destroy_reserved.deliver_now
+    UserMailer.with(user: resource).destroy_reserved.deliver_now
 
     Devise.sign_out_all_scopes ? sign_out : sign_out(resource_name)
     set_flash_message! :notice, :destroy_reserved
@@ -78,7 +85,7 @@ class Users::RegistrationsController < Devise::RegistrationsController
   # DELETE /users/undo_delete アカウント削除取り消し(処理)
   def undo_destroy
     resource.set_undo_destroy_reserve
-    UserMailer.with(user: current_user).undo_destroy_reserved.deliver_now
+    UserMailer.with(user: resource).undo_destroy_reserved.deliver_now
 
     set_flash_message! :notice, :undo_destroy_reserved
     redirect_to root_path

@@ -31,11 +31,25 @@ class ApplicationController < ActionController::Base
     head :not_acceptable unless format_html? && accept_header_html?
   end
 
+  # 認証エラーを返却
+  def unauthenticated_response
+    render './failure', locals: { alert: t('devise.failure.unauthenticated') }, status: :unauthorized
+  end
+
+  # 認証済みエラーを返却
+  def already_authenticated_response
+    render './failure', locals: { alert: t('devise.failure.already_authenticated') }, status: :unauthorized
+  end
+
+  # パスワードリセットトークンのユーザーを返却
+  def user_reset_password_token(token)
+    reset_password_token = Devise.token_generator.digest(self, :reset_password_token, token)
+    resource_class.find_by(reset_password_token: reset_password_token)
+  end
+
   # 有効なパスワードリセットトークンかを返却
   def valid_reset_password_token?(token)
-    reset_password_token = Devise.token_generator.digest(self, :reset_password_token, token)
-    resource = resource_class.find_by(reset_password_token: reset_password_token)
-    resource&.reset_password_period_valid?
+    user_reset_password_token(token)&.reset_password_period_valid?
   end
 
   # メールアドレス確認済みかを返却
@@ -76,9 +90,19 @@ class ApplicationController < ActionController::Base
     redirect_to root_path, alert: t('alert.user.destroy_reserved') if current_user.destroy_reserved?
   end
 
+  # 削除予約済みの場合、JSONでメッセージを返却
+  def json_response_destroy_reserved
+    render './failure', locals: { alert: t('alert.user.destroy_reserved') }, status: :unprocessable_entity if current_user&.destroy_reserved?
+  end
+
   # 削除予約済みでない場合、リダイレクトしてメッセージを表示
   def redirect_response_not_destroy_reserved
     redirect_to root_path, alert: t('alert.user.not_destroy_reserved') unless current_user.destroy_reserved?
+  end
+
+  # 削除予約済みでない場合、JSONでメッセージを返却
+  def json_response_not_destroy_reserved
+    render './failure', locals: { alert: t('alert.user.not_destroy_reserved') }, status: :unprocessable_entity unless current_user&.destroy_reserved?
   end
 
   # ユニークコードを作成して返却

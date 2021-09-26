@@ -209,7 +209,7 @@ RSpec.describe 'AdminUsers::Passwords', type: :request do
     subject { put update_admin_user_password_path, params: { admin_user: attributes } }
     let(:new_password) { Faker::Internet.password(min_length: 8) }
     let(:valid_attributes)   { { reset_password_token: reset_password_token, password: new_password, password_confirmation: new_password } }
-    let(:invalid_attributes) { { reset_password_token: reset_password_token, password: new_password, password_confirmation: nil } }
+    let(:invalid_attributes) { { reset_password_token: reset_password_token, password: nil, password_confirmation: nil } }
 
     # テスト内容
     shared_examples_for 'OK' do
@@ -259,7 +259,7 @@ RSpec.describe 'AdminUsers::Passwords', type: :request do
     shared_examples_for '[未ログイン][期限内]無効なパラメータ' do
       let(:attributes) { invalid_attributes }
       it_behaves_like 'NG'
-      it_behaves_like 'ToError', 'activerecord.errors.models.admin_user.attributes.password_confirmation.confirmation'
+      it_behaves_like 'ToError', 'activerecord.errors.models.admin_user.attributes.password.blank'
     end
     shared_examples_for '[ログイン中][期限内/期限切れ]無効なパラメータ' do
       let(:attributes) { invalid_attributes }

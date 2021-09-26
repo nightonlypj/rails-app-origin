@@ -1,5 +1,6 @@
 env_name: '【テスト環境】'
 base_domain: 'test.mydomain'
+base_image_url: 'https://test.mydomain'
 redirect_whitelist: ['https://test-front.mydomain/*']
 default_confirm_success_url: ''
 default_password_reset_url: ''

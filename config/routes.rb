@@ -51,11 +51,15 @@ Rails.application.routes.draw do
     put    'users/password',         to: 'users/passwords#update',            as: 'update_user_password'
     patch  'users/password',         to: 'users/passwords#update',            as: nil
 
-    # devise_token_auth
+    # Devise Token Auth
     post   'users/auth/sign_up',         to: 'users/auth/registrations#create',             as: 'create_user_auth_registration'
     put    'users/auth/update',          to: 'users/auth/registrations#update',             as: 'update_user_auth_registration'
     patch  'users/auth/update',          to: 'users/auth/registrations#update',             as: nil
+    put    'users/auth/image',           to: 'users/auth/registrations#image_update',       as: 'update_user_auth_image_registration'
+    patch  'users/auth/image',           to: 'users/auth/registrations#image_update',       as: nil
+    delete 'users/auth/image',           to: 'users/auth/registrations#image_destroy',      as: 'delete_user_auth_image_registration'
     delete 'users/auth/destroy',         to: 'users/auth/registrations#destroy',            as: 'destroy_user_auth_registration'
+    delete 'users/auth/undo_delete',     to: 'users/auth/registrations#undo_destroy',       as: 'destroy_undo_user_auth_registration'
     post   'users/auth/confirmation',    to: 'users/auth/confirmations#create',             as: 'create_user_auth_confirmation'
     get    'users/auth/confirmation',    to: 'users/auth/confirmations#show',               as: 'user_auth_confirmation'
     post   'users/auth/sign_in',         to: 'users/auth/sessions#create',                  as: 'create_user_auth_session'

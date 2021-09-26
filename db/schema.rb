@@ -82,9 +82,8 @@ ActiveRecord::Schema.define(version: 2021_08_06_000715) do
     t.datetime "updated_at", precision: 6, null: false
     t.string "provider", default: "email", null: false, comment: "認証方法"
     t.string "uid", default: "", null: false, comment: "UID"
-    t.boolean "allow_password_change", default: false, comment: "パスワード変更許可"
-    t.string "nickname", comment: "ニックネーム"
-    t.text "tokens", comment: "トークン"
+    t.boolean "allow_password_change", default: false, comment: "パスワード再設定中"
+    t.text "tokens", comment: "認証トークン"
     t.index ["code"], name: "index_users5", unique: true
     t.index ["confirmation_token"], name: "index_users3", unique: true
     t.index ["destroy_schedule_at"], name: "index_users6"
