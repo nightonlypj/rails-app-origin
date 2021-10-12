@@ -1,5 +1,10 @@
 # リリースノート
 
+## 1.4.0 (Sprint 9)
+
+- 異なるドメインからAPIにアクセスできるようにしたい（CROS設定）
+  - https://dev.azure.com/nightonly/rails-app-origin/_workitems/edit/410/
+
 ## 1.3.0 (Sprint 8)
 
 - 認証と登録をAPIでもできるようにしたい
