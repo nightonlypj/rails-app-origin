@@ -154,7 +154,7 @@ ja:
     sessions:
       signed_in: 'ログインしました。'
       signed_out: 'ログアウトしました。'
-      already_signed_out: '既にログアウト済みです。'
+      already_signed_out: '既にログアウトされています。'
     unlocks:
       send_instructions: 'アカウントロック解除のメールを送信しました。メールを確認してください。'
       send_paranoid_instructions: 'アカウントロック解除のメールを送信しました。メールを確認してください。'

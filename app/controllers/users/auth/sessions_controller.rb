@@ -4,12 +4,12 @@ class Users::Auth::SessionsController < DeviseTokenAuth::SessionsController
   include DeviseTokenAuth::Concerns::SetUserByToken
   skip_before_action :verify_authenticity_token
   prepend_before_action :unauthenticated_response_sign_out, only: %i[destroy], unless: :user_signed_in?
-  prepend_before_action :already_authenticated_response, only: %i[create], if: :user_signed_in?
   prepend_before_action :not_acceptable_response_not_api_accept
 
   # POST /users/auth/sign_in(.json) ログインAPI(処理)
   def create
     return render './failure', locals: { alert: t('devise_token_auth.sessions.bad_credentials') }, status: :bad_request if request.request_parameters.blank?
+    return render_create_error_bad_credentials if params[:email].blank? || params[:password].blank?
 
     super
   end

@@ -2,6 +2,8 @@
 
 ## 1.4.0 (Sprint 9)
 
+- ログイン状態でもAPIログインできるようにしたい（フロントとの不整合に対応）
+  - https://dev.azure.com/nightonly/rails-app-origin/_workitems/edit/411/
 - 異なるドメインからAPIにアクセスできるようにしたい（CROS設定）
   - https://dev.azure.com/nightonly/rails-app-origin/_workitems/edit/410/
 
