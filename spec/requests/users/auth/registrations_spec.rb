@@ -18,11 +18,11 @@ RSpec.describe 'Users::Auth::Registrations', type: :request do
 
   # POST /users/auth/sign_up(.json) アカウント登録API(処理)
   # 前提条件
-  #   Acceptヘッダがない
+  #   AcceptヘッダにHTMLが含まれる
   # テストパターン
   #   URLの拡張子: ない, .json
   describe 'POST #create' do
-    subject { post create_user_auth_registration_path(format: subject_format) }
+    subject { post create_user_auth_registration_path(format: subject_format), headers: ACCEPT_INC_HTML }
 
     # テストケース
     context 'URLの拡張子がない' do
@@ -35,13 +35,13 @@ RSpec.describe 'Users::Auth::Registrations', type: :request do
     end
   end
   # 前提条件
-  #   AcceptヘッダがJSON
+  #   AcceptヘッダにJSONが含まれる
   # テストパターン
   #   URLの拡張子: ない, .json
   #   未ログイン, ログイン中, APIログイン中
   #   パラメータなし, 有効なパラメータ, 無効なパラメータ, URLがない, URLがホワイトリストにない
   describe 'POST #create(json)' do
-    subject { post create_user_auth_registration_path(format: subject_format), params: attributes, headers: auth_headers.merge(ACCEPT_JSON) }
+    subject { post create_user_auth_registration_path(format: subject_format), params: attributes, headers: auth_headers.merge(ACCEPT_INC_JSON) }
     let(:new_user)   { FactoryBot.attributes_for(:user) }
     let(:exist_user) { FactoryBot.create(:user) }
     let(:valid_attributes)       { { name: new_user[:name], email: new_user[:email], password: new_user[:password], confirm_success_url: FRONT_SITE_URL } }
@@ -216,11 +216,11 @@ RSpec.describe 'Users::Auth::Registrations', type: :request do
 
   # PUT(PATCH) /users/auth/update(.json) 登録情報変更API(処理)
   # 前提条件
-  #   Acceptヘッダがない
+  #   AcceptヘッダにHTMLが含まれる
   # テストパターン
   #   URLの拡張子: ない, .json
   describe 'PUT #update' do
-    subject { put update_user_auth_registration_path(format: subject_format) }
+    subject { put update_user_auth_registration_path(format: subject_format), headers: ACCEPT_INC_HTML }
 
     # テストケース
     context 'URLの拡張子がない' do
@@ -233,13 +233,13 @@ RSpec.describe 'Users::Auth::Registrations', type: :request do
     end
   end
   # 前提条件
-  #   AcceptヘッダがJSON
+  #   AcceptヘッダにJSONが含まれる
   # テストパターン
   #   URLの拡張子: ない, .json
   #   未ログイン, ログイン中, APIログイン中, APIログイン中（削除予約済み）
   #   パラメータなし, 有効なパラメータ（変更なし, あり）, 無効なパラメータ
   describe 'PUT #update(json)' do
-    subject { put update_user_auth_registration_path(format: subject_format), params: attributes, headers: auth_headers.merge(ACCEPT_JSON) }
+    subject { put update_user_auth_registration_path(format: subject_format), params: attributes, headers: auth_headers.merge(ACCEPT_INC_JSON) }
     let(:new_user)   { FactoryBot.attributes_for(:user) }
     let(:exist_user) { FactoryBot.create(:user) }
     let(:nochange_attributes) { { name: user.name, email: user.email, password: user.password } }
@@ -431,11 +431,11 @@ RSpec.describe 'Users::Auth::Registrations', type: :request do
 
   # PUT(PATCH) /users/auth/image(.json) 画像変更API(処理)
   # 前提条件
-  #   Acceptヘッダがない
+  #   AcceptヘッダにHTMLが含まれる
   # テストパターン
   #   URLの拡張子: ない, .json
   describe 'PUT #image_update' do
-    subject { put update_user_auth_image_registration_path(format: subject_format) }
+    subject { put update_user_auth_image_registration_path(format: subject_format), headers: ACCEPT_INC_HTML }
 
     # テストケース
     context 'URLの拡張子がない' do
@@ -448,13 +448,13 @@ RSpec.describe 'Users::Auth::Registrations', type: :request do
     end
   end
   # 前提条件
-  #   AcceptヘッダがJSON
+  #   AcceptヘッダにJSONが含まれる
   # テストパターン
   #   URLの拡張子: ない, .json
   #   未ログイン, ログイン中, APIログイン中, APIログイン中（削除予約済み）
   #   有効なパラメータ, 無効なパラメータ
   describe 'PUT #image_update(json)' do
-    subject { put update_user_auth_image_registration_path(format: subject_format), params: attributes, headers: auth_headers.merge(ACCEPT_JSON) }
+    subject { put update_user_auth_image_registration_path(format: subject_format), params: attributes, headers: auth_headers.merge(ACCEPT_INC_JSON) }
     let(:valid_attributes)   { { image: fixture_file_upload(TEST_IMAGE_FILE, TEST_IMAGE_TYPE) } }
     let(:invalid_attributes) { nil }
     include_context 'Authテスト内容'
@@ -570,11 +570,11 @@ RSpec.describe 'Users::Auth::Registrations', type: :request do
 
   # DELETE /users/auth/image(.json) 画像削除API(処理)
   # 前提条件
-  #   Acceptヘッダがない
+  #   AcceptヘッダにHTMLが含まれる
   # テストパターン
   #   URLの拡張子: ない, .json
   describe 'DELETE #image_destroy' do
-    subject { delete delete_user_auth_image_registration_path(format: subject_format) }
+    subject { delete delete_user_auth_image_registration_path(format: subject_format), headers: ACCEPT_INC_HTML }
 
     # テストケース
     context 'URLの拡張子がない' do
@@ -587,12 +587,12 @@ RSpec.describe 'Users::Auth::Registrations', type: :request do
     end
   end
   # 前提条件
-  #   AcceptヘッダがJSON
+  #   AcceptヘッダにJSONが含まれる
   # テストパターン
   #   URLの拡張子: ない, .json
   #   未ログイン, ログイン中, APIログイン中, APIログイン中（削除予約済み）
   describe 'DELETE #image_destroy(json)' do
-    subject { delete delete_user_auth_image_registration_path(format: subject_format), headers: auth_headers.merge(ACCEPT_JSON) }
+    subject { delete delete_user_auth_image_registration_path(format: subject_format), headers: auth_headers.merge(ACCEPT_INC_JSON) }
     include_context 'Authテスト内容'
     let(:current_user) { User.find(user.id) }
 
@@ -669,11 +669,11 @@ RSpec.describe 'Users::Auth::Registrations', type: :request do
 
   # DELETE /users/auth/destroy(.json) アカウント削除API(処理)
   # 前提条件
-  #   Acceptヘッダがない
+  #   AcceptヘッダにHTMLが含まれる
   # テストパターン
   #   URLの拡張子: ない, .json
   describe 'DELETE #destroy' do
-    subject { delete destroy_user_auth_registration_path(format: subject_format) }
+    subject { delete destroy_user_auth_registration_path(format: subject_format), headers: ACCEPT_INC_HTML }
 
     # テストケース
     context 'URLの拡張子がない' do
@@ -686,12 +686,12 @@ RSpec.describe 'Users::Auth::Registrations', type: :request do
     end
   end
   # 前提条件
-  #   AcceptヘッダがJSON
+  #   AcceptヘッダにJSONが含まれる
   # テストパターン
   #   URLの拡張子: ない, .json
   #   未ログイン, ログイン中, APIログイン中, APIログイン中（削除予約済み）
   describe 'DELETE #destroy(json)' do
-    subject { delete destroy_user_auth_registration_path(format: subject_format), headers: auth_headers.merge(ACCEPT_JSON) }
+    subject { delete destroy_user_auth_registration_path(format: subject_format), headers: auth_headers.merge(ACCEPT_INC_JSON) }
     include_context 'Authテスト内容'
     let(:current_user) { User.find(user.id) }
 
@@ -797,11 +797,11 @@ RSpec.describe 'Users::Auth::Registrations', type: :request do
 
   # DELETE /users/auth/undo_delete(.json) アカウント削除取り消しAPI(処理)
   # 前提条件
-  #   Acceptヘッダがない
+  #   AcceptヘッダにHTMLが含まれる
   # テストパターン
   #   URLの拡張子: ない, .json
   describe 'DELETE #undo_destroy' do
-    subject { delete destroy_undo_user_auth_registration_path(format: subject_format) }
+    subject { delete destroy_undo_user_auth_registration_path(format: subject_format), headers: ACCEPT_INC_HTML }
 
     # テストケース
     context 'URLの拡張子がない' do
@@ -814,12 +814,12 @@ RSpec.describe 'Users::Auth::Registrations', type: :request do
     end
   end
   # 前提条件
-  #   AcceptヘッダがJSON
+  #   AcceptヘッダにJSONが含まれる
   # テストパターン
   #   URLの拡張子: ない, .json
   #   未ログイン, ログイン中, APIログイン中, APIログイン中（削除予約済み）
   describe 'DELETE #undo_destroy(json)' do
-    subject { delete destroy_undo_user_auth_registration_path(format: subject_format), headers: auth_headers.merge(ACCEPT_JSON) }
+    subject { delete destroy_undo_user_auth_registration_path(format: subject_format), headers: auth_headers.merge(ACCEPT_INC_JSON) }
     include_context 'Authテスト内容'
     let(:current_user) { User.find(user.id) }
 

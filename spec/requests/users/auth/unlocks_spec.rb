@@ -18,11 +18,11 @@ RSpec.describe 'Users::Auth::Unlocks', type: :request do
 
   # POST /users/auth/unlock(.json) アカウントロック解除API[メール再送](処理)
   # 前提条件
-  #   Acceptヘッダがない
+  #   AcceptヘッダにHTMLが含まれる
   # テストパターン
   #   URLの拡張子: ない, .json
   describe 'POST #create' do
-    subject { post create_user_auth_unlock_path(format: subject_format) }
+    subject { post create_user_auth_unlock_path(format: subject_format), headers: ACCEPT_INC_HTML }
 
     # テストケース
     context 'URLの拡張子がない' do
@@ -35,13 +35,13 @@ RSpec.describe 'Users::Auth::Unlocks', type: :request do
     end
   end
   # 前提条件
-  #   AcceptヘッダがJSON
+  #   AcceptヘッダにJSONが含まれる
   # テストパターン
   #   URLの拡張子: ない, .json
   #   未ログイン, ログイン中, APIログイン中
   #   パラメータなし, 有効なパラメータ（ロック中, 未ロック）, 無効なパラメータ, URLがない, URLがホワイトリストにない
   describe 'POST #create(json)' do
-    subject { post create_user_auth_unlock_path(format: subject_format), params: attributes, headers: auth_headers.merge(ACCEPT_JSON) }
+    subject { post create_user_auth_unlock_path(format: subject_format), params: attributes, headers: auth_headers.merge(ACCEPT_INC_JSON) }
     let(:send_user_locked)   { FactoryBot.create(:user_locked) }
     let(:send_user_unlocked) { FactoryBot.create(:user) }
     let(:not_user)           { FactoryBot.attributes_for(:user) }
@@ -228,39 +228,32 @@ RSpec.describe 'Users::Auth::Unlocks', type: :request do
 
   # GET /users/auth/unlock アカウントロック解除(処理)
   # 前提条件
-  #   以外（URLの拡張子がない, Acceptヘッダがない）
+  #   URLの拡張子が.json
   # テストパターン
-  #   URLの拡張子: ない, .json
-  #   Acceptヘッダ: ない, JSON
+  #   Acceptヘッダ: HTMLが含まれる, JSONが含まれる
   describe 'GET #show(json)' do
-    subject { get user_auth_unlock_path(format: subject_format), headers: accept_headers }
+    subject { get user_auth_unlock_path(format: :json), headers: accept_headers }
 
     # テストケース
-    context 'URLの拡張子がない, AcceptヘッダがJSON' do
-      let(:subject_format) { nil }
-      let(:accept_headers) { ACCEPT_JSON }
+    context 'AcceptヘッダにHTMLが含まれる' do
+      let(:accept_headers) { ACCEPT_INC_HTML }
       it_behaves_like 'To406'
     end
-    context 'URLの拡張子が.json, Acceptヘッダがない' do
-      let(:subject_format) { :json }
-      let(:accept_headers) { nil }
-      it_behaves_like 'To406'
-    end
-    context 'URLの拡張子が.json, AcceptヘッダがJSON' do
-      let(:subject_format) { :json }
-      let(:accept_headers) { ACCEPT_JSON }
+    context 'AcceptヘッダにJSONが含まれる' do
+      let(:accept_headers) { ACCEPT_INC_JSON }
       it_behaves_like 'To406'
     end
   end
   # 前提条件
-  #   URLの拡張子がない, Acceptヘッダがない
+  #   URLの拡張子がない
   # テストパターン
+  #   Acceptヘッダ: HTMLが含まれる, JSONが含まれる
   #   未ログイン, ログイン中, APIログイン中
   #   トークン: 存在する, 存在しない, ない, 空
   #   ロック日時: ない（未ロック）, ある（ロック中）
   #   ＋リダイレクトURL: ある, ない, ホワイトリストにない
   describe 'GET #show' do
-    subject { get user_auth_unlock_path(unlock_token: unlock_token, redirect_url: @redirect_url), headers: auth_headers }
+    subject { get user_auth_unlock_path(unlock_token: unlock_token, redirect_url: @redirect_url), headers: auth_headers.merge(accept_headers) }
     let(:current_user) { User.find(send_user.id) }
 
     # テスト内容
@@ -405,26 +398,39 @@ RSpec.describe 'Users::Auth::Unlocks', type: :request do
       # it_behaves_like '[*][空]ロック日時がある（ロック中）' # Tips: トークンが存在しない為、ロック日時がない
     end
 
-    context '未ログイン' do
+    shared_examples_for '未ログイン' do
       include_context '未ログイン処理'
       it_behaves_like '[*]トークンが存在する'
       it_behaves_like '[*]トークンが存在しない'
       it_behaves_like '[*]トークンがない'
       it_behaves_like '[*]トークンが空'
     end
-    context 'ログイン中' do
+    shared_examples_for 'ログイン中' do
       include_context 'ログイン処理'
       it_behaves_like '[*]トークンが存在する'
       it_behaves_like '[*]トークンが存在しない'
       it_behaves_like '[*]トークンがない'
       it_behaves_like '[*]トークンが空'
     end
-    context 'APIログイン中' do
+    shared_examples_for 'APIログイン中' do
       include_context 'APIログイン処理'
       it_behaves_like '[*]トークンが存在する'
       it_behaves_like '[*]トークンが存在しない'
       it_behaves_like '[*]トークンがない'
       it_behaves_like '[*]トークンが空'
+    end
+
+    context 'AcceptヘッダにHTMLが含まれる' do
+      let(:accept_headers) { ACCEPT_INC_HTML }
+      it_behaves_like '未ログイン'
+      it_behaves_like 'ログイン中'
+      it_behaves_like 'APIログイン中'
+    end
+    context 'AcceptヘッダにJSONが含まれる' do
+      let(:accept_headers) { ACCEPT_INC_JSON }
+      it_behaves_like '未ログイン'
+      it_behaves_like 'ログイン中'
+      it_behaves_like 'APIログイン中'
     end
   end
 end

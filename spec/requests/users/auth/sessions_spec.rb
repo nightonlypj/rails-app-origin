@@ -15,11 +15,11 @@ RSpec.describe 'Users::Auth::Sessions', type: :request do
 
   # POST /users/auth/sign_in(.json) ログインAPI(処理)
   # 前提条件
-  #   Acceptヘッダがない
+  #   AcceptヘッダにHTMLが含まれる
   # テストパターン
   #   URLの拡張子: ない, .json
   describe 'POST #create' do
-    subject { post create_user_auth_session_path(format: subject_format) }
+    subject { post create_user_auth_session_path(format: subject_format), headers: ACCEPT_INC_HTML }
 
     # テストケース
     context 'URLの拡張子がない' do
@@ -32,13 +32,13 @@ RSpec.describe 'Users::Auth::Sessions', type: :request do
     end
   end
   # 前提条件
-  #   AcceptヘッダがJSON
+  #   AcceptヘッダにJSONが含まれる
   # テストパターン
   #   URLの拡張子: ない, .json
   #   未ログイン, ログイン中, APIログイン中, APIログイン中（削除予約済み）
   #   パラメータなし, 有効なパラメータ（未ロック, ロック中, メール未確認, メールアドレス変更中, 削除予約済み）, 無効なパラメータ
   describe 'POST #create(json)' do
-    subject { post create_user_auth_session_path(format: subject_format), params: attributes, headers: auth_headers.merge(ACCEPT_JSON) }
+    subject { post create_user_auth_session_path(format: subject_format), params: attributes, headers: auth_headers.merge(ACCEPT_INC_JSON) }
     let(:send_user_unlocked)         { FactoryBot.create(:user) }
     let(:send_user_locked)           { FactoryBot.create(:user_locked) }
     let(:send_user_unconfirmed)      { FactoryBot.create(:user_unconfirmed) }
@@ -253,11 +253,11 @@ RSpec.describe 'Users::Auth::Sessions', type: :request do
 
   # DELETE /users/auth/sign_out(.json) ログアウトAPI(処理)
   # 前提条件
-  #   Acceptヘッダがない
+  #   AcceptヘッダにHTMLが含まれる
   # テストパターン
   #   URLの拡張子: ない, .json
   describe 'DELETE #destroy' do
-    subject { delete destroy_user_auth_session_path(format: subject_format) }
+    subject { delete destroy_user_auth_session_path(format: subject_format), headers: ACCEPT_INC_HTML }
 
     # テストケース
     context 'URLの拡張子がない' do
@@ -270,12 +270,12 @@ RSpec.describe 'Users::Auth::Sessions', type: :request do
     end
   end
   # 前提条件
-  #   AcceptヘッダがJSON
+  #   AcceptヘッダにJSONが含まれる
   # テストパターン
   #   URLの拡張子: ない, .json
   #   未ログイン, ログイン中, APIログイン中, APIログイン中（削除予約済み）
   describe 'DELETE #destroy(json)' do
-    subject { delete destroy_user_auth_session_path(format: subject_format), headers: auth_headers.merge(ACCEPT_JSON) }
+    subject { delete destroy_user_auth_session_path(format: subject_format), headers: auth_headers.merge(ACCEPT_INC_JSON) }
     include_context 'Authテスト内容'
     let(:current_user) { user }
 

@@ -112,11 +112,13 @@ shared_context 'Authテスト内容' do
   let(:expect_exist_auth_header) do
     expect(response.header['uid']).not_to be_nil
     expect(response.header['client']).not_to be_nil
-    expect(response.header['access-token']).not_to be_nil
+    expect(response.header['access-token']).not_to be_nil # Tips: 一定時間内のリクエスト(batch_request)は半角スペースが入る
+    expect(response.header['expiry']).not_to be_nil # Tips: 同上
   end
   let(:expect_not_exist_auth_header) do
     expect(response.header['uid']).to be_nil
     expect(response.header['client']).to be_nil
     expect(response.header['access-token']).to be_nil
+    expect(response.header['expiry']).to be_nil
   end
 end

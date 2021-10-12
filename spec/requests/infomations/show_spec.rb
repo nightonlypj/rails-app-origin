@@ -11,7 +11,7 @@ RSpec.describe 'Infomations', type: :request do
   #   開始日時: 過去, 未来
   #   終了日時: 過去, 未来, ない
   #   ＋URLの拡張子: ない, .json
-  #   ＋Acceptヘッダ: ない, JSON
+  #   ＋Acceptヘッダ: HTMLが含まれる, JSONが含まれる
   describe 'GET #show' do
     subject { get infomation_path(id: infomation.id, format: subject_format), headers: auth_headers.merge(@accept_headers) }
     before  { @accept_headers = nil } # Tips: 定義忘れをエラーにする為
@@ -19,28 +19,28 @@ RSpec.describe 'Infomations', type: :request do
     let(:outside_user) { FactoryBot.create(:user) }
 
     # テスト内容
-    shared_examples_for 'ToOK' do |json_code = 200|
+    shared_examples_for 'ToOK' do
       let(:subject_format) { nil }
-      it '[Acceptヘッダがない]HTTPステータスが200。対象項目が含まれる' do
-        @accept_headers = {}
+      it '[AcceptヘッダにHTMLが含まれる]HTTPステータスが200。対象項目が含まれる' do
+        @accept_headers = ACCEPT_INC_HTML
         is_expected.to eq(200)
         expect(response.body).to include(infomation.title) # タイトル
         expect(response.body).to include(infomation.body) if infomation.body.present? # 本文
         expect(response.body).to include(I18n.l(infomation.started_at.to_date)) # 掲載開始日
       end
-      it "[AcceptヘッダがJSON]HTTPが#{json_code}" do
-        @accept_headers = ACCEPT_JSON
-        is_expected.to eq(json_code)
+      it '[AcceptヘッダにJSONが含まれる]HTTPが200' do
+        @accept_headers = ACCEPT_INC_JSON
+        is_expected.to eq(200)
       end
     end
     shared_examples_for 'ToOK(json)' do
       let(:subject_format) { :json }
-      it '[Acceptヘッダがない]HTTPステータスが406' do
-        @accept_headers = {}
+      it '[AcceptヘッダにHTMLが含まれる]HTTPステータスが406' do
+        @accept_headers = ACCEPT_INC_HTML
         is_expected.to eq(406)
       end
-      it '[AcceptヘッダがJSON]HTTPステータスが200。対象項目が一致する' do
-        @accept_headers = ACCEPT_JSON
+      it '[AcceptヘッダにJSONが含まれる]HTTPステータスが200。対象項目が一致する' do
+        @accept_headers = ACCEPT_INC_JSON
         is_expected.to eq(200)
         expect(JSON.parse(response.body)['success']).to eq(true)
 
@@ -54,23 +54,23 @@ RSpec.describe 'Infomations', type: :request do
     end
     shared_examples_for 'ToNot' do
       let(:subject_format) { nil }
-      it '[Acceptヘッダがない]HTTPステータスが404' do
-        @accept_headers = {}
+      it '[AcceptヘッダにHTMLが含まれる]HTTPステータスが404' do
+        @accept_headers = ACCEPT_INC_HTML
         is_expected.to eq(404)
       end
-      it '[AcceptヘッダがJSON]HTTPステータスが404' do
-        @accept_headers = ACCEPT_JSON
+      it '[AcceptヘッダにJSONが含まれる]HTTPステータスが404' do
+        @accept_headers = ACCEPT_INC_JSON
         is_expected.to eq(404)
       end
     end
     shared_examples_for 'ToNot(json)' do |success, alert, notice|
       let(:subject_format) { :json }
-      it '[Acceptヘッダがない]HTTPステータスが406' do
-        @accept_headers = {}
+      it '[AcceptヘッダにHTMLが含まれる]HTTPステータスが406' do
+        @accept_headers = ACCEPT_INC_HTML
         is_expected.to eq(406)
       end
-      it '[AcceptヘッダがJSON]HTTPステータスが404。対象項目が一致する' do
-        @accept_headers = ACCEPT_JSON
+      it '[AcceptヘッダにJSONが含まれる]HTTPステータスが404。対象項目が一致する' do
+        @accept_headers = ACCEPT_INC_JSON
         is_expected.to eq(404)
         response_json = response.body.present? ? JSON.parse(response.body) : {}
         expect(response_json['success']).to eq(success)
@@ -113,7 +113,7 @@ RSpec.describe 'Infomations', type: :request do
     end
     shared_examples_for '[ログイン中/削除予約済み][自分][過去]終了日時が未来' do
       let(:ended_at) { Time.current + 1.day }
-      it_behaves_like 'ToOK', 404 # Tips: APIは未ログイン扱いの為、他人
+      it_behaves_like 'ToOK'
       it_behaves_like 'ToNot(json)', nil, nil, nil # Tips: APIは未ログイン扱いの為、他人
     end
     shared_examples_for '[APIログイン中/削除予約済み][自分][過去]終了日時が未来' do
@@ -138,7 +138,7 @@ RSpec.describe 'Infomations', type: :request do
     end
     shared_examples_for '[ログイン中/削除予約済み][自分][過去]終了日時がない' do
       let(:ended_at) { nil }
-      it_behaves_like 'ToOK', 404 # Tips: APIは未ログイン扱いの為、他人
+      it_behaves_like 'ToOK'
       it_behaves_like 'ToNot(json)', nil, nil, nil # Tips: APIは未ログイン扱いの為、他人
     end
     shared_examples_for '[APIログイン中/削除予約済み][自分][過去]終了日時がない' do

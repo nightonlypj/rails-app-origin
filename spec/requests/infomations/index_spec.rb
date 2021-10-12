@@ -9,7 +9,7 @@ RSpec.describe 'Infomations', type: :request do
   #   未ログイン, ログイン中, ログイン中（削除予約済み）, APIログイン中, APIログイン中（削除予約済み）
   #   お知らせ: ない, 最大表示数と同じ, 最大表示数より多い
   #   ＋URLの拡張子: ない, .json
-  #   ＋Acceptヘッダ: ない, JSON
+  #   ＋Acceptヘッダ: HTMLが含まれる, JSONが含まれる
   describe 'GET #index' do
     subject { get infomations_path(page: subject_page, format: subject_format), headers: auth_headers.merge(@accept_headers) }
     before  { @accept_headers = nil } # Tips: 定義忘れをエラーにする為
@@ -18,12 +18,12 @@ RSpec.describe 'Infomations', type: :request do
     shared_examples_for 'ToOK' do |page|
       let(:subject_page)   { page }
       let(:subject_format) { nil }
-      it '[Acceptヘッダがない]HTTPステータスが200' do
-        @accept_headers = {}
+      it '[AcceptヘッダにHTMLが含まれる]HTTPステータスが200' do
+        @accept_headers = ACCEPT_INC_HTML
         is_expected.to eq(200)
       end
-      it '[AcceptヘッダがJSON]HTTPステータスが200' do
-        @accept_headers = ACCEPT_JSON
+      it '[AcceptヘッダにJSONが含まれる]HTTPステータスが200' do
+        @accept_headers = ACCEPT_INC_JSON
         is_expected.to eq(200)
       end
     end
@@ -31,12 +31,12 @@ RSpec.describe 'Infomations', type: :request do
       let(:subject_page)   { page }
       let(:subject_format) { :json }
       let(:infomations)    { auth_headers.present? ? @user_infomations : @all_infomations } # Tips: APIは未ログイン扱いの為、全員のしか見れない
-      it '[Acceptヘッダがない]HTTPステータスが406' do
-        @accept_headers = {}
+      it '[AcceptヘッダにHTMLが含まれる]HTTPステータスが406' do
+        @accept_headers = ACCEPT_INC_HTML
         is_expected.to eq(406)
       end
-      it '[AcceptヘッダがJSON]HTTPステータスが200。対象項目が一致する' do
-        @accept_headers = ACCEPT_JSON
+      it '[AcceptヘッダにJSONが含まれる]HTTPステータスが200。対象項目が一致する' do
+        @accept_headers = ACCEPT_INC_JSON
         is_expected.to eq(200)
         expect(JSON.parse(response.body)['success']).to eq(true)
 
@@ -53,7 +53,7 @@ RSpec.describe 'Infomations', type: :request do
       let(:subject_format) { nil }
       let(:url_page)       { link_page >= 2 ? link_page : nil }
       it "#{link_page}ページのパスが含まれる" do
-        @accept_headers = {}
+        @accept_headers = ACCEPT_INC_HTML
         subject
         expect(response.body).to include("\"#{infomations_path(page: url_page)}\"")
       end
@@ -63,7 +63,7 @@ RSpec.describe 'Infomations', type: :request do
       let(:subject_format) { nil }
       let(:url_page)       { link_page >= 2 ? link_page : nil }
       it "#{link_page}ページのパスが含まれない" do
-        @accept_headers = {}
+        @accept_headers = ACCEPT_INC_HTML
         subject
         expect(response.body).not_to include("\"#{infomations_path(page: url_page)}\"")
       end
@@ -75,7 +75,7 @@ RSpec.describe 'Infomations', type: :request do
       let(:start_no)       { (Settings['default_infomations_limit'] * (page - 1)) + 1 }
       let(:end_no)         { [@user_infomations.count, Settings['default_infomations_limit'] * page].min }
       it '対象項目が含まれる' do
-        @accept_headers = {}
+        @accept_headers = ACCEPT_INC_HTML
         subject
         (start_no..end_no).each do |no|
           info = @user_infomations[@user_infomations.count - no]
@@ -97,7 +97,7 @@ RSpec.describe 'Infomations', type: :request do
       let(:start_no)       { (Settings['default_infomations_limit'] * (page - 1)) + 1 }
       let(:end_no)         { [infomations.count, Settings['default_infomations_limit'] * page].min }
       it '件数・対象項目が一致する' do
-        @accept_headers = ACCEPT_JSON
+        @accept_headers = ACCEPT_INC_JSON
         subject
         response_json = JSON.parse(response.body)['infomations']
         expect(response_json.count).to eq(end_no - start_no + 1)
@@ -119,7 +119,7 @@ RSpec.describe 'Infomations', type: :request do
       let(:subject_format) { nil }
       let(:url_page)       { redirect_page >= 2 ? redirect_page : nil }
       it '最終ページにリダイレクトする' do
-        @accept_headers = {}
+        @accept_headers = ACCEPT_INC_HTML
         is_expected.to redirect_to(infomations_path(page: url_page))
       end
     end
@@ -127,7 +127,7 @@ RSpec.describe 'Infomations', type: :request do
       let(:subject_page)   { page }
       let(:subject_format) { :json }
       it 'リダイレクトしない' do
-        @accept_headers = ACCEPT_JSON
+        @accept_headers = ACCEPT_INC_JSON
         is_expected.to eq(200)
       end
     end

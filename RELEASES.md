@@ -7,6 +7,11 @@
 - 異なるドメインからAPIにアクセスできるようにしたい（CROS設定）
   - https://dev.azure.com/nightonly/rails-app-origin/_workitems/edit/410/
 
+### Bug
+
+- acceptヘッダにjsonと*が含まれるとtemplateエラーになる
+  - https://dev.azure.com/nightonly/rails-app-origin/_workitems/edit/412/
+
 ## 1.3.0 (Sprint 8)
 
 - 認証と登録をAPIでもできるようにしたい

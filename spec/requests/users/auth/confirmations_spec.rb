@@ -18,11 +18,11 @@ RSpec.describe 'Users::Auth::Confirmations', type: :request do
 
   # POST /users/auth/confirmation(.json) メールアドレス確認API[メール再送](処理)
   # 前提条件
-  #   Acceptヘッダがない
+  #   AcceptヘッダにHTMLが含まれる
   # テストパターン
   #   URLの拡張子: ない, .json
   describe 'POST #create' do
-    subject { post create_user_auth_confirmation_path(format: subject_format) }
+    subject { post create_user_auth_confirmation_path(format: subject_format), headers: ACCEPT_INC_HTML }
 
     # テストケース
     context 'URLの拡張子がない' do
@@ -35,13 +35,13 @@ RSpec.describe 'Users::Auth::Confirmations', type: :request do
     end
   end
   # 前提条件
-  #   AcceptヘッダがJSON
+  #   AcceptヘッダにJSONが含まれる
   # テストパターン
   #   URLの拡張子: ない, .json
   #   未ログイン, ログイン中, APIログイン中
   #   パラメータなし, 有効なパラメータ（メール未確認, メール確認済み, メールアドレス変更中）, 無効なパラメータ, URLがない, URLがホワイトリストにない
   describe 'POST #create(json)' do
-    subject { post create_user_auth_confirmation_path(format: subject_format), params: attributes, headers: auth_headers.merge(ACCEPT_JSON) }
+    subject { post create_user_auth_confirmation_path(format: subject_format), params: attributes, headers: auth_headers.merge(ACCEPT_INC_JSON) }
     let(:send_user_unconfirmed)   { FactoryBot.create(:user_unconfirmed) }
     let(:send_user_confirmed)     { FactoryBot.create(:user) }
     let(:send_user_email_changed) { FactoryBot.create(:user_email_changed) }
@@ -191,39 +191,32 @@ RSpec.describe 'Users::Auth::Confirmations', type: :request do
 
   # GET /users/auth/confirmation メールアドレス確認(処理)
   # 前提条件
-  #   以外（URLの拡張子がない, Acceptヘッダがない）
+  #   URLの拡張子が.json
   # テストパターン
-  #   URLの拡張子: ない, .json
-  #   Acceptヘッダ: ない, JSON
+  #   Acceptヘッダ: HTMLが含まれる, JSONが含まれる
   describe 'GET #show(json)' do
-    subject { get user_auth_confirmation_path(format: subject_format), headers: accept_headers }
+    subject { get user_auth_confirmation_path(format: :json), headers: accept_headers }
 
     # テストケース
-    context 'URLの拡張子がない, AcceptヘッダがJSON' do
-      let(:subject_format) { nil }
-      let(:accept_headers) { ACCEPT_JSON }
+    context 'AcceptヘッダにHTMLが含まれる' do
+      let(:accept_headers) { ACCEPT_INC_HTML }
       it_behaves_like 'To406'
     end
-    context 'URLの拡張子が.json, Acceptヘッダがない' do
-      let(:subject_format) { :json }
-      let(:accept_headers) { nil }
-      it_behaves_like 'To406'
-    end
-    context 'URLの拡張子が.json, AcceptヘッダがJSON' do
-      let(:subject_format) { :json }
-      let(:accept_headers) { ACCEPT_JSON }
+    context 'AcceptヘッダにJSONが含まれる' do
+      let(:accept_headers) { ACCEPT_INC_JSON }
       it_behaves_like 'To406'
     end
   end
   # 前提条件
-  #   URLの拡張子がない, Acceptヘッダがない
+  #   URLの拡張子がない
   # テストパターン
+  #   Acceptヘッダ: HTMLが含まれる, JSONが含まれる
   #   未ログイン, ログイン中, APIログイン中
   #   トークン: 期限内, 期限切れ, 存在しない, ない, 空
   #   確認日時: ない（未確認）, 確認送信日時より前（未確認）, 確認送信日時より後（確認済み）
   #   ＋リダイレクトURL: ある, ない, ホワイトリストにない
   describe 'GET #show' do
-    subject { get user_auth_confirmation_path(confirmation_token: confirmation_token, redirect_url: @redirect_url), headers: auth_headers }
+    subject { get user_auth_confirmation_path(confirmation_token: confirmation_token, redirect_url: @redirect_url), headers: auth_headers.merge(accept_headers) }
     let(:current_user) { User.find(send_user.id) }
 
     # テスト内容
@@ -392,7 +385,7 @@ RSpec.describe 'Users::Auth::Confirmations', type: :request do
       # it_behaves_like '[*][空]確認日時が確認送信日時より後（確認済み）' # Tips: トークンが存在しない為、確認日時がない
     end
 
-    context '未ログイン' do
+    shared_examples_for '未ログイン' do
       include_context '未ログイン処理'
       it_behaves_like '[未ログイン]トークンが期限内'
       it_behaves_like '[*]トークンが期限切れ'
@@ -400,7 +393,7 @@ RSpec.describe 'Users::Auth::Confirmations', type: :request do
       it_behaves_like '[*]トークンがない'
       it_behaves_like '[*]トークンが空'
     end
-    context 'ログイン中' do
+    shared_examples_for 'ログイン中' do
       include_context 'ログイン処理'
       it_behaves_like '[ログイン中]トークンが期限内'
       it_behaves_like '[*]トークンが期限切れ'
@@ -408,13 +401,26 @@ RSpec.describe 'Users::Auth::Confirmations', type: :request do
       it_behaves_like '[*]トークンがない'
       it_behaves_like '[*]トークンが空'
     end
-    context 'APIログイン中' do
+    shared_examples_for 'APIログイン中' do
       include_context 'APIログイン処理'
       it_behaves_like '[ログイン中]トークンが期限内'
       it_behaves_like '[*]トークンが期限切れ'
       it_behaves_like '[*]トークンが存在しない'
       it_behaves_like '[*]トークンがない'
       it_behaves_like '[*]トークンが空'
+    end
+
+    context 'AcceptヘッダにHTMLが含まれる' do
+      let(:accept_headers) { ACCEPT_INC_HTML }
+      it_behaves_like '未ログイン'
+      it_behaves_like 'ログイン中'
+      it_behaves_like 'APIログイン中'
+    end
+    context 'AcceptヘッダにJSONが含まれる' do
+      let(:accept_headers) { ACCEPT_INC_JSON }
+      it_behaves_like '未ログイン'
+      it_behaves_like 'ログイン中'
+      it_behaves_like 'APIログイン中'
     end
   end
 end

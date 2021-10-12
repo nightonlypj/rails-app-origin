@@ -15,11 +15,11 @@ RSpec.describe 'Users::Auth::TokenValidations', type: :request do
 
   # GET /users/auth/validate_token(.json) トークン検証API(処理)
   # 前提条件
-  #   Acceptヘッダがない
+  #   AcceptヘッダにHTMLが含まれる
   # テストパターン
   #   URLの拡張子: ない, .json
   describe 'GET #validate_token' do
-    subject { get user_auth_validate_token_path(format: subject_format) }
+    subject { get user_auth_validate_token_path(format: subject_format), headers: ACCEPT_INC_HTML }
 
     # テストケース
     context 'URLの拡張子がない' do
@@ -32,12 +32,12 @@ RSpec.describe 'Users::Auth::TokenValidations', type: :request do
     end
   end
   # 前提条件
-  #   AcceptヘッダがJSON
+  #   AcceptヘッダにJSONが含まれる
   # テストパターン
   #   URLの拡張子: ない, .json
   #   未ログイン, ログイン中, APIログイン中
   describe 'GET #validate_token(json)' do
-    subject { get user_auth_validate_token_path(format: subject_format), headers: auth_headers.merge(ACCEPT_JSON) }
+    subject { get user_auth_validate_token_path(format: subject_format), headers: auth_headers.merge(ACCEPT_INC_JSON) }
     include_context 'Authテスト内容'
     let(:current_user) { user }
 

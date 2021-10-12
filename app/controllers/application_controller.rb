@@ -1,7 +1,7 @@
 class ApplicationController < ActionController::Base
   private
 
-  # URLの拡張子が.jsonか、acceptヘッダにapplication/jsonが含まれるかを返却
+  # URLの拡張子が.jsonか、acceptヘッダにapplication/jsonが含まれる（htmlや*がない）かを返却
   def format_api?
     request.format.json?
   end

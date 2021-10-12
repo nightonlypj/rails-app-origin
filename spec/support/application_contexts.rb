@@ -6,7 +6,8 @@ TEST_IMAGE_TYPE = 'image/jpeg'.freeze
 FRONT_SITE_URL = 'http://front.localhost.test/'.freeze
 BAD_SITE_URL   = 'http://badsite.com/'.freeze
 
-ACCEPT_JSON = { 'accept' => 'application/json' }.freeze
+ACCEPT_INC_HTML = { 'accept' => 'text/html,application/xhtml+xml,application/xml,*/*' }.freeze
+ACCEPT_INC_JSON = { 'accept' => 'application/json,text/plain,*/*' }.freeze
 
 # メールタイトルを返却
 def get_subject(key)
