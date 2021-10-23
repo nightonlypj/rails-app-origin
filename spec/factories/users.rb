@@ -7,6 +7,11 @@ FactoryBot.define do
     password              { pass }
     password_confirmation { pass }
     confirmed_at          { '0000-01-01 00:00:00+0000' }
+    sign_in_count         { 1 }
+    current_sign_in_at    { Time.now.utc - 1.hour }
+    last_sign_in_at       { Time.now.utc - 2.hours }
+    current_sign_in_ip    { Faker::Internet.ip_v4_address }
+    last_sign_in_ip       { Faker::Internet.ip_v4_address }
   end
 
   # ロック中

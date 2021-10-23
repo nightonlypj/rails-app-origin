@@ -4,9 +4,10 @@ class Users::Auth::RegistrationsController < DeviseTokenAuth::RegistrationsContr
   include Users::RegistrationsConcern
   include DeviseTokenAuth::Concerns::SetUserByToken
   skip_before_action :verify_authenticity_token
-  prepend_before_action :unauthenticated_response, only: %i[update image_update image_destroy destroy undo_destroy], unless: :user_signed_in?
+  prepend_before_action :unauthenticated_response, only: %i[show update image_update image_destroy destroy undo_destroy], unless: :user_signed_in?
   prepend_before_action :already_authenticated_response, only: %i[create], if: :user_signed_in?
   prepend_before_action :not_acceptable_response_not_api_accept
+  prepend_before_action :update_request_uid_header
   before_action :json_response_destroy_reserved, only: %i[update image_update image_destroy destroy]
   before_action :json_response_not_destroy_reserved, only: %i[undo_destroy]
   before_action :configure_sign_up_params, only: %i[create]
@@ -21,6 +22,11 @@ class Users::Auth::RegistrationsController < DeviseTokenAuth::RegistrationsContr
     end
   end
 
+  # GET /users/auth/show(.json) 登録情報詳細API
+  def show
+    render './users/auth/show'
+  end
+
   # PUT(PATCH) /users/auth/update(.json) 登録情報変更API(処理)
   def update
     # Tips: 存在するメールアドレスの場合はエラーにする
@@ -30,6 +36,8 @@ class Users::Auth::RegistrationsController < DeviseTokenAuth::RegistrationsContr
       return render './failure', locals: { errors: errors, alert: t('errors.messages.not_saved.one') }, status: :unprocessable_entity
     end
 
+    params[:password_confirmation] = '' if params[:password_confirmation].nil? # Tips: nilだとチェックされずに保存される為
+    params[:current_password] = '' if params[:current_password].nil? # Tips: nilだとチェックされずに保存される為
     super
   end
 

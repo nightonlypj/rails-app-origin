@@ -138,7 +138,6 @@ RSpec.describe 'Users::Auth::Sessions', type: :request do
       # it_behaves_like 'ToMsg', 'devise_token_auth.sessions.not_confirmed', nil, nil
       # it_behaves_like 'ToMsg', nil, 'devise.failure.already_authenticated', nil # Tips: フロントと不一致で再ログイン出来なくなる為
       it_behaves_like 'ToMsg', nil, 'devise.failure.unconfirmed', nil
-
     end
     shared_examples_for '[未ログイン/ログイン中]有効なパラメータ（メールアドレス変更中）' do
       let(:send_user)  { send_user_email_changed }

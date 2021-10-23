@@ -11,7 +11,7 @@ class Users::PasswordsController < Devise::PasswordsController
   #   super
   # end
 
-  # GET /users/password/edit パスワード再設定
+  # GET /users/password パスワード再設定
   def edit
     return redirect_to new_user_password_path, alert: invalid_token_message unless valid_reset_password_token?(params[:reset_password_token])
 
@@ -26,7 +26,6 @@ class Users::PasswordsController < Devise::PasswordsController
     # Tips: メールアドレス変更中でなく、メール未確認の場合は、確認済みにする
     resource.update!(confirmed_at: Time.now.utc) if resource.unconfirmed_email.blank? && resource.confirmed_at.blank?
 
-    params[:user][:password_confirmation] = '' if params[:user][:password_confirmation].nil? # Tips: nilだとチェックされずに保存される為
     super
   end
 

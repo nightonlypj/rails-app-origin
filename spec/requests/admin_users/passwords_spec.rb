@@ -130,7 +130,7 @@ RSpec.describe 'AdminUsers::Passwords', type: :request do
     end
   end
 
-  # GET /admin/password/edit パスワード再設定
+  # GET /admin/password パスワード再設定
   # 前提条件
   #   なし
   # テストパターン

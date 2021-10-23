@@ -160,7 +160,7 @@ RSpec.describe 'Users::Passwords', type: :request do
     end
   end
 
-  # GET /users/password/edit パスワード再設定
+  # GET /users/password パスワード再設定
   # 前提条件
   #   なし
   # テストパターン

@@ -20,7 +20,7 @@
         <p class="card-footer">
           <nav>
             <ul>
-<% if devise_mapping.confirmable? && resource.pending_reconfirmation? && valid_confirmation_token? %>
+<% if user_valid_confirmation_token? %>
               <li><%= link_to 'メールアドレス確認', new_confirmation_path(resource_name) %></li>
 <% end %>
               <li><%= link_to 'アカウント削除', delete_user_registration_path %></li>

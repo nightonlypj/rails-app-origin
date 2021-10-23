@@ -1,5 +1,23 @@
 class ApplicationController < ActionController::Base
+  after_action :update_response_uid_header
+
   private
+
+  # リクエストのuidヘッダを[id+36**2](36進数)からuidに変更 # Tips: uidがメールアドレスだと、メールアドレス確認後に認証に失敗する為
+  def update_request_uid_header
+    return if request.headers['uid'].blank?
+
+    user = User.find_by(id: request.headers['uid'].to_i(36) - (36**2))
+    request.headers['uid'] = user&.uid
+  end
+
+  # レスポンスのuidヘッダをuidから[id+36**2](36進数)に変更
+  def update_response_uid_header
+    return if response.headers['uid'].blank?
+
+    user = User.find_by(uid: response.headers['uid'])
+    response.headers['uid'] = user.present? ? (user.id + (36**2)).to_s(36) : nil
+  end
 
   # URLの拡張子が.jsonか、acceptヘッダにapplication/jsonが含まれる（htmlや*がない）かを返却
   def format_api?
@@ -60,7 +78,7 @@ class ApplicationController < ActionController::Base
 
   # 有効なメールアドレス確認トークンかを返却
   def valid_confirmation_token?(token)
-    true if resource_class.confirm_within.blank?
+    return true if resource_class.confirm_within.blank?
 
     resource = resource_class.find_by(confirmation_token: token)
     resource&.confirmation_sent_at&.present? && (Time.now.utc <= resource.confirmation_sent_at.utc + resource_class.confirm_within)

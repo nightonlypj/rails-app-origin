@@ -2,6 +2,10 @@
 
 ## 1.4.0 (Sprint 9)
 
+- ユーザーの登録情報詳細を取得できるAPIが欲しい
+  - https://dev.azure.com/nightonly/rails-app-origin/_workitems/edit/414/
+- Devise Token Authのuidをメールアドレスからidに変更したい
+  - https://dev.azure.com/nightonly/rails-app-origin/_workitems/edit/413/
 - ログイン状態でもAPIログインできるようにしたい（フロントとの不整合に対応）
   - https://dev.azure.com/nightonly/rails-app-origin/_workitems/edit/411/
 - 異なるドメインからAPIにアクセスできるようにしたい（CROS設定）

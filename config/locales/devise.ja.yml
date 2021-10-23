@@ -84,7 +84,7 @@ ja:
               too_short: '%{count}文字以上で入力してください。'
               too_long: '%{count}文字以下で入力してください。'
             password_confirmation:
-              confirmation: 'パスワードと一致しません。' # '%{attribute}と一致しません。'
+              confirmation: 'パスワードと一致していません。' # '%{attribute}と一致しません。'
             current_password:
               blank: '入力してください。'
               invalid: 'パスワードが違います。'
@@ -96,7 +96,7 @@ ja:
               invalid: 'URLが正しくないか、有効期限が切れています。最初からやり直してください。'
             unlock_token:
               blank: 'URLが正しくありません。最初からやり直してください。'
-              invalid: 'URLが正しくないか、有効期限が切れています。最初からやり直してください。'
+              invalid: 'URLが正しくないか、解除されています。ログインできるか確認してください。'
         admin_user:
           attributes:
             name:
@@ -114,7 +114,7 @@ ja:
               too_short: '%{count}文字以上で入力してください。'
               too_long: '%{count}文字以下で入力してください。'
             password_confirmation:
-              confirmation: 'パスワードと一致しません。' # '%{attribute}と一致しません。'
+              confirmation: 'パスワードと一致していません。' # '%{attribute}と一致しません。'
             current_password:
               blank: '入力してください。'
               invalid: 'パスワードが違います。'
@@ -126,10 +126,10 @@ ja:
               invalid: 'URLが正しくないか、有効期限が切れています。最初からやり直してください。'
             unlock_token:
               blank: 'URLが正しくありません。最初からやり直してください。'
-              invalid: 'URLが正しくないか、有効期限が切れています。最初からやり直してください。'
+              invalid: 'URLが正しくないか、解除されています。ログインできるか確認してください。'
   errors:
     messages:
-      already_confirmed: 'メールアドレス確認済みです。ログインしてください。'
+      already_confirmed: 'メールアドレス確認済みです。' # Tips: 「ログインしてください。」は不要（ログイン中の場合もある為）
       confirmation_period_expired: '有効期限が切れています。'
       expired: '有効期限が切れています。最初からやり直してください。'
       not_found: 'ユーザーが見つかりません。'
@@ -143,14 +143,14 @@ ja:
       signed_up_but_unconfirmed: 'メールアドレス確認のメールを送信しました。メールを確認してください。'
       updated: '登録情報を変更しました。'
       updated_but_not_signed_in: '登録情報を変更しました。ログインし直してください。'
-      update_needs_confirmation: 'メールアドレス確認のメールを送信しました。メールを確認してください。'
+      update_needs_confirmation: '登録情報の変更を受け付けました。メールを確認してください。'
       destroyed: 'アカウントを削除しました。またのご利用をお待ちしております。'
       destroy_reserved: 'アカウント削除を受け付けました。またのご利用をお待ちしております。'
       undo_destroy_reserved: 'アカウント削除の取り消しが完了しました。'
     confirmations:
       send_instructions: 'メールアドレスの確認メールを送信しました。メールを確認してください。'
       send_paranoid_instructions: 'メールアドレスの確認メールを送信しました。メールを確認してください。'
-      confirmed: 'メールアドレスの確認が完了しました。'
+      confirmed: 'メールアドレスの確認が完了しました。' # Tips: 「ログインしてください。」は不要（ログイン中の場合もある為）
     sessions:
       signed_in: 'ログインしました。'
       signed_out: 'ログアウトしました。'
@@ -158,7 +158,7 @@ ja:
     unlocks:
       send_instructions: 'アカウントロック解除のメールを送信しました。メールを確認してください。'
       send_paranoid_instructions: 'アカウントロック解除のメールを送信しました。メールを確認してください。'
-      unlocked: 'アカウントロックを解除しました。'
+      unlocked: 'アカウントロックを解除しました。ログインしてください。'
     passwords:
       no_token: 'URLが正しくありません。最初からやり直してください。'
       send_instructions: 'パスワード再設定のメールを送信しました。メールを確認してください。'

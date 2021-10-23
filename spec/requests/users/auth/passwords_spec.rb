@@ -272,7 +272,9 @@ RSpec.describe 'Users::Auth::Passwords', type: :request do
   #   トークン: 期限内（未ロック, ロック中, メール未確認）, 期限切れ, 存在しない, ない, 空
   #   ＋リダイレクトURL: ある, ない, ホワイトリストにない
   describe 'GET #edit' do
-    subject { get edit_user_auth_password_path(reset_password_token: reset_password_token, redirect_url: redirect_url), headers: auth_headers.merge(accept_headers) }
+    subject do
+      get edit_user_auth_password_path(reset_password_token: reset_password_token, redirect_url: redirect_url), headers: auth_headers.merge(accept_headers)
+    end
 
     # テスト内容
     shared_examples_for 'ToOK' do

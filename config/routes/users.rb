@@ -33,6 +33,7 @@ Rails.application.routes.draw do
     # Devise Token Auth
     defaults format: :json do
       post   'users/auth/sign_up',         to: 'users/auth/registrations#create',             as: 'create_user_auth_registration'
+      get    'users/auth/show',            to: 'users/auth/registrations#show',               as: 'show_user_auth_registration'
       put    'users/auth/update',          to: 'users/auth/registrations#update',             as: 'update_user_auth_registration'
       patch  'users/auth/update',          to: 'users/auth/registrations#update',             as: nil
       put    'users/auth/image',           to: 'users/auth/registrations#image_update',       as: 'update_user_auth_image_registration'

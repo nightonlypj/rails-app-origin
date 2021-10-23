@@ -5,6 +5,7 @@ class Users::Auth::ConfirmationsController < DeviseTokenAuth::ConfirmationsContr
   skip_before_action :verify_authenticity_token
   prepend_before_action :not_acceptable_response_not_api_accept, only: %i[create]
   prepend_before_action :not_acceptable_response_not_html_accept, only: %i[show]
+  prepend_before_action :update_request_uid_header
 
   # POST /users/auth/confirmation(.json) メールアドレス確認API[メール再送](処理)
   def create

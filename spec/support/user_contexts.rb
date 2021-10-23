@@ -11,7 +11,8 @@ shared_context 'APIログイン処理' do |target = :user, use_image = false|
   let(:auth_token) { user.create_new_auth_token }
   let(:auth_headers) do
     {
-      'uid' => auth_token['uid'],
+      # 'uid' => auth_token['uid'],
+      'uid' => (user.id + (36**2)).to_s(36),
       'client' => auth_token['client'],
       'access-token' => auth_token['access-token']
     }
@@ -83,19 +84,6 @@ shared_context 'Authテスト内容' do
       expect(response_json['user']['image_url']['large']).to eq("#{Settings['base_image_url']}#{current_user.image_url(:large)}")
       expect(response_json['user']['image_url']['xlarge']).to eq("#{Settings['base_image_url']}#{current_user.image_url(:xlarge)}")
       expect(response_json['user']['name']).to eq(current_user.name)
-      expect(response_json['user']['email']).to eq(current_user.email)
-      ## Trackable
-      expect(response_json['user']['sign_in_count']).to eq(current_user.sign_in_count)
-      current_sign_in_at = current_user.current_sign_in_at.present? ? I18n.l(current_user.current_sign_in_at, format: :json) : nil
-      expect(response_json['user']['current_sign_in_at']).to eq(current_sign_in_at)
-      expect(response_json['user']['last_sign_in_at']).to eq(current_user.last_sign_in_at.present? ? I18n.l(current_user.last_sign_in_at, format: :json) : nil)
-      expect(response_json['user']['current_sign_in_ip']).to eq(current_user.current_sign_in_ip)
-      expect(response_json['user']['last_sign_in_ip']).to eq(current_user.last_sign_in_ip)
-      ## Confirmable
-      expect(response_json['user']['confirmed_at']).to eq(current_user.confirmed_at.present? ? I18n.l(current_user.confirmed_at, format: :json) : nil)
-      confirmation_sent_at = current_user.confirmation_sent_at.present? ? I18n.l(current_user.confirmation_sent_at, format: :json) : nil
-      expect(response_json['user']['confirmation_sent_at']).to eq(confirmation_sent_at)
-      expect(response_json['user']['unconfirmed_email']).to eq(current_user.unconfirmed_email)
       ## 削除予約
       destroy_requested_at = current_user.destroy_requested_at.present? ? I18n.l(current_user.destroy_requested_at, format: :json) : nil
       expect(response_json['user']['destroy_requested_at']).to eq(destroy_requested_at)
@@ -110,7 +98,8 @@ shared_context 'Authテスト内容' do
     expect(response_json['user']).to be_nil
   end
   let(:expect_exist_auth_header) do
-    expect(response.header['uid']).not_to be_nil
+    # expect(response.header['uid']).to eq(current_user.email)
+    expect(response.header['uid']).to eq((current_user.id + (36**2)).to_s(36))
     expect(response.header['client']).not_to be_nil
     expect(response.header['access-token']).not_to be_nil # Tips: 一定時間内のリクエスト(batch_request)は半角スペースが入る
     expect(response.header['expiry']).not_to be_nil # Tips: 同上
