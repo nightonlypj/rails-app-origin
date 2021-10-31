@@ -1,5 +1,5 @@
 <% validate_enabled = action_name == 'image_update' && resource.errors.any? %>
-<%= form_for(resource, as: resource_name, url: update_user_image_registration_path, html: { method: :put, novalidate: true, id: 'edit_image' }, local: true) do |form| %>
+<%= form_for(resource, as: resource_name, url: update_user_image_registration_path, html: { method: :post, novalidate: true, id: 'edit_image' }, local: true) do |form| %>
   <div>
     <%= image_tag current_user.image_url(:xlarge) %>
   </div>
@@ -9,8 +9,6 @@
     <%= render 'users/shared/field_error_messages', messages: resource.errors[:image] %>
   </div>
 
-  <%= form.submit 'アップロード', class: "btn btn-primary #{current_user.image? ? 'mb-3' : 'mb-4'}" %>
+  <%= form.submit 'アップロード', class: "btn btn-primary mb-3" %>
 <% end %>
-<% if current_user.image? %>
-  <%= button_to '画像削除', delete_user_image_registration_path, data: { confirm: '本当に削除しますか？' }, method: :delete, class: 'btn btn-warning mb-4' %>
-<% end %>
+<%= button_to '画像削除', delete_user_image_registration_path, data: { confirm: '本当に削除しますか？' }, method: :delete, class: 'btn btn-warning mb-4', disabled: !current_user.image? %>

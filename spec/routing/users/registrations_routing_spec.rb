@@ -22,12 +22,13 @@ RSpec.describe Users::RegistrationsController, type: :routing do
       expect(patch: '/users/edit').to route_to('users/registrations#update')
     end
     it 'routes to #image_update' do
-      expect(put: '/users/image').to route_to('users/registrations#image_update')
-      expect(patch: '/users/image').to route_to('users/registrations#image_update')
+      expect(post: '/users/image/update').to route_to('users/registrations#image_update')
+      expect(get: '/users/image/update').to route_to('users/registrations#edit')
       expect(get: '/users/image').to route_to('users/registrations#edit')
     end
     it 'routes to #image_destroy' do
-      expect(delete: '/users/image').to route_to('users/registrations#image_destroy')
+      expect(delete: '/users/image/destroy').to route_to('users/registrations#image_destroy')
+      expect(get: '/users/image/destroy').to route_to('users/registrations#edit')
     end
     it 'routes to #delete' do
       expect(get: '/users/delete').to route_to('users/registrations#delete')

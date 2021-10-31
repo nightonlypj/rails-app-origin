@@ -257,14 +257,14 @@ RSpec.describe 'Users::Registrations', type: :request do
     end
   end
 
-  # PUT(PATCH) /users/image 画像変更(処理)
+  # POST /users/image/update 画像変更(処理)
   # 前提条件
   #   なし
   # テストパターン
   #   未ログイン, ログイン中, ログイン中（削除予約済み）
   #   有効なパラメータ, 無効なパラメータ
-  describe 'PUT #image_update' do
-    subject { put update_user_image_registration_path, params: { user: attributes } }
+  describe 'POST #image_update' do
+    subject { post update_user_image_registration_path, params: { user: attributes } }
     let(:valid_attributes)   { { image: fixture_file_upload(TEST_IMAGE_FILE, TEST_IMAGE_TYPE) } }
     let(:invalid_attributes) { nil }
     let(:current_user) { User.find(user.id) }
@@ -335,7 +335,7 @@ RSpec.describe 'Users::Registrations', type: :request do
     end
   end
 
-  # DELETE /users/image 画像削除(処理)
+  # DELETE /users/image/destroy 画像削除(処理)
   # 前提条件
   #   なし
   # テストパターン

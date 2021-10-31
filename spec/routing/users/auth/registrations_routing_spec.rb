@@ -31,12 +31,15 @@ RSpec.describe Users::Auth::RegistrationsController, type: :routing do
       expect(patch: '/users/auth/update.json').to route_to('users/auth/registrations#update', format: 'json')
     end
     it 'routes to #image_update' do
-      expect(put: '/users/auth/image').to route_to('users/auth/registrations#image_update', format: :json)
-      expect(patch: '/users/auth/image').to route_to('users/auth/registrations#image_update', format: :json)
+      expect(post: '/users/auth/image/update').to route_to('users/auth/registrations#image_update', format: :json)
+      expect(post: '/users/auth/image/update.json').to route_to('users/auth/registrations#image_update', format: 'json')
+      expect(get: '/users/auth/image/update').not_to be_routable
       expect(get: '/users/auth/image').not_to be_routable
     end
     it 'routes to #image_destroy' do
-      expect(delete: '/users/auth/image').to route_to('users/auth/registrations#image_destroy', format: :json)
+      expect(delete: '/users/auth/image/delete').to route_to('users/auth/registrations#image_destroy', format: :json)
+      expect(delete: '/users/auth/image/delete.json').to route_to('users/auth/registrations#image_destroy', format: 'json')
+      expect(get: '/users/auth/image/delete').not_to be_routable
     end
     it 'routes to #delete' do
       expect(get: '/users/auth/delete').not_to be_routable
@@ -44,14 +47,15 @@ RSpec.describe Users::Auth::RegistrationsController, type: :routing do
     it 'routes to #destroy' do
       # expect(delete: '/users/auth').to route_to('users/auth/registrations#destroy')
       expect(delete: '/users/auth').not_to be_routable
-      expect(delete: '/users/auth/destroy').to route_to('users/auth/registrations#destroy', format: :json)
-      expect(delete: '/users/auth/destroy.json').to route_to('users/auth/registrations#destroy', format: 'json')
+      expect(delete: '/users/auth/delete').to route_to('users/auth/registrations#destroy', format: :json)
+      expect(delete: '/users/auth/delete.json').to route_to('users/auth/registrations#destroy', format: 'json')
     end
     it 'routes to #undo_delete' do
       expect(get: '/users/auth/undo_delete').not_to be_routable
     end
     it 'routes to #undo_destroy' do
       expect(delete: '/users/auth/undo_delete').to route_to('users/auth/registrations#undo_destroy', format: :json)
+      expect(delete: '/users/auth/undo_delete.json').to route_to('users/auth/registrations#undo_destroy', format: 'json')
     end
     it 'routes to #cancel' do
       # expect(get: '/users/auth/cancel').to route_to('users/auth/registrations#cancel')

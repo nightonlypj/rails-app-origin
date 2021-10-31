@@ -2,6 +2,7 @@ json.success true
 json.user do
   json.provider current_user.provider
   json.code current_user.code
+  json.upload_image current_user.image?
   json.image_url do
     json.mini "#{Settings['base_image_url']}#{current_user.image_url(:mini)}"
     json.small "#{Settings['base_image_url']}#{current_user.image_url(:small)}"
@@ -20,6 +21,7 @@ json.user do
   ## Confirmable
   json.unconfirmed_email user_valid_confirmation_token? ? current_user.unconfirmed_email : nil
   ## 削除予約
+  json.destroy_schedule_days Settings['destroy_schedule_days']
   json.destroy_requested_at current_user.destroy_requested_at.present? ? l(current_user.destroy_requested_at, format: :json) : nil
   json.destroy_schedule_at current_user.destroy_schedule_at.present? ? l(current_user.destroy_schedule_at, format: :json) : nil
   ## 作成日時

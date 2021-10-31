@@ -39,7 +39,7 @@ class Users::RegistrationsController < Devise::RegistrationsController
     super
   end
 
-  # PUT(PATCH) /users/image 画像変更(処理)
+  # POST /users/image/update 画像変更(処理)
   def image_update
     if params.blank? || params[:user].blank?
       resource.errors.add(:image, t('errors.messages.image_update_blank'))
@@ -54,7 +54,7 @@ class Users::RegistrationsController < Devise::RegistrationsController
     end
   end
 
-  # DELETE /users/image 画像削除(処理)
+  # DELETE /users/image/destroy 画像削除(処理)
   def image_destroy
     @user = User.find(resource.id)
     @user.remove_image!

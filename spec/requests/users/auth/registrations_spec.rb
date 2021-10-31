@@ -248,31 +248,34 @@ RSpec.describe 'Users::Auth::Registrations', type: :request do
         is_expected.to eq(200)
         response_json = JSON.parse(response.body)
         expect(response_json['success']).to eq(true)
-        expect(response_json['user']['provider']).to eq(user.provider)
-        expect(response_json['user']['code']).to eq(user.code)
-        expect(response_json['user']['image_url']['mini']).to eq("#{Settings['base_image_url']}#{user.image_url(:mini)}")
-        expect(response_json['user']['image_url']['small']).to eq("#{Settings['base_image_url']}#{user.image_url(:small)}")
-        expect(response_json['user']['image_url']['medium']).to eq("#{Settings['base_image_url']}#{user.image_url(:medium)}")
-        expect(response_json['user']['image_url']['large']).to eq("#{Settings['base_image_url']}#{user.image_url(:large)}")
-        expect(response_json['user']['image_url']['xlarge']).to eq("#{Settings['base_image_url']}#{user.image_url(:xlarge)}")
-        expect(response_json['user']['name']).to eq(user.name)
-        expect(response_json['user']['email']).to eq(user.email)
+        expect(response_json['user']['provider']).to eq(current_user.provider)
+        expect(response_json['user']['code']).to eq(current_user.code)
+        expect(response_json['user']['upload_image']).to eq(current_user.image?)
+        expect(response_json['user']['image_url']['mini']).to eq("#{Settings['base_image_url']}#{current_user.image_url(:mini)}")
+        expect(response_json['user']['image_url']['small']).to eq("#{Settings['base_image_url']}#{current_user.image_url(:small)}")
+        expect(response_json['user']['image_url']['medium']).to eq("#{Settings['base_image_url']}#{current_user.image_url(:medium)}")
+        expect(response_json['user']['image_url']['large']).to eq("#{Settings['base_image_url']}#{current_user.image_url(:large)}")
+        expect(response_json['user']['image_url']['xlarge']).to eq("#{Settings['base_image_url']}#{current_user.image_url(:xlarge)}")
+        expect(response_json['user']['name']).to eq(current_user.name)
+        expect(response_json['user']['email']).to eq(current_user.email)
         ## Trackable
-        expect(response_json['user']['sign_in_count']).to eq(user.sign_in_count)
-        current_sign_in_at = user.current_sign_in_at.present? ? I18n.l(user.current_sign_in_at, format: :json) : nil
+        expect(response_json['user']['sign_in_count']).to eq(current_user.sign_in_count)
+        current_sign_in_at = current_user.current_sign_in_at.present? ? I18n.l(current_user.current_sign_in_at, format: :json) : nil
         expect(response_json['user']['current_sign_in_at']).to eq(current_sign_in_at)
-        expect(response_json['user']['last_sign_in_at']).to eq(user.last_sign_in_at.present? ? I18n.l(user.last_sign_in_at, format: :json) : nil)
-        expect(response_json['user']['current_sign_in_ip']).to eq(user.current_sign_in_ip)
-        expect(response_json['user']['last_sign_in_ip']).to eq(user.last_sign_in_ip)
+        last_sign_in_at = current_user.last_sign_in_at.present? ? I18n.l(current_user.last_sign_in_at, format: :json) : nil
+        expect(response_json['user']['last_sign_in_at']).to eq(last_sign_in_at)
+        expect(response_json['user']['current_sign_in_ip']).to eq(current_user.current_sign_in_ip)
+        expect(response_json['user']['last_sign_in_ip']).to eq(current_user.last_sign_in_ip)
         ## Confirmable
-        expect(response_json['user']['unconfirmed_email']).to eq(user.unconfirmed_email.present? ? user.unconfirmed_email : nil)
+        expect(response_json['user']['unconfirmed_email']).to eq(current_user.unconfirmed_email.present? ? current_user.unconfirmed_email : nil)
         ## 削除予約
-        destroy_requested_at = user.destroy_requested_at.present? ? I18n.l(user.destroy_requested_at, format: :json) : nil
+        expect(response_json['user']['destroy_schedule_days']).to eq(Settings['destroy_schedule_days'])
+        destroy_requested_at = current_user.destroy_requested_at.present? ? I18n.l(current_user.destroy_requested_at, format: :json) : nil
         expect(response_json['user']['destroy_requested_at']).to eq(destroy_requested_at)
-        destroy_schedule_at = user.destroy_schedule_at.present? ? I18n.l(user.destroy_schedule_at, format: :json) : nil
+        destroy_schedule_at = current_user.destroy_schedule_at.present? ? I18n.l(current_user.destroy_schedule_at, format: :json) : nil
         expect(response_json['user']['destroy_schedule_at']).to eq(destroy_schedule_at)
         ## 作成日時
-        expect(response_json['user']['created_at']).to eq(user.created_at.present? ? I18n.l(user.created_at, format: :json) : nil)
+        expect(response_json['user']['created_at']).to eq(current_user.created_at.present? ? I18n.l(current_user.created_at, format: :json) : nil)
 
         expect_exist_auth_header
       end
@@ -538,13 +541,13 @@ RSpec.describe 'Users::Auth::Registrations', type: :request do
     end
   end
 
-  # PUT(PATCH) /users/auth/image(.json) 画像変更API(処理)
+  # POST /users/auth/image/update(.json) 画像変更API(処理)
   # 前提条件
   #   AcceptヘッダにHTMLが含まれる
   # テストパターン
   #   URLの拡張子: ない, .json
-  describe 'PUT #image_update' do
-    subject { put update_user_auth_image_registration_path(format: subject_format), headers: ACCEPT_INC_HTML }
+  describe 'POST #image_update' do
+    subject { post update_user_auth_image_registration_path(format: subject_format), headers: ACCEPT_INC_HTML }
 
     # テストケース
     context 'URLの拡張子がない' do
@@ -562,8 +565,8 @@ RSpec.describe 'Users::Auth::Registrations', type: :request do
   #   URLの拡張子: ない, .json
   #   未ログイン, ログイン中, APIログイン中, APIログイン中（削除予約済み）
   #   有効なパラメータ, 無効なパラメータ
-  describe 'PUT #image_update(json)' do
-    subject { put update_user_auth_image_registration_path(format: subject_format), params: attributes, headers: auth_headers.merge(ACCEPT_INC_JSON) }
+  describe 'POST #image_update(json)' do
+    subject { post update_user_auth_image_registration_path(format: subject_format), params: attributes, headers: auth_headers.merge(ACCEPT_INC_JSON) }
     let(:valid_attributes)   { { image: fixture_file_upload(TEST_IMAGE_FILE, TEST_IMAGE_TYPE) } }
     let(:invalid_attributes) { nil }
     include_context 'Authテスト内容'
@@ -677,7 +680,7 @@ RSpec.describe 'Users::Auth::Registrations', type: :request do
     end
   end
 
-  # DELETE /users/auth/image(.json) 画像削除API(処理)
+  # DELETE /users/auth/image/delete(.json) 画像削除API(処理)
   # 前提条件
   #   AcceptヘッダにHTMLが含まれる
   # テストパターン
@@ -776,7 +779,7 @@ RSpec.describe 'Users::Auth::Registrations', type: :request do
     end
   end
 
-  # DELETE /users/auth/destroy(.json) アカウント削除API(処理)
+  # DELETE /users/auth/delete(.json) アカウント削除API(処理)
   # 前提条件
   #   AcceptヘッダにHTMLが含まれる
   # テストパターン

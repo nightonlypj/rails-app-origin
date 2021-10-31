@@ -41,9 +41,9 @@ class Users::Auth::RegistrationsController < DeviseTokenAuth::RegistrationsContr
     super
   end
 
-  # PUT(PATCH) /users/auth/image(.json) 画像変更API(処理)
+  # POST /users/auth/image/update(.json) 画像変更API(処理)
   def image_update
-    if params[:image].blank?
+    if params[:image].blank? || params[:image].class != ActionDispatch::Http::UploadedFile
       errors = { image: t('errors.messages.image_update_blank') }
       errors[:full_messages] = ["#{t('activerecord.attributes.user.image')} #{errors[:image]}"]
       return render './failure', locals: { errors: errors, alert: t('errors.messages.not_saved.one') }, status: :unprocessable_entity
@@ -54,11 +54,11 @@ class Users::Auth::RegistrationsController < DeviseTokenAuth::RegistrationsContr
       update_auth_header # Tips: 成功時のみ認証情報を返す
       render './users/auth/success', locals: { notice: t('notice.user.image_update') }
     else
-      render './failure', locals: { alert: t('alert.failed_update') }, status: :unprocessable_entity
+      render './failure', locals: { errors: @user.errors, alert: t('errors.messages.not_saved.one') }, status: :unprocessable_entity
     end
   end
 
-  # DELETE /users/auth/image(.json) 画像削除API(処理)
+  # DELETE /users/auth/image/delete(.json) 画像削除API(処理)
   def image_destroy
     @user = User.find(@resource.id)
     @user.remove_image!
@@ -66,7 +66,7 @@ class Users::Auth::RegistrationsController < DeviseTokenAuth::RegistrationsContr
     render './users/auth/success', locals: { notice: t('notice.user.image_destroy') }
   end
 
-  # DELETE /users/auth/destroy(.json) アカウント削除API(処理)
+  # DELETE /users/auth/delete(.json) アカウント削除API(処理)
   def destroy
     if @resource
       # @resource.destroy

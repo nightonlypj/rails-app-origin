@@ -7,9 +7,10 @@ Rails.application.routes.draw do
     put    'users/edit',             to: 'users/registrations#update',        as: 'update_user_registration'
     patch  'users/edit',             to: 'users/registrations#update',        as: nil
     get    'users/image',            to: 'users/registrations#edit',          as: nil
-    put    'users/image',            to: 'users/registrations#image_update',  as: 'update_user_image_registration'
-    patch  'users/image',            to: 'users/registrations#image_update',  as: nil
-    delete 'users/image',            to: 'users/registrations#image_destroy', as: 'delete_user_image_registration'
+    get    'users/image/update',     to: 'users/registrations#edit',          as: nil
+    post   'users/image/update',     to: 'users/registrations#image_update',  as: 'update_user_image_registration'
+    get    'users/image/destroy',    to: 'users/registrations#edit',          as: nil
+    delete 'users/image/destroy',    to: 'users/registrations#image_destroy', as: 'delete_user_image_registration'
     get    'users/delete',           to: 'users/registrations#delete',        as: 'delete_user_registration'
     delete 'users/delete',           to: 'users/registrations#destroy',       as: 'destroy_user_registration'
     get    'users/undo_delete',      to: 'users/registrations#undo_delete',   as: 'delete_undo_user_registration'
@@ -36,10 +37,9 @@ Rails.application.routes.draw do
       get    'users/auth/show',            to: 'users/auth/registrations#show',               as: 'show_user_auth_registration'
       put    'users/auth/update',          to: 'users/auth/registrations#update',             as: 'update_user_auth_registration'
       patch  'users/auth/update',          to: 'users/auth/registrations#update',             as: nil
-      put    'users/auth/image',           to: 'users/auth/registrations#image_update',       as: 'update_user_auth_image_registration'
-      patch  'users/auth/image',           to: 'users/auth/registrations#image_update',       as: nil
-      delete 'users/auth/image',           to: 'users/auth/registrations#image_destroy',      as: 'delete_user_auth_image_registration'
-      delete 'users/auth/destroy',         to: 'users/auth/registrations#destroy',            as: 'destroy_user_auth_registration'
+      post   'users/auth/image/update',    to: 'users/auth/registrations#image_update',       as: 'update_user_auth_image_registration'
+      delete 'users/auth/image/delete',    to: 'users/auth/registrations#image_destroy',      as: 'delete_user_auth_image_registration'
+      delete 'users/auth/delete',          to: 'users/auth/registrations#destroy',            as: 'destroy_user_auth_registration'
       delete 'users/auth/undo_delete',     to: 'users/auth/registrations#undo_destroy',       as: 'destroy_undo_user_auth_registration'
       post   'users/auth/confirmation',    to: 'users/auth/confirmations#create',             as: 'create_user_auth_confirmation'
       post   'users/auth/sign_in',         to: 'users/auth/sessions#create',                  as: 'create_user_auth_session'

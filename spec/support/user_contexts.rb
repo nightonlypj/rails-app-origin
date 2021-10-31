@@ -78,6 +78,7 @@ shared_context 'Authテスト内容' do
     else
       expect(response_json['user']['provider']).to eq(current_user.provider)
       expect(response_json['user']['code']).to eq(current_user.code)
+      expect(response_json['user']['upload_image']).to eq(current_user.image?)
       expect(response_json['user']['image_url']['mini']).to eq("#{Settings['base_image_url']}#{current_user.image_url(:mini)}")
       expect(response_json['user']['image_url']['small']).to eq("#{Settings['base_image_url']}#{current_user.image_url(:small)}")
       expect(response_json['user']['image_url']['medium']).to eq("#{Settings['base_image_url']}#{current_user.image_url(:medium)}")
@@ -85,6 +86,7 @@ shared_context 'Authテスト内容' do
       expect(response_json['user']['image_url']['xlarge']).to eq("#{Settings['base_image_url']}#{current_user.image_url(:xlarge)}")
       expect(response_json['user']['name']).to eq(current_user.name)
       ## 削除予約
+      expect(response_json['user']['destroy_schedule_days']).to eq(Settings['destroy_schedule_days'])
       destroy_requested_at = current_user.destroy_requested_at.present? ? I18n.l(current_user.destroy_requested_at, format: :json) : nil
       expect(response_json['user']['destroy_requested_at']).to eq(destroy_requested_at)
       destroy_schedule_at = current_user.destroy_schedule_at.present? ? I18n.l(current_user.destroy_schedule_at, format: :json) : nil
