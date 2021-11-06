@@ -30,6 +30,10 @@ ja:
     user:
       destroy_reserved: 'アカウント削除予定の為、この操作はできません。'
       not_destroy_reserved: '既に取り消し済みか、アカウント削除していません。'
+      destroy:
+        params_blank: 'パラメータが指定されていません。'
+        undo_delete_url_blank: 'undo_delete_urlが指定されていません。'
+        undo_delete_url_not_allowed: 'undo_delete_urlが指定されていません。'
   errors:
     messages:
       image_update_blank: '選択してください。'

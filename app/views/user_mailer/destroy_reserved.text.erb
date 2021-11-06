@@ -7,4 +7,8 @@
 削除されるまではログインできますが、一部機能が制限されます。
 
 アカウント削除取り消し
+<% if @undo_delete_url.present? %>
+<%= @undo_delete_url %>
+<% else %>
 <%= delete_undo_user_registration_url %>
+<% end %>

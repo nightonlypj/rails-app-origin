@@ -46,17 +46,25 @@ RSpec.describe :user, type: :task do
       end
     end
     shared_examples_for 'ユーザー3削除' do
-      it 'ユーザー3が削除される' do
+      it 'ユーザー3が削除される。メールが送信される' do
         task.invoke(dry_run)
         expect(User.find_by(id: user3.id)).to be_nil
+        expect(ActionMailer::Base.deliveries.count).to eq(1)
+        expect(ActionMailer::Base.deliveries[0].to).to eq([user3.email])
+        expect(ActionMailer::Base.deliveries[0].subject).to eq(get_subject('mailer.user.destroy_completed.subject')) # アカウント削除完了のお知らせ
       end
     end
     shared_examples_for 'ユーザー3・4削除' do
-      it 'ユーザー3・4、ユーザー4向けのお知らせが削除される' do
+      it 'ユーザー3・4、ユーザー4向けのお知らせが削除される。メールが送信される' do
         task.invoke(dry_run)
         expect(User.find_by(id: user3.id)).to be_nil
         expect(User.find_by(id: user4.id)).to be_nil
         expect(Infomation.find_by(user_id: user4.id)).to be_nil
+        expect(ActionMailer::Base.deliveries.count).to eq(2)
+        expect(ActionMailer::Base.deliveries[0].to).to eq([user3.email])
+        expect(ActionMailer::Base.deliveries[1].to).to eq([user4.email])
+        expect(ActionMailer::Base.deliveries[0].subject).to eq(get_subject('mailer.user.destroy_completed.subject')) # アカウント削除完了のお知らせ
+        expect(ActionMailer::Base.deliveries[1].subject).to eq(get_subject('mailer.user.destroy_completed.subject')) # アカウント削除完了のお知らせ
       end
     end
 

@@ -68,10 +68,18 @@ class Users::Auth::RegistrationsController < DeviseTokenAuth::RegistrationsContr
 
   # DELETE /users/auth/delete(.json) アカウント削除API(処理)
   def destroy
+    return render './failure', locals: { alert: t('alert.user.destroy.params_blank') }, status: :bad_request if request.request_parameters.blank?
+    if params[:undo_delete_url].blank?
+      return render './failure', locals: { alert: t('alert.user.destroy.undo_delete_url_blank') }, status: :unprocessable_entity
+    end
+    if blacklisted_redirect_url?(params[:undo_delete_url])
+      return render './failure', locals: { alert: t('alert.user.destroy.undo_delete_url_not_allowed') }, status: :unprocessable_entity
+    end
+
     if @resource
       # @resource.destroy
       @resource.set_destroy_reserve
-      UserMailer.with(user: @resource).destroy_reserved.deliver_now
+      UserMailer.with(user: @resource, undo_delete_url: params[:undo_delete_url]).destroy_reserved.deliver_now
 
       yield @resource if block_given?
       render_destroy_success

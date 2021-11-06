@@ -802,8 +802,12 @@ RSpec.describe 'Users::Auth::Registrations', type: :request do
   # テストパターン
   #   URLの拡張子: ない, .json
   #   未ログイン, ログイン中, APIログイン中, APIログイン中（削除予約済み）
+  #   パラメータなし, 有効なパラメータ, URLがない, URLがホワイトリストにない
   describe 'DELETE #destroy(json)' do
-    subject { delete destroy_user_auth_registration_path(format: subject_format), headers: auth_headers.merge(ACCEPT_INC_JSON) }
+    subject { delete destroy_user_auth_registration_path(format: subject_format), params: attributes, headers: auth_headers.merge(ACCEPT_INC_JSON) }
+    let(:valid_attributes)       { { undo_delete_url: FRONT_SITE_URL } }
+    let(:invalid_nil_attributes) { { undo_delete_url: nil } }
+    let(:invalid_bad_attributes) { { undo_delete_url: BAD_SITE_URL } }
     include_context 'Authテスト内容'
     let(:current_user) { User.find(user.id) }
 
@@ -813,11 +817,15 @@ RSpec.describe 'Users::Auth::Registrations', type: :request do
       #   expect { subject }.to change(User, :count).by(-1)
       # end
       let!(:start_time) { Time.current.floor }
-      it "削除依頼日時が現在日時に、削除予定日時が#{Settings['destroy_schedule_days']}日後に変更される" do
+      it "削除依頼日時が現在日時に、削除予定日時が#{Settings['destroy_schedule_days']}日後に変更される。メールが送信される" do
         subject
         expect(current_user.destroy_requested_at).to be_between(start_time, Time.current)
         expect(current_user.destroy_schedule_at).to be_between(start_time + Settings['destroy_schedule_days'].days,
                                                                Time.current + Settings['destroy_schedule_days'].days)
+        expect(ActionMailer::Base.deliveries.count).to eq(1)
+        expect(ActionMailer::Base.deliveries[0].subject).to eq(get_subject('mailer.user.destroy_reserved.subject')) # アカウント削除受け付けのお知らせ
+        expect(ActionMailer::Base.deliveries[0].html_part.body).to include(attributes[:undo_delete_url])
+        expect(ActionMailer::Base.deliveries[0].text_part.body).to include(attributes[:undo_delete_url])
       end
     end
     shared_examples_for 'NG' do
@@ -826,10 +834,11 @@ RSpec.describe 'Users::Auth::Registrations', type: :request do
       # end
       let!(:before_destroy_requested_at) { user.destroy_requested_at }
       let!(:before_destroy_schedule_at)  { user.destroy_schedule_at }
-      it '削除依頼日時・削除予定日時が変更されない' do
+      it '削除依頼日時・削除予定日時が変更されない。メールが送信されない' do
         subject
         expect(current_user.destroy_requested_at).to eq(before_destroy_requested_at)
         expect(current_user.destroy_schedule_at).to eq(before_destroy_schedule_at)
+        expect(ActionMailer::Base.deliveries.count).to eq(0)
       end
     end
 
@@ -857,38 +866,137 @@ RSpec.describe 'Users::Auth::Registrations', type: :request do
     end
 
     # テストケース
-    shared_examples_for '未ログイン' do
-      include_context '未ログイン処理'
+    shared_examples_for '[未ログイン/ログイン中]パラメータなし' do
+      let(:attributes) { nil }
       # it_behaves_like 'NG' # Tips: 未ログインの為、対象がない
       # it_behaves_like 'ToNG', 404, 'error', false
       it_behaves_like 'ToNG', 401, nil, false
       # it_behaves_like 'ToMsg', NilClass, 0, 'devise_token_auth.registrations.account_to_destroy_not_found', nil, nil, nil
       it_behaves_like 'ToMsg', NilClass, 0, nil, nil, 'devise.failure.unauthenticated', nil
     end
-    shared_examples_for 'ログイン中' do
-      include_context 'ログイン処理'
+    shared_examples_for '[未ログイン/ログイン中]有効なパラメータ' do
+      let(:attributes) { valid_attributes }
       # it_behaves_like 'NG' # Tips: 未ログインの為、対象がない
       # it_behaves_like 'ToNG', 404, 'error', false
       it_behaves_like 'ToNG', 401, nil, false
       # it_behaves_like 'ToMsg', NilClass, 0, 'devise_token_auth.registrations.account_to_destroy_not_found', nil, nil, nil
       it_behaves_like 'ToMsg', NilClass, 0, nil, nil, 'devise.failure.unauthenticated', nil
     end
-    shared_examples_for 'APIログイン中' do
-      include_context 'APIログイン処理'
+    shared_examples_for '[未ログイン/ログイン中]URLがない' do
+      let(:attributes) { invalid_nil_attributes }
+      # it_behaves_like 'NG' # Tips: 未ログインの為、対象がない
+      # it_behaves_like 'ToNG', 404, 'error', false
+      it_behaves_like 'ToNG', 401, nil, false
+      # it_behaves_like 'ToMsg', NilClass, 0, 'devise_token_auth.registrations.account_to_destroy_not_found', nil, nil, nil
+      it_behaves_like 'ToMsg', NilClass, 0, nil, nil, 'devise.failure.unauthenticated', nil
+    end
+    shared_examples_for '[未ログイン/ログイン中]URLがホワイトリストにない' do
+      let(:attributes) { invalid_bad_attributes }
+      # it_behaves_like 'NG' # Tips: 未ログインの為、対象がない
+      # it_behaves_like 'ToNG', 404, 'error', false
+      it_behaves_like 'ToNG', 401, nil, false
+      # it_behaves_like 'ToMsg', NilClass, 0, 'devise_token_auth.registrations.account_to_destroy_not_found', nil, nil, nil
+      it_behaves_like 'ToMsg', NilClass, 0, nil, nil, 'devise.failure.unauthenticated', nil
+    end
+    shared_examples_for '[APIログイン中]パラメータなし' do
+      let(:attributes) { nil }
+      # it_behaves_like 'OK'
+      it_behaves_like 'NG'
+      # it_behaves_like 'ToOK', 'success', nil
+      it_behaves_like 'ToNG', 400
+      # it_behaves_like 'ToMsg', NilClass, 0, nil, 'devise_token_auth.registrations.account_with_uid_destroyed', nil, nil
+      it_behaves_like 'ToMsg', NilClass, 0, nil, nil, 'alert.user.destroy.params_blank', nil
+    end
+    shared_examples_for '[APIログイン中]有効なパラメータ' do
+      let(:attributes) { valid_attributes }
       it_behaves_like 'OK'
       # it_behaves_like 'ToOK', 'success', nil
       it_behaves_like 'ToOK', nil, true
       # it_behaves_like 'ToMsg', NilClass, 0, nil, 'devise_token_auth.registrations.account_with_uid_destroyed', nil, nil
       it_behaves_like 'ToMsg', NilClass, 0, nil, nil, nil, 'devise.registrations.destroy_reserved'
     end
-    shared_examples_for 'APIログイン中（削除予約済み）' do
-      include_context 'APIログイン処理', :user_destroy_reserved
+    shared_examples_for '[APIログイン中]URLがない' do
+      let(:attributes) { invalid_nil_attributes }
+      # it_behaves_like 'OK'
+      it_behaves_like 'NG'
+      # it_behaves_like 'ToOK', 'success', nil
+      it_behaves_like 'ToNG', 422
+      # it_behaves_like 'ToMsg', NilClass, 0, nil, 'devise_token_auth.registrations.account_with_uid_destroyed', nil, nil
+      it_behaves_like 'ToMsg', NilClass, 0, nil, nil, 'alert.user.destroy.undo_delete_url_blank', nil
+    end
+    shared_examples_for '[APIログイン中]URLがホワイトリストにない' do
+      let(:attributes) { invalid_bad_attributes }
+      # it_behaves_like 'OK'
+      it_behaves_like 'NG'
+      # it_behaves_like 'ToOK', 'success', nil
+      it_behaves_like 'ToNG', 422
+      # it_behaves_like 'ToMsg', NilClass, 0, nil, 'devise_token_auth.registrations.account_with_uid_destroyed', nil, nil
+      it_behaves_like 'ToMsg', NilClass, 0, nil, nil, 'alert.user.destroy.undo_delete_url_not_allowed', nil
+    end
+    shared_examples_for '[削除予約済み]パラメータなし' do
+      let(:attributes) { nil }
       # it_behaves_like 'OK'
       it_behaves_like 'NG'
       # it_behaves_like 'ToOK', 'success', nil
       it_behaves_like 'ToNG', 422, nil, false
       # it_behaves_like 'ToMsg', NilClass, 0, nil, 'devise_token_auth.registrations.account_with_uid_destroyed', nil, nil
       it_behaves_like 'ToMsg', NilClass, 0, nil, nil, 'alert.user.destroy_reserved', nil
+    end
+    shared_examples_for '[削除予約済み]有効なパラメータ' do
+      let(:attributes) { valid_attributes }
+      # it_behaves_like 'OK'
+      it_behaves_like 'NG'
+      # it_behaves_like 'ToOK', 'success', nil
+      it_behaves_like 'ToNG', 422, nil, false
+      # it_behaves_like 'ToMsg', NilClass, 0, nil, 'devise_token_auth.registrations.account_with_uid_destroyed', nil, nil
+      it_behaves_like 'ToMsg', NilClass, 0, nil, nil, 'alert.user.destroy_reserved', nil
+    end
+    shared_examples_for '[削除予約済み]URLがない' do
+      let(:attributes) { invalid_nil_attributes }
+      # it_behaves_like 'OK'
+      it_behaves_like 'NG'
+      # it_behaves_like 'ToOK', 'success', nil
+      it_behaves_like 'ToNG', 422, nil, false
+      # it_behaves_like 'ToMsg', NilClass, 0, nil, 'devise_token_auth.registrations.account_with_uid_destroyed', nil, nil
+      it_behaves_like 'ToMsg', NilClass, 0, nil, nil, 'alert.user.destroy_reserved', nil
+    end
+    shared_examples_for '[削除予約済み]URLがホワイトリストにない' do
+      let(:attributes) { invalid_bad_attributes }
+      # it_behaves_like 'OK'
+      it_behaves_like 'NG'
+      # it_behaves_like 'ToOK', 'success', nil
+      it_behaves_like 'ToNG', 422, nil, false
+      # it_behaves_like 'ToMsg', NilClass, 0, nil, 'devise_token_auth.registrations.account_with_uid_destroyed', nil, nil
+      it_behaves_like 'ToMsg', NilClass, 0, nil, nil, 'alert.user.destroy_reserved', nil
+    end
+
+    shared_examples_for '未ログイン' do
+      include_context '未ログイン処理'
+      it_behaves_like '[未ログイン/ログイン中]パラメータなし'
+      it_behaves_like '[未ログイン/ログイン中]有効なパラメータ'
+      it_behaves_like '[未ログイン/ログイン中]URLがない'
+      it_behaves_like '[未ログイン/ログイン中]URLがホワイトリストにない'
+    end
+    shared_examples_for 'ログイン中' do
+      include_context 'ログイン処理'
+      it_behaves_like '[未ログイン/ログイン中]パラメータなし'
+      it_behaves_like '[未ログイン/ログイン中]有効なパラメータ'
+      it_behaves_like '[未ログイン/ログイン中]URLがない'
+      it_behaves_like '[未ログイン/ログイン中]URLがホワイトリストにない'
+    end
+    shared_examples_for 'APIログイン中' do
+      include_context 'APIログイン処理'
+      it_behaves_like '[APIログイン中]パラメータなし'
+      it_behaves_like '[APIログイン中]有効なパラメータ'
+      it_behaves_like '[APIログイン中]URLがない'
+      it_behaves_like '[APIログイン中]URLがホワイトリストにない'
+    end
+    shared_examples_for 'APIログイン中（削除予約済み）' do
+      include_context 'APIログイン処理', :user_destroy_reserved
+      it_behaves_like '[削除予約済み]パラメータなし'
+      it_behaves_like '[削除予約済み]有効なパラメータ'
+      it_behaves_like '[削除予約済み]URLがない'
+      it_behaves_like '[削除予約済み]URLがホワイトリストにない'
     end
 
     context 'URLの拡張子がない' do
@@ -937,17 +1045,20 @@ RSpec.describe 'Users::Auth::Registrations', type: :request do
 
     # テスト内容
     shared_examples_for 'OK' do
-      it '削除依頼日時・削除予定日時がなしに変更される' do
+      it '削除依頼日時・削除予定日時がなしに変更される。メールが送信される' do
         subject
         expect(current_user.destroy_requested_at).to be_nil
         expect(current_user.destroy_schedule_at).to be_nil
+        expect(ActionMailer::Base.deliveries.count).to eq(1)
+        expect(ActionMailer::Base.deliveries[0].subject).to eq(get_subject('mailer.user.undo_destroy_reserved.subject')) # アカウント削除取り消し完了のお知らせ
       end
     end
     shared_examples_for 'NG' do
-      it '削除依頼日時・削除予定日時が変更されない' do
+      it '削除依頼日時・削除予定日時が変更されない。メールが送信されない' do
         subject
         expect(current_user.destroy_requested_at).to eq(user.destroy_requested_at)
         expect(current_user.destroy_schedule_at).to eq(user.destroy_schedule_at)
+        expect(ActionMailer::Base.deliveries.count).to eq(0)
       end
     end
 

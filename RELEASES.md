@@ -2,6 +2,8 @@
 
 ## 1.4.0 (Sprint 9)
 
+- アカウント削除APIで送信されるメールの取り消しURLにフロントURLを入れたい
+  - https://dev.azure.com/nightonly/rails-app-origin/_workitems/edit/432/
 - メールアドレス確認APIで確認済みの場合はaccount_confirmation_success=trueを返して欲しい
   - https://dev.azure.com/nightonly/rails-app-origin/_workitems/edit/428/
 - seedで特定の状態のテストユーザーを作成したい

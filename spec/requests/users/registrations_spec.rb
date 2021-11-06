@@ -409,20 +409,26 @@ RSpec.describe 'Users::Registrations', type: :request do
     # テスト内容
     shared_examples_for 'OK' do
       let!(:start_time) { Time.current.floor }
-      it "削除依頼日時が現在日時に、削除予定日時が#{Settings['destroy_schedule_days']}日後に変更される" do
+      let(:url) { "http://#{Settings['base_domain']}#{delete_undo_user_registration_path}" }
+      it "削除依頼日時が現在日時に、削除予定日時が#{Settings['destroy_schedule_days']}日後に変更される。メールが送信される" do
         subject
         expect(current_user.destroy_requested_at).to be_between(start_time, Time.current)
         expect(current_user.destroy_schedule_at).to be_between(start_time + Settings['destroy_schedule_days'].days,
                                                                Time.current + Settings['destroy_schedule_days'].days)
+        expect(ActionMailer::Base.deliveries.count).to eq(1)
+        expect(ActionMailer::Base.deliveries[0].subject).to eq(get_subject('mailer.user.destroy_reserved.subject')) # アカウント削除受け付けのお知らせ
+        expect(ActionMailer::Base.deliveries[0].html_part.body).to include(url)
+        expect(ActionMailer::Base.deliveries[0].text_part.body).to include(url)
       end
     end
     shared_examples_for 'NG' do
       let!(:before_destroy_requested_at) { user.destroy_requested_at }
       let!(:before_destroy_schedule_at)  { user.destroy_schedule_at }
-      it '削除依頼日時・削除予定日時が変更されない' do
+      it '削除依頼日時・削除予定日時が変更されない。メールが送信されない' do
         subject
         expect(current_user.destroy_requested_at).to eq(before_destroy_requested_at)
         expect(current_user.destroy_schedule_at).to eq(before_destroy_schedule_at)
+        expect(ActionMailer::Base.deliveries.count).to eq(0)
       end
     end
 
@@ -476,17 +482,20 @@ RSpec.describe 'Users::Registrations', type: :request do
 
     # テスト内容
     shared_examples_for 'OK' do
-      it '削除依頼日時・削除予定日時がなしに変更される' do
+      it '削除依頼日時・削除予定日時がなしに変更される。メールが送信される' do
         subject
         expect(current_user.destroy_requested_at).to be_nil
         expect(current_user.destroy_schedule_at).to be_nil
+        expect(ActionMailer::Base.deliveries.count).to eq(1)
+        expect(ActionMailer::Base.deliveries[0].subject).to eq(get_subject('mailer.user.undo_destroy_reserved.subject')) # アカウント削除取り消し完了のお知らせ
       end
     end
     shared_examples_for 'NG' do
-      it '削除依頼日時・削除予定日時が変更されない' do
+      it '削除依頼日時・削除予定日時が変更されない。メールが送信されない' do
         subject
         expect(current_user.destroy_requested_at).to eq(user.destroy_requested_at)
         expect(current_user.destroy_schedule_at).to eq(user.destroy_schedule_at)
+        expect(ActionMailer::Base.deliveries.count).to eq(0)
       end
     end
 
