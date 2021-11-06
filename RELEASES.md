@@ -2,6 +2,8 @@
 
 ## 1.4.0 (Sprint 9)
 
+- seedで特定の状態のテストユーザーを作成したい
+  - https://dev.azure.com/nightonly/rails-app-origin/_workitems/edit/419/
 - ユーザーの登録情報詳細を取得できるAPIが欲しい
   - https://dev.azure.com/nightonly/rails-app-origin/_workitems/edit/414/
 - Devise Token Authのuidをメールアドレスからidに変更したい
