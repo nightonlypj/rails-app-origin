@@ -347,13 +347,13 @@ RSpec.describe 'Users::Auth::Confirmations', type: :request do
       include_context 'メールアドレス確認トークン作成', true, false
       # it_behaves_like 'NG' # Tips: ActionController::RoutingError: Not Found
       it_behaves_like 'NG'
-      it_behaves_like 'ToNG', 'errors.messages.already_confirmed', nil
+      it_behaves_like 'ToOK', 'errors.messages.already_confirmed', nil
     end
     shared_examples_for '[*][期限切れ]確認日時が確認送信日時より後（確認済み）' do
       include_context 'メールアドレス確認トークン作成', true, false
       # it_behaves_like 'NG' # Tips: ActionController::RoutingError: Not Found
       it_behaves_like 'NG'
-      it_behaves_like 'ToNG', 'errors.messages.already_confirmed', nil
+      it_behaves_like 'ToOK', 'errors.messages.already_confirmed', nil
     end
 
     shared_examples_for '[未ログイン]トークンが期限内' do

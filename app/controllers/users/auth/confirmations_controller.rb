@@ -43,17 +43,18 @@ class Users::Auth::ConfirmationsController < DeviseTokenAuth::ConfirmationsContr
       #   redirect_to signed_in_resource.build_auth_url(redirect_url, redirect_headers)
       # else
       # end
-    else
+      # else
       # raise ActionController::RoutingError, 'Not Found'
+    elsif already_confirmed?(@resource)
+      return redirect_to Settings['confirmation_success_url_not'] if redirect_url.blank?
+      return redirect_to Settings['confirmation_success_url_bad'] if blacklisted_redirect_url?(redirect_url)
+
+      redirect_header_options = { account_confirmation_success: true, alert: t('errors.messages.already_confirmed') }
+    else
       return redirect_to Settings['confirmation_error_url_not'] if redirect_url.blank?
       return redirect_to Settings['confirmation_error_url_bad'] if blacklisted_redirect_url?(redirect_url)
 
-      redirect_header_options = { account_confirmation_success: false }
-      if already_confirmed?(@resource)
-        redirect_header_options[:alert] = t('errors.messages.already_confirmed')
-      else
-        redirect_header_options[:alert] = t('activerecord.errors.models.user.attributes.confirmation_token.invalid')
-      end
+      redirect_header_options = { account_confirmation_success: false, alert: t('activerecord.errors.models.user.attributes.confirmation_token.invalid') }
     end
     redirect_to DeviseTokenAuth::Url.generate(redirect_url, redirect_header_options)
   end
