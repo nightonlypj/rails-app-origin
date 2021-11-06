@@ -9,9 +9,13 @@ class Users::Auth::ConfirmationsController < DeviseTokenAuth::ConfirmationsContr
 
   # POST /users/auth/confirmation(.json) メールアドレス確認API[メール再送](処理)
   def create
-    return render './failure', locals: { alert: params_nil_message }, status: :bad_request if request.request_parameters.blank?
-    return render './failure', locals: { alert: url_blank_message }, status: :unprocessable_entity if params[:confirm_success_url].blank?
-    return render './failure', locals: { alert: url_not_message }, status: :unprocessable_entity if blacklisted_redirect_url?(params[:confirm_success_url])
+    return render './failure', locals: { alert: t('errors.messages.validate_confirmation_params') }, status: :bad_request if request.request_parameters.blank?
+    if params[:redirect_url].blank?
+      return render './failure', locals: { alert: t('devise_token_auth.confirmations.missing_confirm_success_url') }, status: :unprocessable_entity
+    end
+    if blacklisted_redirect_url?(params[:redirect_url])
+      return render './failure', locals: { alert: t('devise_token_auth.confirmations.redirect_url_not_allowed') }, status: :unprocessable_entity
+    end
 
     # Tips: 確認済み・不要の場合はエラーにする
     resource = params[:email].present? ? resource_class.find_by(email: params[:email]) : nil
@@ -55,21 +59,6 @@ class Users::Auth::ConfirmationsController < DeviseTokenAuth::ConfirmationsContr
   end
 
   private
-
-  # パラメータ不足メッセージを返却
-  def params_nil_message
-    t('errors.messages.validate_confirmation_params')
-  end
-
-  # URL不足メッセージを返却
-  def url_blank_message
-    t('devise_token_auth.confirmations.missing_confirm_success_url')
-  end
-
-  # URL不許可メッセージを返却
-  def url_not_message
-    t('devise_token_auth.confirmations.redirect_url_not_allowed')
-  end
 
   # 確認済み・不要かを返却
   def already_confirmed?(resource)

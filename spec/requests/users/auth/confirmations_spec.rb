@@ -46,19 +46,25 @@ RSpec.describe 'Users::Auth::Confirmations', type: :request do
     let(:send_user_confirmed)     { FactoryBot.create(:user) }
     let(:send_user_email_changed) { FactoryBot.create(:user_email_changed) }
     let(:not_user)                { FactoryBot.attributes_for(:user) }
-    let(:valid_attributes)       { { email: send_user.email, confirm_success_url: FRONT_SITE_URL } }
-    let(:invalid_attributes)     { { email: not_user[:email], confirm_success_url: FRONT_SITE_URL } }
-    let(:invalid_nil_attributes) { { email: send_user_unconfirmed.email, confirm_success_url: nil } }
-    let(:invalid_bad_attributes) { { email: send_user_unconfirmed.email, confirm_success_url: BAD_SITE_URL } }
+    let(:valid_attributes)       { { email: send_user.email, redirect_url: FRONT_SITE_URL } }
+    let(:invalid_attributes)     { { email: not_user[:email], redirect_url: FRONT_SITE_URL } }
+    let(:invalid_nil_attributes) { { email: send_user_unconfirmed.email, redirect_url: nil } }
+    let(:invalid_bad_attributes) { { email: send_user_unconfirmed.email, redirect_url: BAD_SITE_URL } }
     include_context 'Authテスト内容'
     let(:current_user) { nil }
 
     # テスト内容
     shared_examples_for 'OK' do
+      let(:url) { "http://#{Settings['base_domain']}#{user_auth_confirmation_path}" }
+      let(:url_param) { "redirect_url=#{URI.encode_www_form_component(attributes[:redirect_url])}" }
       it 'メールが送信される' do
         subject
         expect(ActionMailer::Base.deliveries.count).to eq(1)
         expect(ActionMailer::Base.deliveries[0].subject).to eq(get_subject('devise.mailer.confirmation_instructions.subject')) # メールアドレス確認のお願い
+        expect(ActionMailer::Base.deliveries[0].html_part.body).to include(url)
+        expect(ActionMailer::Base.deliveries[0].text_part.body).to include(url)
+        expect(ActionMailer::Base.deliveries[0].html_part.body).to include(url_param)
+        expect(ActionMailer::Base.deliveries[0].text_part.body).to include(url_param)
       end
     end
     shared_examples_for 'NG' do

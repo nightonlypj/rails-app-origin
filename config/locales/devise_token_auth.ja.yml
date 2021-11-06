@@ -26,8 +26,8 @@ ja:
       # missing_passwords: 'パスワードまたはパスワード確認を入力してください。' # Tips: バリデーションとdevise.failure.already_authenticatedに変更 # "'Password', 'Password confirmation' パラメータが与えられていません。"
       successfully_updated: 'パスワードを変更しました。' # "パスワードの更新に成功しました。"
     confirmations: # Tips: 追加
-      missing_confirm_success_url: 'confirm_success_urlが指定されていません。' # Tips: 追加 # "'confirm_success_url' パラメータが与えられていません。"
-      redirect_url_not_allowed: 'confirm_success_urlが許可されていません。' # Tips: 追加 # "'%{redirect_url}' へのリダイレクトは許可されていません。"
+      missing_confirm_success_url: 'redirect_urlが指定されていません。' # Tips: 追加 # "'confirm_success_url' パラメータが与えられていません。"
+      redirect_url_not_allowed: 'redirect_urlが許可されていません。' # Tips: 追加 # "'%{redirect_url}' へのリダイレクトは許可されていません。"
       # missing_email: 'メールアドレスを入力してください。' # Tips: errors.messages.validate_confirmation_paramsに変更 # "メールアドレスが与えられていません。"
       sended_paranoid: 'ユーザーが見つかりません。' # Tips: user_not_foundで、config.paranoid = trueの場合
       user_not_found: 'ユーザーが見つかりません。'

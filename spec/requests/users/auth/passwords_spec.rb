@@ -56,10 +56,16 @@ RSpec.describe 'Users::Auth::Passwords', type: :request do
 
     # テスト内容
     shared_examples_for 'OK' do
+      let(:url) { "http://#{Settings['base_domain']}#{edit_user_auth_password_path}" }
+      let(:url_param) { "redirect_url=#{URI.encode_www_form_component(attributes[:redirect_url])}" }
       it 'メールが送信される' do
         subject
         expect(ActionMailer::Base.deliveries.count).to eq(1)
         expect(ActionMailer::Base.deliveries[0].subject).to eq(get_subject('devise.mailer.reset_password_instructions.subject')) # パスワード再設定方法のお知らせ
+        expect(ActionMailer::Base.deliveries[0].html_part.body).to include(url)
+        expect(ActionMailer::Base.deliveries[0].text_part.body).to include(url)
+        expect(ActionMailer::Base.deliveries[0].html_part.body).to include(url_param)
+        expect(ActionMailer::Base.deliveries[0].text_part.body).to include(url_param)
       end
     end
     shared_examples_for 'NG' do

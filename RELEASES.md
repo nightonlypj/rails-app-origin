@@ -15,6 +15,8 @@
 
 ### Bug
 
+- メールアドレス確認APIで送信されるメールの確認URLにリダイレクトURLが入らない
+  - https://dev.azure.com/nightonly/rails-app-origin/_workitems/edit/426/
 - acceptヘッダにjsonと*が含まれるとtemplateエラーになる
   - https://dev.azure.com/nightonly/rails-app-origin/_workitems/edit/412/
 
