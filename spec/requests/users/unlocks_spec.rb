@@ -139,15 +139,17 @@ RSpec.describe 'Users::Unlocks', type: :request do
 
     # テスト内容
     shared_examples_for 'OK' do
-      it 'アカウントロック日時がなしに変更される' do
+      it 'アカウントロック日時がなしに回数が0に変更される' do
         subject
         expect(current_user.locked_at).to be_nil
+        expect(current_user.failed_attempts).to eq(0)
       end
     end
     shared_examples_for 'NG' do
-      it 'アカウントロック日時が変更されない' do
+      it 'アカウントロック日時・回数が変更されない' do
         subject
         expect(current_user.locked_at).to eq(send_user.locked_at)
+        expect(current_user.failed_attempts).to eq(send_user.failed_attempts)
       end
     end
 

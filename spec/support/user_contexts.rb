@@ -38,13 +38,14 @@ shared_context 'パスワードリセットトークン作成' do |valid, locked
   let(:sent_at)              { valid ? Time.now.utc - 1.minute : '0000-01-01 00:00:00+0000' }
   let(:unlock_token)         { locked ? SecureRandom.uuid : nil }
   let(:locked_at)            { locked ? Time.now.utc - 1.minute : '0000-01-01 00:00:00+0000' }
+  let(:failed_attempts)      { locked ? Devise.maximum_attempts : 0 }
   let(:confirmation_token)   { unconfirmed ? Devise.token_generator.digest(self, :confirmation_token, SecureRandom.uuid) : nil }
   let(:confirmation_sent_at) { unconfirmed ? Time.now.utc - 1.minute : nil }
   let(:confirmed_at)         { unconfirmed ? nil : '0000-01-01 00:00:00+0000' }
   let(:unconfirmed_email)    { change_email ? Faker::Internet.safe_email : nil }
   let!(:send_user) do
     FactoryBot.create(:user, reset_password_token: digest_token, reset_password_sent_at: sent_at,
-                             unlock_token: unlock_token, locked_at: locked_at,
+                             unlock_token: unlock_token, locked_at: locked_at, failed_attempts: failed_attempts,
                              confirmation_token: confirmation_token, confirmation_sent_at: confirmation_sent_at, confirmed_at: confirmed_at,
                              unconfirmed_email: unconfirmed_email)
   end
@@ -62,10 +63,11 @@ shared_context 'メールアドレス確認トークン作成' do |confirmed, be
 end
 
 shared_context 'アカウントロック解除トークン作成' do |locked|
-  let(:unlock_token) { SecureRandom.uuid }
-  let(:digest_token) { Devise.token_generator.digest(self, :unlock_token, unlock_token) }
-  let(:locked_at)    { locked ? Time.now.utc - 1.minute : nil }
-  let!(:send_user)   { FactoryBot.create(:user, unlock_token: digest_token, locked_at: locked_at) }
+  let(:unlock_token)    { SecureRandom.uuid }
+  let(:digest_token)    { Devise.token_generator.digest(self, :unlock_token, unlock_token) }
+  let(:locked_at)       { locked ? Time.now.utc - 1.minute : nil }
+  let(:failed_attempts) { locked ? Devise.maximum_attempts : 0 }
+  let!(:send_user)      { FactoryBot.create(:user, unlock_token: digest_token, locked_at: locked_at, failed_attempts: failed_attempts) }
 end
 
 shared_context 'Authテスト内容' do

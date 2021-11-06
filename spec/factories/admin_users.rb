@@ -10,7 +10,8 @@ FactoryBot.define do
 
   # ロック中
   factory :admin_user_locked, parent: :admin_user do
-    locked_at    { Time.now.utc - 1.minute }
-    unlock_token { Devise.token_generator.digest(self, :unlock_token, email) }
+    unlock_token    { Devise.token_generator.digest(self, :unlock_token, email) }
+    locked_at       { Time.now.utc - 1.minute }
+    failed_attempts { Devise.maximum_attempts }
   end
 end

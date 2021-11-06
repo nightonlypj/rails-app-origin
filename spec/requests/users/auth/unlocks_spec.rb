@@ -264,41 +264,49 @@ RSpec.describe 'Users::Auth::Unlocks', type: :request do
 
     # テスト内容
     shared_examples_for 'OK' do
-      it '[リダイレクトURLがある]アカウントロック日時がなしに変更される' do
+      it '[リダイレクトURLがある]アカウントロック日時がなしに回数が0に変更される' do
         @redirect_url = FRONT_SITE_URL
         subject
         expect(current_user.locked_at).to be_nil
+        expect(current_user.failed_attempts).to eq(0)
       end
       # it '[リダイレクトURLがない]アカウントロック日時がなしに変更されない' do
-      it '[リダイレクトURLがない]アカウントロック日時がなしに変更される' do
+      it '[リダイレクトURLがない]アカウントロック日時がなしに回数が0に変更される' do
         @redirect_url = nil
         subject
         # expect(current_user.locked_at).to eq(send_user.locked_at)
+        # expect(current_user.failed_attempts).to eq(send_user.failed_attempts)
         expect(current_user.locked_at).to be_nil
+        expect(current_user.failed_attempts).to eq(0)
       end
       # it '[リダイレクトURLがホワイトリストにない]アカウントロック日時がなしに変更されない' do
-      it '[リダイレクトURLがホワイトリストにない]アカウントロック日時がなしに変更される' do
+      it '[リダイレクトURLがホワイトリストにない]アカウントロック日時がなしに回数が0に変更される' do
         @redirect_url = BAD_SITE_URL
         subject
         # expect(current_user.locked_at).to eq(send_user.locked_at)
+        # expect(current_user.failed_attempts).to eq(send_user.failed_attempts)
         expect(current_user.locked_at).to be_nil
+        expect(current_user.failed_attempts).to eq(0)
       end
     end
     # shared_examples_for 'NG' do
-    #   it '[リダイレクトURLがある]アカウントロック日時が変更されない' do
+    #   it '[リダイレクトURLがある]アカウントロック日時・回数が変更されない' do
     #     @redirect_url = FRONT_SITE_URL
     #     subject
     #     expect(current_user.locked_at).to eq(send_user.locked_at)
+    #     expect(current_user.failed_attempts).to eq(send_user.failed_attempts)
     #   end
-    #   it '[リダイレクトURLがない]アカウントロック日時が変更されない' do
+    #   it '[リダイレクトURLがない]アカウントロック日時・回数が変更されない' do
     #     @redirect_url = nil
     #     subject
     #     expect(current_user.locked_at).to eq(send_user.locked_at)
+    #     expect(current_user.failed_attempts).to eq(send_user.failed_attempts)
     #   end
-    #   it '[リダイレクトURLがホワイトリストにない]アカウントロック日時が変更されない' do
+    #   it '[リダイレクトURLがホワイトリストにない]アカウントロック日時・回数が変更されない' do
     #     @redirect_url = BAD_SITE_URL
     #     subject
     #     expect(current_user.locked_at).to eq(send_user.locked_at)
+    #     expect(current_user.failed_attempts).to eq(send_user.failed_attempts)
     #   end
     # end
 

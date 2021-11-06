@@ -105,6 +105,9 @@ class Users::Auth::PasswordsController < DeviseTokenAuth::PasswordsController
     # render json: { success: true, data: resource_data, message: I18n.t('devise_token_auth.passwords.successfully_updated') }
     update_auth_header # Tips: 成功時のみ認証情報を返す
 
+    # Tips: ロック中の場合は解除する
+    @resource.update!(locked_at: nil, failed_attempts: 0) if @resource.locked_at.present?
+
     alert = @resource.unconfirmed_email.present? ? t('devise.failure.unconfirmed') : nil
     render './users/auth/success', locals: { alert: alert, notice: t('devise_token_auth.passwords.successfully_updated') }
   end

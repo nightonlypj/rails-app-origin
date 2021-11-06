@@ -135,18 +135,21 @@ RSpec.describe 'AdminUsers::Unlocks', type: :request do
   #   ロック日時: ない（未ロック）, ある（ロック中）
   describe 'GET #show' do
     subject { get admin_user_unlock_path(unlock_token: unlock_token) }
+    let(:current_admin_user) { AdminUser.find(send_admin_user.id) }
 
     # テスト内容
     shared_examples_for 'OK' do
-      it 'アカウントロック日時がなしに変更される' do
+      it 'アカウントロック日時がなしに回数が0に変更される' do
         subject
-        expect(AdminUser.find(send_admin_user.id).locked_at).to be_nil
+        expect(current_admin_user.locked_at).to be_nil
+        expect(current_admin_user.failed_attempts).to eq(0)
       end
     end
     shared_examples_for 'NG' do
-      it 'アカウントロック日時が変更されない' do
+      it 'アカウントロック日時・回数が変更されない' do
         subject
-        expect(AdminUser.find(send_admin_user.id).locked_at).to eq(send_admin_user.locked_at)
+        expect(current_admin_user.locked_at).to eq(send_admin_user.locked_at)
+        expect(current_admin_user.failed_attempts).to eq(send_admin_user.failed_attempts)
       end
     end
 

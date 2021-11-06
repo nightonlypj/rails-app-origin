@@ -2,6 +2,8 @@
 
 ## 1.4.0 (Sprint 9)
 
+- パスワード再設定APIで成功しロック中の場合はロックを解除したい
+  - https://dev.azure.com/nightonly/rails-app-origin/_workitems/edit/429/
 - アカウント削除APIで送信されるメールの取り消しURLにフロントURLを入れたい
   - https://dev.azure.com/nightonly/rails-app-origin/_workitems/edit/432/
 - メールアドレス確認APIで確認済みの場合はaccount_confirmation_success=trueを返して欲しい

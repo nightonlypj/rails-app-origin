@@ -16,8 +16,9 @@ FactoryBot.define do
 
   # ロック中
   factory :user_locked, parent: :user do
-    unlock_token { Devise.token_generator.digest(self, :unlock_token, email) }
-    locked_at    { Time.now.utc - 1.minute }
+    unlock_token    { Devise.token_generator.digest(self, :unlock_token, email) }
+    locked_at       { Time.now.utc - 1.minute }
+    failed_attempts { Devise.maximum_attempts }
   end
 
   # メール未確認
