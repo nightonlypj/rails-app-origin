@@ -3,6 +3,7 @@ class DeviseMailer < Devise::Mailer
 
   # メールアドレス確認のお願い
   def confirmation_instructions(record, token, opts = {})
+    opts[:redirect_url] = record.redirect_url if record.redirect_url.present? # Tips: /users/auth/updateで使用
     send_mail(super)
   end
 

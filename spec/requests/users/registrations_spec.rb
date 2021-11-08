@@ -69,6 +69,7 @@ RSpec.describe 'Users::Registrations', type: :request do
 
     # テスト内容
     shared_examples_for 'OK' do
+      let(:url) { "http://#{Settings['base_domain']}#{user_confirmation_path}" }
       it '作成・対象項目が設定される。メールが送信される' do
         expect do
           subject
@@ -76,6 +77,8 @@ RSpec.describe 'Users::Registrations', type: :request do
 
           expect(ActionMailer::Base.deliveries.count).to eq(1)
           expect(ActionMailer::Base.deliveries[0].subject).to eq(get_subject('devise.mailer.confirmation_instructions.subject')) # メールアドレス確認のお願い
+          expect(ActionMailer::Base.deliveries[0].html_part.body).to include(url)
+          expect(ActionMailer::Base.deliveries[0].text_part.body).to include(url)
         end.to change(User, :count).by(1)
       end
     end
@@ -161,6 +164,7 @@ RSpec.describe 'Users::Registrations', type: :request do
 
     # テスト内容
     shared_examples_for 'OK' do |change_email|
+      let(:url) { "http://#{Settings['base_domain']}#{user_confirmation_path}" }
       it '対象項目が変更される。メールが送信される' do
         subject
         expect(current_user.unconfirmed_email).to change_email ? eq(attributes[:email]) : eq(user.unconfirmed_email) # 確認待ちメールアドレス
@@ -170,7 +174,11 @@ RSpec.describe 'Users::Registrations', type: :request do
         expect(ActionMailer::Base.deliveries.count).to eq(change_email ? 3 : 1)
         expect(ActionMailer::Base.deliveries[0].subject).to eq(get_subject('devise.mailer.email_changed.subject')) if change_email # メールアドレス変更受け付けのお知らせ
         expect(ActionMailer::Base.deliveries[change_email ? 1 : 0].subject).to eq(get_subject('devise.mailer.password_change.subject')) # パスワード変更完了のお知らせ
-        expect(ActionMailer::Base.deliveries[2].subject).to eq(get_subject('devise.mailer.confirmation_instructions.subject')) if change_email # メールアドレス確認のお願い
+        if change_email
+          expect(ActionMailer::Base.deliveries[2].subject).to eq(get_subject('devise.mailer.confirmation_instructions.subject')) # メールアドレス確認のお願い
+          expect(ActionMailer::Base.deliveries[2].html_part.body).to include(url)
+          expect(ActionMailer::Base.deliveries[2].text_part.body).to include(url)
+        end
       end
     end
     shared_examples_for 'NG' do

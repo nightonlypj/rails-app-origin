@@ -5,6 +5,7 @@ class User < ApplicationRecord
          :recoverable, :rememberable, :validatable,
          :confirmable, :lockable, :timeoutable, :trackable
   include DeviseTokenAuth::Concerns::User
+  attr_accessor :redirect_url # Tips: /users/auth/updateで使用
 
   mount_uploader :image, ImageUploader
   has_many :infomation, dependent: :destroy
