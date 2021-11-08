@@ -37,7 +37,7 @@ shared_context 'パスワードリセットトークン作成' do |valid, locked
   let(:digest_token)         { Devise.token_generator.digest(self, :reset_password_token, reset_password_token) }
   let(:sent_at)              { valid ? Time.now.utc - 1.minute : '0000-01-01 00:00:00+0000' }
   let(:unlock_token)         { locked ? SecureRandom.uuid : nil }
-  let(:locked_at)            { locked ? Time.now.utc - 1.minute : '0000-01-01 00:00:00+0000' }
+  let(:locked_at)            { locked ? Time.now.utc - 1.minute : nil }
   let(:failed_attempts)      { locked ? Devise.maximum_attempts : 0 }
   let(:confirmation_token)   { unconfirmed ? Devise.token_generator.digest(self, :confirmation_token, SecureRandom.uuid) : nil }
   let(:confirmation_sent_at) { unconfirmed ? Time.now.utc - 1.minute : nil }
@@ -62,10 +62,11 @@ shared_context 'メールアドレス確認トークン作成' do |confirmed, be
   end
 end
 
-shared_context 'アカウントロック解除トークン作成' do |locked|
+shared_context 'アカウントロック解除トークン作成' do |locked, expired = false|
   let(:unlock_token)    { SecureRandom.uuid }
   let(:digest_token)    { Devise.token_generator.digest(self, :unlock_token, unlock_token) }
-  let(:locked_at)       { locked ? Time.now.utc - 1.minute : nil }
+  let(:locked_time)     { Time.now.utc - 1.minute - (expired ? Devise.unlock_in : 0) }
+  let(:locked_at)       { locked ? locked_time : nil }
   let(:failed_attempts) { locked ? Devise.maximum_attempts : 0 }
   let!(:send_user)      { FactoryBot.create(:user, unlock_token: digest_token, locked_at: locked_at, failed_attempts: failed_attempts) }
 end

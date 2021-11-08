@@ -256,7 +256,7 @@ RSpec.describe 'Users::Auth::Unlocks', type: :request do
   #   Acceptヘッダ: HTMLが含まれる, JSONが含まれる
   #   未ログイン, ログイン中, APIログイン中
   #   トークン: 存在する, 存在しない, ない, 空
-  #   ロック日時: ない（未ロック）, ある（ロック中）
+  #   ロック日時: ない（未ロック）, 期限内（ロック中）, 期限切れ（未ロック）
   #   ＋リダイレクトURL: ある, ない, ホワイトリストにない
   describe 'GET #show' do
     subject { get user_auth_unlock_path(unlock_token: unlock_token, redirect_url: @redirect_url), headers: auth_headers.merge(accept_headers) }
@@ -289,26 +289,26 @@ RSpec.describe 'Users::Auth::Unlocks', type: :request do
         expect(current_user.failed_attempts).to eq(0)
       end
     end
-    # shared_examples_for 'NG' do
-    #   it '[リダイレクトURLがある]アカウントロック日時・回数が変更されない' do
-    #     @redirect_url = FRONT_SITE_URL
-    #     subject
-    #     expect(current_user.locked_at).to eq(send_user.locked_at)
-    #     expect(current_user.failed_attempts).to eq(send_user.failed_attempts)
-    #   end
-    #   it '[リダイレクトURLがない]アカウントロック日時・回数が変更されない' do
-    #     @redirect_url = nil
-    #     subject
-    #     expect(current_user.locked_at).to eq(send_user.locked_at)
-    #     expect(current_user.failed_attempts).to eq(send_user.failed_attempts)
-    #   end
-    #   it '[リダイレクトURLがホワイトリストにない]アカウントロック日時・回数が変更されない' do
-    #     @redirect_url = BAD_SITE_URL
-    #     subject
-    #     expect(current_user.locked_at).to eq(send_user.locked_at)
-    #     expect(current_user.failed_attempts).to eq(send_user.failed_attempts)
-    #   end
-    # end
+    shared_examples_for 'NG' do
+      it '[リダイレクトURLがある]アカウントロック日時・回数が変更されない' do
+        @redirect_url = FRONT_SITE_URL
+        subject
+        expect(current_user.locked_at).to eq(send_user.locked_at)
+        expect(current_user.failed_attempts).to eq(send_user.failed_attempts)
+      end
+      it '[リダイレクトURLがない]アカウントロック日時・回数が変更されない' do
+        @redirect_url = nil
+        subject
+        expect(current_user.locked_at).to eq(send_user.locked_at)
+        expect(current_user.failed_attempts).to eq(send_user.failed_attempts)
+      end
+      it '[リダイレクトURLがホワイトリストにない]アカウントロック日時・回数が変更されない' do
+        @redirect_url = BAD_SITE_URL
+        subject
+        expect(current_user.locked_at).to eq(send_user.locked_at)
+        expect(current_user.failed_attempts).to eq(send_user.failed_attempts)
+      end
+    end
 
     shared_examples_for 'ToOK' do |alert, notice|
       it '[リダイレクトURLがある]指定URL（成功パラメータ）にリダイレクトする' do
@@ -372,7 +372,7 @@ RSpec.describe 'Users::Auth::Unlocks', type: :request do
     # テストケース
     shared_examples_for '[*][存在する]ロック日時がない（未ロック）' do
       include_context 'アカウントロック解除トークン作成', false
-      # it_behaves_like 'NG' # Tips: 元々、ロック日時がない
+      it_behaves_like 'NG'
       # it_behaves_like 'ToOK', nil, nil
       it_behaves_like 'ToOK', nil, 'devise.unlocks.unlocked' # Tips: 既に解除済み
     end
@@ -386,30 +386,39 @@ RSpec.describe 'Users::Auth::Unlocks', type: :request do
       # it_behaves_like 'ToNG', nil, nil # Tips: ActionController::RoutingError: Not Found
       it_behaves_like 'ToNG', 'activerecord.errors.models.user.attributes.unlock_token.blank', nil
     end
-    shared_examples_for '[*][存在する]ロック日時がある（ロック中）' do
+    shared_examples_for '[*][存在する]ロック日時が期限内（ロック中）' do
       include_context 'アカウントロック解除トークン作成', true
+      it_behaves_like 'OK'
+      it_behaves_like 'ToOK', nil, 'devise.unlocks.unlocked' # Tips: 解除されても良さそう
+    end
+    shared_examples_for '[*][存在する]ロック日時が期限切れ（未ロック）' do
+      include_context 'アカウントロック解除トークン作成', true, true
       it_behaves_like 'OK'
       it_behaves_like 'ToOK', nil, 'devise.unlocks.unlocked'
     end
 
     shared_examples_for '[*]トークンが存在する' do
       it_behaves_like '[*][存在する]ロック日時がない（未ロック）'
-      it_behaves_like '[*][存在する]ロック日時がある（ロック中）'
+      it_behaves_like '[*][存在する]ロック日時が期限内（ロック中）'
+      it_behaves_like '[*][存在する]ロック日時が期限切れ（未ロック）'
     end
     shared_examples_for '[*]トークンが存在しない' do
       let(:unlock_token) { NOT_TOKEN }
       it_behaves_like '[*][存在しない]ロック日時がない（未ロック）'
-      # it_behaves_like '[*][存在しない]ロック日時がある（ロック中）' # Tips: トークンが存在しない為、ロック日時がない
+      # it_behaves_like '[*][存在しない]ロック日時が期限内（ロック中）' # Tips: トークンが存在しない為、ロック日時がない
+      # it_behaves_like '[*][存在しない]ロック日時が期限切れ（未ロック）' # Tips: トークンが存在しない為、ロック日時がない
     end
     shared_examples_for '[*]トークンがない' do
       let(:unlock_token) { nil }
       it_behaves_like '[*][ない/空]ロック日時がない（未ロック）'
-      # it_behaves_like '[*][ない]ロック日時がある（ロック中）' # Tips: トークンが存在しない為、ロック日時がない
+      # it_behaves_like '[*][ない]ロック日時が期限内（ロック中）' # Tips: トークンが存在しない為、ロック日時がない
+      # it_behaves_like '[*][ない]ロック日時が期限切れ（未ロック）' # Tips: トークンが存在しない為、ロック日時がない
     end
     shared_examples_for '[*]トークンが空' do
       let(:unlock_token) { '' }
       it_behaves_like '[*][ない/空]ロック日時がない（未ロック）'
-      # it_behaves_like '[*][空]ロック日時がある（ロック中）' # Tips: トークンが存在しない為、ロック日時がない
+      # it_behaves_like '[*][空]ロック日時が期限内（ロック中）' # Tips: トークンが存在しない為、ロック日時がない
+      # it_behaves_like '[*][空]ロック日時が期限切れ（未ロック）' # Tips: トークンが存在しない為、ロック日時がない
     end
 
     shared_examples_for '未ログイン' do
