@@ -21,6 +21,16 @@ FactoryBot.define do
     failed_attempts { Devise.maximum_attempts }
   end
 
+  # ロック前
+  factory :user_before_lock1, parent: :user do
+    failed_attempts { Devise.maximum_attempts - 1 }
+  end
+
+  # ロック前の前
+  factory :user_before_lock2, parent: :user do
+    failed_attempts { Devise.maximum_attempts - 2 }
+  end
+
   # メール未確認
   factory :user_unconfirmed, parent: :user do
     confirmation_token   { Devise.token_generator.digest(self, :confirmation_token, email) }

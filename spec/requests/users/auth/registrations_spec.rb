@@ -360,18 +360,18 @@ RSpec.describe 'Users::Auth::Registrations', type: :request do
     subject { put update_user_auth_registration_path(format: subject_format), params: attributes, headers: auth_headers.merge(ACCEPT_INC_JSON) }
     let(:new_user)   { FactoryBot.attributes_for(:user) }
     let(:exist_user) { FactoryBot.create(:user) }
-    let(:nochange_attributes)    { { name: user.name, email: user.email, password: user.password, redirect_url: FRONT_SITE_URL } }
-    let(:valid_attributes)       { { name: new_user[:name], email: new_user[:email], password: new_user[:password], redirect_url: FRONT_SITE_URL } }
-    let(:invalid_attributes)     { { name: exist_user.name, email: exist_user.email, password: exist_user.password, redirect_url: FRONT_SITE_URL } }
-    let(:invalid_nil_attributes) { { name: exist_user.name, email: exist_user.email, password: exist_user.password, redirect_url: nil } }
-    let(:invalid_bad_attributes) { { name: exist_user.name, email: exist_user.email, password: exist_user.password, redirect_url: BAD_SITE_URL } }
+    let(:nochange_attributes)    { { name: user.name, email: user.email, password: user.password, confirm_redirect_url: FRONT_SITE_URL } }
+    let(:valid_attributes)       { { name: new_user[:name], email: new_user[:email], password: new_user[:password], confirm_redirect_url: FRONT_SITE_URL } }
+    let(:invalid_attributes)     { { name: exist_user.name, email: exist_user.email, password: exist_user.password, confirm_redirect_url: FRONT_SITE_URL } }
+    let(:invalid_nil_attributes) { { name: exist_user.name, email: exist_user.email, password: exist_user.password, confirm_redirect_url: nil } }
+    let(:invalid_bad_attributes) { { name: exist_user.name, email: exist_user.email, password: exist_user.password, confirm_redirect_url: BAD_SITE_URL } }
     include_context 'Authテスト内容'
     let(:current_user) { User.find(user.id) }
 
     # テスト内容
     shared_examples_for 'OK' do |change_email|
       let(:url) { "http://#{Settings['base_domain']}#{user_auth_confirmation_path}" }
-      let(:url_param) { "redirect_url=#{URI.encode_www_form_component(attributes[:redirect_url])}" }
+      let(:url_param) { "redirect_url=#{URI.encode_www_form_component(attributes[:confirm_redirect_url])}" }
       it '対象項目が変更される。対象のメールが送信される' do
         subject
         expect(current_user.unconfirmed_email).to change_email ? eq(attributes[:email]) : eq(user.unconfirmed_email) # 確認待ちメールアドレス
@@ -526,7 +526,7 @@ RSpec.describe 'Users::Auth::Registrations', type: :request do
       # it_behaves_like 'ToOK', 'success', nil, true
       it_behaves_like 'ToNG', 422, nil, false
       # it_behaves_like 'ToMsg', NilClass, 0, nil, nil, nil, nil
-      it_behaves_like 'ToMsg', NilClass, 0, nil, nil, 'devise_token_auth.confirmations.missing_confirm_success_url', nil
+      it_behaves_like 'ToMsg', NilClass, 0, nil, nil, 'devise_token_auth.registrations.confirm_redirect_url_blank', nil
     end
     shared_examples_for '[削除予約済み]URLがない' do
       let(:attributes) { invalid_nil_attributes.merge(password_confirmation: invalid_nil_attributes[:password], current_password: user.password) }
@@ -552,7 +552,7 @@ RSpec.describe 'Users::Auth::Registrations', type: :request do
       # it_behaves_like 'ToOK', 'success', nil, true
       it_behaves_like 'ToNG', 422, nil, false
       # it_behaves_like 'ToMsg', NilClass, 0, nil, nil, nil, nil
-      it_behaves_like 'ToMsg', NilClass, 0, nil, nil, 'devise_token_auth.confirmations.redirect_url_not_allowed', nil
+      it_behaves_like 'ToMsg', NilClass, 0, nil, nil, 'devise_token_auth.registrations.confirm_redirect_url_not_allowed', nil
     end
     shared_examples_for '[削除予約済み]URLがホワイトリストにない' do
       let(:attributes) { invalid_bad_attributes.merge(password_confirmation: invalid_bad_attributes[:password], current_password: user.password) }

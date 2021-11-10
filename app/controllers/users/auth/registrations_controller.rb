@@ -29,11 +29,11 @@ class Users::Auth::RegistrationsController < DeviseTokenAuth::RegistrationsContr
 
   # PUT(PATCH) /users/auth/update(.json) 登録情報変更API(処理)
   def update
-    if params[:redirect_url].blank?
-      return render './failure', locals: { alert: t('devise_token_auth.confirmations.missing_confirm_success_url') }, status: :unprocessable_entity
+    if params[:confirm_redirect_url].blank?
+      return render './failure', locals: { alert: t('devise_token_auth.registrations.confirm_redirect_url_blank') }, status: :unprocessable_entity
     end
-    if blacklisted_redirect_url?(params[:redirect_url])
-      return render './failure', locals: { alert: t('devise_token_auth.confirmations.redirect_url_not_allowed') }, status: :unprocessable_entity
+    if blacklisted_redirect_url?(params[:confirm_redirect_url])
+      return render './failure', locals: { alert: t('devise_token_auth.registrations.confirm_redirect_url_not_allowed') }, status: :unprocessable_entity
     end
 
     # Tips: 存在するメールアドレスの場合はエラーにする
@@ -43,9 +43,10 @@ class Users::Auth::RegistrationsController < DeviseTokenAuth::RegistrationsContr
       return render './failure', locals: { errors: errors, alert: t('errors.messages.not_saved.one') }, status: :unprocessable_entity
     end
 
-    @resource.redirect_url = params[:redirect_url]
     params[:password_confirmation] = '' if params[:password_confirmation].nil? # Tips: nilだとチェックされずに保存される為
     params[:current_password] = '' if params[:current_password].nil? # Tips: nilだとチェックされずに保存される為
+
+    @resource.redirect_url = params[:confirm_redirect_url]
     super
   end
 

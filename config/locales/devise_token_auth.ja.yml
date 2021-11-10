@@ -5,6 +5,8 @@ ja:
       bad_credentials: 'パラメータが指定されていません。' # "ログイン用の認証情報が正しくありません。再度お試しください。"
       # not_supported: "/sign_in に GET はサポートされていません。POST をお使いください。" # Tips: 未使用(routesなしに変更済み)
       user_not_found: '既にログアウトされています。' # "ユーザーが見つからないか、ログインしていません。"
+      unlock_redirect_url_blank: 'unlock_redirect_urlが指定されていません。' # Tips: 追加
+      unlock_redirect_url_not_allowed: 'unlock_redirect_urlが許可されていません。' # Tips: 追加
     token_validations:
       invalid: 'セッションがタイムアウトしました。ログインし直してください。' # "ログイン用の認証情報が正しくありません。"
     registrations:
@@ -14,6 +16,8 @@ ja:
       account_with_uid_destroyed: 'アカウントを削除しました。またのご利用をお待ちしております。' # "'%{uid}' のアカウントは削除されました。"
       # account_to_destroy_not_found: 'ログインしてください。' # Tips: devise.failure.unauthenticatedに変更 # '削除するアカウントが見つかりません。'
       # user_not_found: 'ログインしてください。' # Tips: devise.failure.unauthenticatedに変更 # "ユーザーが見つかりません。"
+      confirm_redirect_url_blank: 'confirm_redirect_urlが指定されていません。' # Tips: 追加
+      confirm_redirect_url_not_allowed: 'confirm_redirect_urlが許可されていません。' # Tips: 追加
     omniauth:
       not_allowed_redirect_url: 'redirect_urlが許可されていません。' # "'%{redirect_url}' へのリダイレクトは許可されていません。"
     passwords:

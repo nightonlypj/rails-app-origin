@@ -10,6 +10,12 @@ class Users::Auth::SessionsController < DeviseTokenAuth::SessionsController
   # POST /users/auth/sign_in(.json) ログインAPI(処理)
   def create
     return render './failure', locals: { alert: t('devise_token_auth.sessions.bad_credentials') }, status: :bad_request if request.request_parameters.blank?
+    if params[:unlock_redirect_url].blank?
+      return render './failure', locals: { alert: t('devise_token_auth.sessions.unlock_redirect_url_blank') }, status: :unprocessable_entity
+    end
+    if blacklisted_redirect_url?(params[:unlock_redirect_url])
+      return render './failure', locals: { alert: t('devise_token_auth.sessions.unlock_redirect_url_not_allowed') }, status: :unprocessable_entity
+    end
     return render_create_error_bad_credentials if params[:email].blank? || params[:password].blank?
 
     super
@@ -23,6 +29,12 @@ class Users::Auth::SessionsController < DeviseTokenAuth::SessionsController
   end
 
   private
+
+  def find_resource(field, value)
+    super
+    @resource.redirect_url = params[:unlock_redirect_url] if @resource.present? && params[:unlock_redirect_url].present?
+    @resource
+  end
 
   def unauthenticated_response_sign_out
     render './failure', locals: { alert: t('devise_token_auth.sessions.user_not_found') }, status: :unauthorized
@@ -53,7 +65,15 @@ class Users::Auth::SessionsController < DeviseTokenAuth::SessionsController
 
   def render_create_error_bad_credentials
     # render_error(401, I18n.t('devise_token_auth.sessions.bad_credentials'))
-    render './failure', locals: { alert: t('devise.failure.invalid') }, status: :unprocessable_entity
+    if @resource.blank?
+      render './failure', locals: { alert: t('devise.failure.not_found_in_database') }, status: :unprocessable_entity
+    elsif @resource.locked_at.present?
+      render_create_error_account_locked
+    elsif @resource.failed_attempts == Devise.maximum_attempts - 1
+      render './failure', locals: { alert: t('devise.failure.last_attempt') }, status: :unprocessable_entity
+    else
+      render './failure', locals: { alert: t('devise.failure.invalid') }, status: :unprocessable_entity
+    end
   end
 
   def render_destroy_success

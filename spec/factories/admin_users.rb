@@ -14,4 +14,14 @@ FactoryBot.define do
     locked_at       { Time.now.utc - 1.minute }
     failed_attempts { Devise.maximum_attempts }
   end
+
+  # ロック前
+  factory :admin_user_before_lock1, parent: :admin_user do
+    failed_attempts { Devise.maximum_attempts - 1 }
+  end
+
+  # ロック前の前
+  factory :admin_user_before_lock2, parent: :admin_user do
+    failed_attempts { Devise.maximum_attempts - 2 }
+  end
 end
