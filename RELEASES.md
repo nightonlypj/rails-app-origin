@@ -2,6 +2,8 @@
 
 ## 1.4.0 (Sprint 9)
 
+- アカウントロック直後とその後でメッセージを分けたい
+  - https://dev.azure.com/nightonly/rails-app-origin/_workitems/edit/435/
 - パスワード再設定APIで成功しロック中の場合はロックを解除したい
   - https://dev.azure.com/nightonly/rails-app-origin/_workitems/edit/429/
 - アカウント削除APIで送信されるメールの取り消しURLにフロントURLを入れたい

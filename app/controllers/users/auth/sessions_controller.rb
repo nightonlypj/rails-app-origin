@@ -67,9 +67,9 @@ class Users::Auth::SessionsController < DeviseTokenAuth::SessionsController
     # render_error(401, I18n.t('devise_token_auth.sessions.bad_credentials'))
     if @resource.blank?
       render './failure', locals: { alert: t('devise.failure.not_found_in_database') }, status: :unprocessable_entity
-    elsif @resource.locked_at.present?
-      render_create_error_account_locked
-    elsif @resource.failed_attempts == Devise.maximum_attempts - 1
+    elsif @resource.access_locked?
+      render './failure', locals: { alert: t('devise.failure.send_locked') }, status: :unprocessable_entity
+    elsif Devise.lock_strategy == :failed_attempts && @resource.failed_attempts == Devise.maximum_attempts - 1
       render './failure', locals: { alert: t('devise.failure.last_attempt') }, status: :unprocessable_entity
     else
       render './failure', locals: { alert: t('devise.failure.invalid') }, status: :unprocessable_entity

@@ -161,7 +161,7 @@ RSpec.describe 'Users::Sessions', type: :request do
     shared_examples_for '[未ログイン]無効なパラメータ（ロック前）' do
       let(:send_user)  { send_user_before_lock1 }
       let(:attributes) { invalid_pass_attributes }
-      it_behaves_like 'ToError', 'devise.failure.locked'
+      it_behaves_like 'ToError', 'devise.failure.send_locked'
       it_behaves_like 'SendLocked'
     end
     shared_examples_for '[ログイン中/削除予約済み]無効なパラメータ（ロック前）' do

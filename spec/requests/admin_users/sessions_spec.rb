@@ -116,27 +116,27 @@ RSpec.describe 'AdminUsers::Sessions', type: :request do
       it_behaves_like 'NotSendLocked'
     end
     shared_examples_for '[未ログイン]無効なパラメータ（ロック前）' do
-      let(:send_user)  { send_admin_user_before_lock1 }
-      let(:attributes) { invalid_pass_attributes }
-      it_behaves_like 'ToError', 'devise.failure.locked'
+      let(:send_admin_user) { send_admin_user_before_lock1 }
+      let(:attributes)      { invalid_pass_attributes }
+      it_behaves_like 'ToError', 'devise.failure.send_locked'
       it_behaves_like 'SendLocked'
     end
     shared_examples_for '[ログイン中]無効なパラメータ（ロック前）' do
-      let(:send_user)  { send_admin_user_before_lock1 }
-      let(:attributes) { invalid_pass_attributes }
-      it_behaves_like 'ToTop', 'devise.failure.already_authenticated', nil
+      let(:send_admin_user) { send_admin_user_before_lock1 }
+      let(:attributes)      { invalid_pass_attributes }
+      it_behaves_like 'ToAdmin', 'devise.failure.already_authenticated', nil
       it_behaves_like 'NotSendLocked'
     end
     shared_examples_for '[未ログイン]無効なパラメータ（ロック前の前）' do
-      let(:send_user)  { send_admin_user_before_lock2 }
-      let(:attributes) { invalid_pass_attributes }
+      let(:send_admin_user) { send_admin_user_before_lock2 }
+      let(:attributes)      { invalid_pass_attributes }
       it_behaves_like 'ToError', 'devise.failure.last_attempt'
       it_behaves_like 'NotSendLocked'
     end
     shared_examples_for '[ログイン中]無効なパラメータ（ロック前の前）' do
-      let(:send_user)  { send_admin_user_before_lock2 }
-      let(:attributes) { invalid_pass_attributes }
-      it_behaves_like 'ToTop', 'devise.failure.already_authenticated', nil
+      let(:send_admin_user) { send_admin_user_before_lock2 }
+      let(:attributes)      { invalid_pass_attributes }
+      it_behaves_like 'ToAdmin', 'devise.failure.already_authenticated', nil
       it_behaves_like 'NotSendLocked'
     end
 
@@ -144,16 +144,16 @@ RSpec.describe 'AdminUsers::Sessions', type: :request do
       it_behaves_like '[未ログイン]有効なパラメータ（未ロック）'
       it_behaves_like '[未ログイン]有効なパラメータ（ロック中）'
       it_behaves_like '[未ログイン]無効なパラメータ（存在しない）'
-      it_behaves_like '[未ログイン]無効なパラメータ（存在しない）'
-      it_behaves_like '[未ログイン]無効なパラメータ（存在しない）'
+      it_behaves_like '[未ログイン]無効なパラメータ（ロック前）'
+      it_behaves_like '[未ログイン]無効なパラメータ（ロック前の前）'
     end
     context 'ログイン中' do
       include_context 'ログイン処理（管理者）'
       it_behaves_like '[ログイン中]有効なパラメータ（未ロック）'
       it_behaves_like '[ログイン中]有効なパラメータ（ロック中）'
       it_behaves_like '[ログイン中]無効なパラメータ（存在しない）'
-      it_behaves_like '[ログイン中]無効なパラメータ（存在しない）'
-      it_behaves_like '[ログイン中]無効なパラメータ（存在しない）'
+      it_behaves_like '[ログイン中]無効なパラメータ（ロック前）'
+      it_behaves_like '[ログイン中]無効なパラメータ（ロック前の前）'
     end
   end
 

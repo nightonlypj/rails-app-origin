@@ -232,7 +232,7 @@ RSpec.describe 'Users::Auth::Sessions', type: :request do
       let(:send_user)  { send_user_before_lock1 }
       let(:attributes) { invalid_pass_attributes }
       it_behaves_like 'ToNG', 422
-      it_behaves_like 'ToMsg', nil, 'devise.failure.locked', nil
+      it_behaves_like 'ToMsg', nil, 'devise.failure.send_locked', nil
       it_behaves_like 'SendLocked'
     end
     shared_examples_for '[*]無効なパラメータ（ロック前の前）' do
