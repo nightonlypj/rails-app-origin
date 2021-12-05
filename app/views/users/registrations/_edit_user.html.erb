@@ -9,7 +9,7 @@
 
 <% if user_valid_confirmation_token? %>
   <div class="note note-info mb-3">
-    確認待ち: <%= resource.unconfirmed_email %><br/>
+    確認待ち: <%= resource.unconfirmed_email %><br>
     <small>※メールを確認してください。メールが届いていない場合は[メールアドレス確認]をしてください。</small>
   </div>
 <% end %>

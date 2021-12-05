@@ -20,8 +20,8 @@ Rails.application.routes.draw do
     get    'users/confirmation',     to: 'users/confirmations#show',          as: 'user_confirmation'
     get    'users/sign_in',          to: 'users/sessions#new',                as: 'new_user_session'
     post   'users/sign_in',          to: 'users/sessions#create',             as: 'create_user_session'
-    get    'users/sign_out',         to: 'users/sessions#destroy',            as: 'destroy_user_session'
-    delete 'users/sign_out',         to: 'users/sessions#destroy',            as: nil
+    get    'users/sign_out',         to: 'users/sessions#delete',             as: 'delete_user_session'
+    delete 'users/sign_out',         to: 'users/sessions#destroy',            as: 'destroy_user_session'
     get    'users/unlock/new',       to: 'users/unlocks#new',                 as: 'new_user_unlock'
     post   'users/unlock/new',       to: 'users/unlocks#create',              as: 'create_user_unlock'
     get    'users/unlock',           to: 'users/unlocks#show',                as: 'user_unlock'

@@ -13,7 +13,12 @@ class Users::SessionsController < Devise::SessionsController
   #   super
   # end
 
-  # DELETE(GET) /users/sign_out ログアウト(処理)
+  # GET /users/sign_out ログアウト
+  def delete
+    redirect_to root_path, alert: t('devise.sessions.already_signed_out') unless user_signed_in?
+  end
+
+  # DELETE /users/sign_out ログアウト(処理)
   # def destroy
   #   super
   # end

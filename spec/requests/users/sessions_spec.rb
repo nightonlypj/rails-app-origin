@@ -55,7 +55,7 @@ RSpec.describe 'Users::Sessions', type: :request do
   #   なし
   # テストパターン
   #   未ログイン, ログイン中, ログイン中（削除予約済み）
-  #   有効なパラメータ（未ロック, ロック中, メール未確認, メールアドレス変更中, 削除予約済み）, 無効なパラメータ（存在しない, ロック前, ロック前の前）
+  #   有効なパラメータ（未ロック, ロック中, メール未確認, メールアドレス変更中, 削除予約済み）, 無効なパラメータ（存在しない, ロック前, ロック前の前, ロック前の前の前）
   describe 'POST #create' do
     subject { post create_user_session_path, params: { user: attributes } }
     let(:send_user_unlocked)         { FactoryBot.create(:user) }
@@ -66,6 +66,7 @@ RSpec.describe 'Users::Sessions', type: :request do
     let(:not_user)                   { FactoryBot.attributes_for(:user) }
     let(:send_user_before_lock1)     { FactoryBot.create(:user_before_lock1) }
     let(:send_user_before_lock2)     { FactoryBot.create(:user_before_lock2) }
+    let(:send_user_before_lock3)     { FactoryBot.create(:user_before_lock3) }
     let(:valid_attributes)        { { email: send_user.email, password: send_user.password } }
     let(:invalid_not_attributes)  { { email: not_user[:email], password: not_user[:password] } }
     let(:invalid_pass_attributes) { { email: send_user.email, password: "n#{send_user.password}" } }
@@ -182,6 +183,18 @@ RSpec.describe 'Users::Sessions', type: :request do
       it_behaves_like 'ToTop', 'devise.failure.already_authenticated', nil
       it_behaves_like 'NotSendLocked'
     end
+    shared_examples_for '[未ログイン]無効なパラメータ（ロック前の前の前）' do
+      let(:send_user)  { send_user_before_lock3 }
+      let(:attributes) { invalid_pass_attributes }
+      it_behaves_like 'ToError', 'devise.failure.invalid'
+      it_behaves_like 'NotSendLocked'
+    end
+    shared_examples_for '[ログイン中/削除予約済み]無効なパラメータ（ロック前の前の前）' do
+      let(:send_user)  { send_user_before_lock3 }
+      let(:attributes) { invalid_pass_attributes }
+      it_behaves_like 'ToTop', 'devise.failure.already_authenticated', nil
+      it_behaves_like 'NotSendLocked'
+    end
 
     context '未ログイン' do
       it_behaves_like '[未ログイン]有効なパラメータ（未ロック）'
@@ -192,6 +205,7 @@ RSpec.describe 'Users::Sessions', type: :request do
       it_behaves_like '[未ログイン]無効なパラメータ（存在しない）'
       it_behaves_like '[未ログイン]無効なパラメータ（ロック前）'
       it_behaves_like '[未ログイン]無効なパラメータ（ロック前の前）'
+      it_behaves_like '[未ログイン]無効なパラメータ（ロック前の前の前）'
     end
     context 'ログイン中' do
       include_context 'ログイン処理'
@@ -203,6 +217,7 @@ RSpec.describe 'Users::Sessions', type: :request do
       it_behaves_like '[ログイン中/削除予約済み]無効なパラメータ（存在しない）'
       it_behaves_like '[ログイン中/削除予約済み]無効なパラメータ（ロック前）'
       it_behaves_like '[ログイン中/削除予約済み]無効なパラメータ（ロック前の前）'
+      it_behaves_like '[ログイン中/削除予約済み]無効なパラメータ（ロック前の前の前）'
     end
     context 'ログイン中（削除予約済み）' do
       include_context 'ログイン処理', :user_destroy_reserved
@@ -214,10 +229,33 @@ RSpec.describe 'Users::Sessions', type: :request do
       it_behaves_like '[ログイン中/削除予約済み]無効なパラメータ（存在しない）'
       it_behaves_like '[ログイン中/削除予約済み]無効なパラメータ（ロック前）'
       it_behaves_like '[ログイン中/削除予約済み]無効なパラメータ（ロック前の前）'
+      it_behaves_like '[ログイン中/削除予約済み]無効なパラメータ（ロック前の前の前）'
     end
   end
 
-  # DELETE(GET) /users/sign_out ログアウト(処理)
+  # GET /users/sign_out ログアウト
+  # 前提条件
+  #   なし
+  # テストパターン
+  #   未ログイン, ログイン中, ログイン中（削除予約済み）
+  describe 'GET #delete' do
+    subject { get delete_user_session_path }
+
+    # テストケース
+    context '未ログイン' do
+      it_behaves_like 'ToTop', 'devise.sessions.already_signed_out', nil
+    end
+    context 'ログイン中' do
+      include_context 'ログイン処理'
+      it_behaves_like 'ToOK'
+    end
+    context 'ログイン中（削除予約済み）' do
+      include_context 'ログイン処理', :user_destroy_reserved
+      it_behaves_like 'ToOK'
+    end
+  end
+
+  # DELETE /users/sign_out ログアウト(処理)
   # 前提条件
   #   なし
   # テストパターン

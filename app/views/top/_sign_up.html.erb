@@ -1,11 +1,13 @@
-<article class="card m-1 mb-2">
-  <div class="card-body">
-    <h5 class="card-title"><%= link_to 'アカウント登録', new_user_registration_path, class: 'text-dark' %></h5>
-    <p class="card-text"><%= link_to '無料で始める', new_user_registration_path, class: 'btn btn-primary' %></p>
-    <nav class="card-footer">
+<div class="card card-body mb-2">
+  <h5 class="card-title mb-3">アカウント登録</h5>
+  <div class="card-text mb-3">
+    <%= link_to '無料で始める', new_user_registration_path, class: 'btn btn-primary' %>
+  </div>
+  <div class="card-footer pb-0 px-0">
+    <nav>
       <ul class="mt-2 mb-0">
         <li><%= link_to 'ログイン', new_user_session_path %></li>
       </ul>
     </nav>
   </div>
-</article>
+</div>

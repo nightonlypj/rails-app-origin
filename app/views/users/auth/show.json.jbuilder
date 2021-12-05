@@ -24,6 +24,8 @@ json.user do
   json.destroy_schedule_days Settings['destroy_schedule_days']
   json.destroy_requested_at current_user.destroy_requested_at.present? ? l(current_user.destroy_requested_at, format: :json) : nil
   json.destroy_schedule_at current_user.destroy_schedule_at.present? ? l(current_user.destroy_schedule_at, format: :json) : nil
+  ## お知らせ
+  json.infomation_unread_count current_user.infomation_unread_count
   ## 作成日時
   json.created_at current_user.created_at.present? ? l(current_user.created_at, format: :json) : nil
 end

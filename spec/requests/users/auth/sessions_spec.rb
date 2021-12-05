@@ -36,7 +36,7 @@ RSpec.describe 'Users::Auth::Sessions', type: :request do
   # テストパターン
   #   URLの拡張子: ない, .json
   #   未ログイン, ログイン中, APIログイン中, APIログイン中（削除予約済み）
-  #   パラメータなし, 有効なパラメータ（未ロック, ロック中, メール未確認, メールアドレス変更中, 削除予約済み）, 無効なパラメータ（存在しない, ロック前, ロック前の前）, URLがない, URLがホワイトリストにない
+  #   パラメータなし, 有効なパラメータ（未ロック, ロック中, メール未確認, メールアドレス変更中, 削除予約済み）, 無効なパラメータ（存在しない, ロック前, ロック前の前, ロック前の前の前）, URLがない, URLがホワイトリストにない
   describe 'POST #create(json)' do
     subject { post create_user_auth_session_path(format: subject_format), params: attributes, headers: auth_headers.merge(ACCEPT_INC_JSON) }
     let(:send_user_unlocked)         { FactoryBot.create(:user) }
@@ -47,6 +47,7 @@ RSpec.describe 'Users::Auth::Sessions', type: :request do
     let(:not_user)                   { FactoryBot.attributes_for(:user) }
     let(:send_user_before_lock1)     { FactoryBot.create(:user_before_lock1) }
     let(:send_user_before_lock2)     { FactoryBot.create(:user_before_lock2) }
+    let(:send_user_before_lock3)     { FactoryBot.create(:user_before_lock3) }
     let(:valid_attributes)        { { email: send_user.email, password: send_user.password, unlock_redirect_url: FRONT_SITE_URL } }
     let(:invalid_not_attributes)  { { email: not_user[:email], password: not_user[:password], unlock_redirect_url: FRONT_SITE_URL } }
     let(:invalid_pass_attributes) { { email: send_user.email, password: "n#{send_user.password}", unlock_redirect_url: FRONT_SITE_URL } }
@@ -242,6 +243,13 @@ RSpec.describe 'Users::Auth::Sessions', type: :request do
       it_behaves_like 'ToMsg', nil, 'devise.failure.last_attempt', nil
       it_behaves_like 'NotSendLocked'
     end
+    shared_examples_for '[*]無効なパラメータ（ロック前の前の前）' do
+      let(:send_user)  { send_user_before_lock3 }
+      let(:attributes) { invalid_pass_attributes }
+      it_behaves_like 'ToNG', 422
+      it_behaves_like 'ToMsg', nil, 'devise.failure.invalid', nil
+      it_behaves_like 'NotSendLocked'
+    end
     shared_examples_for '[*]URLがない' do
       let(:send_user)  { send_user_unlocked }
       let(:attributes) { invalid_nil_attributes }
@@ -268,6 +276,7 @@ RSpec.describe 'Users::Auth::Sessions', type: :request do
       it_behaves_like '[未ログイン/ログイン中]無効なパラメータ（存在しない）'
       it_behaves_like '[*]無効なパラメータ（ロック前）'
       it_behaves_like '[*]無効なパラメータ（ロック前の前）'
+      it_behaves_like '[*]無効なパラメータ（ロック前の前の前）'
       it_behaves_like '[*]URLがない'
       it_behaves_like '[*]URLがホワイトリストにない'
     end
@@ -282,6 +291,7 @@ RSpec.describe 'Users::Auth::Sessions', type: :request do
       it_behaves_like '[未ログイン/ログイン中]無効なパラメータ（存在しない）'
       it_behaves_like '[*]無効なパラメータ（ロック前）'
       it_behaves_like '[*]無効なパラメータ（ロック前の前）'
+      it_behaves_like '[*]無効なパラメータ（ロック前の前の前）'
       it_behaves_like '[*]URLがない'
       it_behaves_like '[*]URLがホワイトリストにない'
     end
@@ -296,6 +306,7 @@ RSpec.describe 'Users::Auth::Sessions', type: :request do
       it_behaves_like '[APIログイン中/削除予約済み]無効なパラメータ（存在しない）'
       it_behaves_like '[*]無効なパラメータ（ロック前）'
       it_behaves_like '[*]無効なパラメータ（ロック前の前）'
+      it_behaves_like '[*]無効なパラメータ（ロック前の前の前）'
       it_behaves_like '[*]URLがない'
       it_behaves_like '[*]URLがホワイトリストにない'
     end
@@ -310,6 +321,7 @@ RSpec.describe 'Users::Auth::Sessions', type: :request do
       it_behaves_like '[APIログイン中/削除予約済み]無効なパラメータ（存在しない）'
       it_behaves_like '[*]無効なパラメータ（ロック前）'
       it_behaves_like '[*]無効なパラメータ（ロック前の前）'
+      it_behaves_like '[*]無効なパラメータ（ロック前の前の前）'
       it_behaves_like '[*]URLがない'
       it_behaves_like '[*]URLがホワイトリストにない'
     end

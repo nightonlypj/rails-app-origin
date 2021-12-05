@@ -24,4 +24,9 @@ FactoryBot.define do
   factory :admin_user_before_lock2, parent: :admin_user do
     failed_attempts { Devise.maximum_attempts - 2 }
   end
+
+  # ロック前の前の前
+  factory :admin_user_before_lock3, parent: :admin_user do
+    failed_attempts { Devise.maximum_attempts - 3 }
+  end
 end

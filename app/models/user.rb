@@ -52,4 +52,9 @@ class User < ApplicationRecord
       ''
     end
   end
+
+  # お知らせの未読数を返却
+  def infomation_unread_count
+    Infomation.by_target(self).by_unread(infomation_check_last_started_at).count
+  end
 end

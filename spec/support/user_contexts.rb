@@ -94,6 +94,8 @@ shared_context 'Authテスト内容' do
       expect(response_json['user']['destroy_requested_at']).to eq(destroy_requested_at)
       destroy_schedule_at = current_user.destroy_schedule_at.present? ? I18n.l(current_user.destroy_schedule_at, format: :json) : nil
       expect(response_json['user']['destroy_schedule_at']).to eq(destroy_schedule_at)
+      ## お知らせ
+      expect(response_json['user']['infomation_unread_count']).to eq(current_user.infomation_unread_count)
     end
   end
   let(:expect_failure_json) do

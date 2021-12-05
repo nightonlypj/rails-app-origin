@@ -2,6 +2,8 @@
 
 ## 1.4.0 (Sprint 9)
 
+- お知らせの未読数・ラベル・大切なお知らせを表示したい
+  - https://dev.azure.com/nightonly/rails-app-origin/_workitems/edit/436/
 - アカウントロック直後とその後でメッセージを分けたい
   - https://dev.azure.com/nightonly/rails-app-origin/_workitems/edit/435/
 - パスワード再設定APIで成功しロック中の場合はロックを解除したい

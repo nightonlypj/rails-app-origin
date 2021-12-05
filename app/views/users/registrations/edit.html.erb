@@ -1,33 +1,31 @@
 <%= render 'users/shared/error_messages', resource: resource %>
 
-<main class="card mb-1" style="max-width: 850px; margin-left: auto; margin-right: auto">
-  <div class="card-body">
-    <div class="row">
-      <div class="col">
-        <h5 class="card-title">登録情報変更</h5>
-      </div>
+<div class="card card-body mb-2" style="max-width: 850px">
+  <div class="row">
+    <div class="col">
+      <h5 class="card-title">登録情報変更</h5>
     </div>
-    <div class="row">
-      <div class="col-md-4">
-        <%= render 'edit_image' %>
-      </div>
-      <div class="col-md-8">
-        <%= render 'edit_user' %>
-      </div>
+  </div>
+  <div class="row">
+    <div class="col-md-4 card-text">
+      <%= render 'edit_image' %>
     </div>
-    <div class="row">
-      <div class="col">
-        <p class="card-footer">
-          <nav>
-            <ul>
+    <div class="col-md-8 card-text">
+      <%= render 'edit_user' %>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col">
+      <div class="card-footer pb-0 px-0">
+        <nav>
+          <ul class="mt-2 mb-0">
 <% if user_valid_confirmation_token? %>
-              <li><%= link_to 'メールアドレス確認', new_confirmation_path(resource_name) %></li>
+            <li><%= link_to 'メールアドレス確認', new_confirmation_path(resource_name) %></li>
 <% end %>
-              <li><%= link_to 'アカウント削除', delete_user_registration_path %></li>
-            </ul>
-          </nav>
-        </p>
+            <li><%= link_to 'アカウント削除', delete_user_registration_path %></li>
+          </ul>
+        </nav>
       </div>
     </div>
   </div>
-</main>
+</div>

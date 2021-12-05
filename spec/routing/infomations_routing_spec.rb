@@ -6,6 +6,10 @@ RSpec.describe InfomationsController, type: :routing do
       expect(get: '/infomations').to route_to('infomations#index')
       expect(get: '/infomations.json').to route_to('infomations#index', format: 'json')
     end
+    it 'routes to #important' do
+      expect(get: '/infomations/important').to route_to('infomations#important', format: :json)
+      expect(get: '/infomations/important.json').to route_to('infomations#important', format: 'json')
+    end
     it 'routes to #show' do
       expect(get: '/infomations/1').to route_to('infomations#show', id: '1')
       expect(get: '/infomations/1.json').to route_to('infomations#show', id: '1', format: 'json')

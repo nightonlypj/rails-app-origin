@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_08_06_000715) do
+ActiveRecord::Schema.define(version: 2021_11_30_000939) do
 
   create_table "admin_users", charset: "utf8mb4", collation: "utf8mb4_bin", force: :cascade do |t|
     t.string "name", null: false, comment: "氏名"
@@ -49,6 +49,9 @@ ActiveRecord::Schema.define(version: 2021_08_06_000715) do
     t.bigint "user_id", comment: "ユーザーID"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
+    t.integer "label", default: 0, null: false, comment: "ラベル"
+    t.datetime "force_started_at", comment: "強制表示開始日時"
+    t.datetime "force_ended_at", comment: "強制表示終了日時"
     t.index ["started_at", "ended_at"], name: "index_infomations2"
     t.index ["started_at", "id"], name: "index_infomations1"
     t.index ["target", "user_id"], name: "index_infomations3"
@@ -84,6 +87,7 @@ ActiveRecord::Schema.define(version: 2021_08_06_000715) do
     t.string "uid", default: "", null: false, comment: "UID"
     t.boolean "allow_password_change", default: false, comment: "パスワード再設定中"
     t.text "tokens", comment: "認証トークン"
+    t.datetime "infomation_check_last_started_at", comment: "お知らせ確認最終開始日時"
     t.index ["code"], name: "index_users5", unique: true
     t.index ["confirmation_token"], name: "index_users3", unique: true
     t.index ["destroy_schedule_at"], name: "index_users6"

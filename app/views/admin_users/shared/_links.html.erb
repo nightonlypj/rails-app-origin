@@ -1,6 +1,6 @@
 <% unless admin_user_signed_in? %>
 <nav>
-  <ul>
+  <ul class="mt-2 mb-0">
 <% if controller_name != 'sessions' %>
     <li><%= link_to 'ログイン', new_session_path(resource_name) %></li>
 <% end %>

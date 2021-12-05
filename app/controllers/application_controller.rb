@@ -31,22 +31,24 @@ class ApplicationController < ActionController::Base
 
   # acceptヘッダにJSONが含まれるかを返却
   def accept_header_api?
-    %r{,application/json[,;]} =~ ",#{request.headers[:ACCEPT]},"
+    !(%r{,application/json[,;]} =~ ",#{request.headers[:ACCEPT]},").nil?
   end
 
   # acceptヘッダが空か、HTMLが含まれるかを返却
   def accept_header_html?
-    request.headers[:ACCEPT].blank? || %r{,text/html[,;]} =~ ",#{request.headers[:ACCEPT]}," || %r{,\*/\*[,;]} =~ ",#{request.headers[:ACCEPT]},"
+    request.headers[:ACCEPT].blank? ||
+      !(%r{,text/html[,;]} =~ ",#{request.headers[:ACCEPT]},").nil? ||
+      !(%r{,\*/\*[,;]} =~ ",#{request.headers[:ACCEPT]},").nil?
   end
 
   # acceptヘッダにJSONが含まれない場合、HTTPステータス406を返却
   def not_acceptable_response_not_api_accept
-    head :not_acceptable unless (format_html? || format_api?) && accept_header_api?
+    head :not_acceptable if !format_api? || !accept_header_api?
   end
 
   # acceptヘッダにHTMLが含まれない場合、HTTPステータス406を返却
   def not_acceptable_response_not_html_accept
-    head :not_acceptable unless format_html? && accept_header_html?
+    head :not_acceptable if !format_html? || !accept_header_html?
   end
 
   # 認証エラーを返却

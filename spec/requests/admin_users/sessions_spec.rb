@@ -51,7 +51,7 @@ RSpec.describe 'AdminUsers::Sessions', type: :request do
   #   なし
   # テストパターン
   #   未ログイン, ログイン中
-  #   有効なパラメータ（未ロック, ロック中）, 無効なパラメータ（存在しない, ロック前, ロック前の前）
+  #   有効なパラメータ（未ロック, ロック中）, 無効なパラメータ（存在しない, ロック前, ロック前の前, ロック前の前の前）
   describe 'POST #create' do
     subject { post create_admin_user_session_path, params: { admin_user: attributes } }
     let(:send_admin_user_unlocked)     { FactoryBot.create(:admin_user) }
@@ -59,6 +59,7 @@ RSpec.describe 'AdminUsers::Sessions', type: :request do
     let(:not_admin_user)               { FactoryBot.attributes_for(:admin_user) }
     let(:send_admin_user_before_lock1) { FactoryBot.create(:admin_user_before_lock1) }
     let(:send_admin_user_before_lock2) { FactoryBot.create(:admin_user_before_lock2) }
+    let(:send_admin_user_before_lock3) { FactoryBot.create(:admin_user_before_lock3) }
     let(:valid_attributes)        { { email: send_admin_user.email, password: send_admin_user.password } }
     let(:invalid_not_attributes)  { { email: not_admin_user[:email], password: not_admin_user[:password] } }
     let(:invalid_pass_attributes) { { email: send_admin_user.email, password: "n#{send_admin_user.password}" } }
@@ -139,6 +140,18 @@ RSpec.describe 'AdminUsers::Sessions', type: :request do
       it_behaves_like 'ToAdmin', 'devise.failure.already_authenticated', nil
       it_behaves_like 'NotSendLocked'
     end
+    shared_examples_for '[未ログイン]無効なパラメータ（ロック前の前の前）' do
+      let(:send_admin_user) { send_admin_user_before_lock3 }
+      let(:attributes)      { invalid_pass_attributes }
+      it_behaves_like 'ToError', 'devise.failure.invalid'
+      it_behaves_like 'NotSendLocked'
+    end
+    shared_examples_for '[ログイン中]無効なパラメータ（ロック前の前の前）' do
+      let(:send_admin_user) { send_admin_user_before_lock3 }
+      let(:attributes)      { invalid_pass_attributes }
+      it_behaves_like 'ToAdmin', 'devise.failure.already_authenticated', nil
+      it_behaves_like 'NotSendLocked'
+    end
 
     context '未ログイン' do
       it_behaves_like '[未ログイン]有効なパラメータ（未ロック）'
@@ -146,6 +159,7 @@ RSpec.describe 'AdminUsers::Sessions', type: :request do
       it_behaves_like '[未ログイン]無効なパラメータ（存在しない）'
       it_behaves_like '[未ログイン]無効なパラメータ（ロック前）'
       it_behaves_like '[未ログイン]無効なパラメータ（ロック前の前）'
+      it_behaves_like '[未ログイン]無効なパラメータ（ロック前の前の前）'
     end
     context 'ログイン中' do
       include_context 'ログイン処理（管理者）'
@@ -154,6 +168,7 @@ RSpec.describe 'AdminUsers::Sessions', type: :request do
       it_behaves_like '[ログイン中]無効なパラメータ（存在しない）'
       it_behaves_like '[ログイン中]無効なパラメータ（ロック前）'
       it_behaves_like '[ログイン中]無効なパラメータ（ロック前の前）'
+      it_behaves_like '[ログイン中]無効なパラメータ（ロック前の前の前）'
     end
   end
 

@@ -24,11 +24,12 @@ RSpec.describe 'Infomations', type: :request do
       it '[AcceptヘッダにHTMLが含まれる]HTTPステータスが200。対象項目が含まれる' do
         @accept_headers = ACCEPT_INC_HTML
         is_expected.to eq(200)
+        expect(response.body).to include(infomation.label_i18n) if infomation.label_i18n.present? # ラベル
         expect(response.body).to include(infomation.title) # タイトル
-        expect(response.body).to include(infomation.body) if infomation.body.present? # 本文
+        expect(response.body).to include(infomation.body.present? ? infomation.body : infomation.summary) # 本文, サマリー
         expect(response.body).to include(I18n.l(infomation.started_at.to_date)) # 掲載開始日
       end
-      it '[AcceptヘッダにJSONが含まれる]HTTPが200' do
+      it '[AcceptヘッダにJSONが含まれる]HTTPが200' do # Tips: HTMLが返却される
         @accept_headers = ACCEPT_INC_JSON
         is_expected.to eq(200)
       end
@@ -37,7 +38,8 @@ RSpec.describe 'Infomations', type: :request do
       let(:subject_format) { :json }
       it '[AcceptヘッダにHTMLが含まれる]HTTPステータスが406' do
         @accept_headers = ACCEPT_INC_HTML
-        is_expected.to eq(406)
+        # is_expected.to eq(406)
+        is_expected.to eq(200) # TODO: JSONが返却される
       end
       it '[AcceptヘッダにJSONが含まれる]HTTPステータスが200。対象項目が一致する' do
         @accept_headers = ACCEPT_INC_JSON
@@ -45,7 +47,10 @@ RSpec.describe 'Infomations', type: :request do
         expect(JSON.parse(response.body)['success']).to eq(true)
 
         response_json = JSON.parse(response.body)['infomation']
+        expect(response_json['label']).to eq(infomation.label) # ラベル
+        expect(response_json['label_i18n']).to eq(infomation.label_i18n)
         expect(response_json['title']).to eq(infomation.title) # タイトル
+        expect(response_json['summary']).to eq(infomation.summary) # サマリー
         expect(response_json['body']).to eq(infomation.body) # 本文
         expect(response_json['started_at']).to eq(I18n.l(infomation.started_at, format: :json)) # 掲載開始日
         expect(response_json['ended_at']).to eq(infomation.ended_at.present? ? I18n.l(infomation.ended_at, format: :json) : nil) # 掲載終了日
@@ -65,9 +70,9 @@ RSpec.describe 'Infomations', type: :request do
     end
     shared_examples_for 'ToNot(json)' do |success, alert, notice|
       let(:subject_format) { :json }
-      it '[AcceptヘッダにHTMLが含まれる]HTTPステータスが406' do
+      it '[AcceptヘッダにHTMLが含まれる]HTTPステータスが404' do
         @accept_headers = ACCEPT_INC_HTML
-        is_expected.to eq(406)
+        is_expected.to eq(404)
       end
       it '[AcceptヘッダにJSONが含まれる]HTTPステータスが404。対象項目が一致する' do
         @accept_headers = ACCEPT_INC_JSON

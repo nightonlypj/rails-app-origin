@@ -8,9 +8,11 @@ RSpec.describe Users::SessionsController, type: :routing do
     it 'routes to #create' do
       expect(post: '/users/sign_in').to route_to('users/sessions#create')
     end
+    it 'routes to #delete' do
+      expect(get: '/users/sign_out').to route_to('users/sessions#delete')
+    end
     it 'routes to #destroy' do
       expect(delete: '/users/sign_out').to route_to('users/sessions#destroy')
-      expect(get: '/users/sign_out').to route_to('users/sessions#destroy')
     end
   end
 end

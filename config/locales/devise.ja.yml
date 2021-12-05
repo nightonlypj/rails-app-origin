@@ -35,6 +35,7 @@ ja:
         locked_at: 'アカウントロック日時'
         destroy_requested_at: '削除依頼日時'
         destroy_schedule_at: '削除予定日時'
+        infomation_check_last_started_at: 'お知らせ確認最終開始日時'
         created_at: '作成日時'
         updated_at: '更新日時'
       admin_user:
