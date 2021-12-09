@@ -9,7 +9,7 @@ RSpec.describe Users::Auth::RegistrationsController, type: :routing do
     it 'routes to #create' do
       # expect(post: '/users/auth').to route_to('users/auth/registrations#create')
       expect(post: '/users/auth').not_to be_routable
-      expect(post: '/users/auth/sign_up').to route_to('users/auth/registrations#create', format: :json)
+      expect(post: '/users/auth/sign_up').to route_to('users/auth/registrations#create')
       expect(post: '/users/auth/sign_up.json').to route_to('users/auth/registrations#create', format: 'json')
     end
     it 'routes to #edit' do
@@ -17,7 +17,7 @@ RSpec.describe Users::Auth::RegistrationsController, type: :routing do
       expect(get: '/users/auth/edit').not_to be_routable
     end
     it 'routes to #show' do
-      expect(get: '/users/auth/show').to route_to('users/auth/registrations#show', format: :json)
+      expect(get: '/users/auth/show').to route_to('users/auth/registrations#show')
       expect(get: '/users/auth/show.json').to route_to('users/auth/registrations#show', format: 'json')
     end
     it 'routes to #update' do
@@ -25,19 +25,19 @@ RSpec.describe Users::Auth::RegistrationsController, type: :routing do
       # expect(patch: '/users/auth').to route_to('users/auth/registrations#update')
       expect(put: '/users/auth').not_to be_routable
       expect(patch: '/users/auth').not_to be_routable
-      expect(put: '/users/auth/update').to route_to('users/auth/registrations#update', format: :json)
-      expect(patch: '/users/auth/update').to route_to('users/auth/registrations#update', format: :json)
+      expect(put: '/users/auth/update').to route_to('users/auth/registrations#update')
+      expect(patch: '/users/auth/update').to route_to('users/auth/registrations#update')
       expect(put: '/users/auth/update.json').to route_to('users/auth/registrations#update', format: 'json')
       expect(patch: '/users/auth/update.json').to route_to('users/auth/registrations#update', format: 'json')
     end
     it 'routes to #image_update' do
-      expect(post: '/users/auth/image/update').to route_to('users/auth/registrations#image_update', format: :json)
+      expect(post: '/users/auth/image/update').to route_to('users/auth/registrations#image_update')
       expect(post: '/users/auth/image/update.json').to route_to('users/auth/registrations#image_update', format: 'json')
       expect(get: '/users/auth/image/update').not_to be_routable
       expect(get: '/users/auth/image').not_to be_routable
     end
     it 'routes to #image_destroy' do
-      expect(delete: '/users/auth/image/delete').to route_to('users/auth/registrations#image_destroy', format: :json)
+      expect(delete: '/users/auth/image/delete').to route_to('users/auth/registrations#image_destroy')
       expect(delete: '/users/auth/image/delete.json').to route_to('users/auth/registrations#image_destroy', format: 'json')
       expect(get: '/users/auth/image/delete').not_to be_routable
     end
@@ -47,14 +47,14 @@ RSpec.describe Users::Auth::RegistrationsController, type: :routing do
     it 'routes to #destroy' do
       # expect(delete: '/users/auth').to route_to('users/auth/registrations#destroy')
       expect(delete: '/users/auth').not_to be_routable
-      expect(delete: '/users/auth/delete').to route_to('users/auth/registrations#destroy', format: :json)
+      expect(delete: '/users/auth/delete').to route_to('users/auth/registrations#destroy')
       expect(delete: '/users/auth/delete.json').to route_to('users/auth/registrations#destroy', format: 'json')
     end
     it 'routes to #undo_delete' do
       expect(get: '/users/auth/undo_delete').not_to be_routable
     end
     it 'routes to #undo_destroy' do
-      expect(delete: '/users/auth/undo_delete').to route_to('users/auth/registrations#undo_destroy', format: :json)
+      expect(delete: '/users/auth/undo_delete').to route_to('users/auth/registrations#undo_destroy')
       expect(delete: '/users/auth/undo_delete.json').to route_to('users/auth/registrations#undo_destroy', format: 'json')
     end
     it 'routes to #cancel' do

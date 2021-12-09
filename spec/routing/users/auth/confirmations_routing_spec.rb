@@ -7,7 +7,7 @@ RSpec.describe Users::Auth::ConfirmationsController, type: :routing do
       expect(get: '/users/auth/confirmation/new').not_to be_routable
     end
     it 'routes to #create' do
-      expect(post: '/users/auth/confirmation').to route_to('users/auth/confirmations#create', format: :json)
+      expect(post: '/users/auth/confirmation').to route_to('users/auth/confirmations#create')
       expect(post: '/users/auth/confirmation.json').to route_to('users/auth/confirmations#create', format: 'json')
     end
     it 'routes to #show' do

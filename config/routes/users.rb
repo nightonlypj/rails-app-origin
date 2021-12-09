@@ -32,26 +32,24 @@ Rails.application.routes.draw do
     patch  'users/password',         to: 'users/passwords#update',            as: nil
 
     # Devise Token Auth
-    defaults format: :json do
-      post   'users/auth/sign_up',         to: 'users/auth/registrations#create',             as: 'create_user_auth_registration'
-      get    'users/auth/show',            to: 'users/auth/registrations#show',               as: 'show_user_auth_registration'
-      put    'users/auth/update',          to: 'users/auth/registrations#update',             as: 'update_user_auth_registration'
-      patch  'users/auth/update',          to: 'users/auth/registrations#update',             as: nil
-      post   'users/auth/image/update',    to: 'users/auth/registrations#image_update',       as: 'update_user_auth_image_registration'
-      delete 'users/auth/image/delete',    to: 'users/auth/registrations#image_destroy',      as: 'delete_user_auth_image_registration'
-      delete 'users/auth/delete',          to: 'users/auth/registrations#destroy',            as: 'destroy_user_auth_registration'
-      delete 'users/auth/undo_delete',     to: 'users/auth/registrations#undo_destroy',       as: 'destroy_undo_user_auth_registration'
-      post   'users/auth/confirmation',    to: 'users/auth/confirmations#create',             as: 'create_user_auth_confirmation'
-      post   'users/auth/sign_in',         to: 'users/auth/sessions#create',                  as: 'create_user_auth_session'
-      delete 'users/auth/sign_out',        to: 'users/auth/sessions#destroy',                 as: 'destroy_user_auth_session'
-      post   'users/auth/unlock',          to: 'users/auth/unlocks#create',                   as: 'create_user_auth_unlock'
-      post   'users/auth/password',        to: 'users/auth/passwords#create',                 as: 'create_user_auth_password'
-      put    'users/auth/password/update', to: 'users/auth/passwords#update',                 as: 'update_user_auth_password'
-      patch  'users/auth/password/update', to: 'users/auth/passwords#update',                 as: nil
-      get    'users/auth/validate_token',  to: 'users/auth/token_validations#validate_token', as: 'user_auth_validate_token'
-    end
-    get 'users/auth/confirmation', to: 'users/auth/confirmations#show', as: 'user_auth_confirmation'
-    get 'users/auth/unlock',       to: 'users/auth/unlocks#show',       as: 'user_auth_unlock'
-    get 'users/auth/password',     to: 'users/auth/passwords#edit',     as: 'edit_user_auth_password'
+    post   'users/auth/sign_up',         to: 'users/auth/registrations#create',             as: 'create_user_auth_registration'
+    get    'users/auth/show',            to: 'users/auth/registrations#show',               as: 'show_user_auth_registration'
+    put    'users/auth/update',          to: 'users/auth/registrations#update',             as: 'update_user_auth_registration'
+    patch  'users/auth/update',          to: 'users/auth/registrations#update',             as: nil
+    post   'users/auth/image/update',    to: 'users/auth/registrations#image_update',       as: 'update_user_auth_image_registration'
+    delete 'users/auth/image/delete',    to: 'users/auth/registrations#image_destroy',      as: 'delete_user_auth_image_registration'
+    delete 'users/auth/delete',          to: 'users/auth/registrations#destroy',            as: 'destroy_user_auth_registration'
+    delete 'users/auth/undo_delete',     to: 'users/auth/registrations#undo_destroy',       as: 'destroy_undo_user_auth_registration'
+    post   'users/auth/confirmation',    to: 'users/auth/confirmations#create',             as: 'create_user_auth_confirmation'
+    get    'users/auth/confirmation',    to: 'users/auth/confirmations#show',               as: 'user_auth_confirmation'
+    post   'users/auth/sign_in',         to: 'users/auth/sessions#create',                  as: 'create_user_auth_session'
+    delete 'users/auth/sign_out',        to: 'users/auth/sessions#destroy',                 as: 'destroy_user_auth_session'
+    post   'users/auth/unlock',          to: 'users/auth/unlocks#create',                   as: 'create_user_auth_unlock'
+    get    'users/auth/unlock',          to: 'users/auth/unlocks#show',                     as: 'user_auth_unlock'
+    post   'users/auth/password',        to: 'users/auth/passwords#create',                 as: 'create_user_auth_password'
+    get    'users/auth/password',        to: 'users/auth/passwords#edit',                   as: 'edit_user_auth_password'
+    put    'users/auth/password/update', to: 'users/auth/passwords#update',                 as: 'update_user_auth_password'
+    patch  'users/auth/password/update', to: 'users/auth/passwords#update',                 as: nil
+    get    'users/auth/validate_token',  to: 'users/auth/token_validations#validate_token', as: 'user_auth_validate_token'
   end
 end

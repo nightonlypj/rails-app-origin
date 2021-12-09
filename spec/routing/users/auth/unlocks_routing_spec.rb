@@ -7,7 +7,7 @@ RSpec.describe Users::Auth::UnlocksController, type: :routing do
       expect(get: '/users/auth/unlock/new').not_to be_routable
     end
     it 'routes to #create' do
-      expect(post: '/users/auth/unlock').to route_to('users/auth/unlocks#create', format: :json)
+      expect(post: '/users/auth/unlock').to route_to('users/auth/unlocks#create')
       expect(post: '/users/auth/unlock.json').to route_to('users/auth/unlocks#create', format: 'json')
     end
     it 'routes to #show' do

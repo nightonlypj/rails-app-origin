@@ -3,6 +3,8 @@ require 'rails_helper'
 RSpec.describe 'Users::Auth::Registrations', type: :request do
   # テスト内容（共通）
   shared_examples_for 'ToMsg' do |error_class, errors_count, error_msg, message, alert, notice|
+    let(:subject_format) { :json }
+    let(:accept_headers) { ACCEPT_INC_JSON }
     it '対象のメッセージと一致する' do
       subject
       response_json = JSON.parse(response.body)
@@ -18,30 +20,14 @@ RSpec.describe 'Users::Auth::Registrations', type: :request do
 
   # POST /users/auth/sign_up(.json) アカウント登録API(処理)
   # 前提条件
-  #   AcceptヘッダにHTMLが含まれる
+  #   なし
   # テストパターン
-  #   URLの拡張子: ない, .json
-  describe 'POST #create' do
-    subject { post create_user_auth_registration_path(format: subject_format), headers: ACCEPT_INC_HTML }
-
-    # テストケース
-    context 'URLの拡張子がない' do
-      let(:subject_format) { nil }
-      it_behaves_like 'To406'
-    end
-    context 'URLの拡張子が.json' do
-      let(:subject_format) { :json }
-      it_behaves_like 'To406'
-    end
-  end
-  # 前提条件
-  #   AcceptヘッダにJSONが含まれる
-  # テストパターン
-  #   URLの拡張子: ない, .json
   #   未ログイン, ログイン中, APIログイン中
   #   パラメータなし, 有効なパラメータ, 無効なパラメータ, URLがない, URLがホワイトリストにない
-  describe 'POST #create(json)' do
-    subject { post create_user_auth_registration_path(format: subject_format), params: attributes, headers: auth_headers.merge(ACCEPT_INC_JSON) }
+  #   ＋URLの拡張子: .json, ない
+  #   ＋Acceptヘッダ: JSONが含まれる, JSONが含まれない
+  describe 'POST #create' do
+    subject { post create_user_auth_registration_path(format: subject_format), params: attributes, headers: auth_headers.merge(accept_headers) }
     let(:new_user)   { FactoryBot.attributes_for(:user) }
     let(:exist_user) { FactoryBot.create(:user) }
     let(:valid_attributes)       { { name: new_user[:name], email: new_user[:email], password: new_user[:password], confirm_success_url: FRONT_SITE_URL } }
@@ -53,7 +39,9 @@ RSpec.describe 'Users::Auth::Registrations', type: :request do
 
     # テスト内容
     shared_examples_for 'OK' do
-      let(:url) { "http://#{Settings['base_domain']}#{user_auth_confirmation_path}" }
+      let(:subject_format) { :json }
+      let(:accept_headers) { ACCEPT_INC_JSON }
+      let(:url)       { "http://#{Settings['base_domain']}#{user_auth_confirmation_path}" }
       let(:url_param) { "redirect_url=#{URI.encode_www_form_component(attributes[:confirm_success_url])}" }
       it '作成・対象項目が設定される。メールが送信される' do
         expect do
@@ -70,12 +58,16 @@ RSpec.describe 'Users::Auth::Registrations', type: :request do
       end
     end
     shared_examples_for 'NG' do
+      let(:subject_format) { :json }
+      let(:accept_headers) { ACCEPT_INC_JSON }
       it '作成されない。メールが送信されない' do
         expect { subject }.to change(User, :count).by(0) && change(ActionMailer::Base.deliveries, :count).by(0)
       end
     end
 
-    shared_examples_for 'ToOK' do # |status, success, data_present|
+    shared_examples_for 'ToOK(json/json)' do # |status, success, data_present|
+      let(:subject_format) { :json }
+      let(:accept_headers) { ACCEPT_INC_JSON }
       it 'HTTPステータスが200。対象項目が一致する。認証ヘッダがない' do
         is_expected.to eq(200)
         # response_json = JSON.parse(response.body)
@@ -86,7 +78,9 @@ RSpec.describe 'Users::Auth::Registrations', type: :request do
         expect_not_exist_auth_header
       end
     end
-    shared_examples_for 'ToNG' do |code| # , status, success, data_present|
+    shared_examples_for 'ToNG(json/json)' do |code| # , status, success, data_present|
+      let(:subject_format) { :json }
+      let(:accept_headers) { ACCEPT_INC_JSON }
       it "HTTPステータスが#{code}。対象項目が一致する。認証ヘッダがない" do
         is_expected.to eq(code) # 方針(優先順): 401: ログイン中, 400:パラメータなし, 422: 無効なパラメータ・状態
         # response_json = JSON.parse(response.body)
@@ -96,6 +90,19 @@ RSpec.describe 'Users::Auth::Registrations', type: :request do
         expect_failure_json
         expect_not_exist_auth_header
       end
+    end
+
+    shared_examples_for 'ToOK' do # |status, success, data_present|
+      it_behaves_like 'ToOK(json/json)' # , status, success, data_present
+      it_behaves_like 'To406(json/html)'
+      it_behaves_like 'To406(html/json)'
+      it_behaves_like 'To406(html/html)'
+    end
+    shared_examples_for 'ToNG' do |code| # , status, success, data_present|
+      it_behaves_like 'ToNG(json/json)', code # , status, success, data_present
+      it_behaves_like 'To406(json/html)'
+      it_behaves_like 'To406(html/json)'
+      it_behaves_like 'To406(html/html)'
     end
 
     # テストケース
@@ -181,7 +188,7 @@ RSpec.describe 'Users::Auth::Registrations', type: :request do
       it_behaves_like 'ToMsg', NilClass, 0, nil, nil, 'devise.failure.already_authenticated', nil
     end
 
-    shared_examples_for '未ログイン' do
+    context '未ログイン' do
       include_context '未ログイン処理'
       it_behaves_like '[未ログイン/ログイン中]パラメータなし'
       it_behaves_like '[未ログイン/ログイン中]有効なパラメータ'
@@ -189,7 +196,7 @@ RSpec.describe 'Users::Auth::Registrations', type: :request do
       it_behaves_like '[未ログイン/ログイン中]URLがない'
       it_behaves_like '[未ログイン/ログイン中]URLがホワイトリストにない'
     end
-    shared_examples_for 'ログイン中' do
+    context 'ログイン中' do
       include_context '未ログイン処理'
       it_behaves_like '[未ログイン/ログイン中]パラメータなし'
       it_behaves_like '[未ログイン/ログイン中]有効なパラメータ'
@@ -197,7 +204,7 @@ RSpec.describe 'Users::Auth::Registrations', type: :request do
       it_behaves_like '[未ログイン/ログイン中]URLがない'
       it_behaves_like '[未ログイン/ログイン中]URLがホワイトリストにない'
     end
-    shared_examples_for 'APIログイン中' do
+    context 'APIログイン中' do
       include_context 'APIログイン処理'
       it_behaves_like '[APIログイン中]パラメータなし'
       it_behaves_like '[APIログイン中]有効なパラメータ'
@@ -205,51 +212,24 @@ RSpec.describe 'Users::Auth::Registrations', type: :request do
       it_behaves_like '[APIログイン中]URLがない'
       it_behaves_like '[APIログイン中]URLがホワイトリストにない'
     end
-
-    context 'URLの拡張子がない' do
-      let(:subject_format) { nil }
-      it_behaves_like '未ログイン'
-      it_behaves_like 'ログイン中'
-      it_behaves_like 'APIログイン中'
-    end
-    context 'URLの拡張子が.json' do
-      let(:subject_format) { :json }
-      it_behaves_like '未ログイン'
-      it_behaves_like 'ログイン中'
-      it_behaves_like 'APIログイン中'
-    end
   end
 
   # GET /users/auth/show(.json) 登録情報詳細API
   # 前提条件
-  #   AcceptヘッダにHTMLが含まれる
+  #   なし
   # テストパターン
-  #   URLの拡張子: ない, .json
-  describe 'GET #show' do
-    subject { get show_user_auth_registration_path(format: subject_format), headers: ACCEPT_INC_HTML }
-
-    # テストケース
-    context 'URLの拡張子がない' do
-      let(:subject_format) { nil }
-      it_behaves_like 'To406'
-    end
-    context 'URLの拡張子が.json' do
-      let(:subject_format) { :json }
-      it_behaves_like 'To406'
-    end
-  end
-  # 前提条件
-  #   AcceptヘッダにJSONが含まれる
-  # テストパターン
-  #   URLの拡張子: ない, .json
   #   未ログイン, ログイン中, APIログイン中, APIログイン中（削除予約済み）
-  describe 'GET #show(json)' do
-    subject { get show_user_auth_registration_path(format: subject_format), headers: auth_headers.merge(ACCEPT_INC_JSON) }
+  #   ＋URLの拡張子: .json, ない
+  #   ＋Acceptヘッダ: JSONが含まれる, JSONが含まれない
+  describe 'GET #show' do
+    subject { get show_user_auth_registration_path(format: subject_format), headers: auth_headers.merge(accept_headers) }
     include_context 'Authテスト内容'
     let(:current_user) { user }
 
     # テスト内容
-    shared_examples_for 'ToOK' do
+    shared_examples_for 'ToOK(json/json)' do
+      let(:subject_format) { :json }
+      let(:accept_headers) { ACCEPT_INC_JSON }
       it 'HTTPステータスが200。対象項目が一致する。認証ヘッダがある' do
         is_expected.to eq(200)
         response_json = JSON.parse(response.body)
@@ -288,7 +268,9 @@ RSpec.describe 'Users::Auth::Registrations', type: :request do
         expect_exist_auth_header
       end
     end
-    shared_examples_for 'ToNG' do |code|
+    shared_examples_for 'ToNG(json/json)' do |code|
+      let(:subject_format) { :json }
+      let(:accept_headers) { ACCEPT_INC_JSON }
       it "HTTPステータスが#{code}。対象項目が一致する。認証ヘッダがない" do
         is_expected.to eq(code) # 方針(優先順): 401: 未ログイン
         expect_failure_json
@@ -296,70 +278,52 @@ RSpec.describe 'Users::Auth::Registrations', type: :request do
       end
     end
 
+    shared_examples_for 'ToOK' do
+      it_behaves_like 'ToOK(json/json)'
+      it_behaves_like 'To406(json/html)'
+      it_behaves_like 'To406(html/json)'
+      it_behaves_like 'To406(html/html)'
+    end
+    shared_examples_for 'ToNG' do |code|
+      it_behaves_like 'ToNG(json/json)', code
+      it_behaves_like 'To406(json/html)'
+      it_behaves_like 'To406(html/json)'
+      it_behaves_like 'To406(html/html)'
+    end
+
     # テストケース
-    shared_examples_for '未ログイン' do
+    context '未ログイン' do
       include_context '未ログイン処理'
       it_behaves_like 'ToNG', 401
       it_behaves_like 'ToMsg', NilClass, 0, nil, nil, 'devise.failure.unauthenticated', nil
     end
-    shared_examples_for 'ログイン中' do
+    context 'ログイン中' do
       include_context 'ログイン処理'
       it_behaves_like 'ToNG', 401
       it_behaves_like 'ToMsg', NilClass, 0, nil, nil, 'devise.failure.unauthenticated', nil
     end
-    shared_examples_for 'APIログイン中' do
+    context 'APIログイン中' do
       include_context 'APIログイン処理', :user_email_changed, true
       it_behaves_like 'ToOK'
       it_behaves_like 'ToMsg', NilClass, 0, nil, nil, nil, nil
     end
-    shared_examples_for 'APIログイン中（削除予約済み）' do
+    context 'APIログイン中（削除予約済み）' do
       include_context 'APIログイン処理', :user_destroy_reserved, true
       it_behaves_like 'ToOK'
       it_behaves_like 'ToMsg', NilClass, 0, nil, nil, nil, nil
-    end
-
-    context 'URLの拡張子がない' do
-      let(:subject_format) { nil }
-      it_behaves_like '未ログイン'
-      it_behaves_like 'ログイン中'
-      it_behaves_like 'APIログイン中'
-      it_behaves_like 'APIログイン中（削除予約済み）'
-    end
-    context 'URLの拡張子が.json' do
-      let(:subject_format) { :json }
-      it_behaves_like '未ログイン'
-      it_behaves_like 'ログイン中'
-      it_behaves_like 'APIログイン中'
-      it_behaves_like 'APIログイン中（削除予約済み）'
     end
   end
 
   # PUT(PATCH) /users/auth/update(.json) 登録情報変更API(処理)
   # 前提条件
-  #   AcceptヘッダにHTMLが含まれる
+  #   なし
   # テストパターン
-  #   URLの拡張子: ない, .json
-  describe 'PUT #update' do
-    subject { put update_user_auth_registration_path(format: subject_format), headers: ACCEPT_INC_HTML }
-
-    # テストケース
-    context 'URLの拡張子がない' do
-      let(:subject_format) { nil }
-      it_behaves_like 'To406'
-    end
-    context 'URLの拡張子が.json' do
-      let(:subject_format) { :json }
-      it_behaves_like 'To406'
-    end
-  end
-  # 前提条件
-  #   AcceptヘッダにJSONが含まれる
-  # テストパターン
-  #   URLの拡張子: ない, .json
   #   未ログイン, ログイン中, APIログイン中, APIログイン中（削除予約済み）
   #   パラメータなし, 有効なパラメータ（変更なし, あり）, 無効なパラメータ, URLがない, URLがホワイトリストにない
-  describe 'PUT #update(json)' do
-    subject { put update_user_auth_registration_path(format: subject_format), params: attributes, headers: auth_headers.merge(ACCEPT_INC_JSON) }
+  #   ＋URLの拡張子: .json, ない
+  #   ＋Acceptヘッダ: JSONが含まれる, JSONが含まれない
+  describe 'PUT #update' do
+    subject { put update_user_auth_registration_path(format: subject_format), params: attributes, headers: auth_headers.merge(accept_headers) }
     let(:new_user)   { FactoryBot.attributes_for(:user) }
     let(:exist_user) { FactoryBot.create(:user) }
     let(:nochange_attributes)    { { name: user.name, email: user.email, password: user.password, confirm_redirect_url: FRONT_SITE_URL } }
@@ -372,7 +336,9 @@ RSpec.describe 'Users::Auth::Registrations', type: :request do
 
     # テスト内容
     shared_examples_for 'OK' do |change_email|
-      let(:url) { "http://#{Settings['base_domain']}#{user_auth_confirmation_path}" }
+      let(:subject_format) { :json }
+      let(:accept_headers) { ACCEPT_INC_JSON }
+      let(:url)       { "http://#{Settings['base_domain']}#{user_auth_confirmation_path}" }
       let(:url_param) { "redirect_url=#{URI.encode_www_form_component(attributes[:confirm_redirect_url])}" }
       it '対象項目が変更される。対象のメールが送信される' do
         subject
@@ -393,6 +359,8 @@ RSpec.describe 'Users::Auth::Registrations', type: :request do
       end
     end
     shared_examples_for 'NG' do
+      let(:subject_format) { :json }
+      let(:accept_headers) { ACCEPT_INC_JSON }
       it '対象項目が変更されない。メールが送信されない' do
         subject
         expect(current_user.unconfirmed_email).to eq(user.unconfirmed_email) # 確認待ちメールアドレス
@@ -403,7 +371,9 @@ RSpec.describe 'Users::Auth::Registrations', type: :request do
       end
     end
 
-    shared_examples_for 'ToOK' do # |status, success, id_present|
+    shared_examples_for 'ToOK(json/json)' do # |status, success, id_present|
+      let(:subject_format) { :json }
+      let(:accept_headers) { ACCEPT_INC_JSON }
       it 'HTTPステータスが200。対象項目が一致する。認証ヘッダがある' do
         is_expected.to eq(200)
         # response_json = JSON.parse(response.body)
@@ -416,7 +386,9 @@ RSpec.describe 'Users::Auth::Registrations', type: :request do
         expect_exist_auth_header
       end
     end
-    shared_examples_for 'ToNG' do |code| # , status, success|
+    shared_examples_for 'ToNG(json/json)' do |code| # , status, success|
+      let(:subject_format) { :json }
+      let(:accept_headers) { ACCEPT_INC_JSON }
       it "HTTPステータスが#{code}。対象項目が一致する。認証ヘッダがない" do
         is_expected.to eq(code) # 方針(優先順): 401: 未ログイン, 400:パラメータなし, 422: 無効なパラメータ・状態
         # response_json = JSON.parse(response.body)
@@ -426,6 +398,19 @@ RSpec.describe 'Users::Auth::Registrations', type: :request do
         expect_failure_json
         expect_not_exist_auth_header
       end
+    end
+
+    shared_examples_for 'ToOK' do
+      it_behaves_like 'ToOK(json/json)'
+      it_behaves_like 'To406(json/html)'
+      it_behaves_like 'To406(html/json)'
+      it_behaves_like 'To406(html/html)'
+    end
+    shared_examples_for 'ToNG' do |code|
+      it_behaves_like 'ToNG(json/json)', code
+      it_behaves_like 'To406(json/html)'
+      it_behaves_like 'To406(html/json)'
+      it_behaves_like 'To406(html/html)'
     end
 
     # テストケース
@@ -566,7 +551,7 @@ RSpec.describe 'Users::Auth::Registrations', type: :request do
       it_behaves_like 'ToMsg', NilClass, 0, nil, nil, 'alert.user.destroy_reserved', nil
     end
 
-    shared_examples_for '未ログイン' do
+    context '未ログイン' do
       include_context '未ログイン処理'
       it_behaves_like '[未ログイン/ログイン中]パラメータなし'
       # it_behaves_like '[未ログイン/ログイン中]有効なパラメータ（変更なし）' # Tips: 未ログインの為、対象がない
@@ -575,7 +560,7 @@ RSpec.describe 'Users::Auth::Registrations', type: :request do
       it_behaves_like '[未ログイン/ログイン中]URLがない'
       it_behaves_like '[未ログイン/ログイン中]URLがホワイトリストにない'
     end
-    shared_examples_for 'ログイン中' do
+    context 'ログイン中' do
       include_context 'ログイン処理'
       it_behaves_like '[未ログイン/ログイン中]パラメータなし'
       # it_behaves_like '[未ログイン/ログイン中]有効なパラメータ（変更なし）' # Tips: 未ログインの為、対象がない
@@ -584,7 +569,7 @@ RSpec.describe 'Users::Auth::Registrations', type: :request do
       it_behaves_like '[未ログイン/ログイン中]URLがない'
       it_behaves_like '[未ログイン/ログイン中]URLがホワイトリストにない'
     end
-    shared_examples_for 'APIログイン中' do
+    context 'APIログイン中' do
       include_context 'APIログイン処理', :user, true
       it_behaves_like '[APIログイン中/削除予約済み]パラメータなし'
       it_behaves_like '[APIログイン中]有効なパラメータ（変更なし）'
@@ -593,7 +578,7 @@ RSpec.describe 'Users::Auth::Registrations', type: :request do
       it_behaves_like '[APIログイン中]URLがない'
       it_behaves_like '[APIログイン中]URLがホワイトリストにない'
     end
-    shared_examples_for 'APIログイン中（削除予約済み）' do
+    context 'APIログイン中（削除予約済み）' do
       include_context 'APIログイン処理', :user_destroy_reserved, true
       it_behaves_like '[APIログイン中/削除予約済み]パラメータなし'
       it_behaves_like '[削除予約済み]有効なパラメータ（変更なし）'
@@ -602,49 +587,18 @@ RSpec.describe 'Users::Auth::Registrations', type: :request do
       it_behaves_like '[削除予約済み]URLがない'
       it_behaves_like '[削除予約済み]URLがホワイトリストにない'
     end
-
-    context 'URLの拡張子がない' do
-      let(:subject_format) { nil }
-      it_behaves_like '未ログイン'
-      it_behaves_like 'ログイン中'
-      it_behaves_like 'APIログイン中'
-      it_behaves_like 'APIログイン中（削除予約済み）'
-    end
-    context 'URLの拡張子が.json' do
-      let(:subject_format) { :json }
-      it_behaves_like '未ログイン'
-      it_behaves_like 'ログイン中'
-      it_behaves_like 'APIログイン中'
-      it_behaves_like 'APIログイン中（削除予約済み）'
-    end
   end
 
   # POST /users/auth/image/update(.json) 画像変更API(処理)
   # 前提条件
-  #   AcceptヘッダにHTMLが含まれる
+  #   なし
   # テストパターン
-  #   URLの拡張子: ない, .json
-  describe 'POST #image_update' do
-    subject { post update_user_auth_image_registration_path(format: subject_format), headers: ACCEPT_INC_HTML }
-
-    # テストケース
-    context 'URLの拡張子がない' do
-      let(:subject_format) { nil }
-      it_behaves_like 'To406'
-    end
-    context 'URLの拡張子が.json' do
-      let(:subject_format) { :json }
-      it_behaves_like 'To406'
-    end
-  end
-  # 前提条件
-  #   AcceptヘッダにJSONが含まれる
-  # テストパターン
-  #   URLの拡張子: ない, .json
   #   未ログイン, ログイン中, APIログイン中, APIログイン中（削除予約済み）
   #   有効なパラメータ, 無効なパラメータ
-  describe 'POST #image_update(json)' do
-    subject { post update_user_auth_image_registration_path(format: subject_format), params: attributes, headers: auth_headers.merge(ACCEPT_INC_JSON) }
+  #   ＋URLの拡張子: .json, ない
+  #   ＋Acceptヘッダ: JSONが含まれる, JSONが含まれない
+  describe 'POST #image_update' do
+    subject { post update_user_auth_image_registration_path(format: subject_format), params: attributes, headers: auth_headers.merge(accept_headers) }
     let(:valid_attributes)   { { image: fixture_file_upload(TEST_IMAGE_FILE, TEST_IMAGE_TYPE) } }
     let(:invalid_attributes) { nil }
     include_context 'Authテスト内容'
@@ -652,31 +606,52 @@ RSpec.describe 'Users::Auth::Registrations', type: :request do
 
     # テスト内容
     shared_examples_for 'OK' do
+      let(:subject_format) { :json }
+      let(:accept_headers) { ACCEPT_INC_JSON }
       it '画像が変更される' do
         subject
         expect(current_user.image.url).not_to eq(user.image.url)
       end
     end
     shared_examples_for 'NG' do
+      let(:subject_format) { :json }
+      let(:accept_headers) { ACCEPT_INC_JSON }
       it '画像が変更されない' do
         subject
         expect(current_user.image.url).to eq(user.image.url)
       end
     end
 
-    shared_examples_for 'ToOK' do
+    shared_examples_for 'ToOK(json/json)' do
+      let(:subject_format) { :json }
+      let(:accept_headers) { ACCEPT_INC_JSON }
       it 'HTTPステータスが200。対象項目が一致する。認証ヘッダがある' do
         is_expected.to eq(200)
         expect_success_json
         expect_exist_auth_header
       end
     end
-    shared_examples_for 'ToNG' do |code|
+    shared_examples_for 'ToNG(json/json)' do |code|
+      let(:subject_format) { :json }
+      let(:accept_headers) { ACCEPT_INC_JSON }
       it "HTTPステータスが#{code}。対象項目が一致する。認証ヘッダがない" do
         is_expected.to eq(code) # 方針(優先順): 401: 未ログイン, 400:パラメータなし, 422: 無効なパラメータ・状態
         expect_failure_json
         expect_not_exist_auth_header
       end
+    end
+
+    shared_examples_for 'ToOK' do
+      it_behaves_like 'ToOK(json/json)'
+      it_behaves_like 'To406(json/html)'
+      it_behaves_like 'To406(html/json)'
+      it_behaves_like 'To406(html/html)'
+    end
+    shared_examples_for 'ToNG' do |code|
+      it_behaves_like 'ToNG(json/json)', code
+      it_behaves_like 'To406(json/html)'
+      it_behaves_like 'To406(html/json)'
+      it_behaves_like 'To406(html/html)'
     end
 
     # テストケース
@@ -721,93 +696,70 @@ RSpec.describe 'Users::Auth::Registrations', type: :request do
       it_behaves_like 'ToMsg', NilClass, 0, nil, nil, 'alert.user.destroy_reserved', nil
     end
 
-    shared_examples_for '未ログイン' do
+    context '未ログイン' do
       include_context '未ログイン処理'
       it_behaves_like '[未ログイン/ログイン中]有効なパラメータ'
       it_behaves_like '[未ログイン/ログイン中]無効なパラメータ'
     end
-    shared_examples_for 'ログイン中' do
+    context 'ログイン中' do
       include_context 'ログイン処理'
       it_behaves_like '[未ログイン/ログイン中]有効なパラメータ'
       it_behaves_like '[未ログイン/ログイン中]無効なパラメータ'
     end
-    shared_examples_for 'APIログイン中' do
+    context 'APIログイン中' do
       include_context 'APIログイン処理'
       it_behaves_like '[APIログイン中]有効なパラメータ'
       it_behaves_like '[APIログイン中]無効なパラメータ'
     end
-    shared_examples_for 'APIログイン中（削除予約済み）' do
+    context 'APIログイン中（削除予約済み）' do
       include_context 'APIログイン処理', :user_destroy_reserved
       it_behaves_like '[削除予約済み]有効なパラメータ'
       it_behaves_like '[削除予約済み]無効なパラメータ'
-    end
-
-    context 'URLの拡張子がない' do
-      let(:subject_format) { nil }
-      it_behaves_like '未ログイン'
-      it_behaves_like 'ログイン中'
-      it_behaves_like 'APIログイン中'
-      it_behaves_like 'APIログイン中（削除予約済み）'
-    end
-    context 'URLの拡張子が.json' do
-      let(:subject_format) { :json }
-      it_behaves_like '未ログイン'
-      it_behaves_like 'ログイン中'
-      it_behaves_like 'APIログイン中'
-      it_behaves_like 'APIログイン中（削除予約済み）'
     end
   end
 
   # DELETE /users/auth/image/delete(.json) 画像削除API(処理)
   # 前提条件
-  #   AcceptヘッダにHTMLが含まれる
+  #   なし
   # テストパターン
-  #   URLの拡張子: ない, .json
-  describe 'DELETE #image_destroy' do
-    subject { delete delete_user_auth_image_registration_path(format: subject_format), headers: ACCEPT_INC_HTML }
-
-    # テストケース
-    context 'URLの拡張子がない' do
-      let(:subject_format) { nil }
-      it_behaves_like 'To406'
-    end
-    context 'URLの拡張子が.json' do
-      let(:subject_format) { :json }
-      it_behaves_like 'To406'
-    end
-  end
-  # 前提条件
-  #   AcceptヘッダにJSONが含まれる
-  # テストパターン
-  #   URLの拡張子: ない, .json
   #   未ログイン, ログイン中, APIログイン中, APIログイン中（削除予約済み）
-  describe 'DELETE #image_destroy(json)' do
-    subject { delete delete_user_auth_image_registration_path(format: subject_format), headers: auth_headers.merge(ACCEPT_INC_JSON) }
+  #   ＋URLの拡張子: .json, ない
+  #   ＋Acceptヘッダ: JSONが含まれる, JSONが含まれない
+  describe 'DELETE #image_destroy' do
+    subject { delete delete_user_auth_image_registration_path(format: subject_format), headers: auth_headers.merge(accept_headers) }
     include_context 'Authテスト内容'
     let(:current_user) { User.find(user.id) }
 
     # テスト内容
     shared_examples_for 'OK' do
+      let(:subject_format) { :json }
+      let(:accept_headers) { ACCEPT_INC_JSON }
       it '画像が削除される' do
         subject
         expect(current_user.image.url).to be_nil
       end
     end
     shared_examples_for 'NG' do
+      let(:subject_format) { :json }
+      let(:accept_headers) { ACCEPT_INC_JSON }
       it '画像が変更されない' do
         subject
         expect(current_user.image.url).to eq(user.image.url)
       end
     end
 
-    shared_examples_for 'ToOK' do
+    shared_examples_for 'ToOK(json/json)' do
+      let(:subject_format) { :json }
+      let(:accept_headers) { ACCEPT_INC_JSON }
       it 'HTTPステータスが200。対象項目が一致する。認証ヘッダがある' do
         is_expected.to eq(200)
         expect_success_json
         expect_exist_auth_header
       end
     end
-    shared_examples_for 'ToNG' do |code|
+    shared_examples_for 'ToNG(json/json)' do |code|
+      let(:subject_format) { :json }
+      let(:accept_headers) { ACCEPT_INC_JSON }
       it "HTTPステータスが#{code}。対象項目が一致する。認証ヘッダがない" do
         is_expected.to eq(code) # 方針(優先順): 401: 未ログイン, 400:パラメータなし, 422: 無効なパラメータ・状態
         expect_failure_json
@@ -815,74 +767,56 @@ RSpec.describe 'Users::Auth::Registrations', type: :request do
       end
     end
 
+    shared_examples_for 'ToOK' do
+      it_behaves_like 'ToOK(json/json)'
+      it_behaves_like 'To406(json/html)'
+      it_behaves_like 'To406(html/json)'
+      it_behaves_like 'To406(html/html)'
+    end
+    shared_examples_for 'ToNG' do |code|
+      it_behaves_like 'ToNG(json/json)', code
+      it_behaves_like 'To406(json/html)'
+      it_behaves_like 'To406(html/json)'
+      it_behaves_like 'To406(html/html)'
+    end
+
     # テストケース
-    shared_examples_for '未ログイン' do
+    context '未ログイン' do
       include_context '未ログイン処理'
       # it_behaves_like 'NG' # Tips: 未ログインの為、対象がない
       it_behaves_like 'ToNG', 401
       it_behaves_like 'ToMsg', NilClass, 0, nil, nil, 'devise.failure.unauthenticated', nil
     end
-    shared_examples_for 'ログイン中' do
+    context 'ログイン中' do
       include_context 'ログイン処理', :user, true
       it_behaves_like 'NG'
       it_behaves_like 'ToNG', 401
       it_behaves_like 'ToMsg', NilClass, 0, nil, nil, 'devise.failure.unauthenticated', nil
     end
-    shared_examples_for 'APIログイン中' do
+    context 'APIログイン中' do
       include_context 'APIログイン処理', :user, true
       it_behaves_like 'OK'
       it_behaves_like 'ToOK'
       it_behaves_like 'ToMsg', NilClass, 0, nil, nil, nil, 'notice.user.image_destroy'
     end
-    shared_examples_for 'APIログイン中（削除予約済み）' do
+    context 'APIログイン中（削除予約済み）' do
       include_context 'APIログイン処理', :user_destroy_reserved, true
       it_behaves_like 'NG'
       it_behaves_like 'ToNG', 422
       it_behaves_like 'ToMsg', NilClass, 0, nil, nil, 'alert.user.destroy_reserved', nil
     end
-
-    context 'URLの拡張子がない' do
-      let(:subject_format) { nil }
-      it_behaves_like '未ログイン'
-      it_behaves_like 'ログイン中'
-      it_behaves_like 'APIログイン中'
-      it_behaves_like 'APIログイン中（削除予約済み）'
-    end
-    context 'URLの拡張子が.json' do
-      let(:subject_format) { :json }
-      it_behaves_like '未ログイン'
-      it_behaves_like 'ログイン中'
-      it_behaves_like 'APIログイン中'
-      it_behaves_like 'APIログイン中（削除予約済み）'
-    end
   end
 
   # DELETE /users/auth/delete(.json) アカウント削除API(処理)
   # 前提条件
-  #   AcceptヘッダにHTMLが含まれる
+  #   なし
   # テストパターン
-  #   URLの拡張子: ない, .json
-  describe 'DELETE #destroy' do
-    subject { delete destroy_user_auth_registration_path(format: subject_format), headers: ACCEPT_INC_HTML }
-
-    # テストケース
-    context 'URLの拡張子がない' do
-      let(:subject_format) { nil }
-      it_behaves_like 'To406'
-    end
-    context 'URLの拡張子が.json' do
-      let(:subject_format) { :json }
-      it_behaves_like 'To406'
-    end
-  end
-  # 前提条件
-  #   AcceptヘッダにJSONが含まれる
-  # テストパターン
-  #   URLの拡張子: ない, .json
   #   未ログイン, ログイン中, APIログイン中, APIログイン中（削除予約済み）
   #   パラメータなし, 有効なパラメータ, URLがない, URLがホワイトリストにない
-  describe 'DELETE #destroy(json)' do
-    subject { delete destroy_user_auth_registration_path(format: subject_format), params: attributes, headers: auth_headers.merge(ACCEPT_INC_JSON) }
+  #   ＋URLの拡張子: .json, ない
+  #   ＋Acceptヘッダ: JSONが含まれる, JSONが含まれない
+  describe 'DELETE #destroy' do
+    subject { delete destroy_user_auth_registration_path(format: subject_format), params: attributes, headers: auth_headers.merge(accept_headers) }
     let(:valid_attributes)       { { undo_delete_url: FRONT_SITE_URL } }
     let(:invalid_nil_attributes) { { undo_delete_url: nil } }
     let(:invalid_bad_attributes) { { undo_delete_url: BAD_SITE_URL } }
@@ -891,6 +825,8 @@ RSpec.describe 'Users::Auth::Registrations', type: :request do
 
     # テスト内容
     shared_examples_for 'OK' do
+      let(:subject_format) { :json }
+      let(:accept_headers) { ACCEPT_INC_JSON }
       # it '削除される' do
       #   expect { subject }.to change(User, :count).by(-1)
       # end
@@ -907,6 +843,8 @@ RSpec.describe 'Users::Auth::Registrations', type: :request do
       end
     end
     shared_examples_for 'NG' do
+      let(:subject_format) { :json }
+      let(:accept_headers) { ACCEPT_INC_JSON }
       # it '削除されない' do
       #   expect { subject }.to change(User, :count).by(0)
       # end
@@ -920,7 +858,9 @@ RSpec.describe 'Users::Auth::Registrations', type: :request do
       end
     end
 
-    shared_examples_for 'ToOK' do # |status, success|
+    shared_examples_for 'ToOK(json/json)' do # |status, success|
+      let(:subject_format) { :json }
+      let(:accept_headers) { ACCEPT_INC_JSON }
       it 'HTTPステータスが200。対象項目が一致する。認証ヘッダがない' do
         is_expected.to eq(200)
         # response_json = JSON.parse(response.body)
@@ -931,7 +871,9 @@ RSpec.describe 'Users::Auth::Registrations', type: :request do
         expect_not_exist_auth_header
       end
     end
-    shared_examples_for 'ToNG' do |code| # , status, success|
+    shared_examples_for 'ToNG(json/json)' do |code| # , status, success|
+      let(:subject_format) { :json }
+      let(:accept_headers) { ACCEPT_INC_JSON }
       it "HTTPステータスが#{code}。対象項目が一致する。認証ヘッダがない" do
         is_expected.to eq(code) # 方針(優先順): 401: 未ログイン, 422: 無効なパラメータ・状態
         # response_json = JSON.parse(response.body)
@@ -941,6 +883,19 @@ RSpec.describe 'Users::Auth::Registrations', type: :request do
         expect_failure_json
         expect_not_exist_auth_header
       end
+    end
+
+    shared_examples_for 'ToOK' do # |status, success|
+      it_behaves_like 'ToOK(json/json)' # , status, success
+      it_behaves_like 'To406(json/html)'
+      it_behaves_like 'To406(html/json)'
+      it_behaves_like 'To406(html/html)'
+    end
+    shared_examples_for 'ToNG' do |code| # , status, success|
+      it_behaves_like 'ToNG(json/json)', code # , status, success
+      it_behaves_like 'To406(json/html)'
+      it_behaves_like 'To406(html/json)'
+      it_behaves_like 'To406(html/html)'
     end
 
     # テストケース
@@ -1048,81 +1003,52 @@ RSpec.describe 'Users::Auth::Registrations', type: :request do
       it_behaves_like 'ToMsg', NilClass, 0, nil, nil, 'alert.user.destroy_reserved', nil
     end
 
-    shared_examples_for '未ログイン' do
+    context '未ログイン' do
       include_context '未ログイン処理'
       it_behaves_like '[未ログイン/ログイン中]パラメータなし'
       it_behaves_like '[未ログイン/ログイン中]有効なパラメータ'
       it_behaves_like '[未ログイン/ログイン中]URLがない'
       it_behaves_like '[未ログイン/ログイン中]URLがホワイトリストにない'
     end
-    shared_examples_for 'ログイン中' do
+    context 'ログイン中' do
       include_context 'ログイン処理'
       it_behaves_like '[未ログイン/ログイン中]パラメータなし'
       it_behaves_like '[未ログイン/ログイン中]有効なパラメータ'
       it_behaves_like '[未ログイン/ログイン中]URLがない'
       it_behaves_like '[未ログイン/ログイン中]URLがホワイトリストにない'
     end
-    shared_examples_for 'APIログイン中' do
+    context 'APIログイン中' do
       include_context 'APIログイン処理'
       it_behaves_like '[APIログイン中]パラメータなし'
       it_behaves_like '[APIログイン中]有効なパラメータ'
       it_behaves_like '[APIログイン中]URLがない'
       it_behaves_like '[APIログイン中]URLがホワイトリストにない'
     end
-    shared_examples_for 'APIログイン中（削除予約済み）' do
+    context 'APIログイン中（削除予約済み）' do
       include_context 'APIログイン処理', :user_destroy_reserved
       it_behaves_like '[削除予約済み]パラメータなし'
       it_behaves_like '[削除予約済み]有効なパラメータ'
       it_behaves_like '[削除予約済み]URLがない'
       it_behaves_like '[削除予約済み]URLがホワイトリストにない'
     end
-
-    context 'URLの拡張子がない' do
-      let(:subject_format) { nil }
-      it_behaves_like '未ログイン'
-      it_behaves_like 'ログイン中'
-      it_behaves_like 'APIログイン中'
-      it_behaves_like 'APIログイン中（削除予約済み）'
-    end
-    context 'URLの拡張子が.json' do
-      let(:subject_format) { :json }
-      it_behaves_like '未ログイン'
-      it_behaves_like 'ログイン中'
-      it_behaves_like 'APIログイン中'
-      it_behaves_like 'APIログイン中（削除予約済み）'
-    end
   end
 
   # DELETE /users/auth/undo_delete(.json) アカウント削除取り消しAPI(処理)
   # 前提条件
-  #   AcceptヘッダにHTMLが含まれる
+  #   なし
   # テストパターン
-  #   URLの拡張子: ない, .json
-  describe 'DELETE #undo_destroy' do
-    subject { delete destroy_undo_user_auth_registration_path(format: subject_format), headers: ACCEPT_INC_HTML }
-
-    # テストケース
-    context 'URLの拡張子がない' do
-      let(:subject_format) { nil }
-      it_behaves_like 'To406'
-    end
-    context 'URLの拡張子が.json' do
-      let(:subject_format) { :json }
-      it_behaves_like 'To406'
-    end
-  end
-  # 前提条件
-  #   AcceptヘッダにJSONが含まれる
-  # テストパターン
-  #   URLの拡張子: ない, .json
   #   未ログイン, ログイン中, APIログイン中, APIログイン中（削除予約済み）
-  describe 'DELETE #undo_destroy(json)' do
-    subject { delete destroy_undo_user_auth_registration_path(format: subject_format), headers: auth_headers.merge(ACCEPT_INC_JSON) }
+  #   ＋URLの拡張子: .json, ない
+  #   ＋Acceptヘッダ: JSONが含まれる, JSONが含まれない
+  describe 'DELETE #undo_destroy' do
+    subject { delete destroy_undo_user_auth_registration_path(format: subject_format), headers: auth_headers.merge(accept_headers) }
     include_context 'Authテスト内容'
     let(:current_user) { User.find(user.id) }
 
     # テスト内容
     shared_examples_for 'OK' do
+      let(:subject_format) { :json }
+      let(:accept_headers) { ACCEPT_INC_JSON }
       it '削除依頼日時・削除予定日時がなしに変更される。メールが送信される' do
         subject
         expect(current_user.destroy_requested_at).to be_nil
@@ -1132,6 +1058,8 @@ RSpec.describe 'Users::Auth::Registrations', type: :request do
       end
     end
     shared_examples_for 'NG' do
+      let(:subject_format) { :json }
+      let(:accept_headers) { ACCEPT_INC_JSON }
       it '削除依頼日時・削除予定日時が変更されない。メールが送信されない' do
         subject
         expect(current_user.destroy_requested_at).to eq(user.destroy_requested_at)
@@ -1140,14 +1068,18 @@ RSpec.describe 'Users::Auth::Registrations', type: :request do
       end
     end
 
-    shared_examples_for 'ToOK' do
+    shared_examples_for 'ToOK(json/json)' do
+      let(:subject_format) { :json }
+      let(:accept_headers) { ACCEPT_INC_JSON }
       it 'HTTPステータスが200。対象項目が一致する。認証ヘッダがある' do
         is_expected.to eq(200)
         expect_success_json
         expect_exist_auth_header
       end
     end
-    shared_examples_for 'ToNG' do |code|
+    shared_examples_for 'ToNG(json/json)' do |code|
+      let(:subject_format) { :json }
+      let(:accept_headers) { ACCEPT_INC_JSON }
       it "HTTPステータスが#{code}。対象項目が一致する。認証ヘッダがない" do
         is_expected.to eq(code) # 方針(優先順): 401: 未ログイン, 400:パラメータなし, 422: 無効なパラメータ・状態
         expect_failure_json
@@ -1155,45 +1087,43 @@ RSpec.describe 'Users::Auth::Registrations', type: :request do
       end
     end
 
+    shared_examples_for 'ToOK' do
+      it_behaves_like 'ToOK(json/json)'
+      it_behaves_like 'To406(json/html)'
+      it_behaves_like 'To406(html/json)'
+      it_behaves_like 'To406(html/html)'
+    end
+    shared_examples_for 'ToNG' do |code|
+      it_behaves_like 'ToNG(json/json)', code
+      it_behaves_like 'To406(json/html)'
+      it_behaves_like 'To406(html/json)'
+      it_behaves_like 'To406(html/html)'
+    end
+
     # テストケース
-    shared_examples_for '未ログイン' do
+    context '未ログイン' do
       include_context '未ログイン処理'
       # it_behaves_like 'NG' # Tips: 未ログインの為、対象がない
       it_behaves_like 'ToNG', 401
       it_behaves_like 'ToMsg', NilClass, 0, nil, nil, 'devise.failure.unauthenticated', nil
     end
-    shared_examples_for 'ログイン中' do
+    context 'ログイン中' do
       include_context 'ログイン処理'
       it_behaves_like 'NG'
       it_behaves_like 'ToNG', 401
       it_behaves_like 'ToMsg', NilClass, 0, nil, nil, 'devise.failure.unauthenticated', nil
     end
-    shared_examples_for 'APIログイン中' do
+    context 'APIログイン中' do
       include_context 'APIログイン処理'
       it_behaves_like 'NG'
       it_behaves_like 'ToNG', 422
       it_behaves_like 'ToMsg', NilClass, 0, nil, nil, 'alert.user.not_destroy_reserved', nil
     end
-    shared_examples_for 'APIログイン中（削除予約済み）' do
+    context 'APIログイン中（削除予約済み）' do
       include_context 'APIログイン処理', :user_destroy_reserved
       it_behaves_like 'OK'
       it_behaves_like 'ToOK'
       it_behaves_like 'ToMsg', NilClass, 0, nil, nil, nil, 'devise.registrations.undo_destroy_reserved'
-    end
-
-    context 'URLの拡張子がない' do
-      let(:subject_format) { nil }
-      it_behaves_like '未ログイン'
-      it_behaves_like 'ログイン中'
-      it_behaves_like 'APIログイン中'
-      it_behaves_like 'APIログイン中（削除予約済み）'
-    end
-    context 'URLの拡張子が.json' do
-      let(:subject_format) { :json }
-      it_behaves_like '未ログイン'
-      it_behaves_like 'ログイン中'
-      it_behaves_like 'APIログイン中'
-      it_behaves_like 'APIログイン中（削除予約済み）'
     end
   end
 end

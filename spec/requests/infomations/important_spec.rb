@@ -7,36 +7,17 @@ RSpec.describe 'Infomations', type: :request do
   # テストパターン
   #   未ログイン, ログイン中, ログイン中（削除予約済み）, APIログイン中, APIログイン中（削除予約済み）
   #   大切なお知らせ: ない, ある
-  #   ＋URLの拡張子: ない, .json
-  #   ＋Acceptヘッダ: HTMLが含まれる, JSONが含まれる
+  #   ＋URLの拡張子: .json, ない
+  #   ＋Acceptヘッダ: JSONが含まれる, JSONが含まれない
   describe 'GET #important' do
-    subject { get important_infomations_path(format: subject_format), headers: auth_headers.merge(@accept_headers) }
-    before  { @accept_headers = nil } # Tips: 定義忘れをエラーにする為
+    subject { get important_infomations_path(format: subject_format), headers: auth_headers.merge(accept_headers) }
     before { FactoryBot.create(:infomation_important_finished) }
 
     # テスト内容
-    shared_examples_for 'ToOK' do
-      let(:subject_format) { nil }
-      it '[AcceptヘッダにHTMLが含まれる]HTTPステータスが406' do
-        @accept_headers = ACCEPT_INC_HTML
-        # is_expected.to eq(406)
-        is_expected.to eq(200) # TODO: JSONが返却される
-      end
-      it '[AcceptヘッダにJSONが含まれる]HTTPステータスが406' do
-        @accept_headers = ACCEPT_INC_JSON
-        # is_expected.to eq(406)
-        is_expected.to eq(200) # TODO: JSONが返却される
-      end
-    end
-    shared_examples_for 'ToOK(json)' do
+    shared_examples_for 'ToOK(json/json)' do
       let(:subject_format) { :json }
-      it '[AcceptヘッダにHTMLが含まれる]HTTPステータスが406' do
-        @accept_headers = ACCEPT_INC_HTML
-        # is_expected.to eq(406)
-        is_expected.to eq(200) # TODO: JSONが返却される
-      end
-      it '[AcceptヘッダにJSONが含まれる]HTTPステータスが200。対象項目が一致する' do
-        @accept_headers = ACCEPT_INC_JSON
+      let(:accept_headers) { ACCEPT_INC_JSON }
+      it 'HTTPステータスが200。対象項目が一致する' do
         is_expected.to eq(200)
         expect(JSON.parse(response.body)['success']).to eq(true)
       end
@@ -44,8 +25,8 @@ RSpec.describe 'Infomations', type: :request do
 
     shared_examples_for 'リスト表示(json)' do
       let(:subject_format) { :json }
+      let(:accept_headers) { ACCEPT_INC_JSON }
       it '件数・対象項目が一致する' do
-        @accept_headers = ACCEPT_INC_JSON
         subject
         response_json = JSON.parse(response.body)['infomations']
         expect(response_json.count).to eq(infomations.count)
@@ -65,23 +46,27 @@ RSpec.describe 'Infomations', type: :request do
       end
     end
 
+    shared_examples_for 'ToOK' do
+      it_behaves_like 'ToOK(json/json)'
+      it_behaves_like 'To406(json/html)'
+      it_behaves_like 'To406(html/json)'
+      it_behaves_like 'To406(html/html)'
+    end
+
     # テストケース
     shared_examples_for '[*]大切なお知らせがない' do
       include_context '大切なお知らせ一覧作成', 0, 0, 0, 0
       it_behaves_like 'ToOK'
-      it_behaves_like 'ToOK(json)'
       it_behaves_like 'リスト表示(json)'
     end
     shared_examples_for '[未ログイン]大切なお知らせがある' do
       include_context '大切なお知らせ一覧作成', 1, 1, 0, 0
       it_behaves_like 'ToOK'
-      it_behaves_like 'ToOK(json)'
       it_behaves_like 'リスト表示(json)'
     end
     shared_examples_for '[ログイン中/削除予約済み]大切なお知らせがある' do
       include_context '大切なお知らせ一覧作成', 1, 1, 1, 1
       it_behaves_like 'ToOK'
-      it_behaves_like 'ToOK(json)'
       it_behaves_like 'リスト表示(json)'
     end
 

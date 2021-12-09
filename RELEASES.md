@@ -25,6 +25,8 @@
 
 ### Bug
 
+- ブラウザで.jsonのURLにアクセスできないようにしたい
+  - https://dev.azure.com/nightonly/rails-app-origin/_workitems/edit/439/
 - ログインAPIでアカウントロック時に送信されるメールの解除URLにリダイレクトURLが入らない
   - https://dev.azure.com/nightonly/rails-app-origin/_workitems/edit/423/
 - ログインAPIで「注意：もう一回間違えるとアカウントがロックされます。」が表示されない

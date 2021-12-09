@@ -7,7 +7,7 @@ class Users::Auth::PasswordsController < DeviseTokenAuth::PasswordsController
   prepend_before_action :not_acceptable_response_not_api_accept, only: %i[create update]
   prepend_before_action :not_acceptable_response_not_html_accept, only: %i[edit]
   prepend_before_action :update_request_uid_header
-  skip_after_action :update_auth_header, only: [:update]
+  skip_after_action :update_auth_header, only: %i[update]
 
   # POST /users/auth/password(.json) パスワード再設定API[メール送信](処理)
   def create

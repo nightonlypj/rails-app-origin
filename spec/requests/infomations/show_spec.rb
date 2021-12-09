@@ -13,36 +13,34 @@ RSpec.describe 'Infomations', type: :request do
   #   ＋URLの拡張子: ない, .json
   #   ＋Acceptヘッダ: HTMLが含まれる, JSONが含まれる
   describe 'GET #show' do
-    subject { get infomation_path(id: infomation.id, format: subject_format), headers: auth_headers.merge(@accept_headers) }
-    before  { @accept_headers = nil } # Tips: 定義忘れをエラーにする為
+    subject { get infomation_path(id: infomation.id, format: subject_format), headers: auth_headers.merge(accept_headers) }
     let(:infomation)   { FactoryBot.create(:infomation, started_at: started_at, ended_at: ended_at, target: target, user_id: user_id) }
     let(:outside_user) { FactoryBot.create(:user) }
 
     # テスト内容
-    shared_examples_for 'ToOK' do
+    shared_examples_for 'ToOK(html)' do
       let(:subject_format) { nil }
-      it '[AcceptヘッダにHTMLが含まれる]HTTPステータスが200。対象項目が含まれる' do
-        @accept_headers = ACCEPT_INC_HTML
+      it 'HTTPステータスが200。対象項目が含まれる' do
         is_expected.to eq(200)
         expect(response.body).to include(infomation.label_i18n) if infomation.label_i18n.present? # ラベル
         expect(response.body).to include(infomation.title) # タイトル
         expect(response.body).to include(infomation.body.present? ? infomation.body : infomation.summary) # 本文, サマリー
         expect(response.body).to include(I18n.l(infomation.started_at.to_date)) # 掲載開始日
       end
-      it '[AcceptヘッダにJSONが含まれる]HTTPが200' do # Tips: HTMLが返却される
-        @accept_headers = ACCEPT_INC_JSON
-        is_expected.to eq(200)
-      end
     end
-    shared_examples_for 'ToOK(json)' do
+
+    shared_examples_for 'ToOK(html/html)' do
+      let(:accept_headers) { ACCEPT_INC_HTML }
+      it_behaves_like 'ToOK(html)'
+    end
+    shared_examples_for 'ToOK(html/json)' do
+      let(:accept_headers) { ACCEPT_INC_JSON }
+      it_behaves_like 'ToOK(html)'
+    end
+    shared_examples_for 'ToOK(json/json)' do
       let(:subject_format) { :json }
-      it '[AcceptヘッダにHTMLが含まれる]HTTPステータスが406' do
-        @accept_headers = ACCEPT_INC_HTML
-        # is_expected.to eq(406)
-        is_expected.to eq(200) # TODO: JSONが返却される
-      end
-      it '[AcceptヘッダにJSONが含まれる]HTTPステータスが200。対象項目が一致する' do
-        @accept_headers = ACCEPT_INC_JSON
+      let(:accept_headers) { ACCEPT_INC_JSON }
+      it 'HTTPステータスが200。対象項目が一致する' do
         is_expected.to eq(200)
         expect(JSON.parse(response.body)['success']).to eq(true)
 
@@ -57,25 +55,10 @@ RSpec.describe 'Infomations', type: :request do
         expect(response_json['target']).to eq(infomation.target) # 対象
       end
     end
-    shared_examples_for 'ToNot' do
-      let(:subject_format) { nil }
-      it '[AcceptヘッダにHTMLが含まれる]HTTPステータスが404' do
-        @accept_headers = ACCEPT_INC_HTML
-        is_expected.to eq(404)
-      end
-      it '[AcceptヘッダにJSONが含まれる]HTTPステータスが404' do
-        @accept_headers = ACCEPT_INC_JSON
-        is_expected.to eq(404)
-      end
-    end
-    shared_examples_for 'ToNot(json)' do |success, alert, notice|
+    shared_examples_for 'ToNot(json/json)' do |success, alert, notice|
       let(:subject_format) { :json }
-      it '[AcceptヘッダにHTMLが含まれる]HTTPステータスが404' do
-        @accept_headers = ACCEPT_INC_HTML
-        is_expected.to eq(404)
-      end
-      it '[AcceptヘッダにJSONが含まれる]HTTPステータスが404。対象項目が一致する' do
-        @accept_headers = ACCEPT_INC_JSON
+      let(:accept_headers) { ACCEPT_INC_JSON }
+      it 'HTTPステータスが404。対象項目が一致する' do
         is_expected.to eq(404)
         response_json = response.body.present? ? JSON.parse(response.body) : {}
         expect(response_json['success']).to eq(success)
@@ -83,6 +66,23 @@ RSpec.describe 'Infomations', type: :request do
         expect(response_json['alert']).to alert.present? ? eq(I18n.t(alert)) : be_nil
         expect(response_json['notice']).to notice.present? ? eq(I18n.t(notice)) : be_nil
       end
+    end
+
+    shared_examples_for 'ToOK' do
+      it_behaves_like 'ToOK(html/html)'
+      it_behaves_like 'ToOK(html/json)'
+    end
+    shared_examples_for 'ToOK(json)' do
+      it_behaves_like 'To406(json/html)'
+      it_behaves_like 'ToOK(json/json)'
+    end
+    shared_examples_for 'ToNot' do
+      it_behaves_like 'To404(html/html)'
+      it_behaves_like 'To404(html/json)'
+    end
+    shared_examples_for 'ToNot(json)' do |success, alert, notice|
+      it_behaves_like 'To406(json/html)'
+      it_behaves_like 'ToNot(json/json)', success, alert, notice
     end
 
     # テストケース

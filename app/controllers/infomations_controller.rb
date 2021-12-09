@@ -1,6 +1,7 @@
 class InfomationsController < ApplicationAuthController
   include InfomationsConcern
-  before_action :set_important_infomations, only: [:important]
+  prepend_before_action :not_acceptable_response_not_api_accept, only: %i[important]
+  before_action :set_important_infomations, only: %i[important]
 
   # GET /infomations お知らせ一覧
   # GET /infomations(.json) お知らせ一覧API
@@ -24,9 +25,9 @@ class InfomationsController < ApplicationAuthController
     return head :not_found if @infomation.blank? || !@infomation.target_user?(current_user) || @infomation.started_at > Time.current
 
     if @infomation.ended_at.present? && @infomation.ended_at < Time.current
-      return render './failure', locals: { alert: t('errors.messages.infomation.ended') }, status: :not_found if format_api?
+      return head :not_found if format_html?
 
-      head :not_found
+      render './failure', locals: { alert: t('errors.messages.infomation.ended') }, status: :not_found
     end
   end
 

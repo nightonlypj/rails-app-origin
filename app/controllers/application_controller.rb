@@ -19,34 +19,29 @@ class ApplicationController < ActionController::Base
     response.headers['uid'] = user.present? ? (user.id + (36**2)).to_s(36) : nil
   end
 
-  # URLの拡張子が.jsonか、acceptヘッダにapplication/jsonが含まれる（htmlや*がない）かを返却
-  def format_api?
-    request.format.json?
-  end
-
   # URLの拡張子がないかを返却
   def format_html?
     request.format.html?
   end
 
-  # acceptヘッダにJSONが含まれるかを返却
+  # acceptヘッダにJSONが含まれる（ワイルドカード不可）かを返却
   def accept_header_api?
     !(%r{,application/json[,;]} =~ ",#{request.headers[:ACCEPT]},").nil?
   end
 
-  # acceptヘッダが空か、HTMLが含まれるかを返却
+  # acceptヘッダが空か、HTMLが含まれる（ワイルドカード可）かを返却
   def accept_header_html?
     request.headers[:ACCEPT].blank? ||
       !(%r{,text/html[,;]} =~ ",#{request.headers[:ACCEPT]},").nil? ||
       !(%r{,\*/\*[,;]} =~ ",#{request.headers[:ACCEPT]},").nil?
   end
 
-  # acceptヘッダにJSONが含まれない場合、HTTPステータス406を返却
+  # APIリクエストに不整合がある場合、HTTPステータス406を返却（明示的にAPIのみ対応にする場合に使用）
   def not_acceptable_response_not_api_accept
-    head :not_acceptable if !format_api? || !accept_header_api?
+    head :not_acceptable if format_html? || !accept_header_api?
   end
 
-  # acceptヘッダにHTMLが含まれない場合、HTTPステータス406を返却
+  # HTMLリクエストに不整合がある場合、HTTPステータス406を返却（明示的にHTMLのみ対応にする場合に使用）
   def not_acceptable_response_not_html_accept
     head :not_acceptable if !format_html? || !accept_header_html?
   end
