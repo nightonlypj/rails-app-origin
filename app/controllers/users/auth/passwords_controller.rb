@@ -26,7 +26,7 @@ class Users::Auth::PasswordsController < DeviseTokenAuth::PasswordsController
     super
   end
 
-  # PUT(PATCH) /users/auth/password/update(.json) パスワード再設定API(処理)
+  # POST /users/auth/password/update(.json) パスワード再設定API(処理)
   def update
     return render_create_error_missing_email if request.request_parameters.blank?
 

@@ -172,11 +172,35 @@ RSpec.describe 'AdminUsers::Sessions', type: :request do
     end
   end
 
-  # DELETE(GET) /admin/sign_out ログアウト(処理)
+  # POST(GET,DELETE) /admin/sign_out ログアウト(処理)
   # 前提条件
   #   なし
   # テストパターン
   #   未ログイン, ログイン中
+  describe 'POST #destroy' do
+    subject { post destroy_admin_user_session_path }
+
+    # テストケース
+    context '未ログイン' do
+      it_behaves_like 'ToLogin', nil, 'devise.sessions.already_signed_out'
+    end
+    context 'ログイン中' do
+      include_context 'ログイン処理（管理者）'
+      it_behaves_like 'ToLogin', nil, 'devise.sessions.signed_out'
+    end
+  end
+  describe 'GET #destroy' do
+    subject { get destroy_admin_user_session_path }
+
+    # テストケース
+    context '未ログイン' do
+      it_behaves_like 'ToLogin', nil, 'devise.sessions.already_signed_out'
+    end
+    context 'ログイン中' do
+      include_context 'ログイン処理（管理者）'
+      it_behaves_like 'ToLogin', nil, 'devise.sessions.signed_out'
+    end
+  end
   describe 'DELETE #destroy' do
     subject { delete destroy_admin_user_session_path }
 

@@ -11,4 +11,4 @@
 
   <%= form.submit 'アップロード', class: "btn btn-primary mb-3" %>
 <% end %>
-<%= button_to '画像削除', delete_user_image_registration_path, data: { confirm: '本当に削除しますか？' }, method: :delete, class: 'btn btn-warning mb-4', disabled: !current_user.image? %>
+<%= button_to '画像削除', delete_user_image_registration_path, data: { confirm: '本当に削除しますか？' }, method: :post, class: 'btn btn-warning mb-4', disabled: !current_user.image? %>

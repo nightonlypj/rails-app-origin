@@ -6,7 +6,6 @@ RSpec.describe 'users/registrations/edit', type: :view do
     it '対象の送信先と項目が含まれる' do
       render
       assert_select 'form[action=?][method=?]', update_user_registration_path, 'post' do
-        assert_select 'input[name=?][value=?]', '_method', 'put'
         assert_select 'input[name=?]', 'user[name]'
         assert_select 'input[name=?]', 'user[email]'
         assert_select 'input[name=?]', 'user[password]'
@@ -19,7 +18,6 @@ RSpec.describe 'users/registrations/edit', type: :view do
         assert_select 'input[name=?]', 'commit'
       end
       assert_select 'form[action=?][method=?]', delete_user_image_registration_path, 'post' do # 画像削除
-        assert_select 'input[name=?][value=?]', '_method', 'delete'
         assert_select 'input[type=?]', 'submit'
       end
     end

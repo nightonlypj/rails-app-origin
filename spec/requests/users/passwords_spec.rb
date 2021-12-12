@@ -251,15 +251,15 @@ RSpec.describe 'Users::Passwords', type: :request do
     end
   end
 
-  # PUT(PATCH) /users/password パスワード再設定(処理)
+  # POST /users/password パスワード再設定(処理)
   # 前提条件
   #   なし
   # テストパターン
   #   未ログイン, ログイン中
   #   トークン: 期限内（未ロック, ロック中, メール未確認, メールアドレス変更中）, 期限切れ, 存在しない, ない
   #   有効なパラメータ, 無効なパラメータ
-  describe 'PUT #update' do
-    subject { put update_user_password_path, params: { user: attributes } }
+  describe 'POST #update' do
+    subject { post update_user_password_path, params: { user: attributes } }
     let(:new_password) { Faker::Internet.password(min_length: 8) }
     let(:valid_attributes)   { { reset_password_token: reset_password_token, password: new_password, password_confirmation: new_password } }
     let(:invalid_attributes) { { reset_password_token: reset_password_token, password: nil, password_confirmation: nil } }

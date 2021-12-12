@@ -314,7 +314,7 @@ RSpec.describe 'Users::Auth::Registrations', type: :request do
     end
   end
 
-  # PUT(PATCH) /users/auth/update(.json) 登録情報変更API(処理)
+  # POST /users/auth/update(.json) 登録情報変更API(処理)
   # 前提条件
   #   なし
   # テストパターン
@@ -322,8 +322,8 @@ RSpec.describe 'Users::Auth::Registrations', type: :request do
   #   パラメータなし, 有効なパラメータ（変更なし, あり）, 無効なパラメータ, URLがない, URLがホワイトリストにない
   #   ＋URLの拡張子: .json, ない
   #   ＋Acceptヘッダ: JSONが含まれる, JSONが含まれない
-  describe 'PUT #update' do
-    subject { put update_user_auth_registration_path(format: subject_format), params: attributes, headers: auth_headers.merge(accept_headers) }
+  describe 'POST #update' do
+    subject { post update_user_auth_registration_path(format: subject_format), params: attributes, headers: auth_headers.merge(accept_headers) }
     let(:new_user)   { FactoryBot.attributes_for(:user) }
     let(:exist_user) { FactoryBot.create(:user) }
     let(:nochange_attributes)    { { name: user.name, email: user.email, password: user.password, confirm_redirect_url: FRONT_SITE_URL } }
@@ -718,15 +718,15 @@ RSpec.describe 'Users::Auth::Registrations', type: :request do
     end
   end
 
-  # DELETE /users/auth/image/delete(.json) 画像削除API(処理)
+  # POST /users/auth/image/delete(.json) 画像削除API(処理)
   # 前提条件
   #   なし
   # テストパターン
   #   未ログイン, ログイン中, APIログイン中, APIログイン中（削除予約済み）
   #   ＋URLの拡張子: .json, ない
   #   ＋Acceptヘッダ: JSONが含まれる, JSONが含まれない
-  describe 'DELETE #image_destroy' do
-    subject { delete delete_user_auth_image_registration_path(format: subject_format), headers: auth_headers.merge(accept_headers) }
+  describe 'POST #image_destroy' do
+    subject { post delete_user_auth_image_registration_path(format: subject_format), headers: auth_headers.merge(accept_headers) }
     include_context 'Authテスト内容'
     let(:current_user) { User.find(user.id) }
 
@@ -807,7 +807,7 @@ RSpec.describe 'Users::Auth::Registrations', type: :request do
     end
   end
 
-  # DELETE /users/auth/delete(.json) アカウント削除API(処理)
+  # POST /users/auth/delete(.json) アカウント削除API(処理)
   # 前提条件
   #   なし
   # テストパターン
@@ -815,8 +815,8 @@ RSpec.describe 'Users::Auth::Registrations', type: :request do
   #   パラメータなし, 有効なパラメータ, URLがない, URLがホワイトリストにない
   #   ＋URLの拡張子: .json, ない
   #   ＋Acceptヘッダ: JSONが含まれる, JSONが含まれない
-  describe 'DELETE #destroy' do
-    subject { delete destroy_user_auth_registration_path(format: subject_format), params: attributes, headers: auth_headers.merge(accept_headers) }
+  describe 'POST #destroy' do
+    subject { post destroy_user_auth_registration_path(format: subject_format), params: attributes, headers: auth_headers.merge(accept_headers) }
     let(:valid_attributes)       { { undo_delete_url: FRONT_SITE_URL } }
     let(:invalid_nil_attributes) { { undo_delete_url: nil } }
     let(:invalid_bad_attributes) { { undo_delete_url: BAD_SITE_URL } }
@@ -1033,15 +1033,15 @@ RSpec.describe 'Users::Auth::Registrations', type: :request do
     end
   end
 
-  # DELETE /users/auth/undo_delete(.json) アカウント削除取り消しAPI(処理)
+  # POST /users/auth/undo_delete(.json) アカウント削除取り消しAPI(処理)
   # 前提条件
   #   なし
   # テストパターン
   #   未ログイン, ログイン中, APIログイン中, APIログイン中（削除予約済み）
   #   ＋URLの拡張子: .json, ない
   #   ＋Acceptヘッダ: JSONが含まれる, JSONが含まれない
-  describe 'DELETE #undo_destroy' do
-    subject { delete destroy_undo_user_auth_registration_path(format: subject_format), headers: auth_headers.merge(accept_headers) }
+  describe 'POST #undo_destroy' do
+    subject { post destroy_undo_user_auth_registration_path(format: subject_format), headers: auth_headers.merge(accept_headers) }
     include_context 'Authテスト内容'
     let(:current_user) { User.find(user.id) }
 

@@ -417,7 +417,7 @@ RSpec.describe 'Users::Auth::Passwords', type: :request do
     end
   end
 
-  # PUT(PATCH) /users/auth/password/update(.json) パスワード再設定API(処理)
+  # POST /users/auth/password/update(.json) パスワード再設定API(処理)
   # 前提条件
   #   なし
   # テストパターン
@@ -426,8 +426,8 @@ RSpec.describe 'Users::Auth::Passwords', type: :request do
   #   パラメータなし, 有効なパラメータ, 無効なパラメータ（なし, 確認なし）
   #   ＋URLの拡張子: .json, ない
   #   ＋Acceptヘッダ: JSONが含まれる, JSONが含まれない
-  describe 'PUT #update' do
-    subject { put update_user_auth_password_path(format: subject_format), params: attributes, headers: auth_headers.merge(accept_headers) }
+  describe 'POST #update' do
+    subject { post update_user_auth_password_path(format: subject_format), params: attributes, headers: auth_headers.merge(accept_headers) }
     let(:new_password) { Faker::Internet.password(min_length: 8) }
     let(:valid_attributes)           { { reset_password_token: reset_password_token, password: new_password, password_confirmation: new_password } }
     let(:invalid_attributes)         { { reset_password_token: reset_password_token, password: nil, password_confirmation: nil } }

@@ -27,7 +27,7 @@ class Users::Auth::RegistrationsController < DeviseTokenAuth::RegistrationsContr
     render './users/auth/show'
   end
 
-  # PUT(PATCH) /users/auth/update(.json) 登録情報変更API(処理)
+  # POST /users/auth/update(.json) 登録情報変更API(処理)
   def update
     if params[:confirm_redirect_url].blank?
       return render './failure', locals: { alert: t('devise_token_auth.registrations.confirm_redirect_url_blank') }, status: :unprocessable_entity
@@ -67,7 +67,7 @@ class Users::Auth::RegistrationsController < DeviseTokenAuth::RegistrationsContr
     end
   end
 
-  # DELETE /users/auth/image/delete(.json) 画像削除API(処理)
+  # POST /users/auth/image/delete(.json) 画像削除API(処理)
   def image_destroy
     @user = User.find(@resource.id)
     @user.remove_image!
@@ -75,7 +75,7 @@ class Users::Auth::RegistrationsController < DeviseTokenAuth::RegistrationsContr
     render './users/auth/success', locals: { notice: t('notice.user.image_destroy') }
   end
 
-  # DELETE /users/auth/delete(.json) アカウント削除API(処理)
+  # POST /users/auth/delete(.json) アカウント削除API(処理)
   def destroy
     return render './failure', locals: { alert: t('alert.user.destroy.params_blank') }, status: :bad_request if request.request_parameters.blank?
     if params[:undo_delete_url].blank?
@@ -97,7 +97,7 @@ class Users::Auth::RegistrationsController < DeviseTokenAuth::RegistrationsContr
     end
   end
 
-  # DELETE /users/auth/undo_delete(.json) アカウント削除取り消しAPI(処理)
+  # POST /users/auth/undo_delete(.json) アカウント削除取り消しAPI(処理)
   def undo_destroy
     @resource.set_undo_destroy_reserve
     UserMailer.with(user: @resource).undo_destroy_reserved.deliver_now

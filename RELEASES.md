@@ -2,6 +2,8 @@
 
 ## 1.4.0 (Sprint 9)
 
+- GETとPOSTに統一（PUT/PATCH/DELETEをPOSTに変更）したい
+  - https://dev.azure.com/nightonly/rails-app-origin/_workitems/edit/442/
 - Deviseのview specを作成したい
   - https://dev.azure.com/nightonly/rails-app-origin/_workitems/edit/440/
 - お知らせの未読数・ラベル・大切なお知らせを表示したい

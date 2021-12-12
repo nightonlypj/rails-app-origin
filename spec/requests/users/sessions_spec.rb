@@ -255,13 +255,13 @@ RSpec.describe 'Users::Sessions', type: :request do
     end
   end
 
-  # DELETE /users/sign_out ログアウト(処理)
+  # POST /users/sign_out ログアウト(処理)
   # 前提条件
   #   なし
   # テストパターン
   #   未ログイン, ログイン中, ログイン中（削除予約済み）
-  describe 'DELETE #destroy' do
-    subject { delete destroy_user_session_path }
+  describe 'POST #destroy' do
+    subject { post destroy_user_session_path }
 
     # テストケース
     context '未ログイン' do

@@ -15,7 +15,7 @@ class AdminUsers::SessionsController < Devise::SessionsController
   #   super
   # end
 
-  # DELETE(GET) /admin/sign_out ログアウト(処理)
+  # POST(GET,DELETE) /admin/sign_out ログアウト(処理)
   # def destroy
   #   super
   # end

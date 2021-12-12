@@ -21,7 +21,7 @@ class Users::Auth::SessionsController < DeviseTokenAuth::SessionsController
     super
   end
 
-  # DELETE /users/auth/sign_out(.json) ログアウトAPI(処理)
+  # POST /users/auth/sign_out(.json) ログアウトAPI(処理)
   def destroy
     return render './failure', locals: { alert: t('devise.sessions.already_signed_out') }, status: :unauthorized unless user_signed_in?
 

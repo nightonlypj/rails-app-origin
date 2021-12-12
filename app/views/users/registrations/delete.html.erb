@@ -5,7 +5,7 @@
       アカウントは<%= Settings['destroy_schedule_days'] %>日後に削除されます。それまでは取り消し可能です。<br>
       削除されるまではログインできますが、一部機能が制限されます。
     </p>
-    <%= button_to '削除', destroy_user_registration_path, data: { confirm: '本当に削除しますか？' }, method: :delete, class: 'btn btn-danger' %>
+    <%= button_to '削除', destroy_user_registration_path, data: { confirm: '本当に削除しますか？' }, method: :post, class: 'btn btn-danger' %>
   </div>
   <div class="card-footer pb-0 px-0">
     <ul class="mt-2 mb-0">

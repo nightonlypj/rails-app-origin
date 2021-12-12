@@ -334,15 +334,15 @@ RSpec.describe 'Users::Auth::Sessions', type: :request do
     end
   end
 
-  # DELETE /users/auth/sign_out(.json) ログアウトAPI(処理)
+  # POST /users/auth/sign_out(.json) ログアウトAPI(処理)
   # 前提条件
   #   なし
   # テストパターン
   #   未ログイン, ログイン中, APIログイン中, APIログイン中（削除予約済み）
   #   ＋URLの拡張子: .json, ない
   #   ＋Acceptヘッダ: JSONが含まれる, JSONが含まれない
-  describe 'DELETE #destroy' do
-    subject { delete destroy_user_auth_session_path(format: subject_format), headers: auth_headers.merge(accept_headers) }
+  describe 'POST #destroy' do
+    subject { post destroy_user_auth_session_path(format: subject_format), headers: auth_headers.merge(accept_headers) }
     include_context 'Authテスト内容'
     let(:current_user) { user }
 

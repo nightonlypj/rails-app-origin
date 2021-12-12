@@ -18,7 +18,7 @@ class Users::SessionsController < Devise::SessionsController
     redirect_to root_path, alert: t('devise.sessions.already_signed_out') unless user_signed_in?
   end
 
-  # DELETE /users/sign_out ログアウト(処理)
+  # POST /users/sign_out ログアウト(処理)
   # def destroy
   #   super
   # end

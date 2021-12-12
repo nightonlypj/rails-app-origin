@@ -21,10 +21,10 @@ RSpec.describe Users::Auth::PasswordsController, type: :routing do
       # expect(patch: '/users/auth/password').to route_to('users/auth/passwords#update')
       expect(put: '/users/auth/password').not_to be_routable
       expect(patch: '/users/auth/password').not_to be_routable
-      expect(put: '/users/auth/password/update').to route_to('users/auth/passwords#update')
-      expect(patch: '/users/auth/password/update').to route_to('users/auth/passwords#update')
-      expect(put: '/users/auth/password/update.json').to route_to('users/auth/passwords#update', format: 'json')
-      expect(patch: '/users/auth/password/update.json').to route_to('users/auth/passwords#update', format: 'json')
+      expect(get: '/users/auth/password/update').not_to be_routable
+      expect(get: '/users/auth/password/update.json').not_to be_routable
+      expect(post: '/users/auth/password/update').to route_to('users/auth/passwords#update')
+      expect(post: '/users/auth/password/update.json').to route_to('users/auth/passwords#update', format: 'json')
     end
   end
 end

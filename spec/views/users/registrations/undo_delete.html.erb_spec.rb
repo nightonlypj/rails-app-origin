@@ -8,7 +8,6 @@ RSpec.describe 'users/registrations/undo_delete', type: :view do
     it '対象の送信先と項目が含まれる' do
       render
       assert_select 'form[action=?][method=?]', destroy_undo_user_registration_path, 'post' do
-        assert_select 'input[name=?][value=?]', '_method', 'delete'
         assert_select 'input[type=?]', 'submit'
       end
     end

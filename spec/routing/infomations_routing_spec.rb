@@ -23,10 +23,8 @@ RSpec.describe InfomationsController, type: :routing do
     it 'routes to #create' do
       expect(post: '/infomations').not_to be_routable
     end
-    it 'routes to #update via PUT' do
+    it 'routes to #update' do
       expect(put: '/infomations/1').not_to be_routable
-    end
-    it 'routes to #update via PATCH' do
       expect(patch: '/infomations/1').not_to be_routable
     end
     it 'routes to #destroy' do

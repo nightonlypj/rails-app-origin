@@ -18,17 +18,16 @@ RSpec.describe Users::RegistrationsController, type: :routing do
       # expect(patch: '/users').to route_to('users/registrations#update')
       expect(put: '/users').not_to be_routable
       expect(patch: '/users').not_to be_routable
-      expect(put: '/users/edit').to route_to('users/registrations#update')
-      expect(patch: '/users/edit').to route_to('users/registrations#update')
+      expect(post: '/users/edit').to route_to('users/registrations#update')
     end
     it 'routes to #image_update' do
+      expect(get: '/users/image/update').to route_to('users/registrations#edit') # Tips: URL直アクセス対応
       expect(post: '/users/image/update').to route_to('users/registrations#image_update')
-      expect(get: '/users/image/update').to route_to('users/registrations#edit')
-      expect(get: '/users/image').to route_to('users/registrations#edit')
     end
     it 'routes to #image_destroy' do
-      expect(delete: '/users/image/destroy').to route_to('users/registrations#image_destroy')
-      expect(get: '/users/image/destroy').to route_to('users/registrations#edit')
+      expect(delete: '/users/image/destroy').not_to be_routable
+      expect(get: '/users/image/destroy').to route_to('users/registrations#edit') # Tips: URL直アクセス対応
+      expect(post: '/users/image/destroy').to route_to('users/registrations#image_destroy')
     end
     it 'routes to #delete' do
       expect(get: '/users/delete').to route_to('users/registrations#delete')
@@ -36,13 +35,13 @@ RSpec.describe Users::RegistrationsController, type: :routing do
     it 'routes to #destroy' do
       # expect(delete: '/users').to route_to('users/registrations#destroy')
       expect(delete: '/users').not_to be_routable
-      expect(delete: '/users/delete').to route_to('users/registrations#destroy')
+      expect(post: '/users/delete').to route_to('users/registrations#destroy')
     end
     it 'routes to #undo_delete' do
       expect(get: '/users/undo_delete').to route_to('users/registrations#undo_delete')
     end
     it 'routes to #undo_destroy' do
-      expect(delete: '/users/undo_delete').to route_to('users/registrations#undo_destroy')
+      expect(post: '/users/undo_delete').to route_to('users/registrations#undo_destroy')
     end
     it 'routes to #cancel' do
       # expect(get: '/users/cancel').to route_to('users/registrations#cancel')

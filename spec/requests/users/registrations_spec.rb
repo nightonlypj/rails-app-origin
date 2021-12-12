@@ -147,14 +147,14 @@ RSpec.describe 'Users::Registrations', type: :request do
     end
   end
 
-  # PUT(PATCH) /users/edit 登録情報変更(処理)
+  # POST /users/edit 登録情報変更(処理)
   # 前提条件
   #   なし
   # テストパターン
   #   未ログイン, ログイン中, ログイン中（メールアドレス変更中, 削除予約済み）
   #   有効なパラメータ（変更なし, あり）, 無効なパラメータ
-  describe 'PUT #update' do
-    subject { put update_user_registration_path, params: { user: attributes.merge(current_password: current_password) } }
+  describe 'POST #update' do
+    subject { post update_user_registration_path, params: { user: attributes.merge(current_password: current_password) } }
     let(:new_user)   { FactoryBot.attributes_for(:user) }
     let(:exist_user) { FactoryBot.create(:user) }
     let(:nochange_attributes) { { name: user.name, email: user.email, password: user.password } }
@@ -343,13 +343,13 @@ RSpec.describe 'Users::Registrations', type: :request do
     end
   end
 
-  # DELETE /users/image/destroy 画像削除(処理)
+  # POST /users/image/destroy 画像削除(処理)
   # 前提条件
   #   なし
   # テストパターン
   #   未ログイン, ログイン中, ログイン中（削除予約済み）
-  describe 'DELETE #image_destroy' do
-    subject { delete delete_user_image_registration_path }
+  describe 'POST #image_destroy' do
+    subject { post delete_user_image_registration_path }
     let(:current_user) { User.find(user.id) }
 
     # テスト内容
@@ -405,13 +405,13 @@ RSpec.describe 'Users::Registrations', type: :request do
     end
   end
 
-  # DELETE /users/delete アカウント削除(処理)
+  # POST /users/delete アカウント削除(処理)
   # 前提条件
   #   なし
   # テストパターン
   #   未ログイン, ログイン中, ログイン中（削除予約済み）
-  describe 'DELETE #destroy' do
-    subject { delete destroy_user_registration_path }
+  describe 'POST #destroy' do
+    subject { post destroy_user_registration_path }
     let(:current_user) { User.find(user.id) }
 
     # テスト内容
@@ -479,13 +479,13 @@ RSpec.describe 'Users::Registrations', type: :request do
     end
   end
 
-  # DELETE /users/undo_delete アカウント削除取り消し(処理)
+  # POST /users/undo_delete アカウント削除取り消し(処理)
   # 前提条件
   #   なし
   # テストパターン
   #   未ログイン, ログイン中, ログイン中（削除予約済み）
-  describe 'DELETE #undo_destroy' do
-    subject { delete destroy_undo_user_registration_path }
+  describe 'POST #undo_destroy' do
+    subject { post destroy_undo_user_registration_path }
     let(:current_user) { User.find(user.id) }
 
     # テスト内容

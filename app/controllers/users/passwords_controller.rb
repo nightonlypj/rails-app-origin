@@ -18,7 +18,7 @@ class Users::PasswordsController < Devise::PasswordsController
     super
   end
 
-  # PUT(PATCH) /users/password パスワード再設定(処理)
+  # POST /users/password パスワード再設定(処理)
   def update
     resource = user_reset_password_token(resource_params[:reset_password_token])
     return redirect_to new_user_password_path, alert: invalid_token_message unless resource&.reset_password_period_valid?
