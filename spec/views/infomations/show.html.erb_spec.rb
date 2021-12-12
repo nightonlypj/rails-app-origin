@@ -6,7 +6,7 @@ RSpec.describe 'infomations/show', type: :view do
   context do
     it '対象のパスが含まれる' do
       render
-      expect(rendered).to include("\"#{infomations_path}\"") # お知らせ一覧
+      expect(rendered).to include("href=\"#{infomations_path}\"") # お知らせ一覧
     end
   end
 end

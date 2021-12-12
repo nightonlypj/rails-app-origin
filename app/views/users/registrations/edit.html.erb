@@ -20,7 +20,7 @@
         <nav>
           <ul class="mt-2 mb-0">
 <% if user_valid_confirmation_token? %>
-            <li><%= link_to 'メールアドレス確認', new_confirmation_path(resource_name) %></li>
+            <li><%= link_to 'メールアドレス確認', new_user_confirmation_path %></li>
 <% end %>
             <li><%= link_to 'アカウント削除', delete_user_registration_path %></li>
           </ul>
