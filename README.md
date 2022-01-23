@@ -32,21 +32,21 @@ https://hub.docker.com/editions/community/docker-ce-desktop-mac/
 ### コンテナ作成＆起動
 
 ```
-% cd rails-app-origin
+$ cd rails-app-origin
 
-% docker-compose build
-% docker-compose up
-または % docker-compose up --build
+$ docker-compose build
+$ docker-compose up
+または $ docker-compose up --build
 ```
 ※終了は、Ctrl+C
 
 ```
-% cp -a config/settings/development.yml,local config/settings/development.yml
+$ cp -a config/settings/development.yml,local config/settings/development.yml
 
-% docker-compose run web rails db:migrate
-% docker-compose run web rails db:seed
+$ docker-compose run web rails db:migrate
+$ docker-compose run web rails db:seed
 
-% rails s
+$ rails s
 ```
 
 - http://localhost:3000
@@ -59,7 +59,7 @@ https://hub.docker.com/editions/community/docker-ce-desktop-mac/
 DBの設定以外は、下記「環境構築手順（Macの場合）」参照
 
 ```
-% docker-compose up db
+$ docker-compose up db
 ```
 
 config/database.yml

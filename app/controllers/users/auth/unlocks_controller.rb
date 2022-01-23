@@ -6,6 +6,7 @@ class Users::Auth::UnlocksController < DeviseTokenAuth::UnlocksController
   prepend_before_action :already_authenticated_response, only: %i[create], if: :user_signed_in?
   prepend_before_action :not_acceptable_response_not_api_accept, only: %i[create]
   prepend_before_action :not_acceptable_response_not_html_accept, only: %i[show]
+  prepend_before_action :update_request_uid_header
   before_action :validate_redirect_url_param, only: %i[create show] # Tips: 追加
 
   # POST /users/auth/unlock(.json) アカウントロック解除API[メール再送](処理)

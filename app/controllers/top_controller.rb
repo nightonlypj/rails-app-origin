@@ -1,6 +1,8 @@
 class TopController < ApplicationController
+  include InfomationsConcern
+  before_action :set_important_infomations
+
   # GET / トップページ
-  def index
-    @infomations = Infomation.by_target_period.by_target_user(current_user).page(1).per(Settings['infomations_limit'])
-  end
+  # def index
+  # end
 end

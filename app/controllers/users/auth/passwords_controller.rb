@@ -6,7 +6,8 @@ class Users::Auth::PasswordsController < DeviseTokenAuth::PasswordsController
   prepend_before_action :already_authenticated_response, only: %i[create update], if: :user_signed_in?
   prepend_before_action :not_acceptable_response_not_api_accept, only: %i[create update]
   prepend_before_action :not_acceptable_response_not_html_accept, only: %i[edit]
-  skip_after_action :update_auth_header, only: [:update]
+  prepend_before_action :update_request_uid_header
+  skip_after_action :update_auth_header, only: %i[update]
 
   # POST /users/auth/password(.json) パスワード再設定API[メール送信](処理)
   def create
@@ -25,7 +26,7 @@ class Users::Auth::PasswordsController < DeviseTokenAuth::PasswordsController
     super
   end
 
-  # PUT(PATCH) /users/auth/password/update(.json) パスワード再設定API(処理)
+  # POST /users/auth/password/update(.json) パスワード再設定API(処理)
   def update
     return render_create_error_missing_email if request.request_parameters.blank?
 
@@ -103,6 +104,9 @@ class Users::Auth::PasswordsController < DeviseTokenAuth::PasswordsController
   def render_update_success
     # render json: { success: true, data: resource_data, message: I18n.t('devise_token_auth.passwords.successfully_updated') }
     update_auth_header # Tips: 成功時のみ認証情報を返す
+
+    # Tips: ロック中の場合は解除する
+    @resource.update!(locked_at: nil, failed_attempts: 0) if @resource.locked_at.present?
 
     alert = @resource.unconfirmed_email.present? ? t('devise.failure.unconfirmed') : nil
     render './users/auth/success', locals: { alert: alert, notice: t('devise_token_auth.passwords.successfully_updated') }

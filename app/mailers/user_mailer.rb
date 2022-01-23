@@ -1,6 +1,7 @@
 class UserMailer < ApplicationMailer
   # アカウント削除受け付けのお知らせ
   def destroy_reserved
+    @undo_delete_url = params[:undo_delete_url]
     send_mail('mailer.user.destroy_reserved.subject')
   end
 

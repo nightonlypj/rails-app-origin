@@ -1,12 +1,10 @@
-<main class="card mb-1" style="max-width: 640px; margin-left: auto; margin-right: auto">
-  <div class="card-body">
-    <h5 class="card-title">アカウント削除取り消し</h5>
-    <p class="card-text">
-      このアカウントは<%= l(current_user.destroy_schedule_at.to_date) %>以降に削除されます。それまでは取り消し可能です。<br/>
+<div class="card card-body mb-2" style="max-width: 640px">
+  <h5 class="card-title">アカウント削除取り消し</h5>
+  <p class="card-text">
+    このアカウントは<%= l(current_user.destroy_schedule_at.to_date) %>以降に削除されます。それまでは取り消し可能です。<br>
 <% if current_user.destroy_requested_at.present? %>
-      ※<%= l(current_user.destroy_requested_at) %>にアカウント削除依頼を受け付けています。<br/>
+    ※<%= l(current_user.destroy_requested_at) %>にアカウント削除依頼を受け付けています。<br>
 <% end %>
-    <p><%= button_to '取り消し', destroy_undo_user_registration_path, data: { confirm: '本当に取り消しますか？' }, method: :delete, class: 'btn btn-warning' %></p>
+    <p><%= button_to '取り消し', destroy_undo_user_registration_path, data: { confirm: '本当に取り消しますか？' }, method: :post, class: 'btn btn-warning' %></p>
   </p>
-  </div>
-</main>
+</div>

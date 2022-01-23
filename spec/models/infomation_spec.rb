@@ -1,5 +1,3 @@
-# TODO: 直す
-
 require 'rails_helper'
 
 RSpec.describe Infomation, type: :model do

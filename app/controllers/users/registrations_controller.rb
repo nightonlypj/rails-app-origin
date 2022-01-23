@@ -28,7 +28,7 @@ class Users::RegistrationsController < Devise::RegistrationsController
   #   super
   # end
 
-  # PUT(PATCH) /users/edit 登録情報変更(処理)
+  # POST /users/edit 登録情報変更(処理)
   def update
     # Tips: 存在するメールアドレスの場合はエラーにする
     if resource.email != params[:user][:email] && User.find_by(email: params[:user][:email]).present?
@@ -39,7 +39,7 @@ class Users::RegistrationsController < Devise::RegistrationsController
     super
   end
 
-  # PUT(PATCH) /users/image 画像変更(処理)
+  # POST /users/image/update 画像変更(処理)
   def image_update
     if params.blank? || params[:user].blank?
       resource.errors.add(:image, t('errors.messages.image_update_blank'))
@@ -54,7 +54,7 @@ class Users::RegistrationsController < Devise::RegistrationsController
     end
   end
 
-  # DELETE /users/image 画像削除(処理)
+  # POST /users/image/destroy 画像削除(処理)
   def image_destroy
     @user = User.find(resource.id)
     @user.remove_image!
@@ -66,7 +66,7 @@ class Users::RegistrationsController < Devise::RegistrationsController
   # def delete
   # end
 
-  # DELETE /users/delete アカウント削除(処理)
+  # POST /users/delete アカウント削除(処理)
   def destroy
     # resource.destroy
     resource.set_destroy_reserve
@@ -82,7 +82,7 @@ class Users::RegistrationsController < Devise::RegistrationsController
   # def undo_delete
   # end
 
-  # DELETE /users/undo_delete アカウント削除取り消し(処理)
+  # POST /users/undo_delete アカウント削除取り消し(処理)
   def undo_destroy
     resource.set_undo_destroy_reserve
     UserMailer.with(user: resource).undo_destroy_reserved.deliver_now

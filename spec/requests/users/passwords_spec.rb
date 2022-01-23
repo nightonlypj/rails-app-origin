@@ -71,10 +71,13 @@ RSpec.describe 'Users::Passwords', type: :request do
 
     # テスト内容
     shared_examples_for 'OK' do
+      let(:url) { "http://#{Settings['base_domain']}#{edit_user_password_path}" }
       it 'メールが送信される' do
         subject
         expect(ActionMailer::Base.deliveries.count).to eq(1)
         expect(ActionMailer::Base.deliveries[0].subject).to eq(get_subject('devise.mailer.reset_password_instructions.subject')) # パスワード再設定方法のお知らせ
+        expect(ActionMailer::Base.deliveries[0].html_part.body).to include(url)
+        expect(ActionMailer::Base.deliveries[0].text_part.body).to include(url)
       end
     end
     shared_examples_for 'NG' do
@@ -160,7 +163,7 @@ RSpec.describe 'Users::Passwords', type: :request do
     end
   end
 
-  # GET /users/password/edit パスワード再設定
+  # GET /users/password パスワード再設定
   # 前提条件
   #   なし
   # テストパターン
@@ -248,15 +251,15 @@ RSpec.describe 'Users::Passwords', type: :request do
     end
   end
 
-  # PUT(PATCH) /users/password パスワード再設定(処理)
+  # POST /users/password パスワード再設定(処理)
   # 前提条件
   #   なし
   # テストパターン
   #   未ログイン, ログイン中
   #   トークン: 期限内（未ロック, ロック中, メール未確認, メールアドレス変更中）, 期限切れ, 存在しない, ない
   #   有効なパラメータ, 無効なパラメータ
-  describe 'PUT #update' do
-    subject { put update_user_password_path, params: { user: attributes } }
+  describe 'POST #update' do
+    subject { post update_user_password_path, params: { user: attributes } }
     let(:new_password) { Faker::Internet.password(min_length: 8) }
     let(:valid_attributes)   { { reset_password_token: reset_password_token, password: new_password, password_confirmation: new_password } }
     let(:invalid_attributes) { { reset_password_token: reset_password_token, password: nil, password_confirmation: nil } }
@@ -269,6 +272,8 @@ RSpec.describe 'Users::Passwords', type: :request do
         subject
         expect(current_user.reset_password_sent_at).to be_nil
         expect(current_user.confirmed_at).to change_confirmed ? be_between(start_time, Time.current) : eq(send_user.confirmed_at)
+        expect(current_user.locked_at).to be_nil # Tips: ロック中の場合は解除する
+        expect(current_user.failed_attempts).to eq(0)
 
         expect(ActionMailer::Base.deliveries.count).to eq(1)
         expect(ActionMailer::Base.deliveries[0].subject).to eq(get_subject('devise.mailer.password_change.subject')) # パスワード変更完了のお知らせ

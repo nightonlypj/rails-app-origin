@@ -1,15 +1,15 @@
 <% validate_enabled = action_name == 'update' && resource.errors.any? %>
 <% validate_password_enabled = validate_enabled && (params[:user][:password].present? || params[:user][:password_confirmation].present?) %>
-<%= form_for(resource, as: resource_name, url: update_user_registration_path, html: { method: :put, novalidate: true }, local: true) do |form| %>
+<%= form_for(resource, as: resource_name, url: update_user_registration_path, html: { method: :post, novalidate: true }, local: true) do |form| %>
   <div class="form-outline<%= input_size_class_name(resource, :name) %>">
     <%= form.text_field :name, autocomplete: 'name', class: "form-control#{validate_class_name(validate_enabled, resource, :name)}" %>
     <%= form.label '氏名', class: 'form-label', for: 'user_name' %>
     <%= render 'users/shared/field_error_messages', messages: resource.errors[:name] %>
   </div>
 
-<% if devise_mapping.confirmable? && resource.pending_reconfirmation? && valid_confirmation_token? %>
+<% if user_valid_confirmation_token? %>
   <div class="note note-info mb-3">
-    確認待ち: <%= resource.unconfirmed_email %><br/>
+    確認待ち: <%= resource.unconfirmed_email %><br>
     <small>※メールを確認してください。メールが届いていない場合は[メールアドレス確認]をしてください。</small>
   </div>
 <% end %>

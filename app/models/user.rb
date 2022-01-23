@@ -1,10 +1,13 @@
 class User < ApplicationRecord
+  include UsersConcern
+
   # Include default devise modules. Others available are:
   # :confirmable, :lockable, :timeoutable, :trackable and :omniauthable
   devise :database_authenticatable, :registerable,
          :recoverable, :rememberable, :validatable,
          :confirmable, :lockable, :timeoutable, :trackable
   include DeviseTokenAuth::Concerns::User
+  attr_accessor :redirect_url # Tips: /users/auth/{update,sign_in}で使用
 
   mount_uploader :image, ImageUploader
   has_many :infomation, dependent: :destroy
@@ -48,5 +51,10 @@ class User < ApplicationRecord
       logger.warn("[WARN]Not found: User.image_url(#{version})")
       ''
     end
+  end
+
+  # お知らせの未読数を返却
+  def infomation_unread_count
+    Infomation.by_target(self).by_unread(infomation_check_last_started_at).count
   end
 end

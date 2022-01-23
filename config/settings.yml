@@ -15,6 +15,8 @@ reset_password_error_url_bad: '/auth/reset_password_error.html?bad'
 confirm_within_hours: 24
 # パスワード再設定URLの有効期限（単位：時間）
 reset_password_within_hours: 24
+# アカウントロックの有効期間（単位：時間）
+unlock_in_hours: 1
 # アカウント削除の猶予期間（単位：日）
 destroy_schedule_days: 7
 # アカウント削除完了メール送信(true or false)  Tips:「rails user:destroy[false]」をcronで実行（メール送信する場合、夜間は避けた方が良い）
@@ -24,7 +26,5 @@ user_name_minimum: 1
 user_name_maximum: 32
 
 ## お知らせ
-# お知らせの最大表示件数
-infomations_limit: 5
 # 一覧のデフォルト最大表示件数
 default_infomations_limit: 25

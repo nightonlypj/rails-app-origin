@@ -192,4 +192,77 @@ RSpec.describe User, type: :model do
       it_behaves_like 'Not', nil
     end
   end
+
+  # お知らせの未読数を返却
+  # 前提条件
+  #   なし
+  # テストパターン
+  #   お知らせ対象: 0件, 1件（全員）, 1件（自分）, 2件（全員＋自分）
+  #   お知らせ確認最終開始日時: ない, 過去, 現在
+  describe '#infomation_unread_count' do
+    subject { user.infomation_unread_count }
+    let(:user) { FactoryBot.create(:user, infomation_check_last_started_at: infomation_check_last_started_at) }
+
+    # テスト内容
+    shared_examples_for 'Count' do |count|
+      it "件数(#{count})" do
+        is_expected.to eq(count)
+      end
+    end
+
+    # テストケース
+    shared_examples_for '[0件]お知らせ確認最終開始日時がない' do
+      let(:infomation_check_last_started_at) { nil }
+      it_behaves_like 'Count', 0
+    end
+    shared_examples_for '[1件]お知らせ確認最終開始日時がない' do
+      let(:infomation_check_last_started_at) { nil }
+      it_behaves_like 'Count', 1
+    end
+    shared_examples_for '[2件]お知らせ確認最終開始日時がない' do
+      let(:infomation_check_last_started_at) { nil }
+      it_behaves_like 'Count', 2
+    end
+    shared_examples_for '[0件]お知らせ確認最終開始日時が過去' do
+      let(:infomation_check_last_started_at) { Time.current - 1.month }
+      it_behaves_like 'Count', 0
+    end
+    shared_examples_for '[1件]お知らせ確認最終開始日時が過去' do
+      let(:infomation_check_last_started_at) { Time.current - 1.month }
+      it_behaves_like 'Count', 1
+    end
+    shared_examples_for '[2件]お知らせ確認最終開始日時が過去' do
+      let(:infomation_check_last_started_at) { Time.current - 1.month }
+      it_behaves_like 'Count', 2
+    end
+    shared_examples_for '[*]お知らせ確認最終開始日時が現在' do
+      let(:infomation_check_last_started_at) { Time.current }
+      it_behaves_like 'Count', 0
+    end
+
+    context 'お知らせ対象が0件' do
+      include_context 'お知らせ一覧作成', 0, 0, 0, 0
+      it_behaves_like '[0件]お知らせ確認最終開始日時がない'
+      it_behaves_like '[0件]お知らせ確認最終開始日時が過去'
+      it_behaves_like '[*]お知らせ確認最終開始日時が現在'
+    end
+    context 'お知らせ対象が1件（全員）' do
+      include_context 'お知らせ一覧作成', 1, 0, 0, 0
+      it_behaves_like '[1件]お知らせ確認最終開始日時がない'
+      it_behaves_like '[1件]お知らせ確認最終開始日時が過去'
+      it_behaves_like '[*]お知らせ確認最終開始日時が現在'
+    end
+    context 'お知らせ対象が1件（自分）' do
+      include_context 'お知らせ一覧作成', 0, 0, 1, 0
+      it_behaves_like '[1件]お知らせ確認最終開始日時がない'
+      it_behaves_like '[1件]お知らせ確認最終開始日時が過去'
+      it_behaves_like '[*]お知らせ確認最終開始日時が現在'
+    end
+    context 'お知らせ対象が2件（全員＋自分）' do
+      include_context 'お知らせ一覧作成', 0, 1, 0, 1
+      it_behaves_like '[2件]お知らせ確認最終開始日時がない'
+      it_behaves_like '[2件]お知らせ確認最終開始日時が過去'
+      it_behaves_like '[*]お知らせ確認最終開始日時が現在'
+    end
+  end
 end

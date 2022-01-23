@@ -9,95 +9,102 @@ RSpec.describe 'Infomations', type: :request do
   #   未ログイン, ログイン中, ログイン中（削除予約済み）, APIログイン中, APIログイン中（削除予約済み）
   #   お知らせ: ない, 最大表示数と同じ, 最大表示数より多い
   #   ＋URLの拡張子: ない, .json
-  #   ＋Acceptヘッダ: ない, JSON
+  #   ＋Acceptヘッダ: HTMLが含まれる, JSONが含まれる
   describe 'GET #index' do
-    subject { get infomations_path(page: subject_page, format: subject_format), headers: auth_headers.merge(@accept_headers) }
-    before  { @accept_headers = nil } # Tips: 定義忘れをエラーにする為
+    subject { get infomations_path(page: subject_page, format: subject_format), headers: auth_headers.merge(accept_headers) }
 
     # テスト内容
-    shared_examples_for 'ToOK' do |page|
-      let(:subject_page)   { page }
+    shared_examples_for 'ToOK(html)' do
       let(:subject_format) { nil }
-      it '[Acceptヘッダがない]HTTPステータスが200' do
-        @accept_headers = {}
-        is_expected.to eq(200)
-      end
-      it '[AcceptヘッダがJSON]HTTPステータスが200' do
-        @accept_headers = ACCEPT_JSON
+      it 'HTTPステータスが200' do
         is_expected.to eq(200)
       end
     end
-    shared_examples_for 'ToOK(json)' do |page|
-      let(:subject_page)   { page }
+
+    shared_examples_for 'ToOK(html/html)' do
+      let(:accept_headers) { ACCEPT_INC_HTML }
+      it_behaves_like 'ToOK(html)'
+    end
+    shared_examples_for 'ToOK(html/json)' do
+      let(:accept_headers) { ACCEPT_INC_JSON }
+      it_behaves_like 'ToOK(html)'
+    end
+    shared_examples_for 'ToOK(json/json)' do
       let(:subject_format) { :json }
-      let(:infomations)    { auth_headers.present? ? @user_infomations : @all_infomations } # Tips: APIは未ログイン扱いの為、全員のしか見れない
-      it '[Acceptヘッダがない]HTTPステータスが406' do
-        @accept_headers = {}
-        is_expected.to eq(406)
-      end
-      it '[AcceptヘッダがJSON]HTTPステータスが200。対象項目が一致する' do
-        @accept_headers = ACCEPT_JSON
+      let(:accept_headers) { ACCEPT_INC_JSON }
+      it 'HTTPステータスが200。対象項目が一致する' do
         is_expected.to eq(200)
         expect(JSON.parse(response.body)['success']).to eq(true)
 
         response_json = JSON.parse(response.body)['infomation']
         expect(response_json['total_count']).to eq(infomations.count) # 全件数
-        expect(response_json['current_page']).to eq(page) # 現在ページ
+        expect(response_json['current_page']).to eq(subject_page) # 現在ページ
         expect(response_json['total_pages']).to eq((infomations.count - 1).div(Settings['default_infomations_limit']) + 1) # 全ページ数
         expect(response_json['limit_value']).to eq(Settings['default_infomations_limit']) # 最大表示件数
       end
     end
 
+    shared_examples_for 'ToOK' do |page|
+      let(:subject_page) { page }
+      it_behaves_like 'ToOK(html/html)'
+      it_behaves_like 'ToOK(html/json)'
+    end
+    shared_examples_for 'ToOK(json)' do |page|
+      let(:subject_page) { page }
+      it_behaves_like 'To406(json/html)'
+      it_behaves_like 'ToOK(json/json)'
+    end
+
     shared_examples_for 'ページネーション表示' do |page, link_page|
-      let(:subject_page)   { page }
       let(:subject_format) { nil }
-      let(:url_page)       { link_page >= 2 ? link_page : nil }
+      let(:accept_headers) { ACCEPT_INC_HTML }
+      let(:subject_page) { page }
+      let(:url_page)     { link_page >= 2 ? link_page : nil }
       it "#{link_page}ページのパスが含まれる" do
-        @accept_headers = {}
         subject
         expect(response.body).to include("\"#{infomations_path(page: url_page)}\"")
       end
     end
     shared_examples_for 'ページネーション非表示' do |page, link_page|
-      let(:subject_page)   { page }
       let(:subject_format) { nil }
-      let(:url_page)       { link_page >= 2 ? link_page : nil }
+      let(:accept_headers) { ACCEPT_INC_HTML }
+      let(:subject_page) { page }
+      let(:url_page)     { link_page >= 2 ? link_page : nil }
       it "#{link_page}ページのパスが含まれない" do
-        @accept_headers = {}
         subject
         expect(response.body).not_to include("\"#{infomations_path(page: url_page)}\"")
       end
     end
 
     shared_examples_for 'リスト表示' do |page|
-      let(:subject_page)   { page }
       let(:subject_format) { nil }
-      let(:start_no)       { (Settings['default_infomations_limit'] * (page - 1)) + 1 }
-      let(:end_no)         { [@user_infomations.count, Settings['default_infomations_limit'] * page].min }
+      let(:accept_headers) { ACCEPT_INC_HTML }
+      let(:subject_page) { page }
+      let(:start_no)     { (Settings['default_infomations_limit'] * (page - 1)) + 1 }
+      let(:end_no)       { [@user_infomations.count, Settings['default_infomations_limit'] * page].min }
       it '対象項目が含まれる' do
-        @accept_headers = {}
         subject
         (start_no..end_no).each do |no|
           info = @user_infomations[@user_infomations.count - no]
+          expect(response.body).to include(info.label_i18n) if info.label_i18n.present? # ラベル
           expect(response.body).to include(info.title) # タイトル
           expect(response.body).to include(info.summary) if info.summary.present? # 概要
           if info.body.present?
             expect(response.body).to include("\"#{infomation_path(info)}\"") # お知らせ詳細のパス
           else
-            expect(response.body).not_to include("\"#{infomation_path(info)}\"") # Tips: 本文がない場合は表示しない
+            expect(response.body).not_to include("\"#{infomation_path(info)}\"") # Tips: 本文がない場合は遷移しない
           end
           expect(response.body).to include(I18n.l(info.started_at.to_date)) # 掲載開始日
         end
       end
     end
     shared_examples_for 'リスト表示(json)' do |page|
-      let(:subject_page)   { page }
       let(:subject_format) { :json }
-      let(:infomations)    { auth_headers.present? ? @user_infomations : @all_infomations } # Tips: APIは未ログイン扱いの為、全員のしか見れない
-      let(:start_no)       { (Settings['default_infomations_limit'] * (page - 1)) + 1 }
-      let(:end_no)         { [infomations.count, Settings['default_infomations_limit'] * page].min }
+      let(:accept_headers) { ACCEPT_INC_JSON }
+      let(:subject_page) { page }
+      let(:start_no)     { (Settings['default_infomations_limit'] * (page - 1)) + 1 }
+      let(:end_no)       { [infomations.count, Settings['default_infomations_limit'] * page].min }
       it '件数・対象項目が一致する' do
-        @accept_headers = ACCEPT_JSON
         subject
         response_json = JSON.parse(response.body)['infomations']
         expect(response_json.count).to eq(end_no - start_no + 1)
@@ -105,8 +112,11 @@ RSpec.describe 'Infomations', type: :request do
           data = response_json[no - start_no]
           info = infomations[infomations.count - no]
           expect(data['id']).to eq(info.id) # ID
+          expect(data['label']).to eq(info.label) # ラベル
+          expect(data['label_i18n']).to eq(info.label_i18n)
           expect(data['title']).to eq(info.title) # タイトル
           expect(data['summary']).to eq(info.summary) # 概要
+          expect(data['body_present']).to eq(info.body.present?) # 本文
           expect(data['started_at']).to eq(I18n.l(info.started_at, format: :json)) # 掲載開始日
           expect(data['ended_at']).to eq(info.ended_at.present? ? I18n.l(info.ended_at, format: :json) : nil) # 掲載終了日
           expect(data['target']).to eq(info.target) # 対象
@@ -115,19 +125,19 @@ RSpec.describe 'Infomations', type: :request do
     end
 
     shared_examples_for 'リダイレクト' do |page, redirect_page|
-      let(:subject_page)   { page }
       let(:subject_format) { nil }
-      let(:url_page)       { redirect_page >= 2 ? redirect_page : nil }
+      let(:accept_headers) { ACCEPT_INC_HTML }
+      let(:subject_page) { page }
+      let(:url_page)     { redirect_page >= 2 ? redirect_page : nil }
       it '最終ページにリダイレクトする' do
-        @accept_headers = {}
         is_expected.to redirect_to(infomations_path(page: url_page))
       end
     end
     shared_examples_for 'リダイレクト(json)' do |page|
-      let(:subject_page)   { page }
       let(:subject_format) { :json }
+      let(:accept_headers) { ACCEPT_INC_JSON }
+      let(:subject_page) { page }
       it 'リダイレクトしない' do
-        @accept_headers = ACCEPT_JSON
         is_expected.to eq(200)
       end
     end
@@ -224,30 +234,35 @@ RSpec.describe 'Infomations', type: :request do
     end
 
     context '未ログイン' do
+      let(:infomations) { @all_infomations }
       include_context '未ログイン処理'
       it_behaves_like '[*]お知らせがない'
       it_behaves_like '[未ログイン]お知らせが最大表示数と同じ'
       it_behaves_like '[未ログイン]お知らせが最大表示数より多い'
     end
     context 'ログイン中' do
+      let(:infomations) { @all_infomations } # Tips: APIは未ログイン扱いの為、全員のしか見れない
       include_context 'ログイン処理'
       it_behaves_like '[*]お知らせがない'
       it_behaves_like '[ログイン中/削除予約済み]お知らせが最大表示数と同じ'
       it_behaves_like '[ログイン中/削除予約済み]お知らせが最大表示数より多い'
     end
     context 'ログイン中（削除予約済み）' do
+      let(:infomations) { @all_infomations } # Tips: APIは未ログイン扱いの為、全員のしか見れない
       include_context 'ログイン処理', :user_destroy_reserved
       it_behaves_like '[*]お知らせがない'
       it_behaves_like '[ログイン中/削除予約済み]お知らせが最大表示数と同じ'
       it_behaves_like '[ログイン中/削除予約済み]お知らせが最大表示数より多い'
     end
     context 'APIログイン中' do
+      let(:infomations) { @user_infomations }
       include_context 'APIログイン処理'
       it_behaves_like '[*]お知らせがない'
       it_behaves_like '[APIログイン中/削除予約済み]お知らせが最大表示数と同じ'
       it_behaves_like '[APIログイン中/削除予約済み]お知らせが最大表示数より多い'
     end
     context 'APIログイン中（削除予約済み）' do
+      let(:infomations) { @user_infomations }
       include_context 'APIログイン処理', :user_destroy_reserved
       it_behaves_like '[*]お知らせがない'
       it_behaves_like '[APIログイン中/削除予約済み]お知らせが最大表示数と同じ'

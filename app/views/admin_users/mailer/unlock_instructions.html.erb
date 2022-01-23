@@ -1,5 +1,6 @@
-<%= @resource.name %> 様<br/>
-<br/>
-ログイン失敗が繰り返された為、アカウントがロックされました。<br/>
-アカウントロックを解除するには、下記のリンクをクリックしてください。<br/>
-<%= link_to 'アカウントロック解除', unlock_url(@resource, unlock_token: @token) %><br/>
+<%= @resource.name %> 様<br>
+<br>
+ログイン失敗が繰り返された為、アカウントがロックされました。<br>
+アカウントロックを解除するには、下記のリンクをクリックしてください。<br>
+※ロックは<%= Settings['unlock_in_hours'] %>時間後に自動で解除されます。<br>
+<%= link_to 'アカウントロック解除', unlock_url(@resource, unlock_token: @token) %><br>

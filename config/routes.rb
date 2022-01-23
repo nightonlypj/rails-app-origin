@@ -1,5 +1,5 @@
 Rails.application.routes.draw do
-  resources :infomations, only: %i[index show]
+  draw :infomations
   draw :admin
   draw :users
   root 'top#index'

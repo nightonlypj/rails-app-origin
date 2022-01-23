@@ -11,7 +11,8 @@ shared_context 'APIログイン処理' do |target = :user, use_image = false|
   let(:auth_token) { user.create_new_auth_token }
   let(:auth_headers) do
     {
-      'uid' => auth_token['uid'],
+      # 'uid' => auth_token['uid'],
+      'uid' => (user.id + (36**2)).to_s(36),
       'client' => auth_token['client'],
       'access-token' => auth_token['access-token']
     }
@@ -36,14 +37,15 @@ shared_context 'パスワードリセットトークン作成' do |valid, locked
   let(:digest_token)         { Devise.token_generator.digest(self, :reset_password_token, reset_password_token) }
   let(:sent_at)              { valid ? Time.now.utc - 1.minute : '0000-01-01 00:00:00+0000' }
   let(:unlock_token)         { locked ? SecureRandom.uuid : nil }
-  let(:locked_at)            { locked ? Time.now.utc - 1.minute : '0000-01-01 00:00:00+0000' }
+  let(:locked_at)            { locked ? Time.now.utc - 1.minute : nil }
+  let(:failed_attempts)      { locked ? Devise.maximum_attempts : 0 }
   let(:confirmation_token)   { unconfirmed ? Devise.token_generator.digest(self, :confirmation_token, SecureRandom.uuid) : nil }
   let(:confirmation_sent_at) { unconfirmed ? Time.now.utc - 1.minute : nil }
   let(:confirmed_at)         { unconfirmed ? nil : '0000-01-01 00:00:00+0000' }
   let(:unconfirmed_email)    { change_email ? Faker::Internet.safe_email : nil }
   let!(:send_user) do
     FactoryBot.create(:user, reset_password_token: digest_token, reset_password_sent_at: sent_at,
-                             unlock_token: unlock_token, locked_at: locked_at,
+                             unlock_token: unlock_token, locked_at: locked_at, failed_attempts: failed_attempts,
                              confirmation_token: confirmation_token, confirmation_sent_at: confirmation_sent_at, confirmed_at: confirmed_at,
                              unconfirmed_email: unconfirmed_email)
   end
@@ -60,11 +62,13 @@ shared_context 'メールアドレス確認トークン作成' do |confirmed, be
   end
 end
 
-shared_context 'アカウントロック解除トークン作成' do |locked|
-  let(:unlock_token) { SecureRandom.uuid }
-  let(:digest_token) { Devise.token_generator.digest(self, :unlock_token, unlock_token) }
-  let(:locked_at)    { locked ? Time.now.utc - 1.minute : nil }
-  let!(:send_user)   { FactoryBot.create(:user, unlock_token: digest_token, locked_at: locked_at) }
+shared_context 'アカウントロック解除トークン作成' do |locked, expired = false|
+  let(:unlock_token)    { SecureRandom.uuid }
+  let(:digest_token)    { Devise.token_generator.digest(self, :unlock_token, unlock_token) }
+  let(:locked_time)     { Time.now.utc - 1.minute - (expired ? Devise.unlock_in : 0) }
+  let(:locked_at)       { locked ? locked_time : nil }
+  let(:failed_attempts) { locked ? Devise.maximum_attempts : 0 }
+  let!(:send_user)      { FactoryBot.create(:user, unlock_token: digest_token, locked_at: locked_at, failed_attempts: failed_attempts) }
 end
 
 shared_context 'Authテスト内容' do
@@ -77,30 +81,21 @@ shared_context 'Authテスト内容' do
     else
       expect(response_json['user']['provider']).to eq(current_user.provider)
       expect(response_json['user']['code']).to eq(current_user.code)
+      expect(response_json['user']['upload_image']).to eq(current_user.image?)
       expect(response_json['user']['image_url']['mini']).to eq("#{Settings['base_image_url']}#{current_user.image_url(:mini)}")
       expect(response_json['user']['image_url']['small']).to eq("#{Settings['base_image_url']}#{current_user.image_url(:small)}")
       expect(response_json['user']['image_url']['medium']).to eq("#{Settings['base_image_url']}#{current_user.image_url(:medium)}")
       expect(response_json['user']['image_url']['large']).to eq("#{Settings['base_image_url']}#{current_user.image_url(:large)}")
       expect(response_json['user']['image_url']['xlarge']).to eq("#{Settings['base_image_url']}#{current_user.image_url(:xlarge)}")
       expect(response_json['user']['name']).to eq(current_user.name)
-      expect(response_json['user']['email']).to eq(current_user.email)
-      ## Trackable
-      expect(response_json['user']['sign_in_count']).to eq(current_user.sign_in_count)
-      current_sign_in_at = current_user.current_sign_in_at.present? ? I18n.l(current_user.current_sign_in_at, format: :json) : nil
-      expect(response_json['user']['current_sign_in_at']).to eq(current_sign_in_at)
-      expect(response_json['user']['last_sign_in_at']).to eq(current_user.last_sign_in_at.present? ? I18n.l(current_user.last_sign_in_at, format: :json) : nil)
-      expect(response_json['user']['current_sign_in_ip']).to eq(current_user.current_sign_in_ip)
-      expect(response_json['user']['last_sign_in_ip']).to eq(current_user.last_sign_in_ip)
-      ## Confirmable
-      expect(response_json['user']['confirmed_at']).to eq(current_user.confirmed_at.present? ? I18n.l(current_user.confirmed_at, format: :json) : nil)
-      confirmation_sent_at = current_user.confirmation_sent_at.present? ? I18n.l(current_user.confirmation_sent_at, format: :json) : nil
-      expect(response_json['user']['confirmation_sent_at']).to eq(confirmation_sent_at)
-      expect(response_json['user']['unconfirmed_email']).to eq(current_user.unconfirmed_email)
       ## 削除予約
+      expect(response_json['user']['destroy_schedule_days']).to eq(Settings['destroy_schedule_days'])
       destroy_requested_at = current_user.destroy_requested_at.present? ? I18n.l(current_user.destroy_requested_at, format: :json) : nil
       expect(response_json['user']['destroy_requested_at']).to eq(destroy_requested_at)
       destroy_schedule_at = current_user.destroy_schedule_at.present? ? I18n.l(current_user.destroy_schedule_at, format: :json) : nil
       expect(response_json['user']['destroy_schedule_at']).to eq(destroy_schedule_at)
+      ## お知らせ
+      expect(response_json['user']['infomation_unread_count']).to eq(current_user.infomation_unread_count)
     end
   end
   let(:expect_failure_json) do
@@ -110,13 +105,16 @@ shared_context 'Authテスト内容' do
     expect(response_json['user']).to be_nil
   end
   let(:expect_exist_auth_header) do
-    expect(response.header['uid']).not_to be_nil
+    # expect(response.header['uid']).to eq(current_user.email)
+    expect(response.header['uid']).to eq((current_user.id + (36**2)).to_s(36))
     expect(response.header['client']).not_to be_nil
-    expect(response.header['access-token']).not_to be_nil
+    expect(response.header['access-token']).not_to be_nil # Tips: 一定時間内のリクエスト(batch_request)は半角スペースが入る
+    expect(response.header['expiry']).not_to be_nil # Tips: 同上
   end
   let(:expect_not_exist_auth_header) do
     expect(response.header['uid']).to be_nil
     expect(response.header['client']).to be_nil
     expect(response.header['access-token']).to be_nil
+    expect(response.header['expiry']).to be_nil
   end
 end

@@ -4,9 +4,10 @@ class Users::Auth::RegistrationsController < DeviseTokenAuth::RegistrationsContr
   include Users::RegistrationsConcern
   include DeviseTokenAuth::Concerns::SetUserByToken
   skip_before_action :verify_authenticity_token
-  prepend_before_action :unauthenticated_response, only: %i[update image_update image_destroy destroy undo_destroy], unless: :user_signed_in?
+  prepend_before_action :unauthenticated_response, only: %i[show update image_update image_destroy destroy undo_destroy], unless: :user_signed_in?
   prepend_before_action :already_authenticated_response, only: %i[create], if: :user_signed_in?
   prepend_before_action :not_acceptable_response_not_api_accept
+  prepend_before_action :update_request_uid_header
   before_action :json_response_destroy_reserved, only: %i[update image_update image_destroy destroy]
   before_action :json_response_not_destroy_reserved, only: %i[undo_destroy]
   before_action :configure_sign_up_params, only: %i[create]
@@ -21,8 +22,20 @@ class Users::Auth::RegistrationsController < DeviseTokenAuth::RegistrationsContr
     end
   end
 
-  # PUT(PATCH) /users/auth/update(.json) 登録情報変更API(処理)
+  # GET /users/auth/show(.json) 登録情報詳細API
+  def show
+    render './users/auth/show'
+  end
+
+  # POST /users/auth/update(.json) 登録情報変更API(処理)
   def update
+    if params[:confirm_redirect_url].blank?
+      return render './failure', locals: { alert: t('devise_token_auth.registrations.confirm_redirect_url_blank') }, status: :unprocessable_entity
+    end
+    if blacklisted_redirect_url?(params[:confirm_redirect_url])
+      return render './failure', locals: { alert: t('devise_token_auth.registrations.confirm_redirect_url_not_allowed') }, status: :unprocessable_entity
+    end
+
     # Tips: 存在するメールアドレスの場合はエラーにする
     if @resource.present? && @resource.email != params[:email] && User.find_by(email: params[:email]).present?
       errors = { email: t('activerecord.errors.models.user.attributes.email.exist') }
@@ -30,12 +43,16 @@ class Users::Auth::RegistrationsController < DeviseTokenAuth::RegistrationsContr
       return render './failure', locals: { errors: errors, alert: t('errors.messages.not_saved.one') }, status: :unprocessable_entity
     end
 
+    params[:password_confirmation] = '' if params[:password_confirmation].nil? # Tips: nilだとチェックされずに保存される為
+    params[:current_password] = '' if params[:current_password].nil? # Tips: nilだとチェックされずに保存される為
+
+    @resource.redirect_url = params[:confirm_redirect_url]
     super
   end
 
-  # PUT(PATCH) /users/auth/image(.json) 画像変更API(処理)
+  # POST /users/auth/image/update(.json) 画像変更API(処理)
   def image_update
-    if params[:image].blank?
+    if params[:image].blank? || params[:image].class != ActionDispatch::Http::UploadedFile
       errors = { image: t('errors.messages.image_update_blank') }
       errors[:full_messages] = ["#{t('activerecord.attributes.user.image')} #{errors[:image]}"]
       return render './failure', locals: { errors: errors, alert: t('errors.messages.not_saved.one') }, status: :unprocessable_entity
@@ -46,11 +63,11 @@ class Users::Auth::RegistrationsController < DeviseTokenAuth::RegistrationsContr
       update_auth_header # Tips: 成功時のみ認証情報を返す
       render './users/auth/success', locals: { notice: t('notice.user.image_update') }
     else
-      render './failure', locals: { alert: t('alert.failed_update') }, status: :unprocessable_entity
+      render './failure', locals: { errors: @user.errors, alert: t('errors.messages.not_saved.one') }, status: :unprocessable_entity
     end
   end
 
-  # DELETE /users/auth/image(.json) 画像削除API(処理)
+  # POST /users/auth/image/delete(.json) 画像削除API(処理)
   def image_destroy
     @user = User.find(@resource.id)
     @user.remove_image!
@@ -58,12 +75,20 @@ class Users::Auth::RegistrationsController < DeviseTokenAuth::RegistrationsContr
     render './users/auth/success', locals: { notice: t('notice.user.image_destroy') }
   end
 
-  # DELETE /users/auth/destroy(.json) アカウント削除API(処理)
+  # POST /users/auth/delete(.json) アカウント削除API(処理)
   def destroy
+    return render './failure', locals: { alert: t('alert.user.destroy.params_blank') }, status: :bad_request if request.request_parameters.blank?
+    if params[:undo_delete_url].blank?
+      return render './failure', locals: { alert: t('alert.user.destroy.undo_delete_url_blank') }, status: :unprocessable_entity
+    end
+    if blacklisted_redirect_url?(params[:undo_delete_url])
+      return render './failure', locals: { alert: t('alert.user.destroy.undo_delete_url_not_allowed') }, status: :unprocessable_entity
+    end
+
     if @resource
       # @resource.destroy
       @resource.set_destroy_reserve
-      UserMailer.with(user: @resource).destroy_reserved.deliver_now
+      UserMailer.with(user: @resource, undo_delete_url: params[:undo_delete_url]).destroy_reserved.deliver_now
 
       yield @resource if block_given?
       render_destroy_success
@@ -72,7 +97,7 @@ class Users::Auth::RegistrationsController < DeviseTokenAuth::RegistrationsContr
     end
   end
 
-  # DELETE /users/auth/undo_delete(.json) アカウント削除取り消しAPI(処理)
+  # POST /users/auth/undo_delete(.json) アカウント削除取り消しAPI(処理)
   def undo_destroy
     @resource.set_undo_destroy_reserve
     UserMailer.with(user: @resource).undo_destroy_reserved.deliver_now

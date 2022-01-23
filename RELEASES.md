@@ -1,5 +1,47 @@
 # リリースノート
 
+## 1.4.0 (Sprint 9)
+
+- GETとPOSTに統一（PUT/PATCH/DELETEをPOSTに変更）したい
+  - https://dev.azure.com/nightonly/rails-app-origin/_workitems/edit/442/
+- Deviseのview specを作成したい
+  - https://dev.azure.com/nightonly/rails-app-origin/_workitems/edit/440/
+- お知らせの未読数・ラベル・大切なお知らせを表示したい
+  - https://dev.azure.com/nightonly/rails-app-origin/_workitems/edit/436/
+- アカウントロック直後とその後でメッセージを分けたい
+  - https://dev.azure.com/nightonly/rails-app-origin/_workitems/edit/435/
+- パスワード再設定APIで成功しロック中の場合はロックを解除したい
+  - https://dev.azure.com/nightonly/rails-app-origin/_workitems/edit/429/
+- アカウント削除APIで送信されるメールの取り消しURLにフロントURLを入れたい
+  - https://dev.azure.com/nightonly/rails-app-origin/_workitems/edit/432/
+- メールアドレス確認APIで確認済みの場合はaccount_confirmation_success=trueを返して欲しい
+  - https://dev.azure.com/nightonly/rails-app-origin/_workitems/edit/428/
+- seedで特定の状態のテストユーザーを作成したい
+  - https://dev.azure.com/nightonly/rails-app-origin/_workitems/edit/419/
+- ユーザーの登録情報詳細を取得できるAPIが欲しい
+  - https://dev.azure.com/nightonly/rails-app-origin/_workitems/edit/414/
+- Devise Token Authのuidをメールアドレスからidに変更したい
+  - https://dev.azure.com/nightonly/rails-app-origin/_workitems/edit/413/
+- ログイン状態でもAPIログインできるようにしたい（フロントとの不整合に対応）
+  - https://dev.azure.com/nightonly/rails-app-origin/_workitems/edit/411/
+- 異なるドメインからAPIにアクセスできるようにしたい（CROS設定）
+  - https://dev.azure.com/nightonly/rails-app-origin/_workitems/edit/410/
+
+### Bug
+
+- ブラウザで.jsonのURLにアクセスできないようにしたい
+  - https://dev.azure.com/nightonly/rails-app-origin/_workitems/edit/439/
+- ログインAPIでアカウントロック時に送信されるメールの解除URLにリダイレクトURLが入らない
+  - https://dev.azure.com/nightonly/rails-app-origin/_workitems/edit/423/
+- ログインAPIで「注意：もう一回間違えるとアカウントがロックされます。」が表示されない
+  - https://dev.azure.com/nightonly/rails-app-origin/_workitems/edit/422/
+- 登録情報変更APIでメールアドレス変更時に送信されるメールの確認URLにリダイレクトURLが入らない
+  - https://dev.azure.com/nightonly/rails-app-origin/_workitems/edit/425/
+- メールアドレス確認APIで送信されるメールの確認URLにリダイレクトURLが入らない
+  - https://dev.azure.com/nightonly/rails-app-origin/_workitems/edit/426/
+- acceptヘッダにjsonと*が含まれるとtemplateエラーになる
+  - https://dev.azure.com/nightonly/rails-app-origin/_workitems/edit/412/
+
 ## 1.3.0 (Sprint 8)
 
 - 認証と登録をAPIでもできるようにしたい

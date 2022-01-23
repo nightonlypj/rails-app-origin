@@ -14,48 +14,79 @@
     <%= javascript_pack_tag 'application', 'data-turbolinks-track': 'reload' %>
   </head>
   <body>
-    <header style="margin-bottom: 65px">
-      <nav class="navbar navbar-expand-lg navbar-light bg-light fixed-top">
+    <header style="margin-bottom: 70px">
+      <nav class="navbar navbar-light bg-light fixed-top">
         <div class="container-fluid">
-          <%= link_to "#{t('app_name')}#{Settings['env_name']}", root_path, class: 'navbar-brand' %>
-          <button class="navbar-toggler" type="button" data-mdb-toggle="collapse" data-mdb-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
-            <i class="fas fa-bars"></i>
-          </button>
-          <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
-            <ul class="navbar-nav" style="margin-left: auto">
-<% if user_signed_in? %>
-              <li class="nav-item text-nowrap" style="height: 45px"><%= link_to (image_tag current_user.image_url(:small)).html_safe + ' ' + current_user.name, edit_user_registration_path, class: 'nav-link d-inline-block text-truncate', style: 'max-width: 400px' %></li>
-              <li class="nav-item text-nowrap"><%= link_to 'ログアウト', destroy_user_session_path, class: 'nav-link', style: 'padding-top: 10px; padding-bottom: 10px' %></li>
+          <a href="<%= root_path %>" class="navbar-brand">
+            <%= image_tag "/logo.png",  width: '40px', height: '40px' %>
+            <%= t('app_name') %>
+            <span class="d-none d-sm-block"><%= Settings['env_name'] %></span>
+          </a>
+          <nav class="nav align-items-center">
+<% unless user_signed_in? %>
+            <a href="<%= new_user_session_path %>" class="nav-link d-flex align-items-center link-dark">
+              <i class="fas fa-sign-in-alt fa-lg"></i>
+              <span class="d-none d-md-block m-1">ログイン</span>
+            </a>
+            <a href="<%= new_user_registration_path %>" class="nav-link d-flex align-items-center link-dark">
+              <i class="fas fa-user-alt fa-lg"></i>
+              <span class="d-none d-md-block m-1">アカウント登録</span>
+            </a>
 <% else %>
-              <li class="nav-item text-nowrap"><%= link_to 'ログイン', new_user_session_path, class: 'nav-link', style: 'padding-top: 10px; padding-bottom: 10px' %></li>
-              <li class="nav-item text-nowrap"><%= link_to 'アカウント登録', new_user_registration_path, class: 'nav-link', style: 'padding-top: 10px; padding-bottom: 10px' %></li>
-<% end %>
+            <ul class="navbar-nav">
+              <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle d-flex align-items-center" style="max-width: 400px" href="#" id="navbarDropdownMenuLink" role="button" data-mdb-toggle="dropdown" aria-expanded="false">
+                  <%= image_tag current_user.image_url(:small), class: 'rounded-circle' %>
+                  <span class="text-truncate d-none d-lg-block"><%= current_user.name %></span>
+                </a>
+                <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdownMenuLink">
+                  <li>
+                    <a class="dropdown-item" href="<%= edit_user_registration_path %>">
+                      <i class="fas fa-user-edit"></i>
+                      <span class="m-2">登録情報変更</span>
+                    </a>
+                  </li>
+                  <li>
+                    <a class="dropdown-item" href="<%= delete_user_session_path %>">
+                      <i class="fas fa-sign-out-alt"></i>
+                      <span class="m-2">ログアウト</span>
+                    </a>
+                  </li>
+                </ul>
+              </li>
             </ul>
-          </div>
+            <a href="<%= infomations_path %>" class="nav-link link-dark">
+              <i class="fas fa-bell fa-lg"></i>
+<% if current_user.infomation_unread_count > 0 %>
+              <span class="badge rounded-pill badge-notification bg-danger"><%= current_user.infomation_unread_count %></span>
+<% end %>
+            </a>
+<% end %>
+          </nav>
         </div>
       </nav>
     </header>
+    <main class="container-lg">
 <% if destroy_reserved_message? %>
-    <aside>
-      <p class="note note-warning m-1">このアカウントは<%= l(current_user.destroy_schedule_at.to_date) %>以降に削除されます。<%= link_to '取り消しはこちら', delete_undo_user_registration_path %></p>
-    </aside>
+      <aside>
+        <p class="note note-warning m-1">このアカウントは<%= l(current_user.destroy_schedule_at.to_date) %>以降に削除されます。<%= link_to '取り消しはこちら', delete_undo_user_registration_path %></p>
+      </aside>
 <% end %>
 <% if alert.present? %>
-    <aside>
-      <p class="note note-danger m-1"><%= alert %></p>
-    </aside>
+      <aside>
+        <p class="note note-danger m-1"><%= alert %></p>
+      </aside>
 <% end %>
 <% if notice.present? %>
-    <aside>
-      <p class="note note-success m-1"><%= notice %></p>
-    </aside>
+      <aside>
+        <p class="note note-success m-1"><%= notice %></p>
+      </aside>
 <% end %>
-
-<%= yield %>
-
+      <%= yield %>
+    </main>
     <footer class="bg-light">
       <div class="text-center p-3">
-        Copyright &copy; <%= link_to t('my_name'), t('my_url'), target: :_blank, rel: [:noopener, :noreferrer] %> All Rights Reserved.
+        Copyright &copy; <%= link_to t('my_name'), t('my_url'), target: :_blank, rel: %i[noopener noreferrer] %> All Rights Reserved.
       </div>
 <% if Rails.env.development? %>
       <h5>development</h5>

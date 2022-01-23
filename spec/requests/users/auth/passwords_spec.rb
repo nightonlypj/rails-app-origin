@@ -3,6 +3,8 @@ require 'rails_helper'
 RSpec.describe 'Users::Auth::Passwords', type: :request do
   # テスト内容（共通）
   shared_examples_for 'ToMsg' do |error_class, errors_count, error_msg, message, alert, notice|
+    let(:subject_format) { :json }
+    let(:accept_headers) { ACCEPT_INC_JSON }
     it '対象のメッセージと一致する' do
       subject
       response_json = JSON.parse(response.body)
@@ -19,30 +21,14 @@ RSpec.describe 'Users::Auth::Passwords', type: :request do
 
   # POST /users/auth/password(.json) パスワード再設定API[メール送信](処理)
   # 前提条件
-  #   Acceptヘッダがない
+  #   なし
   # テストパターン
-  #   URLの拡張子: ない, .json
-  describe 'POST #create' do
-    subject { post create_user_auth_password_path(format: subject_format) }
-
-    # テストケース
-    context 'URLの拡張子がない' do
-      let(:subject_format) { nil }
-      it_behaves_like 'To406'
-    end
-    context 'URLの拡張子が.json' do
-      let(:subject_format) { :json }
-      it_behaves_like 'To406'
-    end
-  end
-  # 前提条件
-  #   AcceptヘッダがJSON
-  # テストパターン
-  #   URLの拡張子: ない, .json
   #   未ログイン, ログイン中, APIログイン中
   #   パラメータなし, 有効なパラメータ（未ロック, ロック中, メール未確認）, 無効なパラメータ, URLがない, URLがホワイトリストにない
-  describe 'POST #create(json)' do
-    subject { post create_user_auth_password_path(format: subject_format), params: attributes, headers: auth_headers.merge(ACCEPT_JSON) }
+  #   ＋URLの拡張子: .json, ない
+  #   ＋Acceptヘッダ: JSONが含まれる, JSONが含まれない
+  describe 'POST #create' do
+    subject { post create_user_auth_password_path(format: subject_format), params: attributes, headers: auth_headers.merge(accept_headers) }
     let(:send_user_unlocked)    { FactoryBot.create(:user) }
     let(:send_user_locked)      { FactoryBot.create(:user_locked) }
     let(:send_user_unconfirmed) { FactoryBot.create(:user_unconfirmed) }
@@ -56,31 +42,58 @@ RSpec.describe 'Users::Auth::Passwords', type: :request do
 
     # テスト内容
     shared_examples_for 'OK' do
+      let(:subject_format) { :json }
+      let(:accept_headers) { ACCEPT_INC_JSON }
+      let(:url)       { "http://#{Settings['base_domain']}#{edit_user_auth_password_path}" }
+      let(:url_param) { "redirect_url=#{URI.encode_www_form_component(attributes[:redirect_url])}" }
       it 'メールが送信される' do
         subject
         expect(ActionMailer::Base.deliveries.count).to eq(1)
         expect(ActionMailer::Base.deliveries[0].subject).to eq(get_subject('devise.mailer.reset_password_instructions.subject')) # パスワード再設定方法のお知らせ
+        expect(ActionMailer::Base.deliveries[0].html_part.body).to include(url)
+        expect(ActionMailer::Base.deliveries[0].text_part.body).to include(url)
+        expect(ActionMailer::Base.deliveries[0].html_part.body).to include(url_param)
+        expect(ActionMailer::Base.deliveries[0].text_part.body).to include(url_param)
       end
     end
     shared_examples_for 'NG' do
+      let(:subject_format) { :json }
+      let(:accept_headers) { ACCEPT_INC_JSON }
       it 'メールが送信されない' do
         expect { subject }.to change(ActionMailer::Base.deliveries, :count).by(0)
       end
     end
 
-    shared_examples_for 'ToOK' do
+    shared_examples_for 'ToOK(json/json)' do
+      let(:subject_format) { :json }
+      let(:accept_headers) { ACCEPT_INC_JSON }
       it 'HTTPステータスが200。対象項目が一致する。認証ヘッダがない' do
         is_expected.to eq(200)
         expect_success_json
         expect_not_exist_auth_header
       end
     end
-    shared_examples_for 'ToNG' do |code|
+    shared_examples_for 'ToNG(json/json)' do |code|
+      let(:subject_format) { :json }
+      let(:accept_headers) { ACCEPT_INC_JSON }
       it "HTTPステータスが#{code}。対象項目が一致する。認証ヘッダがない" do
         is_expected.to eq(code) # 方針(優先順): 401: ログイン中, 400:パラメータなし, 422: 無効なパラメータ・状態
         expect_failure_json
         expect_not_exist_auth_header
       end
+    end
+
+    shared_examples_for 'ToOK' do
+      it_behaves_like 'ToOK(json/json)'
+      it_behaves_like 'To406(json/html)'
+      it_behaves_like 'To406(html/json)'
+      it_behaves_like 'To406(html/html)'
+    end
+    shared_examples_for 'ToNG' do |code|
+      it_behaves_like 'ToNG(json/json)', code
+      it_behaves_like 'To406(json/html)'
+      it_behaves_like 'To406(html/json)'
+      it_behaves_like 'To406(html/html)'
     end
 
     # テストケース
@@ -201,7 +214,7 @@ RSpec.describe 'Users::Auth::Passwords', type: :request do
       it_behaves_like 'ToMsg', NilClass, 0, nil, nil, 'devise.failure.already_authenticated', nil
     end
 
-    shared_examples_for '未ログイン' do
+    context '未ログイン' do
       include_context '未ログイン処理'
       it_behaves_like '[未ログイン/ログイン中]パラメータなし'
       it_behaves_like '[未ログイン/ログイン中]有効なパラメータ（未ロック）'
@@ -211,7 +224,7 @@ RSpec.describe 'Users::Auth::Passwords', type: :request do
       it_behaves_like '[未ログイン/ログイン中]URLがない'
       it_behaves_like '[未ログイン/ログイン中]URLがホワイトリストにない'
     end
-    shared_examples_for 'ログイン中' do
+    context 'ログイン中' do
       include_context 'ログイン処理'
       it_behaves_like '[未ログイン/ログイン中]パラメータなし'
       it_behaves_like '[未ログイン/ログイン中]有効なパラメータ（未ロック）'
@@ -221,7 +234,7 @@ RSpec.describe 'Users::Auth::Passwords', type: :request do
       it_behaves_like '[未ログイン/ログイン中]URLがない'
       it_behaves_like '[未ログイン/ログイン中]URLがホワイトリストにない'
     end
-    shared_examples_for 'APIログイン中' do
+    context 'APIログイン中' do
       include_context 'APIログイン処理'
       it_behaves_like '[APIログイン中]パラメータなし'
       it_behaves_like '[APIログイン中]有効なパラメータ（未ロック）'
@@ -231,64 +244,33 @@ RSpec.describe 'Users::Auth::Passwords', type: :request do
       it_behaves_like '[APIログイン中]URLがない'
       it_behaves_like '[APIログイン中]URLがホワイトリストにない'
     end
-
-    context 'URLの拡張子がない' do
-      let(:subject_format) { nil }
-      it_behaves_like '未ログイン'
-      it_behaves_like 'ログイン中'
-      it_behaves_like 'APIログイン中'
-    end
-    context 'URLの拡張子が.json' do
-      let(:subject_format) { :json }
-      it_behaves_like '未ログイン'
-      it_behaves_like 'ログイン中'
-      it_behaves_like 'APIログイン中'
-    end
   end
 
   # GET /users/auth/password パスワード再設定
   # 前提条件
-  #   以外（URLの拡張子がない, Acceptヘッダがない）
-  # テストパターン
-  #   URLの拡張子: ない, .json
-  #   Acceptヘッダ: ない, JSON
-  describe 'GET #edit(json)' do
-    subject { get edit_user_auth_password_path(format: subject_format), headers: accept_headers }
-
-    # テストケース
-    context 'URLの拡張子がない, AcceptヘッダがJSON' do
-      let(:subject_format) { nil }
-      let(:accept_headers) { ACCEPT_JSON }
-      it_behaves_like 'To406'
-    end
-    context 'URLの拡張子が.json, Acceptヘッダがない' do
-      let(:subject_format) { :json }
-      let(:accept_headers) { nil }
-      it_behaves_like 'To406'
-    end
-    context 'URLの拡張子が.json, AcceptヘッダがJSON' do
-      let(:subject_format) { :json }
-      let(:accept_headers) { ACCEPT_JSON }
-      it_behaves_like 'To406'
-    end
-  end
-  # 前提条件
-  #   URLの拡張子がない, Acceptヘッダがない
+  #   なし
   # テストパターン
   #   未ログイン, ログイン中, APIログイン中
   #   トークン: 期限内（未ロック, ロック中, メール未確認）, 期限切れ, 存在しない, ない, 空
+  #   ＋URLの拡張子: ない, .json
+  #   ＋Acceptヘッダ: JSONが含まれない, JSONが含まれる
   #   ＋リダイレクトURL: ある, ない, ホワイトリストにない
   describe 'GET #edit' do
-    subject { get edit_user_auth_password_path(reset_password_token: reset_password_token, redirect_url: redirect_url), headers: auth_headers }
+    subject do
+      get edit_user_auth_password_path(format: subject_format, reset_password_token: reset_password_token, redirect_url: redirect_url),
+          headers: auth_headers.merge(accept_headers)
+    end
 
     # テスト内容
-    shared_examples_for 'ToOK' do
+    shared_examples_for 'ToOK(html)' do
+      let(:subject_format) { nil }
       let(:redirect_url) { FRONT_SITE_URL }
       it '指定URL（成功パラメータ）にリダイレクトする' do
         is_expected.to redirect_to("#{FRONT_SITE_URL}?reset_password_token=#{reset_password_token}")
       end
     end
-    shared_examples_for 'ToNG' do |alert, notice|
+    shared_examples_for 'ToNG(html)' do |alert, notice|
+      let(:subject_format) { nil }
       let(:redirect_url) { FRONT_SITE_URL }
       it '指定URL（失敗パラメータ）にリダイレクトする' do
         param = { reset_password: false }
@@ -298,7 +280,39 @@ RSpec.describe 'Users::Auth::Passwords', type: :request do
       end
     end
 
+    shared_examples_for 'ToOK(html/html)' do |alert, notice|
+      let(:accept_headers) { ACCEPT_INC_HTML }
+      it_behaves_like 'ToOK(html)', alert, notice
+    end
+    shared_examples_for 'ToOK(html/json)' do |alert, notice|
+      let(:accept_headers) { ACCEPT_INC_JSON }
+      it_behaves_like 'ToOK(html)', alert, notice
+    end
+    shared_examples_for 'ToNG(html/html)' do |alert, notice|
+      let(:accept_headers) { ACCEPT_INC_HTML }
+      it_behaves_like 'ToNG(html)', alert, notice
+    end
+    shared_examples_for 'ToNG(html/json)' do |alert, notice|
+      let(:accept_headers) { ACCEPT_INC_JSON }
+      it_behaves_like 'ToNG(html)', alert, notice
+    end
+
+    shared_examples_for 'ToOK' do |alert, notice|
+      it_behaves_like 'ToOK(html/html)', alert, notice
+      it_behaves_like 'ToOK(html/json)', alert, notice
+      it_behaves_like 'To406(json/html)'
+      it_behaves_like 'To406(json/json)'
+    end
+    shared_examples_for 'ToNG' do |alert, notice|
+      it_behaves_like 'ToNG(html/html)', alert, notice
+      it_behaves_like 'ToNG(html/json)', alert, notice
+      it_behaves_like 'To406(json/html)'
+      it_behaves_like 'To406(json/json)'
+    end
+
     shared_examples_for 'リダイレクトURLがない' do
+      let(:subject_format) { nil }
+      let(:accept_headers) { ACCEPT_INC_HTML }
       let(:redirect_url) { nil }
       # it 'HTTPステータスが422。対象項目が一致する' do
       it 'エラーページにリダイレクトする' do
@@ -310,6 +324,8 @@ RSpec.describe 'Users::Auth::Passwords', type: :request do
       end
     end
     shared_examples_for 'リダイレクトURLがホワイトリストにない' do
+      let(:subject_format) { nil }
+      let(:accept_headers) { ACCEPT_INC_HTML }
       let(:redirect_url) { BAD_SITE_URL }
       # it 'HTTPステータスが422。対象項目が一致する' do
       it 'エラーページにリダイレクトする' do
@@ -401,33 +417,17 @@ RSpec.describe 'Users::Auth::Passwords', type: :request do
     end
   end
 
-  # PUT(PATCH) /users/auth/password/update(.json) パスワード再設定API(処理)
+  # POST /users/auth/password/update(.json) パスワード再設定API(処理)
   # 前提条件
-  #   Acceptヘッダがない
+  #   なし
   # テストパターン
-  #   URLの拡張子: ない, .json
-  describe 'PUT #update' do
-    subject { put update_user_auth_password_path(format: subject_format) }
-
-    # テストケース
-    context 'URLの拡張子がない' do
-      let(:subject_format) { nil }
-      it_behaves_like 'To406'
-    end
-    context 'URLの拡張子が.json' do
-      let(:subject_format) { :json }
-      it_behaves_like 'To406'
-    end
-  end
-  # 前提条件
-  #   AcceptヘッダがJSON
-  # テストパターン
-  #   URLの拡張子: ない, .json
   #   未ログイン, ログイン中, APIログイン中
   #   トークン: 期限内（未ロック, ロック中, メール未確認, メールアドレス変更中）, 期限切れ, 存在しない, ない, 空
   #   パラメータなし, 有効なパラメータ, 無効なパラメータ（なし, 確認なし）
-  describe 'PUT #update(json)' do
-    subject { put update_user_auth_password_path, params: attributes, headers: auth_headers.merge(ACCEPT_JSON) }
+  #   ＋URLの拡張子: .json, ない
+  #   ＋Acceptヘッダ: JSONが含まれる, JSONが含まれない
+  describe 'POST #update' do
+    subject { post update_user_auth_password_path(format: subject_format), params: attributes, headers: auth_headers.merge(accept_headers) }
     let(:new_password) { Faker::Internet.password(min_length: 8) }
     let(:valid_attributes)           { { reset_password_token: reset_password_token, password: new_password, password_confirmation: new_password } }
     let(:invalid_attributes)         { { reset_password_token: reset_password_token, password: nil, password_confirmation: nil } }
@@ -437,17 +437,23 @@ RSpec.describe 'Users::Auth::Passwords', type: :request do
 
     # テスト内容
     shared_examples_for 'OK' do |change_confirmed = false|
+      let(:subject_format) { :json }
+      let(:accept_headers) { ACCEPT_INC_JSON }
       let!(:start_time) { Time.current.floor }
       it "パスワードリセット送信日時がなし#{'・メールアドレス確認日時が現在日時' if change_confirmed}に変更される。メールが送信される" do
         subject
         expect(current_user.reset_password_sent_at).to be_nil
         expect(current_user.confirmed_at).to change_confirmed ? be_between(start_time, Time.current) : eq(send_user.confirmed_at)
+        expect(current_user.locked_at).to be_nil # Tips: ロック中の場合は解除する
+        expect(current_user.failed_attempts).to eq(0)
 
         expect(ActionMailer::Base.deliveries.count).to eq(1)
         expect(ActionMailer::Base.deliveries[0].subject).to eq(get_subject('devise.mailer.password_change.subject')) # パスワード変更完了のお知らせ
       end
     end
     shared_examples_for 'NG' do
+      let(:subject_format) { :json }
+      let(:accept_headers) { ACCEPT_INC_JSON }
       it 'パスワードリセット送信日時が変更されない。メールが送信されない' do
         subject
         expect(current_user.reset_password_sent_at).to eq(send_user.reset_password_sent_at)
@@ -456,14 +462,18 @@ RSpec.describe 'Users::Auth::Passwords', type: :request do
       end
     end
 
-    shared_examples_for 'ToOK' do
+    shared_examples_for 'ToOK(json/json)' do
+      let(:subject_format) { :json }
+      let(:accept_headers) { ACCEPT_INC_JSON }
       it 'HTTPステータスが200。対象項目が一致する。認証ヘッダがある' do
         is_expected.to eq(200)
         expect_success_json
         expect_exist_auth_header
       end
     end
-    shared_examples_for 'ToNG' do |code| # , uid, client, token|
+    shared_examples_for 'ToNG(json/json)' do |code| # , uid, client, token|
+      let(:subject_format) { :json }
+      let(:accept_headers) { ACCEPT_INC_JSON }
       it "HTTPステータスが#{code}。対象項目が一致する。認証ヘッダがない" do
         is_expected.to eq(code) # 方針(優先順): 401: ログイン中, 400:パラメータなし, 422: 無効なパラメータ・状態
         expect_failure_json
@@ -472,6 +482,19 @@ RSpec.describe 'Users::Auth::Passwords', type: :request do
         # expect(response.header['access-token'].present?).to eq(token)
         expect_not_exist_auth_header
       end
+    end
+
+    shared_examples_for 'ToOK' do
+      it_behaves_like 'ToOK(json/json)'
+      it_behaves_like 'To406(json/html)'
+      it_behaves_like 'To406(html/json)'
+      it_behaves_like 'To406(html/html)'
+    end
+    shared_examples_for 'ToNG' do |code| # , uid, client, token|
+      it_behaves_like 'ToNG(json/json)', code # , uid, client, token
+      it_behaves_like 'To406(json/html)'
+      it_behaves_like 'To406(html/json)'
+      it_behaves_like 'To406(html/html)'
     end
 
     # テストケース
@@ -779,7 +802,7 @@ RSpec.describe 'Users::Auth::Passwords', type: :request do
       it_behaves_like '[APIログイン中][存在しない/空]無効なパラメータ（確認なし）'
     end
 
-    shared_examples_for '未ログイン' do
+    context '未ログイン' do
       include_context '未ログイン処理'
       it_behaves_like '[未ログイン/ログイン中]トークンが期限内（未ロック）'
       it_behaves_like '[未ログイン/ログイン中]トークンが期限内（ロック中）'
@@ -790,7 +813,7 @@ RSpec.describe 'Users::Auth::Passwords', type: :request do
       it_behaves_like '[未ログイン/ログイン中]トークンがない'
       it_behaves_like '[未ログイン/ログイン中]トークンが空'
     end
-    shared_examples_for 'ログイン中' do
+    context 'ログイン中' do
       include_context 'ログイン処理'
       it_behaves_like '[未ログイン/ログイン中]トークンが期限内（未ロック）'
       it_behaves_like '[未ログイン/ログイン中]トークンが期限内（ロック中）'
@@ -801,7 +824,7 @@ RSpec.describe 'Users::Auth::Passwords', type: :request do
       it_behaves_like '[未ログイン/ログイン中]トークンがない'
       it_behaves_like '[未ログイン/ログイン中]トークンが空'
     end
-    shared_examples_for 'APIログイン中' do
+    context 'APIログイン中' do
       include_context 'APIログイン処理'
       it_behaves_like '[APIログイン中]トークンが期限内（未ロック）'
       it_behaves_like '[APIログイン中]トークンが期限内（ロック中）'
@@ -811,19 +834,6 @@ RSpec.describe 'Users::Auth::Passwords', type: :request do
       it_behaves_like '[APIログイン中]トークンが存在しない'
       it_behaves_like '[APIログイン中]トークンがない'
       it_behaves_like '[APIログイン中]トークンが空'
-    end
-
-    context 'URLの拡張子がない' do
-      let(:subject_format) { nil }
-      it_behaves_like '未ログイン'
-      it_behaves_like 'ログイン中'
-      it_behaves_like 'APIログイン中'
-    end
-    context 'URLの拡張子が.json' do
-      let(:subject_format) { :json }
-      it_behaves_like '未ログイン'
-      it_behaves_like 'ログイン中'
-      it_behaves_like 'APIログイン中'
     end
   end
 end

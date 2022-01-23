@@ -8,17 +8,25 @@ ja:
     attributes:
       infomation:
         id: 'お知らせID'
+        label: 'ラベル'
         title: 'タイトル'
         summary: '概要'
         body: '本文'
         started_at: '開始日時'
         ended_at: '終了日時'
+        force_started_at: '強制表示開始日時'
+        force_ended_at: '強制表示終了日時'
         target: '対象'
         user: 'ユーザー'
         created_at: '作成日時'
         updated_at: '更新日時'
   enums:
     infomation:
+      label:
+        Not: ''
+        Hindrance: '障害'
+        Maintenance: 'メンテナンス'
+        Other: 'その他'
       target:
         All: '全員'
         User: '対象ユーザーのみ'
@@ -27,10 +35,13 @@ ja:
       image_update: '画像を変更しました。'
       image_destroy: '画像を削除しました。'
   alert:
-    failed_update: '保存に失敗しました。しばらく時間をあけてから、やり直してください。'
     user:
       destroy_reserved: 'アカウント削除予定の為、この操作はできません。'
       not_destroy_reserved: '既に取り消し済みか、アカウント削除していません。'
+      destroy:
+        params_blank: 'パラメータが指定されていません。'
+        undo_delete_url_blank: 'undo_delete_urlが指定されていません。'
+        undo_delete_url_not_allowed: 'undo_delete_urlが指定されていません。'
   errors:
     messages:
       image_update_blank: '選択してください。'

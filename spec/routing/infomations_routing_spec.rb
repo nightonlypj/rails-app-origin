@@ -6,6 +6,10 @@ RSpec.describe InfomationsController, type: :routing do
       expect(get: '/infomations').to route_to('infomations#index')
       expect(get: '/infomations.json').to route_to('infomations#index', format: 'json')
     end
+    it 'routes to #important' do
+      expect(get: '/infomations/important').to route_to('infomations#important')
+      expect(get: '/infomations/important.json').to route_to('infomations#important', format: 'json')
+    end
     it 'routes to #show' do
       expect(get: '/infomations/1').to route_to('infomations#show', id: '1')
       expect(get: '/infomations/1.json').to route_to('infomations#show', id: '1', format: 'json')
@@ -19,10 +23,8 @@ RSpec.describe InfomationsController, type: :routing do
     it 'routes to #create' do
       expect(post: '/infomations').not_to be_routable
     end
-    it 'routes to #update via PUT' do
+    it 'routes to #update' do
       expect(put: '/infomations/1').not_to be_routable
-    end
-    it 'routes to #update via PATCH' do
       expect(patch: '/infomations/1').not_to be_routable
     end
     it 'routes to #destroy' do

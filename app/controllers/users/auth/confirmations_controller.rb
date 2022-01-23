@@ -5,12 +5,17 @@ class Users::Auth::ConfirmationsController < DeviseTokenAuth::ConfirmationsContr
   skip_before_action :verify_authenticity_token
   prepend_before_action :not_acceptable_response_not_api_accept, only: %i[create]
   prepend_before_action :not_acceptable_response_not_html_accept, only: %i[show]
+  prepend_before_action :update_request_uid_header
 
   # POST /users/auth/confirmation(.json) メールアドレス確認API[メール再送](処理)
   def create
-    return render './failure', locals: { alert: params_nil_message }, status: :bad_request if request.request_parameters.blank?
-    return render './failure', locals: { alert: url_blank_message }, status: :unprocessable_entity if params[:confirm_success_url].blank?
-    return render './failure', locals: { alert: url_not_message }, status: :unprocessable_entity if blacklisted_redirect_url?(params[:confirm_success_url])
+    return render './failure', locals: { alert: t('errors.messages.validate_confirmation_params') }, status: :bad_request if request.request_parameters.blank?
+    if params[:redirect_url].blank?
+      return render './failure', locals: { alert: t('devise_token_auth.confirmations.missing_confirm_success_url') }, status: :unprocessable_entity
+    end
+    if blacklisted_redirect_url?(params[:redirect_url])
+      return render './failure', locals: { alert: t('devise_token_auth.confirmations.redirect_url_not_allowed') }, status: :unprocessable_entity
+    end
 
     # Tips: 確認済み・不要の場合はエラーにする
     resource = params[:email].present? ? resource_class.find_by(email: params[:email]) : nil
@@ -38,37 +43,23 @@ class Users::Auth::ConfirmationsController < DeviseTokenAuth::ConfirmationsContr
       #   redirect_to signed_in_resource.build_auth_url(redirect_url, redirect_headers)
       # else
       # end
-    else
+      # else
       # raise ActionController::RoutingError, 'Not Found'
+    elsif already_confirmed?(@resource)
+      return redirect_to Settings['confirmation_success_url_not'] if redirect_url.blank?
+      return redirect_to Settings['confirmation_success_url_bad'] if blacklisted_redirect_url?(redirect_url)
+
+      redirect_header_options = { account_confirmation_success: true, alert: t('errors.messages.already_confirmed') }
+    else
       return redirect_to Settings['confirmation_error_url_not'] if redirect_url.blank?
       return redirect_to Settings['confirmation_error_url_bad'] if blacklisted_redirect_url?(redirect_url)
 
-      redirect_header_options = { account_confirmation_success: false }
-      if already_confirmed?(@resource)
-        redirect_header_options[:alert] = t('errors.messages.already_confirmed')
-      else
-        redirect_header_options[:alert] = t('activerecord.errors.models.user.attributes.confirmation_token.invalid')
-      end
+      redirect_header_options = { account_confirmation_success: false, alert: t('activerecord.errors.models.user.attributes.confirmation_token.invalid') }
     end
     redirect_to DeviseTokenAuth::Url.generate(redirect_url, redirect_header_options)
   end
 
   private
-
-  # パラメータ不足メッセージを返却
-  def params_nil_message
-    t('errors.messages.validate_confirmation_params')
-  end
-
-  # URL不足メッセージを返却
-  def url_blank_message
-    t('devise_token_auth.confirmations.missing_confirm_success_url')
-  end
-
-  # URL不許可メッセージを返却
-  def url_not_message
-    t('devise_token_auth.confirmations.redirect_url_not_allowed')
-  end
 
   # 確認済み・不要かを返却
   def already_confirmed?(resource)

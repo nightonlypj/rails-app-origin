@@ -1,9 +1,22 @@
 class ApplicationController < ActionController::Base
+  after_action :update_response_uid_header
+
   private
 
-  # URLの拡張子が.jsonか、acceptヘッダにapplication/jsonが含まれるかを返却
-  def format_api?
-    request.format.json?
+  # リクエストのuidヘッダを[id+36**2](36進数)からuidに変更 # Tips: uidがメールアドレスだと、メールアドレス確認後に認証に失敗する為
+  def update_request_uid_header
+    return if request.headers['uid'].blank?
+
+    user = User.find_by(id: request.headers['uid'].to_i(36) - (36**2))
+    request.headers['uid'] = user&.uid
+  end
+
+  # レスポンスのuidヘッダをuidから[id+36**2](36進数)に変更
+  def update_response_uid_header
+    return if response.headers['uid'].blank?
+
+    user = User.find_by(uid: response.headers['uid'])
+    response.headers['uid'] = user.present? ? (user.id + (36**2)).to_s(36) : nil
   end
 
   # URLの拡張子がないかを返却
@@ -11,24 +24,26 @@ class ApplicationController < ActionController::Base
     request.format.html?
   end
 
-  # acceptヘッダにJSONが含まれるかを返却
+  # acceptヘッダにJSONが含まれる（ワイルドカード不可）かを返却
   def accept_header_api?
-    %r{,application/json[,;]} =~ ",#{request.headers[:ACCEPT]},"
+    !(%r{,application/json[,;]} =~ ",#{request.headers[:ACCEPT]},").nil?
   end
 
-  # acceptヘッダが空か、HTMLが含まれるかを返却
+  # acceptヘッダが空か、HTMLが含まれる（ワイルドカード可）かを返却
   def accept_header_html?
-    request.headers[:ACCEPT].blank? || %r{,text/html[,;]} =~ ",#{request.headers[:ACCEPT]}," || %r{,\*/\*[,;]} =~ ",#{request.headers[:ACCEPT]},"
+    request.headers[:ACCEPT].blank? ||
+      !(%r{,text/html[,;]} =~ ",#{request.headers[:ACCEPT]},").nil? ||
+      !(%r{,\*/\*[,;]} =~ ",#{request.headers[:ACCEPT]},").nil?
   end
 
-  # acceptヘッダにJSONが含まれない場合、HTTPステータス406を返却
+  # APIリクエストに不整合がある場合、HTTPステータス406を返却（明示的にAPIのみ対応にする場合に使用）
   def not_acceptable_response_not_api_accept
-    head :not_acceptable unless (format_html? || format_api?) && accept_header_api?
+    head :not_acceptable if format_html? || !accept_header_api?
   end
 
-  # acceptヘッダにHTMLが含まれない場合、HTTPステータス406を返却
+  # HTMLリクエストに不整合がある場合、HTTPステータス406を返却（明示的にHTMLのみ対応にする場合に使用）
   def not_acceptable_response_not_html_accept
-    head :not_acceptable unless format_html? && accept_header_html?
+    head :not_acceptable if !format_html? || !accept_header_html?
   end
 
   # 認証エラーを返却
@@ -60,7 +75,7 @@ class ApplicationController < ActionController::Base
 
   # 有効なメールアドレス確認トークンかを返却
   def valid_confirmation_token?(token)
-    true if resource_class.confirm_within.blank?
+    return true if resource_class.confirm_within.blank?
 
     resource = resource_class.find_by(confirmation_token: token)
     resource&.confirmation_sent_at&.present? && (Time.now.utc <= resource.confirmation_sent_at.utc + resource_class.confirm_within)

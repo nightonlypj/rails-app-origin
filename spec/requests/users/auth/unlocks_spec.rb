@@ -3,6 +3,8 @@ require 'rails_helper'
 RSpec.describe 'Users::Auth::Unlocks', type: :request do
   # テスト内容（共通）
   shared_examples_for 'ToMsg' do |error_class, errors_count, error_msg, message, alert, notice|
+    let(:subject_format) { :json }
+    let(:accept_headers) { ACCEPT_INC_JSON }
     it '対象のメッセージと一致する' do
       subject
       response_json = JSON.parse(response.body)
@@ -18,30 +20,14 @@ RSpec.describe 'Users::Auth::Unlocks', type: :request do
 
   # POST /users/auth/unlock(.json) アカウントロック解除API[メール再送](処理)
   # 前提条件
-  #   Acceptヘッダがない
+  #   なし
   # テストパターン
-  #   URLの拡張子: ない, .json
-  describe 'POST #create' do
-    subject { post create_user_auth_unlock_path(format: subject_format) }
-
-    # テストケース
-    context 'URLの拡張子がない' do
-      let(:subject_format) { nil }
-      it_behaves_like 'To406'
-    end
-    context 'URLの拡張子が.json' do
-      let(:subject_format) { :json }
-      it_behaves_like 'To406'
-    end
-  end
-  # 前提条件
-  #   AcceptヘッダがJSON
-  # テストパターン
-  #   URLの拡張子: ない, .json
   #   未ログイン, ログイン中, APIログイン中
   #   パラメータなし, 有効なパラメータ（ロック中, 未ロック）, 無効なパラメータ, URLがない, URLがホワイトリストにない
-  describe 'POST #create(json)' do
-    subject { post create_user_auth_unlock_path(format: subject_format), params: attributes, headers: auth_headers.merge(ACCEPT_JSON) }
+  #   ＋URLの拡張子: .json, ない
+  #   ＋Acceptヘッダ: JSONが含まれる, JSONが含まれない
+  describe 'POST #create' do
+    subject { post create_user_auth_unlock_path(format: subject_format), params: attributes, headers: auth_headers.merge(accept_headers) }
     let(:send_user_locked)   { FactoryBot.create(:user_locked) }
     let(:send_user_unlocked) { FactoryBot.create(:user) }
     let(:not_user)           { FactoryBot.attributes_for(:user) }
@@ -54,32 +40,59 @@ RSpec.describe 'Users::Auth::Unlocks', type: :request do
 
     # テスト内容
     shared_examples_for 'OK' do
+      let(:subject_format) { :json }
+      let(:accept_headers) { ACCEPT_INC_JSON }
+      let(:url)       { "http://#{Settings['base_domain']}#{user_auth_unlock_path}" }
+      let(:url_param) { "redirect_url=#{URI.encode_www_form_component(attributes[:redirect_url])}" }
       it 'メールが送信される' do
         subject
         expect(ActionMailer::Base.deliveries.count).to eq(1)
         expect(ActionMailer::Base.deliveries[0].subject).to eq(get_subject('devise.mailer.unlock_instructions.subject')) # アカウントロックのお知らせ
+        expect(ActionMailer::Base.deliveries[0].html_part.body).to include(url)
+        expect(ActionMailer::Base.deliveries[0].text_part.body).to include(url)
+        expect(ActionMailer::Base.deliveries[0].html_part.body).to include(url_param)
+        expect(ActionMailer::Base.deliveries[0].text_part.body).to include(url_param)
       end
     end
     shared_examples_for 'NG' do
+      let(:subject_format) { :json }
+      let(:accept_headers) { ACCEPT_INC_JSON }
       it 'メールが送信されない' do
         expect { subject }.to change(ActionMailer::Base.deliveries, :count).by(0)
       end
     end
 
-    shared_examples_for 'ToOK' do
+    shared_examples_for 'ToOK(json/json)' do
+      let(:subject_format) { :json }
+      let(:accept_headers) { ACCEPT_INC_JSON }
       it 'HTTPステータスが200。対象項目が一致する。認証ヘッダがない' do
         is_expected.to eq(200)
         expect_success_json
         expect_not_exist_auth_header
       end
     end
-    shared_examples_for 'ToNG' do |code|
+    shared_examples_for 'ToNG(json/json)' do |code|
+      let(:subject_format) { :json }
+      let(:accept_headers) { ACCEPT_INC_JSON }
       it "HTTPステータスが#{code}。対象項目が一致する。認証ヘッダがない" do
         is_expected.to eq(code) # 方針(優先順): 401: ログイン中, 400:パラメータなし, 422: 無効なパラメータ・状態
         expect(JSON.parse(response.body)['success']).to eq(false)
         expect_failure_json
         expect_not_exist_auth_header
       end
+    end
+
+    shared_examples_for 'ToOK' do
+      it_behaves_like 'ToOK(json/json)'
+      it_behaves_like 'To406(json/html)'
+      it_behaves_like 'To406(html/json)'
+      it_behaves_like 'To406(html/html)'
+    end
+    shared_examples_for 'ToNG' do |code|
+      it_behaves_like 'ToNG(json/json)', code
+      it_behaves_like 'To406(json/html)'
+      it_behaves_like 'To406(html/json)'
+      it_behaves_like 'To406(html/html)'
     end
 
     # テストケース
@@ -184,7 +197,7 @@ RSpec.describe 'Users::Auth::Unlocks', type: :request do
       it_behaves_like 'ToMsg', NilClass, 0, nil, nil, 'devise.failure.already_authenticated', nil
     end
 
-    shared_examples_for '未ログイン' do
+    context '未ログイン' do
       include_context '未ログイン処理'
       it_behaves_like '[未ログイン/ログイン中]パラメータなし'
       it_behaves_like '[未ログイン/ログイン中]有効なパラメータ（ロック中）'
@@ -193,7 +206,7 @@ RSpec.describe 'Users::Auth::Unlocks', type: :request do
       it_behaves_like '[未ログイン/ログイン中]URLがない'
       it_behaves_like '[未ログイン/ログイン中]URLがホワイトリストにない'
     end
-    shared_examples_for 'ログイン中' do
+    context 'ログイン中' do
       include_context 'ログイン処理'
       it_behaves_like '[未ログイン/ログイン中]パラメータなし'
       it_behaves_like '[未ログイン/ログイン中]有効なパラメータ（ロック中）'
@@ -202,7 +215,7 @@ RSpec.describe 'Users::Auth::Unlocks', type: :request do
       it_behaves_like '[未ログイン/ログイン中]URLがない'
       it_behaves_like '[未ログイン/ログイン中]URLがホワイトリストにない'
     end
-    shared_examples_for 'APIログイン中' do
+    context 'APIログイン中' do
       include_context 'APIログイン処理'
       it_behaves_like '[APIログイン中]パラメータなし'
       it_behaves_like '[APIログイン中]有効なパラメータ（ロック中）'
@@ -211,99 +224,78 @@ RSpec.describe 'Users::Auth::Unlocks', type: :request do
       it_behaves_like '[APIログイン中]URLがない'
       it_behaves_like '[APIログイン中]URLがホワイトリストにない'
     end
-
-    context 'URLの拡張子がない' do
-      let(:subject_format) { nil }
-      it_behaves_like '未ログイン'
-      it_behaves_like 'ログイン中'
-      it_behaves_like 'APIログイン中'
-    end
-    context 'URLの拡張子が.json' do
-      let(:subject_format) { :json }
-      it_behaves_like '未ログイン'
-      it_behaves_like 'ログイン中'
-      it_behaves_like 'APIログイン中'
-    end
   end
 
   # GET /users/auth/unlock アカウントロック解除(処理)
   # 前提条件
-  #   以外（URLの拡張子がない, Acceptヘッダがない）
-  # テストパターン
-  #   URLの拡張子: ない, .json
-  #   Acceptヘッダ: ない, JSON
-  describe 'GET #show(json)' do
-    subject { get user_auth_unlock_path(format: subject_format), headers: accept_headers }
-
-    # テストケース
-    context 'URLの拡張子がない, AcceptヘッダがJSON' do
-      let(:subject_format) { nil }
-      let(:accept_headers) { ACCEPT_JSON }
-      it_behaves_like 'To406'
-    end
-    context 'URLの拡張子が.json, Acceptヘッダがない' do
-      let(:subject_format) { :json }
-      let(:accept_headers) { nil }
-      it_behaves_like 'To406'
-    end
-    context 'URLの拡張子が.json, AcceptヘッダがJSON' do
-      let(:subject_format) { :json }
-      let(:accept_headers) { ACCEPT_JSON }
-      it_behaves_like 'To406'
-    end
-  end
-  # 前提条件
-  #   URLの拡張子がない, Acceptヘッダがない
+  #   なし
   # テストパターン
   #   未ログイン, ログイン中, APIログイン中
   #   トークン: 存在する, 存在しない, ない, 空
-  #   ロック日時: ない（未ロック）, ある（ロック中）
+  #   ロック日時: ない（未ロック）, 期限内（ロック中）, 期限切れ（未ロック）
+  #   ＋URLの拡張子: ない, .json
+  #   ＋Acceptヘッダ: JSONが含まれない, JSONが含まれる
   #   ＋リダイレクトURL: ある, ない, ホワイトリストにない
   describe 'GET #show' do
-    subject { get user_auth_unlock_path(unlock_token: unlock_token, redirect_url: @redirect_url), headers: auth_headers }
+    subject do
+      get user_auth_unlock_path(format: subject_format, unlock_token: unlock_token, redirect_url: @redirect_url), headers: auth_headers.merge(accept_headers)
+    end
     let(:current_user) { User.find(send_user.id) }
 
     # テスト内容
     shared_examples_for 'OK' do
-      it '[リダイレクトURLがある]アカウントロック日時がなしに変更される' do
+      let(:subject_format) { nil }
+      let(:accept_headers) { ACCEPT_INC_HTML }
+      it '[リダイレクトURLがある]アカウントロック日時がなしに回数が0に変更される' do
         @redirect_url = FRONT_SITE_URL
         subject
         expect(current_user.locked_at).to be_nil
+        expect(current_user.failed_attempts).to eq(0)
       end
       # it '[リダイレクトURLがない]アカウントロック日時がなしに変更されない' do
-      it '[リダイレクトURLがない]アカウントロック日時がなしに変更される' do
+      it '[リダイレクトURLがない]アカウントロック日時がなしに回数が0に変更される' do
         @redirect_url = nil
         subject
         # expect(current_user.locked_at).to eq(send_user.locked_at)
+        # expect(current_user.failed_attempts).to eq(send_user.failed_attempts)
         expect(current_user.locked_at).to be_nil
+        expect(current_user.failed_attempts).to eq(0)
       end
       # it '[リダイレクトURLがホワイトリストにない]アカウントロック日時がなしに変更されない' do
-      it '[リダイレクトURLがホワイトリストにない]アカウントロック日時がなしに変更される' do
+      it '[リダイレクトURLがホワイトリストにない]アカウントロック日時がなしに回数が0に変更される' do
         @redirect_url = BAD_SITE_URL
         subject
         # expect(current_user.locked_at).to eq(send_user.locked_at)
+        # expect(current_user.failed_attempts).to eq(send_user.failed_attempts)
         expect(current_user.locked_at).to be_nil
+        expect(current_user.failed_attempts).to eq(0)
       end
     end
-    # shared_examples_for 'NG' do
-    #   it '[リダイレクトURLがある]アカウントロック日時が変更されない' do
-    #     @redirect_url = FRONT_SITE_URL
-    #     subject
-    #     expect(current_user.locked_at).to eq(send_user.locked_at)
-    #   end
-    #   it '[リダイレクトURLがない]アカウントロック日時が変更されない' do
-    #     @redirect_url = nil
-    #     subject
-    #     expect(current_user.locked_at).to eq(send_user.locked_at)
-    #   end
-    #   it '[リダイレクトURLがホワイトリストにない]アカウントロック日時が変更されない' do
-    #     @redirect_url = BAD_SITE_URL
-    #     subject
-    #     expect(current_user.locked_at).to eq(send_user.locked_at)
-    #   end
-    # end
+    shared_examples_for 'NG' do
+      let(:subject_format) { nil }
+      let(:accept_headers) { ACCEPT_INC_HTML }
+      it '[リダイレクトURLがある]アカウントロック日時・回数が変更されない' do
+        @redirect_url = FRONT_SITE_URL
+        subject
+        expect(current_user.locked_at).to eq(send_user.locked_at)
+        expect(current_user.failed_attempts).to eq(send_user.failed_attempts)
+      end
+      it '[リダイレクトURLがない]アカウントロック日時・回数が変更されない' do
+        @redirect_url = nil
+        subject
+        expect(current_user.locked_at).to eq(send_user.locked_at)
+        expect(current_user.failed_attempts).to eq(send_user.failed_attempts)
+      end
+      it '[リダイレクトURLがホワイトリストにない]アカウントロック日時・回数が変更されない' do
+        @redirect_url = BAD_SITE_URL
+        subject
+        expect(current_user.locked_at).to eq(send_user.locked_at)
+        expect(current_user.failed_attempts).to eq(send_user.failed_attempts)
+      end
+    end
 
-    shared_examples_for 'ToOK' do |alert, notice|
+    shared_examples_for 'ToOK(html)' do |alert, notice|
+      let(:subject_format) { nil }
       it '[リダイレクトURLがある]指定URL（成功パラメータ）にリダイレクトする' do
         @redirect_url = FRONT_SITE_URL
         param = { unlock: true }
@@ -332,7 +324,8 @@ RSpec.describe 'Users::Auth::Unlocks', type: :request do
         is_expected.to redirect_to(Settings['unlock_success_url_bad'])
       end
     end
-    shared_examples_for 'ToNG' do |alert, notice|
+    shared_examples_for 'ToNG(html)' do |alert, notice|
+      let(:subject_format) { nil }
       it '[リダイレクトURLがある]指定URL（失敗パラメータ）にリダイレクトする' do
         @redirect_url = FRONT_SITE_URL
         param = { unlock: false }
@@ -362,10 +355,40 @@ RSpec.describe 'Users::Auth::Unlocks', type: :request do
       end
     end
 
+    shared_examples_for 'ToOK(html/html)' do |alert, notice|
+      let(:accept_headers) { ACCEPT_INC_HTML }
+      it_behaves_like 'ToOK(html)', alert, notice
+    end
+    shared_examples_for 'ToOK(html/json)' do |alert, notice|
+      let(:accept_headers) { ACCEPT_INC_JSON }
+      it_behaves_like 'ToOK(html)', alert, notice
+    end
+    shared_examples_for 'ToNG(html/html)' do |alert, notice|
+      let(:accept_headers) { ACCEPT_INC_HTML }
+      it_behaves_like 'ToNG(html)', alert, notice
+    end
+    shared_examples_for 'ToNG(html/json)' do |alert, notice|
+      let(:accept_headers) { ACCEPT_INC_JSON }
+      it_behaves_like 'ToNG(html)', alert, notice
+    end
+
+    shared_examples_for 'ToOK' do |alert, notice|
+      it_behaves_like 'ToOK(html/html)', alert, notice
+      it_behaves_like 'ToOK(html/json)', alert, notice
+      it_behaves_like 'To406(json/html)'
+      it_behaves_like 'To406(json/json)'
+    end
+    shared_examples_for 'ToNG' do |alert, notice|
+      it_behaves_like 'ToNG(html/html)', alert, notice
+      it_behaves_like 'ToNG(html/json)', alert, notice
+      it_behaves_like 'To406(json/html)'
+      it_behaves_like 'To406(json/json)'
+    end
+
     # テストケース
     shared_examples_for '[*][存在する]ロック日時がない（未ロック）' do
       include_context 'アカウントロック解除トークン作成', false
-      # it_behaves_like 'NG' # Tips: 元々、ロック日時がない
+      it_behaves_like 'NG'
       # it_behaves_like 'ToOK', nil, nil
       it_behaves_like 'ToOK', nil, 'devise.unlocks.unlocked' # Tips: 既に解除済み
     end
@@ -379,30 +402,39 @@ RSpec.describe 'Users::Auth::Unlocks', type: :request do
       # it_behaves_like 'ToNG', nil, nil # Tips: ActionController::RoutingError: Not Found
       it_behaves_like 'ToNG', 'activerecord.errors.models.user.attributes.unlock_token.blank', nil
     end
-    shared_examples_for '[*][存在する]ロック日時がある（ロック中）' do
+    shared_examples_for '[*][存在する]ロック日時が期限内（ロック中）' do
       include_context 'アカウントロック解除トークン作成', true
+      it_behaves_like 'OK'
+      it_behaves_like 'ToOK', nil, 'devise.unlocks.unlocked' # Tips: 解除されても良さそう
+    end
+    shared_examples_for '[*][存在する]ロック日時が期限切れ（未ロック）' do
+      include_context 'アカウントロック解除トークン作成', true, true
       it_behaves_like 'OK'
       it_behaves_like 'ToOK', nil, 'devise.unlocks.unlocked'
     end
 
     shared_examples_for '[*]トークンが存在する' do
       it_behaves_like '[*][存在する]ロック日時がない（未ロック）'
-      it_behaves_like '[*][存在する]ロック日時がある（ロック中）'
+      it_behaves_like '[*][存在する]ロック日時が期限内（ロック中）'
+      it_behaves_like '[*][存在する]ロック日時が期限切れ（未ロック）'
     end
     shared_examples_for '[*]トークンが存在しない' do
       let(:unlock_token) { NOT_TOKEN }
       it_behaves_like '[*][存在しない]ロック日時がない（未ロック）'
-      # it_behaves_like '[*][存在しない]ロック日時がある（ロック中）' # Tips: トークンが存在しない為、ロック日時がない
+      # it_behaves_like '[*][存在しない]ロック日時が期限内（ロック中）' # Tips: トークンが存在しない為、ロック日時がない
+      # it_behaves_like '[*][存在しない]ロック日時が期限切れ（未ロック）' # Tips: トークンが存在しない為、ロック日時がない
     end
     shared_examples_for '[*]トークンがない' do
       let(:unlock_token) { nil }
       it_behaves_like '[*][ない/空]ロック日時がない（未ロック）'
-      # it_behaves_like '[*][ない]ロック日時がある（ロック中）' # Tips: トークンが存在しない為、ロック日時がない
+      # it_behaves_like '[*][ない]ロック日時が期限内（ロック中）' # Tips: トークンが存在しない為、ロック日時がない
+      # it_behaves_like '[*][ない]ロック日時が期限切れ（未ロック）' # Tips: トークンが存在しない為、ロック日時がない
     end
     shared_examples_for '[*]トークンが空' do
       let(:unlock_token) { '' }
       it_behaves_like '[*][ない/空]ロック日時がない（未ロック）'
-      # it_behaves_like '[*][空]ロック日時がある（ロック中）' # Tips: トークンが存在しない為、ロック日時がない
+      # it_behaves_like '[*][空]ロック日時が期限内（ロック中）' # Tips: トークンが存在しない為、ロック日時がない
+      # it_behaves_like '[*][空]ロック日時が期限切れ（未ロック）' # Tips: トークンが存在しない為、ロック日時がない
     end
 
     context '未ログイン' do

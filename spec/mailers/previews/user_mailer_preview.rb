@@ -1,9 +1,14 @@
 # Preview all emails at http://localhost:3000/rails/mailers/user_mailer
 class UserMailerPreview < ActionMailer::Preview
   # アカウント削除受け付けのお知らせ
-  def destroy_reserved
+  def destroy_reserved(undo_delete_url = nil)
     user = FactoryBot.build_stubbed(:user_destroy_reserved)
-    UserMailer.with(user: user).destroy_reserved
+    UserMailer.with(user: user, undo_delete_url: undo_delete_url).destroy_reserved
+  end
+
+  def destroy_reserved_auth
+    undo_delete_url = Faker::Internet.url
+    destroy_reserved(undo_delete_url)
   end
 
   # アカウント削除取り消し完了のお知らせ

@@ -69,6 +69,7 @@ RSpec.describe 'Users::Registrations', type: :request do
 
     # テスト内容
     shared_examples_for 'OK' do
+      let(:url) { "http://#{Settings['base_domain']}#{user_confirmation_path}" }
       it '作成・対象項目が設定される。メールが送信される' do
         expect do
           subject
@@ -76,6 +77,8 @@ RSpec.describe 'Users::Registrations', type: :request do
 
           expect(ActionMailer::Base.deliveries.count).to eq(1)
           expect(ActionMailer::Base.deliveries[0].subject).to eq(get_subject('devise.mailer.confirmation_instructions.subject')) # メールアドレス確認のお願い
+          expect(ActionMailer::Base.deliveries[0].html_part.body).to include(url)
+          expect(ActionMailer::Base.deliveries[0].text_part.body).to include(url)
         end.to change(User, :count).by(1)
       end
     end
@@ -144,14 +147,14 @@ RSpec.describe 'Users::Registrations', type: :request do
     end
   end
 
-  # PUT(PATCH) /users/edit 登録情報変更(処理)
+  # POST /users/edit 登録情報変更(処理)
   # 前提条件
   #   なし
   # テストパターン
   #   未ログイン, ログイン中, ログイン中（メールアドレス変更中, 削除予約済み）
   #   有効なパラメータ（変更なし, あり）, 無効なパラメータ
-  describe 'PUT #update' do
-    subject { put update_user_registration_path, params: { user: attributes.merge(current_password: current_password) } }
+  describe 'POST #update' do
+    subject { post update_user_registration_path, params: { user: attributes.merge(current_password: current_password) } }
     let(:new_user)   { FactoryBot.attributes_for(:user) }
     let(:exist_user) { FactoryBot.create(:user) }
     let(:nochange_attributes) { { name: user.name, email: user.email, password: user.password } }
@@ -161,6 +164,7 @@ RSpec.describe 'Users::Registrations', type: :request do
 
     # テスト内容
     shared_examples_for 'OK' do |change_email|
+      let(:url) { "http://#{Settings['base_domain']}#{user_confirmation_path}" }
       it '対象項目が変更される。メールが送信される' do
         subject
         expect(current_user.unconfirmed_email).to change_email ? eq(attributes[:email]) : eq(user.unconfirmed_email) # 確認待ちメールアドレス
@@ -170,7 +174,11 @@ RSpec.describe 'Users::Registrations', type: :request do
         expect(ActionMailer::Base.deliveries.count).to eq(change_email ? 3 : 1)
         expect(ActionMailer::Base.deliveries[0].subject).to eq(get_subject('devise.mailer.email_changed.subject')) if change_email # メールアドレス変更受け付けのお知らせ
         expect(ActionMailer::Base.deliveries[change_email ? 1 : 0].subject).to eq(get_subject('devise.mailer.password_change.subject')) # パスワード変更完了のお知らせ
-        expect(ActionMailer::Base.deliveries[2].subject).to eq(get_subject('devise.mailer.confirmation_instructions.subject')) if change_email # メールアドレス確認のお願い
+        if change_email
+          expect(ActionMailer::Base.deliveries[2].subject).to eq(get_subject('devise.mailer.confirmation_instructions.subject')) # メールアドレス確認のお願い
+          expect(ActionMailer::Base.deliveries[2].html_part.body).to include(url)
+          expect(ActionMailer::Base.deliveries[2].text_part.body).to include(url)
+        end
       end
     end
     shared_examples_for 'NG' do
@@ -257,14 +265,14 @@ RSpec.describe 'Users::Registrations', type: :request do
     end
   end
 
-  # PUT(PATCH) /users/image 画像変更(処理)
+  # POST /users/image/update 画像変更(処理)
   # 前提条件
   #   なし
   # テストパターン
   #   未ログイン, ログイン中, ログイン中（削除予約済み）
   #   有効なパラメータ, 無効なパラメータ
-  describe 'PUT #image_update' do
-    subject { put update_user_image_registration_path, params: { user: attributes } }
+  describe 'POST #image_update' do
+    subject { post update_user_image_registration_path, params: { user: attributes } }
     let(:valid_attributes)   { { image: fixture_file_upload(TEST_IMAGE_FILE, TEST_IMAGE_TYPE) } }
     let(:invalid_attributes) { nil }
     let(:current_user) { User.find(user.id) }
@@ -335,13 +343,13 @@ RSpec.describe 'Users::Registrations', type: :request do
     end
   end
 
-  # DELETE /users/image 画像削除(処理)
+  # POST /users/image/destroy 画像削除(処理)
   # 前提条件
   #   なし
   # テストパターン
   #   未ログイン, ログイン中, ログイン中（削除予約済み）
-  describe 'DELETE #image_destroy' do
-    subject { delete delete_user_image_registration_path }
+  describe 'POST #image_destroy' do
+    subject { post delete_user_image_registration_path }
     let(:current_user) { User.find(user.id) }
 
     # テスト内容
@@ -397,32 +405,38 @@ RSpec.describe 'Users::Registrations', type: :request do
     end
   end
 
-  # DELETE /users/delete アカウント削除(処理)
+  # POST /users/delete アカウント削除(処理)
   # 前提条件
   #   なし
   # テストパターン
   #   未ログイン, ログイン中, ログイン中（削除予約済み）
-  describe 'DELETE #destroy' do
-    subject { delete destroy_user_registration_path }
+  describe 'POST #destroy' do
+    subject { post destroy_user_registration_path }
     let(:current_user) { User.find(user.id) }
 
     # テスト内容
     shared_examples_for 'OK' do
       let!(:start_time) { Time.current.floor }
-      it "削除依頼日時が現在日時に、削除予定日時が#{Settings['destroy_schedule_days']}日後に変更される" do
+      let(:url) { "http://#{Settings['base_domain']}#{delete_undo_user_registration_path}" }
+      it "削除依頼日時が現在日時に、削除予定日時が#{Settings['destroy_schedule_days']}日後に変更される。メールが送信される" do
         subject
         expect(current_user.destroy_requested_at).to be_between(start_time, Time.current)
         expect(current_user.destroy_schedule_at).to be_between(start_time + Settings['destroy_schedule_days'].days,
                                                                Time.current + Settings['destroy_schedule_days'].days)
+        expect(ActionMailer::Base.deliveries.count).to eq(1)
+        expect(ActionMailer::Base.deliveries[0].subject).to eq(get_subject('mailer.user.destroy_reserved.subject')) # アカウント削除受け付けのお知らせ
+        expect(ActionMailer::Base.deliveries[0].html_part.body).to include(url)
+        expect(ActionMailer::Base.deliveries[0].text_part.body).to include(url)
       end
     end
     shared_examples_for 'NG' do
       let!(:before_destroy_requested_at) { user.destroy_requested_at }
       let!(:before_destroy_schedule_at)  { user.destroy_schedule_at }
-      it '削除依頼日時・削除予定日時が変更されない' do
+      it '削除依頼日時・削除予定日時が変更されない。メールが送信されない' do
         subject
         expect(current_user.destroy_requested_at).to eq(before_destroy_requested_at)
         expect(current_user.destroy_schedule_at).to eq(before_destroy_schedule_at)
+        expect(ActionMailer::Base.deliveries.count).to eq(0)
       end
     end
 
@@ -465,28 +479,31 @@ RSpec.describe 'Users::Registrations', type: :request do
     end
   end
 
-  # DELETE /users/undo_delete アカウント削除取り消し(処理)
+  # POST /users/undo_delete アカウント削除取り消し(処理)
   # 前提条件
   #   なし
   # テストパターン
   #   未ログイン, ログイン中, ログイン中（削除予約済み）
-  describe 'DELETE #undo_destroy' do
-    subject { delete destroy_undo_user_registration_path }
+  describe 'POST #undo_destroy' do
+    subject { post destroy_undo_user_registration_path }
     let(:current_user) { User.find(user.id) }
 
     # テスト内容
     shared_examples_for 'OK' do
-      it '削除依頼日時・削除予定日時がなしに変更される' do
+      it '削除依頼日時・削除予定日時がなしに変更される。メールが送信される' do
         subject
         expect(current_user.destroy_requested_at).to be_nil
         expect(current_user.destroy_schedule_at).to be_nil
+        expect(ActionMailer::Base.deliveries.count).to eq(1)
+        expect(ActionMailer::Base.deliveries[0].subject).to eq(get_subject('mailer.user.undo_destroy_reserved.subject')) # アカウント削除取り消し完了のお知らせ
       end
     end
     shared_examples_for 'NG' do
-      it '削除依頼日時・削除予定日時が変更されない' do
+      it '削除依頼日時・削除予定日時が変更されない。メールが送信されない' do
         subject
         expect(current_user.destroy_requested_at).to eq(user.destroy_requested_at)
         expect(current_user.destroy_schedule_at).to eq(user.destroy_schedule_at)
+        expect(ActionMailer::Base.deliveries.count).to eq(0)
       end
     end
 

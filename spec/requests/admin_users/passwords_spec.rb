@@ -69,10 +69,13 @@ RSpec.describe 'AdminUsers::Passwords', type: :request do
 
     # テスト内容
     shared_examples_for 'OK' do
+      let(:url) { "http://#{Settings['base_domain']}#{edit_admin_user_password_path}" }
       it 'メールが送信される' do
         subject
         expect(ActionMailer::Base.deliveries.count).to eq(1)
         expect(ActionMailer::Base.deliveries[0].subject).to eq(get_subject('devise.mailer.reset_password_instructions.admin_user_subject')) # パスワード再設定方法のお知らせ
+        expect(ActionMailer::Base.deliveries[0].html_part.body).to include(url)
+        expect(ActionMailer::Base.deliveries[0].text_part.body).to include(url)
       end
     end
     shared_examples_for 'NG' do
@@ -130,7 +133,7 @@ RSpec.describe 'AdminUsers::Passwords', type: :request do
     end
   end
 
-  # GET /admin/password/edit パスワード再設定
+  # GET /admin/password パスワード再設定
   # 前提条件
   #   なし
   # テストパターン
@@ -198,15 +201,15 @@ RSpec.describe 'AdminUsers::Passwords', type: :request do
     end
   end
 
-  # PUT(PATCH) /admin/password パスワード再設定(処理)
+  # POST /admin/password パスワード再設定(処理)
   # 前提条件
   #   なし
   # テストパターン
   #   未ログイン, ログイン中
   #   トークン: 期限内（未ロック, ロック中）, 期限切れ, 存在しない, ない
   #   有効なパラメータ, 無効なパラメータ
-  describe 'PUT #update' do
-    subject { put update_admin_user_password_path, params: { admin_user: attributes } }
+  describe 'POST #update' do
+    subject { post update_admin_user_password_path, params: { admin_user: attributes } }
     let(:new_password) { Faker::Internet.password(min_length: 8) }
     let(:valid_attributes)   { { reset_password_token: reset_password_token, password: new_password, password_confirmation: new_password } }
     let(:invalid_attributes) { { reset_password_token: reset_password_token, password: nil, password_confirmation: nil } }

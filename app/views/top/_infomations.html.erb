@@ -1,31 +1,20 @@
-<article class="card m-1 mb-2">
-  <div class="card-body">
-    <h5 class="card-title"><%= link_to 'お知らせ', infomations_path, class: 'text-dark' %></h5>
-    <ul class="list-group">
-<% @infomations.each do |new_infomation| %>
-      <li class="list-group-item">
-        <div>
-          <span class="fw-bolder">
-<% if new_infomation.body.present? %>
-            <%= link_to new_infomation.title, infomation_path(new_infomation) %>
+<div class="card card-body mb-2">
+  <h5 class="card-title mb-3">大切なお知らせ</h5>
+  <div class="card-text">
+<% @infomations.each do |infomation| %>
+    <article class="mb-1">
+      <%= render 'infomations/label', infomation: infomation %>
+      <span>
+<% if infomation.body.present? || infomation.summary.present? %>
+        <%= link_to infomation.title, infomation_path(infomation) %>
 <% else %>
-            <%= new_infomation.title %>
+        <%= infomation.title %>
 <% end %>
-          </span>
-          (<%= l(new_infomation.started_at.to_date) %>)
-        </div>
-<% if new_infomation.summary.present? %>
-        <div class="fw-light">
-          <%= new_infomation.summary.html_safe %>
-        </div>
-<% end %>
-      </li>
-<% end %>
-    </ul>
-<% if @infomations.total_pages > 1 %>
-    <nav>
-      <%= link_to 'もっと見る', infomations_path, class: 'btn btn-info btn-rounded btn-sm m-2' %>
-    </nav>
+      </span>
+      <span>
+        (<%= l(infomation.started_at.to_date) %>)
+      </span>
+    </article>
 <% end %>
   </div>
-</article>
+</div>
