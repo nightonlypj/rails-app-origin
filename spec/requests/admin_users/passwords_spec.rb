@@ -201,15 +201,15 @@ RSpec.describe 'AdminUsers::Passwords', type: :request do
     end
   end
 
-  # POST /admin/password パスワード再設定(処理)
+  # PUT /admin/password パスワード再設定(処理)
   # 前提条件
   #   なし
   # テストパターン
   #   未ログイン, ログイン中
   #   トークン: 期限内（未ロック, ロック中）, 期限切れ, 存在しない, ない
   #   有効なパラメータ, 無効なパラメータ
-  describe 'POST #update' do
-    subject { post update_admin_user_password_path, params: { admin_user: attributes } }
+  describe 'PUT #update' do
+    subject { put update_admin_user_password_path, params: { admin_user: attributes } }
     let(:new_password) { Faker::Internet.password(min_length: 8) }
     let(:valid_attributes)   { { reset_password_token: reset_password_token, password: new_password, password_confirmation: new_password } }
     let(:invalid_attributes) { { reset_password_token: reset_password_token, password: nil, password_confirmation: nil } }

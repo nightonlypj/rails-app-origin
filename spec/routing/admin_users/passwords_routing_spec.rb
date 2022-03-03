@@ -24,7 +24,7 @@ RSpec.describe AdminUsers::PasswordsController, type: :routing do
     it 'routes to #update' do
       # expect(put: '/admin_users/password').to route_to('admin_users/passwords#update')
       expect(put: '/admin_users/password').not_to be_routable
-      expect(post: '/admin/password').to route_to('admin_users/passwords#update')
+      expect(put: '/admin/password').to route_to('admin_users/passwords#update')
     end
   end
 end

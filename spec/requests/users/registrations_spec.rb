@@ -147,14 +147,14 @@ RSpec.describe 'Users::Registrations', type: :request do
     end
   end
 
-  # POST /users/edit 登録情報変更(処理)
+  # PUT /users/edit 登録情報変更(処理)
   # 前提条件
   #   なし
   # テストパターン
   #   未ログイン, ログイン中, ログイン中（メールアドレス変更中, 削除予約済み）
   #   有効なパラメータ（変更なし, あり）, 無効なパラメータ
-  describe 'POST #update' do
-    subject { post update_user_registration_path, params: { user: attributes.merge(current_password: current_password) } }
+  describe 'PUT #update' do
+    subject { put update_user_registration_path, params: { user: attributes.merge(current_password: current_password) } }
     let(:new_user)   { FactoryBot.attributes_for(:user) }
     let(:exist_user) { FactoryBot.create(:user) }
     let(:nochange_attributes) { { name: user.name, email: user.email, password: user.password } }

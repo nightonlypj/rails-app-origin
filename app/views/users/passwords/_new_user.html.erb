@@ -1,5 +1,5 @@
 <% validate_enabled = resource.errors.any? %>
-<%= form_for(resource, as: resource_name, url: create_user_password_path, html: { method: :post, novalidate: true }, local: true) do |form| %>
+<%= form_with(model: resource, url: create_user_password_path, html: { method: :post, novalidate: true }, local: true) do |form| %>
   <div class="form-outline<%= input_size_class_name(resource, :email) %>">
     <%= form.email_field :email, autocomplete: 'email', class: "form-control#{validate_class_name(validate_enabled, resource, :email)}" %>
     <%= form.label 'メールアドレス', class: 'form-label', for: 'user_email' %>

@@ -12,7 +12,7 @@ Rails.application.routes.draw do
     get    'admin/password/new', to: 'admin_users/passwords#new',    as: 'new_admin_user_password'
     post   'admin/password/new', to: 'admin_users/passwords#create', as: 'create_admin_user_password'
     get    'admin/password',     to: 'admin_users/passwords#edit',   as: 'edit_admin_user_password'
-    post   'admin/password',     to: 'admin_users/passwords#update', as: 'update_admin_user_password'
+    put    'admin/password',     to: 'admin_users/passwords#update', as: 'update_admin_user_password'
   end
   mount RailsAdmin::Engine => '/admin', as: 'rails_admin'
 end

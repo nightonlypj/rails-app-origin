@@ -18,9 +18,8 @@ RSpec.describe Users::PasswordsController, type: :routing do
     it 'routes to #update' do
       # expect(put: '/users/password').to route_to('users/passwords#update')
       # expect(patch: '/users/password').to route_to('users/passwords#update')
-      expect(put: '/users/password').not_to be_routable
+      expect(put: '/users/password').to route_to('users/passwords#update')
       expect(patch: '/users/password').not_to be_routable
-      expect(post: '/users/password').to route_to('users/passwords#update')
     end
   end
 end

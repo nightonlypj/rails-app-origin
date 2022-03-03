@@ -1,5 +1,10 @@
 # リリースノート
 
+## 1.5.0 (Sprint 10)
+
+- form_forをform_withに変更したい
+  - https://dev.azure.com/nightonly/rails-app-origin/_workitems/edit/445/
+
 ## 1.4.0 (Sprint 9)
 
 - GETとPOSTに統一（PUT/PATCH/DELETEをPOSTに変更）したい

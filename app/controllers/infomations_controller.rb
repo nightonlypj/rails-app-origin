@@ -22,7 +22,7 @@ class InfomationsController < ApplicationAuthController
   # GET /infomations/1(.json) お知らせ詳細API
   def show
     @infomation = Infomation.find(params[:id])
-    return head :not_found if @infomation.blank? || !@infomation.target_user?(current_user) || @infomation.started_at > Time.current
+    return head :not_found if @infomation.blank? || !@infomation.display_target?(current_user) || @infomation.started_at > Time.current
 
     if @infomation.ended_at.present? && @infomation.ended_at < Time.current
       return head :not_found if format_html?

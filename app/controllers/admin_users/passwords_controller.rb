@@ -20,7 +20,7 @@ class AdminUsers::PasswordsController < Devise::PasswordsController
     super
   end
 
-  # POST /admin/password パスワード再設定(処理)
+  # PUT /admin/password パスワード再設定(処理)
   def update
     return redirect_to new_admin_user_password_path, alert: invalid_token_message unless valid_reset_password_token?(resource_params[:reset_password_token])
 

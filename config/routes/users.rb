@@ -4,7 +4,7 @@ Rails.application.routes.draw do
     get  'users/sign_up',          to: 'users/registrations#new',           as: 'new_user_registration'
     post 'users/sign_up',          to: 'users/registrations#create',        as: 'create_user_registration'
     get  'users/edit',             to: 'users/registrations#edit',          as: 'edit_user_registration'
-    post 'users/edit',             to: 'users/registrations#update',        as: 'update_user_registration'
+    put  'users/edit',             to: 'users/registrations#update',        as: 'update_user_registration'
     get  'users/image/update',     to: 'users/registrations#edit',          as: nil # Tips: URL直アクセス対応
     post 'users/image/update',     to: 'users/registrations#image_update',  as: 'update_user_image_registration'
     get  'users/image/destroy',    to: 'users/registrations#edit',          as: nil # Tips: URL直アクセス対応
@@ -26,7 +26,7 @@ Rails.application.routes.draw do
     get  'users/password/new',     to: 'users/passwords#new',               as: 'new_user_password'
     post 'users/password/new',     to: 'users/passwords#create',            as: 'create_user_password'
     get  'users/password',         to: 'users/passwords#edit',              as: 'edit_user_password'
-    post 'users/password',         to: 'users/passwords#update',            as: 'update_user_password'
+    put  'users/password',         to: 'users/passwords#update',            as: 'update_user_password'
 
     # Devise Token Auth
     post 'users/auth/sign_up',         to: 'users/auth/registrations#create',             as: 'create_user_auth_registration'

@@ -1,14 +1,14 @@
 require 'rails_helper'
 
 RSpec.describe Infomation, type: :model do
-  # 対象かを返却
+  # 表示対象かを返却
   # 前提条件
   #   なし
   # テストパターン
   #   未ログイン, ログイン中, ログイン中（削除予約済み）
   #   対象: 全員, 自分, 他人
-  describe '#target_user?' do
-    subject { infomation.target_user?(user) }
+  describe '#display_target?' do
+    subject { infomation.display_target?(user) }
     let(:infomation)   { FactoryBot.create(:infomation, target: target, user_id: user_id) }
     let(:outside_user) { FactoryBot.create(:user) }
 

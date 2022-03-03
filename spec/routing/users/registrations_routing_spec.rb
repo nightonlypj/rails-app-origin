@@ -18,7 +18,7 @@ RSpec.describe Users::RegistrationsController, type: :routing do
       # expect(patch: '/users').to route_to('users/registrations#update')
       expect(put: '/users').not_to be_routable
       expect(patch: '/users').not_to be_routable
-      expect(post: '/users/edit').to route_to('users/registrations#update')
+      expect(put: '/users/edit').to route_to('users/registrations#update')
     end
     it 'routes to #image_update' do
       expect(get: '/users/image/update').to route_to('users/registrations#edit') # Tips: URL直アクセス対応

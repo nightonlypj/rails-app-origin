@@ -24,8 +24,8 @@ ja:
     infomation:
       label:
         Not: ''
-        Hindrance: '障害'
         Maintenance: 'メンテナンス'
+        Hindrance: '障害'
         Other: 'その他'
       target:
         All: '全員'
