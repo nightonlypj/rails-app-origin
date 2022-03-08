@@ -245,7 +245,6 @@ GEM
     parallel (1.21.0)
     parser (3.0.2.0)
       ast (~> 2.4.1)
-    pg (1.2.3)
     pry (0.14.1)
       coderay (~> 1.1)
       method_source (~> 1.0)
@@ -457,7 +456,6 @@ DEPENDENCIES
   mini_magick
   mysql2 (>= 0.4.4)
   paper_trail
-  pg (~> 1.1)
   puma (~> 4.1)
   rack-cors
   rails (~> 6.1.4)

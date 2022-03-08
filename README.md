@@ -36,6 +36,7 @@ $ cd rails-app-origin
 
 $ docker-compose build
 $ docker-compose up
+（DBのみ起動 $ docker-compose up db）
 または $ docker-compose up --build
 ```
 ※終了は、Ctrl+C
