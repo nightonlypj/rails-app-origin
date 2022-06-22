@@ -2,6 +2,8 @@
 
 ## 1.5.0 (Sprint 10)
 
+- ECS(Fargate)でアプリを動かしたい
+  - https://dev.azure.com/nightonly/rails-app-origin/_workitems/edit/459/
 - form_forをform_withに変更したい
   - https://dev.azure.com/nightonly/rails-app-origin/_workitems/edit/445/
 

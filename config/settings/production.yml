@@ -1,0 +1,10 @@
+env_name: <%= ENV['ENV_NAME'] %> # (空) or 【STG環境】 or 【テスト環境】
+base_domain: <%= ENV['BASE_DOMAIN'] %> # example.com
+base_image_url: <%= ENV['BASE_IMAGE_URL'] || "https://#{ENV['BASE_DOMAIN']}" %> # https://example.com
+redirect_whitelist: <%= eval(ENV['REDIRECT_WHITELIST'] || '[]') %> # ['https://front.example.com/*']
+default_confirm_success_url: <%= ENV['DEFAULT_CONFIRM_SUCCESS_URL'] %> # (空)
+default_password_reset_url: <%= ENV['DEFAULT_PASSWORD_RESET_URL'] %> # (空)
+default_unlock_success_url: <%= ENV['DEFAULT_UNLOCK_SUCCESS_URL'] %> # (空)
+mailer_from:
+  name: <%= ENV['MAILER_FROM_NAME'] || "'%{app_name}'" %>
+  email: <%= ENV['MAILER_FROM_EMAIL'] || "noreply@#{ENV['BASE_DOMAIN']}" %> # noreply@example.com

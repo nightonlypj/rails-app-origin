@@ -1,11 +1,11 @@
 namespace :user do
   desc '削除予定日時を過ぎたユーザーのアカウントを削除'
-  task(:destroy, [:dry_run] => :environment) do |_, args|
+  task(:destroy, [:dry_run] => :environment) do |task, args|
     args.with_defaults(dry_run: 'true')
     dry_run = (args.dry_run != 'false')
 
-    logger = Logger.new("log/user_destroy_#{Rails.env}.log")
-    logger.info('=== START ===')
+    logger = new_logger(task.name)
+    logger.info("=== START #{task.name} ===")
     logger.info("dry_run: #{dry_run}")
 
     ActiveRecord::Base.connection_pool.with_connection do # Tips: 念の為（PG::UnableToSend: no connection to the server対策）
@@ -29,6 +29,6 @@ namespace :user do
       end
     end
 
-    logger.info('=== END ===')
+    logger.info("=== END #{task.name} ===")
   end
 end
