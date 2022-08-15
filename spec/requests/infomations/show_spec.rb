@@ -14,8 +14,11 @@ RSpec.describe 'Infomations', type: :request do
   #   ＋Acceptヘッダ: HTMLが含まれる, JSONが含まれる
   describe 'GET #show' do
     subject { get infomation_path(id: infomation.id, format: subject_format), headers: auth_headers.merge(accept_headers) }
-    let(:infomation)   { FactoryBot.create(:infomation, started_at: started_at, ended_at: ended_at, target: target, user_id: user_id) }
-    let(:outside_user) { FactoryBot.create(:user) }
+    let_it_be(:outside_user) { FactoryBot.create(:user) }
+
+    shared_context 'お知らせ作成' do
+      let_it_be(:infomation) { FactoryBot.create(:infomation, started_at: started_at, ended_at: ended_at, target: target, user_id: user_id) }
+    end
 
     # テスト内容
     shared_examples_for 'ToOK(html)' do
@@ -87,133 +90,148 @@ RSpec.describe 'Infomations', type: :request do
 
     # テストケース
     shared_examples_for '[*][全員][過去]終了日時が過去' do
-      let(:ended_at) { Time.current - 1.day }
+      let_it_be(:ended_at) { Time.current - 1.day }
+      include_context 'お知らせ作成'
       it_behaves_like 'ToNot'
       it_behaves_like 'ToNot(json)', false, 'errors.messages.infomation.ended', nil
     end
     shared_examples_for '[ログイン中/削除予約済み][自分][過去]終了日時が過去' do
-      let(:ended_at) { Time.current - 1.day }
+      let_it_be(:ended_at) { Time.current - 1.day }
+      include_context 'お知らせ作成'
       it_behaves_like 'ToNot'
       it_behaves_like 'ToNot(json)', nil, nil, nil # Tips: APIは未ログイン扱いの為、他人
     end
     shared_examples_for '[APIログイン中/削除予約済み][自分][過去]終了日時が過去' do
-      let(:ended_at) { Time.current - 1.day }
+      let_it_be(:ended_at) { Time.current - 1.day }
+      include_context 'お知らせ作成'
       it_behaves_like 'ToNot'
       it_behaves_like 'ToNot(json)', false, 'errors.messages.infomation.ended', nil
     end
     shared_examples_for '[*][他人][過去]終了日時が過去' do
-      let(:ended_at) { Time.current - 1.day }
+      let_it_be(:ended_at) { Time.current - 1.day }
+      include_context 'お知らせ作成'
       it_behaves_like 'ToNot'
       it_behaves_like 'ToNot(json)', nil, nil, nil
     end
     shared_examples_for '[*][*][未来]終了日時が過去' do # Tips: 不整合
-      let(:ended_at) { Time.current - 1.day }
+      let_it_be(:ended_at) { Time.current - 1.day }
+      include_context 'お知らせ作成'
       it_behaves_like 'ToNot'
       it_behaves_like 'ToNot(json)', nil, nil, nil
     end
     shared_examples_for '[*][全員][過去]終了日時が未来' do
-      let(:ended_at) { Time.current + 1.day }
+      let_it_be(:ended_at) { Time.current + 1.day }
+      include_context 'お知らせ作成'
       it_behaves_like 'ToOK'
       it_behaves_like 'ToOK(json)'
     end
     shared_examples_for '[ログイン中/削除予約済み][自分][過去]終了日時が未来' do
-      let(:ended_at) { Time.current + 1.day }
+      let_it_be(:ended_at) { Time.current + 1.day }
+      include_context 'お知らせ作成'
       it_behaves_like 'ToOK'
       it_behaves_like 'ToNot(json)', nil, nil, nil # Tips: APIは未ログイン扱いの為、他人
     end
     shared_examples_for '[APIログイン中/削除予約済み][自分][過去]終了日時が未来' do
-      let(:ended_at) { Time.current + 1.day }
+      let_it_be(:ended_at) { Time.current + 1.day }
+      include_context 'お知らせ作成'
       it_behaves_like 'ToOK' # Tips: HTMLもログイン状態になる
       it_behaves_like 'ToOK(json)'
     end
     shared_examples_for '[*][他人][過去]終了日時が未来' do
-      let(:ended_at) { Time.current + 1.day }
+      let_it_be(:ended_at) { Time.current + 1.day }
+      include_context 'お知らせ作成'
       it_behaves_like 'ToNot'
       it_behaves_like 'ToNot(json)', nil, nil, nil
     end
     shared_examples_for '[*][*][未来]終了日時が未来' do
-      let(:ended_at) { Time.current + 1.day }
+      let_it_be(:ended_at) { Time.current + 1.day }
+      include_context 'お知らせ作成'
       it_behaves_like 'ToNot'
       it_behaves_like 'ToNot(json)', nil, nil, nil
     end
     shared_examples_for '[*][全員][過去]終了日時がない' do
-      let(:ended_at) { nil }
+      let_it_be(:ended_at) { nil }
+      include_context 'お知らせ作成'
       it_behaves_like 'ToOK'
       it_behaves_like 'ToOK(json)'
     end
     shared_examples_for '[ログイン中/削除予約済み][自分][過去]終了日時がない' do
-      let(:ended_at) { nil }
+      let_it_be(:ended_at) { nil }
+      include_context 'お知らせ作成'
       it_behaves_like 'ToOK'
       it_behaves_like 'ToNot(json)', nil, nil, nil # Tips: APIは未ログイン扱いの為、他人
     end
     shared_examples_for '[APIログイン中/削除予約済み][自分][過去]終了日時がない' do
-      let(:ended_at) { nil }
+      let_it_be(:ended_at) { nil }
+      include_context 'お知らせ作成'
       it_behaves_like 'ToOK' # Tips: HTMLもログイン状態になる
       it_behaves_like 'ToOK(json)'
     end
     shared_examples_for '[*][他人][過去]終了日時がない' do
-      let(:ended_at) { nil }
+      let_it_be(:ended_at) { nil }
+      include_context 'お知らせ作成'
       it_behaves_like 'ToNot'
       it_behaves_like 'ToNot(json)', nil, nil, nil
     end
     shared_examples_for '[*][*][未来]終了日時がない' do
-      let(:ended_at) { nil }
+      let_it_be(:ended_at) { nil }
+      include_context 'お知らせ作成'
       it_behaves_like 'ToNot'
       it_behaves_like 'ToNot(json)', nil, nil, nil
     end
 
     shared_examples_for '[*][全員]開始日時が過去' do
-      let(:started_at) { Time.current - 1.day }
+      let_it_be(:started_at) { Time.current - 1.day }
       it_behaves_like '[*][全員][過去]終了日時が過去'
       it_behaves_like '[*][全員][過去]終了日時が未来'
       it_behaves_like '[*][全員][過去]終了日時がない'
     end
     shared_examples_for '[ログイン中/削除予約済み][自分]開始日時が過去' do
-      let(:started_at) { Time.current - 1.day }
+      let_it_be(:started_at) { Time.current - 1.day }
       it_behaves_like '[ログイン中/削除予約済み][自分][過去]終了日時が過去'
       it_behaves_like '[ログイン中/削除予約済み][自分][過去]終了日時が未来'
       it_behaves_like '[ログイン中/削除予約済み][自分][過去]終了日時がない'
     end
     shared_examples_for '[APIログイン中/削除予約済み][自分]開始日時が過去' do
-      let(:started_at) { Time.current - 1.day }
+      let_it_be(:started_at) { Time.current - 1.day }
       it_behaves_like '[APIログイン中/削除予約済み][自分][過去]終了日時が過去'
       it_behaves_like '[APIログイン中/削除予約済み][自分][過去]終了日時が未来'
       it_behaves_like '[APIログイン中/削除予約済み][自分][過去]終了日時がない'
     end
     shared_examples_for '[*][他人]開始日時が過去' do
-      let(:started_at) { Time.current - 1.day }
+      let_it_be(:started_at) { Time.current - 1.day }
       it_behaves_like '[*][他人][過去]終了日時が過去'
       it_behaves_like '[*][他人][過去]終了日時が未来'
       it_behaves_like '[*][他人][過去]終了日時がない'
     end
     shared_examples_for '[*][*]開始日時が未来' do
-      let(:started_at) { Time.current + 1.day }
+      let_it_be(:started_at) { Time.current + 1.day }
       it_behaves_like '[*][*][未来]終了日時が過去'
       it_behaves_like '[*][*][未来]終了日時が未来'
       it_behaves_like '[*][*][未来]終了日時がない'
     end
 
     shared_examples_for '[*]対象が全員' do
-      let(:target)  { :All }
-      let(:user_id) { nil }
+      let_it_be(:target)  { :All }
+      let_it_be(:user_id) { nil }
       it_behaves_like '[*][全員]開始日時が過去'
       it_behaves_like '[*][*]開始日時が未来'
     end
     shared_examples_for '[ログイン中/削除予約済み]対象が自分' do
-      let(:target)  { :User }
-      let(:user_id) { user.id }
+      let_it_be(:target)  { :User }
+      let_it_be(:user_id) { user.id }
       it_behaves_like '[ログイン中/削除予約済み][自分]開始日時が過去'
       it_behaves_like '[*][*]開始日時が未来'
     end
     shared_examples_for '[APIログイン中/削除予約済み]対象が自分' do
-      let(:target)  { :User }
-      let(:user_id) { user.id }
+      let_it_be(:target)  { :User }
+      let_it_be(:user_id) { user.id }
       it_behaves_like '[APIログイン中/削除予約済み][自分]開始日時が過去'
       it_behaves_like '[*][*]開始日時が未来'
     end
     shared_examples_for '[*]対象が他人' do
-      let(:target)  { :User }
-      let(:user_id) { outside_user.id }
+      let_it_be(:target)  { :User }
+      let_it_be(:user_id) { outside_user.id }
       it_behaves_like '[*][他人]開始日時が過去'
       it_behaves_like '[*][*]開始日時が未来'
     end
@@ -231,7 +249,7 @@ RSpec.describe 'Infomations', type: :request do
       it_behaves_like '[*]対象が他人'
     end
     context 'ログイン中（削除予約済み）' do
-      include_context 'ログイン処理', :user_destroy_reserved
+      include_context 'ログイン処理', :destroy_reserved
       it_behaves_like '[*]対象が全員'
       it_behaves_like '[ログイン中/削除予約済み]対象が自分'
       it_behaves_like '[*]対象が他人'
@@ -243,7 +261,7 @@ RSpec.describe 'Infomations', type: :request do
       it_behaves_like '[*]対象が他人'
     end
     context 'APIログイン中（削除予約済み）' do
-      include_context 'APIログイン処理', :user_destroy_reserved
+      include_context 'APIログイン処理', :destroy_reserved
       it_behaves_like '[*]対象が全員'
       it_behaves_like '[APIログイン中/削除予約済み]対象が自分'
       it_behaves_like '[*]対象が他人'

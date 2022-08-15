@@ -28,9 +28,9 @@ RSpec.describe 'Users::Auth::Unlocks', type: :request do
   #   ＋Acceptヘッダ: JSONが含まれる, JSONが含まれない
   describe 'POST #create' do
     subject { post create_user_auth_unlock_path(format: subject_format), params: attributes, headers: auth_headers.merge(accept_headers) }
-    let(:send_user_locked)   { FactoryBot.create(:user_locked) }
-    let(:send_user_unlocked) { FactoryBot.create(:user) }
-    let(:not_user)           { FactoryBot.attributes_for(:user) }
+    let_it_be(:send_user_locked)   { FactoryBot.create(:user, :locked) }
+    let_it_be(:send_user_unlocked) { FactoryBot.create(:user) }
+    let_it_be(:not_user)           { FactoryBot.attributes_for(:user) }
     let(:valid_attributes)       { { email: send_user.email, redirect_url: FRONT_SITE_URL } }
     let(:invalid_attributes)     { { email: not_user[:email], redirect_url: FRONT_SITE_URL } }
     let(:invalid_nil_attributes) { { email: send_user_locked.email, redirect_url: nil } }

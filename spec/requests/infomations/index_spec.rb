@@ -249,7 +249,7 @@ RSpec.describe 'Infomations', type: :request do
     end
     context 'ログイン中（削除予約済み）' do
       let(:infomations) { @all_infomations } # Tips: APIは未ログイン扱いの為、全員のしか見れない
-      include_context 'ログイン処理', :user_destroy_reserved
+      include_context 'ログイン処理', :destroy_reserved
       it_behaves_like '[*]お知らせがない'
       it_behaves_like '[ログイン中/削除予約済み]お知らせが最大表示数と同じ'
       it_behaves_like '[ログイン中/削除予約済み]お知らせが最大表示数より多い'
@@ -263,7 +263,7 @@ RSpec.describe 'Infomations', type: :request do
     end
     context 'APIログイン中（削除予約済み）' do
       let(:infomations) { @user_infomations }
-      include_context 'APIログイン処理', :user_destroy_reserved
+      include_context 'APIログイン処理', :destroy_reserved
       it_behaves_like '[*]お知らせがない'
       it_behaves_like '[APIログイン中/削除予約済み]お知らせが最大表示数と同じ'
       it_behaves_like '[APIログイン中/削除予約済み]お知らせが最大表示数より多い'

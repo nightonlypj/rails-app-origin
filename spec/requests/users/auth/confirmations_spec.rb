@@ -28,10 +28,10 @@ RSpec.describe 'Users::Auth::Confirmations', type: :request do
   #   ＋Acceptヘッダ: JSONが含まれる, JSONが含まれない
   describe 'POST #create' do
     subject { post create_user_auth_confirmation_path(format: subject_format), params: attributes, headers: auth_headers.merge(accept_headers) }
-    let(:send_user_unconfirmed)   { FactoryBot.create(:user_unconfirmed) }
-    let(:send_user_confirmed)     { FactoryBot.create(:user) }
-    let(:send_user_email_changed) { FactoryBot.create(:user_email_changed) }
-    let(:not_user)                { FactoryBot.attributes_for(:user) }
+    let_it_be(:send_user_unconfirmed)   { FactoryBot.create(:user, :unconfirmed) }
+    let_it_be(:send_user_confirmed)     { FactoryBot.create(:user) }
+    let_it_be(:send_user_email_changed) { FactoryBot.create(:user, :email_changed) }
+    let_it_be(:not_user)                { FactoryBot.attributes_for(:user) }
     let(:valid_attributes)       { { email: send_user.email, redirect_url: FRONT_SITE_URL } }
     let(:invalid_attributes)     { { email: not_user[:email], redirect_url: FRONT_SITE_URL } }
     let(:invalid_nil_attributes) { { email: send_user_unconfirmed.email, redirect_url: nil } }
@@ -372,19 +372,19 @@ RSpec.describe 'Users::Auth::Confirmations', type: :request do
     end
 
     shared_examples_for '[未ログイン]トークンが期限内' do
-      let(:confirmation_sent_at) { Time.now.utc }
+      let_it_be(:confirmation_sent_at) { Time.now.utc }
       it_behaves_like '[未ログイン][期限内]確認日時がない（未確認）'
       it_behaves_like '[未ログイン][期限内]確認日時が確認送信日時より前（未確認）'
       it_behaves_like '[*][期限内]確認日時が確認送信日時より後（確認済み）'
     end
     shared_examples_for '[ログイン中]トークンが期限内' do
-      let(:confirmation_sent_at) { Time.now.utc }
+      let_it_be(:confirmation_sent_at) { Time.now.utc }
       it_behaves_like '[ログイン中][期限内]確認日時がない（未確認）'
       it_behaves_like '[ログイン中][期限内]確認日時が確認送信日時より前（未確認）'
       it_behaves_like '[*][期限内]確認日時が確認送信日時より後（確認済み）'
     end
     shared_examples_for '[*]トークンが期限切れ' do
-      let(:confirmation_sent_at) { Time.now.utc - User.confirm_within - 1.hour }
+      let_it_be(:confirmation_sent_at) { Time.now.utc - User.confirm_within - 1.hour }
       it_behaves_like '[*][期限切れ]確認日時がない（未確認）'
       it_behaves_like '[*][期限切れ]確認日時が確認送信日時より前（未確認）'
       it_behaves_like '[*][期限切れ]確認日時が確認送信日時より後（確認済み）'

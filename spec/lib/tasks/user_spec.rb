@@ -9,22 +9,20 @@ RSpec.describe :user, type: :task do
   #   ドライラン: true, false
   describe 'user:destroy' do
     let(:task) { Rake.application['user:destroy'] }
-    let!(:user1) { FactoryBot.create(:user) }
-    let!(:user2) { FactoryBot.create(:user_destroy_reserved) }
-    before do
+    let_it_be(:user1) { FactoryBot.create(:user) }
+    let_it_be(:user2) { FactoryBot.create(:user, :destroy_reserved) }
+    before_all do
       FactoryBot.create(:infomation) # :All
       FactoryBot.create(:infomation, target: :User, user_id: user1.id)
       FactoryBot.create(:infomation, target: :User, user_id: user2.id)
     end
 
     shared_context 'ユーザー作成3' do
-      let!(:user3) { FactoryBot.create(:user_destroy_targeted) }
+      let_it_be(:user3) { FactoryBot.create(:user, :destroy_targeted) }
     end
     shared_context 'ユーザー作成4' do
-      let!(:user4) { FactoryBot.create(:user_destroy_targeted) }
-      before do
-        FactoryBot.create(:infomation, target: :User, user_id: user4.id)
-      end
+      let_it_be(:user4) { FactoryBot.create(:user, :destroy_targeted) }
+      before_all { FactoryBot.create(:infomation, target: :User, user_id: user4.id) }
     end
 
     # テスト内容

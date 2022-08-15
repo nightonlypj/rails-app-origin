@@ -25,15 +25,15 @@ RSpec.describe 'Users::Auth::Sessions', type: :request do
   #   ＋Acceptヘッダ: JSONが含まれる, JSONが含まれない
   describe 'POST #create' do
     subject { post create_user_auth_session_path(format: subject_format), params: attributes, headers: auth_headers.merge(accept_headers) }
-    let(:send_user_unlocked)         { FactoryBot.create(:user) }
-    let(:send_user_locked)           { FactoryBot.create(:user_locked) }
-    let(:send_user_unconfirmed)      { FactoryBot.create(:user_unconfirmed) }
-    let(:send_user_email_changed)    { FactoryBot.create(:user_email_changed) }
-    let(:send_user_destroy_reserved) { FactoryBot.create(:user_destroy_reserved) }
-    let(:not_user)                   { FactoryBot.attributes_for(:user) }
-    let(:send_user_before_lock1)     { FactoryBot.create(:user_before_lock1) }
-    let(:send_user_before_lock2)     { FactoryBot.create(:user_before_lock2) }
-    let(:send_user_before_lock3)     { FactoryBot.create(:user_before_lock3) }
+    let_it_be(:send_user_unlocked)         { FactoryBot.create(:user) }
+    let_it_be(:send_user_locked)           { FactoryBot.create(:user, :locked) }
+    let_it_be(:send_user_unconfirmed)      { FactoryBot.create(:user, :unconfirmed) }
+    let_it_be(:send_user_email_changed)    { FactoryBot.create(:user, :email_changed) }
+    let_it_be(:send_user_destroy_reserved) { FactoryBot.create(:user, :destroy_reserved) }
+    let_it_be(:not_user)                   { FactoryBot.attributes_for(:user) }
+    let_it_be(:send_user_before_lock1)     { FactoryBot.create(:user, :before_lock1) }
+    let_it_be(:send_user_before_lock2)     { FactoryBot.create(:user, :before_lock2) }
+    let_it_be(:send_user_before_lock3)     { FactoryBot.create(:user, :before_lock3) }
     let(:valid_attributes)        { { email: send_user.email, password: send_user.password, unlock_redirect_url: FRONT_SITE_URL } }
     let(:invalid_not_attributes)  { { email: not_user[:email], password: not_user[:password], unlock_redirect_url: FRONT_SITE_URL } }
     let(:invalid_pass_attributes) { { email: send_user.email, password: "n#{send_user.password}", unlock_redirect_url: FRONT_SITE_URL } }
@@ -318,7 +318,7 @@ RSpec.describe 'Users::Auth::Sessions', type: :request do
       it_behaves_like '[*]URLがホワイトリストにない'
     end
     context 'APIログイン中（削除予約済み）' do
-      include_context 'APIログイン処理', :user_destroy_reserved
+      include_context 'APIログイン処理', :destroy_reserved
       it_behaves_like '[APIログイン中/削除予約済み]パラメータなし'
       it_behaves_like '[APIログイン中/削除予約済み]有効なパラメータ（未ロック）'
       it_behaves_like '[APIログイン中/削除予約済み]有効なパラメータ（ロック中）'
@@ -401,7 +401,7 @@ RSpec.describe 'Users::Auth::Sessions', type: :request do
       it_behaves_like 'ToMsg', nil, nil, 'devise.sessions.signed_out'
     end
     context 'APIログイン中（削除予約済み）' do
-      include_context 'APIログイン処理', :user_destroy_reserved
+      include_context 'APIログイン処理', :destroy_reserved
       it_behaves_like 'ToOK'
       # it_behaves_like 'ToMsg', nil, nil, nil
       it_behaves_like 'ToMsg', nil, nil, 'devise.sessions.signed_out'

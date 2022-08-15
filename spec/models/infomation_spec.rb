@@ -9,8 +9,7 @@ RSpec.describe Infomation, type: :model do
   #   対象: 全員, 自分, 他人
   describe '#display_target?' do
     subject { infomation.display_target?(user) }
-    let(:infomation)   { FactoryBot.create(:infomation, target: target, user_id: user_id) }
-    let(:outside_user) { FactoryBot.create(:user) }
+    let_it_be(:outside_user) { FactoryBot.create(:user) }
 
     # テスト内容
     shared_examples_for 'OK' do
@@ -26,18 +25,15 @@ RSpec.describe Infomation, type: :model do
 
     # テストケース
     shared_examples_for '[*]対象が全員' do
-      let(:user_id) { nil }
-      let(:target)  { :All }
+      let_it_be(:infomation) { FactoryBot.create(:infomation, target: :All) }
       it_behaves_like 'OK'
     end
     shared_examples_for '[ログイン中/削除予約済み]対象が自分' do
-      let(:user_id) { user.id }
-      let(:target)  { :User }
+      let_it_be(:infomation) { FactoryBot.create(:infomation, target: :User, user_id: user.id) }
       it_behaves_like 'OK'
     end
     shared_examples_for '[*]対象が他人' do
-      let(:user_id) { outside_user.id }
-      let(:target)  { :User }
+      let_it_be(:infomation) { FactoryBot.create(:infomation, target: :User, user_id: outside_user.id) }
       it_behaves_like 'NG'
     end
 
@@ -48,13 +44,13 @@ RSpec.describe Infomation, type: :model do
       it_behaves_like '[*]対象が他人'
     end
     context 'ログイン中' do
-      let(:user) { FactoryBot.create(:user) }
+      include_context 'ユーザー作成'
       it_behaves_like '[*]対象が全員'
       it_behaves_like '[ログイン中/削除予約済み]対象が自分'
       it_behaves_like '[*]対象が他人'
     end
     context 'ログイン中（削除予約済み）' do
-      let(:user) { FactoryBot.create(:user_destroy_reserved) }
+      include_context 'ユーザー作成', :destroy_reserved
       it_behaves_like '[*]対象が全員'
       it_behaves_like '[ログイン中/削除予約済み]対象が自分'
       it_behaves_like '[*]対象が他人'

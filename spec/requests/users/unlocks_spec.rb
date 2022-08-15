@@ -54,9 +54,9 @@ RSpec.describe 'Users::Unlocks', type: :request do
   #   有効なパラメータ（ロック中, 未ロック）, 無効なパラメータ
   describe 'POST #create' do
     subject { post create_user_unlock_path, params: { user: attributes } }
-    let(:send_user_locked)   { FactoryBot.create(:user_locked) }
-    let(:send_user_unlocked) { FactoryBot.create(:user) }
-    let(:not_user)           { FactoryBot.attributes_for(:user) }
+    let_it_be(:send_user_locked)   { FactoryBot.create(:user, :locked) }
+    let_it_be(:send_user_unlocked) { FactoryBot.create(:user) }
+    let_it_be(:not_user)           { FactoryBot.attributes_for(:user) }
     let(:valid_attributes)   { { email: send_user.email } }
     let(:invalid_attributes) { { email: not_user[:email] } }
 

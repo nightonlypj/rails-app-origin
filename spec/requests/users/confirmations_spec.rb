@@ -52,7 +52,7 @@ RSpec.describe 'Users::Confirmations', type: :request do
       it_behaves_like 'ToOK' # Tips: リンクないけど、送れても良さそう
     end
     context 'ログイン中（メールアドレス変更中）' do
-      include_context 'ログイン処理', :user_email_changed
+      include_context 'ログイン処理', :email_changed
       it_behaves_like 'ToOK' # Tips: ログイン中でも再送したい
     end
   end
@@ -65,10 +65,10 @@ RSpec.describe 'Users::Confirmations', type: :request do
   #   有効なパラメータ（メール未確認, メール確認済み, メールアドレス変更中）, 無効なパラメータ
   describe 'POST #create' do
     subject { post create_user_confirmation_path, params: { user: attributes } }
-    let(:send_user_unconfirmed)   { FactoryBot.create(:user_unconfirmed) }
-    let(:send_user_confirmed)     { FactoryBot.create(:user) }
-    let(:send_user_email_changed) { FactoryBot.create(:user_email_changed) }
-    let(:not_user)                { FactoryBot.attributes_for(:user) }
+    let_it_be(:send_user_unconfirmed)   { FactoryBot.create(:user, :unconfirmed) }
+    let_it_be(:send_user_confirmed)     { FactoryBot.create(:user) }
+    let_it_be(:send_user_email_changed) { FactoryBot.create(:user, :email_changed) }
+    let_it_be(:not_user)                { FactoryBot.attributes_for(:user) }
     let(:valid_attributes)   { { email: send_user.email } }
     let(:invalid_attributes) { { email: not_user[:email] } }
 
@@ -207,19 +207,19 @@ RSpec.describe 'Users::Confirmations', type: :request do
     end
 
     shared_examples_for '[未ログイン]トークンが期限内' do
-      let(:confirmation_sent_at) { Time.now.utc }
+      let_it_be(:confirmation_sent_at) { Time.now.utc }
       it_behaves_like '[未ログイン][期限内]確認日時がない（未確認）'
       it_behaves_like '[未ログイン][期限内]確認日時が確認送信日時より前（未確認）'
       it_behaves_like '[未ログイン][期限内]確認日時が確認送信日時より後（確認済み）'
     end
     shared_examples_for '[ログイン中]トークンが期限内' do
-      let(:confirmation_sent_at) { Time.now.utc }
+      let_it_be(:confirmation_sent_at) { Time.now.utc }
       it_behaves_like '[ログイン中][期限内]確認日時がない（未確認）'
       it_behaves_like '[ログイン中][期限内]確認日時が確認送信日時より前（未確認）'
       it_behaves_like '[ログイン中][期限内]確認日時が確認送信日時より後（確認済み）'
     end
     shared_examples_for '[*]トークンが期限切れ' do
-      let(:confirmation_sent_at) { Time.now.utc - User.confirm_within - 1.hour }
+      let_it_be(:confirmation_sent_at) { Time.now.utc - User.confirm_within - 1.hour }
       it_behaves_like '[*][期限切れ]確認日時がない（未確認）'
       it_behaves_like '[*][期限切れ]確認日時が確認送信日時より前（未確認）'
       it_behaves_like '[*][期限切れ]確認日時が確認送信日時より後（確認済み）'

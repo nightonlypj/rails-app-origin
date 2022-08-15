@@ -54,9 +54,9 @@ RSpec.describe 'AdminUsers::Unlocks', type: :request do
   #   有効なパラメータ（ロック中, 未ロック）, 無効なパラメータ
   describe 'POST #create' do
     subject { post create_admin_user_unlock_path, params: { admin_user: attributes } }
-    let(:send_admin_user_locked)   { FactoryBot.create(:admin_user_locked) }
-    let(:send_admin_user_unlocked) { FactoryBot.create(:admin_user) }
-    let(:not_admin_user)           { FactoryBot.attributes_for(:admin_user) }
+    let_it_be(:send_admin_user_locked)   { FactoryBot.create(:admin_user, :locked) }
+    let_it_be(:send_admin_user_unlocked) { FactoryBot.create(:admin_user) }
+    let_it_be(:not_admin_user)           { FactoryBot.attributes_for(:admin_user) }
     let(:valid_attributes)   { { email: send_admin_user.email } }
     let(:invalid_attributes) { { email: not_admin_user[:email] } }
 

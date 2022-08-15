@@ -61,9 +61,9 @@ RSpec.describe 'AdminUsers::Passwords', type: :request do
   #   有効なパラメータ（未ロック, ロック中）, 無効なパラメータ
   describe 'POST #create' do
     subject { post create_admin_user_password_path, params: { admin_user: attributes } }
-    let(:send_admin_user_unlocked) { FactoryBot.create(:admin_user) }
-    let(:send_admin_user_locked)   { FactoryBot.create(:admin_user_locked) }
-    let(:not_admin_user)           { FactoryBot.attributes_for(:admin_user) }
+    let_it_be(:send_admin_user_unlocked) { FactoryBot.create(:admin_user) }
+    let_it_be(:send_admin_user_locked)   { FactoryBot.create(:admin_user, :locked) }
+    let_it_be(:not_admin_user)           { FactoryBot.attributes_for(:admin_user) }
     let(:valid_attributes)   { { email: send_admin_user.email } }
     let(:invalid_attributes) { { email: not_admin_user[:email] } }
 
@@ -213,12 +213,13 @@ RSpec.describe 'AdminUsers::Passwords', type: :request do
     let(:new_password) { Faker::Internet.password(min_length: 8) }
     let(:valid_attributes)   { { reset_password_token: reset_password_token, password: new_password, password_confirmation: new_password } }
     let(:invalid_attributes) { { reset_password_token: reset_password_token, password: nil, password_confirmation: nil } }
+    let(:current_admin_user) { AdminUser.find(send_admin_user.id) }
 
     # テスト内容
     shared_examples_for 'OK' do
       it 'パスワードリセット送信日時がなしに変更される。メールが送信される' do
         subject
-        expect(AdminUser.find(send_admin_user.id).reset_password_sent_at).to be_nil
+        expect(current_admin_user.reset_password_sent_at).to be_nil
 
         expect(ActionMailer::Base.deliveries.count).to eq(1)
         expect(ActionMailer::Base.deliveries[0].subject).to eq(get_subject('devise.mailer.password_change.admin_user_subject')) # パスワード変更完了のお知らせ
@@ -227,7 +228,7 @@ RSpec.describe 'AdminUsers::Passwords', type: :request do
     shared_examples_for 'NG' do
       it 'パスワードリセット送信日時が変更されない。メールが送信されない' do
         subject
-        expect(AdminUser.find(send_admin_user.id).reset_password_sent_at).to eq(send_admin_user.reset_password_sent_at)
+        expect(current_admin_user.reset_password_sent_at).to eq(send_admin_user.reset_password_sent_at)
 
         expect(ActionMailer::Base.deliveries.count).to eq(0)
       end

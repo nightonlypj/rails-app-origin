@@ -8,7 +8,7 @@ class AdminUserDeviseMailerPreview < ActionMailer::Preview
 
   # アカウントロックのお知らせ
   def unlock_instructions
-    admin_user = FactoryBot.build_stubbed(:admin_user_locked)
+    admin_user = FactoryBot.build_stubbed(:admin_user, :locked)
     DeviseMailer.unlock_instructions(admin_user, token)
   end
 

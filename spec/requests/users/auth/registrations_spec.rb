@@ -28,8 +28,8 @@ RSpec.describe 'Users::Auth::Registrations', type: :request do
   #   ＋Acceptヘッダ: JSONが含まれる, JSONが含まれない
   describe 'POST #create' do
     subject { post create_user_auth_registration_path(format: subject_format), params: attributes, headers: auth_headers.merge(accept_headers) }
-    let(:new_user)   { FactoryBot.attributes_for(:user) }
-    let(:exist_user) { FactoryBot.create(:user) }
+    let_it_be(:new_user)   { FactoryBot.attributes_for(:user) }
+    let_it_be(:exist_user) { FactoryBot.create(:user) }
     let(:valid_attributes)       { { name: new_user[:name], email: new_user[:email], password: new_user[:password], confirm_success_url: FRONT_SITE_URL } }
     let(:invalid_attributes)     { { name: exist_user.name, email: exist_user.email, password: exist_user.password, confirm_success_url: FRONT_SITE_URL } }
     let(:invalid_nil_attributes) { { name: new_user[:name], email: new_user[:email], password: new_user[:password], confirm_success_url: nil } }
@@ -303,12 +303,12 @@ RSpec.describe 'Users::Auth::Registrations', type: :request do
       it_behaves_like 'ToMsg', NilClass, 0, nil, nil, 'devise.failure.unauthenticated', nil
     end
     context 'APIログイン中' do
-      include_context 'APIログイン処理', :user_email_changed, true
+      include_context 'APIログイン処理', :email_changed, true
       it_behaves_like 'ToOK'
       it_behaves_like 'ToMsg', NilClass, 0, nil, nil, nil, nil
     end
     context 'APIログイン中（削除予約済み）' do
-      include_context 'APIログイン処理', :user_destroy_reserved, true
+      include_context 'APIログイン処理', :destroy_reserved, true
       it_behaves_like 'ToOK'
       it_behaves_like 'ToMsg', NilClass, 0, nil, nil, nil, nil
     end
@@ -324,8 +324,8 @@ RSpec.describe 'Users::Auth::Registrations', type: :request do
   #   ＋Acceptヘッダ: JSONが含まれる, JSONが含まれない
   describe 'POST #update' do
     subject { post update_user_auth_registration_path(format: subject_format), params: attributes, headers: auth_headers.merge(accept_headers) }
-    let(:new_user)   { FactoryBot.attributes_for(:user) }
-    let(:exist_user) { FactoryBot.create(:user) }
+    let_it_be(:new_user)   { FactoryBot.attributes_for(:user) }
+    let_it_be(:exist_user) { FactoryBot.create(:user) }
     let(:nochange_attributes)    { { name: user.name, email: user.email, password: user.password, confirm_redirect_url: FRONT_SITE_URL } }
     let(:valid_attributes)       { { name: new_user[:name], email: new_user[:email], password: new_user[:password], confirm_redirect_url: FRONT_SITE_URL } }
     let(:invalid_attributes)     { { name: exist_user.name, email: exist_user.email, password: exist_user.password, confirm_redirect_url: FRONT_SITE_URL } }
@@ -570,7 +570,7 @@ RSpec.describe 'Users::Auth::Registrations', type: :request do
       it_behaves_like '[未ログイン/ログイン中]URLがホワイトリストにない'
     end
     context 'APIログイン中' do
-      include_context 'APIログイン処理', :user, true
+      include_context 'APIログイン処理', nil, true
       it_behaves_like '[APIログイン中/削除予約済み]パラメータなし'
       it_behaves_like '[APIログイン中]有効なパラメータ（変更なし）'
       it_behaves_like '[APIログイン中]有効なパラメータ（変更あり）'
@@ -579,7 +579,7 @@ RSpec.describe 'Users::Auth::Registrations', type: :request do
       it_behaves_like '[APIログイン中]URLがホワイトリストにない'
     end
     context 'APIログイン中（削除予約済み）' do
-      include_context 'APIログイン処理', :user_destroy_reserved, true
+      include_context 'APIログイン処理', :destroy_reserved, true
       it_behaves_like '[APIログイン中/削除予約済み]パラメータなし'
       it_behaves_like '[削除予約済み]有効なパラメータ（変更なし）'
       it_behaves_like '[削除予約済み]有効なパラメータ（変更あり）'
@@ -666,10 +666,6 @@ RSpec.describe 'Users::Auth::Registrations', type: :request do
       it_behaves_like 'OK'
       it_behaves_like 'ToOK'
       it_behaves_like 'ToMsg', NilClass, 0, nil, nil, nil, 'notice.user.image_update'
-      after do
-        current_user.remove_image!
-        current_user.save!
-      end
     end
     shared_examples_for '[削除予約済み]有効なパラメータ' do
       let(:attributes) { valid_attributes }
@@ -712,7 +708,7 @@ RSpec.describe 'Users::Auth::Registrations', type: :request do
       it_behaves_like '[APIログイン中]無効なパラメータ'
     end
     context 'APIログイン中（削除予約済み）' do
-      include_context 'APIログイン処理', :user_destroy_reserved
+      include_context 'APIログイン処理', :destroy_reserved
       it_behaves_like '[削除予約済み]有効なパラメータ'
       it_behaves_like '[削除予約済み]無効なパラメータ'
     end
@@ -788,19 +784,19 @@ RSpec.describe 'Users::Auth::Registrations', type: :request do
       it_behaves_like 'ToMsg', NilClass, 0, nil, nil, 'devise.failure.unauthenticated', nil
     end
     context 'ログイン中' do
-      include_context 'ログイン処理', :user, true
+      include_context 'ログイン処理', nil, true
       it_behaves_like 'NG'
       it_behaves_like 'ToNG', 401
       it_behaves_like 'ToMsg', NilClass, 0, nil, nil, 'devise.failure.unauthenticated', nil
     end
     context 'APIログイン中' do
-      include_context 'APIログイン処理', :user, true
+      include_context 'APIログイン処理', nil, true
       it_behaves_like 'OK'
       it_behaves_like 'ToOK'
       it_behaves_like 'ToMsg', NilClass, 0, nil, nil, nil, 'notice.user.image_destroy'
     end
     context 'APIログイン中（削除予約済み）' do
-      include_context 'APIログイン処理', :user_destroy_reserved, true
+      include_context 'APIログイン処理', :destroy_reserved, true
       it_behaves_like 'NG'
       it_behaves_like 'ToNG', 422
       it_behaves_like 'ToMsg', NilClass, 0, nil, nil, 'alert.user.destroy_reserved', nil
@@ -848,12 +844,10 @@ RSpec.describe 'Users::Auth::Registrations', type: :request do
       # it '削除されない' do
       #   expect { subject }.to change(User, :count).by(0)
       # end
-      let!(:before_destroy_requested_at) { user.destroy_requested_at }
-      let!(:before_destroy_schedule_at)  { user.destroy_schedule_at }
       it '削除依頼日時・削除予定日時が変更されない。メールが送信されない' do
         subject
-        expect(current_user.destroy_requested_at).to eq(before_destroy_requested_at)
-        expect(current_user.destroy_schedule_at).to eq(before_destroy_schedule_at)
+        expect(current_user.destroy_requested_at).to eq(user.destroy_requested_at)
+        expect(current_user.destroy_schedule_at).to eq(user.destroy_schedule_at)
         expect(ActionMailer::Base.deliveries.count).to eq(0)
       end
     end
@@ -1025,7 +1019,7 @@ RSpec.describe 'Users::Auth::Registrations', type: :request do
       it_behaves_like '[APIログイン中]URLがホワイトリストにない'
     end
     context 'APIログイン中（削除予約済み）' do
-      include_context 'APIログイン処理', :user_destroy_reserved
+      include_context 'APIログイン処理', :destroy_reserved
       it_behaves_like '[削除予約済み]パラメータなし'
       it_behaves_like '[削除予約済み]有効なパラメータ'
       it_behaves_like '[削除予約済み]URLがない'
@@ -1120,7 +1114,7 @@ RSpec.describe 'Users::Auth::Registrations', type: :request do
       it_behaves_like 'ToMsg', NilClass, 0, nil, nil, 'alert.user.not_destroy_reserved', nil
     end
     context 'APIログイン中（削除予約済み）' do
-      include_context 'APIログイン処理', :user_destroy_reserved
+      include_context 'APIログイン処理', :destroy_reserved
       it_behaves_like 'OK'
       it_behaves_like 'ToOK'
       it_behaves_like 'ToMsg', NilClass, 0, nil, nil, nil, 'devise.registrations.undo_destroy_reserved'

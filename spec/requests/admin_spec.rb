@@ -32,7 +32,7 @@ RSpec.describe 'Admin', type: :request do
       it_behaves_like 'ToLogin', 'devise.failure.unauthenticated', nil
     end
     context 'ログイン中（削除予約済み）' do
-      include_context 'ログイン処理', :user_destroy_reserved
+      include_context 'ログイン処理', :destroy_reserved
       it_behaves_like 'ToLogin', 'devise.failure.unauthenticated', nil
     end
     context 'ログイン中（管理者）' do

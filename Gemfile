@@ -77,6 +77,8 @@ group :test do
   gem 'webdrivers'
   # Use SimpleCov
   gem 'simplecov'
+  # Use Ruby Tests Profiling Toolbox
+  gem 'test-prof'
 end
 
 # Windows does not include zoneinfo files, so bundle the tzinfo-data gem

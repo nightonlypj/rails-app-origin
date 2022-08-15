@@ -399,6 +399,7 @@ GEM
     sqlite3 (1.4.2)
     ssrf_filter (1.0.7)
     temple (0.8.2)
+    test-prof (1.0.10)
     thor (1.1.0)
     tilt (2.0.10)
     turbolinks (5.2.1)
@@ -479,6 +480,7 @@ DEPENDENCIES
   spring-commands-rspec
   spring-watcher-listen (~> 2.0.0)
   sqlite3 (~> 1.4)
+  test-prof
   turbolinks (~> 5)
   tzinfo-data
   unicorn

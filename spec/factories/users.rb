@@ -12,53 +12,53 @@ FactoryBot.define do
     last_sign_in_at       { Time.now.utc - 2.hours }
     current_sign_in_ip    { Faker::Internet.ip_v4_address }
     last_sign_in_ip       { Faker::Internet.ip_v4_address }
-  end
 
-  # ロック中
-  factory :user_locked, parent: :user do
-    unlock_token    { Devise.token_generator.digest(self, :unlock_token, email) }
-    locked_at       { Time.now.utc - 1.minute }
-    failed_attempts { Devise.maximum_attempts }
-  end
+    # ロック中
+    trait :locked do
+      unlock_token    { Devise.token_generator.digest(self, :unlock_token, email) }
+      locked_at       { Time.now.utc - 1.minute }
+      failed_attempts { Devise.maximum_attempts }
+    end
 
-  # ロック前
-  factory :user_before_lock1, parent: :user do
-    failed_attempts { Devise.maximum_attempts - 1 }
-  end
+    # ロック前
+    trait :before_lock1 do
+      failed_attempts { Devise.maximum_attempts - 1 }
+    end
 
-  # ロック前の前
-  factory :user_before_lock2, parent: :user do
-    failed_attempts { Devise.maximum_attempts - 2 }
-  end
+    # ロック前の前
+    trait :before_lock2 do
+      failed_attempts { Devise.maximum_attempts - 2 }
+    end
 
-  # ロック前の前の前
-  factory :user_before_lock3, parent: :user do
-    failed_attempts { Devise.maximum_attempts - 3 }
-  end
+    # ロック前の前の前
+    trait :before_lock3 do
+      failed_attempts { Devise.maximum_attempts - 3 }
+    end
 
-  # メール未確認
-  factory :user_unconfirmed, parent: :user do
-    confirmation_token   { Devise.token_generator.digest(self, :confirmation_token, email) }
-    confirmation_sent_at { Time.now.utc - 1.minute }
-    confirmed_at         { nil }
-  end
+    # メール未確認
+    trait :unconfirmed do
+      confirmation_token   { Devise.token_generator.digest(self, :confirmation_token, email) }
+      confirmation_sent_at { Time.now.utc - 1.minute }
+      confirmed_at         { nil }
+    end
 
-  # メールアドレス変更中
-  factory :user_email_changed, parent: :user do
-    confirmation_token   { Devise.token_generator.digest(self, :confirmation_token, email) }
-    confirmation_sent_at { Time.now.utc - 1.minute }
-    unconfirmed_email    { Faker::Internet.safe_email }
-  end
+    # メールアドレス変更中
+    trait :email_changed do
+      confirmation_token   { Devise.token_generator.digest(self, :confirmation_token, email) }
+      confirmation_sent_at { Time.now.utc - 1.minute }
+      unconfirmed_email    { Faker::Internet.safe_email }
+    end
 
-  # 削除予約済み
-  factory :user_destroy_reserved, parent: :user do
-    destroy_requested_at { Time.current - 1.minute }
-    destroy_schedule_at  { destroy_requested_at + Settings['destroy_schedule_days'].days }
-  end
+    # 削除予約済み
+    trait :destroy_reserved do
+      destroy_requested_at { Time.current - 1.minute }
+      destroy_schedule_at  { destroy_requested_at + Settings['destroy_schedule_days'].days }
+    end
 
-  # 削除対象
-  factory :user_destroy_targeted, parent: :user do
-    destroy_requested_at { Time.current - 1.minute - Settings['destroy_schedule_days'].days }
-    destroy_schedule_at  { destroy_requested_at + Settings['destroy_schedule_days'].days }
+    # 削除対象
+    trait :destroy_targeted do
+      destroy_requested_at { Time.current - 1.minute - Settings['destroy_schedule_days'].days }
+      destroy_schedule_at  { destroy_requested_at + Settings['destroy_schedule_days'].days }
+    end
   end
 end

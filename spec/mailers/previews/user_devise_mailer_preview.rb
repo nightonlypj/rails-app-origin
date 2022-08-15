@@ -2,7 +2,7 @@
 class UserDeviseMailerPreview < ActionMailer::Preview
   # メールアドレス確認のお願い
   def confirmation_instructions(redirect_url = nil)
-    user = FactoryBot.build_stubbed(:user_unconfirmed)
+    user = FactoryBot.build_stubbed(:user, :unconfirmed)
     DeviseMailer.confirmation_instructions(user, token, { 'client-config': 'default', 'redirect-url': redirect_url })
   end
 
@@ -24,7 +24,7 @@ class UserDeviseMailerPreview < ActionMailer::Preview
 
   # アカウントロックのお知らせ
   def unlock_instructions(redirect_url = nil)
-    user = FactoryBot.build_stubbed(:user_locked)
+    user = FactoryBot.build_stubbed(:user, :locked)
     DeviseMailer.unlock_instructions(user, token, { 'client-config': 'default', 'redirect-url': redirect_url })
   end
 
@@ -35,7 +35,7 @@ class UserDeviseMailerPreview < ActionMailer::Preview
 
   # メールアドレス変更受け付けのお知らせ
   def email_changed
-    user = FactoryBot.build_stubbed(:user_email_changed)
+    user = FactoryBot.build_stubbed(:user, :email_changed)
     DeviseMailer.email_changed(user)
   end
 

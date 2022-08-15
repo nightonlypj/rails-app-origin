@@ -63,7 +63,7 @@ RSpec.describe 'Top', type: :request do
       it_behaves_like '[ログイン中/削除予約済み]大切なお知らせがある'
     end
     context 'ログイン中（削除予約済み）' do
-      include_context 'ログイン処理', :user_destroy_reserved
+      include_context 'ログイン処理', :destroy_reserved
       include_context 'お知らせ一覧作成', 1, 1, 1, 1
       it_behaves_like '[*]大切なお知らせがない'
       it_behaves_like '[ログイン中/削除予約済み]大切なお知らせがある'

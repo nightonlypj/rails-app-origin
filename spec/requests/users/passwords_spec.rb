@@ -61,11 +61,11 @@ RSpec.describe 'Users::Passwords', type: :request do
   #   有効なパラメータ（未ロック, ロック中, メール未確認, メールアドレス変更中）, 無効なパラメータ
   describe 'POST #create' do
     subject { post create_user_password_path, params: { user: attributes } }
-    let(:send_user_unlocked)      { FactoryBot.create(:user) }
-    let(:send_user_locked)        { FactoryBot.create(:user_locked) }
-    let(:send_user_unconfirmed)   { FactoryBot.create(:user_unconfirmed) }
-    let(:send_user_email_changed) { FactoryBot.create(:user_email_changed) }
-    let(:not_user)                { FactoryBot.attributes_for(:user) }
+    let_it_be(:send_user_unlocked)      { FactoryBot.create(:user) }
+    let_it_be(:send_user_locked)        { FactoryBot.create(:user, :locked) }
+    let_it_be(:send_user_unconfirmed)   { FactoryBot.create(:user, :unconfirmed) }
+    let_it_be(:send_user_email_changed) { FactoryBot.create(:user, :email_changed) }
+    let_it_be(:not_user)                { FactoryBot.attributes_for(:user) }
     let(:valid_attributes)   { { email: send_user.email } }
     let(:invalid_attributes) { { email: not_user[:email] } }
 

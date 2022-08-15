@@ -53,7 +53,7 @@ RSpec.describe 'layouts/application', type: :view do
     it_behaves_like '削除予約非表示'
   end
   context 'ログイン中（削除予約済み）' do
-    include_context 'ログイン処理', :user_destroy_reserved
+    include_context 'ログイン処理', :destroy_reserved
     it_behaves_like 'ログイン中表示'
     it_behaves_like '削除予約表示'
   end

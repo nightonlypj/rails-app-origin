@@ -1,7 +1,7 @@
 require 'rails_helper'
 
 RSpec.describe 'users/registrations/undo_delete', type: :view do
-  include_context 'ログイン処理', :user_destroy_reserved
+  include_context 'ログイン処理', :destroy_reserved
   before { @resource = user }
 
   context do

@@ -11,7 +11,7 @@ RSpec.describe 'Infomations', type: :request do
   #   ＋Acceptヘッダ: JSONが含まれる, JSONが含まれない
   describe 'GET #important' do
     subject { get important_infomations_path(format: subject_format), headers: auth_headers.merge(accept_headers) }
-    before { FactoryBot.create(:infomation_important_finished) }
+    before_all { FactoryBot.create(:infomation, :important, :force_finished) }
 
     # テスト内容
     shared_examples_for 'ToOK(json/json)' do
@@ -86,7 +86,7 @@ RSpec.describe 'Infomations', type: :request do
     end
     context 'ログイン中（削除予約済み）' do
       let(:infomations) { @all_important_infomations } # Tips: APIは未ログイン扱いの為、全員のしか見れない
-      include_context 'ログイン処理', :user_destroy_reserved
+      include_context 'ログイン処理', :destroy_reserved
       include_context 'お知らせ一覧作成', 1, 1, 1, 1
       it_behaves_like '[*]大切なお知らせがない'
       it_behaves_like '[ログイン中/削除予約済み]大切なお知らせがある'
@@ -100,7 +100,7 @@ RSpec.describe 'Infomations', type: :request do
     end
     context 'APIログイン中（削除予約済み）' do
       let(:infomations) { @user_important_infomations }
-      include_context 'APIログイン処理', :user_destroy_reserved
+      include_context 'APIログイン処理', :destroy_reserved
       include_context 'お知らせ一覧作成', 1, 1, 1, 1
       it_behaves_like '[*]大切なお知らせがない'
       it_behaves_like '[ログイン中/削除予約済み]大切なお知らせがある'

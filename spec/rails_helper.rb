@@ -12,6 +12,10 @@ require 'rspec/rails'
 # Use devise
 require 'devise'
 
+# Use Ruby Tests Profiling Toolbox
+require 'test_prof/recipes/rspec/let_it_be'
+require 'test_prof/recipes/rspec/before_all'
+
 # Requires supporting ruby files with custom matchers and macros, etc, in
 # spec/support/ and its subdirectories. Files matching `spec/**/*_spec.rb` are
 # run as spec files by default. This means that files in spec/support that end

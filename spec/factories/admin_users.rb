@@ -6,27 +6,27 @@ FactoryBot.define do
     password              { pass }
     password_confirmation { pass }
     confirmed_at          { '0000-01-01 00:00:00+0000' }
-  end
 
-  # ロック中
-  factory :admin_user_locked, parent: :admin_user do
-    unlock_token    { Devise.token_generator.digest(self, :unlock_token, email) }
-    locked_at       { Time.now.utc - 1.minute }
-    failed_attempts { Devise.maximum_attempts }
-  end
+    # ロック中
+    trait :locked do
+      unlock_token    { Devise.token_generator.digest(self, :unlock_token, email) }
+      locked_at       { Time.now.utc - 1.minute }
+      failed_attempts { Devise.maximum_attempts }
+    end
 
-  # ロック前
-  factory :admin_user_before_lock1, parent: :admin_user do
-    failed_attempts { Devise.maximum_attempts - 1 }
-  end
+    # ロック前
+    trait :before_lock1 do
+      failed_attempts { Devise.maximum_attempts - 1 }
+    end
 
-  # ロック前の前
-  factory :admin_user_before_lock2, parent: :admin_user do
-    failed_attempts { Devise.maximum_attempts - 2 }
-  end
+    # ロック前の前
+    trait :before_lock2 do
+      failed_attempts { Devise.maximum_attempts - 2 }
+    end
 
-  # ロック前の前の前
-  factory :admin_user_before_lock3, parent: :admin_user do
-    failed_attempts { Devise.maximum_attempts - 3 }
+    # ロック前の前の前
+    trait :before_lock3 do
+      failed_attempts { Devise.maximum_attempts - 3 }
+    end
   end
 end

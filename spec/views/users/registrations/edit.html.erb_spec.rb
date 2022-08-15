@@ -49,7 +49,7 @@ RSpec.describe 'users/registrations/edit', type: :view do
     it_behaves_like 'メール確認済み表示'
   end
   context 'ログイン中（メールアドレス変更中）' do
-    include_context 'ログイン処理', :user_email_changed
+    include_context 'ログイン処理', :email_changed
     before { @resource = user }
     it_behaves_like '入力項目'
     it_behaves_like 'メールアドレス変更中表示'

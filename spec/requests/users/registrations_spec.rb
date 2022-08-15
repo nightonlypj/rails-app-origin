@@ -61,8 +61,8 @@ RSpec.describe 'Users::Registrations', type: :request do
   #   有効なパラメータ, 無効なパラメータ
   describe 'POST #create' do
     subject { post create_user_registration_path, params: { user: attributes } }
-    let(:new_user)   { FactoryBot.attributes_for(:user) }
-    let(:exist_user) { FactoryBot.create(:user) }
+    let_it_be(:new_user)   { FactoryBot.attributes_for(:user) }
+    let_it_be(:exist_user) { FactoryBot.create(:user) }
     let(:valid_attributes)   { { name: new_user[:name], email: new_user[:email], password: new_user[:password] } }
     let(:invalid_attributes) { { name: exist_user.name, email: exist_user.email, password: exist_user.password } }
     let(:current_user) { User.find_by!(email: attributes[:email]) }
@@ -138,11 +138,11 @@ RSpec.describe 'Users::Registrations', type: :request do
       it_behaves_like 'ToOK'
     end
     context 'ログイン中（メールアドレス変更中）' do
-      include_context 'ログイン処理', :user_email_changed
+      include_context 'ログイン処理', :email_changed
       it_behaves_like 'ToOK'
     end
     context 'ログイン中（削除予約済み）' do
-      include_context 'ログイン処理', :user_destroy_reserved
+      include_context 'ログイン処理', :destroy_reserved
       it_behaves_like 'ToTop', 'alert.user.destroy_reserved', nil
     end
   end
@@ -155,8 +155,8 @@ RSpec.describe 'Users::Registrations', type: :request do
   #   有効なパラメータ（変更なし, あり）, 無効なパラメータ
   describe 'PUT #update' do
     subject { put update_user_registration_path, params: { user: attributes.merge(current_password: current_password) } }
-    let(:new_user)   { FactoryBot.attributes_for(:user) }
-    let(:exist_user) { FactoryBot.create(:user) }
+    let_it_be(:new_user)   { FactoryBot.attributes_for(:user) }
+    let_it_be(:exist_user) { FactoryBot.create(:user) }
     let(:nochange_attributes) { { name: user.name, email: user.email, password: user.password } }
     let(:valid_attributes)    { { name: new_user[:name], email: new_user[:email], password: new_user[:password] } }
     let(:invalid_attributes)  { { name: exist_user.name, email: exist_user.email, password: exist_user.password } }
@@ -243,21 +243,21 @@ RSpec.describe 'Users::Registrations', type: :request do
       it_behaves_like '[未ログイン]無効なパラメータ'
     end
     context 'ログイン中' do
-      include_context 'ログイン処理', :user, true
+      include_context 'ログイン処理', nil, true
       let(:current_password) { user.password }
       it_behaves_like '[ログイン中]有効なパラメータ（変更なし）'
       it_behaves_like '[ログイン中]有効なパラメータ（変更あり）'
       it_behaves_like '[ログイン中]無効なパラメータ'
     end
     context 'ログイン中（メールアドレス変更中）' do
-      include_context 'ログイン処理', :user_email_changed, true
+      include_context 'ログイン処理', :email_changed, true
       let(:current_password) { user.password }
       it_behaves_like '[ログイン中]有効なパラメータ（変更なし）'
       it_behaves_like '[ログイン中]有効なパラメータ（変更あり）'
       it_behaves_like '[ログイン中]無効なパラメータ'
     end
     context 'ログイン中（削除予約済み）' do
-      include_context 'ログイン処理', :user_destroy_reserved, true
+      include_context 'ログイン処理', :destroy_reserved, true
       let(:current_password) { user.password }
       it_behaves_like '[削除予約済み]有効なパラメータ（変更なし）'
       it_behaves_like '[削除予約済み]有効なパラメータ（変更あり）'
@@ -301,10 +301,6 @@ RSpec.describe 'Users::Registrations', type: :request do
       let(:attributes) { valid_attributes }
       it_behaves_like 'OK'
       it_behaves_like 'ToEdit', nil, 'notice.user.image_update'
-      after do
-        current_user.remove_image!
-        current_user.save!
-      end
     end
     shared_examples_for '[削除予約済み]有効なパラメータ' do
       let(:attributes) { valid_attributes }
@@ -337,7 +333,7 @@ RSpec.describe 'Users::Registrations', type: :request do
       it_behaves_like '[ログイン中]無効なパラメータ'
     end
     context 'ログイン中（削除予約済み）' do
-      include_context 'ログイン処理', :user_destroy_reserved
+      include_context 'ログイン処理', :destroy_reserved
       it_behaves_like '[削除予約済み]有効なパラメータ'
       it_behaves_like '[削除予約済み]無効なパラメータ'
     end
@@ -372,12 +368,12 @@ RSpec.describe 'Users::Registrations', type: :request do
       it_behaves_like 'ToLogin', 'devise.failure.unauthenticated', nil
     end
     context 'ログイン中' do
-      include_context 'ログイン処理', :user, true
+      include_context 'ログイン処理', nil, true
       it_behaves_like 'OK'
       it_behaves_like 'ToEdit', nil, 'notice.user.image_destroy'
     end
     context 'ログイン中（削除予約済み）' do
-      include_context 'ログイン処理', :user_destroy_reserved, true
+      include_context 'ログイン処理', :destroy_reserved, true
       it_behaves_like 'NG'
       it_behaves_like 'ToTop', 'alert.user.destroy_reserved', nil
     end
@@ -400,7 +396,7 @@ RSpec.describe 'Users::Registrations', type: :request do
       it_behaves_like 'ToOK'
     end
     context 'ログイン中（削除予約済み）' do
-      include_context 'ログイン処理', :user_destroy_reserved
+      include_context 'ログイン処理', :destroy_reserved
       it_behaves_like 'ToTop', 'alert.user.destroy_reserved', nil
     end
   end
@@ -430,12 +426,10 @@ RSpec.describe 'Users::Registrations', type: :request do
       end
     end
     shared_examples_for 'NG' do
-      let!(:before_destroy_requested_at) { user.destroy_requested_at }
-      let!(:before_destroy_schedule_at)  { user.destroy_schedule_at }
       it '削除依頼日時・削除予定日時が変更されない。メールが送信されない' do
         subject
-        expect(current_user.destroy_requested_at).to eq(before_destroy_requested_at)
-        expect(current_user.destroy_schedule_at).to eq(before_destroy_schedule_at)
+        expect(current_user.destroy_requested_at).to eq(user.destroy_requested_at)
+        expect(current_user.destroy_schedule_at).to eq(user.destroy_schedule_at)
         expect(ActionMailer::Base.deliveries.count).to eq(0)
       end
     end
@@ -448,10 +442,13 @@ RSpec.describe 'Users::Registrations', type: :request do
     context 'ログイン中' do
       include_context 'ログイン処理'
       it_behaves_like 'OK'
+    end
+    context 'ログイン中' do # Tips: 上記と一緒にすると変更の影響を受ける為(let_it_beに変更後)
+      include_context 'ログイン処理'
       it_behaves_like 'ToLogin', nil, 'devise.registrations.destroy_reserved'
     end
     context 'ログイン中（削除予約済み）' do
-      include_context 'ログイン処理', :user_destroy_reserved
+      include_context 'ログイン処理', :destroy_reserved
       it_behaves_like 'NG'
       it_behaves_like 'ToTop', 'alert.user.destroy_reserved', nil
     end
@@ -474,7 +471,7 @@ RSpec.describe 'Users::Registrations', type: :request do
       it_behaves_like 'ToTop', 'alert.user.not_destroy_reserved', nil
     end
     context 'ログイン中（削除予約済み）' do
-      include_context 'ログイン処理', :user_destroy_reserved
+      include_context 'ログイン処理', :destroy_reserved
       it_behaves_like 'ToOK'
     end
   end
@@ -518,8 +515,11 @@ RSpec.describe 'Users::Registrations', type: :request do
       it_behaves_like 'ToTop', 'alert.user.not_destroy_reserved', nil
     end
     context 'ログイン中（削除予約済み）' do
-      include_context 'ログイン処理', :user_destroy_reserved
+      include_context 'ログイン処理', :destroy_reserved
       it_behaves_like 'OK'
+    end
+    context 'ログイン中（削除予約済み）' do # Tips: 上記と一緒にすると変更の影響を受ける為(let_it_beに変更後)
+      include_context 'ログイン処理', :destroy_reserved
       it_behaves_like 'ToTop', nil, 'devise.registrations.undo_destroy_reserved'
     end
   end
