@@ -123,7 +123,7 @@ Layout/LineLength:
 
 # C: Metrics/MethodLength: Method has too many lines.
 Metrics/MethodLength:
-  Max: 25
+  Max: 30
 
 # C: Metrics/ParameterLists: Avoid parameter lists longer than 5 parameters.
 Metrics/ParameterLists:

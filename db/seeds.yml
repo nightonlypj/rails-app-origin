@@ -1,0 +1,27 @@
+- file: 'seed/admin_users.yml'
+  model: 'AdminUser'
+  insert: true
+  env:
+    production: true
+    development: true
+- file: 'seed/users_development.yml'
+  model: 'User'
+  insert: true
+  update: true
+  option:
+    bulk_update: true
+    exclude_update_column:
+      - 'password'
+  env:
+    development: true
+- file: 'seed/infomations_development.yml'
+  model: 'Infomation'
+  insert: true
+  update: true
+  delete: true
+  option:
+    bulk_insert: true
+    bulk_update: true
+    destroy: true
+  env:
+    development: true

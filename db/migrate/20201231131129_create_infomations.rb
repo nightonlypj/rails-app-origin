@@ -1,6 +1,6 @@
 class CreateInfomations < ActiveRecord::Migration[6.0]
   def change
-    create_table :infomations do |t|
+    create_table :infomations, comment: 'お知らせ' do |t|
       t.string :title, null: false, comment: 'タイトル'
       t.string :summary,            comment: '概要'
       t.text   :body,               comment: '本文'

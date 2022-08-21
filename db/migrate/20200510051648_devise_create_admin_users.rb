@@ -2,7 +2,7 @@
 
 class DeviseCreateAdminUsers < ActiveRecord::Migration[6.0]
   def change
-    create_table :admin_users do |t|
+    create_table :admin_users, comment: '管理者' do |t|
       t.string :name, null: false, comment: '氏名'
 
       ## Database authenticatable

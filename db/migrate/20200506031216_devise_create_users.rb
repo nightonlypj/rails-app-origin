@@ -2,7 +2,7 @@
 
 class DeviseCreateUsers < ActiveRecord::Migration[6.0]
   def change
-    create_table :users do |t|
+    create_table :users, comment: 'ユーザー' do |t|
       t.string :code, null: false, comment: 'ユーザーコード'
       t.string :image,             comment: '画像' # json: PostgreSQL/MySQL, string: SQLite/MariaDB(MySQLでもOK)
       t.string :name, null: false, comment: '氏名'
