@@ -3,7 +3,7 @@
 class DeviseCreateUsers < ActiveRecord::Migration[6.0]
   def change
     create_table :users, comment: 'ユーザー' do |t|
-      t.string :code, null: false, comment: 'ユーザーコード'
+      t.string :code, null: false, comment: 'コード'
       t.string :image,             comment: '画像' # json: PostgreSQL/MySQL, string: SQLite/MariaDB(MySQLでもOK)
       t.string :name, null: false, comment: '氏名'
 
@@ -42,7 +42,6 @@ class DeviseCreateUsers < ActiveRecord::Migration[6.0]
 
       t.timestamps
     end
-
     add_index :users, :email,                unique: true, name: 'index_users1'
     add_index :users, :reset_password_token, unique: true, name: 'index_users2'
     add_index :users, :confirmation_token,   unique: true, name: 'index_users3'

@@ -13,7 +13,7 @@ RSpec.describe User, type: :model do
     end
   end
 
-  # ユーザーコード
+  # コード
   # 前提条件
   #   なし
   # テストパターン

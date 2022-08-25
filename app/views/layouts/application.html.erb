@@ -11,43 +11,51 @@
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" />
     <link rel="stylesheet" href="<%= config.asset_host %>/css/mdb.min.css?v3.1.0" />
     <%= stylesheet_link_tag 'application', media: 'all', 'data-turbolinks-track': 'reload' %>
+<% if Settings['debug'] %>
+    <meta name="debug" content="true">
+<% end %>
     <%= javascript_pack_tag 'application', 'data-turbolinks-track': 'reload' %>
   </head>
   <body>
     <header style="margin-bottom: 70px">
-      <nav class="navbar navbar-light bg-light fixed-top">
-        <div class="container-fluid">
-          <a href="<%= root_path %>" class="navbar-brand">
-            <%= image_tag "/logo.png",  width: '40px', height: '40px' %>
-            <%= t('app_name') %>
-            <span class="d-none d-sm-block"><%= Settings['env_name'] %></span>
-          </a>
+      <nav class="navbar navbar-light bg-light fixed-top" style="padding-top: 8px">
+        <div class="container-fluid px-1">
+          <div class="d-flex">
+            <button id='left_menu_display_btn' type="button" class="btn btn-link btn-rounded p-3" data-mdb-ripple-color="dark">
+              <i class="fa fa-bars text-body" style="font-size: 20px"></i>
+            </button>
+            <a href="<%= root_path %>" class="navbar-brand">
+              <%= image_tag "/logo.png",  width: '40px', height: '40px' %>
+              <%= t('app_name') %>
+              <span class="d-none d-sm-block"><%= Settings['env_name'] %></span>
+            </a>
+          </div>
           <nav class="nav align-items-center">
 <% unless user_signed_in? %>
-            <a href="<%= new_user_session_path %>" class="nav-link d-flex align-items-center link-dark">
+            <a href="<%= new_user_session_path %>" class="btn btn-link btn-rounded d-flex align-items-center link-dark p-2" style="font-size: 1rem">
               <i class="fas fa-sign-in-alt fa-lg"></i>
               <span class="d-none d-md-block m-1">ログイン</span>
             </a>
-            <a href="<%= new_user_registration_path %>" class="nav-link d-flex align-items-center link-dark">
+            <a href="<%= new_user_registration_path %>" class="btn btn-link btn-rounded d-flex align-items-center link-dark p-2" style="font-size: 1rem">
               <i class="fas fa-user-alt fa-lg"></i>
               <span class="d-none d-md-block m-1">アカウント登録</span>
             </a>
 <% else %>
             <ul class="navbar-nav">
               <li class="nav-item dropdown">
-                <a class="nav-link dropdown-toggle d-flex align-items-center" style="max-width: 400px" href="#" id="navbarDropdownMenuLink" role="button" data-mdb-toggle="dropdown" aria-expanded="false">
+                <a id="userDropdownToggle" href="#" class="dropdown-toggle btn-link d-flex align-items-center link-dark p-2" style="max-width: 400px" role="button" data-mdb-toggle="dropdown" aria-expanded="false">
                   <%= image_tag current_user.image_url(:small), class: 'rounded-circle' %>
-                  <span class="text-truncate d-none d-lg-block"><%= current_user.name %></span>
+                  <span class="text-truncate d-none d-lg-block mx-1"><%= current_user.name %></span>
                 </a>
-                <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdownMenuLink">
+                <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdownToggle">
                   <li>
-                    <a class="dropdown-item" href="<%= edit_user_registration_path %>">
+                    <a href="<%= edit_user_registration_path %>" class="dropdown-item">
                       <i class="fas fa-user-edit"></i>
                       <span class="m-2">登録情報変更</span>
                     </a>
                   </li>
                   <li>
-                    <a class="dropdown-item" href="<%= delete_user_session_path %>">
+                    <a href="<%= delete_user_session_path %>" class="dropdown-item">
                       <i class="fas fa-sign-out-alt"></i>
                       <span class="m-2">ログアウト</span>
                     </a>
@@ -55,35 +63,100 @@
                 </ul>
               </li>
             </ul>
-            <a href="<%= infomations_path %>" class="nav-link link-dark">
-              <i class="fas fa-bell fa-lg"></i>
+            <a href="<%= infomations_path %>" class="btn btn-link btn-rounded link-dark" style="font-size: 1rem">
+              <i class="fas fa-bell fa-lg">
 <% if current_user.infomation_unread_count > 0 %>
-              <span class="badge rounded-pill badge-notification bg-danger"><%= current_user.infomation_unread_count %></span>
+                <span class="badge rounded-pill badge-notification bg-danger"><%= current_user.infomation_unread_count %></span>
 <% end %>
+              </i>
             </a>
 <% end %>
           </nav>
         </div>
       </nav>
     </header>
-    <main class="container-lg">
+
+    <div class="d-flex">
+      <nav id="left_menu" class="nav flex-column bg-light" style="width: 300px; display: none">
+<% unless user_signed_in? %>
+        <a href="<%= new_user_session_path %>" class="btn btn-link d-flex align-items-center link-dark" style="font-size: 1rem">
+          <i class="fas fa-sign-in-alt fa-lg"></i>
+          <span class="mx-2 my-1">ログイン</span>
+        </a>
+        <a href="<%= new_user_registration_path %>" class="btn btn-link d-flex align-items-center link-dark" style="font-size: 1rem">
+          <i class="fas fa-user-alt fa-lg"></i>
+          <span class="mx-2 my-1">アカウント登録</span>
+        </a>
+        <hr class="my-0" />
+        <a href="<%= infomations_path %>" class="btn btn-link d-flex align-items-center link-dark" style="font-size: 1rem">
+          <i class="fas fa-bell fa-lg"></i>
+          <span class="mx-2 my-1">お知らせ</span>
+        </a>
+<% else %>
+        <div id="userAccordionFlush" class="accordion accordion-flush">
+          <div class="accordion-item">
+            <div id="userAccordionHeader" class="accordion-header">
+              <button
+                class="accordion-button px-3 py-2<%= ' collapsed' unless user_accordion_show? %>"
+                data-mdb-toggle="collapse"
+                data-mdb-target="#userAccordionCollapse"
+                aria-expanded="true"
+                aria-controls="userAccordionCollapse"
+              >
+                <%= image_tag current_user.image_url(:small), class: 'rounded-circle' %>
+                <span class="text-truncate text-start mx-1" style="width: 200px"><%= current_user.name %></span>
+              </button>
+            </div>
+            <div
+              id="userAccordionCollapse"
+              class="accordion-collapse collapse<%= ' show' if user_accordion_show? %>"
+              aria-labelledby="userAccordionHeader"
+              data-mdb-parent="#userAccordionFlush"
+            >
+              <div class="accordion-body py-1">
+                <a href="<%= edit_user_registration_path %>" class="btn btn-link d-flex align-items-center link-dark px-3" style="font-size: 1rem">
+                  <i class="fas fa-user-edit"></i>
+                  <span class="mx-2 my-1">登録情報変更</span>
+                </a>
+                <a href="<%= delete_user_session_path %>" class="btn btn-link d-flex align-items-center link-dark px-3" style="font-size: 1rem">
+                  <i class="fas fa-sign-out-alt"></i>
+                  <span class="mx-2 my-1">ログアウト</span>
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+        <hr class="my-0" />
+        <a href="<%= infomations_path %>" class="btn btn-link d-flex align-items-center link-dark" style="font-size: 1rem">
+          <i class="fas fa-bell fa-lg">
+<% if current_user.infomation_unread_count > 0 %>
+            <span class="badge rounded-pill badge-notification bg-danger"><%= current_user.infomation_unread_count %></span>
+<% end %>
+          </i>
+          <span class="mx-2 my-1">お知らせ</span>
+        </a>
+<% end %>
+      </nav>
+      <main id="main_contents" class="flex-grow-1 mx-2">
 <% if destroy_reserved_message? %>
-      <aside>
-        <p class="note note-warning m-1">このアカウントは<%= l(current_user.destroy_schedule_at.to_date) %>以降に削除されます。<%= link_to '取り消しはこちら', delete_undo_user_registration_path %></p>
-      </aside>
+        <aside>
+          <p class="note note-warning mx-1 my-2">このアカウントは<%= l(current_user.destroy_schedule_at.to_date) %>以降に削除されます。<%= link_to '取り消しはこちら', delete_undo_user_registration_path %></p>
+        </aside>
 <% end %>
 <% if alert.present? %>
-      <aside>
-        <p class="note note-danger m-1"><%= alert %></p>
-      </aside>
+        <aside>
+          <p class="note note-danger mx-1 my-2"><%= alert %></p>
+        </aside>
 <% end %>
 <% if notice.present? %>
-      <aside>
-        <p class="note note-success m-1"><%= notice %></p>
-      </aside>
+        <aside>
+          <p class="note note-success mx-1 my-2"><%= notice %></p>
+        </aside>
 <% end %>
-      <%= yield %>
-    </main>
+        <%= yield %>
+      </main>
+    </div>
+
     <footer class="bg-light">
       <div class="text-center p-3">
         Copyright &copy; <%= link_to t('my_name'), t('my_url'), target: :_blank, rel: %i[noopener noreferrer] %> All Rights Reserved.

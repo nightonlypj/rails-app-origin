@@ -7,7 +7,7 @@ ja:
       infomation: 'お知らせ'
     attributes:
       infomation:
-        id: 'お知らせID'
+        id: 'ID'
         label: 'ラベル'
         title: 'タイトル'
         summary: '概要'

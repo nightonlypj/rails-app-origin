@@ -9,7 +9,7 @@ ja:
         provider: '認証方法'
         uid: 'UID'
         tokens: '認証トークン'
-        code: 'ユーザーコード'
+        code: 'コード'
         image: '画像'
         name: '氏名'
         email: 'メールアドレス'

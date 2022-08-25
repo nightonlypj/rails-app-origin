@@ -103,7 +103,7 @@
   password: 'changepassword'
   confirmed_at: '0000-01-01 00:00:00+0000'
   destroy_requested_at: '2000-01-01 12:34:56+0900'
-  destroy_schedule_at: '9000-01-08 12:34:56+0900'
+  destroy_schedule_at: '9000-01-01 12:34:56+0900'
 - id: 20
   code: 'code0000000000000000000000000020'
   name: '削除対象のユーザー'

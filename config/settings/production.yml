@@ -1,3 +1,4 @@
+debug: false
 env_name: <%= ENV['ENV_NAME'] %> # (空) or 【STG環境】 or 【テスト環境】
 base_domain: <%= ENV['BASE_DOMAIN'] %> # example.com
 base_image_url: <%= ENV['BASE_IMAGE_URL'] || "https://#{ENV['BASE_DOMAIN']}" %> # https://example.com

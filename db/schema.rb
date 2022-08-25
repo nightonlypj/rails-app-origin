@@ -52,6 +52,7 @@ ActiveRecord::Schema.define(version: 2021_11_30_000939) do
     t.integer "label", default: 0, null: false, comment: "ラベル"
     t.datetime "force_started_at", comment: "強制表示開始日時"
     t.datetime "force_ended_at", comment: "強制表示終了日時"
+    t.index ["force_started_at", "force_ended_at"], name: "index_infomations4"
     t.index ["started_at", "ended_at"], name: "index_infomations2"
     t.index ["started_at", "id"], name: "index_infomations1"
     t.index ["target", "user_id"], name: "index_infomations3"
@@ -59,7 +60,7 @@ ActiveRecord::Schema.define(version: 2021_11_30_000939) do
   end
 
   create_table "users", charset: "utf8", collation: "utf8_bin", comment: "ユーザー", force: :cascade do |t|
-    t.string "code", null: false, comment: "ユーザーコード"
+    t.string "code", null: false, comment: "コード"
     t.string "image", comment: "画像"
     t.string "name", null: false, comment: "氏名"
     t.string "email", default: "", null: false, comment: "メールアドレス"

@@ -46,8 +46,13 @@ def insert_contents(bulk_insert)
 end
 
 # 変更チェック
-def data_changed?(content, data)
-  content.each { |key, value| return true if data[key] != value }
+def data_changed?(content, data, new_model)
+  content.each do |key, value|
+    next if data[key] == value
+
+    new_model[key] = value # Tips: 日付やenum等のフォーマット違いに対応
+    return true if data[key] != new_model[key]
+  end
 
   false
 end
@@ -57,6 +62,7 @@ def update_contents(bulk_update, exclude_update_column)
   count = 0
   update_datas = []
   datas = @model.where(id: @ids)
+  new_model = @model.new
   now = Time.current
 
   datas.find_each do |data|
@@ -72,7 +78,7 @@ def update_contents(bulk_update, exclude_update_column)
       next
     end
 
-    next unless data_changed?(content, data)
+    next unless data_changed?(content, data, new_model)
 
     update_datas.push(data.attributes.merge(content).merge(updated_at: now))
     next if update_datas.count < BULK_MAX_COUNT
@@ -114,7 +120,10 @@ File.open("#{Rails.root}/db/seeds.yml") do |seed_body|
 
     p "== file: #{seed['file']}"
     File.open("#{Rails.root}/db/#{seed['file']}") do |file_body|
-      @contents = YAML.safe_load(file_body).index_by { |content| content['id'] }
+      yaml = YAML.safe_load(file_body)
+      @contents = yaml.index_by { |content| content['id'] }
+      raise 'idが重複しています。' if yaml.count != @contents.count
+
       @ids = @contents.keys
       @model = seed['model'].constantize
       p "count: #{@contents.count}, model: #{@model}"

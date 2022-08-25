@@ -1,14 +1,19 @@
 module ApplicationHelper
+  # 左メニューを開くかを返却
+  def user_accordion_show?
+    (controller_name == 'registrations' && action_name == 'edit') || (controller_name == 'sessions' && action_name == 'delete')
+  end
+
+  # 削除予約メッセージを表示するかを返却
+  def destroy_reserved_message?(user = current_user)
+    controller_name != 'registrations' && action_name != 'undo_delete' && user&.destroy_reserved?
+  end
+
   # 有効なメールアドレス確認トークンかを返却
   def user_valid_confirmation_token?
     return false unless devise_mapping.confirmable? && current_user.pending_reconfirmation?
 
     User.confirm_within.blank? || (Time.now.utc <= current_user.confirmation_sent_at.utc + User.confirm_within)
-  end
-
-  # 削除予約のメッセージを表示するかを返却
-  def destroy_reserved_message?(user = current_user)
-    controller_name != 'registrations' && action_name != 'undo_delete' && user&.destroy_reserved?
   end
 
   # バリデーション表示のクラス名を返却
