@@ -1,4 +1,6 @@
 Rails.application.routes.draw do
+  resources :members
+  resources :spaces
   draw :infomations
   draw :admin
   draw :users
