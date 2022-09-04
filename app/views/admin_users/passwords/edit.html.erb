@@ -1,3 +1,5 @@
+<% content_for(:html_title) { 'パスワード再設定' } %>
+
 <%= render 'admin_users/shared/error_messages', resource: resource unless resource.errors[:reset_password_token].any? %>
 <%= render 'admin_users/shared/alert_messages', messages: resource.errors[:reset_password_token] %>
 

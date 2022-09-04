@@ -4,10 +4,10 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
     <meta http-equiv="x-ua-compatible" content="ie=edge" />
-    <title><%= "#{t('app_name')} Admin#{Settings['env_name']}" %></title>
+    <title><%= content_for?(:html_title) ? yield(:html_title) + ' - ' : '' %><%= "#{t('app_name')} Admin#{Settings['env_name']}" %></title>
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
-    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.11.2/css/all.css" />
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.4/css/all.css" />
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" />
     <link rel="stylesheet" href="<%= config.asset_host %>/css/mdb.min.css?v3.1.0" />
     <%= stylesheet_link_tag 'application', media: 'all', 'data-turbolinks-track': 'reload' %>
@@ -44,12 +44,12 @@
     <main class="container-lg">
 <% if alert.present? %>
       <aside>
-        <p class="note note-danger m-1"><%= alert %></p>
+        <p class="note note-danger mb-2"><%= alert %></p>
       </aside>
 <% end %>
 <% if notice.present? %>
       <aside>
-        <p class="note note-success m-1"><%= notice %></p>
+        <p class="note note-success mb-2"><%= notice %></p>
       </aside>
 <% end %>
       <%= yield %>

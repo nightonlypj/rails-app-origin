@@ -1,11 +1,9 @@
 FactoryBot.define do
   factory :admin_user do
-    pass = Faker::Internet.password(min_length: 8)
-    sequence(:name)       { |n| "admin(#{n})" }
-    email                 { Faker::Internet.safe_email(name: name) }
-    password              { pass }
-    password_confirmation { pass }
-    confirmed_at          { '0000-01-01 00:00:00+0000' }
+    sequence(:name) { |n| "admin(#{n})" }
+    email           { Faker::Internet.safe_email(name: "#{name}#{Faker::Number.hexadecimal(digits: 3)}") }
+    password        { Faker::Internet.password(min_length: 8) }
+    confirmed_at    { '0000-01-01 00:00:00+0000' }
 
     # ロック中
     trait :locked do

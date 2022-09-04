@@ -32,7 +32,7 @@ class Users::RegistrationsController < Devise::RegistrationsController
   def update
     # Tips: 存在するメールアドレスの場合はエラーにする
     if resource.email != params[:user][:email] && User.find_by(email: params[:user][:email]).present?
-      resource.errors.add(:email, t('activerecord.errors.models.user.attributes.email.exist'))
+      resource.errors.add(:email, t('activerecord.errors.models.user.attributes.email.taken'))
       return render :edit
     end
 

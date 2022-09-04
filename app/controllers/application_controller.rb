@@ -124,7 +124,7 @@ class ApplicationController < ActionController::Base
   def create_unique_code(model, key, logger_message)
     try_count = 1
     loop do
-      code = Digest::MD5.hexdigest(SecureRandom.uuid)
+      code = Digest::MD5.hexdigest(SecureRandom.uuid).to_i(16).to_s(36).rjust(25, '0') # Tips: 16進数32桁を36進数25桁に変換
       return code if model.where(key => code).blank?
 
       if try_count < 10

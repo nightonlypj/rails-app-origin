@@ -199,7 +199,10 @@ RSpec.describe User, type: :model do
   #   お知らせ確認最終開始日時: ない, 過去, 現在
   #   お知らせ対象: 0件, 1件（全員）, 1件（自分）, 2件（全員＋自分）
   describe '#infomation_unread_count' do
-    subject { user.infomation_unread_count }
+    subject do
+      user.cache_infomation_unread_count = nil
+      user.infomation_unread_count
+    end
 
     # テスト内容
     shared_examples_for 'Count' do |count|

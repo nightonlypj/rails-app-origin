@@ -1,7 +1,9 @@
+<% content_for(:html_title) { 'お知らせ' } %>
+
 <div class="card card-body mb-2">
   <h5 class="card-title mb-3">お知らせ</h5>
   <div class="card-text">
-<% if @infomations.total_count > @infomations.limit_value %>
+<% if @infomations.present? %>
     <div class="row">
       <div class="col-sm-5 d-flex align-items-center">
         <%= page_entries_info @infomations %>
@@ -45,10 +47,8 @@
     </article>
 <% end %>
 
-<% if @infomations.total_pages > 1 %>
     <div class="d-flex justify-content-center">
       <%= paginate @infomations %>
     </div>
-<% end %>
   </div>
 </div>

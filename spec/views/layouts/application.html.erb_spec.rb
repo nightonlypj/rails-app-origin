@@ -7,12 +7,12 @@ RSpec.describe 'layouts/application', type: :view do
       render
       expect(rendered).to include("\"#{new_user_session_path}\"") # ログイン
       expect(rendered).to include("\"#{new_user_registration_path}\"") # アカウント登録
+      expect(rendered).to include("\"#{infomations_path}\"") # お知らせ
     end
     it '対象のパスが含まれない' do
       render
       expect(rendered).not_to include("\"#{edit_user_registration_path}\"") # 登録情報変更
       expect(rendered).not_to include("\"#{destroy_user_session_path}\"") # ログアウト
-      expect(rendered).not_to include("\"#{infomations_path}\"") # お知らせ
     end
   end
   shared_examples_for 'ログイン中表示' do
