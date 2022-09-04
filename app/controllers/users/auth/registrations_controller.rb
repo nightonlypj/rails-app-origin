@@ -38,7 +38,7 @@ class Users::Auth::RegistrationsController < DeviseTokenAuth::RegistrationsContr
 
     # Tips: 存在するメールアドレスの場合はエラーにする
     if @resource.present? && @resource.email != params[:email] && User.find_by(email: params[:email]).present?
-      errors = { email: t('activerecord.errors.models.user.attributes.email.exist') }
+      errors = { email: t('activerecord.errors.models.user.attributes.email.taken') }
       errors[:full_messages] = ["#{t('activerecord.attributes.user.email')} #{errors[:email]}"]
       return render './failure', locals: { errors: errors, alert: t('errors.messages.not_saved.one') }, status: :unprocessable_entity
     end
@@ -136,11 +136,10 @@ class Users::Auth::RegistrationsController < DeviseTokenAuth::RegistrationsContr
     render './users/auth/success', locals: { notice: t(notice) }
   end
 
-  # Tips: 未使用
-  # def render_update_error
-  #   # render json: { status: 'error', errors: resource_errors }, status: 422
-  #   render './failure', locals: { errors: resource_errors }, status: :unprocessable_entity
-  # end
+  def render_update_error
+    # render json: { status: 'error', errors: resource_errors }, status: 422
+    render './failure', locals: { errors: resource_errors, alert: t('errors.messages.not_saved.one') }, status: :unprocessable_entity
+  end
 
   # Tips: 未使用
   # def render_update_error_user_not_found

@@ -8,9 +8,10 @@ class User < ApplicationRecord
          :confirmable, :lockable, :timeoutable, :trackable
   include DeviseTokenAuth::Concerns::User
   attr_accessor :redirect_url # Tips: /users/auth/{update,sign_in}で使用
+  attr_writer :cache_infomation_unread_count
 
   mount_uploader :image, ImageUploader
-  has_many :infomation, dependent: :destroy
+  has_many :infomations, dependent: :destroy
 
   validates :code, presence: true
   validates :code, uniqueness: { case_sensitive: true }
@@ -55,6 +56,9 @@ class User < ApplicationRecord
 
   # お知らせの未読数を返却
   def infomation_unread_count
-    Infomation.by_target(self).by_unread(infomation_check_last_started_at).count
+    return @cache_infomation_unread_count if @cache_infomation_unread_count.present?
+
+    @cache_infomation_unread_count = Infomation.by_target(self).by_unread(infomation_check_last_started_at).count
+    @cache_infomation_unread_count
   end
 end

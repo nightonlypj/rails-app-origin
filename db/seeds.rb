@@ -28,7 +28,9 @@ def insert_contents(bulk_insert)
       next
     end
 
-    insert_datas.push(data.attributes.merge(content).merge(created_at: now, updated_at: now))
+    content['created_at'] = now if content['created_at'].blank?
+    content['updated_at'] = now if content['updated_at'].blank?
+    insert_datas.push(data.attributes.merge(content))
     next if insert_datas.count < BULK_MAX_COUNT
 
     @model.insert_all!(insert_datas)
@@ -80,7 +82,8 @@ def update_contents(bulk_update, exclude_update_column)
 
     next unless data_changed?(content, data, new_model)
 
-    update_datas.push(data.attributes.merge(content).merge(updated_at: now))
+    content['updated_at'] = now if content['updated_at'].blank?
+    update_datas.push(data.attributes.merge(content))
     next if update_datas.count < BULK_MAX_COUNT
 
     @model.upsert_all(update_datas)

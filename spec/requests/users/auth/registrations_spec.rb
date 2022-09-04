@@ -319,7 +319,7 @@ RSpec.describe 'Users::Auth::Registrations', type: :request do
   #   なし
   # テストパターン
   #   未ログイン, ログイン中, APIログイン中, APIログイン中（削除予約済み）
-  #   パラメータなし, 有効なパラメータ（変更なし, あり）, 無効なパラメータ, URLがない, URLがホワイトリストにない
+  #   パラメータなし, 有効なパラメータ（変更なし, あり）, 無効なパラメータ, 現在のパスワードがない, URLがない, URLがホワイトリストにない
   #   ＋URLの拡張子: .json, ない
   #   ＋Acceptヘッダ: JSONが含まれる, JSONが含まれない
   describe 'POST #update' do
@@ -406,8 +406,8 @@ RSpec.describe 'Users::Auth::Registrations', type: :request do
       it_behaves_like 'To406(html/json)'
       it_behaves_like 'To406(html/html)'
     end
-    shared_examples_for 'ToNG' do |code|
-      it_behaves_like 'ToNG(json/json)', code
+    shared_examples_for 'ToNG' do |code| # , status, success|
+      it_behaves_like 'ToNG(json/json)', code # , status, success
       it_behaves_like 'To406(json/html)'
       it_behaves_like 'To406(html/json)'
       it_behaves_like 'To406(html/html)'
@@ -487,7 +487,7 @@ RSpec.describe 'Users::Auth::Registrations', type: :request do
       # it_behaves_like 'ToOK', 'success', nil, true
       it_behaves_like 'ToNG', 422, nil, false
       # it_behaves_like 'ToMsg', NilClass, 0, nil, nil, nil, nil
-      it_behaves_like 'ToMsg', Hash, 2, 'activerecord.errors.models.user.attributes.email.exist', nil, 'errors.messages.not_saved.one', nil
+      it_behaves_like 'ToMsg', Hash, 2, 'activerecord.errors.models.user.attributes.email.taken', nil, 'errors.messages.not_saved.one', nil
     end
     shared_examples_for '[削除予約済み]無効なパラメータ' do
       let(:attributes) { invalid_attributes.merge(password_confirmation: invalid_attributes[:password], current_password: user.password) }
@@ -496,6 +496,20 @@ RSpec.describe 'Users::Auth::Registrations', type: :request do
       # it_behaves_like 'ToOK', 'success', nil, true
       it_behaves_like 'ToNG', 422, nil, false
       # it_behaves_like 'ToMsg', NilClass, 0, nil, nil, nil, nil
+      it_behaves_like 'ToMsg', NilClass, 0, nil, nil, 'alert.user.destroy_reserved', nil
+    end
+    shared_examples_for '[APIログイン中]現在のパスワードがない' do
+      let(:attributes) { valid_attributes.merge(password_confirmation: valid_attributes[:password], current_password: nil) }
+      it_behaves_like 'NG'
+      # it_behaves_like 'ToNG', 422, 'error', nil
+      it_behaves_like 'ToNG', 422, nil, false
+      # it_behaves_like 'ToMsg', Hash, 2, 'activerecord.errors.models.user.attributes.current_password.blank', nil, nil, nil
+      it_behaves_like 'ToMsg', Hash, 2, 'activerecord.errors.models.user.attributes.current_password.blank', nil, 'errors.messages.not_saved.one', nil
+    end
+    shared_examples_for '[削除予約済み]現在のパスワードがない' do
+      let(:attributes) { valid_attributes.merge(password_confirmation: valid_attributes[:password], current_password: nil) }
+      it_behaves_like 'NG'
+      it_behaves_like 'ToNG', 422, nil, false
       it_behaves_like 'ToMsg', NilClass, 0, nil, nil, 'alert.user.destroy_reserved', nil
     end
     shared_examples_for '[未ログイン/ログイン中]URLがない' do
@@ -557,6 +571,7 @@ RSpec.describe 'Users::Auth::Registrations', type: :request do
       # it_behaves_like '[未ログイン/ログイン中]有効なパラメータ（変更なし）' # Tips: 未ログインの為、対象がない
       it_behaves_like '[未ログイン/ログイン中]有効なパラメータ（変更あり）'
       it_behaves_like '[未ログイン/ログイン中]無効なパラメータ'
+      # it_behaves_like '[未ログイン/ログイン中]現在のパスワードがない' # Tips: 未ログインの為、対象がない
       it_behaves_like '[未ログイン/ログイン中]URLがない'
       it_behaves_like '[未ログイン/ログイン中]URLがホワイトリストにない'
     end
@@ -566,6 +581,7 @@ RSpec.describe 'Users::Auth::Registrations', type: :request do
       # it_behaves_like '[未ログイン/ログイン中]有効なパラメータ（変更なし）' # Tips: 未ログインの為、対象がない
       it_behaves_like '[未ログイン/ログイン中]有効なパラメータ（変更あり）'
       it_behaves_like '[未ログイン/ログイン中]無効なパラメータ'
+      # it_behaves_like '[未ログイン/ログイン中]現在のパスワードがない' # Tips: 未ログインの為、対象がない
       it_behaves_like '[未ログイン/ログイン中]URLがない'
       it_behaves_like '[未ログイン/ログイン中]URLがホワイトリストにない'
     end
@@ -575,6 +591,7 @@ RSpec.describe 'Users::Auth::Registrations', type: :request do
       it_behaves_like '[APIログイン中]有効なパラメータ（変更なし）'
       it_behaves_like '[APIログイン中]有効なパラメータ（変更あり）'
       it_behaves_like '[APIログイン中]無効なパラメータ'
+      it_behaves_like '[APIログイン中]現在のパスワードがない'
       it_behaves_like '[APIログイン中]URLがない'
       it_behaves_like '[APIログイン中]URLがホワイトリストにない'
     end
@@ -584,6 +601,7 @@ RSpec.describe 'Users::Auth::Registrations', type: :request do
       it_behaves_like '[削除予約済み]有効なパラメータ（変更なし）'
       it_behaves_like '[削除予約済み]有効なパラメータ（変更あり）'
       it_behaves_like '[削除予約済み]無効なパラメータ'
+      it_behaves_like '[削除予約済み]現在のパスワードがない'
       it_behaves_like '[削除予約済み]URLがない'
       it_behaves_like '[削除予約済み]URLがホワイトリストにない'
     end

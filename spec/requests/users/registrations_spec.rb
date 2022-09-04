@@ -152,9 +152,9 @@ RSpec.describe 'Users::Registrations', type: :request do
   #   なし
   # テストパターン
   #   未ログイン, ログイン中, ログイン中（メールアドレス変更中, 削除予約済み）
-  #   有効なパラメータ（変更なし, あり）, 無効なパラメータ
+  #   有効なパラメータ（変更なし, あり）, 無効なパラメータ, 現在のパスワードがない
   describe 'PUT #update' do
-    subject { put update_user_registration_path, params: { user: attributes.merge(current_password: current_password) } }
+    subject { put update_user_registration_path, params: { user: attributes } }
     let_it_be(:new_user)   { FactoryBot.attributes_for(:user) }
     let_it_be(:exist_user) { FactoryBot.create(:user) }
     let(:nochange_attributes) { { name: user.name, email: user.email, password: user.password } }
@@ -194,12 +194,12 @@ RSpec.describe 'Users::Registrations', type: :request do
 
     # テストケース
     shared_examples_for '[ログイン中]有効なパラメータ（変更なし）' do
-      let(:attributes) { nochange_attributes }
+      let(:attributes) { nochange_attributes.merge(current_password: user.password) }
       it_behaves_like 'OK', false
       it_behaves_like 'ToTop', nil, 'devise.registrations.updated'
     end
     shared_examples_for '[削除予約済み]有効なパラメータ（変更なし）' do
-      let(:attributes) { nochange_attributes }
+      let(:attributes) { nochange_attributes.merge(current_password: user.password) }
       it_behaves_like 'NG'
       it_behaves_like 'ToTop', 'alert.user.destroy_reserved', nil
     end
@@ -209,12 +209,12 @@ RSpec.describe 'Users::Registrations', type: :request do
       it_behaves_like 'ToLogin', 'devise.failure.unauthenticated', nil
     end
     shared_examples_for '[ログイン中]有効なパラメータ（変更あり）' do
-      let(:attributes) { valid_attributes }
+      let(:attributes) { valid_attributes.merge(current_password: user.password) }
       it_behaves_like 'OK', true
       it_behaves_like 'ToTop', nil, 'devise.registrations.update_needs_confirmation'
     end
     shared_examples_for '[削除予約済み]有効なパラメータ（変更あり）' do
-      let(:attributes) { valid_attributes }
+      let(:attributes) { valid_attributes.merge(current_password: user.password) }
       it_behaves_like 'NG'
       it_behaves_like 'ToTop', 'alert.user.destroy_reserved', nil
     end
@@ -224,44 +224,54 @@ RSpec.describe 'Users::Registrations', type: :request do
       it_behaves_like 'ToLogin', 'devise.failure.unauthenticated', nil
     end
     shared_examples_for '[ログイン中]無効なパラメータ' do
-      let(:attributes) { invalid_attributes }
+      let(:attributes) { invalid_attributes.merge(current_password: user.password) }
       # it_behaves_like 'OK', true
       it_behaves_like 'NG'
       # it_behaves_like 'ToTop', nil, 'devise.registrations.update_needs_confirmation'
-      it_behaves_like 'ToError', 'activerecord.errors.models.user.attributes.email.exist'
+      it_behaves_like 'ToError', 'activerecord.errors.models.user.attributes.email.taken'
     end
     shared_examples_for '[削除予約済み]無効なパラメータ' do
-      let(:attributes) { invalid_attributes }
+      let(:attributes) { invalid_attributes.merge(current_password: user.password) }
+      it_behaves_like 'NG'
+      it_behaves_like 'ToTop', 'alert.user.destroy_reserved', nil
+    end
+    shared_examples_for '[ログイン中]現在のパスワードがない' do
+      let(:attributes) { valid_attributes }
+      it_behaves_like 'NG'
+      it_behaves_like 'ToError', 'activerecord.errors.models.user.attributes.current_password.blank'
+    end
+    shared_examples_for '[削除予約済み]現在のパスワードがない' do
+      let(:attributes) { valid_attributes }
       it_behaves_like 'NG'
       it_behaves_like 'ToTop', 'alert.user.destroy_reserved', nil
     end
 
     context '未ログイン' do
-      let(:current_password) { nil }
       # it_behaves_like '[未ログイン]有効なパラメータ（変更なし）' # Tips: 未ログインの為、対象がない
       it_behaves_like '[未ログイン]有効なパラメータ（変更あり）'
       it_behaves_like '[未ログイン]無効なパラメータ'
+      # it_behaves_like '[未ログイン]現在のパスワードがない' # Tips: 未ログインの為、対象がない
     end
     context 'ログイン中' do
       include_context 'ログイン処理', nil, true
-      let(:current_password) { user.password }
       it_behaves_like '[ログイン中]有効なパラメータ（変更なし）'
       it_behaves_like '[ログイン中]有効なパラメータ（変更あり）'
       it_behaves_like '[ログイン中]無効なパラメータ'
+      it_behaves_like '[ログイン中]現在のパスワードがない'
     end
     context 'ログイン中（メールアドレス変更中）' do
       include_context 'ログイン処理', :email_changed, true
-      let(:current_password) { user.password }
       it_behaves_like '[ログイン中]有効なパラメータ（変更なし）'
       it_behaves_like '[ログイン中]有効なパラメータ（変更あり）'
       it_behaves_like '[ログイン中]無効なパラメータ'
+      it_behaves_like '[ログイン中]現在のパスワードがない'
     end
     context 'ログイン中（削除予約済み）' do
       include_context 'ログイン処理', :destroy_reserved, true
-      let(:current_password) { user.password }
       it_behaves_like '[削除予約済み]有効なパラメータ（変更なし）'
       it_behaves_like '[削除予約済み]有効なパラメータ（変更あり）'
       it_behaves_like '[削除予約済み]無効なパラメータ'
+      it_behaves_like '[削除予約済み]現在のパスワードがない'
     end
   end
 
