@@ -12,6 +12,8 @@ class User < ApplicationRecord
 
   mount_uploader :image, ImageUploader
   has_many :infomations, dependent: :destroy
+  has_many :members, dependent: :destroy
+  has_many :spaces, through: :members
 
   validates :code, presence: true
   validates :code, uniqueness: { case_sensitive: true }

@@ -5,6 +5,8 @@ ja:
   activerecord:
     models:
       infomation: 'お知らせ'
+      space: 'スペース'
+      member: 'メンバー'
     attributes:
       infomation:
         id: 'ID'
@@ -20,6 +22,27 @@ ja:
         user: 'ユーザー'
         created_at: '作成日時'
         updated_at: '更新日時'
+      space:
+        id: 'ID'
+        code: 'コード'
+        image: '画像'
+        name: '名称'
+        description: '説明'
+        destroy_requested_at: '削除依頼日時'
+        destroy_schedule_at: '削除予定日時'
+        create_user: '登録ユーザー'
+        last_update_user: '最終更新ユーザー'
+        created_at: '作成日時'
+        updated_at: '更新日時'
+      member:
+        id: 'ID'
+        space: 'スペース'
+        user: 'ユーザー'
+        power: '権限'
+        invitation_user: '招待ユーザー'
+        invitationed_at: '招待日時'
+        created_at: '作成日時'
+        updated_at: '更新日時'
   enums:
     infomation:
       label:
@@ -30,6 +53,11 @@ ja:
       target:
         All: '全員'
         User: '対象ユーザーのみ'
+    member:
+      power:
+        Admin: '管理者'
+        Writer: '投稿者'
+        Reader: '閲覧者'
   notice:
     user:
       image_update: '画像を変更しました。'

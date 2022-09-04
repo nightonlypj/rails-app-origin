@@ -25,3 +25,21 @@
     destroy: true
   env:
     development: true
+- file: 'seed/spaces_development.yml'
+  model: 'Space'
+  insert: true
+  update: true
+  option:
+    bulk_insert: true
+    bulk_update: true
+  env:
+    development: true
+- file: 'seed/members_development.yml'
+  model: 'Member'
+  insert: true
+  update: true
+  option:
+    bulk_insert: true
+    bulk_update: true
+  env:
+    development: true

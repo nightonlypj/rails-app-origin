@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_11_30_000939) do
+ActiveRecord::Schema.define(version: 2022_08_27_072847) do
 
   create_table "admin_users", charset: "utf8", collation: "utf8_bin", comment: "管理者", force: :cascade do |t|
     t.string "name", null: false, comment: "氏名"
@@ -57,6 +57,41 @@ ActiveRecord::Schema.define(version: 2021_11_30_000939) do
     t.index ["started_at", "id"], name: "index_infomations1"
     t.index ["target", "user_id"], name: "index_infomations3"
     t.index ["user_id"], name: "index_infomations_on_user_id"
+  end
+
+  create_table "members", charset: "utf8", collation: "utf8_bin", comment: "メンバー", force: :cascade do |t|
+    t.bigint "space_id", comment: "スペースID"
+    t.bigint "user_id", comment: "ユーザーID"
+    t.integer "power", null: false, comment: "権限"
+    t.bigint "invitation_user_id", comment: "招待ユーザーID"
+    t.datetime "invitationed_at", comment: "招待日時"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["created_at", "id"], name: "index_members2"
+    t.index ["invitation_user_id"], name: "index_members_on_invitation_user_id"
+    t.index ["space_id", "user_id"], name: "index_members1", unique: true
+    t.index ["space_id"], name: "index_members_on_space_id"
+    t.index ["user_id"], name: "index_members_on_user_id"
+  end
+
+  create_table "spaces", charset: "utf8", collation: "utf8_bin", comment: "スペース", force: :cascade do |t|
+    t.string "code", null: false, comment: "コード"
+    t.string "image", comment: "画像"
+    t.string "name", null: false, comment: "名称"
+    t.text "description", comment: "説明"
+    t.boolean "private", default: true, null: false, comment: "非公開"
+    t.datetime "destroy_requested_at", comment: "削除依頼日時"
+    t.datetime "destroy_schedule_at", comment: "削除予定日時"
+    t.bigint "create_user_id", null: false, comment: "登録ユーザーID"
+    t.bigint "last_update_user_id", comment: "最終更新ユーザーID"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["code"], name: "index_spaces1", unique: true
+    t.index ["create_user_id"], name: "index_spaces_on_create_user_id"
+    t.index ["created_at", "id"], name: "index_spaces3"
+    t.index ["destroy_schedule_at"], name: "index_spaces2"
+    t.index ["last_update_user_id"], name: "index_spaces_on_last_update_user_id"
+    t.index ["name", "id"], name: "index_spaces4"
   end
 
   create_table "users", charset: "utf8", collation: "utf8_bin", comment: "ユーザー", force: :cascade do |t|
@@ -109,4 +144,6 @@ ActiveRecord::Schema.define(version: 2021_11_30_000939) do
   end
 
   add_foreign_key "infomations", "users"
+  add_foreign_key "members", "spaces"
+  add_foreign_key "members", "users"
 end

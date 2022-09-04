@@ -9,6 +9,11 @@
 - form_forをform_withに変更したい
   - https://dev.azure.com/nightonly/rails-app-origin/_workitems/edit/445/
 
+### spaceブランチ
+
+- スペースを作成してメンバーを招待できるようにしたい
+  - https://dev.azure.com/nightonly/rails-app-origin/_workitems/edit/464/
+
 ## 1.4.0 (Sprint 9)
 
 - GETとPOSTに統一（PUT/PATCH/DELETEをPOSTに変更）したい
