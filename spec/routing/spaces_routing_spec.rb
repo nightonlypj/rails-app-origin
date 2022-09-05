@@ -22,11 +22,8 @@ RSpec.describe SpacesController, type: :routing do
       expect(post: '/spaces').to route_to('spaces#create')
     end
 
-    it 'routes to #update via PUT' do
+    it 'routes to #update' do
       expect(put: '/spaces/1').to route_to('spaces#update', id: '1')
-    end
-
-    it 'routes to #update via PATCH' do
       expect(patch: '/spaces/1').to route_to('spaces#update', id: '1')
     end
 

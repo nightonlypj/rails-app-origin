@@ -1,9 +1,24 @@
-class SpacesController < ApplicationController
+class SpacesController < ApplicationAuthController
   before_action :set_space, only: %i[show edit update destroy]
 
-  # GET /spaces or /spaces.json
+  # GET /spaces スペース一覧
+  # GET /spaces(.json) スペース一覧API
   def index
-    @spaces = Space.all
+    @text = params[:text]&.slice(..(255 - 1))
+    @option = params[:option] == '1'
+    @exclude_member_space = params[:exclude_member_space] == '1'
+
+    @spaces = Space.by_target(current_user, @exclude_member_space).search(@text)
+                   .page(params[:page]).per(Settings['default_spaces_limit']).order(created_at: :desc, id: :desc)
+    @members = []
+    if current_user.present?
+      members = Member.where(space_id: @spaces.ids, user: current_user)
+      @members = members.index_by(&:space_id)
+    end
+
+    if format_html? && @spaces.current_page > [@spaces.total_pages, 1].max
+      redirect_to @spaces.total_pages <= 1 ? spaces_path : spaces_path(page: @spaces.total_pages)
+    end
   end
 
   # GET /spaces/1 or /spaces/1.json

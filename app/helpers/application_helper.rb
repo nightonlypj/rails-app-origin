@@ -1,4 +1,9 @@
 module ApplicationHelper
+  # 検索用のjsを使用するかを返却
+  def enable_javascript_search?
+    controller_name == 'spaces' && action_name == 'index'
+  end
+
   # 左メニューを開くかを返却
   def user_accordion_show?
     (controller_name == 'registrations' && action_name == 'edit') || (controller_name == 'sessions' && action_name == 'delete')
@@ -35,5 +40,12 @@ module ApplicationHelper
   # 入力項目のサイズクラス名を返却
   def input_size_class_name(resource, key)
     resource.errors.any? && resource.errors[key].any? ? ' mb-5' : ' mb-3'
+  end
+
+  # 文字列を省略して返却
+  def text_truncate(text, length)
+    return if length <= 0
+
+    text.blank? || text.length <= length ? text : text.slice(..(length - 1)).concat('...')
   end
 end

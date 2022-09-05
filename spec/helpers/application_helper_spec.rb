@@ -18,6 +18,32 @@ RSpec.describe ApplicationHelper, type: :helper do
     end
   end
 
+  # 検索用のjsを使用するかを返却
+  # 前提条件
+  #   なし
+  # テストパターン
+  #   true: スペース一覧
+  #   false: スペース詳細
+  describe 'enable_javascript_search?' do
+    subject { helper.enable_javascript_search? }
+    before do
+      allow(helper).to receive(:controller_name).and_return controller_name
+      allow(helper).to receive(:action_name).and_return action_name
+    end
+
+    # テストケース
+    context 'スペース一覧' do
+      let(:controller_name) { 'spaces' }
+      let(:action_name)     { 'index' }
+      it_behaves_like 'true'
+    end
+    context 'スペース詳細' do
+      let(:controller_name) { 'spaces' }
+      let(:action_name)     { 'show' }
+      it_behaves_like 'false'
+    end
+  end
+
   # 左メニューを開くかを返却
   describe 'user_accordion_show?' do
     subject { helper.user_accordion_show? }
@@ -215,6 +241,37 @@ RSpec.describe ApplicationHelper, type: :helper do
       context 'keyが存在する' do
         let(:key) { :email }
         it_behaves_like 'value', ' mb-5'
+      end
+    end
+  end
+
+  # 文字列を省略して返却
+  describe 'text_truncate' do
+    subject { helper.text_truncate(text, length) }
+
+    # テストケース
+    context 'lengthが0' do
+      let(:length) { 0 }
+      let(:text)   { 'a' }
+      it_behaves_like 'value', nil
+    end
+    context 'lengthが1' do
+      let(:length) { 1 }
+      context 'nil' do
+        let(:text) { nil }
+        it_behaves_like 'value', nil
+      end
+      context '空' do
+        let(:text) { '' }
+        it_behaves_like 'value', ''
+      end
+      context 'lengthと同じ文字数' do
+        let(:text) { 'a' }
+        it_behaves_like 'value', 'a'
+      end
+      context 'lengthより長い' do
+        let(:text) { 'aa' }
+        it_behaves_like 'value', 'a...'
       end
     end
   end

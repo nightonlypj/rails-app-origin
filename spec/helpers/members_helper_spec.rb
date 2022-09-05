@@ -1,15 +1,33 @@
 require 'rails_helper'
 
-# Specs in this file have access to a helper object that includes
-# the MembersHelper. For example:
-#
-# describe MembersHelper do
-#   describe "string concat" do
-#     it "concats two strings with spaces" do
-#       expect(helper.concat_strings("this","that")).to eq("this that")
-#     end
-#   end
-# end
 RSpec.describe MembersHelper, type: :helper do
-  pending "add some examples to (or delete) #{__FILE__}"
+  # 権限のクラス名を返却
+  describe 'power_class_name' do
+    subject { helper.power_class_name(power) }
+
+    # テスト内容
+    shared_examples_for 'value' do |value|
+      it 'value' do
+        is_expected.to eq(value)
+      end
+    end
+
+    # テストケース
+    context 'Admin' do
+      let(:power) { 'Admin' }
+      it_behaves_like 'value', 'fa-user-cog'
+    end
+    context 'Writer' do
+      let(:power) { :Writer }
+      it_behaves_like 'value', 'fa-user-edit'
+    end
+    context 'nil' do
+      let(:power) { nil }
+      it_behaves_like 'value', 'fa-user'
+    end
+    context 'blank' do
+      let(:power) { '' }
+      it_behaves_like 'value', 'fa-user'
+    end
+  end
 end

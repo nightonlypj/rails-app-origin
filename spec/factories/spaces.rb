@@ -2,6 +2,7 @@ FactoryBot.define do
   factory :space do
     sequence(:code) { |n| Faker::Number.hexadecimal(digits: 3) + n.to_s.rjust(5, '0') }
     name            { "space(#{code})" }
+    description     { "description(#{code})" }
     association :create_user, factory: :user
 
     # 非公開・公開

@@ -15,6 +15,7 @@
     <meta name="debug" content="true">
 <% end %>
     <%= javascript_pack_tag 'application', 'data-turbolinks-track': 'reload' %>
+    <%= javascript_pack_tag 'search', 'data-turbolinks-track': 'reload' if enable_javascript_search? %>
   </head>
   <body>
     <header style="margin-bottom: 70px">
@@ -137,6 +138,10 @@
           <span class="mx-2 my-1">お知らせ</span>
         </a>
 <% end %>
+        <a href="<%= spaces_path %>" class="btn btn-link d-flex align-items-center link-dark" style="font-size: 1rem">
+          <i class="fas fa-list fa-lg"></i>
+          <span class="mx-2 my-1">スペース</span>
+        </a>
       </nav>
 
       <main id="main_contents" class="flex-grow-1" style="min-width: 300px">
