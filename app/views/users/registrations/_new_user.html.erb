@@ -1,5 +1,5 @@
 <% validate_enabled = resource.errors.any? %>
-<%= form_with(model: resource, url: create_user_registration_path, html: { method: :post, novalidate: true }, local: true) do |form| %>
+<%= form_with(model: resource, url: create_user_registration_path, html: { method: :post, novalidate: true, autocomplete: 'on' }, local: true) do |form| %>
   <div class="form-outline<%= input_size_class_name(resource, :name) %>">
     <%= form.text_field :name, autocomplete: 'name', class: "form-control#{validate_class_name(validate_enabled, resource, :name)}" %>
     <%= form.label '氏名', class: 'form-label', for: 'user_name' %>
@@ -24,5 +24,5 @@
     <%= render 'users/shared/field_error_messages', messages: resource.errors[:password_confirmation] %>
   </div>
 
-  <%= form.submit '登録', class: 'btn btn-primary' %>
+  <%= form.submit '登録', type: 'button', onclick: 'submit()', class: 'btn btn-primary' %>
 <% end %>

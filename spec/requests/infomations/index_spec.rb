@@ -85,16 +85,16 @@ RSpec.describe 'Infomations', type: :request do
       it '対象項目が含まれる' do
         subject
         (start_no..end_no).each do |no|
-          info = @user_infomations[@user_infomations.count - no]
-          expect(response.body).to include(info.label_i18n) if info.label_i18n.present? # ラベル
-          expect(response.body).to include(info.title) # タイトル
-          expect(response.body).to include(info.summary) if info.summary.present? # 概要
-          if info.body.present?
-            expect(response.body).to include("\"#{infomation_path(info)}\"") # お知らせ詳細のパス
+          infomation = @user_infomations[@user_infomations.count - no]
+          expect(response.body).to include(infomation.label_i18n) if infomation.label_i18n.present? # ラベル
+          expect(response.body).to include(infomation.title) # タイトル
+          expect(response.body).to include(infomation.summary) if infomation.summary.present? # 概要
+          if infomation.body.present?
+            expect(response.body).to include("\"#{infomation_path(infomation)}\"") # お知らせ詳細のパス
           else
-            expect(response.body).not_to include("\"#{infomation_path(info)}\"") # Tips: 本文がない場合は遷移しない
+            expect(response.body).not_to include("\"#{infomation_path(infomation)}\"") # Tips: 本文がない場合は遷移しない
           end
-          expect(response.body).to include(I18n.l(info.started_at.to_date)) # 掲載開始日
+          expect(response.body).to include(I18n.l(infomation.started_at.to_date)) # 掲載開始日
         end
       end
     end
@@ -110,16 +110,16 @@ RSpec.describe 'Infomations', type: :request do
         expect(response_json.count).to eq(end_no - start_no + 1)
         (start_no..end_no).each do |no|
           data = response_json[no - start_no]
-          info = infomations[infomations.count - no]
-          expect(data['id']).to eq(info.id) # ID
-          expect(data['label']).to eq(info.label) # ラベル
-          expect(data['label_i18n']).to eq(info.label_i18n)
-          expect(data['title']).to eq(info.title) # タイトル
-          expect(data['summary']).to eq(info.summary) # 概要
-          expect(data['body_present']).to eq(info.body.present?) # 本文
-          expect(data['started_at']).to eq(I18n.l(info.started_at, format: :json)) # 掲載開始日
-          expect(data['ended_at']).to eq(info.ended_at.present? ? I18n.l(info.ended_at, format: :json) : nil) # 掲載終了日
-          expect(data['target']).to eq(info.target) # 対象
+          infomation = infomations[infomations.count - no]
+          expect(data['id']).to eq(infomation.id) # ID
+          expect(data['label']).to eq(infomation.label) # ラベル
+          expect(data['label_i18n']).to eq(infomation.label_i18n)
+          expect(data['title']).to eq(infomation.title) # タイトル
+          expect(data['summary']).to eq(infomation.summary) # 概要
+          expect(data['body_present']).to eq(infomation.body.present?) # 本文
+          expect(data['started_at']).to eq(I18n.l(infomation.started_at, format: :json)) # 掲載開始日
+          expect(data['ended_at']).to eq(infomation.ended_at.present? ? I18n.l(infomation.ended_at, format: :json) : nil) # 掲載終了日
+          expect(data['target']).to eq(infomation.target) # 対象
         end
       end
     end
