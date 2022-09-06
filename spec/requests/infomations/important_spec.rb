@@ -32,16 +32,16 @@ RSpec.describe 'Infomations', type: :request do
         expect(response_json.count).to eq(infomations.count)
         (1..infomations.count).each do |no|
           data = response_json[no - 1]
-          info = infomations[infomations.count - no]
-          expect(data['id']).to eq(info.id) # ID
-          expect(data['label']).to eq(info.label) # ラベル
-          expect(data['label_i18n']).to eq(info.label_i18n)
-          expect(data['title']).to eq(info.title) # タイトル
-          expect(data['summary']).to eq(info.summary) # 概要
-          expect(data['body_present']).to eq(info.body.present?) # 本文
-          expect(data['started_at']).to eq(I18n.l(info.started_at, format: :json)) # 掲載開始日
-          expect(data['ended_at']).to eq(info.ended_at.present? ? I18n.l(info.ended_at, format: :json) : nil) # 掲載終了日
-          expect(data['target']).to eq(info.target) # 対象
+          infomation = infomations[infomations.count - no]
+          expect(data['id']).to eq(infomation.id) # ID
+          expect(data['label']).to eq(infomation.label) # ラベル
+          expect(data['label_i18n']).to eq(infomation.label_i18n)
+          expect(data['title']).to eq(infomation.title) # タイトル
+          expect(data['summary']).to eq(infomation.summary) # 概要
+          expect(data['body_present']).to eq(infomation.body.present?) # 本文
+          expect(data['started_at']).to eq(I18n.l(infomation.started_at, format: :json)) # 掲載開始日
+          expect(data['ended_at']).to eq(infomation.ended_at.present? ? I18n.l(infomation.ended_at, format: :json) : nil) # 掲載終了日
+          expect(data['target']).to eq(infomation.target) # 対象
         end
       end
     end

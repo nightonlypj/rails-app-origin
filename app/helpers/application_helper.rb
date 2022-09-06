@@ -5,7 +5,7 @@ module ApplicationHelper
   end
 
   # 左メニューを開くかを返却
-  def user_accordion_show?
+  def show_user_accordion?
     (controller_name == 'registrations' && action_name == 'edit') || (controller_name == 'sessions' && action_name == 'delete')
   end
 

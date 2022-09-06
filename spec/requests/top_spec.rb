@@ -21,15 +21,15 @@ RSpec.describe 'Top', type: :request do
       it '対象項目が含まれる' do
         subject
         (1..@user_important_infomations.count).each do |no|
-          info = @user_important_infomations[@user_important_infomations.count - no]
-          expect(response.body).to include(info.label_i18n) if info.label_i18n.present? # ラベル
-          expect(response.body).to include(info.title) # タイトル
-          if info.body.present? || info.summary.present?
-            expect(response.body).to include("\"#{infomation_path(info)}\"") # お知らせ詳細のパス
+          infomation = @user_important_infomations[@user_important_infomations.count - no]
+          expect(response.body).to include(infomation.label_i18n) if infomation.label_i18n.present? # ラベル
+          expect(response.body).to include(infomation.title) # タイトル
+          if infomation.body.present? || infomation.summary.present?
+            expect(response.body).to include("\"#{infomation_path(infomation)}\"") # お知らせ詳細のパス
           else
-            expect(response.body).not_to include("\"#{infomation_path(info)}\"") # Tips: 本文/概要がない場合は遷移しない
+            expect(response.body).not_to include("\"#{infomation_path(infomation)}\"") # Tips: 本文/概要がない場合は遷移しない
           end
-          expect(response.body).to include(I18n.l(info.started_at.to_date)) # 掲載開始日
+          expect(response.body).to include(I18n.l(infomation.started_at.to_date)) # 掲載開始日
         end
       end
     end

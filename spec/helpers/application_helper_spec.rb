@@ -45,32 +45,47 @@ RSpec.describe ApplicationHelper, type: :helper do
   end
 
   # 左メニューを開くかを返却
-  describe 'user_accordion_show?' do
-    subject { helper.user_accordion_show? }
+  # 前提条件
+  #   なし
+  # テストパターン
+  #   true: 登録情報変更, ログアウト
+  #   false: アカウント削除, ログイン
+  describe 'show_user_accordion?' do
+    subject { helper.show_user_accordion? }
     before do
       allow(helper).to receive(:controller_name).and_return controller_name
       allow(helper).to receive(:action_name).and_return action_name
     end
 
     # テストケース
-    context 'トップページ' do
-      let(:controller_name) { 'top' }
-      let(:action_name)     { 'index' }
-      it_behaves_like 'false'
-    end
     context '登録情報変更' do
       let(:controller_name) { 'registrations' }
       let(:action_name)     { 'edit' }
       it_behaves_like 'true'
+    end
+    context 'アカウント削除' do
+      let(:controller_name) { 'registrations' }
+      let(:action_name)     { 'delete' }
+      it_behaves_like 'false'
     end
     context 'ログアウト' do
       let(:controller_name) { 'sessions' }
       let(:action_name)     { 'delete' }
       it_behaves_like 'true'
     end
+    context 'ログイン' do
+      let(:controller_name) { 'sessions' }
+      let(:action_name)     { 'new' }
+      it_behaves_like 'false'
+    end
   end
 
   # 削除予約メッセージを表示するかを返却
+  # 前提条件
+  #   なし
+  # テストパターン
+  #   削除予約: なし, あり
+  #   トップページ, アカウント削除取り消し
   describe 'destroy_reserved_message?' do
     subject do
       if user.nil?
@@ -131,6 +146,10 @@ RSpec.describe ApplicationHelper, type: :helper do
   end
 
   # 有効なメールアドレス確認トークンかを返却
+  # 前提条件
+  #   なし
+  # テストパターン
+  #   メールアドレス変更: なし, あり, 期限切れ
   describe 'user_valid_confirmation_token?' do
     subject { helper.user_valid_confirmation_token? }
     before do
@@ -143,7 +162,7 @@ RSpec.describe ApplicationHelper, type: :helper do
       let_it_be(:current_user) { FactoryBot.create(:user) }
       it_behaves_like 'false'
     end
-    context 'メールアドレス変更中' do
+    context 'メールアドレス変更あり' do
       let_it_be(:current_user) { FactoryBot.create(:user, :email_changed) }
       it_behaves_like 'true'
     end
@@ -154,6 +173,12 @@ RSpec.describe ApplicationHelper, type: :helper do
   end
 
   # バリデーション表示のクラス名を返却
+  # 前提条件
+  #   なし
+  # テストパターン
+  #   enabled: false, true
+  #   key: 存在しない, 存在する
+  #   subkey: nil, 存在しない, 存在する
   describe 'validate_class_name' do
     subject do
       if subkey.nil?
@@ -208,6 +233,10 @@ RSpec.describe ApplicationHelper, type: :helper do
   end
 
   # パスワードのバリデーション表示のクラス名を返却 # Tips: パスワードは再入力で復元しない為
+  # 前提条件
+  #   なし
+  # テストパターン
+  #   enabled: false, true
   describe 'validate_password_class_name' do
     subject { helper.validate_password_class_name(enabled) }
 
@@ -223,13 +252,18 @@ RSpec.describe ApplicationHelper, type: :helper do
   end
 
   # 入力項目のサイズクラス名を返却
+  # 前提条件
+  #   なし
+  # テストパターン
+  #   errors: なし, あり
+  #   key: 存在しない, 存在する
   describe 'input_size_class_name' do
     subject { helper.input_size_class_name(user, key) }
     let_it_be(:user) { FactoryBot.create(:user) }
 
     # テストケース
     context 'errorsなし' do
-      let(:key) { :not }
+      let(:key) { :not } # Tips: errorsなしの為、keyが存在する事はない
       it_behaves_like 'value', ' mb-3'
     end
     context 'errorsあり' do

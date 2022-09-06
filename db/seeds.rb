@@ -5,7 +5,7 @@ BULK_MAX_COUNT = 1000
 
 # シーケンス更新 # Tips: id指定でinsert_allした場合、シーケンスが更新されない為(PostgreSQL)
 def update_sequence
-  return if @model.connection_config[:adapter] != 'postgresql'
+  return if @model.connection_db_config.configuration_hash[:adapter] != 'postgresql'
 
   @model.connection.execute(
     "SELECT setval(pg_get_serial_sequence('#{@model.table_name}', 'id'), (SELECT MAX(id) FROM #{@model.table_name}))"

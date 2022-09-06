@@ -99,7 +99,7 @@
           <div class="accordion-item">
             <div id="userAccordionHeader" class="accordion-header">
               <button
-                class="accordion-button px-3 py-2<%= ' collapsed' unless user_accordion_show? %>"
+                class="accordion-button px-3 py-2<%= ' collapsed' unless show_user_accordion? %>"
                 data-mdb-toggle="collapse"
                 data-mdb-target="#userAccordionCollapse"
                 aria-expanded="true"
@@ -111,7 +111,7 @@
             </div>
             <div
               id="userAccordionCollapse"
-              class="accordion-collapse collapse<%= ' show' if user_accordion_show? %>"
+              class="accordion-collapse collapse<%= ' show' if show_user_accordion? %>"
               aria-labelledby="userAccordionHeader"
               data-mdb-parent="#userAccordionFlush"
             >
