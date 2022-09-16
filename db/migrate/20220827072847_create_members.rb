@@ -12,6 +12,7 @@ class CreateMembers < ActiveRecord::Migration[6.1]
       t.timestamps
     end
     add_index :members, [:space_id, :user_id], unique: true, name: 'index_members1'
-    add_index :members, [:created_at, :id],                  name: 'index_members2'
+    add_index :members, [:invitationed_at, :id],             name: 'index_members2'
+    add_index :members, [:space_id, :power],                 name: 'index_members3'
   end
 end

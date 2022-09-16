@@ -55,9 +55,9 @@ ja:
         User: '対象ユーザーのみ'
     member:
       power:
-        Admin: '管理者'
-        Writer: '投稿者'
-        Reader: '閲覧者'
+        admin: '管理者'
+        writer: '投稿者'
+        reader: '閲覧者'
   notice:
     user:
       image_update: '画像を変更しました。'

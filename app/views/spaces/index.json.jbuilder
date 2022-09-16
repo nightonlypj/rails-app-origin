@@ -22,7 +22,7 @@ json.spaces do
     json.destroy_schedule_at space.destroy_schedule_at.present? ? l(space.destroy_schedule_at, format: :json) : nil
 
     if @members[space.id].present?
-      json.member do
+      json.current_member do
         json.power @members[space.id].power
         json.power_i18n @members[space.id].power_i18n
       end

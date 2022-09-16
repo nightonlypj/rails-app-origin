@@ -1,7 +1,7 @@
 module ApplicationHelper
   # 検索用のjsを使用するかを返却
   def enable_javascript_search?
-    controller_name == 'spaces' && action_name == 'index'
+    %w[spaces members].include?(controller_name) && action_name == 'index'
   end
 
   # 左メニューを開くかを返却
@@ -47,5 +47,15 @@ module ApplicationHelper
     return if length <= 0
 
     text.blank? || text.length <= length ? text : text.slice(..(length - 1)).concat('...')
+  end
+
+  # ページの最初の番号を返却
+  def first_page_number(models)
+    ((models.limit_value * (models.current_page - 1)) + 1).to_s(:delimited)
+  end
+
+  # ページの最後の番号を返却
+  def last_page_number(models)
+    [models.current_page * models.limit_value, models.total_count].min.to_s(:delimited)
   end
 end

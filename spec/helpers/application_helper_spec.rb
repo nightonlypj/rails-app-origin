@@ -22,7 +22,7 @@ RSpec.describe ApplicationHelper, type: :helper do
   # 前提条件
   #   なし
   # テストパターン
-  #   true: スペース一覧
+  #   true: スペース一覧, メンバー一覧
   #   false: スペース詳細
   describe 'enable_javascript_search?' do
     subject { helper.enable_javascript_search? }
@@ -41,6 +41,11 @@ RSpec.describe ApplicationHelper, type: :helper do
       let(:controller_name) { 'spaces' }
       let(:action_name)     { 'show' }
       it_behaves_like 'false'
+    end
+    context 'メンバー一覧' do
+      let(:controller_name) { 'members' }
+      let(:action_name)     { 'index' }
+      it_behaves_like 'true'
     end
   end
 
@@ -307,6 +312,58 @@ RSpec.describe ApplicationHelper, type: :helper do
         let(:text) { 'aa' }
         it_behaves_like 'value', 'a...'
       end
+    end
+  end
+
+  # ページの最初の番号を返却
+  describe 'first_page_number' do
+    subject do
+      FactoryBot.create_list(:user, count)
+      models = User.page(page).per(2)
+      helper.first_page_number(models)
+    end
+
+    # テストケース
+    context '0件' do
+      let(:count) { 0 }
+      let(:page)  { 1 }
+      it_behaves_like 'value', '1'
+    end
+    context '2件' do
+      let(:count) { 2 }
+      let(:page)  { 1 }
+      it_behaves_like 'value', '1'
+    end
+    context '3件、2頁' do
+      let(:count) { 3 }
+      let(:page)  { 2 }
+      it_behaves_like 'value', '3'
+    end
+  end
+
+  # ページの最後の番号を返却
+  describe 'last_page_number' do
+    subject do
+      FactoryBot.create_list(:user, count)
+      models = User.page(page).per(2)
+      helper.last_page_number(models)
+    end
+
+    # テストケース
+    context '0件' do
+      let(:count) { 0 }
+      let(:page)  { 1 }
+      it_behaves_like 'value', '0'
+    end
+    context '2件' do
+      let(:count) { 2 }
+      let(:page)  { 1 }
+      it_behaves_like 'value', '2'
+    end
+    context '3件、2頁' do
+      let(:count) { 3 }
+      let(:page)  { 2 }
+      it_behaves_like 'value', '3'
     end
   end
 end

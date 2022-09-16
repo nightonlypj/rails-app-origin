@@ -67,8 +67,9 @@ ActiveRecord::Schema.define(version: 2022_08_27_072847) do
     t.datetime "invitationed_at", comment: "招待日時"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
-    t.index ["created_at", "id"], name: "index_members2"
     t.index ["invitation_user_id"], name: "index_members_on_invitation_user_id"
+    t.index ["invitationed_at", "id"], name: "index_members2"
+    t.index ["space_id", "power"], name: "index_members3"
     t.index ["space_id", "user_id"], name: "index_members1", unique: true
     t.index ["space_id"], name: "index_members_on_space_id"
     t.index ["user_id"], name: "index_members_on_user_id"

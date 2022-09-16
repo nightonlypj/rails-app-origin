@@ -22,7 +22,7 @@ class Space < ApplicationRecord
     space = all
     collate = connection_db_config.configuration_hash[:adapter] == 'mysql2' ? ' COLLATE utf8_unicode_ci' : ''
     like = connection_db_config.configuration_hash[:adapter] == 'postgresql' ? 'ILIKE' : 'LIKE'
-    text.split.each do |word|
+    text.split(/[[:blank:]]+/).each do |word|
       value = "%#{word}%"
       space = space.where("name#{collate} #{like} ? OR description#{collate} #{like} ?", value, value)
     end

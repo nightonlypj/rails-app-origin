@@ -123,10 +123,10 @@ RSpec.describe 'Spaces', type: :request do
           expect(data['destroy_schedule_at']).to eq(destroy_schedule_at)
           power = members[space.id]
           if power.blank?
-            expect(data['member']).to be_nil
+            expect(data['current_member']).to be_nil
           else
-            expect(data['member']['power']).to eq(power)
-            expect(data['member']['power_i18n']).to eq(Member.powers_i18n[power])
+            expect(data['current_member']['power']).to eq(power)
+            expect(data['current_member']['power_i18n']).to eq(Member.powers_i18n[power])
           end
         end
       end
@@ -161,7 +161,8 @@ RSpec.describe 'Spaces', type: :request do
     end
     shared_examples_for '[未ログイン]スペースが最大表示数と同じ' do
       count = Settings['test_spaces']
-      include_context 'スペース一覧作成', 0, count['public_admin_count'] + count['public_none_count'] + count['private_admin_count'] + count['private_reader_count'], 0, 0
+      all = count['public_admin_count'] + count['public_none_count'] + count['private_admin_count'] + count['private_reader_count']
+      include_context 'スペース一覧作成', 0, all, 0, 0
       it_behaves_like 'ToOK', 1
       it_behaves_like 'ページネーション非表示', 1, 2
       it_behaves_like 'リスト表示', 1
@@ -194,7 +195,8 @@ RSpec.describe 'Spaces', type: :request do
     end
     shared_examples_for '[未ログイン]スペースが最大表示数より多い' do
       count = Settings['test_spaces']
-      include_context 'スペース一覧作成', 0, count['public_admin_count'] + count['public_none_count'] + count['private_admin_count'] + count['private_reader_count'] + 1, 0, 0
+      all = count['public_admin_count'] + count['public_none_count'] + count['private_admin_count'] + count['private_reader_count']
+      include_context 'スペース一覧作成', 0, all + 1, 0, 0
       it_behaves_like 'ToOK', 1
       it_behaves_like 'ToOK', 2
       it_behaves_like 'ページネーション表示', 1, 2
@@ -288,11 +290,11 @@ RSpec.describe 'Spaces', type: :request do
   #   検索文字列あり（部分一致, 大文字・小文字を区別しない）
   # テストパターン
   #   参加スペース: 含む, 除く
-  describe 'GET #index' do
-    subject { get spaces_path(format: subject_format), params: { text: text, exclude_member_space: exclude_member_space }, headers: auth_headers.merge(accept_headers) }
+  describe 'GET #index（検索）' do
+    subject { get spaces_path(format: subject_format), params: params, headers: auth_headers.merge(accept_headers) }
     let_it_be(:space)        { FactoryBot.create(:space, :public, name: 'space(Aaa)', description: 'description(Bbb)') }
     let_it_be(:member_space) { FactoryBot.create(:space, :public, name: 'space(Bbb)', description: 'description(Aaa)') }
-    let(:text) { 'aaa' }
+    let(:params) { { text: 'aaa', exclude_member_space: exclude_member_space } }
 
     # テスト内容
     shared_examples_for 'リスト表示' do
@@ -320,7 +322,7 @@ RSpec.describe 'Spaces', type: :request do
     # テストケース
     context 'ログイン中（URLの拡張子がない/AcceptヘッダにHTMLが含まれる）' do
       include_context 'ログイン処理'
-      before_all { FactoryBot.create(:member, :admin, space_id: member_space.id, user_id: user.id) }
+      before_all { FactoryBot.create(:member, :admin, space: member_space, user: user) }
       let(:subject_format) { nil }
       let(:accept_headers) { ACCEPT_INC_HTML }
       context '参加スペースを含む' do
@@ -338,7 +340,7 @@ RSpec.describe 'Spaces', type: :request do
     end
     context 'APIログイン中（URLの拡張子が.json/AcceptヘッダにJSONが含まれる）' do
       include_context 'APIログイン処理'
-      before_all { FactoryBot.create(:member, :admin, space_id: member_space.id, user_id: user.id) }
+      before_all { FactoryBot.create(:member, :admin, space: member_space, user: user) }
       let(:subject_format) { :json }
       let(:accept_headers) { ACCEPT_INC_JSON }
       context '参加スペースを含む' do

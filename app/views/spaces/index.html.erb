@@ -30,34 +30,33 @@
     </article>
 <% else %>
     <hr class="my-2" />
-    <table class="table table-hover">
-      <tbody>
+    <div class="table-responsive">
+      <table class="table table-hover">
+        <tbody>
 <% @spaces.each do |space| %>
-        <article>
-          <tr>
-            <td scope="row" style="width: 35%">
+          <tr class="align-middle">
+            <td scope="row" class="px-1 py-2" style="width: 35%">
               <%= image_tag space.image_url(:small), class: 'rounded-circle' %>
-              <span class="fw-bolder mx-1">
-                <%= link_to text_truncate(space.name, 64), space %>
+              <span class="fw-bolder ms-1">
+                <%= link_to text_truncate(space.name, 64), space_path(space.code) %>
               </span>
-<% if space.private %>
-              <i class="fas fa-lock" data-mdb-toggle="tooltip" data-mdb-placement="bottom" title="非公開"></i>
-<% end %>
-<% if @members[space.id].present? %>
-              <i class="fas <%= power_class_name(@members[space.id].power) %> mx-1" data-mdb-toggle="tooltip" data-mdb-placement="bottom" title="あなたは「<%= @members[space.id].power_i18n %>」です。"></i>
-<% end %>
+              <%= render 'icon', space: space, current_member: @members[space.id] %>
             </td>
-            <td>
-<% if space.destroy_reserved? %>
-              <i class="fas fa-trash mx-1" data-mdb-toggle="tooltip" data-mdb-placement="bottom" title="<%= l(space.destroy_schedule_at.to_date) %>以降に削除される予定です。"></i>
-<% end %>
+            <td class="px-1 py-2">
               <%= text_truncate(space.description, 128) %>
             </td>
-          </tr>
-        </article>
+            <td class="px-1 py-2">
+<% if @members[space.id].present? %>
+              <a href="<%= members_path(space.code) %>" class="btn btn-link btn-floating link-dark">
+                <i class="fas fa-user-friends" data-mdb-toggle="tooltip" data-mdb-placement="bottom" title="メンバー"></i>
+              </a>
 <% end %>
-      </tbody>
-    </table>
+            </td>
+          </tr>
+<% end %>
+        </tbody>
+      </table>
+    </div>
 <% end %>
 
     <div class="d-flex justify-content-center">

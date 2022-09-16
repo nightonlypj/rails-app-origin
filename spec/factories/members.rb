@@ -1,18 +1,18 @@
 FactoryBot.define do
   factory :member do
-    power { :Admin }
+    power { :admin }
     association :space
     association :user
 
     # 権限
     trait :admin do
-      power { :Admin }
+      power { :admin }
     end
     trait :writer do
-      power { :Writer }
+      power { :writer }
     end
     trait :reader do
-      power { :Reader }
+      power { :reader }
     end
   end
 end

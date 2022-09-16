@@ -1,16 +1,16 @@
 # Tips: id = 連番
 - id: 1
   code: 'code0001'
-  name: '非公開スペース(Admin/Admin)１２３４５６７８９０１２３４５６７８９０１２３４５６７８９０１２３４５６７８９０１２３４５６７８９０１２３４５６７８９０１２３４５６７８９０１２３４５６７８９０１２３４５６７８９０１２３４５６７８９０１２３４５６７８９０１２３４５６７８９０１２３４５６７８９０１２３４５６７８９０１２３４５６７８９０１２３４５６７８９０１２３４５６７８９０１２３４５６７８９０１２３４５６７８９０１２３４５６７８９０１２３４５６７８９０１２３４５６７８９０１２３４５６７８９０１２３４５'
-  description: "非公開スペース(Admin/Admin)\n2行目\n１２３４５６７８９０１２３４５６７８９０１２３４５６７８９０１２３４５６７８９０１２３４５６７８９０１２３４５６７８９０１２３４５６７８９０１２３４５６７８９０１２３４５６７８９０１２３４５６７８９０１２３４５６７８９０１２３４５６７８９０１２３４５６７８９０１２３４５６７８９０１２３４５６７８９０１２３４５６７８９０１２３４５６７８９０１２３４５６７８９０１２３４５６７８９０１２３４５６７８９０１２３４５６７８９０１２３４５６７８９０１２３４５６７８９０"
+  name: '非公開スペース(管理者/管理者)１２３４５６７８９０１２３４５６７８９０１２３４５６７８９０１２３４５６７８９０１２３４５６７８９０１２３４５６７８９０１２３４５６７８９０１２３４５６７８９０１２３４５６７８９０１２３４５６７８９０１２３４５６７８９０１２３４５６７８９０１２３４５６７８９０１２３４５６７８９０１２３４５６７８９０１２３４５６７８９０１２３４５６７８９０１２３４５６７８９０１２３４５６７８９０１２３４５６７８９０１２３４５６７８９０１２３４５６７８９０１２３４５６７８９０１２３４５'
+  description: "非公開スペース(管理者/管理者)\n2行目\n１２３４５６７８９０１２３４５６７８９０１２３４５６７８９０１２３４５６７８９０１２３４５６７８９０１２３４５６７８９０１２３４５６７８９０１２３４５６７８９０１２３４５６７８９０１２３４５６７８９０１２３４５６７８９０１２３４５６７８９０１２３４５６７８９０１２３４５６７８９０１２３４５６７８９０１２３４５６７８９０１２３４５６７８９０１２３４５６７８９０１２３４５６７８９０１２３４５６７８９０１２３４５６７８９０１２３４５６７８９０１２３４５６７８９０"
   private: true
   create_user_id: 1
   last_update_user_id: null
   created_at: '2000-01-31 12:34:56+0900'
 - id: 2
   code: 'code0002'
-  name: '公開スペース(Admin/none)'
-  description: "公開スペース(Admin/none)\n2行目"
+  name: '公開スペース(管理者/なし)'
+  description: "公開スペース(管理者/なし)\n2行目"
   private: false
   create_user_id: 1
   last_update_user_id: null
@@ -18,16 +18,16 @@
 
 - id: 3
   code: 'code0003'
-  name: '非公開スペース(Writer/Admin)'
-  description: "非公開スペース(Writer/Admin)\n2行目"
+  name: '非公開スペース(投稿者/管理者)'
+  description: "非公開スペース(投稿者/管理者)\n2行目"
   private: true
   create_user_id: 1
   last_update_user_id: 2
   created_at: '2000-01-29 12:34:56+0900'
 - id: 4
   code: 'code0004'
-  name: '公開スペース(Writer/Admin)'
-  description: "公開スペース(Writer/Admin)\n2行目"
+  name: '公開スペース(投稿者/管理者)'
+  description: "公開スペース(投稿者/管理者)\n2行目"
   private: false
   create_user_id: 1
   last_update_user_id: 2
@@ -35,16 +35,16 @@
 
 - id: 5
   code: 'code0005'
-  name: '非公開スペース(Reader/Admin)'
-  description: "非公開スペース(Reader/Admin)\n2行目"
+  name: '非公開スペース(閲覧者/管理者)'
+  description: "非公開スペース(閲覧者/管理者)\n2行目"
   private: true
   create_user_id: 1
   last_update_user_id: 2
   created_at: '2000-01-27 12:34:56+0900'
 - id: 6
   code: 'code0006'
-  name: '公開スペース(Reader/Admin)'
-  description: "公開スペース(Reader/Admin)\n2行目"
+  name: '公開スペース(閲覧者/管理者)'
+  description: "公開スペース(閲覧者/管理者)\n2行目"
   private: false
   create_user_id: 1
   last_update_user_id: 2
@@ -52,7 +52,7 @@
 
 - id: 7
   code: 'code0007'
-  name: '非公開スペース(none/Admin)'
+  name: '非公開スペース(なし/管理者)'
   description: null
   private: true
   create_user_id: 1
@@ -60,7 +60,7 @@
   created_at: '2000-01-25 12:34:56+0900'
 - id: 8
   code: 'code0008'
-  name: '公開スペース(none/Admin)'
+  name: '公開スペース(なし/管理者)'
   description: null
   private: false
   create_user_id: 1
@@ -69,8 +69,8 @@
 
 - id: 9
   code: 'code0009'
-  name: '削除予約済みの非公開スペース(Admin/none)'
-  description: "削除予約済みの非公開スペース(Admin/none)\n2行目"
+  name: '削除予約済みの非公開スペース(管理者/なし)'
+  description: "削除予約済みの非公開スペース(管理者/なし)\n2行目"
   private: true
   destroy_requested_at: '2000-01-01 12:34:56+0900'
   destroy_schedule_at: '9000-01-01 12:34:56+0900'
@@ -79,8 +79,8 @@
   created_at: '2000-01-23 12:34:56+0900'
 - id: 10
   code: 'code0010'
-  name: '削除予約済みの公開スペース(Writer/Admin)'
-  description: "削除予約済みの公開スペース(Writer/Admin)\n2行目"
+  name: '削除予約済みの公開スペース(投稿者/管理者)'
+  description: "削除予約済みの公開スペース(投稿者/管理者)\n2行目"
   private: false
   destroy_requested_at: '2000-01-01 12:34:56+0900'
   destroy_schedule_at: '9000-01-01 12:34:56+0900'
@@ -90,8 +90,8 @@
 
 - id: 11
   code: 'code0011'
-  name: '削除対象の非公開スペース(Reader/Admin)'
-  description: "削除対象の非公開スペース(Reader/Admin)\n2行目"
+  name: '削除対象の非公開スペース(閲覧者/管理者)'
+  description: "削除対象の非公開スペース(閲覧者/管理者)\n2行目"
   private: true
   destroy_requested_at: '2000-01-01 12:34:56+0900'
   destroy_schedule_at: '2000-01-08 12:34:56+0900'
@@ -100,7 +100,7 @@
   created_at: '2000-01-21 12:34:56+0900'
 - id: 12
   code: 'code0012'
-  name: '削除対象の公開スペース(none/Admin)'
+  name: '削除対象の公開スペース(なし/管理者)'
   description: null
   private: false
   destroy_requested_at: '2000-01-01 12:34:56+0900'

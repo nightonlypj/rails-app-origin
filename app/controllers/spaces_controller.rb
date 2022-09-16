@@ -1,4 +1,5 @@
 class SpacesController < ApplicationAuthController
+  before_action :authenticate_user!, except: %i[index show]
   before_action :set_space, only: %i[show edit update destroy]
 
   # GET /spaces スペース一覧
@@ -73,7 +74,7 @@ class SpacesController < ApplicationAuthController
 
   # Use callbacks to share common setup or constraints between actions.
   def set_space
-    @space = Space.find(params[:id])
+    @space = Space.find_by!(code: params[:code])
   end
 
   # Only allow a list of trusted parameters through.

@@ -5,8 +5,8 @@ shared_context 'スペース一覧作成' do |public_admin_count, public_none_co
     # 公開（管理者）＋削除予約済み
     @all_spaces = FactoryBot.create_list(:space, public_admin_count, :public, :destroy_reserved)
     @all_spaces.each do |space|
-      FactoryBot.create(:member, :admin, space_id: space.id, user_id: user.id)
-      @members[space.id] = 'Admin'
+      FactoryBot.create(:member, :admin, space: space, user: user)
+      @members[space.id] = 'admin'
     end
 
     # 公開（未参加）
@@ -17,8 +17,8 @@ shared_context 'スペース一覧作成' do |public_admin_count, public_none_co
     if private_admin_count.positive?
       spaces = FactoryBot.create_list(:space, private_admin_count, :private, :destroy_targeted)
       spaces.each do |space|
-        FactoryBot.create(:member, :admin, space_id: space.id, user_id: user.id)
-        @members[space.id] = 'Admin'
+        FactoryBot.create(:member, :admin, space: space, user: user)
+        @members[space.id] = 'admin'
       end
       @user_spaces += spaces
     end
@@ -27,8 +27,8 @@ shared_context 'スペース一覧作成' do |public_admin_count, public_none_co
     if private_reader_count.positive?
       spaces = FactoryBot.create_list(:space, private_reader_count, :private)
       spaces.each do |space|
-        FactoryBot.create(:member, :reader, space_id: space.id, user_id: user.id)
-        @members[space.id] = 'Reader'
+        FactoryBot.create(:member, :reader, space: space, user: user)
+        @members[space.id] = 'reader'
       end
       @user_spaces += spaces
     end

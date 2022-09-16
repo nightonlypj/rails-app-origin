@@ -32,3 +32,7 @@ test_spaces:
   public_none_count: 1
   private_admin_count: 1
   private_reader_count: 1
+
+## メンバー
+# 一覧のデフォルト最大表示件数
+default_members_limit: 2
