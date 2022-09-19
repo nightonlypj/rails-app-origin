@@ -18,8 +18,8 @@ RSpec.describe Users::Auth::RegistrationsController, type: :routing do
       expect(get: '/users/auth/edit').not_to be_routable
     end
     it 'routes to #show' do
-      expect(get: '/users/auth/show').to route_to('users/auth/registrations#show')
-      expect(get: '/users/auth/show.json').to route_to('users/auth/registrations#show', format: 'json')
+      expect(get: '/users/auth/detail').to route_to('users/auth/registrations#show')
+      expect(get: '/users/auth/detail.json').to route_to('users/auth/registrations#show', format: 'json')
     end
     it 'routes to #update' do
       # expect(put: '/users/auth').to route_to('users/auth/registrations#update')

@@ -20,4 +20,14 @@ class ApplicationAuthController < ApplicationController
   def standard_devise_support
     DeviseTokenAuth.enable_standard_devise_support = format_html?
   end
+
+  protected
+
+  def render_authenticate_error
+    if format_html?
+      warden.authenticate!({ scope: :user })
+    else
+      unauthenticated_response
+    end
+  end
 end

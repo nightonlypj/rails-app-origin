@@ -1,7 +1,7 @@
 require 'rails_helper'
 
 RSpec.describe 'users/confirmations/new', type: :view do
-  before { @resource = User.new }
+  before_all { @resource = User.new }
 
   # テスト内容
   shared_examples_for '入力項目' do

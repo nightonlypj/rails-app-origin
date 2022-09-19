@@ -35,7 +35,7 @@ RSpec.describe 'AdminUsers::Passwords', type: :request do
     end
   end
 
-  # GET /admin/password/new パスワード再設定[メール送信]
+  # GET /admin/password/reset パスワード再設定[メール送信]
   # 前提条件
   #   なし
   # テストパターン
@@ -53,7 +53,7 @@ RSpec.describe 'AdminUsers::Passwords', type: :request do
     end
   end
 
-  # POST /admin/password/new パスワード再設定[メール送信](処理)
+  # POST /admin/password/reset パスワード再設定[メール送信](処理)
   # 前提条件
   #   なし
   # テストパターン

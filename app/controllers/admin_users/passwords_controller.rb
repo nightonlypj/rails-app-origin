@@ -3,12 +3,12 @@
 class AdminUsers::PasswordsController < Devise::PasswordsController
   layout 'admin_users'
 
-  # GET /admin/password/new パスワード再設定[メール送信]
+  # GET /admin/password/reset パスワード再設定[メール送信]
   # def new
   #   super
   # end
 
-  # POST /admin/password/new パスワード再設定[メール送信](処理)
+  # POST /admin/password/reset パスワード再設定[メール送信](処理)
   # def create
   #   super
   # end

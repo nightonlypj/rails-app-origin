@@ -21,13 +21,15 @@ class InfomationsController < ApplicationAuthController
   # GET /infomations/1 お知らせ詳細
   # GET /infomations/1(.json) お知らせ詳細API
   def show
-    @infomation = Infomation.find(params[:id])
+    @infomation = Infomation.find_by(id: params[:id])
     return head :not_found if @infomation.blank? || !@infomation.display_target?(current_user) || @infomation.started_at > Time.current
 
     if @infomation.ended_at.present? && @infomation.ended_at < Time.current
-      return head :not_found if format_html?
-
-      render './failure', locals: { alert: t('errors.messages.infomation.ended') }, status: :not_found
+      if format_html?
+        head :not_found
+      else
+        render './failure', locals: { alert: t('errors.messages.infomation.ended') }, status: :not_found
+      end
     end
   end
 

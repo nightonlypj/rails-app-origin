@@ -3,21 +3,21 @@ class Infomation < ApplicationRecord
 
   # ラベル
   enum label: {
-    Not: 0, # （なし）
-    Maintenance: 1, # メンテナンス
-    Hindrance: 2, # 障害
-    Other: 999 # その他
+    not: 0, # （なし）
+    maintenance: 1, # メンテナンス
+    hindrance: 2, # 障害
+    other: 999 # その他
   }, _prefix: true
 
   # 対象
   enum target: {
-    All: 1, # 全員
-    User: 2 # 対象ユーザーのみ
+    all: 1, # 全員
+    user: 2 # 対象ユーザーのみ
   }, _prefix: true
 
   default_scope { order(started_at: :desc, id: :desc) }
   scope :by_target, lambda { |current_user|
-    where('target = ? OR (target = ? AND user_id = ?)', targets[:All], targets[:User], current_user&.id)
+    where('target = ? OR (target = ? AND user_id = ?)', targets[:all], targets[:user], current_user&.id)
       .where('started_at <= ? AND (ended_at IS NULL OR ended_at >= ?)', Time.current, Time.current)
   }
   scope :by_force, -> { where('force_started_at <= ? AND (force_ended_at IS NULL OR force_ended_at >= ?)', Time.current, Time.current) }
@@ -27,6 +27,6 @@ class Infomation < ApplicationRecord
 
   # 表示対象かを返却
   def display_target?(current_user)
-    target_All? || (target_User? && user_id == current_user&.id)
+    target_all? || (target_user? && user_id == current_user&.id)
   end
 end

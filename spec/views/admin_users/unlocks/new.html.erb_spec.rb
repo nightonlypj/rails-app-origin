@@ -1,7 +1,7 @@
 require 'rails_helper'
 
 RSpec.describe 'admin_users/unlocks/new', type: :view do
-  before { @resource = AdminUser.new }
+  before_all { @resource = AdminUser.new }
 
   context do
     it '対象の送信先と項目が含まれる' do

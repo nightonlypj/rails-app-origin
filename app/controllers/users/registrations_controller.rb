@@ -23,12 +23,12 @@ class Users::RegistrationsController < Devise::RegistrationsController
     end
   end
 
-  # GET /users/edit 登録情報変更
+  # GET /users/update 登録情報変更
   # def edit
   #   super
   # end
 
-  # PUT /users/edit 登録情報変更(処理)
+  # PUT /users/update 登録情報変更(処理)
   def update
     # Tips: 存在するメールアドレスの場合はエラーにする
     if resource.email != params[:user][:email] && User.find_by(email: params[:user][:email]).present?

@@ -252,4 +252,87 @@ RSpec.describe ApplicationHelper, type: :helper do
       end
     end
   end
+
+  # 文字列を省略して返却
+  describe 'text_truncate' do
+    subject { helper.text_truncate(text, length) }
+
+    # テストケース
+    context 'lengthが0' do
+      let(:length) { 0 }
+      let(:text)   { 'a' }
+      it_behaves_like 'value', nil
+    end
+    context 'lengthが1' do
+      let(:length) { 1 }
+      context 'nil' do
+        let(:text) { nil }
+        it_behaves_like 'value', nil
+      end
+      context '空' do
+        let(:text) { '' }
+        it_behaves_like 'value', ''
+      end
+      context 'lengthと同じ文字数' do
+        let(:text) { 'a' }
+        it_behaves_like 'value', 'a'
+      end
+      context 'lengthより長い' do
+        let(:text) { 'aa' }
+        it_behaves_like 'value', 'a...'
+      end
+    end
+  end
+
+  # ページの最初の番号を返却
+  describe 'first_page_number' do
+    subject do
+      FactoryBot.create_list(:user, count)
+      models = User.page(page).per(2)
+      helper.first_page_number(models)
+    end
+
+    # テストケース
+    context '0件' do
+      let(:count) { 0 }
+      let(:page)  { 1 }
+      it_behaves_like 'value', '1'
+    end
+    context '2件' do
+      let(:count) { 2 }
+      let(:page)  { 1 }
+      it_behaves_like 'value', '1'
+    end
+    context '3件、2頁' do
+      let(:count) { 3 }
+      let(:page)  { 2 }
+      it_behaves_like 'value', '3'
+    end
+  end
+
+  # ページの最後の番号を返却
+  describe 'last_page_number' do
+    subject do
+      FactoryBot.create_list(:user, count)
+      models = User.page(page).per(2)
+      helper.last_page_number(models)
+    end
+
+    # テストケース
+    context '0件' do
+      let(:count) { 0 }
+      let(:page)  { 1 }
+      it_behaves_like 'value', '0'
+    end
+    context '2件' do
+      let(:count) { 2 }
+      let(:page)  { 1 }
+      it_behaves_like 'value', '2'
+    end
+    context '3件、2頁' do
+      let(:count) { 3 }
+      let(:page)  { 2 }
+      it_behaves_like 'value', '3'
+    end
+  end
 end

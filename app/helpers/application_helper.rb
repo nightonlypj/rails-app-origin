@@ -36,4 +36,21 @@ module ApplicationHelper
   def input_size_class_name(resource, key)
     resource.errors.any? && resource.errors[key].any? ? ' mb-5' : ' mb-3'
   end
+
+  # 文字列を省略して返却
+  def text_truncate(text, length)
+    return if length <= 0
+
+    text.blank? || text.length <= length ? text : text.slice(..(length - 1)).concat('...')
+  end
+
+  # ページの最初の番号を返却
+  def first_page_number(models)
+    ((models.limit_value * (models.current_page - 1)) + 1).to_s(:delimited)
+  end
+
+  # ページの最後の番号を返却
+  def last_page_number(models)
+    [models.current_page * models.limit_value, models.total_count].min.to_s(:delimited)
+  end
 end

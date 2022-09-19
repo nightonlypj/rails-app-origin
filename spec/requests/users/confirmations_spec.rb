@@ -35,7 +35,7 @@ RSpec.describe 'Users::Confirmations', type: :request do
     end
   end
 
-  # GET /users/confirmation/new メールアドレス確認[メール再送]
+  # GET /users/confirmation/resend メールアドレス確認[メール再送]
   # 前提条件
   #   なし
   # テストパターン
@@ -57,7 +57,7 @@ RSpec.describe 'Users::Confirmations', type: :request do
     end
   end
 
-  # POST /users/confirmation/new メールアドレス確認[メール再送](処理)
+  # POST /users/confirmation/resend メールアドレス確認[メール再送](処理)
   # 前提条件
   #   なし
   # テストパターン

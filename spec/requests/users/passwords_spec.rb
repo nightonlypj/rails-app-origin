@@ -35,7 +35,7 @@ RSpec.describe 'Users::Passwords', type: :request do
     end
   end
 
-  # GET /users/password/new パスワード再設定[メール送信]
+  # GET /users/password/reset パスワード再設定[メール送信]
   # 前提条件
   #   なし
   # テストパターン
@@ -53,7 +53,7 @@ RSpec.describe 'Users::Passwords', type: :request do
     end
   end
 
-  # POST /users/password/new パスワード再設定[メール送信](処理)
+  # POST /users/password/reset パスワード再設定[メール送信](処理)
   # 前提条件
   #   なし
   # テストパターン

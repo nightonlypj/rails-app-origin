@@ -22,7 +22,7 @@ class Users::Auth::RegistrationsController < DeviseTokenAuth::RegistrationsContr
     end
   end
 
-  # GET /users/auth/show(.json) 登録情報詳細API
+  # GET /users/auth/detail(.json) 登録情報詳細API
   def show
     render './users/auth/show'
   end

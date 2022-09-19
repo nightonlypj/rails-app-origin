@@ -22,7 +22,7 @@
         <div id="nav_area" class="container-fluid px-1">
           <div class="d-flex">
             <div id="nav_left">
-              <button id='left_menu_display_btn' type="button" class="btn btn-link btn-rounded p-3" data-mdb-ripple-color="dark">
+              <button id='left_menu_display_btn' type="button" class="btn btn-link btn-rounded p-3">
                 <i class="fa fa-bars text-body" style="font-size: 20px"></i>
               </button>
             </div>
@@ -46,7 +46,7 @@
               <li class="nav-item dropdown">
                 <a id="userDropdownToggle" href="#" class="dropdown-toggle btn-link d-flex align-items-center link-dark p-2" style="max-width: 400px" role="button" data-mdb-toggle="dropdown" aria-expanded="false">
                   <%= image_tag current_user.image_url(:small), class: 'rounded-circle' %>
-                  <span class="text-truncate d-none d-lg-block mx-1"><%= current_user.name %></span>
+                  <span class="text-truncate d-none d-lg-block ms-1"><%= current_user.name %></span>
                 </a>
                 <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdownToggle">
                   <li>
@@ -105,7 +105,7 @@
                 aria-controls="userAccordionCollapse"
               >
                 <%= image_tag current_user.image_url(:small), class: 'rounded-circle' %>
-                <span class="text-truncate text-start mx-1" style="width: 200px"><%= current_user.name %></span>
+                <span class="text-truncate text-start ms-1" style="width: 200px"><%= current_user.name %></span>
               </button>
             </div>
             <div

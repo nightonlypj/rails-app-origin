@@ -1,7 +1,7 @@
 # Tips: id = 連番
 - id: 1
   code: 'code000000000000000000001'
-  name: 'user1の氏名'
+  name: 'user1の氏名<b>１２３４５６７８９０１２３４５６７</b>'
   email: 'user1@example.com'
   uid: 'user1@example.com'
   password: 'changepassword'
