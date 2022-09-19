@@ -12,9 +12,9 @@ RSpec.describe :user, type: :task do
     let_it_be(:user1) { FactoryBot.create(:user) }
     let_it_be(:user2) { FactoryBot.create(:user, :destroy_reserved) }
     before_all do
-      FactoryBot.create(:infomation) # :All
-      FactoryBot.create(:infomation, target: :User, user_id: user1.id)
-      FactoryBot.create(:infomation, target: :User, user_id: user2.id)
+      FactoryBot.create(:infomation, :all)
+      FactoryBot.create(:infomation, :user, user: user1)
+      FactoryBot.create(:infomation, :user, user: user2)
     end
 
     shared_context 'ユーザー作成3' do
@@ -22,7 +22,7 @@ RSpec.describe :user, type: :task do
     end
     shared_context 'ユーザー作成4' do
       let_it_be(:user4) { FactoryBot.create(:user, :destroy_targeted) }
-      before_all { FactoryBot.create(:infomation, target: :User, user_id: user4.id) }
+      before_all { FactoryBot.create(:infomation, :user, user: user4) }
     end
 
     # テスト内容

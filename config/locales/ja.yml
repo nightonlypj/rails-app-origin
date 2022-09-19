@@ -46,13 +46,13 @@ ja:
   enums:
     infomation:
       label:
-        Not: ''
-        Maintenance: 'メンテナンス'
-        Hindrance: '障害'
-        Other: 'その他'
+        not: ''
+        maintenance: 'メンテナンス'
+        hindrance: '障害'
+        other: 'その他'
       target:
-        All: '全員'
-        User: '対象ユーザーのみ'
+        all: '全員'
+        user: '対象ユーザーのみ'
     member:
       power:
         admin: '管理者'
@@ -65,7 +65,7 @@ ja:
   alert:
     user:
       destroy_reserved: 'アカウント削除予定の為、この操作はできません。'
-      not_destroy_reserved: '既に取り消し済みか、アカウント削除していません。'
+      not_destroy_reserved: '既に取り消し済みか、アカウント削除されていません。'
       destroy:
         params_blank: 'パラメータが指定されていません。'
         undo_delete_url_blank: 'undo_delete_urlが指定されていません。'

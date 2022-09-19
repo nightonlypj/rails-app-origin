@@ -212,25 +212,25 @@ RSpec.describe 'Infomations', type: :request do
     end
 
     shared_examples_for '[*]対象が全員' do
-      let_it_be(:target)  { :All }
+      let_it_be(:target)  { :all }
       let_it_be(:user_id) { nil }
       it_behaves_like '[*][全員]開始日時が過去'
       it_behaves_like '[*][*]開始日時が未来'
     end
     shared_examples_for '[ログイン中/削除予約済み]対象が自分' do
-      let_it_be(:target)  { :User }
+      let_it_be(:target)  { :user }
       let_it_be(:user_id) { user.id }
       it_behaves_like '[ログイン中/削除予約済み][自分]開始日時が過去'
       it_behaves_like '[*][*]開始日時が未来'
     end
     shared_examples_for '[APIログイン中/削除予約済み]対象が自分' do
-      let_it_be(:target)  { :User }
+      let_it_be(:target)  { :user }
       let_it_be(:user_id) { user.id }
       it_behaves_like '[APIログイン中/削除予約済み][自分]開始日時が過去'
       it_behaves_like '[*][*]開始日時が未来'
     end
     shared_examples_for '[*]対象が他人' do
-      let_it_be(:target)  { :User }
+      let_it_be(:target)  { :user }
       let_it_be(:user_id) { outside_user.id }
       it_behaves_like '[*][他人]開始日時が過去'
       it_behaves_like '[*][*]開始日時が未来'

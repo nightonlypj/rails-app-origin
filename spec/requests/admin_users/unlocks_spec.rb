@@ -28,7 +28,7 @@ RSpec.describe 'AdminUsers::Unlocks', type: :request do
     end
   end
 
-  # GET /admin/unlock/new アカウントロック解除[メール再送]
+  # GET /admin/unlock/resend アカウントロック解除[メール再送]
   # 前提条件
   #   なし
   # テストパターン
@@ -46,7 +46,7 @@ RSpec.describe 'AdminUsers::Unlocks', type: :request do
     end
   end
 
-  # POST /admin/unlock/new アカウントロック解除[メール再送](処理)
+  # POST /admin/unlock/resend アカウントロック解除[メール再送](処理)
   # 前提条件
   #   なし
   # テストパターン

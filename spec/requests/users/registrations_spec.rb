@@ -121,7 +121,7 @@ RSpec.describe 'Users::Registrations', type: :request do
     end
   end
 
-  # GET /users/edit 登録情報変更
+  # GET /users/update 登録情報変更
   # 前提条件
   #   なし
   # テストパターン
@@ -147,7 +147,7 @@ RSpec.describe 'Users::Registrations', type: :request do
     end
   end
 
-  # PUT /users/edit 登録情報変更(処理)
+  # PUT /users/update 登録情報変更(処理)
   # 前提条件
   #   なし
   # テストパターン

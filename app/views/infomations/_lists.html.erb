@@ -1,0 +1,23 @@
+<% @infomations.each do |infomation| %>
+<article>
+  <div>
+    <%= render 'label', infomation: infomation %>
+    <span class="fw-bolder">
+<% if infomation.body.present? %>
+      <%= link_to infomation.title, infomation %>
+<% else %>
+      <%= infomation.title %>
+<% end %>
+    </span>
+    <span>
+      (<%= l(infomation.started_at.to_date) %>)
+    </span>
+  </div>
+<% if infomation.summary.present? %>
+  <div class="m-2">
+    <%= infomation.summary.html_safe %>
+  </div>
+<% end %>
+  <hr/>
+</article>
+<% end %>

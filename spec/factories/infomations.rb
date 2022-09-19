@@ -1,16 +1,26 @@
 FactoryBot.define do
   factory :infomation do
-    label            { :Not }
+    label            { :not }
     sequence(:title) { |n| "infomation(#{n})" }
     summary          { "#{title}の要約" }
     body             { "#{title}の本文" }
     started_at       { Time.current - 1.hour }
     ended_at         { Time.current + 3.hour }
-    target           { :All }
+    target           { :all }
+
+    # 全員
+    trait :all do
+      target { :all }
+    end
+
+    # 対象ユーザーのみ
+    trait :user do
+      target { :user }
+    end
 
     # 終了なし
     trait :forever do
-      label    { :Hindrance }
+      label    { :hindrance }
       ended_at { nil }
     end
 
@@ -32,14 +42,14 @@ FactoryBot.define do
 
     # 大切なお知らせ
     trait :important do
-      label            { :Maintenance }
+      label            { :maintenance }
       force_started_at { Time.current }
       force_ended_at   { Time.current + 2.hour }
     end
 
     # 大切なお知らせ: 終了なし
     trait :force_forever do
-      label          { :Other }
+      label          { :other }
       ended_at       { nil }
       force_ended_at { nil }
     end

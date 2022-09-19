@@ -214,7 +214,7 @@ RSpec.describe 'Users::Auth::Registrations', type: :request do
     end
   end
 
-  # GET /users/auth/show(.json) 登録情報詳細API
+  # GET /users/auth/detail(.json) 登録情報詳細API
   # 前提条件
   #   なし
   # テストパターン
@@ -234,9 +234,7 @@ RSpec.describe 'Users::Auth::Registrations', type: :request do
         is_expected.to eq(200)
         response_json = JSON.parse(response.body)
         expect(response_json['success']).to eq(true)
-        expect(response_json['user']['provider']).to eq(current_user.provider)
         expect(response_json['user']['code']).to eq(current_user.code)
-        expect(response_json['user']['upload_image']).to eq(current_user.image?)
         expect(response_json['user']['image_url']['mini']).to eq("#{Settings['base_image_url']}#{current_user.image_url(:mini)}")
         expect(response_json['user']['image_url']['small']).to eq("#{Settings['base_image_url']}#{current_user.image_url(:small)}")
         expect(response_json['user']['image_url']['medium']).to eq("#{Settings['base_image_url']}#{current_user.image_url(:medium)}")
@@ -244,6 +242,18 @@ RSpec.describe 'Users::Auth::Registrations', type: :request do
         expect(response_json['user']['image_url']['xlarge']).to eq("#{Settings['base_image_url']}#{current_user.image_url(:xlarge)}")
         expect(response_json['user']['name']).to eq(current_user.name)
         expect(response_json['user']['email']).to eq(current_user.email)
+
+        expect(response_json['user']['provider']).to eq(current_user.provider)
+        expect(response_json['user']['upload_image']).to eq(current_user.image?)
+        ## 削除予約
+        expect(response_json['user']['destroy_schedule_days']).to eq(Settings['destroy_schedule_days'])
+        destroy_requested_at = current_user.destroy_requested_at.present? ? I18n.l(current_user.destroy_requested_at, format: :json) : nil
+        expect(response_json['user']['destroy_requested_at']).to eq(destroy_requested_at)
+        destroy_schedule_at = current_user.destroy_schedule_at.present? ? I18n.l(current_user.destroy_schedule_at, format: :json) : nil
+        expect(response_json['user']['destroy_schedule_at']).to eq(destroy_schedule_at)
+        ## お知らせ
+        expect(response_json['user']['infomation_unread_count']).to eq(current_user.infomation_unread_count)
+
         ## Trackable
         expect(response_json['user']['sign_in_count']).to eq(current_user.sign_in_count)
         current_sign_in_at = current_user.current_sign_in_at.present? ? I18n.l(current_user.current_sign_in_at, format: :json) : nil
@@ -254,14 +264,6 @@ RSpec.describe 'Users::Auth::Registrations', type: :request do
         expect(response_json['user']['last_sign_in_ip']).to eq(current_user.last_sign_in_ip)
         ## Confirmable
         expect(response_json['user']['unconfirmed_email']).to eq(current_user.unconfirmed_email.present? ? current_user.unconfirmed_email : nil)
-        ## 削除予約
-        expect(response_json['user']['destroy_schedule_days']).to eq(Settings['destroy_schedule_days'])
-        destroy_requested_at = current_user.destroy_requested_at.present? ? I18n.l(current_user.destroy_requested_at, format: :json) : nil
-        expect(response_json['user']['destroy_requested_at']).to eq(destroy_requested_at)
-        destroy_schedule_at = current_user.destroy_schedule_at.present? ? I18n.l(current_user.destroy_schedule_at, format: :json) : nil
-        expect(response_json['user']['destroy_schedule_at']).to eq(destroy_schedule_at)
-        ## お知らせ
-        expect(response_json['user']['infomation_unread_count']).to eq(current_user.infomation_unread_count)
         ## 作成日時
         expect(response_json['user']['created_at']).to eq(current_user.created_at.present? ? I18n.l(current_user.created_at, format: :json) : nil)
 

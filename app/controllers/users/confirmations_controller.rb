@@ -1,12 +1,12 @@
 # frozen_string_literal: true
 
 class Users::ConfirmationsController < Devise::ConfirmationsController
-  # GET /users/confirmation/new メールアドレス確認[メール再送]
+  # GET /users/confirmation/resend メールアドレス確認[メール再送]
   # def new
   #   super
   # end
 
-  # POST /users/confirmation/new メールアドレス確認[メール再送](処理)
+  # POST /users/confirmation/resend メールアドレス確認[メール再送](処理)
   # def create
   #   super
   # end
