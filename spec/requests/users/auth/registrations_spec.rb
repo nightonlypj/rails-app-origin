@@ -214,7 +214,7 @@ RSpec.describe 'Users::Auth::Registrations', type: :request do
     end
   end
 
-  # GET /users/auth/detail(.json) 登録情報詳細API
+  # GET /users/auth/detail(.json) ユーザー情報詳細API
   # 前提条件
   #   なし
   # テストパターン
@@ -316,7 +316,7 @@ RSpec.describe 'Users::Auth::Registrations', type: :request do
     end
   end
 
-  # POST /users/auth/update(.json) 登録情報変更API(処理)
+  # POST /users/auth/update(.json) ユーザー情報変更API(処理)
   # 前提条件
   #   なし
   # テストパターン
@@ -609,7 +609,7 @@ RSpec.describe 'Users::Auth::Registrations', type: :request do
     end
   end
 
-  # POST /users/auth/image/update(.json) 画像変更API(処理)
+  # POST /users/auth/image/update(.json) ユーザー画像変更API(処理)
   # 前提条件
   #   なし
   # テストパターン
@@ -734,7 +734,7 @@ RSpec.describe 'Users::Auth::Registrations', type: :request do
     end
   end
 
-  # POST /users/auth/image/delete(.json) 画像削除API(処理)
+  # POST /users/auth/image/delete(.json) ユーザー画像削除API(処理)
   # 前提条件
   #   なし
   # テストパターン

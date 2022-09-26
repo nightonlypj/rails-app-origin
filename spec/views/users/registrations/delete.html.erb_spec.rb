@@ -14,7 +14,7 @@ RSpec.describe 'users/registrations/delete', type: :view do
 
     it '対象のパスが含まれる' do
       render
-      expect(rendered).to include("href=\"#{edit_user_registration_path}\"") # 登録情報変更
+      expect(rendered).to include("href=\"#{edit_user_registration_path}\"") # ユーザー情報変更
     end
   end
 end

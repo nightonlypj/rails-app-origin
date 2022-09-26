@@ -28,7 +28,7 @@ RSpec.describe 'Users::Registrations', type: :request do
     end
   end
   shared_examples_for 'ToEdit' do |alert, notice|
-    it '登録情報変更にリダイレクトする' do
+    it 'ユーザー情報変更にリダイレクトする' do
       is_expected.to redirect_to(edit_user_registration_path)
       expect(flash[:alert]).to alert.present? ? eq(I18n.t(alert)) : be_nil
       expect(flash[:notice]).to notice.present? ? eq(I18n.t(notice)) : be_nil
@@ -121,7 +121,7 @@ RSpec.describe 'Users::Registrations', type: :request do
     end
   end
 
-  # GET /users/update 登録情報変更
+  # GET /users/update ユーザー情報変更
   # 前提条件
   #   なし
   # テストパターン
@@ -147,7 +147,7 @@ RSpec.describe 'Users::Registrations', type: :request do
     end
   end
 
-  # PUT /users/update 登録情報変更(処理)
+  # PUT /users/update ユーザー情報変更(処理)
   # 前提条件
   #   なし
   # テストパターン
@@ -275,7 +275,7 @@ RSpec.describe 'Users::Registrations', type: :request do
     end
   end
 
-  # POST /users/image/update 画像変更(処理)
+  # POST /users/image/update ユーザー画像変更(処理)
   # 前提条件
   #   なし
   # テストパターン
@@ -349,7 +349,7 @@ RSpec.describe 'Users::Registrations', type: :request do
     end
   end
 
-  # POST /users/image/destroy 画像削除(処理)
+  # POST /users/image/destroy ユーザー画像削除(処理)
   # 前提条件
   #   なし
   # テストパターン

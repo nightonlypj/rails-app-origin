@@ -22,12 +22,12 @@ class Users::Auth::RegistrationsController < DeviseTokenAuth::RegistrationsContr
     end
   end
 
-  # GET /users/auth/detail(.json) 登録情報詳細API
+  # GET /users/auth/detail(.json) ユーザー情報詳細API
   def show
     render './users/auth/show'
   end
 
-  # POST /users/auth/update(.json) 登録情報変更API(処理)
+  # POST /users/auth/update(.json) ユーザー情報変更API(処理)
   def update
     if params[:confirm_redirect_url].blank?
       return render './failure', locals: { alert: t('devise_token_auth.registrations.confirm_redirect_url_blank') }, status: :unprocessable_entity
@@ -50,7 +50,7 @@ class Users::Auth::RegistrationsController < DeviseTokenAuth::RegistrationsContr
     super
   end
 
-  # POST /users/auth/image/update(.json) 画像変更API(処理)
+  # POST /users/auth/image/update(.json) ユーザー画像変更API(処理)
   def image_update
     if params[:image].blank? || params[:image].class != ActionDispatch::Http::UploadedFile
       errors = { image: t('errors.messages.image_update_blank') }
@@ -67,7 +67,7 @@ class Users::Auth::RegistrationsController < DeviseTokenAuth::RegistrationsContr
     end
   end
 
-  # POST /users/auth/image/delete(.json) 画像削除API(処理)
+  # POST /users/auth/image/delete(.json) ユーザー画像削除API(処理)
   def image_destroy
     @user = User.find(@resource.id)
     @user.remove_image!

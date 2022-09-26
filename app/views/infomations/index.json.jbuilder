@@ -8,6 +8,6 @@ end
 json.infomations do
   json.array! @infomations do |infomation|
     json.id infomation.id
-    json.partial! 'infomations/infomation', infomation: infomation, use_body: false
+    json.partial! 'infomation', infomation: infomation, use_body: false
   end
 end

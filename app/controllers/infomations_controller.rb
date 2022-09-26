@@ -14,12 +14,12 @@ class InfomationsController < ApplicationAuthController
     end
   end
 
-  # GET /infomations/important(.json) 大切なお知らせAPI
+  # GET /infomations/important(.json) 大切なお知らせ一覧API
   # def important
   # end
 
-  # GET /infomations/1 お知らせ詳細
-  # GET /infomations/1(.json) お知らせ詳細API
+  # GET /infomations/:id お知らせ詳細
+  # GET /infomations/:id(.json) お知らせ詳細API
   def show
     @infomation = Infomation.find_by(id: params[:id])
     return head :not_found if @infomation.blank? || !@infomation.display_target?(current_user) || @infomation.started_at > Time.current
