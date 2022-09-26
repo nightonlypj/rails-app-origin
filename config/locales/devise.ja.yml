@@ -142,9 +142,9 @@ ja:
     registrations:
       signed_up: 'アカウント登録が完了しました。'
       signed_up_but_unconfirmed: 'メールアドレス確認のメールを送信しました。メールを確認してください。'
-      updated: '登録情報を変更しました。'
-      updated_but_not_signed_in: '登録情報を変更しました。ログインし直してください。'
-      update_needs_confirmation: '登録情報の変更を受け付けました。メールを確認してください。'
+      updated: 'ユーザー情報を変更しました。'
+      updated_but_not_signed_in: 'ユーザー情報を変更しました。ログインし直してください。'
+      update_needs_confirmation: 'ユーザー情報の変更を受け付けました。メールを確認してください。'
       destroyed: 'アカウントを削除しました。またのご利用をお待ちしております。'
       destroy_reserved: 'アカウント削除を受け付けました。またのご利用をお待ちしております。'
       undo_destroy_reserved: 'アカウント削除の取り消しが完了しました。'

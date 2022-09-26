@@ -23,12 +23,12 @@ class Users::RegistrationsController < Devise::RegistrationsController
     end
   end
 
-  # GET /users/update 登録情報変更
+  # GET /users/update ユーザー情報変更
   # def edit
   #   super
   # end
 
-  # PUT /users/update 登録情報変更(処理)
+  # PUT /users/update ユーザー情報変更(処理)
   def update
     # Tips: 存在するメールアドレスの場合はエラーにする
     if resource.email != params[:user][:email] && User.find_by(email: params[:user][:email]).present?
@@ -39,7 +39,7 @@ class Users::RegistrationsController < Devise::RegistrationsController
     super
   end
 
-  # POST /users/image/update 画像変更(処理)
+  # POST /users/image/update ユーザー画像変更(処理)
   def image_update
     if params.blank? || params[:user].blank?
       resource.errors.add(:image, t('errors.messages.image_update_blank'))
@@ -54,7 +54,7 @@ class Users::RegistrationsController < Devise::RegistrationsController
     end
   end
 
-  # POST /users/image/destroy 画像削除(処理)
+  # POST /users/image/destroy ユーザー画像削除(処理)
   def image_destroy
     @user = User.find(resource.id)
     @user.remove_image!

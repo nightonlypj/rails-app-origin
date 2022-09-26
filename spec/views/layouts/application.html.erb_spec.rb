@@ -11,7 +11,7 @@ RSpec.describe 'layouts/application', type: :view do
     end
     it '対象のパスが含まれない' do
       render
-      expect(rendered).not_to include("\"#{edit_user_registration_path}\"") # 登録情報変更
+      expect(rendered).not_to include("\"#{edit_user_registration_path}\"") # ユーザー情報変更
       expect(rendered).not_to include("\"#{destroy_user_session_path}\"") # ログアウト
     end
   end
@@ -23,7 +23,7 @@ RSpec.describe 'layouts/application', type: :view do
     end
     it '対象のパスが含まれる' do
       render
-      expect(rendered).to include("\"#{edit_user_registration_path}\"") # 登録情報変更
+      expect(rendered).to include("\"#{edit_user_registration_path}\"") # ユーザー情報変更
       expect(rendered).to include("\"#{destroy_user_session_path}\"") # ログアウト
       expect(rendered).to include("\"#{infomations_path}\"") # お知らせ
     end

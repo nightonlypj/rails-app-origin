@@ -22,7 +22,7 @@ RSpec.describe ApplicationHelper, type: :helper do
   # 前提条件
   #   なし
   # テストパターン
-  #   true: 登録情報変更, ログアウト
+  #   true: ユーザー情報変更, ログアウト
   #   false: アカウント削除, ログイン
   describe 'show_user_accordion?' do
     subject { helper.show_user_accordion? }
@@ -32,7 +32,7 @@ RSpec.describe ApplicationHelper, type: :helper do
     end
 
     # テストケース
-    context '登録情報変更' do
+    context 'ユーザー情報変更' do
       let(:controller_name) { 'registrations' }
       let(:action_name)     { 'edit' }
       it_behaves_like 'true'

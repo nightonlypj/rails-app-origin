@@ -1,8 +1,8 @@
 require 'rails_helper'
 
 RSpec.describe 'Infomations', type: :request do
-  # GET /infomations/1 お知らせ詳細
-  # GET /infomations/1(.json) お知らせ詳細API
+  # GET /infomations/:id お知らせ詳細
+  # GET /infomations/:id(.json) お知らせ詳細API
   # 前提条件
   #   なし
   # テストパターン
