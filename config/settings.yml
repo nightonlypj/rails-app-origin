@@ -36,3 +36,5 @@ default_spaces_limit: 25
 ## メンバー
 # 一覧のデフォルト最大表示件数
 default_members_limit: 25
+# 招待の最大件数
+create_members_max_count: 100

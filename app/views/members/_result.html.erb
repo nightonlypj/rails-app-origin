@@ -1,0 +1,43 @@
+<div class="mb-2">
+  <%= flash[:emails].count.to_s(:delimited) %>名中
+  <i class="fas fa-check-circle text-success"></i>
+  招待: <%= flash[:create_user_mails].count.to_s(:delimited) %>名
+  <i class="fas fa-info-circle text-info"></i>
+  参加中: <%= flash[:exist_user_mails].count.to_s(:delimited) %>名
+  <i class="fas fa-exclamation-triangle text-danger"></i>
+  未登録: <%= (flash[:emails].count - flash[:create_user_mails].count - flash[:exist_user_mails].count).to_s(:delimited) %>名
+</div>
+
+<div class="table-responsive">
+  <table class="table table-sm table-hover">
+    <thead class="table-light">
+      <tr>
+        <th scope="col" class="text-nowrap" style="width: 25%">メールアドレス</th>
+        <th scope="col" class="text-nowrap">結果</th>
+      </tr>
+    </thead>
+    <tbody>
+<% flash[:emails].each do |email| %>
+      <tr class="align-middle">
+        <td class="px-1 py-2">
+          <%= email %>
+        </td>
+        <td class="px-1 py-2">
+<% if flash[:create_user_mails].include?(email) %>
+          <i class="fas fa-check-circle text-success"></i>
+          招待しました。
+          <i class="fas <%= power_class_name(flash[:power]) %>"></i>
+          <%= Member.powers_i18n[flash[:power]] %>
+<% elsif flash[:exist_user_mails].include?(email) %>
+          <i class="fas fa-info-circle text-info"></i>
+          既に参加しています。
+<% else %>
+          <i class="fas fa-exclamation-triangle text-danger"></i>
+          アカウントが存在しません。登録後に招待してください。
+<% end %>
+        </td>
+      </tr>
+<% end %>
+    </tbody>
+  </table>
+</div>

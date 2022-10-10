@@ -36,3 +36,5 @@ test_spaces:
 ## メンバー
 # 一覧のデフォルト最大表示件数
 default_members_limit: 2
+# 招待の最大件数
+create_members_max_count: 2

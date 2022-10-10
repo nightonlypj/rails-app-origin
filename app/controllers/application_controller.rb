@@ -101,8 +101,8 @@ class ApplicationController < ActionController::Base
   end
 
   # 削除予約済みの場合、リダイレクトしてメッセージを表示
-  def redirect_response_destroy_reserved
-    redirect_to root_path, alert: t('alert.user.destroy_reserved') if current_user.destroy_reserved?
+  def redirect_response_destroy_reserved(path = root_path)
+    redirect_to path, alert: t('alert.user.destroy_reserved') if current_user.destroy_reserved?
   end
 
   # 削除予約済みの場合、JSONでメッセージを返却

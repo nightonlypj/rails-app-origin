@@ -43,6 +43,16 @@ ja:
         invitationed_at: '招待日時'
         created_at: '作成日時'
         updated_at: '更新日時'
+        emails: 'メールアドレス'
+    errors:
+      models:
+        member:
+          attributes:
+            power:
+              blank: '選択してください。'
+            emails:
+              blank: '入力してください。'
+              max_count: '最大件数(%{count}件)を超えています。'
   enums:
     infomation:
       label:
@@ -62,6 +72,12 @@ ja:
     user:
       image_update: '画像を変更しました。'
       image_destroy: '画像を削除しました。'
+    member:
+      create: 'メンバー招待の処理が完了しました。結果を確認してください。'
+      update: 'メンバーの権限を変更しました。'
+      destroy: '%{destroy_count}名のメンバーを解除しました。'
+      destroy_notfound: '%{count}名中%{destroy_count}名のメンバーを解除しました。'
+      destroy_include_myself: '%{count}名中%{destroy_count}名のメンバーを解除しました。（自分自身は解除できません。他の管理者に依頼してください。）'
   alert:
     user:
       destroy_reserved: 'アカウント削除予定の為、この操作はできません。'
@@ -70,6 +86,12 @@ ja:
         params_blank: 'パラメータが指定されていません。'
         undo_delete_url_blank: 'undo_delete_urlが指定されていません。'
         undo_delete_url_not_allowed: 'undo_delete_urlが指定されていません。'
+    member:
+      destroy:
+        codes:
+          blank: '解除対象が指定されていません。'
+          myself: '自分自身は解除できません。他の管理者に依頼してください。'
+          notfound: '解除対象が見つかりません。'
   errors:
     messages:
       image_update_blank: '選択してください。'

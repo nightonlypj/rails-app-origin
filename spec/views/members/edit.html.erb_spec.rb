@@ -1,20 +1,17 @@
 require 'rails_helper'
 
 RSpec.describe 'members/edit', type: :view do
-  before(:each) do
-    @member = assign(:member, Member.create!(
-                                space: nil,
-                                user: nil
-                              ))
+  before_all do
+    @space = FactoryBot.create(:space)
+    @current_member = FactoryBot.create(:member, :admin, space: @space)
+    @member = FactoryBot.create(:member, :admin, space: @space)
   end
 
-  it 'renders the edit member form' do
+  it '対象の送信先と項目が含まれる' do
     render
-
-    assert_select 'form[action=?][method=?]', member_path(@member), 'post' do
-      assert_select 'input[name=?]', 'member[space_id]'
-
-      assert_select 'input[name=?]', 'member[user_id]'
+    assert_select 'form[action=?][method=?]', update_member_path(@space.code, @member.user.code), 'post' do
+      assert_select 'input[name=?]', 'member[power]'
+      assert_select 'input[type=?]', 'button'
     end
   end
 end

@@ -1,7 +1,11 @@
 class Member < ApplicationRecord
+  attr_accessor :emails # Tips: メンバー招待で使用
+
   belongs_to :space
   belongs_to :user
   belongs_to :invitation_user, class_name: 'User', optional: true
+
+  validates :power, presence: true
 
   # 権限
   enum power: {

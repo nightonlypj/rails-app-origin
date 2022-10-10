@@ -1,6 +1,19 @@
-<h1>Editing Member</h1>
+<% content_for(:html_title) { 'メンバー情報変更' } %>
 
-<%= render 'form', member: @member %>
+<%= render 'users/shared/error_messages', resource: @member %>
 
-<%= link_to 'Show', @member %> |
-<%= link_to 'Back', members_path %>
+<ul class="nav nav-tabs mb-2">
+  <li class="nav-item">
+    <%= link_to 'メンバー一覧', members_path(@space.code), class: 'nav-link' %>
+  </li>
+  <li class="nav-item">
+    <a data-mdb-toggle="tab" class="nav-link active">メンバー情報変更</a>
+  </li>
+</ul>
+
+<div class="card card-body mb-2">
+  <h5 class="card-title mb-3">
+    <%= render 'spaces/title', space: @space, current_member: @current_member, suffix_title: nil %>
+  </h5>
+  <div class="card-text mb-3"><%= render 'edit' %></div>
+</div>

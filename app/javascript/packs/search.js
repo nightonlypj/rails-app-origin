@@ -1,7 +1,8 @@
 const debug = $("meta[name='debug']").attr('content') === 'true'
+let checked = 0
 
 $(document).on('turbolinks:load', function(){
-    // 検索オプションクリック -> 追加項目開閉
+    // 検索オプション -> 追加項目開閉
     $('#option_btn').on('click', function() {
         const expanded = $('#option_btn').attr('aria-expanded') === 'true'
         if (debug) console.log('== #option_btn.onclick', expanded, $("#option").val())
@@ -21,5 +22,17 @@ $(document).on('turbolinks:load', function(){
         if (debug) console.log('== .click_to_search_btn_enabled.onclick')
 
         $('#search_btn').prop('disabled', false)
+    })
+
+    // チェックボックス -> 削除ボタン有効・無効化、選択件数表示
+    $('.change_to_delete_btn_enabled').on('change', function() {
+        if (debug) console.log('== .change_to_delete_btn_enabled.onchange', checked, $(this).prop('checked'))
+
+        if ($(this).prop('checked')) {
+            checked += 1
+        } else {
+            checked -= 1
+        }
+        $('#delete_btn').prop('disabled', checked <= 0)
     })
 })
