@@ -1,4 +1,5 @@
 Rails.application.routes.draw do
+  resources :downloads
   draw :members
   draw :spaces
   draw :infomations
