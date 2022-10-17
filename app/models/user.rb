@@ -14,6 +14,7 @@ class User < ApplicationRecord
   has_many :infomations, dependent: :destroy
   has_many :members, dependent: :destroy
   has_many :spaces, through: :members
+  has_many :downloads, dependent: :destroy
 
   validates :code, presence: true
   validates :code, uniqueness: { case_sensitive: true }

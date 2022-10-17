@@ -9,3 +9,5 @@ json.destroy_requested_at current_user.destroy_requested_at.present? ? l(current
 json.destroy_schedule_at current_user.destroy_schedule_at.present? ? l(current_user.destroy_schedule_at, format: :json) : nil
 ## お知らせ
 json.infomation_unread_count current_user.infomation_unread_count
+## ダウンロード結果
+json.undownloaded_count current_user.undownloaded_count

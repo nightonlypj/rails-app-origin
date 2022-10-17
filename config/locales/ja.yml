@@ -7,6 +7,8 @@ ja:
       infomation: 'お知らせ'
       space: 'スペース'
       member: 'メンバー'
+      download: 'ダウンロード'
+      download_file: 'ダウンロードファイル'
     attributes:
       infomation:
         id: 'ID'
@@ -44,6 +46,29 @@ ja:
         created_at: '作成日時'
         updated_at: '更新日時'
         emails: 'メールアドレス'
+      download:
+        id: 'ID'
+        user: 'ユーザー'
+        status: 'ステータス'
+        requested_at: '依頼日時'
+        completed_at: '完了日時'
+        last_downloaded_at: '最終ダウンロード日時'
+        model: 'モデル'
+        space: 'スペース'
+        target: '対象'
+        format: '形式'
+        char: '文字コード'
+        newline: '改行コード'
+        output_items: '出力項目'
+        search_params: '検索パラメータ'
+        select_items: '選択項目'
+        created_at: '作成日時'
+        updated_at: '更新日時'
+      download_file:
+        download: 'ダウンロード'
+        file: 'ファイル'
+        created_at: '作成日時'
+        updated_at: '更新日時'
     errors:
       models:
         member:
@@ -53,6 +78,25 @@ ja:
             emails:
               blank: '入力してください。'
               max_count: '最大件数(%{count}件)を超えています。'
+        download:
+          attributes:
+            target:
+              blank: '選択してください。'
+            format:
+              blank: '選択してください。'
+            char:
+              blank: '選択してください。'
+            newline:
+              blank: '選択してください。'
+            output_items:
+              blank: '選択してください。'
+  items:
+    member:
+      user.name: 'メンバー'
+      user.email: 'メールアドレス'
+      power: '権限'
+      invitation_user.name: '招待者'
+      invitationed_at: '招待日時'
   enums:
     infomation:
       label:
@@ -68,6 +112,28 @@ ja:
         admin: '管理者'
         writer: '投稿者'
         reader: '閲覧者'
+    download:
+      status:
+        waiting: '処理待ち'
+        processing: '処理中'
+        success: '成功'
+        failure: '失敗'
+      model:
+        member: 'メンバー'
+      target:
+        select: '選択項目'
+        search: '検索'
+        all: '全て'
+      format:
+        csv: 'CSV'
+        tsv: 'TSV'
+      char:
+        sjis: 'ShiftJIS'
+        utf8: 'UTF-8'
+      newline:
+        crlf: 'CR+LF'
+        lf: 'LF'
+        cr: 'CR'
   notice:
     user:
       image_update: '画像を変更しました。'
@@ -78,6 +144,8 @@ ja:
       destroy: '%{destroy_count}名のメンバーを解除しました。'
       destroy_notfound: '%{count}名中%{destroy_count}名のメンバーを解除しました。'
       destroy_include_myself: '%{count}名中%{destroy_count}名のメンバーを解除しました。（自分自身は解除できません。他の管理者に依頼してください。）'
+    download:
+      create: 'ダウンロードを開始しました。完了まで暫くお待ちください。'
   alert:
     user:
       destroy_reserved: 'アカウント削除予定の為、この操作はできません。'

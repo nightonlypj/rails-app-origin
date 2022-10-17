@@ -284,6 +284,43 @@ RSpec.describe ApplicationHelper, type: :helper do
     end
   end
 
+  # 縦並びの入力項目のサイズクラス名を返却
+  # 前提条件
+  #   なし
+  # テストパターン
+  #   enabled: true, false
+  #   errors: なし, あり
+  #   key: 存在しない, 存在する
+  describe 'input_size_class_name_vertical' do
+    subject { helper.input_size_class_name_vertical(enabled, user, key) }
+    let_it_be(:user) { FactoryBot.create(:user) }
+
+    # テストケース
+    context 'enabledがfalse' do
+      let(:enabled) { false }
+      let(:key)     { :not }
+      it_behaves_like 'value', ' mb-3'
+    end
+    context 'enabledがtrue' do
+      let(:enabled) { true }
+      context 'errorsなし' do
+        let(:key) { :not } # Tips: errorsなしの為、keyが存在する事はない
+        it_behaves_like 'value', ' mb-0'
+      end
+      context 'errorsあり' do
+        before_all { user.errors.add(:email, 'メッセージ') }
+        context 'keyが存在しない' do
+          let(:key) { :not }
+          it_behaves_like 'value', ' mb-0'
+        end
+        context 'keyが存在する' do
+          let(:key) { :email }
+          it_behaves_like 'value', ' mb-4'
+        end
+      end
+    end
+  end
+
   # 文字列を省略して返却
   describe 'text_truncate' do
     subject { helper.text_truncate(text, length) }

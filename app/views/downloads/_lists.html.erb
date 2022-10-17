@@ -1,0 +1,39 @@
+<div class="table-responsive">
+  <table class="table table-sm table-hover">
+    <thead class="table-light">
+      <tr>
+        <th scope="col" class="text-nowrap">
+          依頼日時
+          <i class="fas fa-sort-down"></i>
+        </th>
+        <th scope="col" class="text-nowrap">ステータス</th>
+        <th scope="col" class="text-nowrap">ファイル</th>
+        <th scope="col" class="text-nowrap d-none d-md-block">対象・形式等</th>
+      </tr>
+    </thead>
+    <tbody>
+<% @downloads.each do |download| %>
+      <tr class="align-middle">
+        <td scope="row" class="text-nowrap px-1 py-2">
+          <%= l(download.requested_at) %>
+        </td>
+        <td class="text-nowrap text-center px-1 py-2">
+          <%= download.status_i18n %>
+          <%# TODO: 完了日時？ %>
+        </td>
+        <td class="text-nowrap px-1 py-2">
+          <%# TODO: ダウンロードリンク、最終ダウンロード日時？ %>
+        </td>
+        <td class="d-none d-md-block px-1 py-2">
+<% if download.model.to_sym == :member %>
+          <%= text_truncate(download.space.name, 64) %>のメンバー<br/>
+<% else %>
+          <%= download.model_i18n %><br/>
+<% end %>
+          <%= download.target_i18n %>, <%= download.format_i18n %>, <%= download.char_i18n %>, <%= download.newline_i18n %>
+        </td>
+      </tr>
+<% end %>
+    </tbody>
+  </table>
+</div>

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2022_08_27_072847) do
+ActiveRecord::Schema.define(version: 2022_10_11_100201) do
 
   create_table "admin_users", charset: "utf8", collation: "utf8_bin", comment: "管理者", force: :cascade do |t|
     t.string "name", null: false, comment: "氏名"
@@ -39,6 +39,36 @@ ActiveRecord::Schema.define(version: 2022_08_27_072847) do
     t.index ["unlock_token"], name: "index_admin_users4", unique: true
   end
 
+  create_table "download_files", charset: "utf8", collation: "utf8_bin", comment: "ダウンロードファイル", force: :cascade do |t|
+    t.bigint "download_id", null: false, comment: "ダウンロードID"
+    t.binary "file", size: :long, comment: "ファイル"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["download_id"], name: "index_download_files_on_download_id"
+  end
+
+  create_table "downloads", charset: "utf8", collation: "utf8_bin", comment: "ダウンロード", force: :cascade do |t|
+    t.bigint "user_id", null: false, comment: "ユーザーID"
+    t.integer "status", default: 0, null: false, comment: "ステータス"
+    t.datetime "requested_at", null: false, comment: "依頼日時"
+    t.datetime "completed_at", comment: "完了日時"
+    t.datetime "last_downloaded_at", comment: "最終ダウンロード日時"
+    t.integer "model", null: false, comment: "モデル"
+    t.bigint "space_id", comment: "スペースID"
+    t.integer "target", null: false, comment: "対象"
+    t.integer "format", null: false, comment: "形式"
+    t.integer "char", null: false, comment: "文字コード"
+    t.integer "newline", null: false, comment: "改行コード"
+    t.text "output_items", comment: "出力項目"
+    t.text "search_params", comment: "検索パラメータ"
+    t.text "select_items", comment: "選択項目"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["space_id"], name: "index_downloads_on_space_id"
+    t.index ["user_id", "requested_at"], name: "index_downloads1", unique: true
+    t.index ["user_id"], name: "index_downloads_on_user_id"
+  end
+
   create_table "infomations", charset: "utf8", collation: "utf8_bin", comment: "お知らせ", force: :cascade do |t|
     t.string "title", null: false, comment: "タイトル"
     t.string "summary", comment: "概要"
@@ -60,8 +90,8 @@ ActiveRecord::Schema.define(version: 2022_08_27_072847) do
   end
 
   create_table "members", charset: "utf8", collation: "utf8_bin", comment: "メンバー", force: :cascade do |t|
-    t.bigint "space_id", comment: "スペースID"
-    t.bigint "user_id", comment: "ユーザーID"
+    t.bigint "space_id", null: false, comment: "スペースID"
+    t.bigint "user_id", null: false, comment: "ユーザーID"
     t.integer "power", null: false, comment: "権限"
     t.bigint "invitation_user_id", comment: "招待ユーザーID"
     t.datetime "invitationed_at", comment: "招待日時"
@@ -144,6 +174,8 @@ ActiveRecord::Schema.define(version: 2022_08_27_072847) do
     t.index ["item_type", "item_id"], name: "index_versions1"
   end
 
+  add_foreign_key "download_files", "downloads"
+  add_foreign_key "downloads", "users"
   add_foreign_key "infomations", "users"
   add_foreign_key "members", "spaces"
   add_foreign_key "members", "users"

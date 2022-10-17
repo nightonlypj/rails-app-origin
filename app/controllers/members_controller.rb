@@ -127,14 +127,6 @@ class MembersController < ApplicationAuthController
     head :forbidden if @member == @current_member
   end
 
-  def set_create
-    @emails = []
-    params[:member][:emails]&.split(/\R/)&.each do |email|
-      email.strip!
-      @emails.push(email) if email.present? && !@emails.include?(email)
-    end
-  end
-
   def set_index
     @text = params[:text]&.slice(..(255 - 1))
     @option = params[:option] == '1'
@@ -146,6 +138,14 @@ class MembersController < ApplicationAuthController
 
     @sort = MEMBERS_SORT_COLUMN.include?(params[:sort]) ? params[:sort] : 'invitationed_at'
     @desc = params[:desc] != '0'
+  end
+
+  def set_create
+    @emails = []
+    params[:member][:emails]&.split(/\R/)&.each do |email|
+      email.strip!
+      @emails.push(email) if email.present? && !@emails.include?(email)
+    end
   end
 
   def validate_create
@@ -199,6 +199,9 @@ class MembersController < ApplicationAuthController
 
   # Only allow a list of trusted parameters through.
   def member_params
+    # ArgumentError対策
+    params[:member][:power] = nil if Member.powers[params[:member][:power]].blank?
+
     params.require(:member).permit(:power)
   end
 end

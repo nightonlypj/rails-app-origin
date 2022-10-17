@@ -2,7 +2,7 @@
 <%= form_with(model: @member, url: update_member_path(@space.code, @member.user.code), html: { method: :post, novalidate: true, autocomplete: 'on' }, local: true) do |form| %>
   <div class="row">
     <div class="col-md-2 text-md-end">
-      <%= form.label 'メンバー', class: "form-label" %>
+      <%= form.label :emails, 'メンバー', class: "form-label" %>
     </div>
     <div class="col-md-10 mb-3">
       <%= image_tag @member.user.image_url(:small), class: 'rounded-circle' %> <%= @member.user.name %>
@@ -14,25 +14,25 @@
 
   <div class="row">
     <div class="col-md-2 text-md-end">
-      <%= form.label '権限', class: "form-label" %> <span style="color: red">*</span>
+      <%= form.label :power, class: "form-label" %> <span style="color: red">*</span>
     </div>
     <div class="col-md-10">
       <div class="form-outline<%= input_size_class_name(@member, :power) %>">
-        <% Member.powers.each do |key, _value| %>
-          <div class="form-check form-check-inline<%= validate_class_name(validate_enabled, @member, :power) %>">
-            <%= form.radio_button :power, key, class: "form-check-input#{validate_class_name(validate_enabled, @member, :power)}" %>
-            <%= form.label Member.powers_i18n[key], class: 'form-check-label', for: "member_power_#{key}" %>
-          </div>
-        <% end %>
+<% Member.powers.each do |key, _value| %>
+        <div class="form-check form-check-inline<%= validate_class_name(validate_enabled, @member, :power) %>">
+          <%= form.radio_button :power, key, class: "form-check-input#{validate_class_name(validate_enabled, @member, :power)}" %>
+          <%= form.label key, Member.powers_i18n[key], class: 'form-check-label', for: "member_power_#{key}" %>
+        </div>
+<% end %>
         <%= render 'users/shared/field_error_messages', messages: @member.errors[:power] %>
       </div>
     </div>
+  </div>
 
-    <div class="row">
-      <div class="col-md-2"></div>
-      <div class="col-md-10">
-        <%= form.submit '変更', type: 'button', onclick: 'submit()', class: 'btn btn-primary' %>
-      </div>
+  <div class="row">
+    <div class="col-md-2"></div>
+    <div class="col-md-10">
+      <%= form.submit '変更', type: 'button', onclick: 'submit()', class: 'btn btn-primary' %>
     </div>
   </div>
 <% end %>

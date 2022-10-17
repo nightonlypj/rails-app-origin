@@ -1,8 +1,8 @@
-<% content_for(:html_title) { "#{text_truncate(@space.name, 64)}のメンバー一覧" } %>
+<% content_for(:html_title) { "#{text_truncate(@space.name, 64)}のメンバー" } %>
 
 <div class="card card-body mb-2">
   <h5 class="card-title mb-3">
-    <%= render 'spaces/title', space: @space, current_member: @current_member, suffix_title: 'のメンバー一覧' %>
+    <%= render 'spaces/title', space: @space, current_member: @current_member, suffix_title: 'のメンバー' %>
   </h5>
   <div class="card-text">
     <div class="row">
@@ -33,6 +33,12 @@
       <div class="col-md-7">
         <div class="d-flex float-end table-responsive">
           <%= paginate @members %>
+<% if @current_member.power_admin? %>
+          <a href="<%= create_download_path({ model: :member, space_code: @space.code, search_params: request.query_parameters }) %>" class="btn btn-dark d-flex align-items-center text-nowrap click_to_redirect_add_codes">
+            <i class="fas fa-download"></i>
+            <span class="d-none d-md-block ms-1">ダウンロード</span>
+          </a>
+<% end %>
         </div>
       </div>
     </div>

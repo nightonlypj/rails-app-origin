@@ -5,6 +5,7 @@ class Space < ApplicationRecord
   belongs_to :last_update_user, class_name: 'User', optional: true
   has_many :members, dependent: :destroy
   has_many :users, through: :members
+  has_many :downloads
 
   scope :by_target, lambda { |current_user, exclude_member_space|
     space = where(private: false)

@@ -42,6 +42,13 @@ module ApplicationHelper
     resource.errors.any? && resource.errors[key].any? ? ' mb-5' : ' mb-3'
   end
 
+  # 縦並びの入力項目のサイズクラス名を返却
+  def input_size_class_name_vertical(enabled, resource, key)
+    return ' mb-3' unless enabled
+
+    resource.errors.any? && resource.errors[key].any? ? ' mb-4' : ' mb-0'
+  end
+
   # 文字列を省略して返却
   def text_truncate(text, length)
     return if length <= 0

@@ -38,3 +38,7 @@ default_spaces_limit: 25
 default_members_limit: 25
 # 招待の最大件数
 create_members_max_count: 100
+
+## ダウンロード
+# 一覧のデフォルト最大表示件数
+default_downloads_limit: 25

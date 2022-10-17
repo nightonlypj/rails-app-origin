@@ -1,5 +1,5 @@
 FactoryBot.define do
   factory :download_file do
-    download { nil }
+    association :download
   end
 end

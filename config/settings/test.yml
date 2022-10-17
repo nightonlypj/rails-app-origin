@@ -38,3 +38,7 @@ test_spaces:
 default_members_limit: 2
 # 招待の最大件数
 create_members_max_count: 2
+
+## ダウンロード
+# 一覧のデフォルト最大表示件数
+default_downloads_limit: 2

@@ -1,7 +1,8 @@
 class CreateDownloadFiles < ActiveRecord::Migration[6.1]
   def change
-    create_table :download_files do |t|
-      t.references :download, null: false, foreign_key: true
+    create_table :download_files, comment: 'ダウンロードファイル' do |t|
+      t.references :download, null: false, type: :bigint, foreign_key: true, comment: 'ダウンロードID'
+      t.binary :file, size: :long, comment: 'ファイル'
 
       t.timestamps
     end

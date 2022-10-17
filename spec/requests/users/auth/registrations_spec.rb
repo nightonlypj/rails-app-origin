@@ -253,6 +253,8 @@ RSpec.describe 'Users::Auth::Registrations', type: :request do
         expect(response_json['user']['destroy_schedule_at']).to eq(destroy_schedule_at)
         ## お知らせ
         expect(response_json['user']['infomation_unread_count']).to eq(current_user.infomation_unread_count)
+        ## ダウンロード結果
+        expect(response_json['user']['undownloaded_count']).to eq(current_user.undownloaded_count)
 
         ## Trackable
         expect(response_json['user']['sign_in_count']).to eq(current_user.sign_in_count)

@@ -35,4 +35,20 @@ $(document).on('turbolinks:load', function(){
         }
         $('#delete_btn').prop('disabled', checked <= 0)
     })
+
+    // ダウンロードボタン -> URLにコードを追加して遷移
+    $('.click_to_redirect_add_codes').on('click', function() {
+        if (debug) console.log('== .click_to_redirect_add_codes.onclick', $(this).prop('href'))
+
+        let codes = []
+        const elements = $('input[id^="codes["]')
+        for (var element of elements) {
+            if (element.checked) codes.push(element.id.substr(6, (element.id + ']').indexOf(']') - 6))
+        }
+
+        let url = new URL($(this).prop('href'))
+        url.searchParams.append('select_items', codes)
+	    location.href = url
+        return false
+    })
 })

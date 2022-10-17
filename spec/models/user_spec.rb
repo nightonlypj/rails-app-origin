@@ -263,4 +263,9 @@ RSpec.describe User, type: :model do
       it_behaves_like '[現在]2件（全員＋自分）'
     end
   end
+
+  # 未ダウンロード数を返却
+  describe '#undownloaded_count' do
+    # TODO
+  end
 end

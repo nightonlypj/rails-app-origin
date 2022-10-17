@@ -1,5 +1,23 @@
-<h1>New Download</h1>
+<% content_for(:html_title) { 'ダウンロード' } %>
 
-<%= render 'form', download: @download %>
+<%= render 'users/shared/error_messages', resource: @download %>
 
-<%= link_to 'Back', downloads_path %>
+<ul class="nav nav-tabs mb-2">
+<% if @model == :member %>
+  <li class="nav-item">
+    <%= link_to 'メンバー一覧', members_path(@space.code), class: 'nav-link' %>
+  </li>
+<% end %>
+  <li class="nav-item">
+    <a data-mdb-toggle="tab" class="nav-link active">ダウンロード</a>
+  </li>
+</ul>
+
+<div class="card card-body mb-2" style="max-width: 720px">
+<% if @space.present? %>
+  <h5 class="card-title mb-3">
+    <%= render 'spaces/title', space: @space, current_member: @current_member, suffix_title: nil %>
+  </h5>
+<% end %>
+  <div class="card-text mb-3"><%= render 'new' %></div>
+</div>

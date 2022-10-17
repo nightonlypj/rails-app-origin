@@ -1,7 +1,7 @@
 <% if messages.any? %>
-<div class="invalid-feedback">
+<div class="invalid-feedback<%= (defined? add_class) ? " #{add_class}" : '' %>">
 <% messages.each do |message| %>
-<%= message %>
+  <%= message %>
 <% end %>
 </div>
 <% end %>
