@@ -6,7 +6,7 @@
 <% if @current_member.power_admin? %>
         <th scope="col" class="ps-2 pe-0 pt-0 pb-1">
           <button id="delete_btn" type="submit" class="btn btn-light btn-floating" data-confirm="選択したメンバーを解除しますか？" disabled>
-            <i class="fas fa-trash" data-mdb-toggle="tooltip" data-mdb-placement="bottom" title="選択メンバー解除"></i>
+            <i class="fas fa-trash" data-mdb-toggle="tooltip" data-mdb-placement="bottom" title="メンバー解除"></i>
           </button>
         </th>
 <% end %>
@@ -32,12 +32,14 @@
     </thead>
     <tbody>
 <% @members.each do |member| %>
-      <tr class="align-middle<%= ' table-active' if member == @current_member %>">
+      <tr class="align-middle">
 <% if @current_member.power_admin? %>
+        <%# (メンバー解除) %>
         <td scope="row" class="justify-content-center ps-3 pe-2 py-2">
           <%= form.check_box "codes[#{member.user.code}]", include_hidden: false, class: 'form-check-input change_to_delete_btn_enabled' %>
         </td>
 <% end %>
+        <%# メンバー %>
         <td scope="row" class="ps-2 pe-1 py-2">
           <%= image_tag member.user.image_url(:small), class: 'rounded-circle' %>
           <span class="ms-1">
@@ -45,10 +47,12 @@
           </span>
         </td>
 <% if @current_member.power_admin? %>
+        <%# メールアドレス %>
         <td class="px-1 py-2">
           <%= member.user.email %>
         </td>
 <% end %>
+        <%# 権限 %>
         <td class="text-nowrap px-1 py-2">
 <% if @current_member.power_admin? && member != @current_member %>
           <a href="<%= edit_member_path(@space.code, member.user.code) %>">
@@ -60,6 +64,7 @@
 <% end %>
         </td>
 <% if @current_member.power_admin? %>
+        <%# 招待者 %>
         <td class="px-1 py-2">
 <% if member.invitation_user.present? %>
           <%= image_tag member.invitation_user.image_url(:small), class: 'rounded-circle' %>
@@ -69,6 +74,7 @@
 <% end %>
         </td>
 <% end %>
+        <%# 招待日時 %>
         <td class="text-nowrap ps-1 pe-2 py-2">
 <% if member.invitationed_at.present? %>
           <%= l(member.invitationed_at) %>

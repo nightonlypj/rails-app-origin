@@ -12,6 +12,12 @@ RSpec.describe User, type: :model do
       expect(user).to be_invalid
     end
   end
+  shared_examples_for 'Count' do |count|
+    it "#{count}が返却され、キャッシュされる" do
+      is_expected.to eq(count)
+      expect(cache).to eq(count)
+    end
+  end
 
   # コード
   # 前提条件
@@ -203,15 +209,8 @@ RSpec.describe User, type: :model do
       user.cache_infomation_unread_count = nil
       user.infomation_unread_count
     end
+    let(:cache) { user.cache_infomation_unread_count }
 
-    # テスト内容
-    shared_examples_for 'Count' do |count|
-      it "件数(#{count})" do
-        is_expected.to eq(count)
-      end
-    end
-
-    # テストケース
     shared_examples_for '[*]0件' do
       include_context 'お知らせ一覧作成', 0, 0, 0, 0
       it_behaves_like 'Count', 0
@@ -266,6 +265,28 @@ RSpec.describe User, type: :model do
 
   # 未ダウンロード数を返却
   describe '#undownloaded_count' do
-    # TODO
+    subject do
+      current_user.cache_undownloaded_count = nil
+      current_user.undownloaded_count
+    end
+    let(:cache) { current_user.cache_undownloaded_count }
+
+    let_it_be(:current_user) { FactoryBot.create(:user) }
+    before_all do
+      FactoryBot.create(:download, :success) # 他人
+      FactoryBot.create(:download, :complete, user: current_user) # ダウンロード済み
+    end
+
+    context '0件' do
+      it_behaves_like 'Count', 0
+    end
+    context '1件' do
+      before_all { FactoryBot.create(:download, :success, user: current_user) }
+      it_behaves_like 'Count', 1
+    end
+    context '2件' do
+      before_all { FactoryBot.create_list(:download, 2, :success, user: current_user) }
+      it_behaves_like 'Count', 2
+    end
   end
 end

@@ -7,6 +7,12 @@ class Download < ApplicationRecord
   validates :format, presence: true
   validates :char, presence: true
   validates :newline, presence: true
+  validates :output_items, presence: true
+  validates :output_items, text_array: true, if: proc { |download| download.output_items.present? }
+  validates :select_items, presence: true, if: proc { |download| download.target&.to_sym == :select }
+  validates :select_items, text_array: true, if: proc { |download| download.select_items.present? }
+  validates :search_params, presence: true, if: proc { |download| download.target&.to_sym == :search }
+  validates :search_params, text_hash: true, if: proc { |download| download.search_params.present? }
 
   # ステータス
   enum status: {
@@ -36,8 +42,9 @@ class Download < ApplicationRecord
 
   # 文字コード
   enum char: {
-    sjis: 1, # ShiftJIS
-    utf8: 2 # UTF-8
+    sjis: 1, # Shift_JIS
+    eucjp: 2, # EUC-JP
+    utf8: 3 # UTF-8
   }, _prefix: true
 
   # 改行コード
@@ -46,4 +53,30 @@ class Download < ApplicationRecord
     lf: 2, # LF
     cr: 3 # CR
   }, _prefix: true
+
+  # 区切り文字
+  def col_sep
+    case format.to_sym
+    when :csv
+      ','
+    when :tsv
+      "\t"
+    else
+      raise 'format not found.'
+    end
+  end
+
+  # 改行文字
+  def row_sep
+    case newline.to_sym
+    when :crlf
+      "\r\n"
+    when :lf
+      "\n"
+    when :cr
+      "\r"
+    else
+      raise 'newline not found.'
+    end
+  end
 end

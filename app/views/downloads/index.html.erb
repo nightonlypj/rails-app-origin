@@ -9,6 +9,11 @@
         <%= page_entries_info @downloads %>
       </div>
       <div class="col-md-7">
+        <div class="float-end">
+          <a href="<%= downloads_path(id: params[:id]) %>" class="btn btn-dark">
+            <i class="fas fa-sync" data-mdb-toggle="tooltip" data-mdb-placement="bottom" title="更新"></i>
+          </a>
+        </div>
         <div class="float-end table-responsive">
           <%= paginate @downloads %>
         </div>

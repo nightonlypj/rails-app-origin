@@ -52,6 +52,7 @@ ja:
         status: 'ステータス'
         requested_at: '依頼日時'
         completed_at: '完了日時'
+        error_message: 'エラーメッセージ'
         last_downloaded_at: '最終ダウンロード日時'
         model: 'モデル'
         space: 'スペース'
@@ -90,6 +91,13 @@ ja:
               blank: '選択してください。'
             output_items:
               blank: '選択してください。'
+              invalid: '形式が正しくありません。'
+            select_items:
+              blank: '選択してください。'
+              invalid: '形式が正しくありません。'
+            search_params:
+              blank: '選択してください。'
+              invalid: '形式が正しくありません。'
   items:
     member:
       user.name: 'メンバー'
@@ -128,7 +136,8 @@ ja:
         csv: 'CSV'
         tsv: 'TSV'
       char:
-        sjis: 'ShiftJIS'
+        sjis: 'Shift_JIS'
+        eucjp: 'EUC-JP'
         utf8: 'UTF-8'
       newline:
         crlf: 'CR+LF'
@@ -140,12 +149,17 @@ ja:
       image_destroy: '画像を削除しました。'
     member:
       create: 'メンバー招待の処理が完了しました。結果を確認してください。'
-      update: 'メンバーの権限を変更しました。'
+      update: 'メンバー情報を変更しました。'
       destroy: '%{destroy_count}名のメンバーを解除しました。'
       destroy_notfound: '%{count}名中%{destroy_count}名のメンバーを解除しました。'
       destroy_include_myself: '%{count}名中%{destroy_count}名のメンバーを解除しました。（自分自身は解除できません。他の管理者に依頼してください。）'
     download:
-      create: 'ダウンロードを開始しました。完了まで暫くお待ちください。'
+      create: 'ダウンロードファイルの作成を開始しました。'
+      status:
+        waiting: 'ダウンロードファイルの作成を開始しました。完了まで暫くお待ちください。'
+        processing: 'ダウンロードファイルの作成を開始しました。完了まで暫くお待ちください。'
+        success: 'ダウンロードファイルの作成が完了しました。ダウンロード結果からダウンロードしてください。'
+        failure: 'ダウンロードファイルの作成に失敗しました。お問い合わせ頂くか、やり直してください。'
   alert:
     user:
       destroy_reserved: 'アカウント削除予定の為、この操作はできません。'

@@ -1,26 +1,18 @@
 class MembersController < ApplicationAuthController
+  include MembersConcern
   before_action :authenticate_user!
   before_action :set_space
   before_action :members_redirect_response_destroy_reserved, only: %i[new create result edit update destroy]
   before_action :check_power, only: %i[new create result edit update destroy]
   before_action :set_member, only: %i[edit update]
-  before_action :set_index, only: :index
-  before_action :set_create, :validate_create, only: :create
-  before_action :set_destroy, :validate_destroy, only: :destroy
-
-  MEMBERS_SORT_COLUMN = {
-    'user.name' => 'users.name',
-    'user.email' => 'users.email',
-    'power' => 'power',
-    'invitation_user.name' => 'invitation_users_members.name',
-    'invitationed_at' => 'invitationed_at'
-  }.freeze
+  before_action :set_params_index, only: :index
+  before_action :set_params_create, :validate_params_create, only: :create
+  before_action :set_params_destroy, :validate_params_destroy, only: :destroy
 
   # GET /members/:code メンバー一覧
   # GET /members/:code(.json) メンバー一覧API
   def index
-    @members = Member.where(space: @space, power: @power.keys).search(@text, @current_member).eager_load(:user, :invitation_user)
-                     .page(params[:page]).per(Settings['default_members_limit']).order(MEMBERS_SORT_COLUMN[@sort] + (@desc ? ' DESC' : ''), id: :desc)
+    @members = members_search.page(params[:page]).per(Settings['default_members_limit'])
 
     if format_html? && @members.current_page > [@members.total_pages, 1].max
       redirect_to @members.total_pages <= 1 ? members_path : members_path(page: @members.total_pages)
@@ -77,7 +69,7 @@ class MembersController < ApplicationAuthController
     if format_html?
       redirect_to members_path(@space.code), notice: t('notice.member.update')
     else
-      render locals: { notice: t('notice.member.update') }, status: :created
+      render locals: { notice: t('notice.member.update') }
     end
   end
 
@@ -127,20 +119,7 @@ class MembersController < ApplicationAuthController
     head :forbidden if @member == @current_member
   end
 
-  def set_index
-    @text = params[:text]&.slice(..(255 - 1))
-    @option = params[:option] == '1'
-
-    @power = {}
-    Member.powers.each do |key, value|
-      @power[value] = true if params[key] != '0'
-    end
-
-    @sort = MEMBERS_SORT_COLUMN.include?(params[:sort]) ? params[:sort] : 'invitationed_at'
-    @desc = params[:desc] != '0'
-  end
-
-  def set_create
+  def set_params_create
     @emails = []
     params[:member][:emails]&.split(/\R/)&.each do |email|
       email.strip!
@@ -148,12 +127,12 @@ class MembersController < ApplicationAuthController
     end
   end
 
-  def validate_create
+  def validate_params_create
     @member = Member.new(member_params.merge(space: @space, user: current_user, invitation_user: current_user, invitationed_at: Time.current))
     @member.valid?
 
     if @emails.blank?
-      @member.errors.add(:emails, t('activerecord.errors.models.member.attributes.emails.blank'))
+      @member.errors.add(:emails, :blank)
     elsif @emails.count > Settings['create_members_max_count']
       error = t('activerecord.errors.models.member.attributes.emails.max_count').gsub(/%{count}/, Settings['create_members_max_count'].to_s)
       @member.errors.add(:emails, error)
@@ -169,7 +148,7 @@ class MembersController < ApplicationAuthController
     end
   end
 
-  def set_destroy
+  def set_params_destroy
     if params[:codes].instance_of?(Array)
       @codes = params[:codes].uniq.compact
     else
@@ -178,7 +157,7 @@ class MembersController < ApplicationAuthController
     @include_myself = @codes.include?(@current_member.user.code)
   end
 
-  def validate_destroy
+  def validate_params_destroy
     alert = nil
     alert = 'alert.member.destroy.codes.blank' if @codes.blank?
     alert = 'alert.member.destroy.codes.myself' if @codes.count == 1 && @include_myself

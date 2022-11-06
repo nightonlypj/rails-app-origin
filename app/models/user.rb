@@ -7,8 +7,7 @@ class User < ApplicationRecord
          :recoverable, :rememberable, :validatable,
          :confirmable, :lockable, :timeoutable, :trackable
   include DeviseTokenAuth::Concerns::User
-  attr_accessor :redirect_url # Tips: /users/auth/{update,sign_in}で使用
-  attr_writer :cache_infomation_unread_count
+  attr_accessor :redirect_url, :cache_infomation_unread_count, :cache_undownloaded_count # Tips: redirect_urlは/users/auth/{update,sign_in}で使用
 
   mount_uploader :image, ImageUploader
   has_many :infomations, dependent: :destroy
@@ -63,5 +62,13 @@ class User < ApplicationRecord
 
     @cache_infomation_unread_count = Infomation.by_target(self).by_unread(infomation_check_last_started_at).count
     @cache_infomation_unread_count
+  end
+
+  # 未ダウンロード数を返却
+  def undownloaded_count
+    return @cache_undownloaded_count if @cache_undownloaded_count.present?
+
+    @cache_undownloaded_count = Download.where(user: self, status: :success, last_downloaded_at: nil).count
+    @cache_undownloaded_count
   end
 end

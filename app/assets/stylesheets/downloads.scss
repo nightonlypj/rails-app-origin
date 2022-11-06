@@ -1,3 +1,10 @@
 // Place all the styles related to the downloads controller here.
 // They will automatically be included in application.css.
 // You can use Sass (SCSS) here: https://sass-lang.com/
+.table_downloads .row_active {
+    background-color: #E8EAF6; /* indigo lighten-5 */
+}
+.table_downloads .row_inactive {
+    background-color: #F5F5F5; /* grey lighten-4 */
+  }
+  

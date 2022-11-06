@@ -137,3 +137,11 @@ Style/ConditionalAssignment:
 # C: Style/GuardClause: Use a guard clause (*) instead of wrapping the code inside a conditional expression.
 Style/GuardClause:
   Enabled: false
+
+# C: Style/OptionalBooleanParameter: Use keyword arguments when defining method with boolean argument.
+Style/OptionalBooleanParameter:
+  Enabled: false
+
+# C: Naming/AccessorMethodName: Do not prefix writer method names with set_.
+Naming/AccessorMethodName:
+  Enabled: false

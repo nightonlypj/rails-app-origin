@@ -6,12 +6,15 @@ FactoryBot.define do
     format       { :csv }
     char         { :sjis }
     newline      { :crlf }
+    output_items { ['user.name'] }
     association :user
 
-    # メンバー
-    trait :member do
-      model { :member }
-      association :space
+    trait :success do
+      status { :success }
+    end
+    trait :complete do
+      status             { :success }
+      last_downloaded_at { Time.current }
     end
   end
 end

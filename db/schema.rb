@@ -52,6 +52,7 @@ ActiveRecord::Schema.define(version: 2022_10_11_100201) do
     t.integer "status", default: 0, null: false, comment: "ステータス"
     t.datetime "requested_at", null: false, comment: "依頼日時"
     t.datetime "completed_at", comment: "完了日時"
+    t.string "error_message", comment: "エラーメッセージ"
     t.datetime "last_downloaded_at", comment: "最終ダウンロード日時"
     t.integer "model", null: false, comment: "モデル"
     t.bigint "space_id", comment: "スペースID"
@@ -60,12 +61,11 @@ ActiveRecord::Schema.define(version: 2022_10_11_100201) do
     t.integer "char", null: false, comment: "文字コード"
     t.integer "newline", null: false, comment: "改行コード"
     t.text "output_items", comment: "出力項目"
-    t.text "search_params", comment: "検索パラメータ"
     t.text "select_items", comment: "選択項目"
+    t.text "search_params", comment: "検索パラメータ"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.index ["space_id"], name: "index_downloads_on_space_id"
-    t.index ["user_id", "requested_at"], name: "index_downloads1", unique: true
     t.index ["user_id"], name: "index_downloads_on_user_id"
   end
 
