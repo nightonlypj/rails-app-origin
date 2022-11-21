@@ -44,7 +44,6 @@ ja:
         undo_delete_url_not_allowed: 'undo_delete_urlが指定されていません。'
   errors:
     messages:
-      image_update_blank: '選択してください。'
       infomation:
         ended: '掲載期間が終了しました。'
   mailer:

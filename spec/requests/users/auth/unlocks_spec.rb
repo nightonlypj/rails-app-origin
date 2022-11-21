@@ -390,22 +390,22 @@ RSpec.describe 'Users::Auth::Unlocks', type: :request do
       include_context 'アカウントロック解除トークン作成', false
       it_behaves_like 'NG'
       # it_behaves_like 'ToOK', nil, nil
-      it_behaves_like 'ToOK', nil, 'devise.unlocks.unlocked' # Tips: 既に解除済み
+      it_behaves_like 'ToOK', nil, 'devise.unlocks.unlocked' # NOTE: 既に解除済み
     end
     shared_examples_for '[*][存在しない]ロック日時がない（未ロック）' do
-      # it_behaves_like 'NG' # Tips: トークンが存在しない為、ロック日時がない
-      # it_behaves_like 'ToNG', nil, nil # Tips: ActionController::RoutingError: Not Found
+      # it_behaves_like 'NG' # NOTE: トークンが存在しない為、ロック日時がない
+      # it_behaves_like 'ToNG', nil, nil # NOTE: ActionController::RoutingError: Not Found
       it_behaves_like 'ToNG', 'activerecord.errors.models.user.attributes.unlock_token.invalid', nil
     end
     shared_examples_for '[*][ない/空]ロック日時がない（未ロック）' do
-      # it_behaves_like 'NG' # Tips: トークンが存在しない為、ロック日時がない
-      # it_behaves_like 'ToNG', nil, nil # Tips: ActionController::RoutingError: Not Found
+      # it_behaves_like 'NG' # NOTE: トークンが存在しない為、ロック日時がない
+      # it_behaves_like 'ToNG', nil, nil # NOTE: ActionController::RoutingError: Not Found
       it_behaves_like 'ToNG', 'activerecord.errors.models.user.attributes.unlock_token.blank', nil
     end
     shared_examples_for '[*][存在する]ロック日時が期限内（ロック中）' do
       include_context 'アカウントロック解除トークン作成', true
       it_behaves_like 'OK'
-      it_behaves_like 'ToOK', nil, 'devise.unlocks.unlocked' # Tips: 解除されても良さそう
+      it_behaves_like 'ToOK', nil, 'devise.unlocks.unlocked' # NOTE: 解除されても良さそう
     end
     shared_examples_for '[*][存在する]ロック日時が期限切れ（未ロック）' do
       include_context 'アカウントロック解除トークン作成', true, true
@@ -421,20 +421,20 @@ RSpec.describe 'Users::Auth::Unlocks', type: :request do
     shared_examples_for '[*]トークンが存在しない' do
       let(:unlock_token) { NOT_TOKEN }
       it_behaves_like '[*][存在しない]ロック日時がない（未ロック）'
-      # it_behaves_like '[*][存在しない]ロック日時が期限内（ロック中）' # Tips: トークンが存在しない為、ロック日時がない
-      # it_behaves_like '[*][存在しない]ロック日時が期限切れ（未ロック）' # Tips: トークンが存在しない為、ロック日時がない
+      # it_behaves_like '[*][存在しない]ロック日時が期限内（ロック中）' # NOTE: トークンが存在しない為、ロック日時がない
+      # it_behaves_like '[*][存在しない]ロック日時が期限切れ（未ロック）' # NOTE: トークンが存在しない為、ロック日時がない
     end
     shared_examples_for '[*]トークンがない' do
       let(:unlock_token) { nil }
       it_behaves_like '[*][ない/空]ロック日時がない（未ロック）'
-      # it_behaves_like '[*][ない]ロック日時が期限内（ロック中）' # Tips: トークンが存在しない為、ロック日時がない
-      # it_behaves_like '[*][ない]ロック日時が期限切れ（未ロック）' # Tips: トークンが存在しない為、ロック日時がない
+      # it_behaves_like '[*][ない]ロック日時が期限内（ロック中）' # NOTE: トークンが存在しない為、ロック日時がない
+      # it_behaves_like '[*][ない]ロック日時が期限切れ（未ロック）' # NOTE: トークンが存在しない為、ロック日時がない
     end
     shared_examples_for '[*]トークンが空' do
       let(:unlock_token) { '' }
       it_behaves_like '[*][ない/空]ロック日時がない（未ロック）'
-      # it_behaves_like '[*][空]ロック日時が期限内（ロック中）' # Tips: トークンが存在しない為、ロック日時がない
-      # it_behaves_like '[*][空]ロック日時が期限切れ（未ロック）' # Tips: トークンが存在しない為、ロック日時がない
+      # it_behaves_like '[*][空]ロック日時が期限内（ロック中）' # NOTE: トークンが存在しない為、ロック日時がない
+      # it_behaves_like '[*][空]ロック日時が期限切れ（未ロック）' # NOTE: トークンが存在しない為、ロック日時がない
     end
 
     context '未ログイン' do

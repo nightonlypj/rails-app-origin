@@ -27,7 +27,7 @@ RSpec.describe 'Top', type: :request do
           if infomation.body.present? || infomation.summary.present?
             expect(response.body).to include("\"#{infomation_path(infomation)}\"") # お知らせ詳細のパス
           else
-            expect(response.body).not_to include("\"#{infomation_path(infomation)}\"") # Tips: 本文/概要がない場合は遷移しない
+            expect(response.body).not_to include("\"#{infomation_path(infomation)}\"") # NOTE: 本文/概要がない場合は遷移しない
           end
           expect(response.body).to include(I18n.l(infomation.started_at.to_date)) # 掲載開始日
         end

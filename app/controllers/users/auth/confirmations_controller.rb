@@ -17,7 +17,7 @@ class Users::Auth::ConfirmationsController < DeviseTokenAuth::ConfirmationsContr
       return render './failure', locals: { alert: t('devise_token_auth.confirmations.redirect_url_not_allowed') }, status: :unprocessable_entity
     end
 
-    # Tips: 確認済み・不要の場合はエラーにする
+    # NOTE: 確認済み・不要の場合はエラーにする
     resource = params[:email].present? ? resource_class.find_by(email: params[:email]) : nil
     return render './failure', locals: { alert: t('errors.messages.already_confirmed') }, status: :unprocessable_entity if already_confirmed?(resource)
 
@@ -68,7 +68,7 @@ class Users::Auth::ConfirmationsController < DeviseTokenAuth::ConfirmationsContr
 
   protected
 
-  # Tips: 未使用
+  # NOTE: 未使用
   # def render_create_error_missing_email
   #   # render_error(401, I18n.t('devise_token_auth.confirmations.missing_email'))
   #   render './failure', locals: { alert: t('errors.messages.validate_confirmation_params') }, status: :bad_request

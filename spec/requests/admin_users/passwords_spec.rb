@@ -8,7 +8,7 @@ RSpec.describe 'AdminUsers::Passwords', type: :request do
     end
   end
   shared_examples_for 'ToError' do |error_msg|
-    it 'HTTPステータスが200。対象のエラーメッセージが含まれる' do # Tips: 再入力
+    it 'HTTPステータスが200。対象のエラーメッセージが含まれる' do # NOTE: 再入力
       is_expected.to eq(200)
       expect(response.body).to include(I18n.t(error_msg))
     end
@@ -97,7 +97,7 @@ RSpec.describe 'AdminUsers::Passwords', type: :request do
       it_behaves_like 'NG'
       it_behaves_like 'ToAdmin', 'devise.failure.already_authenticated', nil
     end
-    shared_examples_for '[未ログイン]有効なパラメータ（ロック中）' do # Tips: ロック中も出来ても良さそう
+    shared_examples_for '[未ログイン]有効なパラメータ（ロック中）' do # NOTE: ロック中も出来ても良さそう
       let(:send_admin_user) { send_admin_user_locked }
       let(:attributes)      { valid_attributes }
       it_behaves_like 'OK'
@@ -151,7 +151,7 @@ RSpec.describe 'AdminUsers::Passwords', type: :request do
       include_context 'パスワードリセットトークン作成（管理者）', true
       it_behaves_like 'ToAdmin', 'devise.failure.already_authenticated', nil
     end
-    shared_examples_for '[未ログイン]トークンが期限内（ロック中）' do # Tips: ロック中も出来ても良さそう
+    shared_examples_for '[未ログイン]トークンが期限内（ロック中）' do # NOTE: ロック中も出来ても良さそう
       include_context 'パスワードリセットトークン作成（管理者）', true, true
       it_behaves_like 'ToOK'
     end
@@ -252,12 +252,12 @@ RSpec.describe 'AdminUsers::Passwords', type: :request do
     end
     shared_examples_for '[未ログイン][存在しない]有効なパラメータ' do
       let(:attributes) { valid_attributes }
-      # it_behaves_like 'NG' # Tips: トークンが存在しない為、送信日時がない
+      # it_behaves_like 'NG' # NOTE: トークンが存在しない為、送信日時がない
       it_behaves_like 'ToNew', 'activerecord.errors.models.admin_user.attributes.reset_password_token.invalid', nil
     end
     shared_examples_for '[ログイン中][存在しない]有効なパラメータ' do
       let(:attributes) { valid_attributes }
-      # it_behaves_like 'NG' # Tips: トークンが存在しない為、送信日時がない
+      # it_behaves_like 'NG' # NOTE: トークンが存在しない為、送信日時がない
       it_behaves_like 'ToAdmin', 'devise.failure.already_authenticated', nil
     end
     shared_examples_for '[未ログイン][期限内]無効なパラメータ' do
@@ -277,12 +277,12 @@ RSpec.describe 'AdminUsers::Passwords', type: :request do
     end
     shared_examples_for '[未ログイン][存在しない]無効なパラメータ' do
       let(:attributes) { invalid_attributes }
-      # it_behaves_like 'NG' # Tips: トークンが存在しない為、送信日時がない
+      # it_behaves_like 'NG' # NOTE: トークンが存在しない為、送信日時がない
       it_behaves_like 'ToNew', 'activerecord.errors.models.admin_user.attributes.reset_password_token.invalid', nil
     end
     shared_examples_for '[ログイン中][存在しない]無効なパラメータ' do
       let(:attributes) { invalid_attributes }
-      # it_behaves_like 'NG' # Tips: トークンが存在しない為、送信日時がない
+      # it_behaves_like 'NG' # NOTE: トークンが存在しない為、送信日時がない
       it_behaves_like 'ToAdmin', 'devise.failure.already_authenticated', nil
     end
 
@@ -298,7 +298,7 @@ RSpec.describe 'AdminUsers::Passwords', type: :request do
     end
     shared_examples_for '[未ログイン]トークンが期限内（ロック中）' do
       include_context 'パスワードリセットトークン作成（管理者）', true, true
-      it_behaves_like '[未ログイン][期限内]有効なパラメータ' # Tips: ロック中も出来ても良さそう
+      it_behaves_like '[未ログイン][期限内]有効なパラメータ' # NOTE: ロック中も出来ても良さそう
       it_behaves_like '[未ログイン][期限内]無効なパラメータ'
     end
     shared_examples_for '[ログイン中]トークンが期限内（ロック中）' do

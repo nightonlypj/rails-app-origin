@@ -5,9 +5,9 @@ Rails.application.routes.draw do
     post 'users/sign_up',             to: 'users/registrations#create',        as: 'create_user_registration'
     get  'users/update',              to: 'users/registrations#edit',          as: 'edit_user_registration'
     put  'users/update',              to: 'users/registrations#update',        as: 'update_user_registration'
-    get  'users/image/update',        to: 'users/registrations#edit',          as: nil # Tips: URL直アクセス対応
+    get  'users/image/update',        to: 'users/registrations#edit',          as: nil # NOTE: URL直アクセス対応
     post 'users/image/update',        to: 'users/registrations#image_update',  as: 'update_user_image_registration'
-    get  'users/image/delete',        to: 'users/registrations#edit',          as: nil # Tips: URL直アクセス対応
+    get  'users/image/delete',        to: 'users/registrations#edit',          as: nil # NOTE: URL直アクセス対応
     post 'users/image/delete',        to: 'users/registrations#image_destroy', as: 'delete_user_image_registration'
     get  'users/delete',              to: 'users/registrations#delete',        as: 'delete_user_registration'
     post 'users/delete',              to: 'users/registrations#destroy',       as: 'destroy_user_registration'

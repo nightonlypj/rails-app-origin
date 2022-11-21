@@ -85,10 +85,8 @@ shared_context 'Authテスト内容' do
       expect(response_json['user']['upload_image']).to eq(current_user.image?)
       ## 削除予約
       expect(response_json['user']['destroy_schedule_days']).to eq(Settings['destroy_schedule_days'])
-      destroy_requested_at = current_user.destroy_requested_at.present? ? I18n.l(current_user.destroy_requested_at, format: :json) : nil
-      expect(response_json['user']['destroy_requested_at']).to eq(destroy_requested_at)
-      destroy_schedule_at = current_user.destroy_schedule_at.present? ? I18n.l(current_user.destroy_schedule_at, format: :json) : nil
-      expect(response_json['user']['destroy_schedule_at']).to eq(destroy_schedule_at)
+      expect(response_json['user']['destroy_requested_at']).to eq(I18n.l(current_user.destroy_requested_at, format: :json, default: nil))
+      expect(response_json['user']['destroy_schedule_at']).to eq(I18n.l(current_user.destroy_schedule_at, format: :json, default: nil))
       ## お知らせ
       expect(response_json['user']['infomation_unread_count']).to eq(current_user.infomation_unread_count)
     end
@@ -103,8 +101,8 @@ shared_context 'Authテスト内容' do
     # expect(response.header['uid']).to eq(current_user.email)
     expect(response.header['uid']).to eq((current_user.id + (36**2)).to_s(36))
     expect(response.header['client']).not_to be_nil
-    expect(response.header['access-token']).not_to be_nil # Tips: 一定時間内のリクエスト(batch_request)は半角スペースが入る
-    expect(response.header['expiry']).not_to be_nil # Tips: 同上
+    expect(response.header['access-token']).not_to be_nil # NOTE: 一定時間内のリクエスト(batch_request)は半角スペースが入る
+    expect(response.header['expiry']).not_to be_nil # NOTE: 同上
   end
   let(:expect_not_exist_auth_header) do
     expect(response.header['uid']).to be_nil

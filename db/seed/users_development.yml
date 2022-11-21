@@ -1,4 +1,4 @@
-# Tips: id = 連番
+# NOTE: id = 連番
 - id: 1
   code: 'code000000000000000000001'
   name: 'user1の氏名<b>１２３４５６７８９０１２３４５６７</b>'
@@ -146,8 +146,8 @@
   uid: 'unconfirmed_timeout@example.com'
   password: 'changepassword'
   confirmed_at: null
-  confirmation_token: 'token000000000000074' # Tips: INSERT時に値が変わる -> UPDATEで担保
-  confirmation_sent_at: '2000-01-01 12:34:56+0900' # Tips: INSERT時に現在日時になる -> 〃
+  confirmation_token: 'token000000000000074' # NOTE: INSERT時に値が変わる -> UPDATEで担保
+  confirmation_sent_at: '2000-01-01 12:34:56+0900' # NOTE: INSERT時に現在日時になる -> 〃
 - id: 75 # http://localhost:3000/users/auth/confirmation?config=default&confirmation_token=token000000000000075&redirect_url=http%3A%2F%2Flocalhost%3A5000%2Fusers%2Fsign_in
   code: 'code000000000000000000075'
   name: 'メールアドレス変更中のユーザー'

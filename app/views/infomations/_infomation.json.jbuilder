@@ -8,5 +8,5 @@ else
   json.body_present infomation.body.present?
 end
 json.started_at l(infomation.started_at, format: :json)
-json.ended_at infomation.ended_at.present? ? l(infomation.ended_at, format: :json) : nil
+json.ended_at l(infomation.ended_at, format: :json, default: nil)
 json.target infomation.target

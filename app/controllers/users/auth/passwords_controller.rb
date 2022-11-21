@@ -31,12 +31,12 @@ class Users::Auth::PasswordsController < DeviseTokenAuth::PasswordsController
     return render_create_error_missing_email if request.request_parameters.blank?
 
     resource = user_reset_password_token(params[:reset_password_token])
-    # Tips: 存在しないトークンか、期限切れの場合はエラーにする
+    # NOTE: 存在しないトークンか、期限切れの場合はエラーにする
     if (params[:reset_password_token].present? && resource.blank?) || (resource.present? && !resource.reset_password_period_valid?)
       return render './failure', locals: { alert: t('activerecord.errors.models.user.attributes.reset_password_token.invalid') }, status: :unprocessable_entity
     end
 
-    # Tips: メールアドレス変更中でなく、メール未確認の場合は、確認済みにする
+    # NOTE: メールアドレス変更中でなく、メール未確認の場合は、確認済みにする
     resource.update!(confirmed_at: Time.now.utc) if resource.present? && resource.unconfirmed_email.blank? && resource.confirmed_at.blank?
 
     super
@@ -64,7 +64,7 @@ class Users::Auth::PasswordsController < DeviseTokenAuth::PasswordsController
     render './users/auth/success', locals: { current_user: nil, notice: success_message('passwords', @email) }
   end
 
-  # Tips: 未使用
+  # NOTE: 未使用
   # def render_create_error(errors)
   #   # render json: { success: false, errors: errors }, status: 400
   #   render './failure', locals: { alert: errors }, status: :unprocessable_entity
@@ -82,7 +82,7 @@ class Users::Auth::PasswordsController < DeviseTokenAuth::PasswordsController
     render './failure', locals: { alert: t('activerecord.errors.models.user.attributes.reset_password_token.invalid') }, status: :unprocessable_entity
   end
 
-  # Tips: 未使用
+  # NOTE: 未使用
   # def render_update_error_password_not_required
   #   # render_error(422, I18n.t('devise_token_auth.passwords.password_not_required', provider: @resource.provider.humanize))
   #   alert = t('devise_token_auth.passwords.password_not_required', provider: @resource.provider.humanize)
@@ -103,9 +103,9 @@ class Users::Auth::PasswordsController < DeviseTokenAuth::PasswordsController
 
   def render_update_success
     # render json: { success: true, data: resource_data, message: I18n.t('devise_token_auth.passwords.successfully_updated') }
-    update_auth_header # Tips: 成功時のみ認証情報を返す
+    update_auth_header # NOTE: 成功時のみ認証情報を返す
 
-    # Tips: ロック中の場合は解除する
+    # NOTE: ロック中の場合は解除する
     @resource.update!(locked_at: nil, failed_attempts: 0) if @resource.locked_at.present?
 
     alert = @resource.unconfirmed_email.present? ? t('devise.failure.unconfirmed') : nil

@@ -12,12 +12,12 @@ mailer_from:
 
 ## ユーザー
 # ユーザー名の最小・最大文字数
-user_name_minimum: 2  # Tips: 2以上、(7+5?)以下 = "admin(#{n})", "user(#{n})"
-user_name_maximum: 12 # Tips: (7+5?)以上
+user_name_minimum: 2  # NOTE: 2以上、(7+5?)以下 = "admin(#{n})", "user(#{n})"
+user_name_maximum: 12 # NOTE: (7+5?)以上
 
 ## お知らせ
 # 一覧のデフォルト最大表示件数
-default_infomations_limit: 4 # Tips: 高速化の為（4以上、下記の合計値と一致）
+default_infomations_limit: 4 # NOTE: 高速化の為（4以上、下記の合計値と一致）
 test_infomations:
   all_forever_count: 1
   all_future_count: 1

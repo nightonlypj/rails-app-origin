@@ -42,7 +42,7 @@ class Users::Auth::SessionsController < DeviseTokenAuth::SessionsController
 
   protected
 
-  # Tips: 未使用
+  # NOTE: 未使用
   # def render_new_error
   #   # render_error(405, I18n.t('devise_token_auth.sessions.not_supported'))
   #   render './failure', locals: { alert: t('devise_token_auth.registrations.user_not_found') }, status: :not_found
@@ -81,7 +81,7 @@ class Users::Auth::SessionsController < DeviseTokenAuth::SessionsController
     render './users/auth/success', locals: { notice: t('devise.sessions.signed_out') }
   end
 
-  # Tips: 未使用
+  # NOTE: 未使用
   # def render_destroy_error
   #   # render_error(404, I18n.t('devise_token_auth.sessions.user_not_found'))
   #   render './failure', locals: { alert: t('devise_token_auth.sessions.user_not_found') }, status: :unprocessable_entity

@@ -27,7 +27,7 @@ module ApplicationHelper
     end
   end
 
-  # パスワードのバリデーション表示のクラス名を返却 # Tips: パスワードは再入力で復元しない為
+  # パスワードのバリデーション表示のクラス名を返却 # NOTE: パスワードは再入力で復元しない為
   def validate_password_class_name(enabled)
     enabled ? ' is-invalid' : ''
   end

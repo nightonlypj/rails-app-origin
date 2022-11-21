@@ -19,7 +19,7 @@ class Users::RegistrationsController < Devise::RegistrationsController
     ActiveRecord::Base.transaction do
       super
       flash[:alert] = resource.errors[:code].first if resource.errors[:code].present?
-      resource.send_confirmation_instructions if resource.errors.blank? # Tips: devise_token_auth導入後、送信されなくなった為
+      resource.send_confirmation_instructions if resource.errors.blank? # NOTE: devise_token_auth導入後、送信されなくなった為
     end
   end
 
@@ -30,9 +30,9 @@ class Users::RegistrationsController < Devise::RegistrationsController
 
   # PUT /users/update ユーザー情報変更(処理)
   def update
-    # Tips: 存在するメールアドレスの場合はエラーにする
+    # NOTE: 存在するメールアドレスの場合はエラーにする
     if resource.email != params[:user][:email] && User.find_by(email: params[:user][:email]).present?
-      resource.errors.add(:email, t('activerecord.errors.models.user.attributes.email.taken'))
+      resource.errors.add(:email, :taken)
       return render :edit
     end
 
@@ -42,7 +42,7 @@ class Users::RegistrationsController < Devise::RegistrationsController
   # POST /users/image/update ユーザー画像変更(処理)
   def image_update
     if params.blank? || params[:user].blank?
-      resource.errors.add(:image, t('errors.messages.image_update_blank'))
+      resource.errors.add(:image, :blank)
       return render :edit
     end
 

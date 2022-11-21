@@ -12,6 +12,12 @@ RSpec.describe User, type: :model do
       expect(user).to be_invalid
     end
   end
+  shared_examples_for 'Count' do |count|
+    it "#{count}が返却され、キャッシュされる" do
+      is_expected.to eq(count)
+      expect(cache).to eq(count)
+    end
+  end
 
   # コード
   # 前提条件
@@ -203,15 +209,8 @@ RSpec.describe User, type: :model do
       user.cache_infomation_unread_count = nil
       user.infomation_unread_count
     end
+    let(:cache) { user.cache_infomation_unread_count }
 
-    # テスト内容
-    shared_examples_for 'Count' do |count|
-      it "件数(#{count})" do
-        is_expected.to eq(count)
-      end
-    end
-
-    # テストケース
     shared_examples_for '[*]0件' do
       include_context 'お知らせ一覧作成', 0, 0, 0, 0
       it_behaves_like 'Count', 0

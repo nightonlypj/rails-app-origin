@@ -1,4 +1,4 @@
-# Tips: id = 連番
+# NOTE: id = 連番
 - id: 1
   name: 'admin'
   email: 'admin@example.com'

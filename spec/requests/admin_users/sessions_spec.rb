@@ -8,7 +8,7 @@ RSpec.describe 'AdminUsers::Sessions', type: :request do
     end
   end
   shared_examples_for 'ToError' do |error_msg|
-    it 'HTTPステータスが200。対象のエラーメッセージが含まれる' do # Tips: 再入力
+    it 'HTTPステータスが200。対象のエラーメッセージが含まれる' do # NOTE: 再入力
       is_expected.to eq(200)
       expect(response.body).to include(I18n.t(error_msg))
     end

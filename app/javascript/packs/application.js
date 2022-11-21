@@ -44,7 +44,7 @@ function updateDisplay(autoUpdate = false) {
     const clientWidth = document.body.clientWidth
 
     // 左メニュー表示切り替え
-    if (autoUpdate) leftMenuDisplay = clientWidth >= 1264 // Tips: md(Medium)以下はメニューを閉じる
+    if (autoUpdate) leftMenuDisplay = clientWidth >= 1264 // NOTE: md(Medium)以下はメニューを閉じる
     if (debug) console.log('#left_menu.display: ' + autoUpdate + ' + (' + clientWidth + ' >= 1264) = ' + leftMenuDisplay)
     $('#left_menu').css('display', leftMenuDisplay ? 'block' : 'none')
 
@@ -57,6 +57,6 @@ function updateDisplay(autoUpdate = false) {
     const appNameWidth = areaWidth - navLeftWidth - appLogoWidth - navRightWidth - marginWidth
     if (debug) console.log('#app_name.max-width: ' + areaWidth + ' - ' + navLeftWidth + ' - ' + appLogoWidth + ' - ' + navRightWidth + ' - ' + marginWidth + ' = ' + appNameWidth)
     $('#app_name').css('max-width', Math.floor(appNameWidth) + 'px')
-    $('#main_contents').css('min-width', ((clientWidth < 600 ? Math.floor(clientWidth) : 600) - 4) + 'px') // Tips: xs(Extra small)の幅まで
+    $('#main_contents').css('min-width', ((clientWidth < 600 ? Math.floor(clientWidth) : 600) - 4) + 'px') // NOTE: xs(Extra small)の幅まで
     $('#footer').css('min-width', Math.floor(areaWidth) + 'px')
 }

@@ -40,7 +40,7 @@ RSpec.describe 'Infomations', type: :request do
           expect(data['summary']).to eq(infomation.summary) # 概要
           expect(data['body_present']).to eq(infomation.body.present?) # 本文
           expect(data['started_at']).to eq(I18n.l(infomation.started_at, format: :json)) # 掲載開始日
-          expect(data['ended_at']).to eq(infomation.ended_at.present? ? I18n.l(infomation.ended_at, format: :json) : nil) # 掲載終了日
+          expect(data['ended_at']).to eq(I18n.l(infomation.ended_at, format: :json, default: nil)) # 掲載終了日
           expect(data['target']).to eq(infomation.target) # 対象
         end
       end
@@ -78,14 +78,14 @@ RSpec.describe 'Infomations', type: :request do
       it_behaves_like '[未ログイン]大切なお知らせがある'
     end
     context 'ログイン中' do
-      let(:infomations) { @all_important_infomations } # Tips: APIは未ログイン扱いの為、全員のしか見れない
+      let(:infomations) { @all_important_infomations } # NOTE: APIは未ログイン扱いの為、全員のしか見れない
       include_context 'ログイン処理'
       include_context 'お知らせ一覧作成', 1, 1, 1, 1
       it_behaves_like '[*]大切なお知らせがない'
       it_behaves_like '[ログイン中/削除予約済み]大切なお知らせがある'
     end
     context 'ログイン中（削除予約済み）' do
-      let(:infomations) { @all_important_infomations } # Tips: APIは未ログイン扱いの為、全員のしか見れない
+      let(:infomations) { @all_important_infomations } # NOTE: APIは未ログイン扱いの為、全員のしか見れない
       include_context 'ログイン処理', :destroy_reserved
       include_context 'お知らせ一覧作成', 1, 1, 1, 1
       it_behaves_like '[*]大切なお知らせがない'

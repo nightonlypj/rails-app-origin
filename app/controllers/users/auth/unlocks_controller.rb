@@ -7,7 +7,7 @@ class Users::Auth::UnlocksController < DeviseTokenAuth::UnlocksController
   prepend_before_action :not_acceptable_response_not_api_accept, only: %i[create]
   prepend_before_action :not_acceptable_response_not_html_accept, only: %i[show]
   prepend_before_action :update_request_uid_header
-  before_action :validate_redirect_url_param, only: %i[create show] # Tips: 追加
+  before_action :validate_redirect_url_param, only: %i[create show] # NOTE: 追加
 
   # POST /users/auth/unlock(.json) アカウントロック解除API[メール再送](処理)
   def create
@@ -18,7 +18,7 @@ class Users::Auth::UnlocksController < DeviseTokenAuth::UnlocksController
     @email = get_case_insensitive_field_from_resource_params(:email)
     @resource = find_resource(:email, @email)
 
-    # Tips: 未ロックの場合はエラーにする
+    # NOTE: 未ロックの場合はエラーにする
     if @resource.present? && !@resource.access_locked?
       return render './failure', locals: { alert: t('errors.messages.not_locked') }, status: :unprocessable_entity
     end
@@ -29,7 +29,7 @@ class Users::Auth::UnlocksController < DeviseTokenAuth::UnlocksController
       @resource.send_unlock_instructions(
         email: @email,
         provider: 'email',
-        redirect_url: @redirect_url, # Tips: 追加
+        redirect_url: @redirect_url, # NOTE: 追加
         client_config: params[:config_name]
       )
 
@@ -48,7 +48,7 @@ class Users::Auth::UnlocksController < DeviseTokenAuth::UnlocksController
     @resource = resource_class.unlock_access_by_token(params[:unlock_token])
 
     if @resource.persisted?
-      # token = @resource.create_token # Tips: 削除
+      # token = @resource.create_token # NOTE: 削除
       @resource.save!
       yield @resource if block_given?
 

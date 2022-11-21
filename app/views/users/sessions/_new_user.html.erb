@@ -1,12 +1,12 @@
 <%= form_with(model: resource, url: create_user_session_path, html: { method: :post, novalidate: true, autocomplete: 'on' }, local: true) do |form| %>
   <div class="form-outline mb-3">
     <%= form.email_field :email, autocomplete: 'email', class: 'form-control' %>
-    <%= form.label 'メールアドレス', class: 'form-label', for: 'user_email' %>
+    <%= form.label :email, class: 'form-label', for: 'user_email' %>
   </div>
 
   <div class="form-outline mb-3">
     <%= form.password_field :password, autocomplete: 'current-password', class: 'form-control' %>
-    <%= form.label 'パスワード', class: 'form-label', for: 'user_password' %>
+    <%= form.label :password, class: 'form-label', for: 'user_password' %>
   </div>
 
 <% if devise_mapping.rememberable? %>

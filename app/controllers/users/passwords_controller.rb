@@ -23,7 +23,7 @@ class Users::PasswordsController < Devise::PasswordsController
     resource = user_reset_password_token(resource_params[:reset_password_token])
     return redirect_to new_user_password_path, alert: invalid_token_message unless resource&.reset_password_period_valid?
 
-    # Tips: メールアドレス変更中でなく、メール未確認の場合は、確認済みにする
+    # NOTE: メールアドレス変更中でなく、メール未確認の場合は、確認済みにする
     resource.update!(confirmed_at: Time.now.utc) if resource.unconfirmed_email.blank? && resource.confirmed_at.blank?
 
     super

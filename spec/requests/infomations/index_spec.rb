@@ -92,7 +92,7 @@ RSpec.describe 'Infomations', type: :request do
           if infomation.body.present?
             expect(response.body).to include("\"#{infomation_path(infomation)}\"") # お知らせ詳細のパス
           else
-            expect(response.body).not_to include("\"#{infomation_path(infomation)}\"") # Tips: 本文がない場合は遷移しない
+            expect(response.body).not_to include("\"#{infomation_path(infomation)}\"") # NOTE: 本文がない場合は遷移しない
           end
           expect(response.body).to include(I18n.l(infomation.started_at.to_date)) # 掲載開始日
         end
@@ -118,7 +118,7 @@ RSpec.describe 'Infomations', type: :request do
           expect(data['summary']).to eq(infomation.summary) # 概要
           expect(data['body_present']).to eq(infomation.body.present?) # 本文
           expect(data['started_at']).to eq(I18n.l(infomation.started_at, format: :json)) # 掲載開始日
-          expect(data['ended_at']).to eq(infomation.ended_at.present? ? I18n.l(infomation.ended_at, format: :json) : nil) # 掲載終了日
+          expect(data['ended_at']).to eq(I18n.l(infomation.ended_at, format: :json, default: nil)) # 掲載終了日
           expect(data['target']).to eq(infomation.target) # 対象
         end
       end
@@ -210,7 +210,7 @@ RSpec.describe 'Infomations', type: :request do
       it_behaves_like 'リスト表示', 1
       it_behaves_like 'リスト表示', 2
       it_behaves_like 'リダイレクト', 3, 2
-      # it_behaves_like 'ToOK(json)', 1 # Tips: APIは未ログイン扱いの為
+      # it_behaves_like 'ToOK(json)', 1 # NOTE: APIは未ログイン扱いの為
       # it_behaves_like 'ToOK(json)', 2
       # it_behaves_like 'リスト表示(json)', 1
       # it_behaves_like 'リスト表示(json)', 2
@@ -241,14 +241,14 @@ RSpec.describe 'Infomations', type: :request do
       it_behaves_like '[未ログイン]お知らせが最大表示数より多い'
     end
     context 'ログイン中' do
-      let(:infomations) { @all_infomations } # Tips: APIは未ログイン扱いの為、全員のしか見れない
+      let(:infomations) { @all_infomations } # NOTE: APIは未ログイン扱いの為、全員のしか見れない
       include_context 'ログイン処理'
       it_behaves_like '[*]お知らせがない'
       it_behaves_like '[ログイン中/削除予約済み]お知らせが最大表示数と同じ'
       it_behaves_like '[ログイン中/削除予約済み]お知らせが最大表示数より多い'
     end
     context 'ログイン中（削除予約済み）' do
-      let(:infomations) { @all_infomations } # Tips: APIは未ログイン扱いの為、全員のしか見れない
+      let(:infomations) { @all_infomations } # NOTE: APIは未ログイン扱いの為、全員のしか見れない
       include_context 'ログイン処理', :destroy_reserved
       it_behaves_like '[*]お知らせがない'
       it_behaves_like '[ログイン中/削除予約済み]お知らせが最大表示数と同じ'

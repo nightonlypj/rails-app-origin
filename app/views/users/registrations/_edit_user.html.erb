@@ -3,7 +3,7 @@
 <%= form_with(model: resource, url: update_user_registration_path, html: { method: :put, novalidate: true, autocomplete: 'off' }, local: true) do |form| %>
   <div class="form-outline<%= input_size_class_name(resource, :name) %>">
     <%= form.text_field :name, autocomplete: 'off', class: "form-control#{validate_class_name(validate_enabled, resource, :name)}" %>
-    <%= form.label '氏名', class: 'form-label', for: 'user_name' %>
+    <%= form.label :name, class: 'form-label', for: 'user_name' %>
     <%= render 'users/shared/field_error_messages', messages: resource.errors[:name] %>
   </div>
 
@@ -16,25 +16,25 @@
 
   <div class="form-outline<%= input_size_class_name(resource, :email) %>">
     <%= form.email_field :email, autocomplete: 'off', class: "form-control#{validate_class_name(validate_enabled, resource, :email)}" %>
-    <%= form.label 'メールアドレス', class: 'form-label', for: 'user_email' %>
+    <%= form.label :email, class: 'form-label', for: 'user_email' %>
     <%= render 'users/shared/field_error_messages', messages: resource.errors[:email] %>
   </div>
 
   <div class="form-outline<%= input_size_class_name(resource, :password) %>">
     <%= form.password_field :password, autocomplete: 'new-password', class: "form-control#{validate_class_name(validate_password_enabled, resource, :password, :password_confirmation)}" %>
-    <%= form.label "パスワード#{" [#{@minimum_password_length}文字以上]" if @minimum_password_length} (変更する場合のみ)", class: 'form-label', for: 'user_password' %>
+    <%= form.label :password, "パスワード#{" [#{@minimum_password_length}文字以上]" if @minimum_password_length} (変更する場合のみ)", class: 'form-label', for: 'user_password' %>
     <%= render 'users/shared/field_error_messages', messages: resource.errors[:password] %>
   </div>
 
   <div class="form-outline<%= input_size_class_name(resource, :password_confirmation) %>">
     <%= form.password_field :password_confirmation, autocomplete: 'new-password', class: "form-control#{validate_class_name(validate_password_enabled, resource, :password_confirmation, :password)}" %>
-    <%= form.label 'パスワード(確認) (変更する場合のみ)', class: 'form-label', for: 'user_password_confirmation' %>
+    <%= form.label :password_confirmation, 'パスワード(確認) (変更する場合のみ)', class: 'form-label', for: 'user_password_confirmation' %>
     <%= render 'users/shared/field_error_messages', messages: resource.errors[:password_confirmation] %>
   </div>
 
   <div class="form-outline<%= input_size_class_name(resource, :current_password) %>">
     <%= form.password_field :current_password, autocomplete: 'new-password', class: "form-control#{validate_password_class_name(validate_enabled)}" %>
-    <%= form.label '現在のパスワード', class: 'form-label', for: 'user_current_password' %>
+    <%= form.label :current_password, class: 'form-label', for: 'user_current_password' %>
     <%= render 'users/shared/field_error_messages', messages: resource.errors[:current_password] %>
   </div>
 

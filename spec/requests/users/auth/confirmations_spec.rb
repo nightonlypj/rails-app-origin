@@ -104,7 +104,7 @@ RSpec.describe 'Users::Auth::Confirmations', type: :request do
       # it_behaves_like 'ToMsg', Array, 1, 'devise_token_auth.confirmations.missing_email', nil, nil, nil
       it_behaves_like 'ToMsg', NilClass, 0, nil, nil, 'errors.messages.validate_confirmation_params', nil
     end
-    shared_examples_for '[*]有効なパラメータ（メール未確認）' do # Tips: ログイン中も出来ても良さそう
+    shared_examples_for '[*]有効なパラメータ（メール未確認）' do # NOTE: ログイン中も出来ても良さそう
       let(:send_user)  { send_user_unconfirmed }
       let(:attributes) { valid_attributes }
       it_behaves_like 'OK'
@@ -122,7 +122,7 @@ RSpec.describe 'Users::Auth::Confirmations', type: :request do
       # it_behaves_like 'ToMsg', NilClass, 0, nil, 'devise_token_auth.confirmations.sended', nil, nil
       it_behaves_like 'ToMsg', NilClass, 0, nil, nil, 'errors.messages.already_confirmed', nil
     end
-    shared_examples_for '[*]有効なパラメータ（メールアドレス変更中）' do # Tips: ログイン中でも再送したい
+    shared_examples_for '[*]有効なパラメータ（メールアドレス変更中）' do # NOTE: ログイン中でも再送したい
       let(:send_user)  { send_user_email_changed }
       let(:attributes) { valid_attributes }
       it_behaves_like 'OK'
@@ -252,7 +252,7 @@ RSpec.describe 'Users::Auth::Confirmations', type: :request do
       let(:subject_format) { nil }
       it '[リダイレクトURLがある]指定URL（成功パラメータ）にリダイレクトする' do
         @redirect_url = FRONT_SITE_URL
-        # is_expected.to redirect_to(/^#{@redirect_url}\?.*account_confirmation_success=true.*$/) # Tips: ログイン中はaccess-token等も入る
+        # is_expected.to redirect_to(/^#{@redirect_url}\?.*account_confirmation_success=true.*$/) # NOTE: ログイン中はaccess-token等も入る
         param = { account_confirmation_success: true }
         param[:alert] = I18n.t(alert) if alert.present?
         param[:notice] = I18n.t(notice) if notice.present?
@@ -260,12 +260,12 @@ RSpec.describe 'Users::Auth::Confirmations', type: :request do
       end
       it '[リダイレクトURLがない]成功ページにリダイレクトする' do
         @redirect_url = nil
-        # is_expected.to redirect_to(/^#{not_redirect_url}\?.*account_confirmation_success=true.*$/) # Tips: ログイン中はaccess-token等も入る
+        # is_expected.to redirect_to(/^#{not_redirect_url}\?.*account_confirmation_success=true.*$/) # NOTE: ログイン中はaccess-token等も入る
         is_expected.to redirect_to(Settings['confirmation_success_url_not'])
       end
       it '[リダイレクトURLがホワイトリストにない]成功ページにリダイレクトする' do
         @redirect_url = BAD_SITE_URL
-        # is_expected.to redirect_to(/^#{@redirect_url}\?.*account_confirmation_success=true.*$/) # Tips: ログイン中はaccess-token等も入る
+        # is_expected.to redirect_to(/^#{@redirect_url}\?.*account_confirmation_success=true.*$/) # NOTE: ログイン中はaccess-token等も入る
         is_expected.to redirect_to(Settings['confirmation_success_url_bad'])
       end
     end
@@ -280,12 +280,12 @@ RSpec.describe 'Users::Auth::Confirmations', type: :request do
       end
       it '[リダイレクトURLがない]エラーページにリダイレクトする' do
         @redirect_url = nil
-        # is_expected.to redirect_to(/^#{not_redirect_url}\?.*account_confirmation_success=true.*$/) # Tips: ログイン中はaccess-token等も入る
+        # is_expected.to redirect_to(/^#{not_redirect_url}\?.*account_confirmation_success=true.*$/) # NOTE: ログイン中はaccess-token等も入る
         is_expected.to redirect_to(Settings['confirmation_error_url_not'])
       end
       it '[リダイレクトURLがホワイトリストにない]エラーページにリダイレクトする' do
         @redirect_url = BAD_SITE_URL
-        # is_expected.to redirect_to(/^#{BAD_SITE_URL}\?.*account_confirmation_success=true.*$/) # Tips: ログイン中はaccess-token等も入る
+        # is_expected.to redirect_to(/^#{BAD_SITE_URL}\?.*account_confirmation_success=true.*$/) # NOTE: ログイン中はaccess-token等も入る
         is_expected.to redirect_to(Settings['confirmation_error_url_bad'])
       end
     end
@@ -326,20 +326,20 @@ RSpec.describe 'Users::Auth::Confirmations', type: :request do
       it_behaves_like 'OK'
       it_behaves_like 'ToOK', nil, 'devise.confirmations.confirmed'
     end
-    shared_examples_for '[ログイン中][期限内]確認日時がない（未確認）' do # Tips: ログイン中も出来ても良さそう
+    shared_examples_for '[ログイン中][期限内]確認日時がない（未確認）' do # NOTE: ログイン中も出来ても良さそう
       include_context 'メールアドレス確認トークン作成', false, nil
       it_behaves_like 'OK'
       it_behaves_like 'ToOK', nil, 'devise.confirmations.confirmed'
     end
     shared_examples_for '[*][期限切れ]確認日時がない（未確認）' do
       include_context 'メールアドレス確認トークン作成', false, nil
-      # it_behaves_like 'NG' # Tips: ActionController::RoutingError: Not Found
+      # it_behaves_like 'NG' # NOTE: ActionController::RoutingError: Not Found
       it_behaves_like 'NG'
       it_behaves_like 'ToNG', 'activerecord.errors.models.user.attributes.confirmation_token.invalid', nil
     end
     shared_examples_for '[*][存在しない/ない/空]確認日時がない（未確認）' do
-      # it_behaves_like 'NG' # Tips: ActionController::RoutingError: Not Found
-      # it_behaves_like 'NG' # Tips: トークンが存在しない為、確認日時がない
+      # it_behaves_like 'NG' # NOTE: ActionController::RoutingError: Not Found
+      # it_behaves_like 'NG' # NOTE: トークンが存在しない為、確認日時がない
       it_behaves_like 'ToNG', 'activerecord.errors.models.user.attributes.confirmation_token.invalid', nil
     end
     shared_examples_for '[未ログイン][期限内]確認日時が確認送信日時より前（未確認）' do
@@ -347,26 +347,26 @@ RSpec.describe 'Users::Auth::Confirmations', type: :request do
       it_behaves_like 'OK'
       it_behaves_like 'ToOK', nil, 'devise.confirmations.confirmed'
     end
-    shared_examples_for '[ログイン中][期限内]確認日時が確認送信日時より前（未確認）' do # Tips: ログイン中も出来ても良さそう
+    shared_examples_for '[ログイン中][期限内]確認日時が確認送信日時より前（未確認）' do # NOTE: ログイン中も出来ても良さそう
       include_context 'メールアドレス確認トークン作成', true, true
       it_behaves_like 'OK'
       it_behaves_like 'ToOK', nil, 'devise.confirmations.confirmed'
     end
     shared_examples_for '[*][期限切れ]確認日時が確認送信日時より前（未確認）' do
       include_context 'メールアドレス確認トークン作成', true, true
-      # it_behaves_like 'NG' # Tips: ActionController::RoutingError: Not Found
+      # it_behaves_like 'NG' # NOTE: ActionController::RoutingError: Not Found
       it_behaves_like 'NG'
       it_behaves_like 'ToNG', 'activerecord.errors.models.user.attributes.confirmation_token.invalid', nil
     end
     shared_examples_for '[*][期限内]確認日時が確認送信日時より後（確認済み）' do
       include_context 'メールアドレス確認トークン作成', true, false
-      # it_behaves_like 'NG' # Tips: ActionController::RoutingError: Not Found
+      # it_behaves_like 'NG' # NOTE: ActionController::RoutingError: Not Found
       it_behaves_like 'NG'
       it_behaves_like 'ToOK', 'errors.messages.already_confirmed', nil
     end
     shared_examples_for '[*][期限切れ]確認日時が確認送信日時より後（確認済み）' do
       include_context 'メールアドレス確認トークン作成', true, false
-      # it_behaves_like 'NG' # Tips: ActionController::RoutingError: Not Found
+      # it_behaves_like 'NG' # NOTE: ActionController::RoutingError: Not Found
       it_behaves_like 'NG'
       it_behaves_like 'ToOK', 'errors.messages.already_confirmed', nil
     end
@@ -392,20 +392,20 @@ RSpec.describe 'Users::Auth::Confirmations', type: :request do
     shared_examples_for '[*]トークンが存在しない' do
       let(:confirmation_token) { NOT_TOKEN }
       it_behaves_like '[*][存在しない/ない/空]確認日時がない（未確認）'
-      # it_behaves_like '[*][存在しない]確認日時が確認送信日時より前（未確認）' # Tips: トークンが存在しない為、確認日時がない
-      # it_behaves_like '[*][存在しない]確認日時が確認送信日時より後（確認済み）' # Tips: トークンが存在しない為、確認日時がない
+      # it_behaves_like '[*][存在しない]確認日時が確認送信日時より前（未確認）' # NOTE: トークンが存在しない為、確認日時がない
+      # it_behaves_like '[*][存在しない]確認日時が確認送信日時より後（確認済み）' # NOTE: トークンが存在しない為、確認日時がない
     end
     shared_examples_for '[*]トークンがない' do
       let(:confirmation_token) { nil }
       it_behaves_like '[*][存在しない/ない/空]確認日時がない（未確認）'
-      # it_behaves_like '[*][ない]確認日時が確認送信日時より前（未確認）' # Tips: トークンが存在しない為、確認日時がない
-      # it_behaves_like '[*][ない]確認日時が確認送信日時より後（確認済み）' # Tips: トークンが存在しない為、確認日時がない
+      # it_behaves_like '[*][ない]確認日時が確認送信日時より前（未確認）' # NOTE: トークンが存在しない為、確認日時がない
+      # it_behaves_like '[*][ない]確認日時が確認送信日時より後（確認済み）' # NOTE: トークンが存在しない為、確認日時がない
     end
     shared_examples_for '[*]トークンが空' do
       let(:confirmation_token) { '' }
       it_behaves_like '[*][存在しない/ない/空]確認日時がない（未確認）'
-      # it_behaves_like '[*][空]確認日時が確認送信日時より前（未確認）' # Tips: トークンが存在しない為、確認日時がない
-      # it_behaves_like '[*][空]確認日時が確認送信日時より後（確認済み）' # Tips: トークンが存在しない為、確認日時がない
+      # it_behaves_like '[*][空]確認日時が確認送信日時より前（未確認）' # NOTE: トークンが存在しない為、確認日時がない
+      # it_behaves_like '[*][空]確認日時が確認送信日時より後（確認済み）' # NOTE: トークンが存在しない為、確認日時がない
     end
 
     context '未ログイン' do
