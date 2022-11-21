@@ -237,7 +237,7 @@ RSpec.describe ApplicationHelper, type: :helper do
     end
   end
 
-  # パスワードのバリデーション表示のクラス名を返却 # Tips: パスワードは再入力で復元しない為
+  # パスワードのバリデーション表示のクラス名を返却 # NOTE: パスワードは再入力で復元しない為
   # 前提条件
   #   なし
   # テストパターン
@@ -268,7 +268,7 @@ RSpec.describe ApplicationHelper, type: :helper do
 
     # テストケース
     context 'errorsなし' do
-      let(:key) { :not } # Tips: errorsなしの為、keyが存在する事はない
+      let(:key) { :not } # NOTE: errorsなしの為、keyが存在する事はない
       it_behaves_like 'value', ' mb-3'
     end
     context 'errorsあり' do

@@ -3,55 +3,55 @@ ja:
     sessions:
       not_confirmed: 'メールアドレスの確認が必要です。メールが届いていない場合は[メールアドレス確認]をしてください。' # "'%{email}' に確認用のメールを送信しました。メール内の説明を読み、アカウントの有効化をしてください。"
       bad_credentials: 'パラメータが指定されていません。' # "ログイン用の認証情報が正しくありません。再度お試しください。"
-      # not_supported: "/sign_in に GET はサポートされていません。POST をお使いください。" # Tips: 未使用(routesなしに変更済み)
+      # not_supported: "/sign_in に GET はサポートされていません。POST をお使いください。" # NOTE: 未使用(routesなしに変更済み)
       user_not_found: '既にログアウトされています。' # "ユーザーが見つからないか、ログインしていません。"
-      unlock_redirect_url_blank: 'unlock_redirect_urlが指定されていません。' # Tips: 追加
-      unlock_redirect_url_not_allowed: 'unlock_redirect_urlが許可されていません。' # Tips: 追加
+      unlock_redirect_url_blank: 'unlock_redirect_urlが指定されていません。' # NOTE: 追加
+      unlock_redirect_url_not_allowed: 'unlock_redirect_urlが許可されていません。' # NOTE: 追加
     token_validations:
       invalid: 'セッションがタイムアウトしました。ログインし直してください。' # "ログイン用の認証情報が正しくありません。"
     registrations:
       missing_confirm_success_url: 'confirm_success_urlが指定されていません。' # "'confirm_success_url' パラメータが与えられていません。"
       redirect_url_not_allowed: 'confirm_success_urlが許可されていません。' # "'%{redirect_url}' へのリダイレクトは許可されていません。"
-      # email_already_exists: "'%{email}' のアカウントはすでに存在しています。" # Tips: 未使用
+      # email_already_exists: "'%{email}' のアカウントはすでに存在しています。" # NOTE: 未使用
       account_with_uid_destroyed: 'アカウントを削除しました。またのご利用をお待ちしております。' # "'%{uid}' のアカウントは削除されました。"
-      # account_to_destroy_not_found: 'ログインしてください。' # Tips: devise.failure.unauthenticatedに変更 # '削除するアカウントが見つかりません。'
-      # user_not_found: 'ログインしてください。' # Tips: devise.failure.unauthenticatedに変更 # "ユーザーが見つかりません。"
-      confirm_redirect_url_blank: 'confirm_redirect_urlが指定されていません。' # Tips: 追加
-      confirm_redirect_url_not_allowed: 'confirm_redirect_urlが許可されていません。' # Tips: 追加
+      # account_to_destroy_not_found: 'ログインしてください。' # NOTE: devise.failure.unauthenticatedに変更 # '削除するアカウントが見つかりません。'
+      # user_not_found: 'ログインしてください。' # NOTE: devise.failure.unauthenticatedに変更 # "ユーザーが見つかりません。"
+      confirm_redirect_url_blank: 'confirm_redirect_urlが指定されていません。' # NOTE: 追加
+      confirm_redirect_url_not_allowed: 'confirm_redirect_urlが許可されていません。' # NOTE: 追加
     omniauth:
       not_allowed_redirect_url: 'redirect_urlが許可されていません。' # "'%{redirect_url}' へのリダイレクトは許可されていません。"
     passwords:
-      # missing_email: 'メールアドレスを入力してください。' # Tips: errors.messages.validate_password_paramsに変更 # "メールアドレスが与えられていません。"
+      # missing_email: 'メールアドレスを入力してください。' # NOTE: errors.messages.validate_password_paramsに変更 # "メールアドレスが与えられていません。"
       missing_redirect_url: 'redirect_urlが指定されていません。' # "リダイレクト URL が与えられていません。"
       not_allowed_redirect_url: 'redirect_urlが許可されていません。' # "'%{redirect_url}' へのリダイレクトは許可されていません。"
       sended: 'パスワード再設定のメールを送信しました。メールを確認してください。' # "'%{email}' にパスワードリセットの案内が送信されました。"
       user_not_found: 'ユーザーが見つかりません。' # "メールアドレス '%{email}' のユーザーが見つかりません。"
       password_not_required: '%{provider}のログインを利用してください。' # "このアカウントはパスワードを要求していません。'%{provider}' を利用してログインしてください。"
-      # missing_passwords: 'パスワードまたはパスワード確認を入力してください。' # Tips: バリデーションとdevise.failure.already_authenticatedに変更 # "'Password', 'Password confirmation' パラメータが与えられていません。"
+      # missing_passwords: 'パスワードまたはパスワード確認を入力してください。' # NOTE: バリデーションとdevise.failure.already_authenticatedに変更 # "'Password', 'Password confirmation' パラメータが与えられていません。"
       successfully_updated: 'パスワードを変更しました。' # "パスワードの更新に成功しました。"
-    confirmations: # Tips: 追加
-      missing_confirm_success_url: 'redirect_urlが指定されていません。' # Tips: 追加 # "'confirm_success_url' パラメータが与えられていません。"
-      redirect_url_not_allowed: 'redirect_urlが許可されていません。' # Tips: 追加 # "'%{redirect_url}' へのリダイレクトは許可されていません。"
-      # missing_email: 'メールアドレスを入力してください。' # Tips: errors.messages.validate_confirmation_paramsに変更 # "メールアドレスが与えられていません。"
-      sended_paranoid: 'ユーザーが見つかりません。' # Tips: user_not_foundで、config.paranoid = trueの場合
+    confirmations: # NOTE: 追加
+      missing_confirm_success_url: 'redirect_urlが指定されていません。' # NOTE: 追加 # "'confirm_success_url' パラメータが与えられていません。"
+      redirect_url_not_allowed: 'redirect_urlが許可されていません。' # NOTE: 追加 # "'%{redirect_url}' へのリダイレクトは許可されていません。"
+      # missing_email: 'メールアドレスを入力してください。' # NOTE: errors.messages.validate_confirmation_paramsに変更 # "メールアドレスが与えられていません。"
+      sended_paranoid: 'ユーザーが見つかりません。' # NOTE: user_not_foundで、config.paranoid = trueの場合
       user_not_found: 'ユーザーが見つかりません。'
       sended: 'メールアドレスの確認メールを送信しました。メールを確認してください。' # "'%{email}' にメールアドレス確認の案内が送信されました。"
-    unlocks: # Tips: 追加
+    unlocks: # NOTE: 追加
       missing_redirect_url: 'redirect_urlが指定されていません。' # "リダイレクト URL が与えられていません。"
       not_allowed_redirect_url: 'redirect_urlが許可されていません。' # "'%{redirect_url}' へのリダイレクトは許可されていません。"
-      # missing_email: 'メールアドレスを入力してください。' # Tips: errors.messages.validate_unlock_paramsに変更 # 'メールアドレスが与えられていません。'
-      sended_paranoid: 'ユーザーが見つかりません。' # Tips: user_not_foundで、config.paranoid = trueの場合
+      # missing_email: 'メールアドレスを入力してください。' # NOTE: errors.messages.validate_unlock_paramsに変更 # 'メールアドレスが与えられていません。'
+      sended_paranoid: 'ユーザーが見つかりません。' # NOTE: user_not_foundで、config.paranoid = trueの場合
       user_not_found: 'ユーザーが見つかりません。'
       sended: 'アカウントロック解除のメールを送信しました。メールを確認してください。' # "'%{email}' にアカウントロック解除の案内が送信されました。"
   errors:
     messages:
       validate_sign_up_params: 'パラメータが指定されていません。' # "リクエストボディに適切なアカウント新規登録データを送信してください。"
       validate_account_update_params: 'パラメータが指定されていません。' # "リクエストボディに適切なアカウント更新のデータを送信してください。"
-      validate_password_params: 'パラメータが指定されていません。' # Tips: 追加
-      validate_confirmation_params: 'パラメータが指定されていません。' # Tips: 追加
-      validate_unlock_params: 'パラメータが指定されていません。' # Tips: 追加
+      validate_password_params: 'パラメータが指定されていません。' # NOTE: 追加
+      validate_confirmation_params: 'パラメータが指定されていません。' # NOTE: 追加
+      validate_unlock_params: 'パラメータが指定されていません。' # NOTE: 追加
       not_email: '形式が正しくありません。' # "は有効ではありません"
 #  devise:
-#    mailer: # Tips: 画面(JSON)で使用されている
+#    mailer: # NOTE: 画面(JSON)で使用されている
 #      unlock_instructions:
-#        account_lock_msg: 'アカウントがロックされています。メールが届いていない場合は[アカウントロック解除]をしてください。' # Tips: devise.failure.lockedに変更 # "連続してログインに失敗したため、あなたのアカウントはロックされました。"
+#        account_lock_msg: 'アカウントがロックされています。メールが届いていない場合は[アカウントロック解除]をしてください。' # NOTE: devise.failure.lockedに変更 # "連続してログインに失敗したため、あなたのアカウントはロックされました。"

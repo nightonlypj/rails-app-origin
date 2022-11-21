@@ -3,7 +3,7 @@ class ApplicationController < ActionController::Base
 
   private
 
-  # リクエストのuidヘッダを[id+36**2](36進数)からuidに変更 # Tips: uidがメールアドレスだと、メールアドレス確認後に認証に失敗する為
+  # リクエストのuidヘッダを[id+36**2](36進数)からuidに変更 # NOTE: uidがメールアドレスだと、メールアドレス確認後に認証に失敗する為
   def update_request_uid_header
     return if request.headers['uid'].blank?
 
@@ -124,7 +124,7 @@ class ApplicationController < ActionController::Base
   def create_unique_code(model, key, logger_message)
     try_count = 1
     loop do
-      code = Digest::MD5.hexdigest(SecureRandom.uuid).to_i(16).to_s(36).rjust(25, '0') # Tips: 16進数32桁を36進数25桁に変換
+      code = Digest::MD5.hexdigest(SecureRandom.uuid).to_i(16).to_s(36).rjust(25, '0') # NOTE: 16進数32桁を36進数25桁に変換
       return code if model.where(key => code).blank?
 
       if try_count < 10

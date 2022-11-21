@@ -13,7 +13,7 @@ default: &default
   adapter: mysql2
   encoding: utf8
   collation: utf8_bin
-  # encoding: utf8mb4 # Tips: MySQL 5.7.7以降でないとmigrateに失敗する
+  # encoding: utf8mb4 # NOTE: MySQL 5.7.7以降でないとmigrateに失敗する
   # collation: utf8mb4_bin
   pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
   # username: rails_app

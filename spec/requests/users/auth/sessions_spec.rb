@@ -114,10 +114,10 @@ RSpec.describe 'Users::Auth::Sessions', type: :request do
     end
     shared_examples_for '[APIログイン中/削除予約済み]パラメータなし' do
       let(:attributes) { nil }
-      # it_behaves_like 'ToNG', 401 # Tips: フロントと不一致で再ログイン出来なくなる為
+      # it_behaves_like 'ToNG', 401 # NOTE: フロントと不一致で再ログイン出来なくなる為
       it_behaves_like 'ToNG', 400
       # it_behaves_like 'ToMsg', 'devise_token_auth.sessions.bad_credentials', nil, nil
-      # it_behaves_like 'ToMsg', nil, 'devise.failure.already_authenticated', nil # Tips: フロントと不一致で再ログイン出来なくなる為
+      # it_behaves_like 'ToMsg', nil, 'devise.failure.already_authenticated', nil # NOTE: フロントと不一致で再ログイン出来なくなる為
       it_behaves_like 'ToMsg', nil, 'devise_token_auth.sessions.bad_credentials', nil
       it_behaves_like 'NotSendLocked'
     end
@@ -134,10 +134,10 @@ RSpec.describe 'Users::Auth::Sessions', type: :request do
       let(:send_user)  { send_user_unlocked }
       let(:attributes) { valid_attributes }
       # it_behaves_like 'ToOK', nil, true
-      # it_behaves_like 'ToNG', 401 # Tips: フロントと不一致で再ログイン出来なくなる為
+      # it_behaves_like 'ToNG', 401 # NOTE: フロントと不一致で再ログイン出来なくなる為
       it_behaves_like 'ToOK', true, false
       # it_behaves_like 'ToMsg', nil, nil, nil
-      # it_behaves_like 'ToMsg', nil, 'devise.failure.already_authenticated', nil # Tips: フロントと不一致で再ログイン出来なくなる為
+      # it_behaves_like 'ToMsg', nil, 'devise.failure.already_authenticated', nil # NOTE: フロントと不一致で再ログイン出来なくなる為
       it_behaves_like 'ToMsg', nil, nil, 'devise.sessions.signed_in'
       it_behaves_like 'NotSendLocked'
     end
@@ -153,10 +153,10 @@ RSpec.describe 'Users::Auth::Sessions', type: :request do
     shared_examples_for '[APIログイン中/削除予約済み]有効なパラメータ（ロック中）' do
       let(:send_user)  { send_user_locked }
       let(:attributes) { valid_attributes }
-      # it_behaves_like 'ToNG', 401 # Tips: フロントと不一致で再ログイン出来なくなる為
+      # it_behaves_like 'ToNG', 401 # NOTE: フロントと不一致で再ログイン出来なくなる為
       it_behaves_like 'ToNG', 422
       # it_behaves_like 'ToMsg', 'devise.mailer.unlock_instructions.account_lock_msg', nil, nil
-      # it_behaves_like 'ToMsg', nil, 'devise.failure.already_authenticated', nil # Tips: フロントと不一致で再ログイン出来なくなる為
+      # it_behaves_like 'ToMsg', nil, 'devise.failure.already_authenticated', nil # NOTE: フロントと不一致で再ログイン出来なくなる為
       it_behaves_like 'ToMsg', nil, 'devise.failure.locked', nil
       it_behaves_like 'NotSendLocked'
     end
@@ -172,10 +172,10 @@ RSpec.describe 'Users::Auth::Sessions', type: :request do
     shared_examples_for '[APIログイン中/削除予約済み]有効なパラメータ（メール未確認）' do
       let(:send_user)  { send_user_unconfirmed }
       let(:attributes) { valid_attributes }
-      # it_behaves_like 'ToNG', 401 # Tips: フロントと不一致で再ログイン出来なくなる為
+      # it_behaves_like 'ToNG', 401 # NOTE: フロントと不一致で再ログイン出来なくなる為
       it_behaves_like 'ToNG', 422
       # it_behaves_like 'ToMsg', 'devise_token_auth.sessions.not_confirmed', nil, nil
-      # it_behaves_like 'ToMsg', nil, 'devise.failure.already_authenticated', nil # Tips: フロントと不一致で再ログイン出来なくなる為
+      # it_behaves_like 'ToMsg', nil, 'devise.failure.already_authenticated', nil # NOTE: フロントと不一致で再ログイン出来なくなる為
       it_behaves_like 'ToMsg', nil, 'devise.failure.unconfirmed', nil
       it_behaves_like 'NotSendLocked'
     end
@@ -192,10 +192,10 @@ RSpec.describe 'Users::Auth::Sessions', type: :request do
       let(:send_user)  { send_user_email_changed }
       let(:attributes) { valid_attributes }
       # it_behaves_like 'ToOK', nil, true
-      # it_behaves_like 'ToNG', 401 # Tips: フロントと不一致で再ログイン出来なくなる為
+      # it_behaves_like 'ToNG', 401 # NOTE: フロントと不一致で再ログイン出来なくなる為
       it_behaves_like 'ToOK', true, false
       # it_behaves_like 'ToMsg', nil, nil, nil
-      # it_behaves_like 'ToMsg', nil, 'devise.failure.already_authenticated', nil # Tips: フロントと不一致で再ログイン出来なくなる為
+      # it_behaves_like 'ToMsg', nil, 'devise.failure.already_authenticated', nil # NOTE: フロントと不一致で再ログイン出来なくなる為
       it_behaves_like 'ToMsg', nil, nil, 'devise.sessions.signed_in'
       it_behaves_like 'NotSendLocked'
     end
@@ -212,10 +212,10 @@ RSpec.describe 'Users::Auth::Sessions', type: :request do
       let(:send_user)  { send_user_destroy_reserved }
       let(:attributes) { valid_attributes }
       # it_behaves_like 'ToOK', nil, true
-      # it_behaves_like 'ToNG', 401 # Tips: フロントと不一致で再ログイン出来なくなる為
+      # it_behaves_like 'ToNG', 401 # NOTE: フロントと不一致で再ログイン出来なくなる為
       it_behaves_like 'ToOK', true, false
       # it_behaves_like 'ToMsg', nil, nil, nil
-      # it_behaves_like 'ToMsg', nil, 'devise.failure.already_authenticated', nil # Tips: フロントと不一致で再ログイン出来なくなる為
+      # it_behaves_like 'ToMsg', nil, 'devise.failure.already_authenticated', nil # NOTE: フロントと不一致で再ログイン出来なくなる為
       it_behaves_like 'ToMsg', nil, nil, 'devise.sessions.signed_in'
       it_behaves_like 'NotSendLocked'
     end
@@ -229,10 +229,10 @@ RSpec.describe 'Users::Auth::Sessions', type: :request do
     end
     shared_examples_for '[APIログイン中/削除予約済み]無効なパラメータ（存在しない）' do
       let(:attributes) { invalid_not_attributes }
-      # it_behaves_like 'ToNG', 401 # Tips: フロントと不一致で再ログイン出来なくなる為
+      # it_behaves_like 'ToNG', 401 # NOTE: フロントと不一致で再ログイン出来なくなる為
       it_behaves_like 'ToNG', 422
       # it_behaves_like 'ToMsg', 'devise_token_auth.sessions.bad_credentials', nil, nil
-      # it_behaves_like 'ToMsg', nil, 'devise.failure.already_authenticated', nil # Tips: フロントと不一致で再ログイン出来なくなる為
+      # it_behaves_like 'ToMsg', nil, 'devise.failure.already_authenticated', nil # NOTE: フロントと不一致で再ログイン出来なくなる為
       it_behaves_like 'ToMsg', nil, 'devise.failure.invalid', nil
       it_behaves_like 'NotSendLocked'
     end

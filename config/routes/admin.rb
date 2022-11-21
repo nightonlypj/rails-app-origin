@@ -3,9 +3,9 @@ Rails.application.routes.draw do
   devise_scope :admin_user do
     get    'admin/sign_in',        to: 'admin_users/sessions#new',     as: 'new_admin_user_session'
     post   'admin/sign_in',        to: 'admin_users/sessions#create',  as: 'create_admin_user_session'
-    get    'admin/sign_out',       to: 'admin_users/sessions#destroy', as: nil # Tips: URL直アクセス対応
+    get    'admin/sign_out',       to: 'admin_users/sessions#destroy', as: nil # NOTE: URL直アクセス対応
     post   'admin/sign_out',       to: 'admin_users/sessions#destroy', as: 'destroy_admin_user_session'
-    delete 'admin/sign_out',       to: 'admin_users/sessions#destroy', as: nil # Tips: RailsAdmin用
+    delete 'admin/sign_out',       to: 'admin_users/sessions#destroy', as: nil # NOTE: RailsAdmin用
     get    'admin/unlock/resend',  to: 'admin_users/unlocks#new',      as: 'new_admin_user_unlock'
     post   'admin/unlock/resend',  to: 'admin_users/unlocks#create',   as: 'create_admin_user_unlock'
     get    'admin/unlock',         to: 'admin_users/unlocks#show',     as: 'admin_user_unlock'

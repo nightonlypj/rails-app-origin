@@ -3,7 +3,7 @@
 
 BULK_MAX_COUNT = 1000
 
-# シーケンス更新 # Tips: id指定でinsert_allした場合、シーケンスが更新されない為(PostgreSQL)
+# シーケンス更新 # NOTE: id指定でinsert_allした場合、シーケンスが更新されない為(PostgreSQL)
 def update_sequence
   return if @model.connection_db_config.configuration_hash[:adapter] != 'postgresql'
 
@@ -52,7 +52,7 @@ def data_changed?(content, data, new_model)
   content.each do |key, value|
     next if data[key] == value
 
-    new_model[key] = value # Tips: 日付やenum等のフォーマット違いに対応
+    new_model[key] = value # NOTE: 日付やenum等のフォーマット違いに対応
     return true if data[key] != new_model[key]
   end
 

@@ -54,7 +54,7 @@ RSpec.describe 'Infomations', type: :request do
         expect(response_json['summary']).to eq(infomation.summary) # サマリー
         expect(response_json['body']).to eq(infomation.body) # 本文
         expect(response_json['started_at']).to eq(I18n.l(infomation.started_at, format: :json)) # 掲載開始日
-        expect(response_json['ended_at']).to eq(infomation.ended_at.present? ? I18n.l(infomation.ended_at, format: :json) : nil) # 掲載終了日
+        expect(response_json['ended_at']).to eq(I18n.l(infomation.ended_at, format: :json, default: nil)) # 掲載終了日
         expect(response_json['target']).to eq(infomation.target) # 対象
       end
     end
@@ -99,7 +99,7 @@ RSpec.describe 'Infomations', type: :request do
       let_it_be(:ended_at) { Time.current - 1.day }
       include_context 'お知らせ作成'
       it_behaves_like 'ToNot'
-      it_behaves_like 'ToNot(json)', nil, nil, nil # Tips: APIは未ログイン扱いの為、他人
+      it_behaves_like 'ToNot(json)', nil, nil, nil # NOTE: APIは未ログイン扱いの為、他人
     end
     shared_examples_for '[APIログイン中/削除予約済み][自分][過去]終了日時が過去' do
       let_it_be(:ended_at) { Time.current - 1.day }
@@ -113,7 +113,7 @@ RSpec.describe 'Infomations', type: :request do
       it_behaves_like 'ToNot'
       it_behaves_like 'ToNot(json)', nil, nil, nil
     end
-    shared_examples_for '[*][*][未来]終了日時が過去' do # Tips: 不整合
+    shared_examples_for '[*][*][未来]終了日時が過去' do # NOTE: 不整合
       let_it_be(:ended_at) { Time.current - 1.day }
       include_context 'お知らせ作成'
       it_behaves_like 'ToNot'
@@ -129,12 +129,12 @@ RSpec.describe 'Infomations', type: :request do
       let_it_be(:ended_at) { Time.current + 1.day }
       include_context 'お知らせ作成'
       it_behaves_like 'ToOK'
-      it_behaves_like 'ToNot(json)', nil, nil, nil # Tips: APIは未ログイン扱いの為、他人
+      it_behaves_like 'ToNot(json)', nil, nil, nil # NOTE: APIは未ログイン扱いの為、他人
     end
     shared_examples_for '[APIログイン中/削除予約済み][自分][過去]終了日時が未来' do
       let_it_be(:ended_at) { Time.current + 1.day }
       include_context 'お知らせ作成'
-      it_behaves_like 'ToOK' # Tips: HTMLもログイン状態になる
+      it_behaves_like 'ToOK' # NOTE: HTMLもログイン状態になる
       it_behaves_like 'ToOK(json)'
     end
     shared_examples_for '[*][他人][過去]終了日時が未来' do
@@ -159,12 +159,12 @@ RSpec.describe 'Infomations', type: :request do
       let_it_be(:ended_at) { nil }
       include_context 'お知らせ作成'
       it_behaves_like 'ToOK'
-      it_behaves_like 'ToNot(json)', nil, nil, nil # Tips: APIは未ログイン扱いの為、他人
+      it_behaves_like 'ToNot(json)', nil, nil, nil # NOTE: APIは未ログイン扱いの為、他人
     end
     shared_examples_for '[APIログイン中/削除予約済み][自分][過去]終了日時がない' do
       let_it_be(:ended_at) { nil }
       include_context 'お知らせ作成'
-      it_behaves_like 'ToOK' # Tips: HTMLもログイン状態になる
+      it_behaves_like 'ToOK' # NOTE: HTMLもログイン状態になる
       it_behaves_like 'ToOK(json)'
     end
     shared_examples_for '[*][他人][過去]終了日時がない' do
@@ -239,7 +239,7 @@ RSpec.describe 'Infomations', type: :request do
     context '未ログイン' do
       include_context '未ログイン処理'
       it_behaves_like '[*]対象が全員'
-      # it_behaves_like '[未ログイン]対象が自分' # Tips: 未ログインの為、他人
+      # it_behaves_like '[未ログイン]対象が自分' # NOTE: 未ログインの為、他人
       it_behaves_like '[*]対象が他人'
     end
     context 'ログイン中' do

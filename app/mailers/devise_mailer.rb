@@ -3,7 +3,7 @@ class DeviseMailer < Devise::Mailer
 
   # メールアドレス確認のお願い
   def confirmation_instructions(record, token, opts = {})
-    opts[:redirect_url] = record.redirect_url if record.is_a?(User) && record.redirect_url.present? # Tips: /users/auth/updateで使用
+    opts[:redirect_url] = record.redirect_url if record.is_a?(User) && record.redirect_url.present? # NOTE: /users/auth/updateで使用
     send_mail(super)
   end
 
@@ -14,7 +14,7 @@ class DeviseMailer < Devise::Mailer
 
   # アカウントロックのお知らせ
   def unlock_instructions(record, token, opts = {})
-    opts[:redirect_url] = record.redirect_url if record.is_a?(User) && record.redirect_url.present? # Tips: /users/auth/sign_inで使用
+    opts[:redirect_url] = record.redirect_url if record.is_a?(User) && record.redirect_url.present? # NOTE: /users/auth/sign_inで使用
     send_mail(super)
   end
 

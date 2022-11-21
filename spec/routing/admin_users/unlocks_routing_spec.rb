@@ -11,7 +11,7 @@ RSpec.describe AdminUsers::UnlocksController, type: :routing do
       # expect(post: '/admin_users/unlock').to route_to('admin_users/unlocks#create')
       expect(post: '/admin_users/unlock').not_to be_routable
       expect(post: '/admin_users/unlock/new').not_to be_routable
-      # expect(post: '/admin/unlock').not_to be_routable # Tips: rails_admin/main#index
+      # expect(post: '/admin/unlock').not_to be_routable # NOTE: rails_admin/main#index
       expect(post: '/admin/unlock/resend').to route_to('admin_users/unlocks#create')
     end
     it 'routes to #show' do

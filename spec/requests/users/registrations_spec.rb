@@ -8,7 +8,7 @@ RSpec.describe 'Users::Registrations', type: :request do
     end
   end
   shared_examples_for 'ToError' do |error_msg|
-    it 'HTTPステータスが200。対象のエラーメッセージが含まれる' do # Tips: 再入力
+    it 'HTTPステータスが200。対象のエラーメッセージが含まれる' do # NOTE: 再入力
       is_expected.to eq(200)
       expect(response.body).to include(I18n.t(error_msg))
     end
@@ -169,7 +169,7 @@ RSpec.describe 'Users::Registrations', type: :request do
         subject
         expect(current_user.unconfirmed_email).to change_email ? eq(attributes[:email]) : eq(user.unconfirmed_email) # 確認待ちメールアドレス
         expect(current_user.name).to eq(attributes[:name]) # 氏名
-        expect(current_user.image.url).to eq(user.image.url) # 画像 # Tips: 変更されない
+        expect(current_user.image.url).to eq(user.image.url) # 画像 # NOTE: 変更されない
 
         expect(ActionMailer::Base.deliveries.count).to eq(change_email ? 3 : 1)
         expect(ActionMailer::Base.deliveries[0].subject).to eq(get_subject('devise.mailer.email_changed.subject')) if change_email # メールアドレス変更受け付けのお知らせ
@@ -205,7 +205,7 @@ RSpec.describe 'Users::Registrations', type: :request do
     end
     shared_examples_for '[未ログイン]有効なパラメータ（変更あり）' do
       let(:attributes) { valid_attributes }
-      # it_behaves_like 'NG' # Tips: 未ログインの為、対象がない
+      # it_behaves_like 'NG' # NOTE: 未ログインの為、対象がない
       it_behaves_like 'ToLogin', 'devise.failure.unauthenticated', nil
     end
     shared_examples_for '[ログイン中]有効なパラメータ（変更あり）' do
@@ -220,7 +220,7 @@ RSpec.describe 'Users::Registrations', type: :request do
     end
     shared_examples_for '[未ログイン]無効なパラメータ' do
       let(:attributes) { invalid_attributes }
-      # it_behaves_like 'NG' # Tips: 未ログインの為、対象がない
+      # it_behaves_like 'NG' # NOTE: 未ログインの為、対象がない
       it_behaves_like 'ToLogin', 'devise.failure.unauthenticated', nil
     end
     shared_examples_for '[ログイン中]無効なパラメータ' do
@@ -247,10 +247,10 @@ RSpec.describe 'Users::Registrations', type: :request do
     end
 
     context '未ログイン' do
-      # it_behaves_like '[未ログイン]有効なパラメータ（変更なし）' # Tips: 未ログインの為、対象がない
+      # it_behaves_like '[未ログイン]有効なパラメータ（変更なし）' # NOTE: 未ログインの為、対象がない
       it_behaves_like '[未ログイン]有効なパラメータ（変更あり）'
       it_behaves_like '[未ログイン]無効なパラメータ'
-      # it_behaves_like '[未ログイン]現在のパスワードがない' # Tips: 未ログインの為、対象がない
+      # it_behaves_like '[未ログイン]現在のパスワードがない' # NOTE: 未ログインの為、対象がない
     end
     context 'ログイン中' do
       include_context 'ログイン処理', nil, true
@@ -304,7 +304,7 @@ RSpec.describe 'Users::Registrations', type: :request do
     # テストケース
     shared_examples_for '[未ログイン]有効なパラメータ' do
       let(:attributes) { valid_attributes }
-      # it_behaves_like 'NG' # Tips: 未ログインの為、対象がない
+      # it_behaves_like 'NG' # NOTE: 未ログインの為、対象がない
       it_behaves_like 'ToLogin', 'devise.failure.unauthenticated', nil
     end
     shared_examples_for '[ログイン中]有効なパラメータ' do
@@ -319,13 +319,13 @@ RSpec.describe 'Users::Registrations', type: :request do
     end
     shared_examples_for '[未ログイン]無効なパラメータ' do
       let(:attributes) { invalid_attributes }
-      # it_behaves_like 'NG' # Tips: 未ログインの為、対象がない
+      # it_behaves_like 'NG' # NOTE: 未ログインの為、対象がない
       it_behaves_like 'ToLogin', 'devise.failure.unauthenticated', nil
     end
     shared_examples_for '[ログイン中]無効なパラメータ' do
       let(:attributes) { invalid_attributes }
       it_behaves_like 'NG'
-      it_behaves_like 'ToError', 'errors.messages.image_update_blank'
+      it_behaves_like 'ToError', 'activerecord.errors.models.user.attributes.image.blank'
     end
     shared_examples_for '[削除予約済み]無効なパラメータ' do
       let(:attributes) { invalid_attributes }
@@ -374,7 +374,7 @@ RSpec.describe 'Users::Registrations', type: :request do
 
     # テストケース
     context '未ログイン' do
-      # it_behaves_like 'NG' # Tips: 未ログインの為、対象がない
+      # it_behaves_like 'NG' # NOTE: 未ログインの為、対象がない
       it_behaves_like 'ToLogin', 'devise.failure.unauthenticated', nil
     end
     context 'ログイン中' do
@@ -446,14 +446,14 @@ RSpec.describe 'Users::Registrations', type: :request do
 
     # テストケース
     context '未ログイン' do
-      # it_behaves_like 'NG' # Tips: 未ログインの為、対象がない
+      # it_behaves_like 'NG' # NOTE: 未ログインの為、対象がない
       it_behaves_like 'ToLogin', 'devise.failure.unauthenticated', nil
     end
     context 'ログイン中' do
       include_context 'ログイン処理'
       it_behaves_like 'OK'
     end
-    context 'ログイン中' do # Tips: 上記と一緒にすると変更の影響を受ける為(let_it_beに変更後)
+    context 'ログイン中' do # NOTE: 上記と一緒にすると変更の影響を受ける為(let_it_beに変更後)
       include_context 'ログイン処理'
       it_behaves_like 'ToLogin', nil, 'devise.registrations.destroy_reserved'
     end
@@ -516,7 +516,7 @@ RSpec.describe 'Users::Registrations', type: :request do
 
     # テストケース
     context '未ログイン' do
-      # it_behaves_like 'NG' # Tips: 未ログインの為、対象がない
+      # it_behaves_like 'NG' # NOTE: 未ログインの為、対象がない
       it_behaves_like 'ToLogin', 'devise.failure.unauthenticated', nil
     end
     context 'ログイン中' do
@@ -528,7 +528,7 @@ RSpec.describe 'Users::Registrations', type: :request do
       include_context 'ログイン処理', :destroy_reserved
       it_behaves_like 'OK'
     end
-    context 'ログイン中（削除予約済み）' do # Tips: 上記と一緒にすると変更の影響を受ける為(let_it_beに変更後)
+    context 'ログイン中（削除予約済み）' do # NOTE: 上記と一緒にすると変更の影響を受ける為(let_it_beに変更後)
       include_context 'ログイン処理', :destroy_reserved
       it_behaves_like 'ToTop', nil, 'devise.registrations.undo_destroy_reserved'
     end

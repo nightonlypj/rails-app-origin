@@ -22,12 +22,12 @@ RSpec.describe Users::RegistrationsController, type: :routing do
       expect(put: '/users/update').to route_to('users/registrations#update')
     end
     it 'routes to #image_update' do
-      expect(get: '/users/image/update').to route_to('users/registrations#edit') # Tips: URL直アクセス対応
+      expect(get: '/users/image/update').to route_to('users/registrations#edit') # NOTE: URL直アクセス対応
       expect(post: '/users/image/update').to route_to('users/registrations#image_update')
     end
     it 'routes to #image_destroy' do
       expect(delete: '/users/image/delete').not_to be_routable
-      expect(get: '/users/image/delete').to route_to('users/registrations#edit') # Tips: URL直アクセス対応
+      expect(get: '/users/image/delete').to route_to('users/registrations#edit') # NOTE: URL直アクセス対応
       expect(post: '/users/image/delete').to route_to('users/registrations#image_destroy')
     end
     it 'routes to #delete' do

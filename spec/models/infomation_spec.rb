@@ -40,7 +40,7 @@ RSpec.describe Infomation, type: :model do
     context '未ログイン' do
       let(:user) { nil }
       it_behaves_like '[*]対象が全員'
-      # it_behaves_like '[未ログイン]対象が自分' # Tips: 未ログインの為、他人
+      # it_behaves_like '[未ログイン]対象が自分' # NOTE: 未ログインの為、他人
       it_behaves_like '[*]対象が他人'
     end
     context 'ログイン中' do

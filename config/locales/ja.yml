@@ -176,7 +176,6 @@ ja:
           notfound: '解除対象が見つかりません。'
   errors:
     messages:
-      image_update_blank: '選択してください。'
       infomation:
         ended: '掲載期間が終了しました。'
   mailer:

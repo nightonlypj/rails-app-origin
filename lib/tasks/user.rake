@@ -8,7 +8,7 @@ namespace :user do
     logger.info("=== START #{task.name} ===")
     logger.info("dry_run: #{dry_run}")
 
-    ActiveRecord::Base.connection_pool.with_connection do # Tips: 念の為（PG::UnableToSend: no connection to the server対策）
+    ActiveRecord::Base.connection_pool.with_connection do # NOTE: 念の為（PG::UnableToSend: no connection to the server対策）
       users = User.by_destroy_reserved
       logger.debug(users)
 
