@@ -9,11 +9,11 @@ RSpec.describe MembersController, type: :routing do
     end
 
     it 'routes to #show' do
-      # expect(get: '/members/1').not_to be_routable # Tips: members#index
+      # expect(get: '/members/1').not_to be_routable # NOTE: members#index
     end
 
     it 'routes to #new' do
-      # expect(get: '/members/new').not_to be_routable # Tips: members#index
+      # expect(get: '/members/new').not_to be_routable # NOTE: members#index
       expect(get: '/members/code0001/create').to route_to('members#new', code: 'code0001')
     end
 
@@ -45,7 +45,7 @@ RSpec.describe MembersController, type: :routing do
 
     it 'routes to #destroy' do
       expect(delete: '/members/1').not_to be_routable
-      expect(get: '/members/code0001/delete').to route_to('members#index', code: 'code0001') # Tips: URL直アクセス対応
+      expect(get: '/members/code0001/delete').to route_to('members#index', code: 'code0001') # NOTE: URL直アクセス対応
       expect(post: '/members/code0001/delete').to route_to('members#destroy', code: 'code0001')
       expect(post: '/members/code0001/delete.json').to route_to('members#destroy', code: 'code0001', format: 'json')
     end

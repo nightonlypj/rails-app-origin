@@ -41,7 +41,7 @@ ActiveRecord::Schema.define(version: 2022_10_11_100201) do
 
   create_table "download_files", charset: "utf8", collation: "utf8_bin", comment: "ダウンロードファイル", force: :cascade do |t|
     t.bigint "download_id", null: false, comment: "ダウンロードID"
-    t.binary "file", size: :long, comment: "ファイル"
+    t.binary "body", size: :long, comment: "内容"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.index ["download_id"], name: "index_download_files_on_download_id"

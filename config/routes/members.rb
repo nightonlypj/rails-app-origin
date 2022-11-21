@@ -5,6 +5,6 @@ Rails.application.routes.draw do
   get  'members/:code/result',            to: 'members#result',  as: 'result_member'
   get  'members/:code/update/:user_code', to: 'members#edit',    as: 'edit_member'
   post 'members/:code/update/:user_code', to: 'members#update',  as: 'update_member'
-  get  'members/:code/delete',            to: 'members#index',   as: nil # Tips: URL直アクセス対応
+  get  'members/:code/delete',            to: 'members#index',   as: nil # NOTE: URL直アクセス対応
   post 'members/:code/delete',            to: 'members#destroy', as: 'destroy_member'
 end

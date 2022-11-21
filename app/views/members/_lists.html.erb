@@ -32,7 +32,13 @@
     </thead>
     <tbody>
 <% @members.each do |member| %>
+<% if !@current_member.power_admin? || member == @current_member %>
       <tr class="align-middle">
+<% elsif member.user.code != params[:active] %>
+      <tr class="align-middle dblclick_to_link" href="<%= edit_member_path(@space.code, member.user.code) %>">
+<% else %>
+      <tr class="align-middle table-active dblclick_to_link" href="<%= edit_member_path(@space.code, member.user.code) %>">
+<% end %>
 <% if @current_member.power_admin? %>
         <%# (メンバー解除) %>
         <td scope="row" class="justify-content-center ps-3 pe-2 py-2">
@@ -40,7 +46,7 @@
         </td>
 <% end %>
         <%# メンバー %>
-        <td scope="row" class="ps-2 pe-1 py-2">
+        <td scope="row" class="ps-2 pe-1 py-2 ">
           <%= image_tag member.user.image_url(:small), class: 'rounded-circle' %>
           <span class="ms-1">
             <%= member.user.name %>
@@ -48,12 +54,12 @@
         </td>
 <% if @current_member.power_admin? %>
         <%# メールアドレス %>
-        <td class="px-1 py-2">
+        <td class="px-1 py-2 ">
           <%= member.user.email %>
         </td>
 <% end %>
         <%# 権限 %>
-        <td class="text-nowrap px-1 py-2">
+        <td class="text-nowrap px-1 py-2 ">
 <% if @current_member.power_admin? && member != @current_member %>
           <a href="<%= edit_member_path(@space.code, member.user.code) %>">
 <% end %>
@@ -65,7 +71,7 @@
         </td>
 <% if @current_member.power_admin? %>
         <%# 招待者 %>
-        <td class="px-1 py-2">
+        <td class="px-1 py-2 ">
 <% if member.invitation_user.present? %>
           <%= image_tag member.invitation_user.image_url(:small), class: 'rounded-circle' %>
           <span class="fw-bolder ms-1">
@@ -75,7 +81,7 @@
         </td>
 <% end %>
         <%# 招待日時 %>
-        <td class="text-nowrap ps-1 pe-2 py-2">
+        <td class="text-nowrap ps-1 pe-2 py-2 ">
 <% if member.invitationed_at.present? %>
           <%= l(member.invitationed_at) %>
 <% end %>

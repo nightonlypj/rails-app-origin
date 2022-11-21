@@ -8,8 +8,7 @@ RSpec.describe 'downloads/new', type: :view do
     @enable_target = ['all']
     @items = t("items.#{@model}")
 
-    output_items = []
-    @items.each { |key, _value| output_items.push(key.to_s) }
+    output_items = @items.stringify_keys.keys
     @download = Download.new(output_items: output_items)
   end
 
@@ -24,7 +23,7 @@ RSpec.describe 'downloads/new', type: :view do
       assert_select 'input[name=?]', 'download[format]', Download.formats.count
       assert_select 'input[name=?]', 'download[char]', Download.chars.count
       assert_select 'input[name=?]', 'download[newline]', Download.newlines.count
-      @items.each do |key, _value|
+      @items.each do |key, _label|
         assert_select 'input[name=?]', "download[output_items_#{key}]"
       end
       assert_select 'input[type=?]', 'button'

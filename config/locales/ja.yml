@@ -67,7 +67,7 @@ ja:
         updated_at: '更新日時'
       download_file:
         download: 'ダウンロード'
-        file: 'ファイル'
+        body: '内容'
         created_at: '作成日時'
         updated_at: '更新日時'
     errors:
@@ -92,6 +92,7 @@ ja:
             output_items:
               blank: '選択してください。'
               invalid: '形式が正しくありません。'
+              not_exist: '値が存在しません。(%{key})'
             select_items:
               blank: '選択してください。'
               invalid: '形式が正しくありません。'
@@ -176,6 +177,7 @@ ja:
           notfound: '解除対象が見つかりません。'
   errors:
     messages:
+      not_exist: '値が存在しません。'
       infomation:
         ended: '掲載期間が終了しました。'
   mailer:

@@ -2,8 +2,8 @@ json.id download.id
 json.status download.status
 json.status_i18n download.status_i18n
 json.requested_at l(download.requested_at, format: :json)
-json.completed_at download.completed_at.present? ? l(download.completed_at, format: :json) : nil
-json.last_downloaded_at download.last_downloaded_at.present? ? l(download.last_downloaded_at, format: :json) : nil
+json.completed_at l(download.completed_at, format: :json, default: nil)
+json.last_downloaded_at l(download.last_downloaded_at, format: :json, default: nil)
 
 json.model download.model
 json.model_i18n download.model_i18n

@@ -16,6 +16,15 @@ class ApplicationAuthController < ApplicationController
     end
   end
 
+  def not_found_response(key)
+    if format_html?
+      head :not_found
+    else
+      errors = key.present? ? { key => t('errors.messages.not_exist') } : nil
+      render './failure', locals: { errors: errors, alert: t('errors.messages.not_saved.one') }, status: :not_found
+    end
+  end
+
   # URLの拡張子がない場合のみ、Device認証を有効にする（APIでCSRFトークン検証をしない為）
   def standard_devise_support
     DeviseTokenAuth.enable_standard_devise_support = format_html?

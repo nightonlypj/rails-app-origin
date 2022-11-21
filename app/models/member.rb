@@ -1,5 +1,5 @@
 class Member < ApplicationRecord
-  attr_accessor :emails # Tips: メンバー招待で使用
+  attr_accessor :emails # NOTE: メンバー招待で使用
 
   belongs_to :space
   belongs_to :user

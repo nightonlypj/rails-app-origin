@@ -9,4 +9,4 @@ if member.invitation_user.present? && current_member.power_admin?
     json.partial! 'users/auth/user', user: member.invitation_user, use_email: true
   end
 end
-json.invitationed_at member.invitationed_at.present? ? l(member.invitationed_at, format: :json) : nil
+json.invitationed_at l(member.invitationed_at, format: :json, default: nil)

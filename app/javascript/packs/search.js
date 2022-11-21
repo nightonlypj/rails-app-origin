@@ -26,9 +26,10 @@ $(document).on('turbolinks:load', function(){
 
     // チェックボックス -> 削除ボタン有効・無効化、選択件数表示
     $('.change_to_delete_btn_enabled').on('change', function() {
-        if (debug) console.log('== .change_to_delete_btn_enabled.onchange', checked, $(this).prop('checked'))
+        const check = $(this).prop('checked')
+        if (debug) console.log('== .change_to_delete_btn_enabled.onchange', checked, check)
 
-        if ($(this).prop('checked')) {
+        if (check) {
             checked += 1
         } else {
             checked -= 1
@@ -38,7 +39,8 @@ $(document).on('turbolinks:load', function(){
 
     // ダウンロードボタン -> URLにコードを追加して遷移
     $('.click_to_redirect_add_codes').on('click', function() {
-        if (debug) console.log('== .click_to_redirect_add_codes.onclick', $(this).prop('href'))
+        const href = $(this).prop('href')
+        if (debug) console.log('== .click_to_redirect_add_codes.onclick', href)
 
         let codes = []
         const elements = $('input[id^="codes["]')
@@ -46,7 +48,7 @@ $(document).on('turbolinks:load', function(){
             if (element.checked) codes.push(element.id.substr(6, (element.id + ']').indexOf(']') - 6))
         }
 
-        let url = new URL($(this).prop('href'))
+        let url = new URL(href)
         url.searchParams.append('select_items', codes)
 	    location.href = url
         return false

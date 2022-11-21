@@ -13,6 +13,7 @@ class Download < ApplicationRecord
   validates :select_items, text_array: true, if: proc { |download| download.select_items.present? }
   validates :search_params, presence: true, if: proc { |download| download.target&.to_sym == :search }
   validates :search_params, text_hash: true, if: proc { |download| download.search_params.present? }
+  validate :validate_output_items
 
   # ステータス
   enum status: {
@@ -77,6 +78,23 @@ class Download < ApplicationRecord
       "\r"
     else
       raise 'newline not found.'
+    end
+  end
+
+  private
+
+  def validate_output_items
+    return if errors[:output_items].present?
+
+    notfound_items = []
+    items = I18n.t("items.#{model}")
+    eval(output_items).each do |output_item|
+      notfound_items.push(output_item) if items[output_item.to_sym].blank?
+    end
+
+    if notfound_items.present?
+      key = 'activerecord.errors.models.download.attributes.output_items.not_exist'
+      errors.add(:output_items, I18n.t(key).gsub(/%{key}/, notfound_items.join(', ')))
     end
   end
 end

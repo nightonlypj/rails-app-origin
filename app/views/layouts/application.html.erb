@@ -16,7 +16,7 @@
 <% end %>
     <%= javascript_pack_tag 'application', 'data-turbolinks-track': 'reload' %>
     <%= javascript_pack_tag 'search', 'data-turbolinks-track': 'reload' if enable_javascript_search? %>
-    <%= javascript_pack_tag controller_name, 'data-turbolinks-track': 'reload' if %w[downloads].include?(controller_name) %>
+    <%= javascript_pack_tag controller_name, 'data-turbolinks-track': 'reload' if %w[downloads members].include?(controller_name) %>
   </head>
   <body>
     <header style="margin-bottom: 70px">

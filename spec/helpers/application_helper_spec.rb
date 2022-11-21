@@ -304,7 +304,7 @@ RSpec.describe ApplicationHelper, type: :helper do
     context 'enabledがtrue' do
       let(:enabled) { true }
       context 'errorsなし' do
-        let(:key) { :not } # Tips: errorsなしの為、keyが存在する事はない
+        let(:key) { :not } # NOTE: errorsなしの為、keyが存在する事はない
         it_behaves_like 'value', ' mb-0'
       end
       context 'errorsあり' do

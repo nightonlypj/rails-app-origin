@@ -29,20 +29,22 @@ class MembersController < ApplicationAuthController
   def create
     insert_datas = []
     users = User.where(email: @emails)
-    exist_users = User.joins(:members).where(members: { space: @space, user: users })
-    @exist_user_mails = exist_users.pluck(:email)
-    @create_user_mails = (users - exist_users).pluck(:email)
-    (users - exist_users).each do |user|
+    @exist_users = User.joins(:members).where(members: { space: @space, user: users })
+    @create_users = users - @exist_users
+    @create_users.each do |user|
       insert_datas.push(@member.attributes.merge({ user_id: user.id, created_at: @member.invitationed_at, updated_at: @member.invitationed_at }))
     end
     Member.insert_all!(insert_datas) if insert_datas.present?
 
+    @exist_user_mails = @exist_users.pluck(:email)
+    @create_user_mails = @create_users.pluck(:email)
     if format_html?
       redirect_to result_member_path(@space.code), notice: t('notice.member.create'), flash: {
         emails: @emails, exist_user_mails: @exist_user_mails, create_user_mails: @create_user_mails,
         power: @member.power
       }
     else
+      @user_codes = users.pluck(:code)
       render :result, locals: { notice: t('notice.member.create') }, status: :created
     end
   end
@@ -67,7 +69,7 @@ class MembersController < ApplicationAuthController
     end
 
     if format_html?
-      redirect_to members_path(@space.code), notice: t('notice.member.update')
+      redirect_to members_path(@space.code, active: @member.user.code), notice: t('notice.member.update')
     else
       render locals: { notice: t('notice.member.update') }
     end

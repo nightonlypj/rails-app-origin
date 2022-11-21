@@ -15,7 +15,7 @@ class DownloadsController < ApplicationAuthController
 
     @download = nil
     if format_html? && params[:id].present?
-      @downloads.each do |item| # Tips: 一覧から取得。DBから取得するとstatusが異なる可能性がある為
+      @downloads.each do |item| # NOTE: 一覧から取得。DBから取得するとstatusが異なる可能性がある為
         if item.id == params[:id].to_i
           @download = item
           break
@@ -38,15 +38,14 @@ class DownloadsController < ApplicationAuthController
     end
 
     @download.last_downloaded_at = Time.current
-    @download.save! # Tips: 後続処理は時間が掛かるので、先にダウンロード済みにしておく
+    @download.save! # NOTE: 後続処理は時間が掛かるので、先にダウンロード済みにしておく
 
-    send_data(@download.download_files.first.file, filename: "#{@download.model}_#{l(@download.requested_at, format: :file)}.#{@download.format}")
+    send_data(@download.download_files.first.body, filename: "#{@download.model}_#{l(@download.requested_at, format: :file)}.#{@download.format}")
   end
 
   # GET /downloads/create ダウンロード依頼
   def new
-    output_items = []
-    @items.each { |key, _value| output_items.push(key.to_s) }
+    output_items = @items.stringify_keys.keys
 
     @download = Download.new(model: @model, space: @space, search_params: params[:search_params], select_items: params[:select_items],
                              target: @enable_target[0], format: :csv, char: :sjis, newline: :crlf, output_items: output_items)
@@ -68,7 +67,7 @@ class DownloadsController < ApplicationAuthController
     if format_html?
       redirect_to downloads_path(id: @download.id)
     else
-      render :create, locals: { notice: t('notice.download.create') }, status: :created
+      render locals: { notice: t('notice.download.create') }, status: :created
     end
   end
 
@@ -77,11 +76,11 @@ class DownloadsController < ApplicationAuthController
   # Use callbacks to share common setup or constraints between actions.
   def set_params_new(target_params = params)
     @model = target_params[:model]&.to_sym
-    return head :not_found if Download.models[@model].blank?
+    return not_found_response(:model) if Download.models[@model].blank?
 
     if @model == :member
       @space = Space.find_by(code: target_params[:space_code])
-      return head :not_found if @space.blank?
+      return not_found_response(:space_code) if @space.blank?
 
       @current_member = Member.where(space: @space, user: current_user).eager_load(:user)&.first
       head :forbidden if @current_member.blank? || !@current_member.power_admin?
@@ -108,7 +107,9 @@ class DownloadsController < ApplicationAuthController
   def download_params
     if format_html?
       params[:download][:output_items] = []
-      @items.each { |key, _value| params[:download][:output_items].push(key.to_s) if params[:download]["output_items_#{key}"] == '1' }
+      @items.each do |key, _label|
+        params[:download][:output_items].push(key.to_s) if params[:download]["output_items_#{key}"] == '1'
+      end
       params[:download][:select_items] = params[:download][:select_items]&.split(',')
     end
 

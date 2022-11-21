@@ -3,7 +3,7 @@ module MembersConcern
 
   private
 
-  MEMBERS_SORT_COLUMN = {
+  SORT_COLUMN = {
     'user.name' => 'users.name',
     'user.email' => 'users.email',
     'power' => 'power',
@@ -11,7 +11,7 @@ module MembersConcern
     'invitationed_at' => 'invitationed_at'
   }.freeze
 
-  def member_value(member, output_item)
+  def get_value(member, output_item)
     case output_item
     when 'user.name'
       member.user.name
@@ -22,13 +22,13 @@ module MembersConcern
     when 'invitation_user.name'
       member.invitation_user&.name
     when 'invitationed_at'
-      member.invitationed_at.present? ? I18n.l(member.invitationed_at) : nil
+      I18n.l(member.invitationed_at, default: nil)
     else
       raise 'output_item not found.'
     end
   end
 
-  def set_params_index(target_params = params, sort_only = false)
+  def set_params_index(search_params = params, sort_only = false)
     @power = {}
     if sort_only
       @text = nil
@@ -38,25 +38,50 @@ module MembersConcern
         @power[value] = true
       end
     else
-      @text = target_params[:text]&.slice(..(255 - 1))
-      @option = target_params[:option] == '1'
+      @text = search_params[:text]&.slice(..(255 - 1))
+      @option = search_params[:option] == '1'
 
       Member.powers.each do |key, value|
-        @power[value] = true if target_params[key] != '0'
+        @power[value] = true if search_params[key] != '0'
       end
     end
 
-    @sort = MEMBERS_SORT_COLUMN.include?(target_params[:sort]) ? target_params[:sort] : 'invitationed_at'
-    @desc = target_params[:desc] != '0'
+    @sort = SORT_COLUMN.include?(search_params[:sort]) ? search_params[:sort] : 'invitationed_at'
+    @desc = search_params[:desc] != '0'
   end
 
   def members_select(codes)
     Member.where(space: @space).includes(:user).where(user: { code: codes }).eager_load(:user, :invitation_user)
-          .order(MEMBERS_SORT_COLUMN[@sort] + (@desc ? ' DESC' : ''), id: :desc)
+          .order(SORT_COLUMN[@sort] + (@desc ? ' DESC' : ''), id: :desc)
   end
 
   def members_search
     Member.where(space: @space, power: @power.keys).search(@text, @current_member).eager_load(:user, :invitation_user)
-          .order(MEMBERS_SORT_COLUMN[@sort] + (@desc ? ' DESC' : ''), id: :desc)
+          .order(SORT_COLUMN[@sort] + (@desc ? ' DESC' : ''), id: :desc)
+  end
+
+  # ダウンロードファイルのデータ作成
+  def member_file_data(output_items)
+    search_params = @download.search_params.present? ? eval(@download.search_params).symbolize_keys : {}
+    set_params_index(search_params, @download.target.to_sym != :search)
+
+    result = ''
+    base_members = @download.target.to_sym == :select ? members_select(eval(@download.select_items)) : members_search
+    page = 1
+    loop do
+      members = base_members.page(page).per(Settings['job_members_limit'])
+      members.each do |member|
+        data = []
+        output_items.each do |output_item|
+          data.push(get_value(member, output_item))
+        end
+        result += data.to_csv(col_sep: @download.col_sep, row_sep: @download.row_sep)
+      end
+      break if page >= members.total_pages
+
+      page += 1
+    end
+
+    result
   end
 end
