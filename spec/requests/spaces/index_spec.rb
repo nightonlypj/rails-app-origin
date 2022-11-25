@@ -117,10 +117,8 @@ RSpec.describe 'Spaces', type: :request do
           expect(data['name']).to eq(space.name)
           expect(data['description']).to eq(space.description)
           expect(data['private']).to eq(space.private)
-          destroy_requested_at = space.destroy_requested_at.present? ? I18n.l(space.destroy_requested_at, format: :json) : nil
-          expect(data['destroy_requested_at']).to eq(destroy_requested_at)
-          destroy_schedule_at = space.destroy_schedule_at.present? ? I18n.l(space.destroy_schedule_at, format: :json) : nil
-          expect(data['destroy_schedule_at']).to eq(destroy_schedule_at)
+          expect(data['destroy_requested_at']).to eq(I18n.l(space.destroy_requested_at, format: :json, default: nil))
+          expect(data['destroy_schedule_at']).to eq(I18n.l(space.destroy_schedule_at, format: :json, default: nil))
           power = members[space.id]
           if power.blank?
             expect(data['current_member']).to be_nil
@@ -220,7 +218,7 @@ RSpec.describe 'Spaces', type: :request do
       it_behaves_like 'リスト表示', 1
       it_behaves_like 'リスト表示', 2
       it_behaves_like 'リダイレクト', 3, 2
-      # it_behaves_like 'ToOK(json)', 1 # Tips: APIは未ログイン扱いの為
+      # it_behaves_like 'ToOK(json)', 1 # NOTE: APIは未ログイン扱いの為
       # it_behaves_like 'ToOK(json)', 2
       # it_behaves_like 'リスト表示(json)', 1
       # it_behaves_like 'リスト表示(json)', 2
@@ -252,7 +250,7 @@ RSpec.describe 'Spaces', type: :request do
       it_behaves_like '[未ログイン]スペースが最大表示数より多い'
     end
     context 'ログイン中' do
-      let(:spaces)  { @all_spaces } # Tips: APIは未ログイン扱いの為、公開しか見れない
+      let(:spaces)  { @all_spaces } # NOTE: APIは未ログイン扱いの為、公開しか見れない
       let(:members) { {} }
       include_context 'ログイン処理'
       it_behaves_like '[*]スペースがない'
@@ -260,7 +258,7 @@ RSpec.describe 'Spaces', type: :request do
       it_behaves_like '[ログイン中/削除予約済み]スペースが最大表示数より多い'
     end
     context 'ログイン中（削除予約済み）' do
-      let(:spaces)  { @all_spaces } # Tips: APIは未ログイン扱いの為、公開しか見れない
+      let(:spaces)  { @all_spaces } # NOTE: APIは未ログイン扱いの為、公開しか見れない
       let(:members) { {} }
       include_context 'ログイン処理', :destroy_reserved
       it_behaves_like '[*]スペースがない'
@@ -294,7 +292,7 @@ RSpec.describe 'Spaces', type: :request do
     subject { get spaces_path(format: subject_format), params: params, headers: auth_headers.merge(accept_headers) }
     let_it_be(:space)        { FactoryBot.create(:space, :public, name: 'space(Aaa)', description: 'description(Bbb)') }
     let_it_be(:member_space) { FactoryBot.create(:space, :public, name: 'space(Bbb)', description: 'description(Aaa)') }
-    let(:params) { { text: 'aaa', exclude_member_space: exclude_member_space } }
+    let(:params) { { text: 'aaa', exclude: exclude } }
 
     # テスト内容
     shared_examples_for 'リスト表示' do
@@ -326,13 +324,13 @@ RSpec.describe 'Spaces', type: :request do
       let(:subject_format) { nil }
       let(:accept_headers) { ACCEPT_INC_HTML }
       context '参加スペースを含む' do
-        let(:exclude_member_space) { nil }
+        let(:exclude) { nil }
         let(:inside_spaces) { [member_space, space] }
         let(:outside_spaces) { [] }
         it_behaves_like 'リスト表示'
       end
       context '参加スペースを除く' do
-        let(:exclude_member_space) { '1' }
+        let(:exclude) { '1' }
         let(:inside_spaces) { [space] }
         let(:outside_spaces) { [member_space] }
         it_behaves_like 'リスト表示'
@@ -344,12 +342,12 @@ RSpec.describe 'Spaces', type: :request do
       let(:subject_format) { :json }
       let(:accept_headers) { ACCEPT_INC_JSON }
       context '参加スペースを含む' do
-        let(:exclude_member_space) { nil }
+        let(:exclude) { nil }
         let(:inside_spaces) { [member_space, space] }
         it_behaves_like 'リスト表示(json)'
       end
       context '参加スペースを除く' do
-        let(:exclude_member_space) { '1' }
+        let(:exclude) { '1' }
         let(:inside_spaces) { [space] }
         it_behaves_like 'リスト表示(json)'
       end

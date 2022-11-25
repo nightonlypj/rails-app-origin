@@ -48,7 +48,7 @@ class DownloadsController < ApplicationAuthController
     output_items = @items.stringify_keys.keys
 
     @download = Download.new(model: @model, space: @space, search_params: params[:search_params], select_items: params[:select_items],
-                             target: @enable_target[0], format: :csv, char: :sjis, newline: :crlf, output_items: output_items)
+                             target: @enable_target[0], format: :csv, char_code: :sjis, newline_code: :crlf, output_items: output_items)
   end
 
   # POST /downloads/create ダウンロード依頼(処理)
@@ -114,16 +114,16 @@ class DownloadsController < ApplicationAuthController
     end
 
     # ArgumentError対策
-    params[:download][:target]  = nil if Download.targets[params[:download][:target]].blank?
-    params[:download][:format]  = nil if Download.formats[params[:download][:format]].blank?
-    params[:download][:char]    = nil if Download.chars[params[:download][:char]].blank?
-    params[:download][:newline] = nil if Download.newlines[params[:download][:newline]].blank?
+    params[:download][:target]       = nil if Download.targets[params[:download][:target]].blank?
+    params[:download][:format]       = nil if Download.formats[params[:download][:format]].blank?
+    params[:download][:char_code]    = nil if Download.char_codes[params[:download][:char_code]].blank?
+    params[:download][:newline_code] = nil if Download.newline_codes[params[:download][:newline_code]].blank?
 
     # ActionController::Parametersの場合、permitでnilになる為
     params[:download][:output_items] = params[:download][:output_items].to_s if params[:download][:output_items].present?
     params[:download][:select_items] = params[:download][:select_items].to_s if params[:download][:select_items].present?
     params[:download][:search_params] = params[:download][:search_params].to_s if params[:download][:search_params].present?
 
-    params.require(:download).permit(:target, :format, :char, :newline, :output_items, :search_params, :select_items)
+    params.require(:download).permit(:target, :format, :char_code, :newline_code, :output_items, :search_params, :select_items)
   end
 end

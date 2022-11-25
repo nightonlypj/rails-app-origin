@@ -21,8 +21,8 @@ RSpec.describe 'downloads/new', type: :view do
       assert_select 'input[name=?]', 'download[select_items]'
       assert_select 'input[name=?]', 'download[target]', Download.targets.count
       assert_select 'input[name=?]', 'download[format]', Download.formats.count
-      assert_select 'input[name=?]', 'download[char]', Download.chars.count
-      assert_select 'input[name=?]', 'download[newline]', Download.newlines.count
+      assert_select 'input[name=?]', 'download[char_code]', Download.char_codes.count
+      assert_select 'input[name=?]', 'download[newline_code]', Download.newline_codes.count
       @items.each do |key, _label|
         assert_select 'input[name=?]', "download[output_items_#{key}]"
       end

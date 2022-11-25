@@ -29,26 +29,26 @@
         <%= render 'users/shared/field_error_messages', messages: @download.errors[:format] %>
       </div>
 
-      <%= form.label :char, class: "form-label fw-bolder" %>
-      <div class="form-outline<%= input_size_class_name_vertical(validate_enabled, @download, :char) %>">
-<% Download.chars.each do |key, _value| %>
-        <div class="form-check form-check-inline<%= validate_class_name(validate_enabled, @download, :char) %>">
-          <%= form.radio_button :char, key, class: "form-check-input#{validate_class_name(validate_enabled, @download, :char)}" %>
-          <%= form.label key, Download.chars_i18n[key], class: 'form-check-label', for: "download_char_#{key}" %>
+      <%= form.label :char_code, class: "form-label fw-bolder" %>
+      <div class="form-outline<%= input_size_class_name_vertical(validate_enabled, @download, :char_code) %>">
+<% Download.char_codes.each do |key, _value| %>
+        <div class="form-check form-check-inline<%= validate_class_name(validate_enabled, @download, :char_code) %>">
+          <%= form.radio_button :char_code, key, class: "form-check-input#{validate_class_name(validate_enabled, @download, :char_code)}" %>
+          <%= form.label key, Download.char_codes_i18n[key], class: 'form-check-label', for: "download_char_code_#{key}" %>
         </div>
 <% end %>
-        <%= render 'users/shared/field_error_messages', messages: @download.errors[:char] %>
+        <%= render 'users/shared/field_error_messages', messages: @download.errors[:char_code] %>
       </div>
 
-      <%= form.label :newline, class: "form-label fw-bolder" %>
-      <div class="form-outline<%= input_size_class_name_vertical(validate_enabled, @download, :newline) %>">
-<% Download.newlines.each do |key, _value| %>
-        <div class="form-check form-check-inline<%= validate_class_name(validate_enabled, @download, :newline) %>">
-          <%= form.radio_button :newline, key, class: "form-check-input#{validate_class_name(validate_enabled, @download, :newline)}" %>
-          <%= form.label key, Download.newlines_i18n[key], class: 'form-check-label', for: "download_newline_#{key}" %>
+      <%= form.label :newline_code, class: "form-label fw-bolder" %>
+      <div class="form-outline<%= input_size_class_name_vertical(validate_enabled, @download, :newline_code) %>">
+<% Download.newline_codes.each do |key, _value| %>
+        <div class="form-check form-check-inline<%= validate_class_name(validate_enabled, @download, :newline_code) %>">
+          <%= form.radio_button :newline_code, key, class: "form-check-input#{validate_class_name(validate_enabled, @download, :newline_code)}" %>
+          <%= form.label key, Download.newline_codes_i18n[key], class: 'form-check-label', for: "download_newline_code_#{key}" %>
         </div>
 <% end %>
-        <%= render 'users/shared/field_error_messages', messages: @download.errors[:newline] %>
+        <%= render 'users/shared/field_error_messages', messages: @download.errors[:newline_code] %>
       </div>
     </div>
     <div class="col-12 col-md-6">
@@ -56,7 +56,7 @@
       <div class="form-outline<%= input_size_class_name_vertical(validate_enabled, @download, :output_items) %>">
 <% @items.each do |key, value| %>
         <div class="form-check form-switch pb-2<%= validate_class_name(validate_enabled, @download, :output_items) %>">
-          <%= form.check_box "output_items_#{key.to_s}", class: "form-check-input mb-0 #{validate_class_name(validate_enabled, @download, :output_items)}", checked: @download.output_items.include?(key.to_s) %>
+          <%= form.check_box "output_items_#{key.to_s}", class: "form-check-input mb-0 #{validate_class_name(validate_enabled, @download, :output_items)}", checked: @download.output_items&.include?(key.to_s) %>
           <%= form.label key, value, class: 'form-check-label mb-0', for: "download_output_items_#{key.to_s}" %>
         </div>
 <% end %>

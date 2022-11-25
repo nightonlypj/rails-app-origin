@@ -7,11 +7,11 @@ class Space < ApplicationRecord
   has_many :users, through: :members
   has_many :downloads
 
-  scope :by_target, lambda { |current_user, exclude_member_space|
+  scope :by_target, lambda { |current_user, exclude|
     space = where(private: false)
     return space if current_user.blank?
 
-    if exclude_member_space
+    if exclude
       space.left_joins(:members).where(members: { user: nil }).distinct
     else
       space.left_joins(:members).or(where(members: { user: current_user })).distinct

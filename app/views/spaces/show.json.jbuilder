@@ -1,1 +1,3 @@
-json.partial! 'spaces/space', space: @space
+json.space do
+  json.partial! 'space', space: @space
+end

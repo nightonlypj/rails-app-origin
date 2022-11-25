@@ -12,7 +12,7 @@ RSpec.describe 'spaces/index', type: :view do
         assert_select 'button[type=?]', 'submit'
         if signed_in
           assert_select 'input[name=?]', 'option'
-          assert_select 'input[name=?]', 'exclude_member_space'
+          assert_select 'input[name=?]', 'exclude'
         end
       end
     end

@@ -58,8 +58,8 @@ ja:
         space: 'スペース'
         target: '対象'
         format: '形式'
-        char: '文字コード'
-        newline: '改行コード'
+        char_code: '文字コード'
+        newline_code: '改行コード'
         output_items: '出力項目'
         search_params: '検索パラメータ'
         select_items: '選択項目'
@@ -85,9 +85,9 @@ ja:
               blank: '選択してください。'
             format:
               blank: '選択してください。'
-            char:
+            char_code:
               blank: '選択してください。'
-            newline:
+            newline_code:
               blank: '選択してください。'
             output_items:
               blank: '選択してください。'
@@ -136,11 +136,11 @@ ja:
       format:
         csv: 'CSV'
         tsv: 'TSV'
-      char:
+      char_code:
         sjis: 'Shift_JIS'
         eucjp: 'EUC-JP'
         utf8: 'UTF-8'
-      newline:
+      newline_code:
         crlf: 'CR+LF'
         lf: 'LF'
         cr: 'CR'

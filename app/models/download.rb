@@ -5,8 +5,8 @@ class Download < ApplicationRecord
 
   validates :target, presence: true
   validates :format, presence: true
-  validates :char, presence: true
-  validates :newline, presence: true
+  validates :char_code, presence: true
+  validates :newline_code, presence: true
   validates :output_items, presence: true
   validates :output_items, text_array: true, if: proc { |download| download.output_items.present? }
   validates :select_items, presence: true, if: proc { |download| download.target&.to_sym == :select }
@@ -42,14 +42,14 @@ class Download < ApplicationRecord
   }, _prefix: true
 
   # 文字コード
-  enum char: {
+  enum char_code: {
     sjis: 1, # Shift_JIS
     eucjp: 2, # EUC-JP
     utf8: 3 # UTF-8
   }, _prefix: true
 
   # 改行コード
-  enum newline: {
+  enum newline_code: {
     crlf: 1, # CR+LF
     lf: 2, # LF
     cr: 3 # CR
@@ -69,7 +69,7 @@ class Download < ApplicationRecord
 
   # 改行文字
   def row_sep
-    case newline.to_sym
+    case newline_code.to_sym
     when :crlf
       "\r\n"
     when :lf
@@ -77,7 +77,7 @@ class Download < ApplicationRecord
     when :cr
       "\r"
     else
-      raise 'newline not found.'
+      raise 'newline_code not found.'
     end
   end
 

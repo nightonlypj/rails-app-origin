@@ -1,0 +1,30 @@
+<div class="table-responsive">
+  <table class="table table-hover">
+    <tbody>
+<% @spaces.each do |space| %>
+      <tr class="align-middle">
+        <%# 名称 %>
+        <td scope="row" class="px-1 py-2" style="width: 35%">
+          <%= image_tag space.image_url(:small), class: 'rounded-circle' %>
+          <span class="fw-bolder ms-1">
+            <%= link_to text_truncate(space.name, 64), space_path(space.code) %>
+          </span>
+          <%= render 'icon', space: space, current_member: @members[space.id] %>
+        </td>
+        <%# 説明 %>
+        <td class="px-1 py-2">
+          <%= text_truncate(space.description, 128) %>
+        </td>
+        <%# (アクション) %>
+        <td class="px-1 py-2">
+<% if @members[space.id].present? %>
+          <a href="<%= members_path(space.code) %>" class="btn btn-secondary btn-sm">
+            <i class="fas fa-user-friends" data-mdb-toggle="tooltip" data-mdb-placement="bottom" title="メンバー一覧"></i>
+          </a>
+<% end %>
+        </td>
+      </tr>
+<% end %>
+    </tbody>
+  </table>
+</div>

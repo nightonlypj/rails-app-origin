@@ -17,7 +17,7 @@ json.target download.target
 json.target_i18n download.target_i18n
 json.format download.format
 json.format_i18n download.format_i18n
-json.char download.char
-json.char_i18n download.char_i18n
-json.newline download.newline
-json.newline_i18n download.newline_i18n
+json.char_code download.char_code
+json.char_code_i18n download.char_code_i18n
+json.newline_code download.newline_code
+json.newline_code_i18n download.newline_code_i18n

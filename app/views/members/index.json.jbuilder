@@ -1,4 +1,11 @@
 json.success true
+json.search_params do
+  json.text @text
+  json.power @powers.join(',')
+  json.sort @sort
+  json.desc @desc ? 1 : 0
+end
+
 json.space do
   json.partial! 'spaces/space', space: @space
 

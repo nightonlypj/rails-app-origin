@@ -28,8 +28,8 @@
         <div>権限:</div>
 <% Member.powers.each do |key, value| %>
         <div class="form-check ms-2">
-          <%= form.check_box key, checked: @power[value], class: 'form-check-input click_to_search_btn_enabled' %>
-          <%= form.label key, Member.powers_i18n[key], class: 'form-check-label', for: key %>
+          <%= form.check_box "power[#{key}]", checked: @power[value], class: 'form-check-input click_to_search_btn_enabled' %>
+          <%= form.label "power[#{key}]", Member.powers_i18n[key], class: 'form-check-label', for: "power[#{key}]" %>
         </div>
 <% end %>
 

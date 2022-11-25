@@ -4,8 +4,8 @@ FactoryBot.define do
     model        { :member }
     target       { :all }
     format       { :csv }
-    char         { :sjis }
-    newline      { :crlf }
+    char_code    { :sjis }
+    newline_code { :crlf }
     output_items { ['user.name'] }
     association :user
 

@@ -41,7 +41,7 @@ class DownloadJob < ApplicationJob
       raise 'model not found.'
     end
 
-    change_char(file_header(output_items) + file_data)
+    change_char_code(file_header(output_items) + file_data)
   end
 
   def set_space
@@ -63,8 +63,8 @@ class DownloadJob < ApplicationJob
     header.to_csv(col_sep: @download.col_sep, row_sep: @download.row_sep)
   end
 
-  def change_char(result)
-    case @download.char.to_sym
+  def change_char_code(result)
+    case @download.char_code.to_sym
     when :sjis
       result.encode('Windows-31J', invalid: :replace, undef: :replace)
     when :eucjp
@@ -72,7 +72,7 @@ class DownloadJob < ApplicationJob
     when :utf8
       result
     else
-      raise 'char not found.'
+      raise 'char_code not found.'
     end
   end
 end

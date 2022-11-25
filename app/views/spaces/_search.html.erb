@@ -2,7 +2,7 @@
   <div class="d-flex align-items-center">
     <div class="form-outline" style="width: 57%; max-width: 400px">
       <%= form.text_field :text, autocomplete: 'on', class: 'form-control input_to_search_btn_enabled', value: @text, placeholder: '名称や説明を入力' %>
-      <%= form.label '検索', class: 'form-label' %>
+      <%= form.label :text, '検索', class: 'form-label' %>
     </div>
     <button id="search_btn" type="submit" class="btn btn-primary m-1" disabled>
       <i class="fas fa-search"></i>
@@ -11,8 +11,8 @@
     <%= form.hidden_field :option, value: @option ? 1 : '' %>
     <button
       id="option_btn"
-      class="btn btn-light btn-rounded d-flex m-1"
       type="button"
+      class="btn btn-light btn-rounded d-flex m-1"
       data-mdb-toggle="collapse"
       data-mdb-target="#searchCollapse"
       aria-expanded="<%= @option %>"
@@ -29,8 +29,8 @@
     <div class="row">
       <div class="col">
         <div class="form-check">
-          <%= form.check_box :exclude_member_space, checked: @exclude_member_space, include_hidden: false, class: 'form-check-input click_to_search_btn_enabled' %>
-          <%= form.label '参加スペースを除く', class: 'form-check-label', for: 'exclude_member_space' %>
+          <%= form.check_box :exclude, checked: @exclude, include_hidden: false, class: 'form-check-input click_to_search_btn_enabled' %>
+          <%= form.label :exclude, '参加スペースを除く', class: 'form-check-label', for: 'exclude' %>
         </div>
       </div>
     </div>

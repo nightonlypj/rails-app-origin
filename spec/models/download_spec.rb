@@ -49,31 +49,31 @@ RSpec.describe Download, type: :model do
   end
 
   # 文字コード
-  describe 'validates :char' do
-    let(:download) { FactoryBot.build_stubbed(:download, char: char) }
+  describe 'validates :char_code' do
+    let(:download) { FactoryBot.build_stubbed(:download, char_code: char_code) }
 
     # テストケース
     context 'ない' do
-      let(:char) { nil }
+      let(:char_code) { nil }
       it_behaves_like 'InValid'
     end
     context '正常値' do
-      let(:char) { :sjis }
+      let(:char_code) { :sjis }
       it_behaves_like 'Valid'
     end
   end
 
   # 改行コード
-  describe 'validates :newline' do
-    let(:download) { FactoryBot.build_stubbed(:download, newline: newline) }
+  describe 'validates :newline_code' do
+    let(:download) { FactoryBot.build_stubbed(:download, newline_code: newline_code) }
 
     # テストケース
     context 'ない' do
-      let(:newline) { nil }
+      let(:newline_code) { nil }
       it_behaves_like 'InValid'
     end
     context '正常値' do
-      let(:newline) { :crlf }
+      let(:newline_code) { :crlf }
       it_behaves_like 'Valid'
     end
   end
@@ -195,18 +195,18 @@ RSpec.describe Download, type: :model do
   # 改行文字
   describe '#row_sep' do
     subject { download.row_sep }
-    let(:download) { FactoryBot.create(:download, newline: newline) }
+    let(:download) { FactoryBot.create(:download, newline_code: newline_code) }
 
     context 'CR+LF' do
-      let(:newline) { :crlf }
+      let(:newline_code) { :crlf }
       it_behaves_like 'Value', "\r\n", '\r\n'
     end
     context 'LF' do
-      let(:newline) { :lf }
+      let(:newline_code) { :lf }
       it_behaves_like 'Value', "\n", '\n'
     end
     context 'CR' do
-      let(:newline) { :cr }
+      let(:newline_code) { :cr }
       it_behaves_like 'Value', "\r", '\r'
     end
   end

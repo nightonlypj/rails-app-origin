@@ -30,6 +30,7 @@ module MembersConcern
 
   def set_params_index(search_params = params, sort_only = false)
     @power = {}
+    @powers = []
     if sort_only
       @text = nil
       @option = nil
@@ -42,12 +43,21 @@ module MembersConcern
       @option = search_params[:option] == '1'
 
       Member.powers.each do |key, value|
-        @power[value] = true if search_params[key] != '0'
+        if power_include_key?(search_params[:power], key)
+          @power[value] = true
+          @powers.push(key)
+        end
       end
     end
 
     @sort = SORT_COLUMN.include?(search_params[:sort]) ? search_params[:sort] : 'invitationed_at'
     @desc = search_params[:desc] != '0'
+  end
+
+  def power_include_key?(power, key)
+    return true if power.blank?
+
+    power.instance_of?(String) ? power.split(',').include?(key) : power[key] == '1'
   end
 
   def members_select(codes)
