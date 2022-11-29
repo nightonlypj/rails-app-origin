@@ -1,6 +1,10 @@
 require 'rails_helper'
 
 RSpec.describe 'Infomations', type: :request do
+  let(:response_json) { response.body.present? ? JSON.parse(response.body) : {} }
+  let(:response_json_infomation)  { response_json['infomation'] }
+  let(:response_json_infomations) { response_json['infomations'] }
+
   # GET /infomations/:id お知らせ詳細
   # GET /infomations/:id(.json) お知らせ詳細API
   # 前提条件
@@ -45,17 +49,15 @@ RSpec.describe 'Infomations', type: :request do
       let(:accept_headers) { ACCEPT_INC_JSON }
       it 'HTTPステータスが200。対象項目が一致する' do
         is_expected.to eq(200)
-        expect(JSON.parse(response.body)['success']).to eq(true)
-
-        response_json = JSON.parse(response.body)['infomation']
-        expect(response_json['label']).to eq(infomation.label) # ラベル
-        expect(response_json['label_i18n']).to eq(infomation.label_i18n)
-        expect(response_json['title']).to eq(infomation.title) # タイトル
-        expect(response_json['summary']).to eq(infomation.summary) # サマリー
-        expect(response_json['body']).to eq(infomation.body) # 本文
-        expect(response_json['started_at']).to eq(I18n.l(infomation.started_at, format: :json)) # 掲載開始日
-        expect(response_json['ended_at']).to eq(I18n.l(infomation.ended_at, format: :json, default: nil)) # 掲載終了日
-        expect(response_json['target']).to eq(infomation.target) # 対象
+        expect(response_json['success']).to eq(true)
+        expect(response_json_infomation['label']).to eq(infomation.label) # ラベル
+        expect(response_json_infomation['label_i18n']).to eq(infomation.label_i18n)
+        expect(response_json_infomation['title']).to eq(infomation.title) # タイトル
+        expect(response_json_infomation['summary']).to eq(infomation.summary) # サマリー
+        expect(response_json_infomation['body']).to eq(infomation.body) # 本文
+        expect(response_json_infomation['started_at']).to eq(I18n.l(infomation.started_at, format: :json)) # 掲載開始日
+        expect(response_json_infomation['ended_at']).to eq(I18n.l(infomation.ended_at, format: :json, default: nil)) # 掲載終了日
+        expect(response_json_infomation['target']).to eq(infomation.target) # 対象
       end
     end
     shared_examples_for 'ToNot(json/json)' do |success, alert, notice|
@@ -63,9 +65,7 @@ RSpec.describe 'Infomations', type: :request do
       let(:accept_headers) { ACCEPT_INC_JSON }
       it 'HTTPステータスが404。対象項目が一致する' do
         is_expected.to eq(404)
-        response_json = response.body.present? ? JSON.parse(response.body) : {}
         expect(response_json['success']).to eq(success)
-
         expect(response_json['alert']).to alert.present? ? eq(I18n.t(alert)) : be_nil
         expect(response_json['notice']).to notice.present? ? eq(I18n.t(notice)) : be_nil
       end

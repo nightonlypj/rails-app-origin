@@ -65,37 +65,37 @@ end
 
 # テスト内容
 shared_context 'Authテスト内容' do
+  let(:response_json_user)           { response_json['user'] }
+  let(:response_json_user_image_url) { response_json_user['image_url'] }
   let(:expect_success_json) do
-    response_json = JSON.parse(response.body)
     expect(response_json['success']).to eq(true)
     expect(response_json['data']).to be_nil
     if current_user.blank?
-      expect(response_json['user']).to be_nil
+      expect(response_json_user).to be_nil
     else
-      expect(response_json['user']['code']).to eq(current_user.code)
-      expect(response_json['user']['image_url']['mini']).to eq("#{Settings['base_image_url']}#{current_user.image_url(:mini)}")
-      expect(response_json['user']['image_url']['small']).to eq("#{Settings['base_image_url']}#{current_user.image_url(:small)}")
-      expect(response_json['user']['image_url']['medium']).to eq("#{Settings['base_image_url']}#{current_user.image_url(:medium)}")
-      expect(response_json['user']['image_url']['large']).to eq("#{Settings['base_image_url']}#{current_user.image_url(:large)}")
-      expect(response_json['user']['image_url']['xlarge']).to eq("#{Settings['base_image_url']}#{current_user.image_url(:xlarge)}")
-      expect(response_json['user']['name']).to eq(current_user.name)
-      expect(response_json['user']['email']).to be_nil
+      expect(response_json_user['code']).to eq(current_user.code)
+      expect(response_json_user_image_url['mini']).to eq("#{Settings['base_image_url']}#{current_user.image_url(:mini)}")
+      expect(response_json_user_image_url['small']).to eq("#{Settings['base_image_url']}#{current_user.image_url(:small)}")
+      expect(response_json_user_image_url['medium']).to eq("#{Settings['base_image_url']}#{current_user.image_url(:medium)}")
+      expect(response_json_user_image_url['large']).to eq("#{Settings['base_image_url']}#{current_user.image_url(:large)}")
+      expect(response_json_user_image_url['xlarge']).to eq("#{Settings['base_image_url']}#{current_user.image_url(:xlarge)}")
+      expect(response_json_user['name']).to eq(current_user.name)
+      expect(response_json_user['email']).to be_nil
 
-      expect(response_json['user']['provider']).to eq(current_user.provider)
-      expect(response_json['user']['upload_image']).to eq(current_user.image?)
+      expect(response_json_user['provider']).to eq(current_user.provider)
+      expect(response_json_user['upload_image']).to eq(current_user.image?)
       ## 削除予約
-      expect(response_json['user']['destroy_schedule_days']).to eq(Settings['destroy_schedule_days'])
-      expect(response_json['user']['destroy_requested_at']).to eq(I18n.l(current_user.destroy_requested_at, format: :json, default: nil))
-      expect(response_json['user']['destroy_schedule_at']).to eq(I18n.l(current_user.destroy_schedule_at, format: :json, default: nil))
+      expect(response_json_user['destroy_schedule_days']).to eq(Settings['destroy_schedule_days'])
+      expect(response_json_user['destroy_requested_at']).to eq(I18n.l(current_user.destroy_requested_at, format: :json, default: nil))
+      expect(response_json_user['destroy_schedule_at']).to eq(I18n.l(current_user.destroy_schedule_at, format: :json, default: nil))
       ## お知らせ
-      expect(response_json['user']['infomation_unread_count']).to eq(current_user.infomation_unread_count)
+      expect(response_json_user['infomation_unread_count']).to eq(current_user.infomation_unread_count)
     end
   end
   let(:expect_failure_json) do
-    response_json = JSON.parse(response.body)
     expect(response_json['success']).to eq(false)
     expect(response_json['data']).to be_nil
-    expect(response_json['user']).to be_nil
+    expect(response_json_user).to be_nil
   end
   let(:expect_exist_auth_header) do
     # expect(response.header['uid']).to eq(current_user.email)

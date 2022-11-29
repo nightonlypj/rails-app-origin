@@ -1,6 +1,9 @@
 require 'rails_helper'
 
 RSpec.describe 'Infomations', type: :request do
+  let(:response_json) { JSON.parse(response.body) }
+  let(:response_json_infomations) { response_json['infomations'] }
+
   # GET /infomations/important(.json) 大切なお知らせ一覧API
   # 前提条件
   #   なし
@@ -19,7 +22,7 @@ RSpec.describe 'Infomations', type: :request do
       let(:accept_headers) { ACCEPT_INC_JSON }
       it 'HTTPステータスが200。対象項目が一致する' do
         is_expected.to eq(200)
-        expect(JSON.parse(response.body)['success']).to eq(true)
+        expect(response_json['success']).to eq(true)
       end
     end
 
@@ -28,10 +31,9 @@ RSpec.describe 'Infomations', type: :request do
       let(:accept_headers) { ACCEPT_INC_JSON }
       it '件数・対象項目が一致する' do
         subject
-        response_json = JSON.parse(response.body)['infomations']
-        expect(response_json.count).to eq(infomations.count)
+        expect(response_json_infomations.count).to eq(infomations.count)
         (1..infomations.count).each do |no|
-          data = response_json[no - 1]
+          data = response_json_infomations[no - 1]
           infomation = infomations[infomations.count - no]
           expect(data['id']).to eq(infomation.id) # ID
           expect(data['label']).to eq(infomation.label) # ラベル

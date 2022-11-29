@@ -1,15 +1,19 @@
 require 'rails_helper'
 
 RSpec.describe 'Users::Auth::Passwords', type: :request do
+  let(:response_json) { JSON.parse(response.body) }
+
   # テスト内容（共通）
   shared_examples_for 'ToMsg' do |error_class, errors_count, error_msg, message, alert, notice|
     let(:subject_format) { :json }
     let(:accept_headers) { ACCEPT_INC_JSON }
     it '対象のメッセージと一致する' do
       subject
-      response_json = JSON.parse(response.body)
-      msg = error_msg == 'Unauthorized' ? error_msg : I18n.t(error_msg)
-      expect(response_json['errors'].to_s).to error_msg.present? ? include(msg) : be_blank
+      if error_msg.present?
+        expect(response_json['errors'].to_s).to include(error_msg == 'Unauthorized' ? error_msg : I18n.t(error_msg))
+      else
+        expect(response_json['errors'].to_s).to be_blank
+      end
       expect(response_json['errors'].class).to eq(error_class) # 方針: バリデーション(Hash)のみ、他はalertへ
       expect(response_json['errors']&.count).to errors_count.positive? ? eq(errors_count) : be_nil
       expect(response_json['message']).to message.present? ? eq(I18n.t(message)) : be_nil # 方針: 廃止して、noticeへ
@@ -317,7 +321,6 @@ RSpec.describe 'Users::Auth::Passwords', type: :request do
       # it 'HTTPステータスが422。対象項目が一致する' do
       it 'エラーページにリダイレクトする' do
         # is_expected.to eq(422)
-        # response_json = JSON.parse(response.body)
         # expect(response_json['success']).to eq(false)
         # expect(response_json['errors']).not_to be_nil
         is_expected.to redirect_to(Settings['reset_password_error_url_not'])
@@ -330,7 +333,6 @@ RSpec.describe 'Users::Auth::Passwords', type: :request do
       # it 'HTTPステータスが422。対象項目が一致する' do
       it 'エラーページにリダイレクトする' do
         # is_expected.to eq(422)
-        # response_json = JSON.parse(response.body)
         # expect(response_json['success']).to eq(false)
         # expect(response_json['errors']).not_to be_nil
         is_expected.to redirect_to(Settings['reset_password_error_url_bad'])
