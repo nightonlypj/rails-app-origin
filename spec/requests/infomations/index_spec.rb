@@ -1,6 +1,10 @@
 require 'rails_helper'
 
 RSpec.describe 'Infomations', type: :request do
+  let(:response_json) { JSON.parse(response.body) }
+  let(:response_json_infomation)  { response_json['infomation'] }
+  let(:response_json_infomations) { response_json['infomations'] }
+
   # GET /infomations お知らせ一覧
   # GET /infomations(.json) お知らせ一覧API
   # 前提条件
@@ -34,13 +38,11 @@ RSpec.describe 'Infomations', type: :request do
       let(:accept_headers) { ACCEPT_INC_JSON }
       it 'HTTPステータスが200。対象項目が一致する' do
         is_expected.to eq(200)
-        expect(JSON.parse(response.body)['success']).to eq(true)
-
-        response_json = JSON.parse(response.body)['infomation']
-        expect(response_json['total_count']).to eq(infomations.count) # 全件数
-        expect(response_json['current_page']).to eq(subject_page) # 現在ページ
-        expect(response_json['total_pages']).to eq((infomations.count - 1).div(Settings['default_infomations_limit']) + 1) # 全ページ数
-        expect(response_json['limit_value']).to eq(Settings['default_infomations_limit']) # 最大表示件数
+        expect(response_json['success']).to eq(true)
+        expect(response_json_infomation['total_count']).to eq(infomations.count) # 全件数
+        expect(response_json_infomation['current_page']).to eq(subject_page) # 現在ページ
+        expect(response_json_infomation['total_pages']).to eq((infomations.count - 1).div(Settings['default_infomations_limit']) + 1) # 全ページ数
+        expect(response_json_infomation['limit_value']).to eq(Settings['default_infomations_limit']) # 最大表示件数
       end
     end
 
@@ -106,10 +108,9 @@ RSpec.describe 'Infomations', type: :request do
       let(:end_no)       { [infomations.count, Settings['default_infomations_limit'] * page].min }
       it '件数・対象項目が一致する' do
         subject
-        response_json = JSON.parse(response.body)['infomations']
-        expect(response_json.count).to eq(end_no - start_no + 1)
+        expect(response_json_infomations.count).to eq(end_no - start_no + 1)
         (start_no..end_no).each do |no|
-          data = response_json[no - start_no]
+          data = response_json_infomations[no - start_no]
           infomation = infomations[infomations.count - no]
           expect(data['id']).to eq(infomation.id) # ID
           expect(data['label']).to eq(infomation.label) # ラベル

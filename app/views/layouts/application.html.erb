@@ -69,7 +69,7 @@
             <a href="<%= infomations_path %>" class="btn btn-link btn-rounded link-dark" style="font-size: 1rem">
               <i class="fas fa-bell fa-lg">
 <% if current_user.infomation_unread_count > 0 %>
-                <span class="badge rounded-pill badge-notification bg-danger"><%= current_user.infomation_unread_count %></span>
+                <span class="badge rounded-pill badge-notification bg-danger" style="top: -10px; left: -5px"><%= current_user.infomation_unread_count %></span>
 <% end %>
               </i>
             </a>
@@ -133,7 +133,7 @@
         <a href="<%= infomations_path %>" class="btn btn-link d-flex align-items-center link-dark" style="font-size: 1rem">
           <i class="fas fa-bell fa-lg">
 <% if current_user.infomation_unread_count > 0 %>
-            <span class="badge rounded-pill badge-notification bg-danger"><%= current_user.infomation_unread_count %></span>
+            <span class="badge rounded-pill badge-notification bg-danger" style="top: -10px; left: -5px"><%= current_user.infomation_unread_count %></span>
 <% end %>
           </i>
           <span class="mx-2 my-1">お知らせ</span>

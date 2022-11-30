@@ -1,15 +1,15 @@
 require 'rails_helper'
 
 RSpec.describe 'Users::Auth::Sessions', type: :request do
+  let(:response_json) { JSON.parse(response.body) }
+
   # テスト内容（共通）
   shared_examples_for 'ToMsg' do |error_msg, alert, notice|
     let(:subject_format) { :json }
     let(:accept_headers) { ACCEPT_INC_JSON }
     it '対象のメッセージと一致する' do
       subject
-      response_json = JSON.parse(response.body)
       expect(response_json['errors'].to_s).to error_msg.present? ? include(I18n.t(error_msg)) : be_blank # 方針: 廃止して、alertへ
-
       expect(response_json['alert']).to alert.present? ? eq(I18n.t(alert)) : be_nil # 方針: 追加
       expect(response_json['notice']).to notice.present? ? eq(I18n.t(notice)) : be_nil # 方針: 追加
     end
@@ -48,7 +48,6 @@ RSpec.describe 'Users::Auth::Sessions', type: :request do
       let(:accept_headers) { ACCEPT_INC_JSON }
       it 'HTTPステータスが200。対象項目が一致する。認証ヘッダがある' do
         is_expected.to eq(200)
-        # response_json = JSON.parse(response.body)
         # expect(response_json['success']).to eq(success) # 方針: 成功時も返却
         # expect(response_json['data']['id'].present?).to eq(id_present) # 方針: 廃止
         # expect(response_json['data']['name']).to eq(send_user.name)

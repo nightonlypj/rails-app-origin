@@ -1,13 +1,14 @@
 require 'rails_helper'
 
 RSpec.describe 'Users::Auth::Confirmations', type: :request do
+  let(:response_json) { JSON.parse(response.body) }
+
   # テスト内容（共通）
   shared_examples_for 'ToMsg' do |error_class, errors_count, error_msg, message, alert, notice|
     let(:subject_format) { :json }
     let(:accept_headers) { ACCEPT_INC_JSON }
     it '対象のメッセージと一致する' do
       subject
-      response_json = JSON.parse(response.body)
       expect(response_json['errors'].to_s).to error_msg.present? ? include(I18n.t(error_msg)) : be_blank
       expect(response_json['errors'].class).to eq(error_class) # 方針: バリデーション(Hash)のみ、他はalertへ
       expect(response_json['errors']&.count).to errors_count.positive? ? eq(errors_count) : be_nil
