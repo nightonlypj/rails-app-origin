@@ -17,7 +17,7 @@ user_name_maximum: 12 # NOTE: (7+5?)以上
 
 ## お知らせ
 # 一覧のデフォルト最大表示件数
-default_infomations_limit: 4 # NOTE: 高速化の為（4以上、下記の合計値と一致）
+default_infomations_limit: 4 # NOTE: 高速化の為（下記の合計値と一致）
 test_infomations:
   all_forever_count: 1
   all_future_count: 1

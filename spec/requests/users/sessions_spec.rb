@@ -29,8 +29,6 @@ RSpec.describe 'Users::Sessions', type: :request do
   end
 
   # GET /users/sign_in ログイン
-  # 前提条件
-  #   なし
   # テストパターン
   #   未ログイン, ログイン中, ログイン中（削除予約済み）
   describe 'GET #new' do
@@ -51,8 +49,6 @@ RSpec.describe 'Users::Sessions', type: :request do
   end
 
   # POST /users/sign_in ログイン(処理)
-  # 前提条件
-  #   なし
   # テストパターン
   #   未ログイン, ログイン中, ログイン中（削除予約済み）
   #   有効なパラメータ（未ロック, ロック中, メール未確認, メールアドレス変更中, 削除予約済み）, 無効なパラメータ（存在しない, ロック前, ロック前の前, ロック前の前の前）
@@ -234,8 +230,6 @@ RSpec.describe 'Users::Sessions', type: :request do
   end
 
   # GET /users/sign_out ログアウト
-  # 前提条件
-  #   なし
   # テストパターン
   #   未ログイン, ログイン中, ログイン中（削除予約済み）
   describe 'GET #delete' do
@@ -256,8 +250,6 @@ RSpec.describe 'Users::Sessions', type: :request do
   end
 
   # POST /users/sign_out ログアウト(処理)
-  # 前提条件
-  #   なし
   # テストパターン
   #   未ログイン, ログイン中, ログイン中（削除予約済み）
   describe 'POST #destroy' do

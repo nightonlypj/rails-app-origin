@@ -2,8 +2,6 @@ require 'rails_helper'
 
 RSpec.describe 'Top', type: :request do
   # GET / トップページ
-  # 前提条件
-  #   なし
   # テストパターン
   #   未ログイン, ログイン中, ログイン中（削除予約済み）
   #   大切なお知らせ: ない, ある

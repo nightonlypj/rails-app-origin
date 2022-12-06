@@ -2,8 +2,6 @@ require 'rails_helper'
 
 RSpec.describe Infomation, type: :model do
   # 表示対象かを返却
-  # 前提条件
-  #   なし
   # テストパターン
   #   未ログイン, ログイン中, ログイン中（削除予約済み）
   #   対象: 全員, 自分, 他人

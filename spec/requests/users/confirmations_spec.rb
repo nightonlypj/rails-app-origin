@@ -36,8 +36,6 @@ RSpec.describe 'Users::Confirmations', type: :request do
   end
 
   # GET /users/confirmation/resend メールアドレス確認[メール再送]
-  # 前提条件
-  #   なし
   # テストパターン
   #   未ログイン, ログイン中（メール確認済み, メールアドレス変更中）
   describe 'GET #new' do
@@ -58,8 +56,6 @@ RSpec.describe 'Users::Confirmations', type: :request do
   end
 
   # POST /users/confirmation/resend メールアドレス確認[メール再送](処理)
-  # 前提条件
-  #   なし
   # テストパターン
   #   未ログイン, ログイン中
   #   有効なパラメータ（メール未確認, メール確認済み, メールアドレス変更中）, 無効なパラメータ
@@ -130,8 +126,6 @@ RSpec.describe 'Users::Confirmations', type: :request do
   end
 
   # GET /users/confirmation メールアドレス確認(処理)
-  # 前提条件
-  #   なし
   # テストパターン
   #   未ログイン, ログイン中
   #   トークン: 期限内, 期限切れ, 存在しない, ない

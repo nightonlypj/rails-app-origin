@@ -16,8 +16,6 @@ RSpec.describe 'Users::Auth::TokenValidations', type: :request do
   end
 
   # GET /users/auth/validate_token(.json) トークン検証API(処理)
-  # 前提条件
-  #   なし
   # テストパターン
   #   未ログイン, ログイン中, APIログイン中
   #   ＋URLの拡張子: .json, ない
@@ -52,16 +50,16 @@ RSpec.describe 'Users::Auth::TokenValidations', type: :request do
     end
 
     shared_examples_for 'ToOK' do # |id_present|
+      it_behaves_like 'ToNG(html/html)', 406
+      it_behaves_like 'ToNG(html/json)', 406
+      it_behaves_like 'ToNG(json/html)', 406
       it_behaves_like 'ToOK(json/json)' # , id_present
-      it_behaves_like 'To406(json/html)'
-      it_behaves_like 'To406(html/json)'
-      it_behaves_like 'To406(html/html)'
     end
     shared_examples_for 'ToNG' do |code|
+      it_behaves_like 'ToNG(html/html)', 406
+      it_behaves_like 'ToNG(html/json)', 406
+      it_behaves_like 'ToNG(json/html)', 406
       it_behaves_like 'ToNG(json/json)', code
-      it_behaves_like 'To406(json/html)'
-      it_behaves_like 'To406(html/json)'
-      it_behaves_like 'To406(html/html)'
     end
 
     # テストケース

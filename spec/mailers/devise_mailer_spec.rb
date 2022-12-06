@@ -140,8 +140,6 @@ RSpec.describe DeviseMailer, type: :mailer do
   # メールアドレス変更受け付けのお知らせ
   # 前提条件
   #   メールアドレス変更中
-  # テストパターン
-  #   なし
   describe '#email_changed' do
     let_it_be(:user) { FactoryBot.build_stubbed(:user, :email_changed) }
     let(:mail)    { DeviseMailer.email_changed(user) }
@@ -155,10 +153,6 @@ RSpec.describe DeviseMailer, type: :mailer do
   end
 
   # パスワード変更完了のお知らせ
-  # 前提条件
-  #   なし
-  # テストパターン
-  #   なし
   describe '#password_change' do
     let_it_be(:user) { FactoryBot.build_stubbed(:user) }
     let(:mail)    { DeviseMailer.password_change(user) }

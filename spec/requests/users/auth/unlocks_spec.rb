@@ -19,8 +19,6 @@ RSpec.describe 'Users::Auth::Unlocks', type: :request do
   end
 
   # POST /users/auth/unlock(.json) アカウントロック解除API[メール再送](処理)
-  # 前提条件
-  #   なし
   # テストパターン
   #   未ログイン, ログイン中, APIログイン中
   #   パラメータなし, 有効なパラメータ（ロック中, 未ロック）, 無効なパラメータ, URLがない, URLがホワイトリストにない
@@ -83,16 +81,16 @@ RSpec.describe 'Users::Auth::Unlocks', type: :request do
     end
 
     shared_examples_for 'ToOK' do
+      it_behaves_like 'ToNG(html/html)', 406
+      it_behaves_like 'ToNG(html/json)', 406
+      it_behaves_like 'ToNG(json/html)', 406
       it_behaves_like 'ToOK(json/json)'
-      it_behaves_like 'To406(json/html)'
-      it_behaves_like 'To406(html/json)'
-      it_behaves_like 'To406(html/html)'
     end
     shared_examples_for 'ToNG' do |code|
+      it_behaves_like 'ToNG(html/html)', 406
+      it_behaves_like 'ToNG(html/json)', 406
+      it_behaves_like 'ToNG(json/html)', 406
       it_behaves_like 'ToNG(json/json)', code
-      it_behaves_like 'To406(json/html)'
-      it_behaves_like 'To406(html/json)'
-      it_behaves_like 'To406(html/html)'
     end
 
     # テストケース
@@ -227,8 +225,6 @@ RSpec.describe 'Users::Auth::Unlocks', type: :request do
   end
 
   # GET /users/auth/unlock アカウントロック解除(処理)
-  # 前提条件
-  #   なし
   # テストパターン
   #   未ログイン, ログイン中, APIログイン中
   #   トークン: 存在する, 存在しない, ない, 空
@@ -294,7 +290,7 @@ RSpec.describe 'Users::Auth::Unlocks', type: :request do
       end
     end
 
-    shared_examples_for 'ToOK(html)' do |alert, notice|
+    shared_examples_for 'ToOK(html/*)' do
       let(:subject_format) { nil }
       it '[リダイレクトURLがある]指定URL（成功パラメータ）にリダイレクトする' do
         @redirect_url = FRONT_SITE_URL
@@ -322,7 +318,7 @@ RSpec.describe 'Users::Auth::Unlocks', type: :request do
         is_expected.to redirect_to(Settings['unlock_success_url_bad'])
       end
     end
-    shared_examples_for 'ToNG(html)' do |alert, notice|
+    shared_examples_for 'ToNG(html/*)' do
       let(:subject_format) { nil }
       it '[リダイレクトURLがある]指定URL（失敗パラメータ）にリダイレクトする' do
         @redirect_url = FRONT_SITE_URL
@@ -350,63 +346,74 @@ RSpec.describe 'Users::Auth::Unlocks', type: :request do
         is_expected.to redirect_to(Settings['unlock_error_url_bad'])
       end
     end
-
-    shared_examples_for 'ToOK(html/html)' do |alert, notice|
-      let(:accept_headers) { ACCEPT_INC_HTML }
-      it_behaves_like 'ToOK(html)', alert, notice
-    end
-    shared_examples_for 'ToOK(html/json)' do |alert, notice|
+    shared_examples_for 'ToNG(json/json)' do |code|
+      let(:subject_format) { :json }
       let(:accept_headers) { ACCEPT_INC_JSON }
-      it_behaves_like 'ToOK(html)', alert, notice
-    end
-    shared_examples_for 'ToNG(html/html)' do |alert, notice|
-      let(:accept_headers) { ACCEPT_INC_HTML }
-      it_behaves_like 'ToNG(html)', alert, notice
-    end
-    shared_examples_for 'ToNG(html/json)' do |alert, notice|
-      let(:accept_headers) { ACCEPT_INC_JSON }
-      it_behaves_like 'ToNG(html)', alert, notice
+      it "HTTPステータスが#{code}" do
+        is_expected.to eq(code)
+      end
     end
 
-    shared_examples_for 'ToOK' do |alert, notice|
-      it_behaves_like 'ToOK(html/html)', alert, notice
-      it_behaves_like 'ToOK(html/json)', alert, notice
-      it_behaves_like 'To406(json/html)'
-      it_behaves_like 'To406(json/json)'
+    shared_examples_for 'ToNG(html/html)' do
+      let(:subject_format) { nil }
+      let(:accept_headers) { ACCEPT_INC_HTML }
+      it_behaves_like 'ToNG(html/*)'
     end
-    shared_examples_for 'ToNG' do |alert, notice|
-      it_behaves_like 'ToNG(html/html)', alert, notice
-      it_behaves_like 'ToNG(html/json)', alert, notice
-      it_behaves_like 'To406(json/html)'
-      it_behaves_like 'To406(json/json)'
+    shared_examples_for 'ToNG(html/json)' do
+      let(:subject_format) { nil }
+      let(:accept_headers) { ACCEPT_INC_JSON }
+      it_behaves_like 'ToNG(html/*)'
+    end
+
+    shared_examples_for 'ToOK' do
+      it_behaves_like 'ToOK(html/html)'
+      it_behaves_like 'ToOK(html/json)'
+      it_behaves_like 'ToNG(json/html)', 406
+      it_behaves_like 'ToNG(json/json)', 406
+    end
+    shared_examples_for 'ToNG' do
+      it_behaves_like 'ToNG(html/html)'
+      it_behaves_like 'ToNG(html/json)'
+      it_behaves_like 'ToNG(json/html)', 406
+      it_behaves_like 'ToNG(json/json)', 406
     end
 
     # テストケース
     shared_examples_for '[*][存在する]ロック日時がない（未ロック）' do
+      let(:alert)  { nil }
+      # let(:notice) { nil }
+      let(:notice) { 'devise.unlocks.unlocked' } # NOTE: 既に解除済み
       include_context 'アカウントロック解除トークン作成', false
       it_behaves_like 'NG'
-      # it_behaves_like 'ToOK', nil, nil
-      it_behaves_like 'ToOK', nil, 'devise.unlocks.unlocked' # NOTE: 既に解除済み
+      it_behaves_like 'ToOK'
     end
     shared_examples_for '[*][存在しない]ロック日時がない（未ロック）' do
+      # let(:alert)  { nil } # NOTE: ActionController::RoutingError: Not Found
+      let(:alert)  { 'activerecord.errors.models.user.attributes.unlock_token.invalid' }
+      let(:notice) { nil }
       # it_behaves_like 'NG' # NOTE: トークンが存在しない為、ロック日時がない
-      # it_behaves_like 'ToNG', nil, nil # NOTE: ActionController::RoutingError: Not Found
-      it_behaves_like 'ToNG', 'activerecord.errors.models.user.attributes.unlock_token.invalid', nil
+      it_behaves_like 'ToNG'
     end
     shared_examples_for '[*][ない/空]ロック日時がない（未ロック）' do
+      # let(:alert)  { nil } # NOTE: ActionController::RoutingError: Not Found
+      let(:alert)  { 'activerecord.errors.models.user.attributes.unlock_token.blank' }
+      let(:notice) { nil }
       # it_behaves_like 'NG' # NOTE: トークンが存在しない為、ロック日時がない
-      # it_behaves_like 'ToNG', nil, nil # NOTE: ActionController::RoutingError: Not Found
-      it_behaves_like 'ToNG', 'activerecord.errors.models.user.attributes.unlock_token.blank', nil
+      it_behaves_like 'ToNG'
     end
     shared_examples_for '[*][存在する]ロック日時が期限内（ロック中）' do
+      let(:alert)  { nil }
+      let(:notice) { 'devise.unlocks.unlocked' } # NOTE: 解除されても良さそう
       include_context 'アカウントロック解除トークン作成', true
       it_behaves_like 'OK'
-      it_behaves_like 'ToOK', nil, 'devise.unlocks.unlocked' # NOTE: 解除されても良さそう
+      it_behaves_like 'ToOK'
     end
     shared_examples_for '[*][存在する]ロック日時が期限切れ（未ロック）' do
+      let(:alert)  { nil }
+      let(:notice) { 'devise.unlocks.unlocked' }
       include_context 'アカウントロック解除トークン作成', true, true
       it_behaves_like 'OK'
-      it_behaves_like 'ToOK', nil, 'devise.unlocks.unlocked'
+      it_behaves_like 'ToOK'
     end
 
     shared_examples_for '[*]トークンが存在する' do

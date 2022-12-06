@@ -36,8 +36,6 @@ RSpec.describe 'AdminUsers::Passwords', type: :request do
   end
 
   # GET /admin/password/reset パスワード再設定[メール送信]
-  # 前提条件
-  #   なし
   # テストパターン
   #   未ログイン, ログイン中
   describe 'GET #new' do
@@ -54,8 +52,6 @@ RSpec.describe 'AdminUsers::Passwords', type: :request do
   end
 
   # POST /admin/password/reset パスワード再設定[メール送信](処理)
-  # 前提条件
-  #   なし
   # テストパターン
   #   未ログイン, ログイン中
   #   有効なパラメータ（未ロック, ロック中）, 無効なパラメータ
@@ -134,8 +130,6 @@ RSpec.describe 'AdminUsers::Passwords', type: :request do
   end
 
   # GET /admin/password パスワード再設定
-  # 前提条件
-  #   なし
   # テストパターン
   #   未ログイン, ログイン中
   #   トークン: 期限内（未ロック, ロック中）, 期限切れ, 存在しない, ない
@@ -202,8 +196,6 @@ RSpec.describe 'AdminUsers::Passwords', type: :request do
   end
 
   # PUT /admin/password パスワード再設定(処理)
-  # 前提条件
-  #   なし
   # テストパターン
   #   未ログイン, ログイン中
   #   トークン: 期限内（未ロック, ロック中）, 期限切れ, 存在しない, ない

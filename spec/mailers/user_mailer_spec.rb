@@ -13,8 +13,6 @@ RSpec.describe UserMailer, type: :mailer do
   # アカウント削除受け付けのお知らせ
   # 前提条件
   #   削除予約済み
-  # テストパターン
-  #   なし
   describe '#destroy_reserved' do
     let_it_be(:user) { FactoryBot.create(:user, :destroy_reserved) }
     let(:mail)    { UserMailer.with(user: user).destroy_reserved }
@@ -31,8 +29,6 @@ RSpec.describe UserMailer, type: :mailer do
   # アカウント削除取り消し完了のお知らせ
   # 前提条件
   #   削除予約なし
-  # テストパターン
-  #   なし
   describe '#undo_destroy_reserved' do
     let_it_be(:user) { FactoryBot.create(:user) }
     let(:mail)    { UserMailer.with(user: user).undo_destroy_reserved }
@@ -44,8 +40,6 @@ RSpec.describe UserMailer, type: :mailer do
   # アカウント削除完了のお知らせ
   # 前提条件
   #   削除予約済み
-  # テストパターン
-  #   なし
   describe '#destroy_completed' do
     let_it_be(:user) { FactoryBot.create(:user, :destroy_reserved) }
     let(:mail)    { UserMailer.with(user: user).destroy_completed }

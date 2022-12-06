@@ -1,7 +1,7 @@
 json.success true
 if current_user.present?
   json.user do
-    json.partial! 'users/auth/current_user', use_email: false
+    json.partial! './users/auth/current_user', use_email: false, use_add_info: true
   end
 end
 json.alert alert if alert.present?

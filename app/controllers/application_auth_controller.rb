@@ -16,6 +16,15 @@ class ApplicationAuthController < ApplicationController
     end
   end
 
+  # 存在しない(404)を返却
+  def not_found_response(alert = 'alert.page.notfound')
+    if format_html?
+      head :not_found
+    else
+      render './failure', locals: { alert: t(alert) }, status: :not_found
+    end
+  end
+
   # URLの拡張子がない場合のみ、Device認証を有効にする（APIでCSRFトークン検証をしない為）
   def standard_devise_support
     DeviseTokenAuth.enable_standard_devise_support = format_html?

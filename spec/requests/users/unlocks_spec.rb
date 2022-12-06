@@ -29,8 +29,6 @@ RSpec.describe 'Users::Unlocks', type: :request do
   end
 
   # GET /users/unlock/resend アカウントロック解除[メール再送]
-  # 前提条件
-  #   なし
   # テストパターン
   #   未ログイン, ログイン中
   describe 'GET #new' do
@@ -47,8 +45,6 @@ RSpec.describe 'Users::Unlocks', type: :request do
   end
 
   # POST /users/unlock/resend アカウントロック解除[メール再送](処理)
-  # 前提条件
-  #   なし
   # テストパターン
   #   未ログイン, ログイン中
   #   有効なパラメータ（ロック中, 未ロック）, 無効なパラメータ
@@ -127,8 +123,6 @@ RSpec.describe 'Users::Unlocks', type: :request do
   end
 
   # GET /users/unlock アカウントロック解除(処理)
-  # 前提条件
-  #   なし
   # テストパターン
   #   未ログイン, ログイン中
   #   トークン: 存在する, 存在しない, ない
