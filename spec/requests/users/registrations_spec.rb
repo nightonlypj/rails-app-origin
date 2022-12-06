@@ -36,8 +36,6 @@ RSpec.describe 'Users::Registrations', type: :request do
   end
 
   # GET /users/sign_up アカウント登録
-  # 前提条件
-  #   なし
   # テストパターン
   #   未ログイン, ログイン中
   describe 'GET #new' do
@@ -54,8 +52,6 @@ RSpec.describe 'Users::Registrations', type: :request do
   end
 
   # POST /users/sign_up アカウント登録(処理)
-  # 前提条件
-  #   なし
   # テストパターン
   #   未ログイン, ログイン中
   #   有効なパラメータ, 無効なパラメータ
@@ -122,8 +118,6 @@ RSpec.describe 'Users::Registrations', type: :request do
   end
 
   # GET /users/update ユーザー情報変更
-  # 前提条件
-  #   なし
   # テストパターン
   #   未ログイン, ログイン中, ログイン中（メールアドレス変更中, 削除予約済み）
   describe 'GET #edit' do
@@ -148,8 +142,6 @@ RSpec.describe 'Users::Registrations', type: :request do
   end
 
   # PUT /users/update ユーザー情報変更(処理)
-  # 前提条件
-  #   なし
   # テストパターン
   #   未ログイン, ログイン中, ログイン中（メールアドレス変更中, 削除予約済み）
   #   有効なパラメータ（変更なし, あり）, 無効なパラメータ, 現在のパスワードがない
@@ -276,8 +268,6 @@ RSpec.describe 'Users::Registrations', type: :request do
   end
 
   # POST /users/image/update ユーザー画像変更(処理)
-  # 前提条件
-  #   なし
   # テストパターン
   #   未ログイン, ログイン中, ログイン中（削除予約済み）
   #   有効なパラメータ, 無効なパラメータ
@@ -350,8 +340,6 @@ RSpec.describe 'Users::Registrations', type: :request do
   end
 
   # POST /users/image/destroy ユーザー画像削除(処理)
-  # 前提条件
-  #   なし
   # テストパターン
   #   未ログイン, ログイン中, ログイン中（削除予約済み）
   describe 'POST #image_destroy' do
@@ -390,8 +378,6 @@ RSpec.describe 'Users::Registrations', type: :request do
   end
 
   # GET /users/delete アカウント削除
-  # 前提条件
-  #   なし
   # テストパターン
   #   未ログイン, ログイン中, ログイン中（削除予約済み）
   describe 'GET #delete' do
@@ -412,8 +398,6 @@ RSpec.describe 'Users::Registrations', type: :request do
   end
 
   # POST /users/delete アカウント削除(処理)
-  # 前提条件
-  #   なし
   # テストパターン
   #   未ログイン, ログイン中, ログイン中（削除予約済み）
   describe 'POST #destroy' do
@@ -465,8 +449,6 @@ RSpec.describe 'Users::Registrations', type: :request do
   end
 
   # GET /users/undo_delete アカウント削除取り消し
-  # 前提条件
-  #   なし
   # テストパターン
   #   未ログイン, ログイン中, ログイン中（削除予約済み）
   describe 'GET #undo_delete' do
@@ -487,8 +469,6 @@ RSpec.describe 'Users::Registrations', type: :request do
   end
 
   # POST /users/undo_delete アカウント削除取り消し(処理)
-  # 前提条件
-  #   なし
   # テストパターン
   #   未ログイン, ログイン中, ログイン中（削除予約済み）
   describe 'POST #undo_destroy' do

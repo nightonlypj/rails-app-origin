@@ -7,8 +7,6 @@ RSpec.describe 'Infomations', type: :request do
 
   # GET /infomations お知らせ一覧
   # GET /infomations(.json) お知らせ一覧API
-  # 前提条件
-  #   なし
   # テストパターン
   #   未ログイン, ログイン中, ログイン中（削除予約済み）, APIログイン中, APIログイン中（削除予約済み）
   #   お知らせ: ない, 最大表示数と同じ, 最大表示数より多い
@@ -18,20 +16,10 @@ RSpec.describe 'Infomations', type: :request do
     subject { get infomations_path(page: subject_page, format: subject_format), headers: auth_headers.merge(accept_headers) }
 
     # テスト内容
-    shared_examples_for 'ToOK(html)' do
-      let(:subject_format) { nil }
+    shared_examples_for 'ToOK(html/*)' do
       it 'HTTPステータスが200' do
         is_expected.to eq(200)
       end
-    end
-
-    shared_examples_for 'ToOK(html/html)' do
-      let(:accept_headers) { ACCEPT_INC_HTML }
-      it_behaves_like 'ToOK(html)'
-    end
-    shared_examples_for 'ToOK(html/json)' do
-      let(:accept_headers) { ACCEPT_INC_JSON }
-      it_behaves_like 'ToOK(html)'
     end
     shared_examples_for 'ToOK(json/json)' do
       let(:subject_format) { :json }
@@ -39,22 +27,11 @@ RSpec.describe 'Infomations', type: :request do
       it 'HTTPステータスが200。対象項目が一致する' do
         is_expected.to eq(200)
         expect(response_json['success']).to eq(true)
-        expect(response_json_infomation['total_count']).to eq(infomations.count) # 全件数
-        expect(response_json_infomation['current_page']).to eq(subject_page) # 現在ページ
-        expect(response_json_infomation['total_pages']).to eq((infomations.count - 1).div(Settings['default_infomations_limit']) + 1) # 全ページ数
-        expect(response_json_infomation['limit_value']).to eq(Settings['default_infomations_limit']) # 最大表示件数
+        expect(response_json_infomation['total_count']).to eq(infomations.count)
+        expect(response_json_infomation['current_page']).to eq(subject_page)
+        expect(response_json_infomation['total_pages']).to eq((infomations.count - 1).div(Settings['default_infomations_limit']) + 1)
+        expect(response_json_infomation['limit_value']).to eq(Settings['default_infomations_limit'])
       end
-    end
-
-    shared_examples_for 'ToOK' do |page|
-      let(:subject_page) { page }
-      it_behaves_like 'ToOK(html/html)'
-      it_behaves_like 'ToOK(html/json)'
-    end
-    shared_examples_for 'ToOK(json)' do |page|
-      let(:subject_page) { page }
-      it_behaves_like 'To406(json/html)'
-      it_behaves_like 'ToOK(json/json)'
     end
 
     shared_examples_for 'ページネーション表示' do |page, link_page|
@@ -146,7 +123,7 @@ RSpec.describe 'Infomations', type: :request do
     # テストケース
     shared_examples_for '[*]お知らせがない' do
       include_context 'お知らせ一覧作成', 0, 0, 0, 0
-      it_behaves_like 'ToOK', 1
+      it_behaves_like 'ToOK(html)', 1
       it_behaves_like 'ページネーション非表示', 1, 2
       it_behaves_like 'リダイレクト', 2, 1
       it_behaves_like 'ToOK(json)', 1
@@ -155,7 +132,7 @@ RSpec.describe 'Infomations', type: :request do
     shared_examples_for '[未ログイン]お知らせが最大表示数と同じ' do
       count = Settings['test_infomations']
       include_context 'お知らせ一覧作成', count['all_forever_count'] + count['user_forever_count'], count['all_future_count'] + count['user_future_count'], 0, 0
-      it_behaves_like 'ToOK', 1
+      it_behaves_like 'ToOK(html)', 1
       it_behaves_like 'ページネーション非表示', 1, 2
       it_behaves_like 'リスト表示', 1
       it_behaves_like 'リダイレクト', 2, 1
@@ -166,7 +143,7 @@ RSpec.describe 'Infomations', type: :request do
     shared_examples_for '[ログイン中/削除予約済み]お知らせが最大表示数と同じ' do
       count = Settings['test_infomations']
       include_context 'お知らせ一覧作成', count['all_forever_count'], count['all_future_count'], count['user_forever_count'], count['user_future_count']
-      it_behaves_like 'ToOK', 1
+      it_behaves_like 'ToOK(html)', 1
       it_behaves_like 'ページネーション非表示', 1, 2
       it_behaves_like 'リスト表示', 1
       it_behaves_like 'リダイレクト', 2, 1
@@ -177,7 +154,7 @@ RSpec.describe 'Infomations', type: :request do
     shared_examples_for '[APIログイン中/削除予約済み]お知らせが最大表示数と同じ' do
       count = Settings['test_infomations']
       include_context 'お知らせ一覧作成', count['all_forever_count'], count['all_future_count'], count['user_forever_count'], count['user_future_count']
-      it_behaves_like 'ToOK', 1
+      it_behaves_like 'ToOK(html)', 1
       it_behaves_like 'ページネーション非表示', 1, 2
       it_behaves_like 'リスト表示', 1
       it_behaves_like 'リダイレクト', 2, 1
@@ -188,8 +165,8 @@ RSpec.describe 'Infomations', type: :request do
     shared_examples_for '[未ログイン]お知らせが最大表示数より多い' do
       count = Settings['test_infomations']
       include_context 'お知らせ一覧作成', count['all_forever_count'] + count['user_forever_count'], count['all_future_count'] + count['user_future_count'] + 1, 0, 0
-      it_behaves_like 'ToOK', 1
-      it_behaves_like 'ToOK', 2
+      it_behaves_like 'ToOK(html)', 1
+      it_behaves_like 'ToOK(html)', 2
       it_behaves_like 'ページネーション表示', 1, 2
       it_behaves_like 'ページネーション表示', 2, 1
       it_behaves_like 'リスト表示', 1
@@ -204,8 +181,8 @@ RSpec.describe 'Infomations', type: :request do
     shared_examples_for '[ログイン中/削除予約済み]お知らせが最大表示数より多い' do
       count = Settings['test_infomations']
       include_context 'お知らせ一覧作成', count['all_forever_count'], count['all_future_count'], count['user_forever_count'], count['user_future_count'] + 1
-      it_behaves_like 'ToOK', 1
-      it_behaves_like 'ToOK', 2
+      it_behaves_like 'ToOK(html)', 1
+      it_behaves_like 'ToOK(html)', 2
       it_behaves_like 'ページネーション表示', 1, 2
       it_behaves_like 'ページネーション表示', 2, 1
       it_behaves_like 'リスト表示', 1
@@ -220,8 +197,8 @@ RSpec.describe 'Infomations', type: :request do
     shared_examples_for '[APIログイン中/削除予約済み]お知らせが最大表示数より多い' do
       count = Settings['test_infomations']
       include_context 'お知らせ一覧作成', count['all_forever_count'], count['all_future_count'], count['user_forever_count'], count['user_future_count'] + 1
-      it_behaves_like 'ToOK', 1
-      it_behaves_like 'ToOK', 2
+      it_behaves_like 'ToOK(html)', 1
+      it_behaves_like 'ToOK(html)', 2
       it_behaves_like 'ページネーション表示', 1, 2
       it_behaves_like 'ページネーション表示', 2, 1
       it_behaves_like 'リスト表示', 1

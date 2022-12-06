@@ -36,8 +36,6 @@ RSpec.describe 'Users::Passwords', type: :request do
   end
 
   # GET /users/password/reset パスワード再設定[メール送信]
-  # 前提条件
-  #   なし
   # テストパターン
   #   未ログイン, ログイン中
   describe 'GET #new' do
@@ -54,8 +52,6 @@ RSpec.describe 'Users::Passwords', type: :request do
   end
 
   # POST /users/password/reset パスワード再設定[メール送信](処理)
-  # 前提条件
-  #   なし
   # テストパターン
   #   未ログイン, ログイン中
   #   有効なパラメータ（未ロック, ロック中, メール未確認, メールアドレス変更中）, 無効なパラメータ
@@ -164,8 +160,6 @@ RSpec.describe 'Users::Passwords', type: :request do
   end
 
   # GET /users/password パスワード再設定
-  # 前提条件
-  #   なし
   # テストパターン
   #   未ログイン, ログイン中
   #   トークン: 期限内（未ロック, ロック中, メール未確認, メールアドレス変更中）, 期限切れ, 存在しない, ない
@@ -252,8 +246,6 @@ RSpec.describe 'Users::Passwords', type: :request do
   end
 
   # PUT /users/password パスワード再設定(処理)
-  # 前提条件
-  #   なし
   # テストパターン
   #   未ログイン, ログイン中
   #   トークン: 期限内（未ロック, ロック中, メール未確認, メールアドレス変更中）, 期限切れ, 存在しない, ない

@@ -16,12 +16,12 @@ class ApplicationAuthController < ApplicationController
     end
   end
 
-  def not_found_response(key)
+  # 存在しない(404)を返却
+  def not_found_response(alert = 'alert.page.notfound')
     if format_html?
       head :not_found
     else
-      errors = key.present? ? { key => t('errors.messages.not_exist') } : nil
-      render './failure', locals: { errors: errors, alert: t('errors.messages.not_saved.one') }, status: :not_found
+      render './failure', locals: { alert: t(alert) }, status: :not_found
     end
   end
 

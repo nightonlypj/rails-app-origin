@@ -3,7 +3,7 @@ require 'rake'
 require 'fileutils'
 
 RSpec.configure do |config|
-  # すべてのタスクを読み込む
+  # 全てのタスクを読み込む
   config.before(:suite) do
     Rails.application.load_tasks
   end

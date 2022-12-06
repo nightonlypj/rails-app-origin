@@ -50,8 +50,6 @@ RSpec.describe ApplicationHelper, type: :helper do
   end
 
   # 左メニューを開くかを返却
-  # 前提条件
-  #   なし
   # テストパターン
   #   true: ユーザー情報変更, ログアウト
   #   false: アカウント削除, ログイン
@@ -86,8 +84,6 @@ RSpec.describe ApplicationHelper, type: :helper do
   end
 
   # 削除予約メッセージを表示するかを返却
-  # 前提条件
-  #   なし
   # テストパターン
   #   削除予約: なし, あり
   #   トップページ, アカウント削除取り消し
@@ -151,8 +147,6 @@ RSpec.describe ApplicationHelper, type: :helper do
   end
 
   # 有効なメールアドレス確認トークンかを返却
-  # 前提条件
-  #   なし
   # テストパターン
   #   メールアドレス変更: なし, あり, 期限切れ
   describe 'user_valid_confirmation_token?' do
@@ -178,8 +172,6 @@ RSpec.describe ApplicationHelper, type: :helper do
   end
 
   # バリデーション表示のクラス名を返却
-  # 前提条件
-  #   なし
   # テストパターン
   #   enabled: false, true
   #   key: 存在しない, 存在する
@@ -238,8 +230,6 @@ RSpec.describe ApplicationHelper, type: :helper do
   end
 
   # パスワードのバリデーション表示のクラス名を返却 # NOTE: パスワードは再入力で復元しない為
-  # 前提条件
-  #   なし
   # テストパターン
   #   enabled: false, true
   describe 'validate_password_class_name' do
@@ -257,8 +247,6 @@ RSpec.describe ApplicationHelper, type: :helper do
   end
 
   # 入力項目のサイズクラス名を返却
-  # 前提条件
-  #   なし
   # テストパターン
   #   errors: なし, あり
   #   key: 存在しない, 存在する
@@ -322,6 +310,9 @@ RSpec.describe ApplicationHelper, type: :helper do
   end
 
   # 文字列を省略して返却
+  # テストパターン
+  #   length: 0, 1
+  #   text: nil, 空, lengthと同じ文字数, lengthより長い
   describe 'text_truncate' do
     subject { helper.text_truncate(text, length) }
 
@@ -353,6 +344,10 @@ RSpec.describe ApplicationHelper, type: :helper do
   end
 
   # ページの最初の番号を返却
+  # 前提条件
+  #   ページ最大2件
+  # テストパターン
+  #   0件, 2件, 3件2頁
   describe 'first_page_number' do
     subject do
       FactoryBot.create_list(:user, count)
@@ -371,7 +366,7 @@ RSpec.describe ApplicationHelper, type: :helper do
       let(:page)  { 1 }
       it_behaves_like 'value', '1'
     end
-    context '3件、2頁' do
+    context '3件2頁' do
       let(:count) { 3 }
       let(:page)  { 2 }
       it_behaves_like 'value', '3'
@@ -379,6 +374,10 @@ RSpec.describe ApplicationHelper, type: :helper do
   end
 
   # ページの最後の番号を返却
+  # 前提条件
+  #   ページ最大2件
+  # テストパターン
+  #   0件, 2件, 3件2頁
   describe 'last_page_number' do
     subject do
       FactoryBot.create_list(:user, count)

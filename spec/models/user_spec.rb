@@ -20,8 +20,6 @@ RSpec.describe User, type: :model do
   end
 
   # コード
-  # 前提条件
-  #   なし
   # テストパターン
   #   ない, 正常値, 重複
   describe 'validates :code' do
@@ -45,8 +43,6 @@ RSpec.describe User, type: :model do
   end
 
   # 氏名
-  # 前提条件
-  #   なし
   # テストパターン
   #   ない, 最小文字数よりも少ない, 最小文字数と同じ, 最大文字数と同じ, 最大文字数よりも多い
   describe 'validates :name' do
@@ -76,8 +72,6 @@ RSpec.describe User, type: :model do
   end
 
   # 削除予約済みか返却
-  # 前提条件
-  #   なし
   # テストパターン
   #   削除予定日時: ない（予約なし）, ある（予約済み）
   describe '#destroy_reserved?' do
@@ -101,8 +95,6 @@ RSpec.describe User, type: :model do
   # 削除予約
   # 前提条件
   #   削除予約なし
-  # テストパターン
-  #   なし
   describe '#set_destroy_reserve' do
     subject { user.set_destroy_reserve }
     let_it_be(:user) { FactoryBot.create(:user) }
@@ -126,8 +118,6 @@ RSpec.describe User, type: :model do
   # 削除予約取り消し
   # 前提条件
   #   削除予約済み
-  # テストパターン
-  #   なし
   describe '#set_undo_destroy_reserve' do
     subject { user.set_undo_destroy_reserve }
     let_it_be(:user) { FactoryBot.create(:user, :destroy_reserved) }
@@ -147,8 +137,6 @@ RSpec.describe User, type: :model do
   end
 
   # 画像URLを返却
-  # 前提条件
-  #   なし
   # テストパターン
   #   画像: ない, ある
   #   mini, small, medium, large, xlarge, 未定義
@@ -199,8 +187,6 @@ RSpec.describe User, type: :model do
   end
 
   # お知らせの未読数を返却
-  # 前提条件
-  #   なし
   # テストパターン
   #   お知らせ確認最終開始日時: ない, 過去, 現在
   #   お知らせ対象: 0件, 1件（全員）, 1件（自分）, 2件（全員＋自分）

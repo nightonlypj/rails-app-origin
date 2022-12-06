@@ -1,6 +1,6 @@
 json.success true
 json.user do
-  json.partial! 'users/auth/current_user', use_email: true
+  json.partial! './users/auth/current_user', use_email: true, use_add_info: false
 
   ## Trackable
   json.sign_in_count current_user.sign_in_count

@@ -19,8 +19,6 @@ RSpec.describe 'Users::Auth::Registrations', type: :request do
   end
 
   # POST /users/auth/sign_up(.json) アカウント登録API(処理)
-  # 前提条件
-  #   なし
   # テストパターン
   #   未ログイン, ログイン中, APIログイン中
   #   パラメータなし, 有効なパラメータ, 無効なパラメータ, URLがない, URLがホワイトリストにない
@@ -91,16 +89,16 @@ RSpec.describe 'Users::Auth::Registrations', type: :request do
     end
 
     shared_examples_for 'ToOK' do # |status, success, data_present|
+      it_behaves_like 'ToNG(html/html)', 406
+      it_behaves_like 'ToNG(html/json)', 406
+      it_behaves_like 'ToNG(json/html)', 406
       it_behaves_like 'ToOK(json/json)' # , status, success, data_present
-      it_behaves_like 'To406(json/html)'
-      it_behaves_like 'To406(html/json)'
-      it_behaves_like 'To406(html/html)'
     end
     shared_examples_for 'ToNG' do |code| # , status, success, data_present|
+      it_behaves_like 'ToNG(html/html)', 406
+      it_behaves_like 'ToNG(html/json)', 406
+      it_behaves_like 'ToNG(json/html)', 406
       it_behaves_like 'ToNG(json/json)', code # , status, success, data_present
-      it_behaves_like 'To406(json/html)'
-      it_behaves_like 'To406(html/json)'
-      it_behaves_like 'To406(html/html)'
     end
 
     # テストケース
@@ -213,8 +211,6 @@ RSpec.describe 'Users::Auth::Registrations', type: :request do
   end
 
   # GET /users/auth/detail(.json) ユーザー情報詳細API
-  # 前提条件
-  #   なし
   # テストパターン
   #   未ログイン, ログイン中, APIログイン中, APIログイン中（削除予約済み）
   #   ＋URLの拡張子: .json, ない
@@ -249,9 +245,9 @@ RSpec.describe 'Users::Auth::Registrations', type: :request do
         expect(response_json_user['destroy_requested_at']).to eq(I18n.l(current_user.destroy_requested_at, format: :json, default: nil))
         expect(response_json_user['destroy_schedule_at']).to eq(I18n.l(current_user.destroy_schedule_at, format: :json, default: nil))
         ## お知らせ
-        expect(response_json_user['infomation_unread_count']).to eq(current_user.infomation_unread_count)
+        expect(response_json_user['infomation_unread_count']).to be_nil
         ## ダウンロード結果
-        expect(response_json_user['undownloaded_count']).to eq(current_user.undownloaded_count)
+        expect(response_json_user['undownloaded_count']).to be_nil
 
         ## Trackable
         expect(response_json_user['sign_in_count']).to eq(current_user.sign_in_count)
@@ -278,16 +274,16 @@ RSpec.describe 'Users::Auth::Registrations', type: :request do
     end
 
     shared_examples_for 'ToOK' do
+      it_behaves_like 'ToNG(html/html)', 406
+      it_behaves_like 'ToNG(html/json)', 406
+      it_behaves_like 'ToNG(json/html)', 406
       it_behaves_like 'ToOK(json/json)'
-      it_behaves_like 'To406(json/html)'
-      it_behaves_like 'To406(html/json)'
-      it_behaves_like 'To406(html/html)'
     end
     shared_examples_for 'ToNG' do |code|
+      it_behaves_like 'ToNG(html/html)', 406
+      it_behaves_like 'ToNG(html/json)', 406
+      it_behaves_like 'ToNG(json/html)', 406
       it_behaves_like 'ToNG(json/json)', code
-      it_behaves_like 'To406(json/html)'
-      it_behaves_like 'To406(html/json)'
-      it_behaves_like 'To406(html/html)'
     end
 
     # テストケース
@@ -314,8 +310,6 @@ RSpec.describe 'Users::Auth::Registrations', type: :request do
   end
 
   # POST /users/auth/update(.json) ユーザー情報変更API(処理)
-  # 前提条件
-  #   なし
   # テストパターン
   #   未ログイン, ログイン中, APIログイン中, APIログイン中（削除予約済み）
   #   パラメータなし, 有効なパラメータ（変更なし, あり）, 無効なパラメータ, 現在のパスワードがない, URLがない, URLがホワイトリストにない
@@ -398,16 +392,16 @@ RSpec.describe 'Users::Auth::Registrations', type: :request do
     end
 
     shared_examples_for 'ToOK' do
+      it_behaves_like 'ToNG(html/html)', 406
+      it_behaves_like 'ToNG(html/json)', 406
+      it_behaves_like 'ToNG(json/html)', 406
       it_behaves_like 'ToOK(json/json)'
-      it_behaves_like 'To406(json/html)'
-      it_behaves_like 'To406(html/json)'
-      it_behaves_like 'To406(html/html)'
     end
     shared_examples_for 'ToNG' do |code| # , status, success|
+      it_behaves_like 'ToNG(html/html)', 406
+      it_behaves_like 'ToNG(html/json)', 406
+      it_behaves_like 'ToNG(json/html)', 406
       it_behaves_like 'ToNG(json/json)', code # , status, success
-      it_behaves_like 'To406(json/html)'
-      it_behaves_like 'To406(html/json)'
-      it_behaves_like 'To406(html/html)'
     end
 
     # テストケース
@@ -605,8 +599,6 @@ RSpec.describe 'Users::Auth::Registrations', type: :request do
   end
 
   # POST /users/auth/image/update(.json) ユーザー画像変更API(処理)
-  # 前提条件
-  #   なし
   # テストパターン
   #   未ログイン, ログイン中, APIログイン中, APIログイン中（削除予約済み）
   #   有効なパラメータ, 無効なパラメータ
@@ -657,16 +649,16 @@ RSpec.describe 'Users::Auth::Registrations', type: :request do
     end
 
     shared_examples_for 'ToOK' do
+      it_behaves_like 'ToNG(html/html)', 406
+      it_behaves_like 'ToNG(html/json)', 406
+      it_behaves_like 'ToNG(json/html)', 406
       it_behaves_like 'ToOK(json/json)'
-      it_behaves_like 'To406(json/html)'
-      it_behaves_like 'To406(html/json)'
-      it_behaves_like 'To406(html/html)'
     end
     shared_examples_for 'ToNG' do |code|
+      it_behaves_like 'ToNG(html/html)', 406
+      it_behaves_like 'ToNG(html/json)', 406
+      it_behaves_like 'ToNG(json/html)', 406
       it_behaves_like 'ToNG(json/json)', code
-      it_behaves_like 'To406(json/html)'
-      it_behaves_like 'To406(html/json)'
-      it_behaves_like 'To406(html/html)'
     end
 
     # テストケース
@@ -730,8 +722,6 @@ RSpec.describe 'Users::Auth::Registrations', type: :request do
   end
 
   # POST /users/auth/image/delete(.json) ユーザー画像削除API(処理)
-  # 前提条件
-  #   なし
   # テストパターン
   #   未ログイン, ログイン中, APIログイン中, APIログイン中（削除予約済み）
   #   ＋URLの拡張子: .json, ない
@@ -779,16 +769,16 @@ RSpec.describe 'Users::Auth::Registrations', type: :request do
     end
 
     shared_examples_for 'ToOK' do
+      it_behaves_like 'ToNG(html/html)', 406
+      it_behaves_like 'ToNG(html/json)', 406
+      it_behaves_like 'ToNG(json/html)', 406
       it_behaves_like 'ToOK(json/json)'
-      it_behaves_like 'To406(json/html)'
-      it_behaves_like 'To406(html/json)'
-      it_behaves_like 'To406(html/html)'
     end
     shared_examples_for 'ToNG' do |code|
+      it_behaves_like 'ToNG(html/html)', 406
+      it_behaves_like 'ToNG(html/json)', 406
+      it_behaves_like 'ToNG(json/html)', 406
       it_behaves_like 'ToNG(json/json)', code
-      it_behaves_like 'To406(json/html)'
-      it_behaves_like 'To406(html/json)'
-      it_behaves_like 'To406(html/html)'
     end
 
     # テストケース
@@ -819,8 +809,6 @@ RSpec.describe 'Users::Auth::Registrations', type: :request do
   end
 
   # POST /users/auth/delete(.json) アカウント削除API(処理)
-  # 前提条件
-  #   なし
   # テストパターン
   #   未ログイン, ログイン中, APIログイン中, APIログイン中（削除予約済み）
   #   パラメータなし, 有効なパラメータ, URLがない, URLがホワイトリストにない
@@ -893,16 +881,16 @@ RSpec.describe 'Users::Auth::Registrations', type: :request do
     end
 
     shared_examples_for 'ToOK' do # |status, success|
+      it_behaves_like 'ToNG(html/html)', 406
+      it_behaves_like 'ToNG(html/json)', 406
+      it_behaves_like 'ToNG(json/html)', 406
       it_behaves_like 'ToOK(json/json)' # , status, success
-      it_behaves_like 'To406(json/html)'
-      it_behaves_like 'To406(html/json)'
-      it_behaves_like 'To406(html/html)'
     end
     shared_examples_for 'ToNG' do |code| # , status, success|
+      it_behaves_like 'ToNG(html/html)', 406
+      it_behaves_like 'ToNG(html/json)', 406
+      it_behaves_like 'ToNG(json/html)', 406
       it_behaves_like 'ToNG(json/json)', code # , status, success
-      it_behaves_like 'To406(json/html)'
-      it_behaves_like 'To406(html/json)'
-      it_behaves_like 'To406(html/html)'
     end
 
     # テストケース
@@ -1041,8 +1029,6 @@ RSpec.describe 'Users::Auth::Registrations', type: :request do
   end
 
   # POST /users/auth/undo_delete(.json) アカウント削除取り消しAPI(処理)
-  # 前提条件
-  #   なし
   # テストパターン
   #   未ログイン, ログイン中, APIログイン中, APIログイン中（削除予約済み）
   #   ＋URLの拡張子: .json, ない
@@ -1095,16 +1081,16 @@ RSpec.describe 'Users::Auth::Registrations', type: :request do
     end
 
     shared_examples_for 'ToOK' do
+      it_behaves_like 'ToNG(html/html)', 406
+      it_behaves_like 'ToNG(html/json)', 406
+      it_behaves_like 'ToNG(json/html)', 406
       it_behaves_like 'ToOK(json/json)'
-      it_behaves_like 'To406(json/html)'
-      it_behaves_like 'To406(html/json)'
-      it_behaves_like 'To406(html/html)'
     end
     shared_examples_for 'ToNG' do |code|
+      it_behaves_like 'ToNG(html/html)', 406
+      it_behaves_like 'ToNG(html/json)', 406
+      it_behaves_like 'ToNG(json/html)', 406
       it_behaves_like 'ToNG(json/json)', code
-      it_behaves_like 'To406(json/html)'
-      it_behaves_like 'To406(html/json)'
-      it_behaves_like 'To406(html/html)'
     end
 
     # テストケース

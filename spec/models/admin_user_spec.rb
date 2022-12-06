@@ -14,8 +14,6 @@ RSpec.describe AdminUser, type: :model do
   end
 
   # 氏名
-  # 前提条件
-  #   なし
   # テストパターン
   #   ない, 最小文字数よりも少ない, 最小文字数と同じ, 最大文字数と同じ, 最大文字数よりも多い
   describe 'validates :name' do

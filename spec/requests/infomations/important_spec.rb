@@ -5,8 +5,6 @@ RSpec.describe 'Infomations', type: :request do
   let(:response_json_infomations) { response_json['infomations'] }
 
   # GET /infomations/important(.json) 大切なお知らせ一覧API
-  # 前提条件
-  #   なし
   # テストパターン
   #   未ログイン, ログイン中, ログイン中（削除予約済み）, APIログイン中, APIログイン中（削除予約済み）
   #   大切なお知らせ: ない, ある
@@ -48,27 +46,23 @@ RSpec.describe 'Infomations', type: :request do
       end
     end
 
-    shared_examples_for 'ToOK' do
-      it_behaves_like 'ToOK(json/json)'
-      it_behaves_like 'To406(json/html)'
-      it_behaves_like 'To406(html/json)'
-      it_behaves_like 'To406(html/html)'
-    end
-
     # テストケース
     shared_examples_for '[*]大切なお知らせがない' do
       include_context '大切なお知らせ一覧作成', 0, 0, 0, 0
-      it_behaves_like 'ToOK'
+      it_behaves_like 'ToNG(html)', 406
+      it_behaves_like 'ToOK(json)'
       it_behaves_like 'リスト表示(json)'
     end
     shared_examples_for '[未ログイン]大切なお知らせがある' do
       include_context '大切なお知らせ一覧作成', 1, 1, 0, 0
-      it_behaves_like 'ToOK'
+      it_behaves_like 'ToNG(html)', 406
+      it_behaves_like 'ToOK(json)'
       it_behaves_like 'リスト表示(json)'
     end
     shared_examples_for '[ログイン中/削除予約済み]大切なお知らせがある' do
       include_context '大切なお知らせ一覧作成', 1, 1, 1, 1
-      it_behaves_like 'ToOK'
+      it_behaves_like 'ToNG(html)', 406
+      it_behaves_like 'ToOK(json)'
       it_behaves_like 'リスト表示(json)'
     end
 

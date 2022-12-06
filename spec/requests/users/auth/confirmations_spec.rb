@@ -20,8 +20,6 @@ RSpec.describe 'Users::Auth::Confirmations', type: :request do
   end
 
   # POST /users/auth/confirmation(.json) メールアドレス確認API[メール再送](処理)
-  # 前提条件
-  #   なし
   # テストパターン
   #   未ログイン, ログイン中, APIログイン中
   #   パラメータなし, 有効なパラメータ（メール未確認, メール確認済み, メールアドレス変更中）, 無効なパラメータ, URLがない, URLがホワイトリストにない
@@ -84,16 +82,16 @@ RSpec.describe 'Users::Auth::Confirmations', type: :request do
     end
 
     shared_examples_for 'ToOK' do
+      it_behaves_like 'ToNG(html/html)', 406
+      it_behaves_like 'ToNG(html/json)', 406
+      it_behaves_like 'ToNG(json/html)', 406
       it_behaves_like 'ToOK(json/json)'
-      it_behaves_like 'To406(json/html)'
-      it_behaves_like 'To406(html/json)'
-      it_behaves_like 'To406(html/html)'
     end
     shared_examples_for 'ToNG' do |code|
+      it_behaves_like 'ToNG(html/html)', 406
+      it_behaves_like 'ToNG(html/json)', 406
+      it_behaves_like 'ToNG(json/html)', 406
       it_behaves_like 'ToNG(json/json)', code
-      it_behaves_like 'To406(json/html)'
-      it_behaves_like 'To406(html/json)'
-      it_behaves_like 'To406(html/html)'
     end
 
     # テストケース
@@ -191,8 +189,6 @@ RSpec.describe 'Users::Auth::Confirmations', type: :request do
   end
 
   # GET /users/auth/confirmation メールアドレス確認(処理)
-  # 前提条件
-  #   なし
   # テストパターン
   #   未ログイン, ログイン中, APIログイン中
   #   トークン: 期限内, 期限切れ, 存在しない, ない, 空
@@ -249,8 +245,7 @@ RSpec.describe 'Users::Auth::Confirmations', type: :request do
     end
 
     # let(:not_redirect_url) { 'http://www.example.com://' }
-    shared_examples_for 'ToOK(html)' do |alert, notice|
-      let(:subject_format) { nil }
+    shared_examples_for 'ToOK(html/*)' do
       it '[リダイレクトURLがある]指定URL（成功パラメータ）にリダイレクトする' do
         @redirect_url = FRONT_SITE_URL
         # is_expected.to redirect_to(/^#{@redirect_url}\?.*account_confirmation_success=true.*$/) # NOTE: ログイン中はaccess-token等も入る
@@ -270,8 +265,7 @@ RSpec.describe 'Users::Auth::Confirmations', type: :request do
         is_expected.to redirect_to(Settings['confirmation_success_url_bad'])
       end
     end
-    shared_examples_for 'ToNG(html)' do |alert, notice|
-      let(:subject_format) { nil }
+    shared_examples_for 'ToNG(html/*)' do
       it '[リダイレクトURLがある]指定URL（失敗パラメータ）にリダイレクトする' do
         @redirect_url = FRONT_SITE_URL
         param = { account_confirmation_success: false }
@@ -290,86 +284,105 @@ RSpec.describe 'Users::Auth::Confirmations', type: :request do
         is_expected.to redirect_to(Settings['confirmation_error_url_bad'])
       end
     end
-
-    shared_examples_for 'ToOK(html/html)' do |alert, notice|
-      let(:accept_headers) { ACCEPT_INC_HTML }
-      it_behaves_like 'ToOK(html)', alert, notice
-    end
-    shared_examples_for 'ToOK(html/json)' do |alert, notice|
+    shared_examples_for 'ToNG(json/json)' do |code|
+      let(:subject_format) { :json }
       let(:accept_headers) { ACCEPT_INC_JSON }
-      it_behaves_like 'ToOK(html)', alert, notice
-    end
-    shared_examples_for 'ToNG(html/html)' do |alert, notice|
-      let(:accept_headers) { ACCEPT_INC_HTML }
-      it_behaves_like 'ToNG(html)', alert, notice
-    end
-    shared_examples_for 'ToNG(html/json)' do |alert, notice|
-      let(:accept_headers) { ACCEPT_INC_JSON }
-      it_behaves_like 'ToNG(html)', alert, notice
+      it "HTTPステータスが#{code}" do
+        is_expected.to eq(code)
+      end
     end
 
-    shared_examples_for 'ToOK' do |alert, notice|
-      it_behaves_like 'ToOK(html/html)', alert, notice
-      it_behaves_like 'ToOK(html/json)', alert, notice
-      it_behaves_like 'To406(json/html)'
-      it_behaves_like 'To406(json/json)'
+    shared_examples_for 'ToNG(html/html)' do
+      let(:subject_format) { nil }
+      let(:accept_headers) { ACCEPT_INC_HTML }
+      it_behaves_like 'ToNG(html/*)'
     end
-    shared_examples_for 'ToNG' do |alert, notice|
-      it_behaves_like 'ToNG(html/html)', alert, notice
-      it_behaves_like 'ToNG(html/json)', alert, notice
-      it_behaves_like 'To406(json/html)'
-      it_behaves_like 'To406(json/json)'
+    shared_examples_for 'ToNG(html/json)' do
+      let(:subject_format) { nil }
+      let(:accept_headers) { ACCEPT_INC_JSON }
+      it_behaves_like 'ToNG(html/*)'
+    end
+
+    shared_examples_for 'ToOK' do
+      it_behaves_like 'ToOK(html/html)'
+      it_behaves_like 'ToOK(html/json)'
+      it_behaves_like 'ToNG(json/html)', 406
+      it_behaves_like 'ToNG(json/json)', 406
+    end
+    shared_examples_for 'ToNG' do
+      it_behaves_like 'ToNG(html/html)'
+      it_behaves_like 'ToNG(html/json)'
+      it_behaves_like 'ToNG(json/html)', 406
+      it_behaves_like 'ToNG(json/json)', 406
     end
 
     # テストケース
     shared_examples_for '[未ログイン][期限内]確認日時がない（未確認）' do
+      let(:alert)  { nil }
+      let(:notice) { 'devise.confirmations.confirmed' }
       include_context 'メールアドレス確認トークン作成', false, nil
       it_behaves_like 'OK'
-      it_behaves_like 'ToOK', nil, 'devise.confirmations.confirmed'
+      it_behaves_like 'ToOK'
     end
     shared_examples_for '[ログイン中][期限内]確認日時がない（未確認）' do # NOTE: ログイン中も出来ても良さそう
+      let(:alert)  { nil }
+      let(:notice) { 'devise.confirmations.confirmed' }
       include_context 'メールアドレス確認トークン作成', false, nil
       it_behaves_like 'OK'
-      it_behaves_like 'ToOK', nil, 'devise.confirmations.confirmed'
+      it_behaves_like 'ToOK'
     end
     shared_examples_for '[*][期限切れ]確認日時がない（未確認）' do
+      let(:alert)  { 'activerecord.errors.models.user.attributes.confirmation_token.invalid' }
+      let(:notice) { nil }
       include_context 'メールアドレス確認トークン作成', false, nil
       # it_behaves_like 'NG' # NOTE: ActionController::RoutingError: Not Found
       it_behaves_like 'NG'
-      it_behaves_like 'ToNG', 'activerecord.errors.models.user.attributes.confirmation_token.invalid', nil
+      it_behaves_like 'ToNG'
     end
     shared_examples_for '[*][存在しない/ない/空]確認日時がない（未確認）' do
+      let(:alert)  { 'activerecord.errors.models.user.attributes.confirmation_token.invalid' }
+      let(:notice) { nil }
       # it_behaves_like 'NG' # NOTE: ActionController::RoutingError: Not Found
       # it_behaves_like 'NG' # NOTE: トークンが存在しない為、確認日時がない
-      it_behaves_like 'ToNG', 'activerecord.errors.models.user.attributes.confirmation_token.invalid', nil
+      it_behaves_like 'ToNG'
     end
     shared_examples_for '[未ログイン][期限内]確認日時が確認送信日時より前（未確認）' do
+      let(:alert)  { nil }
+      let(:notice) { 'devise.confirmations.confirmed' }
       include_context 'メールアドレス確認トークン作成', true, true
       it_behaves_like 'OK'
-      it_behaves_like 'ToOK', nil, 'devise.confirmations.confirmed'
+      it_behaves_like 'ToOK'
     end
     shared_examples_for '[ログイン中][期限内]確認日時が確認送信日時より前（未確認）' do # NOTE: ログイン中も出来ても良さそう
+      let(:alert)  { nil }
+      let(:notice) { 'devise.confirmations.confirmed' }
       include_context 'メールアドレス確認トークン作成', true, true
       it_behaves_like 'OK'
-      it_behaves_like 'ToOK', nil, 'devise.confirmations.confirmed'
+      it_behaves_like 'ToOK'
     end
     shared_examples_for '[*][期限切れ]確認日時が確認送信日時より前（未確認）' do
+      let(:alert)  { 'activerecord.errors.models.user.attributes.confirmation_token.invalid' }
+      let(:notice) { nil }
       include_context 'メールアドレス確認トークン作成', true, true
       # it_behaves_like 'NG' # NOTE: ActionController::RoutingError: Not Found
       it_behaves_like 'NG'
-      it_behaves_like 'ToNG', 'activerecord.errors.models.user.attributes.confirmation_token.invalid', nil
+      it_behaves_like 'ToNG'
     end
     shared_examples_for '[*][期限内]確認日時が確認送信日時より後（確認済み）' do
+      let(:alert)  { 'errors.messages.already_confirmed' }
+      let(:notice) { nil }
       include_context 'メールアドレス確認トークン作成', true, false
       # it_behaves_like 'NG' # NOTE: ActionController::RoutingError: Not Found
       it_behaves_like 'NG'
-      it_behaves_like 'ToOK', 'errors.messages.already_confirmed', nil
+      it_behaves_like 'ToOK'
     end
     shared_examples_for '[*][期限切れ]確認日時が確認送信日時より後（確認済み）' do
+      let(:alert)  { 'errors.messages.already_confirmed' }
+      let(:notice) { nil }
       include_context 'メールアドレス確認トークン作成', true, false
       # it_behaves_like 'NG' # NOTE: ActionController::RoutingError: Not Found
       it_behaves_like 'NG'
-      it_behaves_like 'ToOK', 'errors.messages.already_confirmed', nil
+      it_behaves_like 'ToOK'
     end
 
     shared_examples_for '[未ログイン]トークンが期限内' do

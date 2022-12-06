@@ -13,8 +13,6 @@ RSpec.describe DeviseMailer, type: :mailer do
   # パスワード再設定方法のお知らせ
   # 前提条件
   #   未ロック
-  # テストパターン
-  #   なし
   describe '#reset_password_instructions' do
     let_it_be(:admin_user) { FactoryBot.build_stubbed(:admin_user) }
     let(:token)   { Devise.token_generator.digest(self, :reset_password_token, SecureRandom.uuid) }
@@ -32,8 +30,6 @@ RSpec.describe DeviseMailer, type: :mailer do
   # アカウントロックのお知らせ
   # 前提条件
   #   ロック中
-  # テストパターン
-  #   なし
   describe '#unlock_instructions' do
     let_it_be(:admin_user) { FactoryBot.build_stubbed(:admin_user, :locked) }
     let(:token)   { Devise.token_generator.digest(self, :unlock_token, SecureRandom.uuid) }
@@ -49,10 +45,6 @@ RSpec.describe DeviseMailer, type: :mailer do
   end
 
   # パスワード変更完了のお知らせ
-  # 前提条件
-  #   なし
-  # テストパターン
-  #   なし
   describe '#password_change' do
     let_it_be(:admin_user) { FactoryBot.build_stubbed(:admin_user) }
     let(:mail)    { DeviseMailer.password_change(admin_user) }

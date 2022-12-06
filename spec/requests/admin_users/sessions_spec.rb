@@ -29,8 +29,6 @@ RSpec.describe 'AdminUsers::Sessions', type: :request do
   end
 
   # GET /admin/sign_in ログイン
-  # 前提条件
-  #   なし
   # テストパターン
   #   未ログイン, ログイン中
   describe 'GET #new' do
@@ -47,8 +45,6 @@ RSpec.describe 'AdminUsers::Sessions', type: :request do
   end
 
   # POST /admin/sign_in ログイン(処理)
-  # 前提条件
-  #   なし
   # テストパターン
   #   未ログイン, ログイン中
   #   有効なパラメータ（未ロック, ロック中）, 無効なパラメータ（存在しない, ロック前, ロック前の前, ロック前の前の前）
@@ -173,8 +169,6 @@ RSpec.describe 'AdminUsers::Sessions', type: :request do
   end
 
   # POST(GET,DELETE) /admin/sign_out ログアウト(処理)
-  # 前提条件
-  #   なし
   # テストパターン
   #   未ログイン, ログイン中
   describe 'POST #destroy' do

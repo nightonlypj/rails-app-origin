@@ -16,8 +16,6 @@ RSpec.describe 'Users::Auth::Sessions', type: :request do
   end
 
   # POST /users/auth/sign_in(.json) ログインAPI(処理)
-  # 前提条件
-  #   なし
   # テストパターン
   #   未ログイン, ログイン中, APIログイン中, APIログイン中（削除予約済み）
   #   パラメータなし, 有効なパラメータ（未ロック, ロック中, メール未確認, メールアドレス変更中, 削除予約済み）, 無効なパラメータ（存在しない, ロック前, ロック前の前, ロック前の前の前）, URLがない, URLがホワイトリストにない
@@ -67,16 +65,16 @@ RSpec.describe 'Users::Auth::Sessions', type: :request do
     end
 
     shared_examples_for 'ToOK' do # |success, id_present|
+      it_behaves_like 'ToNG(html/html)', 406
+      it_behaves_like 'ToNG(html/json)', 406
+      it_behaves_like 'ToNG(json/html)', 406
       it_behaves_like 'ToOK(json/json)' # , success, id_present
-      it_behaves_like 'To406(json/html)'
-      it_behaves_like 'To406(html/json)'
-      it_behaves_like 'To406(html/html)'
     end
     shared_examples_for 'ToNG' do |code|
+      it_behaves_like 'ToNG(html/html)', 406
+      it_behaves_like 'ToNG(html/json)', 406
+      it_behaves_like 'ToNG(json/html)', 406
       it_behaves_like 'ToNG(json/json)', code
-      it_behaves_like 'To406(json/html)'
-      it_behaves_like 'To406(html/json)'
-      it_behaves_like 'To406(html/html)'
     end
 
     shared_examples_for 'SendLocked' do
@@ -334,8 +332,6 @@ RSpec.describe 'Users::Auth::Sessions', type: :request do
   end
 
   # POST /users/auth/sign_out(.json) ログアウトAPI(処理)
-  # 前提条件
-  #   なし
   # テストパターン
   #   未ログイン, ログイン中, APIログイン中, APIログイン中（削除予約済み）
   #   ＋URLの拡張子: .json, ない
@@ -366,16 +362,16 @@ RSpec.describe 'Users::Auth::Sessions', type: :request do
     end
 
     shared_examples_for 'ToOK' do
+      it_behaves_like 'ToNG(html/html)', 406
+      it_behaves_like 'ToNG(html/json)', 406
+      it_behaves_like 'ToNG(json/html)', 406
       it_behaves_like 'ToOK(json/json)'
-      it_behaves_like 'To406(json/html)'
-      it_behaves_like 'To406(html/json)'
-      it_behaves_like 'To406(html/html)'
     end
     shared_examples_for 'ToNG' do |code|
+      it_behaves_like 'ToNG(html/html)', 406
+      it_behaves_like 'ToNG(html/json)', 406
+      it_behaves_like 'ToNG(json/html)', 406
       it_behaves_like 'ToNG(json/json)', code
-      it_behaves_like 'To406(json/html)'
-      it_behaves_like 'To406(html/json)'
-      it_behaves_like 'To406(html/html)'
     end
 
     # テストケース

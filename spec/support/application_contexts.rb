@@ -15,45 +15,85 @@ def get_subject(key)
 end
 
 # テスト内容
-shared_examples_for 'To404' do
-  it 'HTTPステータスが404' do
-    is_expected.to eq(404)
-  end
+shared_examples_for 'ToOK(html/*)' do
+  raise '各Specに作成してください。'
 end
-shared_examples_for 'To404(html/html)' do
+shared_examples_for 'ToOK(json/json)' do
+  raise '各Specに作成してください。'
+end
+shared_examples_for 'ToOK(html/html)' do
   let(:subject_format) { nil }
   let(:accept_headers) { ACCEPT_INC_HTML }
-  it_behaves_like 'To404'
+  it_behaves_like 'ToOK(html/*)'
 end
-shared_examples_for 'To404(html/json)' do
+shared_examples_for 'ToOK(html/json)' do
   let(:subject_format) { nil }
   let(:accept_headers) { ACCEPT_INC_JSON }
-  it_behaves_like 'To404'
+  it_behaves_like 'ToOK(html/*)'
+end
+shared_examples_for 'ToOK(html)' do |page = nil|
+  let(:subject_page) { page }
+  it_behaves_like 'ToOK(html/html)'
+  it_behaves_like 'ToOK(html/json)'
+end
+shared_examples_for 'ToOK(json)' do |page = nil|
+  let(:subject_page) { page }
+  it_behaves_like 'ToNG(json/html)', 406
+  it_behaves_like 'ToOK(json/json)'
 end
 
-shared_examples_for 'To406' do
-  let(:redirect_url) { FRONT_SITE_URL }
-  it 'HTTPステータスが406' do
-    is_expected.to eq(406)
+shared_examples_for 'ToNG(html/html)' do |code|
+  let(:subject_format) { nil }
+  let(:accept_headers) { ACCEPT_INC_HTML }
+  it "HTTPステータスが#{code}" do
+    is_expected.to eq(code)
   end
 end
-shared_examples_for 'To406(json/json)' do
-  let(:subject_format) { :json }
-  let(:accept_headers) { ACCEPT_INC_JSON }
-  it_behaves_like 'To406'
-end
-shared_examples_for 'To406(json/html)' do
-  let(:subject_format) { :json }
-  let(:accept_headers) { ACCEPT_INC_HTML }
-  it_behaves_like 'To406'
-end
-shared_examples_for 'To406(html/json)' do
+shared_examples_for 'ToNG(html/json)' do |code|
   let(:subject_format) { nil }
   let(:accept_headers) { ACCEPT_INC_JSON }
-  it_behaves_like 'To406'
+  it "HTTPステータスが#{code}" do
+    is_expected.to eq(code)
+  end
 end
-shared_examples_for 'To406(html/html)' do
-  let(:subject_format) { nil }
+shared_examples_for 'ToNG(json/html)' do |code|
+  let(:subject_format) { :json }
   let(:accept_headers) { ACCEPT_INC_HTML }
-  it_behaves_like 'To406'
+  it "HTTPステータスが#{code}" do
+    is_expected.to eq(code)
+  end
+end
+shared_examples_for 'ToNG(json/json)' do |code, alert, notice|
+  let(:subject_format) { :json }
+  let(:accept_headers) { ACCEPT_INC_JSON }
+  it "HTTPステータスが#{code}。対象項目が一致する" do
+    is_expected.to eq(code)
+    expect(response_json['success']).to eq(false)
+    expect(response_json['alert']).to alert.present? ? eq(I18n.t(alert)) : be_nil
+    expect(response_json['notice']).to notice.present? ? eq(I18n.t(notice)) : be_nil
+  end
+end
+shared_examples_for 'ToNG(html)' do |code|
+  let(:subject_page) { 1 }
+  it_behaves_like 'ToNG(html/html)', code
+  it_behaves_like 'ToNG(html/json)', code
+end
+shared_examples_for 'ToNG(json)' do |code, alert = nil, notice = nil|
+  let(:subject_page) { 1 }
+  it_behaves_like 'ToNG(json/html)', 406
+  it_behaves_like 'ToNG(json/json)', code, alert_key(code, alert), notice
+end
+def alert_key(code, alert)
+  return alert if alert.present?
+
+  case code
+  when 401
+    'devise.failure.unauthenticated'
+  when 403
+    'alert.user.forbidden'
+  when 404
+    'alert.page.notfound'
+  else
+    raise "code not found.(#{code})"
+  end
 end

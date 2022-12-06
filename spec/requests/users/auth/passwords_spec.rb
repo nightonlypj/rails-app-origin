@@ -24,8 +24,6 @@ RSpec.describe 'Users::Auth::Passwords', type: :request do
   end
 
   # POST /users/auth/password(.json) パスワード再設定API[メール送信](処理)
-  # 前提条件
-  #   なし
   # テストパターン
   #   未ログイン, ログイン中, APIログイン中
   #   パラメータなし, 有効なパラメータ（未ロック, ロック中, メール未確認）, 無効なパラメータ, URLがない, URLがホワイトリストにない
@@ -88,16 +86,16 @@ RSpec.describe 'Users::Auth::Passwords', type: :request do
     end
 
     shared_examples_for 'ToOK' do
+      it_behaves_like 'ToNG(html/html)', 406
+      it_behaves_like 'ToNG(html/json)', 406
+      it_behaves_like 'ToNG(json/html)', 406
       it_behaves_like 'ToOK(json/json)'
-      it_behaves_like 'To406(json/html)'
-      it_behaves_like 'To406(html/json)'
-      it_behaves_like 'To406(html/html)'
     end
     shared_examples_for 'ToNG' do |code|
+      it_behaves_like 'ToNG(html/html)', 406
+      it_behaves_like 'ToNG(html/json)', 406
+      it_behaves_like 'ToNG(json/html)', 406
       it_behaves_like 'ToNG(json/json)', code
-      it_behaves_like 'To406(json/html)'
-      it_behaves_like 'To406(html/json)'
-      it_behaves_like 'To406(html/html)'
     end
 
     # テストケース
@@ -121,7 +119,7 @@ RSpec.describe 'Users::Auth::Passwords', type: :request do
       let(:send_user)  { send_user_unlocked }
       let(:attributes) { valid_attributes }
       it_behaves_like 'OK'
-      it_behaves_like 'ToOK', nil, 'devise.passwords.send_instructions'
+      it_behaves_like 'ToOK'
       # it_behaves_like 'ToMsg', NilClass, 0, nil, 'devise_token_auth.passwords.sended', nil, nil
       it_behaves_like 'ToMsg', NilClass, 0, nil, nil, nil, 'devise_token_auth.passwords.sended'
     end
@@ -139,7 +137,7 @@ RSpec.describe 'Users::Auth::Passwords', type: :request do
       let(:send_user)  { send_user_locked }
       let(:attributes) { valid_attributes }
       it_behaves_like 'OK'
-      it_behaves_like 'ToOK', nil, 'devise.passwords.send_instructions'
+      it_behaves_like 'ToOK'
       # it_behaves_like 'ToMsg', NilClass, 0, nil, 'devise_token_auth.passwords.sended', nil, nil
       it_behaves_like 'ToMsg', NilClass, 0, nil, nil, nil, 'devise_token_auth.passwords.sended'
     end
@@ -157,7 +155,7 @@ RSpec.describe 'Users::Auth::Passwords', type: :request do
       let(:send_user)  { send_user_unconfirmed }
       let(:attributes) { valid_attributes }
       it_behaves_like 'OK'
-      it_behaves_like 'ToOK', nil, 'devise.passwords.send_instructions'
+      it_behaves_like 'ToOK'
       # it_behaves_like 'ToMsg', NilClass, 0, nil, 'devise_token_auth.passwords.sended', nil, nil
       it_behaves_like 'ToMsg', NilClass, 0, nil, nil, nil, 'devise_token_auth.passwords.sended'
     end
@@ -251,8 +249,6 @@ RSpec.describe 'Users::Auth::Passwords', type: :request do
   end
 
   # GET /users/auth/password パスワード再設定
-  # 前提条件
-  #   なし
   # テストパターン
   #   未ログイン, ログイン中, APIログイン中
   #   トークン: 期限内（未ロック, ロック中, メール未確認）, 期限切れ, 存在しない, ない, 空
@@ -266,16 +262,12 @@ RSpec.describe 'Users::Auth::Passwords', type: :request do
     end
 
     # テスト内容
-    shared_examples_for 'ToOK(html)' do
-      let(:subject_format) { nil }
-      let(:redirect_url) { FRONT_SITE_URL }
+    shared_examples_for 'ToOK(html/*)' do
       it '指定URL（成功パラメータ）にリダイレクトする' do
         is_expected.to redirect_to("#{FRONT_SITE_URL}?reset_password_token=#{reset_password_token}")
       end
     end
-    shared_examples_for 'ToNG(html)' do |alert, notice|
-      let(:subject_format) { nil }
-      let(:redirect_url) { FRONT_SITE_URL }
+    shared_examples_for 'ToNG(html/*)' do
       it '指定URL（失敗パラメータ）にリダイレクトする' do
         param = { reset_password: false }
         param[:alert] = I18n.t(alert) if alert.present?
@@ -283,35 +275,38 @@ RSpec.describe 'Users::Auth::Passwords', type: :request do
         is_expected.to redirect_to("#{FRONT_SITE_URL}?#{URI.encode_www_form(param.sort)}")
       end
     end
-
-    shared_examples_for 'ToOK(html/html)' do |alert, notice|
-      let(:accept_headers) { ACCEPT_INC_HTML }
-      it_behaves_like 'ToOK(html)', alert, notice
-    end
-    shared_examples_for 'ToOK(html/json)' do |alert, notice|
+    shared_examples_for 'ToNG(json/json)' do |code|
+      let(:subject_format) { :json }
       let(:accept_headers) { ACCEPT_INC_JSON }
-      it_behaves_like 'ToOK(html)', alert, notice
-    end
-    shared_examples_for 'ToNG(html/html)' do |alert, notice|
-      let(:accept_headers) { ACCEPT_INC_HTML }
-      it_behaves_like 'ToNG(html)', alert, notice
-    end
-    shared_examples_for 'ToNG(html/json)' do |alert, notice|
-      let(:accept_headers) { ACCEPT_INC_JSON }
-      it_behaves_like 'ToNG(html)', alert, notice
+      it "HTTPステータスが#{code}" do
+        is_expected.to eq(code)
+      end
     end
 
-    shared_examples_for 'ToOK' do |alert, notice|
-      it_behaves_like 'ToOK(html/html)', alert, notice
-      it_behaves_like 'ToOK(html/json)', alert, notice
-      it_behaves_like 'To406(json/html)'
-      it_behaves_like 'To406(json/json)'
+    shared_examples_for 'ToNG(html/html)' do
+      let(:subject_format) { nil }
+      let(:accept_headers) { ACCEPT_INC_HTML }
+      it_behaves_like 'ToNG(html/*)'
     end
-    shared_examples_for 'ToNG' do |alert, notice|
-      it_behaves_like 'ToNG(html/html)', alert, notice
-      it_behaves_like 'ToNG(html/json)', alert, notice
-      it_behaves_like 'To406(json/html)'
-      it_behaves_like 'To406(json/json)'
+    shared_examples_for 'ToNG(html/json)' do
+      let(:subject_format) { nil }
+      let(:accept_headers) { ACCEPT_INC_JSON }
+      it_behaves_like 'ToNG(html/*)'
+    end
+
+    shared_examples_for 'ToOK' do
+      let(:redirect_url) { FRONT_SITE_URL }
+      it_behaves_like 'ToOK(html/html)'
+      it_behaves_like 'ToOK(html/json)'
+      it_behaves_like 'ToNG(json/html)', 406
+      it_behaves_like 'ToNG(json/json)', 406
+    end
+    shared_examples_for 'ToNG' do
+      let(:redirect_url) { FRONT_SITE_URL }
+      it_behaves_like 'ToNG(html/html)'
+      it_behaves_like 'ToNG(html/json)'
+      it_behaves_like 'ToNG(json/html)', 406
+      it_behaves_like 'ToNG(json/json)', 406
     end
 
     shared_examples_for 'リダイレクトURLがない' do
@@ -359,30 +354,38 @@ RSpec.describe 'Users::Auth::Passwords', type: :request do
       it_behaves_like 'リダイレクトURLがホワイトリストにない'
     end
     shared_examples_for '[*]トークンが期限切れ' do
+      # let(:alert)  { nil } # NOTE: ActionController::RoutingError: Not Found
+      let(:alert)  { 'activerecord.errors.models.user.attributes.reset_password_token.invalid' }
+      let(:notice) { nil }
       include_context 'パスワードリセットトークン作成', false
-      # it_behaves_like 'ToNG', nil, nil # NOTE: ActionController::RoutingError: Not Found
-      it_behaves_like 'ToNG', 'activerecord.errors.models.user.attributes.reset_password_token.invalid', nil
+      it_behaves_like 'ToNG'
       it_behaves_like 'リダイレクトURLがない'
       it_behaves_like 'リダイレクトURLがホワイトリストにない'
     end
     shared_examples_for '[*]トークンが存在しない' do
+      # let(:alert)  { nil } # NOTE: ActionController::RoutingError: Not Found
+      let(:alert)  { 'activerecord.errors.models.user.attributes.reset_password_token.invalid' }
+      let(:notice) { nil }
       let(:reset_password_token) { NOT_TOKEN }
-      # it_behaves_like 'ToNG', nil, nil # NOTE: ActionController::RoutingError: Not Found
-      it_behaves_like 'ToNG', 'activerecord.errors.models.user.attributes.reset_password_token.invalid', nil
+      it_behaves_like 'ToNG'
       it_behaves_like 'リダイレクトURLがない'
       it_behaves_like 'リダイレクトURLがホワイトリストにない'
     end
     shared_examples_for '[*]トークンがない' do
+      # let(:alert)  { nil } # NOTE: ActionController::RoutingError: Not Found
+      let(:alert)  { 'activerecord.errors.models.user.attributes.reset_password_token.blank' }
+      let(:notice) { nil }
       let(:reset_password_token) { nil }
-      # it_behaves_like 'ToNG', nil, nil # NOTE: ActionController::RoutingError: Not Found
-      it_behaves_like 'ToNG', 'activerecord.errors.models.user.attributes.reset_password_token.blank', nil
+      it_behaves_like 'ToNG'
       it_behaves_like 'リダイレクトURLがない'
       it_behaves_like 'リダイレクトURLがホワイトリストにない'
     end
     shared_examples_for '[*]トークンが空' do
+      # let(:alert)  { nil } # NOTE: ActionController::RoutingError: Not Found
+      let(:alert)  { 'activerecord.errors.models.user.attributes.reset_password_token.blank' }
+      let(:notice) { nil }
       let(:reset_password_token) { '' }
-      # it_behaves_like 'ToNG', nil, nil # NOTE: ActionController::RoutingError: Not Found
-      it_behaves_like 'ToNG', 'activerecord.errors.models.user.attributes.reset_password_token.blank', nil
+      it_behaves_like 'ToNG'
       it_behaves_like 'リダイレクトURLがない'
       it_behaves_like 'リダイレクトURLがホワイトリストにない'
     end
@@ -420,8 +423,6 @@ RSpec.describe 'Users::Auth::Passwords', type: :request do
   end
 
   # POST /users/auth/password/update(.json) パスワード再設定API(処理)
-  # 前提条件
-  #   なし
   # テストパターン
   #   未ログイン, ログイン中, APIログイン中
   #   トークン: 期限内（未ロック, ロック中, メール未確認, メールアドレス変更中）, 期限切れ, 存在しない, ない, 空
@@ -487,16 +488,16 @@ RSpec.describe 'Users::Auth::Passwords', type: :request do
     end
 
     shared_examples_for 'ToOK' do
+      it_behaves_like 'ToNG(html/html)', 406
+      it_behaves_like 'ToNG(html/json)', 406
+      it_behaves_like 'ToNG(json/html)', 406
       it_behaves_like 'ToOK(json/json)'
-      it_behaves_like 'To406(json/html)'
-      it_behaves_like 'To406(html/json)'
-      it_behaves_like 'To406(html/html)'
     end
     shared_examples_for 'ToNG' do |code| # , uid, client, token|
+      it_behaves_like 'ToNG(html/html)', 406
+      it_behaves_like 'ToNG(html/json)', 406
+      it_behaves_like 'ToNG(json/html)', 406
       it_behaves_like 'ToNG(json/json)', code # , uid, client, token
-      it_behaves_like 'To406(json/html)'
-      it_behaves_like 'To406(html/json)'
-      it_behaves_like 'To406(html/html)'
     end
 
     # テストケース
