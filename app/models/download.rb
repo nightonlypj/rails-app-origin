@@ -63,7 +63,7 @@ class Download < ApplicationRecord
     when :tsv
       "\t"
     else
-      raise 'format not found.'
+      raise "format not found.(#{format})"
     end
   end
 
@@ -77,7 +77,7 @@ class Download < ApplicationRecord
     when :cr
       "\r"
     else
-      raise 'newline_code not found.'
+      raise "newline_code not found.(#{newline_code})"
     end
   end
 

@@ -77,6 +77,8 @@ RSpec.describe 'Users::Auth::TokenValidations', type: :request do
     end
     context 'APIログイン中' do
       include_context 'APIログイン処理'
+      include_context 'スペース一覧作成', 1, 1, 1, 1
+      let(:inside_spaces) { [@public_spaces[0], @private_spaces[0], @private_spaces[1]] }
       # it_behaves_like 'ToOK', true
       it_behaves_like 'ToOK', false
       it_behaves_like 'ToMsg', nil, nil, nil

@@ -1,7 +1,12 @@
 json.success true
 json.search_params do
   json.text @text
-  json.exclude @exclude ? 1 : 0
+  json.public @checked[:public] ? 1 : 0
+  json.private @checked[:private] ? 1 : 0
+  json.join @checked[:join] ? 1 : 0
+  json.nojoin @checked[:nojoin] ? 1 : 0
+  json.active @checked[:active] ? 1 : 0
+  json.destroy @checked[:destroy] ? 1 : 0
 end
 
 json.space do
@@ -16,8 +21,9 @@ json.spaces do
 
     if @members[space.id].present?
       json.current_member do
-        json.power @members[space.id].power
-        json.power_i18n @members[space.id].power_i18n
+        member = @members[space.id]
+        json.power member.power
+        json.power_i18n member.power_i18n
       end
     end
   end

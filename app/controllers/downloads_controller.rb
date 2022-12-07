@@ -29,12 +29,12 @@ class DownloadsController < ApplicationAuthController
   # GET /downloads/file/:id ダウンロード
   # GET /downloads/file/:id(.json) ダウンロードAPI
   def file
-    @download = Download.find(params[:id])
-    return head :not_found if @download.user != current_user
+    @download = Download.find_by(id: params[:id])
+    return not_found_response('alert.download.notfound') if @download.blank? || @download.user != current_user
 
     if @download.model.to_sym == :member
       current_member = Member.where(space: @download.space, user: current_user)&.first
-      return head :forbidden if current_member.blank? || !current_member.power_admin?
+      return forbidden_response if current_member.blank? || !current_member.power_admin?
     end
 
     @download.last_downloaded_at = Time.current
@@ -76,14 +76,14 @@ class DownloadsController < ApplicationAuthController
   # Use callbacks to share common setup or constraints between actions.
   def set_params_new(target_params = params)
     @model = target_params[:model]&.to_sym
-    return not_found_response(:model) if Download.models[@model].blank?
+    return not_exist_key_response(:model) if Download.models[@model].blank?
 
     if @model == :member
       @space = Space.find_by(code: target_params[:space_code])
-      return not_found_response(:space_code) if @space.blank?
+      return not_exist_key_response(:space_code) if @space.blank?
 
       @current_member = Member.where(space: @space, user: current_user).eager_load(:user)&.first
-      head :forbidden if @current_member.blank? || !@current_member.power_admin?
+      return forbidden_response if @current_member.blank? || !@current_member.power_admin?
     else
       @space = nil
       @current_member = nil
@@ -101,6 +101,15 @@ class DownloadsController < ApplicationAuthController
 
   def set_params_create
     set_params_new(params[:download])
+  end
+
+  def not_exist_key_response(key)
+    if format_html?
+      head :not_found
+    else
+      errors = key.present? ? { key => t('errors.messages.not_exist') } : nil
+      render './failure', locals: { errors: errors, alert: t('errors.messages.not_saved.one') }, status: :not_found
+    end
   end
 
   # Only allow a list of trusted parameters through.

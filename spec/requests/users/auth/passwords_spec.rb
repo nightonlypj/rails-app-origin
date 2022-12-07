@@ -437,6 +437,7 @@ RSpec.describe 'Users::Auth::Passwords', type: :request do
     let(:invalid_confirm_attributes) { { reset_password_token: reset_password_token, password: new_password, password_confirmation: nil } }
     include_context 'Authテスト内容'
     let(:current_user) { User.find(send_user.id) }
+    let(:inside_spaces) { [] } # TODO: send_userの参加スペースをセット
 
     # テスト内容
     shared_examples_for 'OK' do |change_confirmed = false|

@@ -26,7 +26,7 @@ test_infomations:
 
 ## スペース
 # 一覧のデフォルト最大表示件数
-default_spaces_limit: 4 # NOTE: 高速化の為（4以上、下記の合計値と一致）
+default_spaces_limit: 4 # NOTE: 高速化の為（下記の合計値と一致）
 test_spaces:
   public_admin_count: 1
   public_none_count: 1
@@ -35,7 +35,12 @@ test_spaces:
 
 ## メンバー
 # 一覧のデフォルト最大表示件数
-default_members_limit: 2
+default_members_limit: 4 # NOTE: 高速化の為（下記の合計値+1と一致）
+test_members:
+  admin_count: 1
+  writer_count: 1
+  reader_count: 1
+
 job_members_limit: 2
 # 招待の最大件数
 create_members_max_count: 2

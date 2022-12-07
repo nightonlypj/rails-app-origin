@@ -38,7 +38,7 @@ class DownloadJob < ApplicationJob
       set_space
       file_data = member_file_data(output_items)
     else
-      raise 'model not found.'
+      raise "model not found.(#{model})"
     end
 
     change_char_code(file_header(output_items) + file_data)
@@ -55,7 +55,7 @@ class DownloadJob < ApplicationJob
     items = I18n.t("items.#{@download.model}")
     output_items.each do |output_item|
       value = items[output_item.to_sym]
-      raise 'output_item not found.' if value.blank?
+      raise "output_item not found.(#{output_item})" if value.blank?
 
       header.push(value)
     end
@@ -72,7 +72,7 @@ class DownloadJob < ApplicationJob
     when :utf8
       result
     else
-      raise 'char_code not found.'
+      raise "char_code not found.(#{char_code})"
     end
   end
 end

@@ -104,21 +104,21 @@ class MembersController < ApplicationAuthController
   # Use callbacks to share common setup or constraints between actions.
   def set_space
     @space = Space.find_by(code: params[:code])
-    return head :not_found if @space.blank?
+    return not_found_response if @space.blank?
 
     @current_member = Member.where(space: @space, user: current_user).eager_load(:user)&.first
-    head :forbidden if @current_member.blank?
+    forbidden_response if @current_member.blank?
   end
 
   def check_power
-    head :forbidden unless @current_member.power_admin?
+    forbidden_response unless @current_member.power_admin?
   end
 
   def set_member
     @member = Member.where(space: @space).joins(:user).where(user: { code: params[:user_code] })&.first
-    return head :not_found if @member.blank?
+    return not_found_response if @member.blank?
 
-    head :forbidden if @member == @current_member
+    forbidden_response if @member == @current_member
   end
 
   def set_params_create

@@ -1,6 +1,6 @@
 module DownloadsHelper
-  # ダウンロードのクラス名を返却
-  def download_class_name(download)
+  # ダウンロード結果一覧のクラス名を返却
+  def download_lists_class_name(download)
     if download.status.to_sym == :success
       return download.last_downloaded_at.present? ? ' row_inactive' : ' row_active'
     end

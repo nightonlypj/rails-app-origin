@@ -34,6 +34,7 @@ RSpec.describe 'Users::Auth::Registrations', type: :request do
     let(:invalid_bad_attributes) { { name: new_user[:name], email: new_user[:email], password: new_user[:password], confirm_success_url: BAD_SITE_URL } }
     include_context 'Authテスト内容'
     let(:current_user) { User.find_by!(email: attributes[:email]) }
+    let(:inside_spaces) { [] }
 
     # テスト内容
     shared_examples_for 'OK' do
@@ -578,6 +579,8 @@ RSpec.describe 'Users::Auth::Registrations', type: :request do
     end
     context 'APIログイン中' do
       include_context 'APIログイン処理', nil, true
+      include_context 'スペース一覧作成', 1, 1, 1, 1
+      let(:inside_spaces) { [@public_spaces[0], @private_spaces[0], @private_spaces[1]] }
       it_behaves_like '[APIログイン中/削除予約済み]パラメータなし'
       it_behaves_like '[APIログイン中]有効なパラメータ（変更なし）'
       it_behaves_like '[APIログイン中]有効なパラメータ（変更あり）'
@@ -711,6 +714,8 @@ RSpec.describe 'Users::Auth::Registrations', type: :request do
     end
     context 'APIログイン中' do
       include_context 'APIログイン処理'
+      include_context 'スペース一覧作成', 1, 1, 1, 1
+      let(:inside_spaces) { [@public_spaces[0], @private_spaces[0], @private_spaces[1]] }
       it_behaves_like '[APIログイン中]有効なパラメータ'
       it_behaves_like '[APIログイン中]無効なパラメータ'
     end
@@ -796,6 +801,8 @@ RSpec.describe 'Users::Auth::Registrations', type: :request do
     end
     context 'APIログイン中' do
       include_context 'APIログイン処理', nil, true
+      include_context 'スペース一覧作成', 1, 1, 1, 1
+      let(:inside_spaces) { [@public_spaces[0], @private_spaces[0], @private_spaces[1]] }
       it_behaves_like 'OK'
       it_behaves_like 'ToOK'
       it_behaves_like 'ToMsg', NilClass, 0, nil, nil, nil, 'notice.user.image_destroy'
@@ -1014,6 +1021,8 @@ RSpec.describe 'Users::Auth::Registrations', type: :request do
     end
     context 'APIログイン中' do
       include_context 'APIログイン処理'
+      include_context 'スペース一覧作成', 1, 1, 1, 1
+      let(:inside_spaces) { [@public_spaces[0], @private_spaces[0], @private_spaces[1]] }
       it_behaves_like '[APIログイン中]パラメータなし'
       it_behaves_like '[APIログイン中]有効なパラメータ'
       it_behaves_like '[APIログイン中]URLがない'
@@ -1108,12 +1117,16 @@ RSpec.describe 'Users::Auth::Registrations', type: :request do
     end
     context 'APIログイン中' do
       include_context 'APIログイン処理'
+      include_context 'スペース一覧作成', 1, 1, 1, 1
+      let(:inside_spaces) { [@public_spaces[0], @private_spaces[0], @private_spaces[1]] }
       it_behaves_like 'NG'
       it_behaves_like 'ToNG', 422
       it_behaves_like 'ToMsg', NilClass, 0, nil, nil, 'alert.user.not_destroy_reserved', nil
     end
     context 'APIログイン中（削除予約済み）' do
       include_context 'APIログイン処理', :destroy_reserved
+      include_context 'スペース一覧作成', 1, 1, 1, 1
+      let(:inside_spaces) { [@public_spaces[0], @private_spaces[0], @private_spaces[1]] }
       it_behaves_like 'OK'
       it_behaves_like 'ToOK'
       it_behaves_like 'ToMsg', NilClass, 0, nil, nil, nil, 'devise.registrations.undo_destroy_reserved'

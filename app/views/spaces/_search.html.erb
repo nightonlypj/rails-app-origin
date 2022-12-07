@@ -25,12 +25,36 @@
 <% end %>
   </div>
 <% if user_signed_in? %>
-  <div id="searchCollapse" class="collapse mt-2<%= ' show' if @option %>">
+  <div id="searchCollapse" class="collapse<%= ' show' if @option %>">
     <div class="row">
-      <div class="col">
+      <div class="col-auto d-flex mt-2">
         <div class="form-check">
-          <%= form.check_box :exclude, checked: @exclude, include_hidden: false, class: 'form-check-input click_to_search_btn_enabled' %>
-          <%= form.label :exclude, '参加スペースを除く', class: 'form-check-label', for: 'exclude' %>
+          <%= form.check_box :public, checked: @checked[:public], class: 'form-check-input click_to_search_btn_enabled' %>
+          <%= form.label :public, '公開', class: 'form-check-label', for: 'public' %>
+        </div>
+        <div class="form-check ms-2">
+          <%= form.check_box :private, checked: @checked[:private], class: 'form-check-input click_to_search_btn_enabled' %>
+          <%= form.label :private, '非公開', class: 'form-check-label', for: 'private' %>
+        </div>
+      </div>
+      <div class="col-auto d-flex mt-2">
+        <div class="form-check">
+          <%= form.check_box :join, checked: @checked[:join], class: 'form-check-input click_to_search_btn_enabled' %>
+          <%= form.label :join, '参加', class: 'form-check-label', for: 'join' %>
+        </div>
+        <div class="form-check ms-2">
+          <%= form.check_box :nojoin, checked: @checked[:nojoin], class: 'form-check-input click_to_search_btn_enabled' %>
+          <%= form.label :nojoin, '未参加', class: 'form-check-label', for: 'nojoin' %>
+        </div>
+      </div>
+      <div class="col-auto d-flex mt-2">
+        <div class="form-check">
+          <%= form.check_box :active, checked: @checked[:active], class: 'form-check-input click_to_search_btn_enabled' %>
+          <%= form.label :active, '有効', class: 'form-check-label', for: 'active' %>
+        </div>
+        <div class="form-check ms-2">
+          <%= form.check_box :destroy, checked: @checked[:destroy], class: 'form-check-input click_to_search_btn_enabled' %>
+          <%= form.label :destroy, '削除予定', class: 'form-check-label', for: 'destroy' %>
         </div>
       </div>
     </div>

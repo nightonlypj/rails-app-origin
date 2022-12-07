@@ -9,8 +9,8 @@ RSpec.describe SpacesController, type: :routing do
 
     it 'routes to #show' do
       expect(get: '/spaces/1').not_to be_routable
-      expect(get: '/s/code0001').to route_to('spaces#show', code: 'code0001')
-      expect(get: '/s/code0001.json').to route_to('spaces#show', code: 'code0001', format: 'json')
+      expect(get: '/-/code0001').to route_to('spaces#show', code: 'code0001')
+      expect(get: '/-/code0001.json').to route_to('spaces#show', code: 'code0001', format: 'json')
     end
 
     it 'routes to #new' do

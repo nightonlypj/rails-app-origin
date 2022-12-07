@@ -16,6 +16,15 @@ class ApplicationAuthController < ApplicationController
     end
   end
 
+  # 権限エラー(403)を返却
+  def forbidden_response
+    if format_html?
+      head :forbidden
+    else
+      render './failure', locals: { alert: t('alert.user.forbidden') }, status: :forbidden
+    end
+  end
+
   # 存在しない(404)を返却
   def not_found_response(alert = 'alert.page.notfound')
     if format_html?

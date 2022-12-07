@@ -1,8 +1,8 @@
 <div class="table-responsive">
-  <table class="table table-hover">
+  <table class="table table-hover table_spaces">
     <tbody>
 <% @spaces.each do |space| %>
-      <tr class="align-middle">
+      <tr class="align-middle<%= ' row_inactive' if space.destroy_reserved? %>">
         <%# 名称 %>
         <td scope="row" class="px-1 py-2" style="width: 35%">
           <%= image_tag space.image_url(:small), class: 'rounded-circle' %>
@@ -18,7 +18,7 @@
         <%# (アクション) %>
         <td class="px-1 py-2">
 <% if @members[space.id].present? %>
-          <a href="<%= members_path(space.code) %>" class="btn btn-secondary btn-sm">
+          <a href="<%= members_path(space.code) %>" class="btn btn-primary btn-sm">
             <i class="fas fa-user-friends" data-mdb-toggle="tooltip" data-mdb-placement="bottom" title="メンバー一覧"></i>
           </a>
 <% end %>

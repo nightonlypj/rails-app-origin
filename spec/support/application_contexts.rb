@@ -97,3 +97,26 @@ def alert_key(code, alert)
     raise "code not found.(#{code})"
   end
 end
+
+shared_examples_for 'ToLogin(html/*)' do
+  it 'ログインにリダイレクトする' do
+    is_expected.to redirect_to(new_user_session_path)
+    expect(flash[:alert]).to eq(I18n.t('devise.failure.unauthenticated'))
+    expect(flash[:notice]).to be_nil
+  end
+end
+shared_examples_for 'ToLogin(html/html)' do
+  let(:subject_format) { nil }
+  let(:accept_headers) { ACCEPT_INC_HTML }
+  it_behaves_like 'ToLogin(html/*)'
+end
+shared_examples_for 'ToLogin(html/json)' do
+  let(:subject_format) { nil }
+  let(:accept_headers) { ACCEPT_INC_JSON }
+  it_behaves_like 'ToLogin(html/*)'
+end
+shared_examples_for 'ToLogin(html)' do
+  let(:subject_page) { 1 }
+  it_behaves_like 'ToLogin(html/html)'
+  it_behaves_like 'ToLogin(html/json)'
+end

@@ -250,6 +250,8 @@ RSpec.describe User, type: :model do
   end
 
   # 未ダウンロード数を返却
+  # テストパターン
+  #   ダウンロード対象: 0件, 1件, 2件
   describe '#undownloaded_count' do
     subject do
       current_user.cache_undownloaded_count = nil

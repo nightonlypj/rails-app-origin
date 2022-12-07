@@ -9,7 +9,7 @@ json.model download.model
 json.model_i18n download.model_i18n
 if download.model.to_sym == :member
   json.space do
-    json.partial! 'spaces/space', space: download.space
+    json.partial! './spaces/space', space: download.space
   end
 end
 

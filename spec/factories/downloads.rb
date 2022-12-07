@@ -9,6 +9,11 @@ FactoryBot.define do
     output_items { ['user.name'] }
     association :user
 
+    trait :member do
+      model { :member }
+      association :space
+    end
+
     trait :success do
       status { :success }
     end

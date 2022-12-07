@@ -24,7 +24,7 @@ module MembersConcern
     when 'invitationed_at'
       I18n.l(member.invitationed_at, default: nil)
     else
-      raise 'output_item not found.'
+      raise "output_item not found.(#{output_item})"
     end
   end
 
@@ -55,7 +55,7 @@ module MembersConcern
   end
 
   def power_include_key?(power, key)
-    return true if power.blank?
+    return !power.instance_of?(String) if power.blank?
 
     power.instance_of?(String) ? power.split(',').include?(key) : power[key] == '1'
   end

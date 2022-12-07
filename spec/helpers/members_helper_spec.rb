@@ -2,10 +2,8 @@ require 'rails_helper'
 
 RSpec.describe MembersHelper, type: :helper do
   # 権限のクラス名を返却
-  # 前提条件
-  #   なし
   # テストパターン
-  #   admin, writer, nil, blank
+  #   admin, writer, nil, 空
   describe 'power_class_name' do
     subject { helper.power_class_name(power) }
 
@@ -29,7 +27,7 @@ RSpec.describe MembersHelper, type: :helper do
       let(:power) { nil }
       it_behaves_like 'value', 'fa-user'
     end
-    context 'blank' do
+    context '空' do
       let(:power) { '' }
       it_behaves_like 'value', 'fa-user'
     end

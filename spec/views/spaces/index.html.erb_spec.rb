@@ -1,7 +1,19 @@
 require 'rails_helper'
 
 RSpec.describe 'spaces/index', type: :view do
-  before_all { @spaces = Space.page(1) }
+  before_all do
+    @spaces = Space.page(1)
+    @text = nil
+    @option = false
+    @checked = {
+      public: true,
+      private: true,
+      join: true,
+      nojoin: true,
+      active: true,
+      destroy: false
+    }
+  end
 
   # テスト内容
   shared_examples_for '入力項目' do |signed_in|
@@ -12,7 +24,12 @@ RSpec.describe 'spaces/index', type: :view do
         assert_select 'button[type=?]', 'submit'
         if signed_in
           assert_select 'input[name=?]', 'option'
-          assert_select 'input[name=?]', 'exclude'
+          assert_select 'input[name=?]', 'public'
+          assert_select 'input[name=?]', 'private'
+          assert_select 'input[name=?]', 'join'
+          assert_select 'input[name=?]', 'nojoin'
+          assert_select 'input[name=?]', 'active'
+          assert_select 'input[name=?]', 'destroy'
         end
       end
     end

@@ -19,8 +19,6 @@ RSpec.describe ApplicationHelper, type: :helper do
   end
 
   # 検索用のjsを使用するかを返却
-  # 前提条件
-  #   なし
   # テストパターン
   #   true: スペース一覧, メンバー一覧
   #   false: スペース詳細
@@ -273,8 +271,6 @@ RSpec.describe ApplicationHelper, type: :helper do
   end
 
   # 縦並びの入力項目のサイズクラス名を返却
-  # 前提条件
-  #   なし
   # テストパターン
   #   enabled: true, false
   #   errors: なし, あり

@@ -8,9 +8,16 @@ class SpacesController < ApplicationAuthController
   def index
     @text = params[:text]&.slice(..(255 - 1))
     @option = params[:option] == '1'
-    @exclude = params[:exclude] == '1'
+    @checked = {
+      public: params[:public] != '0',
+      private: params[:private] != '0',
+      join: params[:join] != '0',
+      nojoin: params[:nojoin] != '0',
+      active: params[:active] != '0',
+      destroy: params[:destroy] == '1'
+    }
 
-    @spaces = Space.by_target(current_user, @exclude).search(@text)
+    @spaces = Space.by_target(current_user, @checked).search(@text)
                    .page(params[:page]).per(Settings['default_spaces_limit']).order(created_at: :desc, id: :desc)
     @members = []
     if current_user.present?
@@ -23,8 +30,11 @@ class SpacesController < ApplicationAuthController
     end
   end
 
-  # GET /spaces/1 or /spaces/1.json
-  def show; end
+  # GET /s/:code スペーストップ
+  # GET /s/:code(.json) スペース詳細API
+  def show
+    @member_count = Member.where(space: @space).count
+  end
 
   # GET /spaces/new
   def new
@@ -81,7 +91,12 @@ class SpacesController < ApplicationAuthController
 
   # Use callbacks to share common setup or constraints between actions.
   def set_space
-    @space = Space.find_by!(code: params[:code])
+    @space = Space.find_by(code: params[:code])
+    return not_found_response if @space.blank?
+    return authenticate_user! if @space.private && !user_signed_in?
+
+    @current_member = current_user.present? ? Member.where(space: @space, user: current_user)&.first : nil
+    forbidden_response if @space.private && @current_member.blank?
   end
 
   # Only allow a list of trusted parameters through.

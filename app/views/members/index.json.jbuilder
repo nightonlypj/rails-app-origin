@@ -7,7 +7,7 @@ json.search_params do
 end
 
 json.space do
-  json.partial! 'spaces/space', space: @space
+  json.partial! './spaces/space', space: @space
 
   json.current_member do
     json.power @current_member.power

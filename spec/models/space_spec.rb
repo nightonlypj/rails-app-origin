@@ -2,8 +2,6 @@ require 'rails_helper'
 
 RSpec.describe Space, type: :model do
   # 削除予約済みか返却
-  # 前提条件
-  #   なし
   # テストパターン
   #   削除予定日時: ない（予約なし）, ある（予約済み）
   describe '#destroy_reserved?' do
@@ -25,8 +23,6 @@ RSpec.describe Space, type: :model do
   end
 
   # 画像URLを返却
-  # 前提条件
-  #   なし
   # テストパターン
   #   画像: ない, ある
   #   mini, small, medium, large, xlarge, 未定義

@@ -13,7 +13,7 @@
     </thead>
     <tbody>
 <% @downloads.each do |download| %>
-      <tr class="align-middl<%= download_class_name(download) %>">
+      <tr class="align-middl<%= download_lists_class_name(download) %>">
         <%# 依頼日時 %>
         <td scope="row" class="text-nowrap px-1 py-2">
           <%= l(download.requested_at) %>

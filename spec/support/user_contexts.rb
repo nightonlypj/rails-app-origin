@@ -67,6 +67,7 @@ end
 shared_context 'Authテスト内容' do
   let(:response_json_user)           { response_json['user'] }
   let(:response_json_user_image_url) { response_json_user['image_url'] }
+  let(:response_json_user_spaces)    { response_json_user['spaces'] }
   let(:expect_success_json) do
     expect(response_json['success']).to eq(true)
     expect(response_json['data']).to be_nil
@@ -92,6 +93,30 @@ shared_context 'Authテスト内容' do
       expect(response_json_user['infomation_unread_count']).to eq(current_user.infomation_unread_count)
       ## ダウンロード結果
       expect(response_json_user['undownloaded_count']).to eq(current_user.undownloaded_count)
+
+      ## 参加スペース
+      inside_spaces.sort_by(&:name).each_with_index do |space, index|
+        data = response_json_user_spaces[index]
+        expect(data['code']).to eq(space.code)
+
+        data_image_url = data['image_url']
+        expect(data_image_url['mini']).to eq("#{Settings['base_image_url']}#{space.image_url(:mini)}")
+        expect(data_image_url['small']).to eq("#{Settings['base_image_url']}#{space.image_url(:small)}")
+        expect(data_image_url['medium']).to eq("#{Settings['base_image_url']}#{space.image_url(:medium)}")
+        expect(data_image_url['large']).to eq("#{Settings['base_image_url']}#{space.image_url(:large)}")
+        expect(data_image_url['xlarge']).to eq("#{Settings['base_image_url']}#{space.image_url(:xlarge)}")
+
+        expect(data['name']).to eq(space.name)
+        expect(data['description']).to eq(space.description)
+        expect(data['private']).to eq(space.private)
+        expect(data['destroy_requested_at']).to eq(I18n.l(space.destroy_requested_at, format: :json, default: nil))
+        expect(data['destroy_schedule_at']).to eq(I18n.l(space.destroy_schedule_at, format: :json, default: nil))
+
+        power = @members[space.id]
+        expect(data['current_member']['power']).to eq(power)
+        expect(data['current_member']['power_i18n']).to eq(Member.powers_i18n[power])
+      end
+      expect(response_json_user_spaces.count).to eq(inside_spaces.count)
     end
   end
   let(:expect_failure_json) do

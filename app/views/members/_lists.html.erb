@@ -1,5 +1,5 @@
 <div class="table-responsive">
-<%= form_with(url: destroy_member_path(@space.code), html: { method: :post, novalidate: true, autocomplete: 'off' }, local: true) do |form| %>
+<%= form_with(url: @current_member.power_admin? ? destroy_member_path(@space.code) : '/', html: { method: :post, novalidate: true, autocomplete: 'off' }, local: true) do |form| %>
   <table class="table table-sm table-hover">
     <thead class="table-light">
       <tr>
@@ -34,10 +34,8 @@
 <% @members.each do |member| %>
 <% if !@current_member.power_admin? || member == @current_member %>
       <tr class="align-middle">
-<% elsif member.user.code != params[:active] %>
-      <tr class="align-middle dblclick_to_link" href="<%= edit_member_path(@space.code, member.user.code) %>">
 <% else %>
-      <tr class="align-middle table-active dblclick_to_link" href="<%= edit_member_path(@space.code, member.user.code) %>">
+      <tr class="align-middle<%= ' table-active' if member.user.code == params[:active] %> dblclick_to_link" href="<%= edit_member_path(@space.code, member.user.code) %>">
 <% end %>
 <% if @current_member.power_admin? %>
         <%# (メンバー解除) %>

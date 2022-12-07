@@ -39,6 +39,7 @@ RSpec.describe 'Users::Auth::Sessions', type: :request do
     let(:invalid_bad_attributes)  { { email: send_user.email, password: send_user.password, unlock_redirect_url: BAD_SITE_URL } }
     include_context 'Authテスト内容'
     let(:current_user) { User.find(send_user.id) }
+    let(:inside_spaces) { [] } # TODO: send_userの参加スペースをセット
 
     # テスト内容
     shared_examples_for 'ToOK(json/json)' do # |success, id_present|
@@ -391,12 +392,16 @@ RSpec.describe 'Users::Auth::Sessions', type: :request do
     end
     context 'APIログイン中' do
       include_context 'APIログイン処理'
+      include_context 'スペース一覧作成', 1, 1, 1, 1
+      let(:inside_spaces) { [@public_spaces[0], @private_spaces[0], @private_spaces[1]] }
       it_behaves_like 'ToOK'
       # it_behaves_like 'ToMsg', nil, nil, nil
       it_behaves_like 'ToMsg', nil, nil, 'devise.sessions.signed_out'
     end
     context 'APIログイン中（削除予約済み）' do
       include_context 'APIログイン処理', :destroy_reserved
+      include_context 'スペース一覧作成', 1, 1, 1, 1
+      let(:inside_spaces) { [@public_spaces[0], @private_spaces[0], @private_spaces[1]] }
       it_behaves_like 'ToOK'
       # it_behaves_like 'ToMsg', nil, nil, nil
       it_behaves_like 'ToMsg', nil, nil, 'devise.sessions.signed_out'

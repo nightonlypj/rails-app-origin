@@ -30,6 +30,7 @@ ja:
         image: '画像'
         name: '名称'
         description: '説明'
+        private: '非公開'
         destroy_requested_at: '削除依頼日時'
         destroy_schedule_at: '削除予定日時'
         create_user: '登録ユーザー'
@@ -167,10 +168,13 @@ ja:
     user:
       destroy_reserved: 'アカウント削除予定の為、この操作はできません。'
       not_destroy_reserved: '既に取り消し済みか、アカウント削除されていません。'
+      forbidden: 'アクセス権限がありません。'
       destroy:
         params_blank: 'パラメータが指定されていません。'
         undo_delete_url_blank: 'undo_delete_urlが指定されていません。'
         undo_delete_url_not_allowed: 'undo_delete_urlが指定されていません。'
+    download:
+      notfound: 'ファイルが見つかりません。'
     member:
       destroy:
         codes:

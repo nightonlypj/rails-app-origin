@@ -7,15 +7,31 @@ class Space < ApplicationRecord
   has_many :users, through: :members
   has_many :downloads
 
-  scope :by_target, lambda { |current_user, exclude|
-    space = where(private: false)
-    return space if current_user.blank?
+  scope :by_target, lambda { |current_user, checked|
+    return where(id: []) if (!checked[:public] && !checked[:private]) || (!checked[:join] && !checked[:nojoin]) || (!checked[:active] && !checked[:destroy])
 
-    if exclude
-      space.left_joins(:members).where(members: { user: nil }).distinct
-    else
-      space.left_joins(:members).or(where(members: { user: current_user })).distinct
+    if checked[:public] && checked[:private] && current_user.present?
+      space = where(private: false).left_joins(:members).or(where(members: { user: current_user }))
+    elsif checked[:public]
+      space = where(private: false).left_joins(:members)
+    elsif checked[:private]
+      space = where(private: true).left_joins(:members).where(members: { user: current_user })
     end
+
+    if checked[:join] && !checked[:nojoin]
+      space = space.where(members: { user: current_user })
+    elsif !checked[:join] && checked[:nojoin]
+      join_space = left_joins(:members).where(members: { user: current_user })
+      space = space.where.not(id: join_space.ids)
+    end
+
+    if checked[:active] && !checked[:destroy]
+      space = space.active
+    elsif !checked[:active] && checked[:destroy]
+      space = space.destroy_reserved
+    end
+
+    space.distinct
   }
   scope :search, lambda { |text|
     return if text&.strip.blank?
@@ -30,6 +46,8 @@ class Space < ApplicationRecord
 
     space
   }
+  scope :active, -> { where(destroy_schedule_at: nil) }
+  scope :destroy_reserved, -> { where.not(destroy_schedule_at: nil) }
 
   # 削除予約済みか返却
   def destroy_reserved?
