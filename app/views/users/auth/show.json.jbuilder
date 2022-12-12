@@ -11,5 +11,5 @@ json.user do
   ## Confirmable
   json.unconfirmed_email user_valid_confirmation_token? ? current_user.unconfirmed_email : nil
   ## 作成日時
-  json.created_at l(current_user.created_at, format: :json, default: nil)
+  json.created_at l(current_user.created_at, format: :json)
 end

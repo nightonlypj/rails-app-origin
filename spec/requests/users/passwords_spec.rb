@@ -2,31 +2,6 @@ require 'rails_helper'
 
 RSpec.describe 'Users::Passwords', type: :request do
   # テスト内容（共通）
-  shared_examples_for 'ToOK' do
-    it 'HTTPステータスが200' do
-      is_expected.to eq(200)
-    end
-  end
-  shared_examples_for 'ToError' do |error_msg|
-    it 'HTTPステータスが200。対象のエラーメッセージが含まれる' do # NOTE: 再入力
-      is_expected.to eq(200)
-      expect(response.body).to include(I18n.t(error_msg))
-    end
-  end
-  shared_examples_for 'ToTop' do |alert, notice|
-    it 'トップページにリダイレクトする' do
-      is_expected.to redirect_to(root_path)
-      expect(flash[:alert]).to alert.present? ? eq(I18n.t(alert)) : be_nil
-      expect(flash[:notice]).to notice.present? ? eq(I18n.t(notice)) : be_nil
-    end
-  end
-  shared_examples_for 'ToLogin' do |alert, notice|
-    it 'ログインにリダイレクトする' do
-      is_expected.to redirect_to(new_user_session_path)
-      expect(flash[:alert]).to alert.present? ? eq(I18n.t(alert)) : be_nil
-      expect(flash[:notice]).to notice.present? ? eq(I18n.t(notice)) : be_nil
-    end
-  end
   shared_examples_for 'ToNew' do |alert, notice|
     it 'パスワード再設定[メール送信]にリダイレクトする' do
       is_expected.to redirect_to(new_user_password_path)
@@ -43,7 +18,7 @@ RSpec.describe 'Users::Passwords', type: :request do
 
     # テストケース
     context '未ログイン' do
-      it_behaves_like 'ToOK'
+      it_behaves_like 'ToOK[status]'
     end
     context 'ログイン中' do
       include_context 'ログイン処理'
@@ -169,7 +144,7 @@ RSpec.describe 'Users::Passwords', type: :request do
     # テストケース
     shared_examples_for '[未ログイン]トークンが期限内（未ロック）' do
       include_context 'パスワードリセットトークン作成', true
-      it_behaves_like 'ToOK'
+      it_behaves_like 'ToOK[status]'
     end
     shared_examples_for '[ログイン中]トークンが期限内（未ロック）' do
       include_context 'パスワードリセットトークン作成', true
@@ -177,7 +152,7 @@ RSpec.describe 'Users::Passwords', type: :request do
     end
     shared_examples_for '[未ログイン]トークンが期限内（ロック中）' do # NOTE: ロック中も出来ても良さそう
       include_context 'パスワードリセットトークン作成', true, true
-      it_behaves_like 'ToOK'
+      it_behaves_like 'ToOK[status]'
     end
     shared_examples_for '[ログイン中]トークンが期限内（ロック中）' do
       include_context 'パスワードリセットトークン作成', true, true
@@ -185,7 +160,7 @@ RSpec.describe 'Users::Passwords', type: :request do
     end
     shared_examples_for '[未ログイン]トークンが期限内（メール未確認）' do # NOTE: メール未確認も出来ても良さそう
       include_context 'パスワードリセットトークン作成', true, false, true
-      it_behaves_like 'ToOK'
+      it_behaves_like 'ToOK[status]'
     end
     shared_examples_for '[ログイン中]トークンが期限内（メール未確認）' do
       include_context 'パスワードリセットトークン作成', true, false, true
@@ -193,7 +168,7 @@ RSpec.describe 'Users::Passwords', type: :request do
     end
     shared_examples_for '[未ログイン]トークンが期限内（メールアドレス変更中）' do # NOTE: メールアドレス変更中も出来ても良さそう
       include_context 'パスワードリセットトークン作成', true, false, true, true
-      it_behaves_like 'ToOK'
+      it_behaves_like 'ToOK[status]'
     end
     shared_examples_for '[ログイン中]トークンが期限内（メールアドレス変更中）' do
       include_context 'パスワードリセットトークン作成', true, false, true, true

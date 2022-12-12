@@ -1,33 +1,6 @@
 require 'rails_helper'
 
 RSpec.describe 'Users::Sessions', type: :request do
-  # テスト内容（共通）
-  shared_examples_for 'ToOK' do
-    it 'HTTPステータスが200' do
-      is_expected.to eq(200)
-    end
-  end
-  shared_examples_for 'ToError' do |error_msg|
-    it 'HTTPステータスが200。対象のエラーメッセージが含まれる' do # NOTE: 再入力
-      is_expected.to eq(200)
-      expect(response.body).to include(I18n.t(error_msg))
-    end
-  end
-  shared_examples_for 'ToTop' do |alert, notice|
-    it 'トップページにリダイレクトする' do
-      is_expected.to redirect_to(root_path)
-      expect(flash[:alert]).to alert.present? ? eq(I18n.t(alert)) : be_nil
-      expect(flash[:notice]).to notice.present? ? eq(I18n.t(notice)) : be_nil
-    end
-  end
-  shared_examples_for 'ToLogin' do |alert, notice|
-    it 'ログインにリダイレクトする' do
-      is_expected.to redirect_to(new_user_session_path)
-      expect(flash[:alert]).to alert.present? ? eq(I18n.t(alert)) : be_nil
-      expect(flash[:notice]).to notice.present? ? eq(I18n.t(notice)) : be_nil
-    end
-  end
-
   # GET /users/sign_in ログイン
   # テストパターン
   #   未ログイン, ログイン中, ログイン中（削除予約済み）
@@ -36,7 +9,7 @@ RSpec.describe 'Users::Sessions', type: :request do
 
     # テストケース
     context '未ログイン' do
-      it_behaves_like 'ToOK'
+      it_behaves_like 'ToOK[status]'
     end
     context 'ログイン中' do
       include_context 'ログイン処理'
@@ -241,11 +214,11 @@ RSpec.describe 'Users::Sessions', type: :request do
     end
     context 'ログイン中' do
       include_context 'ログイン処理'
-      it_behaves_like 'ToOK'
+      it_behaves_like 'ToOK[status]'
     end
     context 'ログイン中（削除予約済み）' do
       include_context 'ログイン処理', :destroy_reserved
-      it_behaves_like 'ToOK'
+      it_behaves_like 'ToOK[status]'
     end
   end
 

@@ -38,7 +38,7 @@
               <span class="d-none d-md-block m-1">ログイン</span>
             </a>
             <a href="<%= new_user_registration_path %>" class="btn btn-link btn-rounded d-flex align-items-center link-dark p-2" style="font-size: 1rem">
-              <i class="fas fa-user-alt fa-lg"></i>
+              <i class="fas fa-user-plus fa-lg"></i>
               <span class="d-none d-md-block m-1">アカウント登録</span>
             </a>
 <% else %>
@@ -85,13 +85,8 @@
           <span class="mx-2 my-1">ログイン</span>
         </a>
         <a href="<%= new_user_registration_path %>" class="btn btn-link d-flex align-items-center link-dark" style="font-size: 1rem">
-          <i class="fas fa-user-alt fa-lg"></i>
+          <i class="fas fa-user-plus fa-lg"></i>
           <span class="mx-2 my-1">アカウント登録</span>
-        </a>
-        <hr class="my-0" />
-        <a href="<%= infomations_path %>" class="btn btn-link d-flex align-items-center link-dark" style="font-size: 1rem">
-          <i class="fas fa-bell fa-lg"></i>
-          <span class="mx-2 my-1">お知らせ</span>
         </a>
 <% else %>
         <div id="userAccordionFlush" class="accordion accordion-flush">
@@ -127,16 +122,16 @@
             </div>
           </div>
         </div>
+<% end %>
         <hr class="my-0" />
         <a href="<%= infomations_path %>" class="btn btn-link d-flex align-items-center link-dark" style="font-size: 1rem">
           <i class="fas fa-bell fa-lg">
-<% if current_user.infomation_unread_count > 0 %>
+<% if user_signed_in? && current_user.infomation_unread_count > 0 %>
             <span class="badge rounded-pill badge-notification bg-danger" style="top: -10px; left: -5px"><%= current_user.infomation_unread_count %></span>
 <% end %>
           </i>
           <span class="mx-2 my-1">お知らせ</span>
         </a>
-<% end %>
       </nav>
 
       <main id="main_contents" class="flex-grow-1" style="min-width: 300px">

@@ -1,4 +1,5 @@
 json.code user.code
+json.upload_image current_user.image?
 json.image_url do
   json.mini "#{Settings['base_image_url']}#{user.image_url(:mini)}"
   json.small "#{Settings['base_image_url']}#{user.image_url(:small)}"

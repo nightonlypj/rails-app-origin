@@ -1,7 +1,5 @@
 json.partial! './users/auth/user', user: current_user, use_email: use_email
-
 json.provider current_user.provider
-json.upload_image current_user.image?
 
 ## 削除予約
 json.destroy_schedule_days Settings['destroy_schedule_days']

@@ -14,7 +14,19 @@ def get_subject(key)
   I18n.t(key, app_name: I18n.t('app_name'), env_name: Settings['env_name'])
 end
 
-# テスト内容
+# テスト内容（共通）
+shared_examples_for 'ToOK[status]' do
+  it 'HTTPステータスが200' do
+    is_expected.to eq(200)
+  end
+end
+shared_examples_for 'ToError' do |error_msg|
+  it 'HTTPステータスが200。対象のエラーメッセージが含まれる' do # NOTE: 再入力
+    is_expected.to eq(200)
+    expect(response.body).to include(I18n.t(error_msg))
+  end
+end
+
 shared_examples_for 'ToOK(html/*)' do
   raise '各Specに作成してください。'
 end

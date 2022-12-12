@@ -1,33 +1,6 @@
 require 'rails_helper'
 
 RSpec.describe 'AdminUsers::Sessions', type: :request do
-  # テスト内容（共通）
-  shared_examples_for 'ToOK' do
-    it 'HTTPステータスが200' do
-      is_expected.to eq(200)
-    end
-  end
-  shared_examples_for 'ToError' do |error_msg|
-    it 'HTTPステータスが200。対象のエラーメッセージが含まれる' do # NOTE: 再入力
-      is_expected.to eq(200)
-      expect(response.body).to include(I18n.t(error_msg))
-    end
-  end
-  shared_examples_for 'ToAdmin' do |alert, notice|
-    it 'RailsAdminにリダイレクトする' do
-      is_expected.to redirect_to(rails_admin_path)
-      expect(flash[:alert]).to alert.present? ? eq(I18n.t(alert)) : be_nil
-      expect(flash[:notice]).to notice.present? ? eq(I18n.t(notice)) : be_nil
-    end
-  end
-  shared_examples_for 'ToLogin' do |alert, notice|
-    it 'ログインにリダイレクトする' do
-      is_expected.to redirect_to(new_admin_user_session_path)
-      expect(flash[:alert]).to alert.present? ? eq(I18n.t(alert)) : be_nil
-      expect(flash[:notice]).to notice.present? ? eq(I18n.t(notice)) : be_nil
-    end
-  end
-
   # GET /admin/sign_in ログイン
   # テストパターン
   #   未ログイン, ログイン中
@@ -36,7 +9,7 @@ RSpec.describe 'AdminUsers::Sessions', type: :request do
 
     # テストケース
     context '未ログイン' do
-      it_behaves_like 'ToOK'
+      it_behaves_like 'ToOK[status]'
     end
     context 'ログイン中' do
       include_context 'ログイン処理（管理者）'
@@ -176,11 +149,11 @@ RSpec.describe 'AdminUsers::Sessions', type: :request do
 
     # テストケース
     context '未ログイン' do
-      it_behaves_like 'ToLogin', nil, 'devise.sessions.already_signed_out'
+      it_behaves_like 'ToAdminLogin', nil, 'devise.sessions.already_signed_out'
     end
     context 'ログイン中' do
       include_context 'ログイン処理（管理者）'
-      it_behaves_like 'ToLogin', nil, 'devise.sessions.signed_out'
+      it_behaves_like 'ToAdminLogin', nil, 'devise.sessions.signed_out'
     end
   end
   describe 'GET #destroy' do
@@ -188,11 +161,11 @@ RSpec.describe 'AdminUsers::Sessions', type: :request do
 
     # テストケース
     context '未ログイン' do
-      it_behaves_like 'ToLogin', nil, 'devise.sessions.already_signed_out'
+      it_behaves_like 'ToAdminLogin', nil, 'devise.sessions.already_signed_out'
     end
     context 'ログイン中' do
       include_context 'ログイン処理（管理者）'
-      it_behaves_like 'ToLogin', nil, 'devise.sessions.signed_out'
+      it_behaves_like 'ToAdminLogin', nil, 'devise.sessions.signed_out'
     end
   end
   describe 'DELETE #destroy' do
@@ -200,11 +173,11 @@ RSpec.describe 'AdminUsers::Sessions', type: :request do
 
     # テストケース
     context '未ログイン' do
-      it_behaves_like 'ToLogin', nil, 'devise.sessions.already_signed_out'
+      it_behaves_like 'ToAdminLogin', nil, 'devise.sessions.already_signed_out'
     end
     context 'ログイン中' do
       include_context 'ログイン処理（管理者）'
-      it_behaves_like 'ToLogin', nil, 'devise.sessions.signed_out'
+      it_behaves_like 'ToAdminLogin', nil, 'devise.sessions.signed_out'
     end
   end
 end
