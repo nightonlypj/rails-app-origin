@@ -3,8 +3,8 @@
 class Users::RegistrationsController < Devise::RegistrationsController
   include Users::RegistrationsConcern
   prepend_before_action :authenticate_scope!, only: %i[edit update image_update image_destroy delete destroy undo_delete undo_destroy]
-  before_action :redirect_response_destroy_reserved, only: %i[edit update image_update image_destroy delete destroy]
-  before_action :redirect_response_not_destroy_reserved, only: %i[undo_delete undo_destroy]
+  before_action :redirect_for_destroy_reserved, only: %i[edit update image_update image_destroy delete destroy]
+  before_action :redirect_for_not_destroy_reserved, only: %i[undo_delete undo_destroy]
   before_action :configure_sign_up_params, only: %i[create]
   before_action :configure_account_update_params, only: %i[update]
 

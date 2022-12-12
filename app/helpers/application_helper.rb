@@ -53,7 +53,7 @@ module ApplicationHelper
   def text_truncate(text, length)
     return if length <= 0
 
-    text.blank? || text.length <= length ? text : text.slice(..(length - 1)).concat('...')
+    text.blank? || text.length <= length ? text : text[0, length].concat('...')
   end
 
   # ページの最初の番号を返却

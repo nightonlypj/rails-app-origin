@@ -9,12 +9,6 @@ RSpec.describe 'Top', type: :request do
     subject { get root_path }
 
     # テスト内容
-    shared_examples_for 'ToOK' do
-      it 'HTTPステータスが200' do
-        is_expected.to eq(200)
-      end
-    end
-
     shared_examples_for 'リスト表示' do
       it '対象項目が含まれる' do
         subject
@@ -35,17 +29,17 @@ RSpec.describe 'Top', type: :request do
     # テストケース
     shared_examples_for '[*]大切なお知らせがない' do
       include_context '大切なお知らせ一覧作成', 0, 0, 0, 0
-      it_behaves_like 'ToOK'
+      it_behaves_like 'ToOK[status]'
       it_behaves_like 'リスト表示'
     end
     shared_examples_for '[未ログイン]大切なお知らせがある' do
       include_context '大切なお知らせ一覧作成', 1, 1, 0, 0
-      it_behaves_like 'ToOK'
+      it_behaves_like 'ToOK[status]'
       it_behaves_like 'リスト表示'
     end
     shared_examples_for '[ログイン中/削除予約済み]大切なお知らせがある' do
       include_context '大切なお知らせ一覧作成', 1, 1, 1, 1
-      it_behaves_like 'ToOK'
+      it_behaves_like 'ToOK[status]'
       it_behaves_like 'リスト表示'
     end
 

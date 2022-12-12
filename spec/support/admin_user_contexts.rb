@@ -24,3 +24,19 @@ shared_context 'アカウントロック解除トークン作成（管理者）'
   let_it_be(:failed_attempts) { locked ? Devise.maximum_attempts : 0 }
   let_it_be(:send_admin_user) { FactoryBot.create(:admin_user, unlock_token: digest_token, locked_at: locked_at, failed_attempts: failed_attempts) }
 end
+
+# テスト内容（共通）
+shared_examples_for 'ToAdmin' do |alert, notice|
+  it 'RailsAdminにリダイレクトする' do
+    is_expected.to redirect_to(rails_admin_path)
+    expect(flash[:alert]).to alert.present? ? eq(I18n.t(alert)) : be_nil
+    expect(flash[:notice]).to notice.present? ? eq(I18n.t(notice)) : be_nil
+  end
+end
+shared_examples_for 'ToAdminLogin' do |alert, notice|
+  it 'ログイン（管理者）にリダイレクトする' do
+    is_expected.to redirect_to(new_admin_user_session_path)
+    expect(flash[:alert]).to alert.present? ? eq(I18n.t(alert)) : be_nil
+    expect(flash[:notice]).to notice.present? ? eq(I18n.t(notice)) : be_nil
+  end
+end

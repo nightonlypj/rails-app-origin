@@ -231,6 +231,7 @@ RSpec.describe 'Users::Auth::Registrations', type: :request do
         is_expected.to eq(200)
         expect(response_json['success']).to eq(true)
         expect(response_json_user['code']).to eq(current_user.code)
+        expect(response_json_user['upload_image']).to eq(current_user.image?)
         expect(response_json_user_image_url['mini']).to eq("#{Settings['base_image_url']}#{current_user.image_url(:mini)}")
         expect(response_json_user_image_url['small']).to eq("#{Settings['base_image_url']}#{current_user.image_url(:small)}")
         expect(response_json_user_image_url['medium']).to eq("#{Settings['base_image_url']}#{current_user.image_url(:medium)}")
@@ -240,7 +241,6 @@ RSpec.describe 'Users::Auth::Registrations', type: :request do
         expect(response_json_user['email']).to eq(current_user.email)
 
         expect(response_json_user['provider']).to eq(current_user.provider)
-        expect(response_json_user['upload_image']).to eq(current_user.image?)
         ## 削除予約
         expect(response_json_user['destroy_schedule_days']).to eq(Settings['destroy_schedule_days'])
         expect(response_json_user['destroy_requested_at']).to eq(I18n.l(current_user.destroy_requested_at, format: :json, default: nil))
@@ -259,7 +259,7 @@ RSpec.describe 'Users::Auth::Registrations', type: :request do
         ## Confirmable
         expect(response_json_user['unconfirmed_email']).to eq(current_user.unconfirmed_email.present? ? current_user.unconfirmed_email : nil)
         ## 作成日時
-        expect(response_json_user['created_at']).to eq(I18n.l(current_user.created_at, format: :json, default: nil))
+        expect(response_json_user['created_at']).to eq(I18n.l(current_user.created_at, format: :json))
 
         expect_exist_auth_header
       end

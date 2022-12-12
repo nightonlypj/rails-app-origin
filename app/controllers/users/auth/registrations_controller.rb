@@ -4,12 +4,12 @@ class Users::Auth::RegistrationsController < DeviseTokenAuth::RegistrationsContr
   include Users::RegistrationsConcern
   include DeviseTokenAuth::Concerns::SetUserByToken
   skip_before_action :verify_authenticity_token
-  prepend_before_action :unauthenticated_response, only: %i[show update image_update image_destroy destroy undo_destroy], unless: :user_signed_in?
-  prepend_before_action :already_authenticated_response, only: %i[create], if: :user_signed_in?
-  prepend_before_action :not_acceptable_response_not_api_accept
+  prepend_before_action :response_unauthenticated, only: %i[show update image_update image_destroy destroy undo_destroy], unless: :user_signed_in?
+  prepend_before_action :response_already_authenticated, only: %i[create], if: :user_signed_in?
+  prepend_before_action :response_not_acceptable_for_not_api
   prepend_before_action :update_request_uid_header
-  before_action :json_response_destroy_reserved, only: %i[update image_update image_destroy destroy]
-  before_action :json_response_not_destroy_reserved, only: %i[undo_destroy]
+  before_action :response_api_for_destroy_reserved, only: %i[update image_update image_destroy destroy]
+  before_action :response_api_for_not_destroy_reserved, only: %i[undo_destroy]
   before_action :configure_sign_up_params, only: %i[create]
   before_action :configure_account_update_params, only: %i[update]
   skip_after_action :update_auth_header, only: %i[update image_update]

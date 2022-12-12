@@ -6,7 +6,7 @@
 
   <div class="form-outline<%= input_size_class_name(resource, :image) %>">
     <%= form.file_field :image, class: "form-control#{validate_class_name(validate_enabled, resource, :image)}" %>
-    <%= render 'users/shared/field_error_messages', messages: resource.errors[:image] %>
+    <%= render './users/shared/field_error_messages', messages: resource.errors[:image] %>
   </div>
 
   <%= form.submit 'アップロード', class: "btn btn-primary mb-3" %>

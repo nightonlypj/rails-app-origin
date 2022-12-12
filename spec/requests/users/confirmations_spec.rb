@@ -2,31 +2,6 @@ require 'rails_helper'
 
 RSpec.describe 'Users::Confirmations', type: :request do
   # テスト内容（共通）
-  shared_examples_for 'ToOK' do
-    it 'HTTPステータスが200' do
-      is_expected.to eq(200)
-    end
-  end
-  shared_examples_for 'ToError' do |error_msg|
-    it 'HTTPステータスが200。対象のエラーメッセージが含まれる' do # NOTE: 再入力
-      is_expected.to eq(200)
-      expect(response.body).to include(I18n.t(error_msg))
-    end
-  end
-  shared_examples_for 'ToTop' do |alert, notice|
-    it 'トップページにリダイレクトする' do
-      is_expected.to redirect_to(root_path)
-      expect(flash[:alert]).to alert.present? ? eq(I18n.t(alert)) : be_nil
-      expect(flash[:notice]).to notice.present? ? eq(I18n.t(notice)) : be_nil
-    end
-  end
-  shared_examples_for 'ToLogin' do |alert, notice|
-    it 'ログインにリダイレクトする' do
-      is_expected.to redirect_to(new_user_session_path)
-      expect(flash[:alert]).to alert.present? ? eq(I18n.t(alert)) : be_nil
-      expect(flash[:notice]).to notice.present? ? eq(I18n.t(notice)) : be_nil
-    end
-  end
   shared_examples_for 'ToNew' do |alert, notice|
     it 'メールアドレス確認[メール再送]にリダイレクトする' do
       is_expected.to redirect_to(new_user_confirmation_path)
@@ -43,15 +18,15 @@ RSpec.describe 'Users::Confirmations', type: :request do
 
     # テストケース
     context '未ログイン' do
-      it_behaves_like 'ToOK'
+      it_behaves_like 'ToOK[status]'
     end
     context 'ログイン中（メール確認済み）' do
       include_context 'ログイン処理'
-      it_behaves_like 'ToOK' # NOTE: リンクないけど、送れても良さそう
+      it_behaves_like 'ToOK[status]' # NOTE: リンクないけど、送れても良さそう
     end
     context 'ログイン中（メールアドレス変更中）' do
       include_context 'ログイン処理', :email_changed
-      it_behaves_like 'ToOK' # NOTE: ログイン中でも再送したい
+      it_behaves_like 'ToOK[status]' # NOTE: ログイン中でも再送したい
     end
   end
 

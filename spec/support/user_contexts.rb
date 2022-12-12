@@ -63,7 +63,22 @@ shared_context 'アカウントロック解除トークン作成' do |locked, ex
   let_it_be(:send_user)       { FactoryBot.create(:user, unlock_token: digest_token, locked_at: locked_at, failed_attempts: failed_attempts) }
 end
 
-# テスト内容
+# テスト内容（共通）
+shared_examples_for 'ToTop' do |alert, notice|
+  it 'トップページにリダイレクトする' do
+    is_expected.to redirect_to(root_path)
+    expect(flash[:alert]).to alert.present? ? eq(I18n.t(alert)) : be_nil
+    expect(flash[:notice]).to notice.present? ? eq(I18n.t(notice)) : be_nil
+  end
+end
+shared_examples_for 'ToLogin' do |alert, notice|
+  it 'ログインにリダイレクトする' do
+    is_expected.to redirect_to(new_user_session_path)
+    expect(flash[:alert]).to alert.present? ? eq(I18n.t(alert)) : be_nil
+    expect(flash[:notice]).to notice.present? ? eq(I18n.t(notice)) : be_nil
+  end
+end
+
 shared_context 'Authテスト内容' do
   let(:response_json_user)           { response_json['user'] }
   let(:response_json_user_image_url) { response_json_user['image_url'] }
@@ -75,6 +90,7 @@ shared_context 'Authテスト内容' do
       expect(response_json_user).to be_nil
     else
       expect(response_json_user['code']).to eq(current_user.code)
+      expect(response_json_user['upload_image']).to eq(current_user.image?)
       expect(response_json_user_image_url['mini']).to eq("#{Settings['base_image_url']}#{current_user.image_url(:mini)}")
       expect(response_json_user_image_url['small']).to eq("#{Settings['base_image_url']}#{current_user.image_url(:small)}")
       expect(response_json_user_image_url['medium']).to eq("#{Settings['base_image_url']}#{current_user.image_url(:medium)}")
@@ -84,7 +100,6 @@ shared_context 'Authテスト内容' do
       expect(response_json_user['email']).to be_nil
 
       expect(response_json_user['provider']).to eq(current_user.provider)
-      expect(response_json_user['upload_image']).to eq(current_user.image?)
       ## 削除予約
       expect(response_json_user['destroy_schedule_days']).to eq(Settings['destroy_schedule_days'])
       expect(response_json_user['destroy_requested_at']).to eq(I18n.l(current_user.destroy_requested_at, format: :json, default: nil))

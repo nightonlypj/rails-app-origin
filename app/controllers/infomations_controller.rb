@@ -1,6 +1,6 @@
 class InfomationsController < ApplicationAuthController
   include InfomationsConcern
-  prepend_before_action :not_acceptable_response_not_api_accept, only: %i[important]
+  prepend_before_action :response_not_acceptable_for_not_api, only: %i[important]
   before_action :set_important_infomations, only: %i[important]
 
   # GET /infomations お知らせ一覧
@@ -22,9 +22,9 @@ class InfomationsController < ApplicationAuthController
   # GET /infomations/:id(.json) お知らせ詳細API
   def show
     @infomation = Infomation.find_by(id: params[:id])
-    return not_found_response if @infomation.blank? || !@infomation.display_target?(current_user) || @infomation.started_at > Time.current
+    return response_not_found if @infomation.blank? || !@infomation.display_target?(current_user) || @infomation.started_at > Time.current
 
-    not_found_response('errors.messages.infomation.ended') if @infomation.ended_at.present? && @infomation.ended_at < Time.current
+    response_not_found('errors.messages.infomation.ended') if @infomation.ended_at.present? && @infomation.ended_at < Time.current
   end
 
   private

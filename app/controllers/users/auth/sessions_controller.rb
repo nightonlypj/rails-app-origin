@@ -4,7 +4,7 @@ class Users::Auth::SessionsController < DeviseTokenAuth::SessionsController
   include DeviseTokenAuth::Concerns::SetUserByToken
   skip_before_action :verify_authenticity_token
   prepend_before_action :unauthenticated_response_sign_out, only: %i[destroy], unless: :user_signed_in?
-  prepend_before_action :not_acceptable_response_not_api_accept
+  prepend_before_action :response_not_acceptable_for_not_api
   prepend_before_action :update_request_uid_header
 
   # POST /users/auth/sign_in(.json) ログインAPI(処理)

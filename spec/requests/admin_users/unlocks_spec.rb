@@ -1,33 +1,6 @@
 require 'rails_helper'
 
 RSpec.describe 'AdminUsers::Unlocks', type: :request do
-  # テスト内容（共通）
-  shared_examples_for 'ToOK' do
-    it 'HTTPステータスが200' do
-      is_expected.to eq(200)
-    end
-  end
-  shared_examples_for 'ToError' do |error_msg|
-    it 'HTTPステータスが200。対象のエラーメッセージが含まれる' do # NOTE: 再入力
-      is_expected.to eq(200)
-      expect(response.body).to include(I18n.t(error_msg))
-    end
-  end
-  shared_examples_for 'ToAdmin' do |alert, notice|
-    it 'RailsAdminにリダイレクトする' do
-      is_expected.to redirect_to(rails_admin_path)
-      expect(flash[:alert]).to alert.present? ? eq(I18n.t(alert)) : be_nil
-      expect(flash[:notice]).to notice.present? ? eq(I18n.t(notice)) : be_nil
-    end
-  end
-  shared_examples_for 'ToLogin' do |alert, notice|
-    it 'ログインにリダイレクトする' do
-      is_expected.to redirect_to(new_admin_user_session_path)
-      expect(flash[:alert]).to alert.present? ? eq(I18n.t(alert)) : be_nil
-      expect(flash[:notice]).to notice.present? ? eq(I18n.t(notice)) : be_nil
-    end
-  end
-
   # GET /admin/unlock/resend アカウントロック解除[メール再送]
   # テストパターン
   #   未ログイン, ログイン中
@@ -36,7 +9,7 @@ RSpec.describe 'AdminUsers::Unlocks', type: :request do
 
     # テストケース
     context '未ログイン' do
-      it_behaves_like 'ToOK'
+      it_behaves_like 'ToOK[status]'
     end
     context 'ログイン中' do
       include_context 'ログイン処理（管理者）'
@@ -78,7 +51,7 @@ RSpec.describe 'AdminUsers::Unlocks', type: :request do
       let(:send_admin_user) { send_admin_user_locked }
       let(:attributes)      { valid_attributes }
       it_behaves_like 'OK'
-      it_behaves_like 'ToLogin', nil, 'devise.unlocks.send_instructions'
+      it_behaves_like 'ToAdminLogin', nil, 'devise.unlocks.send_instructions'
     end
     shared_examples_for '[ログイン中]有効なパラメータ（ロック中）' do
       let(:send_admin_user) { send_admin_user_locked }
@@ -151,7 +124,7 @@ RSpec.describe 'AdminUsers::Unlocks', type: :request do
     shared_examples_for '[未ログイン][存在する]ロック日時がない（未ロック）' do
       include_context 'アカウントロック解除トークン作成（管理者）', false
       it_behaves_like 'NG'
-      it_behaves_like 'ToLogin', nil, 'devise.unlocks.unlocked' # NOTE: 既に解除済み
+      it_behaves_like 'ToAdminLogin', nil, 'devise.unlocks.unlocked' # NOTE: 既に解除済み
     end
     shared_examples_for '[ログイン中][存在する]ロック日時がない（未ロック）' do
       include_context 'アカウントロック解除トークン作成（管理者）', false
@@ -177,7 +150,7 @@ RSpec.describe 'AdminUsers::Unlocks', type: :request do
     shared_examples_for '[未ログイン][存在する]ロック日時が期限内（ロック中）' do
       include_context 'アカウントロック解除トークン作成（管理者）', true
       it_behaves_like 'OK'
-      it_behaves_like 'ToLogin', nil, 'devise.unlocks.unlocked'
+      it_behaves_like 'ToAdminLogin', nil, 'devise.unlocks.unlocked'
     end
     shared_examples_for '[ログイン中][存在する]ロック日時が期限内（ロック中）' do
       include_context 'アカウントロック解除トークン作成（管理者）', true
@@ -187,7 +160,7 @@ RSpec.describe 'AdminUsers::Unlocks', type: :request do
     shared_examples_for '[未ログイン][存在する]ロック日時が期限切れ（未ロック）' do
       include_context 'アカウントロック解除トークン作成（管理者）', true, true
       it_behaves_like 'OK'
-      it_behaves_like 'ToLogin', nil, 'devise.unlocks.unlocked' # NOTE: 解除されても良さそう
+      it_behaves_like 'ToAdminLogin', nil, 'devise.unlocks.unlocked' # NOTE: 解除されても良さそう
     end
     shared_examples_for '[ログイン中][存在する]ロック日時が期限切れ（未ロック）' do
       include_context 'アカウントロック解除トークン作成（管理者）', true, true
