@@ -32,6 +32,11 @@ test_spaces:
   public_none_count: 1
   private_admin_count: 1
   private_reader_count: 1
+# 名称の最小・最大文字数
+space_name_minimum: 2  # NOTE: 2以上、(7+8?)以下 = "space(#{n})""
+space_name_maximum: 15 # NOTE: (7+8?)以上
+# 説明の最大文字数
+space_description_maximum: 22 # NOTE: (13+8?)以上 = "description(#{code})"
 
 ## メンバー
 # 一覧のデフォルト最大表示件数

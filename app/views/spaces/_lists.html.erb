@@ -6,9 +6,7 @@
         <%# 名称 %>
         <td scope="row" class="px-1 py-2" style="width: 35%">
           <%= image_tag space.image_url(:small), class: 'rounded-circle' %>
-          <span class="fw-bolder ms-1">
-            <%= link_to text_truncate(space.name, 64), space_path(space.code) %>
-          </span>
+          <%= link_to text_truncate(space.name, 64), space_path(space.code) %>
           <%= render 'icon', space: space, current_member: @members[space.id] %>
         </td>
         <%# 説明 %>

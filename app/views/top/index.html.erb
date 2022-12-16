@@ -4,6 +4,11 @@
     <%= render 'sign_up' %>
   </div>
 <% end %>
+<% if user_signed_in? %>
+  <div class="col-12 col-md-6">
+    <%= render 'create_space' %>
+  </div>
+<% end %>
   <div class="col-12 col-md-6">
     <%= render 'infomations' if @infomations.present? %>
   </div>

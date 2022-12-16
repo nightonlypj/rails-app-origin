@@ -1,10 +1,12 @@
 json.success true
 json.search_params do
   json.text @text
-  json.public @checked[:public] ? 1 : 0
-  json.private @checked[:private] ? 1 : 0
-  json.join @checked[:join] ? 1 : 0
-  json.nojoin @checked[:nojoin] ? 1 : 0
+  if Settings['enable_public_space']
+    json.public @checked[:public] ? 1 : 0
+    json.private @checked[:private] ? 1 : 0
+    json.join @checked[:join] ? 1 : 0
+    json.nojoin @checked[:nojoin] ? 1 : 0
+  end
   json.active @checked[:active] ? 1 : 0
   json.destroy @checked[:destroy] ? 1 : 0
 end

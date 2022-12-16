@@ -1,0 +1,4 @@
+<% if user.present? %>
+<%= image_tag user.image_url(:small), class: 'rounded-circle' %>
+<%= user.name %>
+<% end %>

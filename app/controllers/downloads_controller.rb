@@ -30,11 +30,11 @@ class DownloadsController < ApplicationAuthController
   # GET /downloads/file/:id(.json) ダウンロードAPI
   def file
     @download = Download.find_by(id: params[:id])
-    return not_found_response('alert.download.notfound') if @download.blank? || @download.user != current_user
+    return response_not_found('alert.download.notfound') if @download.blank? || @download.user != current_user
 
     if @download.model.to_sym == :member
       current_member = Member.where(space: @download.space, user: current_user)&.first
-      return forbidden_response if current_member.blank? || !current_member.power_admin?
+      return response_forbidden if current_member.blank? || !current_member.power_admin?
     end
 
     @download.last_downloaded_at = Time.current
@@ -76,14 +76,14 @@ class DownloadsController < ApplicationAuthController
   # Use callbacks to share common setup or constraints between actions.
   def set_params_new(target_params = params)
     @model = target_params[:model]&.to_sym
-    return not_exist_key_response(:model) if Download.models[@model].blank?
+    return response_not_exist_key(:model) if Download.models[@model].blank?
 
     if @model == :member
       @space = Space.find_by(code: target_params[:space_code])
-      return not_exist_key_response(:space_code) if @space.blank?
+      return response_not_exist_key(:space_code) if @space.blank?
 
       @current_member = Member.where(space: @space, user: current_user).eager_load(:user)&.first
-      return forbidden_response if @current_member.blank? || !@current_member.power_admin?
+      return response_forbidden if @current_member.blank? || !@current_member.power_admin?
     else
       @space = nil
       @current_member = nil
@@ -103,7 +103,7 @@ class DownloadsController < ApplicationAuthController
     set_params_new(params[:download])
   end
 
-  def not_exist_key_response(key)
+  def response_not_exist_key(key)
     if format_html?
       head :not_found
     else

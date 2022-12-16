@@ -24,10 +24,12 @@ RSpec.describe 'spaces/index', type: :view do
         assert_select 'button[type=?]', 'submit'
         if signed_in
           assert_select 'input[name=?]', 'option'
-          assert_select 'input[name=?]', 'public'
-          assert_select 'input[name=?]', 'private'
-          assert_select 'input[name=?]', 'join'
-          assert_select 'input[name=?]', 'nojoin'
+          if Settings['enable_public_space']
+            assert_select 'input[name=?]', 'public'
+            assert_select 'input[name=?]', 'private'
+            assert_select 'input[name=?]', 'join'
+            assert_select 'input[name=?]', 'nojoin'
+          end
           assert_select 'input[name=?]', 'active'
           assert_select 'input[name=?]', 'destroy'
         end

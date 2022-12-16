@@ -134,6 +134,7 @@
           </i>
           <span class="mx-2 my-1">お知らせ</span>
         </a>
+<% if user_signed_in? %>
         <a href="<%= downloads_path %>" class="btn btn-link d-flex align-items-center link-dark" style="font-size: 1rem">
           <i class="fas fa-download fa-lg">
 <% if current_user.undownloaded_count > 0 %>
@@ -144,7 +145,7 @@
         </a>
 <% end %>
         <a href="<%= spaces_path %>" class="btn btn-link d-flex align-items-center link-dark" style="font-size: 1rem">
-          <i class="fas fa-list fa-lg"></i>
+          <i class="fas fa-folder-open fa-lg"></i>
           <span class="mx-2 my-1">スペース</span>
         </a>
 <% if user_signed_in? %>

@@ -5,10 +5,8 @@
     <div class="row">
       <div class="col">
         <%= image_tag @space.image_url(:small), class: 'rounded-circle' %>
-        <span class="ms-1">
-          <%= @space.name %>
-        </span>
-        <%= render 'spaces/icon', space: @space, current_member: @current_member %>
+        <%= @space.name %>
+        <%= render './spaces/icon', space: @space, current_member: @current_member %>
       </div>
 <% if @current_member.present? %>
       <div class="col-auto text-end ps-0">

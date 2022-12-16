@@ -30,8 +30,17 @@ user_name_maximum: 32
 default_infomations_limit: 25
 
 ## スペース
+# 公開スペース使用可否  ※後からfalseに変更しても作成済みの公開スペースは表示されます。
+enable_public_space: true
 # 一覧のデフォルト最大表示件数
 default_spaces_limit: 25
+# コードの文字数
+space_code_length: 8
+# 名称の最小・最大文字数
+space_name_minimum: 3
+space_name_maximum: 128
+# 説明の最大文字数
+space_description_maximum: 4096
 
 ## メンバー
 # 一覧のデフォルト最大表示件数

@@ -1,71 +1,79 @@
 # NOTE: id = 連番
 - id: 1
   code: 'code0001'
-  name: '非公開スペース(管理者/管理者)<b>１２３４５６７８９０１２３４５６７８９０１２３４５６７８９０１２３４５６７８９０１２３４５６７８９０１２３４５６７８９０１２３４５６７８９０１２３４５６７８９０１２３４５６７８９０１２３４５６７８９０１２３４５６７８９０１２３４５６７８９０１２３４５６７８９０１２３４５６７８９０１２３４５６７８９０１２３４５６７８９０１２３４５６７８９０１２３４５６７８９０１２３４５６７８９０１２３４５６７８９０１２３４５６７８９０１２３４５６７８９０１２３４５６７８９０１２</b>'
-  description: "非公開スペース(管理者/管理者)\n2行目\n<b>１２３４５６７８９０１２３４５６７８９０１２３４５６７８９０１２３４５６７８９０１２３４５６７８９０１２３４５６７８９０１２３４５６７８９０１２３４５６７８９０１２３４５６７８９０１２３４５６７８９０１２３４５６７８９０１２３４５６７８９０１２３４５６７８９０１２３４５６７８９０１２３４５６７８９０１２３４５６７８９０１２３４５６７８９０１２３４５６７８９０１２３４５６７８９０１２３４５６７８９０１２３４５６７８９０１２３４５６７８９０１２３４５６７８９０</b>"
+  name: '非公開スペース(管理者/管理者)<b>１２３４５６７８９０１２３４５６７８９０１２３４５６７８９０１２３４５６７８９０１２３４５６７８９０１２３４５６７８９０１２３４５６７８９０１２３４５６７８９０１２３４５６７８９０１２３４５６７８９０１２３４５</b>'
+  description: "非公開スペース(管理者/管理者)\n2行目\n<b>１２３４５６７８９０１２３４５６７８９０１２３４５６７８９０１２３４５６７８９０１２３４５６７８９０１２３４５６７８９０１２３４５６７８９０１２３４５６７８９０１２３４５６７８９０１２３４５６７８９０１２３４５</b>\nhttps://example.com"
   private: true
-  create_user_id: 1
-  last_update_user_id: null
+  created_user_id: 1
+  last_updated_user_id: 2
   created_at: '2000-01-31 12:34:56+0900'
+  updated_at: '2000-02-21 12:34:56+0900'
 - id: 2
   code: 'code0002'
   name: '公開スペース(管理者/なし)'
   description: "公開スペース(管理者/なし)\n2行目"
   private: false
-  create_user_id: 1
-  last_update_user_id: null
+  created_user_id: 1
+  last_updated_user_id: null
   created_at: '2000-01-30 12:34:56+0900'
+  updated_at: '2000-01-30 12:34:56+0900'
 
 - id: 3
   code: 'code0003'
   name: '非公開スペース(投稿者/管理者)'
   description: "非公開スペース(投稿者/管理者)\n2行目"
   private: true
-  create_user_id: 1
-  last_update_user_id: 2
+  created_user_id: 1
+  last_updated_user_id: 2
   created_at: '2000-01-29 12:34:56+0900'
+  updated_at: '2000-02-19 12:34:56+0900'
 - id: 4
   code: 'code0004'
   name: '公開スペース(投稿者/管理者)'
   description: "公開スペース(投稿者/管理者)\n2行目"
   private: false
-  create_user_id: 1
-  last_update_user_id: 2
+  created_user_id: 1
+  last_updated_user_id: 2
   created_at: '2000-01-28 12:34:56+0900'
+  updated_at: '2000-02-18 12:34:56+0900'
 
 - id: 5
   code: 'code0005'
   name: '非公開スペース(閲覧者/管理者)'
   description: "非公開スペース(閲覧者/管理者)\n2行目"
   private: true
-  create_user_id: 1
-  last_update_user_id: 2
+  created_user_id: 1
+  last_updated_user_id: 2
   created_at: '2000-01-27 12:34:56+0900'
+  updated_at: '2000-02-17 12:34:56+0900'
 - id: 6
   code: 'code0006'
   name: '公開スペース(閲覧者/管理者)'
   description: "公開スペース(閲覧者/管理者)\n2行目"
   private: false
-  create_user_id: 1
-  last_update_user_id: 2
+  created_user_id: 1
+  last_updated_user_id: 2
   created_at: '2000-01-26 12:34:56+0900'
+  updated_at: '2000-02-16 12:34:56+0900'
 
 - id: 7
   code: 'code0007'
   name: '非公開スペース(なし/管理者)'
   description: null
   private: true
-  create_user_id: 1
-  last_update_user_id: 2
+  created_user_id: 1
+  last_updated_user_id: 2
   created_at: '2000-01-25 12:34:56+0900'
+  updated_at: '2000-02-15 12:34:56+0900'
 - id: 8
   code: 'code0008'
   name: '公開スペース(なし/管理者)'
   description: null
   private: false
-  create_user_id: 1
-  last_update_user_id: 2
+  created_user_id: 1
+  last_updated_user_id: 2
   created_at: '2000-01-24 12:34:56+0900'
+  updated_at: '2000-02-14 12:34:56+0900'
 
 - id: 9
   code: 'code0009'
@@ -74,9 +82,10 @@
   private: true
   destroy_requested_at: '2000-01-01 12:34:56+0900'
   destroy_schedule_at: '9000-01-01 12:34:56+0900'
-  create_user_id: 1
-  last_update_user_id: 1
+  created_user_id: 1
+  last_updated_user_id: 1
   created_at: '2000-01-23 12:34:56+0900'
+  updated_at: '2000-02-13 12:34:56+0900'
 - id: 10
   code: 'code0010'
   name: '削除予約済みの公開スペース(投稿者/管理者)'
@@ -84,9 +93,10 @@
   private: false
   destroy_requested_at: '2000-01-01 12:34:56+0900'
   destroy_schedule_at: '9000-01-01 12:34:56+0900'
-  create_user_id: 1
-  last_update_user_id: 2
+  created_user_id: 1
+  last_updated_user_id: 2
   created_at: '2000-01-22 12:34:56+0900'
+  updated_at: '2000-02-12 12:34:56+0900'
 
 - id: 11
   code: 'code0011'
@@ -95,9 +105,10 @@
   private: true
   destroy_requested_at: '2000-01-01 12:34:56+0900'
   destroy_schedule_at: '2000-01-08 12:34:56+0900'
-  create_user_id: 1
-  last_update_user_id: 2
+  created_user_id: 1
+  last_updated_user_id: 2
   created_at: '2000-01-21 12:34:56+0900'
+  updated_at: '2000-02-11 12:34:56+0900'
 - id: 12
   code: 'code0012'
   name: '削除対象の公開スペース(なし/管理者)'
@@ -105,97 +116,113 @@
   private: false
   destroy_requested_at: '2000-01-01 12:34:56+0900'
   destroy_schedule_at: '2000-01-08 12:34:56+0900'
-  create_user_id: 1
-  last_update_user_id: 2
+  created_user_id: 1
+  last_updated_user_id: 2
   created_at: '2000-01-20 12:34:56+0900'
+  updated_at: '2000-02-10 12:34:56+0900'
 
 - id: 101
   code: 'code0101'
   name: '公開スペース 1'
   private: false
-  create_user_id: 1
+  created_user_id: 1
   created_at: '2000-01-01 12:34:56+0900'
+  updated_at: '2000-01-01 12:34:56+0900'
 - id: 102
   code: 'code0102'
   name: '公開スペース 2'
   private: false
-  create_user_id: 1
+  created_user_id: 1
   created_at: '2000-01-01 12:34:56+0900'
+  updated_at: '2000-01-01 12:34:56+0900'
 - id: 103
   code: 'code0103'
   name: '公開スペース 3'
   private: false
-  create_user_id: 1
+  created_user_id: 1
   created_at: '2000-01-01 12:34:56+0900'
+  updated_at: '2000-01-01 12:34:56+0900'
 - id: 104
   code: 'code0104'
   name: '公開スペース 4'
   private: false
-  create_user_id: 1
+  created_user_id: 1
   created_at: '2000-01-01 12:34:56+0900'
+  updated_at: '2000-01-01 12:34:56+0900'
 - id: 105
   code: 'code0105'
   name: '公開スペース 5'
   private: false
-  create_user_id: 1
+  created_user_id: 1
   created_at: '2000-01-01 12:34:56+0900'
+  updated_at: '2000-01-01 12:34:56+0900'
 - id: 106
   code: 'code0106'
   name: '公開スペース 6'
   private: false
-  create_user_id: 1
+  created_user_id: 1
   created_at: '2000-01-01 12:34:56+0900'
+  updated_at: '2000-01-01 12:34:56+0900'
 - id: 107
   code: 'code0107'
   name: '公開スペース 7'
   private: false
-  create_user_id: 1
+  created_user_id: 1
   created_at: '2000-01-01 12:34:56+0900'
+  updated_at: '2000-01-01 12:34:56+0900'
 - id: 108
   code: 'code0108'
   name: '公開スペース 8'
   private: false
-  create_user_id: 1
+  created_user_id: 1
   created_at: '2000-01-01 12:34:56+0900'
+  updated_at: '2000-01-01 12:34:56+0900'
 - id: 109
   code: 'code0109'
   name: '公開スペース 9'
   private: false
-  create_user_id: 1
+  created_user_id: 1
   created_at: '2000-01-01 12:34:56+0900'
+  updated_at: '2000-01-01 12:34:56+0900'
 - id: 110
   code: 'code0110'
   name: '公開スペース 10'
   private: false
-  create_user_id: 1
+  created_user_id: 1
   created_at: '2000-01-01 12:34:56+0900'
+  updated_at: '2000-01-01 12:34:56+0900'
 - id: 111
   code: 'code0111'
   name: '公開スペース 11'
   private: false
-  create_user_id: 1
+  created_user_id: 1
   created_at: '2000-01-01 12:34:56+0900'
+  updated_at: '2000-01-01 12:34:56+0900'
 - id: 112
   code: 'code0112'
   name: '公開スペース 12'
   private: false
-  create_user_id: 1
+  created_user_id: 1
   created_at: '2000-01-01 12:34:56+0900'
+  updated_at: '2000-01-01 12:34:56+0900'
 - id: 113
   code: 'code0113'
   name: '公開スペース 13'
   private: false
-  create_user_id: 1
+  created_user_id: 1
   created_at: '2000-01-01 12:34:56+0900'
+  updated_at: '2000-01-01 12:34:56+0900'
 - id: 114
   code: 'code0114'
   name: '公開スペース 14'
   private: false
-  create_user_id: 1
+  created_user_id: 1
   created_at: '2000-01-01 12:34:56+0900'
+  updated_at: '2000-01-01 12:34:56+0900'
 - id: 115
   code: 'code0115'
   name: '公開スペース 15'
   private: false
-  create_user_id: 1
+  created_user_id: 1
   created_at: '2000-01-01 12:34:56+0900'
+  updated_at: '2000-01-01 12:34:56+0900'

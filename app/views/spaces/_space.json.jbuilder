@@ -1,4 +1,5 @@
 json.code space.code
+json.upload_image space.image?
 json.image_url do
   json.mini "#{Settings['base_image_url']}#{space.image_url(:mini)}"
   json.small "#{Settings['base_image_url']}#{space.image_url(:small)}"

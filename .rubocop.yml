@@ -121,10 +121,19 @@ Style/FrozenStringLiteralComment:
 # C: Layout/LineLength: Line is too long.
 Layout/LineLength:
   Max: 160
+  Exclude:
+    - 'spec/**/*'
 
 # C: Metrics/MethodLength: Method has too many lines.
 Metrics/MethodLength:
   Max: 30
+  Exclude:
+    - 'spec/**/*'
+
+# C: Metrics/AbcSize: Assignment Branch Condition size for expect_space_json is too high.
+Metrics/AbcSize:
+  Exclude:
+    - 'spec/**/*'
 
 # C: Metrics/ParameterLists: Avoid parameter lists longer than 5 parameters.
 Metrics/ParameterLists:

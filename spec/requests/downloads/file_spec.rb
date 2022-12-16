@@ -62,7 +62,7 @@ RSpec.describe 'Downloads', type: :request do
     end
     shared_examples_for '[APIログイン中/削除予約済み][存在する][その他ユーザー]権限がない' do
       it_behaves_like 'ToNG(html)', 404
-      it_behaves_like 'ToNG(json)', 404, 'alert.download.notfound'
+      it_behaves_like 'ToNG(json)', 404, nil, 'alert.download.notfound'
     end
 
     shared_examples_for '[ログイン中/削除予約済み][存在する]依頼ユーザーがログインユーザー' do
@@ -109,7 +109,7 @@ RSpec.describe 'Downloads', type: :request do
     shared_examples_for '[APIログイン中/削除予約済み]IDが存在しない' do
       let_it_be(:download) { FactoryBot.build_stubbed(:download) }
       it_behaves_like 'ToNG(html)', 404
-      it_behaves_like 'ToNG(json)', 404, 'alert.download.notfound'
+      it_behaves_like 'ToNG(json)', 404, nil, 'alert.download.notfound'
     end
     shared_examples_for '[未ログイン]IDが存在する' do
       let_it_be(:download) { FactoryBot.create(:download, :success) }

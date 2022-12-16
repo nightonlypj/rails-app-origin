@@ -6,10 +6,10 @@ RSpec.describe 'Spaces', type: :request do
   let(:response_json_spaces) { response_json['spaces'] }
 
   # テスト内容（共通）
-  shared_examples_for 'リスト表示（個別）' do
-    it '対象の名称が含まれる' do
+  shared_examples_for 'ToOK[名称]' do
+    it 'HTTPステータスが200。対象の名称が含まれる/一致する' do
       Settings['default_spaces_limit'] = spaces.count if spaces.count.positive?
-      subject
+      is_expected.to eq(200)
       if subject_format == :json
         # JSON
         expect(response_json_spaces.count).to eq(spaces.count)
@@ -49,7 +49,12 @@ RSpec.describe 'Spaces', type: :request do
       it 'HTTPステータスが200。対象項目が一致する' do
         is_expected.to eq(200)
         expect(response_json['success']).to eq(true)
-        expect(response_json['search_params']).to eq({ text: nil, public: 1, private: 1, join: 1, nojoin: 1, active: 1, destroy: 0 }.stringify_keys)
+        if Settings['enable_public_space']
+          search_params = { text: nil, public: 1, private: 1, join: 1, nojoin: 1, active: 1, destroy: 0 }
+        else
+          search_params = { text: nil, active: 1, destroy: 0 }
+        end
+        expect(response_json['search_params']).to eq(search_params.stringify_keys)
         expect(response_json_space['total_count']).to eq(spaces.count)
         expect(response_json_space['current_page']).to eq(subject_page)
         expect(response_json_space['total_pages']).to eq((spaces.count - 1).div(Settings['default_spaces_limit']) + 1)
@@ -116,14 +121,7 @@ RSpec.describe 'Spaces', type: :request do
           data = response_json_spaces[no - start_no]
           space = spaces[spaces.count - no]
           expect(data['code']).to eq(space.code)
-
-          data_image_url = data['image_url']
-          expect(data_image_url['mini']).to eq("#{Settings['base_image_url']}#{space.image_url(:mini)}")
-          expect(data_image_url['small']).to eq("#{Settings['base_image_url']}#{space.image_url(:small)}")
-          expect(data_image_url['medium']).to eq("#{Settings['base_image_url']}#{space.image_url(:medium)}")
-          expect(data_image_url['large']).to eq("#{Settings['base_image_url']}#{space.image_url(:large)}")
-          expect(data_image_url['xlarge']).to eq("#{Settings['base_image_url']}#{space.image_url(:xlarge)}")
-
+          expect_image_json(data, space)
           expect(data['name']).to eq(space.name)
           expect(data['description']).to eq(space.description)
           expect(data['private']).to eq(space.private)
@@ -307,9 +305,9 @@ RSpec.describe 'Spaces', type: :request do
     let(:params) { { text: 'aaa' } }
 
     # テストケース
-    shared_examples_for 'リスト表示' do
+    shared_examples_for '検索文字列あり' do
       let(:spaces) { [join_space, nojoin_space] }
-      it_behaves_like 'リスト表示（個別）'
+      it_behaves_like 'ToOK[名称]'
     end
 
     context 'ログイン中（URLの拡張子がない/AcceptヘッダにHTMLが含まれる）' do
@@ -317,14 +315,14 @@ RSpec.describe 'Spaces', type: :request do
       before_all { FactoryBot.create(:member, :admin, space: join_space, user: user) }
       let(:subject_format) { nil }
       let(:accept_headers) { ACCEPT_INC_HTML }
-      it_behaves_like 'リスト表示'
+      it_behaves_like '検索文字列あり'
     end
     context 'APIログイン中（URLの拡張子が.json/AcceptヘッダにJSONが含まれる）' do
       include_context 'APIログイン処理'
       before_all { FactoryBot.create(:member, :admin, space: join_space, user: user) }
       let(:subject_format) { :json }
       let(:accept_headers) { ACCEPT_INC_JSON }
-      it_behaves_like 'リスト表示'
+      it_behaves_like '検索文字列あり'
     end
   end
 
@@ -340,62 +338,64 @@ RSpec.describe 'Spaces', type: :request do
     shared_examples_for '全て1' do
       let(:params) { { public: 1, private: 1, join: 1, nojoin: 1, active: 1, destroy: 1 } }
       let(:spaces) { (@public_spaces + @public_nojoin_spaces + @public_nojoin_destroy_spaces + @private_spaces).reverse }
-      it_behaves_like 'リスト表示（個別）'
+      it_behaves_like 'ToOK[名称]'
     end
     shared_examples_for '公開・非公開が1と0' do
       let(:params) { { public: 1, private: 0, join: 1, nojoin: 1, active: 1, destroy: 1 } }
       let(:spaces) { (@public_spaces + @public_nojoin_spaces + @public_nojoin_destroy_spaces).reverse }
-      it_behaves_like 'リスト表示（個別）'
+      it_behaves_like 'ToOK[名称]'
     end
     shared_examples_for '公開・非公開が0と1' do
       let(:params) { { public: 0, private: 1, join: 1, nojoin: 1, active: 1, destroy: 1 } }
       let(:spaces) { @private_spaces.reverse }
-      it_behaves_like 'リスト表示（個別）'
+      it_behaves_like 'ToOK[名称]'
     end
     shared_examples_for '公開・非公開が0と0' do
       let(:params) { { public: 0, private: 0, join: 1, nojoin: 1, active: 1, destroy: 1 } }
       let(:spaces) { [] }
-      it_behaves_like 'リスト表示（個別）'
+      it_behaves_like 'ToOK[名称]'
     end
     shared_examples_for '参加・未参加が1と0' do
       let(:params) { { public: 1, private: 1, join: 1, nojoin: 0, active: 1, destroy: 1 } }
       let(:spaces) { (@public_spaces + @private_spaces).reverse }
-      it_behaves_like 'リスト表示（個別）'
+      it_behaves_like 'ToOK[名称]'
     end
     shared_examples_for '参加・未参加が0と1' do
       let(:params) { { public: 1, private: 1, join: 0, nojoin: 1, active: 1, destroy: 1 } }
       let(:spaces) { (@public_nojoin_spaces + @public_nojoin_destroy_spaces).reverse }
-      it_behaves_like 'リスト表示（個別）'
+      it_behaves_like 'ToOK[名称]'
     end
     shared_examples_for '参加・未参加が0と0' do
       let(:params) { { public: 1, private: 1, join: 0, nojoin: 0, active: 1, destroy: 1 } }
       let(:spaces) { [] }
-      it_behaves_like 'リスト表示（個別）'
+      it_behaves_like 'ToOK[名称]'
     end
     shared_examples_for '有効・削除予定が1と0' do
       let(:params) { { public: 1, private: 1, join: 1, nojoin: 1, active: 1, destroy: 0 } }
       let(:spaces) { (@public_spaces + @public_nojoin_spaces + @private_spaces).reverse }
-      it_behaves_like 'リスト表示（個別）'
+      it_behaves_like 'ToOK[名称]'
     end
     shared_examples_for '有効・削除予定が0と1' do
       let(:params) { { public: 1, private: 1, join: 1, nojoin: 1, active: 0, destroy: 1 } }
       let(:spaces) { @public_nojoin_destroy_spaces.reverse }
-      it_behaves_like 'リスト表示（個別）'
+      it_behaves_like 'ToOK[名称]'
     end
     shared_examples_for '有効・削除予定が0と0' do
       let(:params) { { public: 1, private: 1, join: 1, nojoin: 1, active: 0, destroy: 0 } }
       let(:spaces) { [] }
-      it_behaves_like 'リスト表示（個別）'
+      it_behaves_like 'ToOK[名称]'
     end
 
-    shared_examples_for 'リスト表示' do
+    shared_examples_for 'オプション' do
       it_behaves_like '全て1'
-      it_behaves_like '公開・非公開が1と0'
-      it_behaves_like '公開・非公開が0と1'
-      it_behaves_like '公開・非公開が0と0'
-      it_behaves_like '参加・未参加が1と0'
-      it_behaves_like '参加・未参加が0と1'
-      it_behaves_like '参加・未参加が0と0'
+      if Settings['enable_public_space']
+        it_behaves_like '公開・非公開が1と0'
+        it_behaves_like '公開・非公開が0と1'
+        it_behaves_like '公開・非公開が0と0'
+        it_behaves_like '参加・未参加が1と0'
+        it_behaves_like '参加・未参加が0と1'
+        it_behaves_like '参加・未参加が0と0'
+      end
       it_behaves_like '有効・削除予定が1と0'
       it_behaves_like '有効・削除予定が0と1'
       it_behaves_like '有効・削除予定が0と0'
@@ -406,14 +406,14 @@ RSpec.describe 'Spaces', type: :request do
       include_context 'スペース一覧作成', 1, 1, 1, 1
       let(:subject_format) { nil }
       let(:accept_headers) { ACCEPT_INC_HTML }
-      it_behaves_like 'リスト表示'
+      it_behaves_like 'オプション'
     end
     context 'APIログイン中（URLの拡張子が.json/AcceptヘッダにJSONが含まれる）' do
       include_context 'APIログイン処理'
       include_context 'スペース一覧作成', 1, 1, 1, 1
       let(:subject_format) { :json }
       let(:accept_headers) { ACCEPT_INC_JSON }
-      it_behaves_like 'リスト表示'
+      it_behaves_like 'オプション'
     end
   end
 end

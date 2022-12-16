@@ -3,11 +3,12 @@ FactoryBot.define do
     sequence(:code) { |n| Faker::Number.hexadecimal(digits: 3) + n.to_s.rjust(5, '0') }
     name            { "space(#{code})" }
     description     { "description(#{code})" }
-    association :create_user, factory: :user
+    private         { true }
+    association :created_user, factory: :user
 
     # 非公開・公開
     trait :private do
-      private { true }
+      # private { true }
     end
     trait :public do
       private { false }

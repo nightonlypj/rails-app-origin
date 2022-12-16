@@ -54,7 +54,7 @@ RSpec.describe 'Infomations', type: :request do
       let_it_be(:ended_at) { Time.current - 1.day }
       include_context 'お知らせ作成'
       it_behaves_like 'ToNG(html)', 404
-      it_behaves_like 'ToNG(json)', 404, 'errors.messages.infomation.ended'
+      it_behaves_like 'ToNG(json)', 404, nil, 'errors.messages.infomation.ended'
     end
     shared_examples_for '[ログイン中/削除予約済み][自分][過去]終了日時が過去' do
       let_it_be(:ended_at) { Time.current - 1.day }
@@ -66,7 +66,7 @@ RSpec.describe 'Infomations', type: :request do
       let_it_be(:ended_at) { Time.current - 1.day }
       include_context 'お知らせ作成'
       it_behaves_like 'ToNG(html)', 404
-      it_behaves_like 'ToNG(json)', 404, 'errors.messages.infomation.ended'
+      it_behaves_like 'ToNG(json)', 404, nil, 'errors.messages.infomation.ended'
     end
     shared_examples_for '[*][他人][過去]終了日時が過去' do
       let_it_be(:ended_at) { Time.current - 1.day }

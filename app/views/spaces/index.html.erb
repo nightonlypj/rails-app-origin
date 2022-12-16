@@ -15,8 +15,14 @@
         <%= page_entries_info @spaces %>
       </div>
       <div class="col-md-7">
-        <div class="float-end table-responsive">
+        <div class="d-flex float-end table-responsive">
           <%= paginate @spaces %>
+<% if user_signed_in? %>
+          <a href="<%= create_space_path %>" class="btn btn-primary d-flex align-items-center text-nowrap">
+            <i class="fas fa-folder-plus"></i>
+            <span class="ms-1">スペース作成</span>
+          </a>
+<% end %>
         </div>
       </div>
     </div>

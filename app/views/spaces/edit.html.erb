@@ -1,6 +1,8 @@
-<h1>Editing Space</h1>
+<% content_for(:html_title) { 'スペース設定変更' } %>
 
-<%= render 'form', space: @space %>
+<%= render './users/shared/error_messages', resource: @space %>
 
-<%= link_to 'Show', @space %> |
-<%= link_to 'Back', spaces_path %>
+<div class="card card-body mb-2" style="max-width: 850px">
+  <h5 class="card-title mb-3">スペース設定変更</h5>
+  <div class="card-text mb-3"><%= render 'edit' %></div>
+</div>

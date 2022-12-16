@@ -27,6 +27,7 @@
 <% if user_signed_in? %>
   <div id="searchCollapse" class="collapse<%= ' show' if @option %>">
     <div class="row">
+<% if Settings['enable_public_space'] %>
       <div class="col-auto d-flex mt-2">
         <div class="form-check">
           <%= form.check_box :public, checked: @checked[:public], class: 'form-check-input click_to_search_btn_enabled' %>
@@ -47,6 +48,7 @@
           <%= form.label :nojoin, '未参加', class: 'form-check-label', for: 'nojoin' %>
         </div>
       </div>
+<% end %>
       <div class="col-auto d-flex mt-2">
         <div class="form-check">
           <%= form.check_box :active, checked: @checked[:active], class: 'form-check-input click_to_search_btn_enabled' %>

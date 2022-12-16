@@ -1,11 +1,17 @@
 class Space < ApplicationRecord
   mount_uploader :image, ImageUploader
+  attr_accessor :image_delete
 
-  belongs_to :create_user,      class_name: 'User'
-  belongs_to :last_update_user, class_name: 'User', optional: true
+  belongs_to :created_user,      class_name: 'User'
+  belongs_to :last_updated_user, class_name: 'User', optional: true
   has_many :members, dependent: :destroy
   has_many :users, through: :members
   has_many :downloads
+
+  validates :name, presence: true
+  validates :name, length: { in: Settings['space_name_minimum']..Settings['space_name_maximum'] }, if: proc { |space| space.name.present? }
+  validates :description, length: { maximum: Settings['space_description_maximum'] }, if: proc { |space| space.description.present? }
+  validates :private, inclusion: { in: [true, false] } # NOTE: presenceだとfalseもエラーになる為
 
   scope :by_target, lambda { |current_user, checked|
     return where(id: []) if (!checked[:public] && !checked[:private]) || (!checked[:join] && !checked[:nojoin]) || (!checked[:active] && !checked[:destroy])
@@ -71,5 +77,10 @@ class Space < ApplicationRecord
       logger.warn("[WARN]Not found: Space.image_url(#{version})")
       ''
     end
+  end
+
+  # 最終更新日時
+  def last_updated_at
+    updated_at == created_at ? nil : updated_at
   end
 end

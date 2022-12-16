@@ -15,6 +15,16 @@ def get_subject(key)
 end
 
 # テスト内容（共通）
+def expect_image_json(response_json_model, model)
+  expect(response_json_model['upload_image']).to eq(model.image?)
+  data = response_json_model['image_url']
+  expect(data['mini']).to eq("#{Settings['base_image_url']}#{model.image_url(:mini)}")
+  expect(data['small']).to eq("#{Settings['base_image_url']}#{model.image_url(:small)}")
+  expect(data['medium']).to eq("#{Settings['base_image_url']}#{model.image_url(:medium)}")
+  expect(data['large']).to eq("#{Settings['base_image_url']}#{model.image_url(:large)}")
+  expect(data['xlarge']).to eq("#{Settings['base_image_url']}#{model.image_url(:xlarge)}")
+end
+
 shared_examples_for 'ToOK[status]' do
   it 'HTTPステータスが200' do
     is_expected.to eq(200)
@@ -25,6 +35,33 @@ shared_examples_for 'ToError' do |error_msg|
     is_expected.to eq(200)
     expect(response.body).to include(I18n.t(error_msg))
   end
+end
+
+shared_examples_for 'OK' do
+  raise '各Specに作成してください。'
+end
+shared_examples_for 'NG' do
+  raise '各Specに作成してください。'
+end
+shared_examples_for 'OK(html)' do
+  let(:subject_format) { nil }
+  let(:accept_headers) { ACCEPT_INC_HTML }
+  it_behaves_like 'OK'
+end
+shared_examples_for 'NG(html)' do
+  let(:subject_format) { nil }
+  let(:accept_headers) { ACCEPT_INC_HTML }
+  it_behaves_like 'NG'
+end
+shared_examples_for 'OK(json)' do
+  let(:subject_format) { :json }
+  let(:accept_headers) { ACCEPT_INC_JSON }
+  it_behaves_like 'OK'
+end
+shared_examples_for 'NG(json)' do
+  let(:subject_format) { :json }
+  let(:accept_headers) { ACCEPT_INC_JSON }
+  it_behaves_like 'NG'
 end
 
 shared_examples_for 'ToOK(html/*)' do
@@ -54,11 +91,16 @@ shared_examples_for 'ToOK(json)' do |page = nil|
   it_behaves_like 'ToOK(json/json)'
 end
 
-shared_examples_for 'ToNG(html/html)' do |code|
+shared_examples_for 'ToNG(html/html)' do |code, errors = nil|
   let(:subject_format) { nil }
   let(:accept_headers) { ACCEPT_INC_HTML }
-  it "HTTPステータスが#{code}" do
+  it "HTTPステータスが#{code}#{'。エラーメッセージが含まれる' if errors.present?}" do
     is_expected.to eq(code)
+    next if errors.blank?
+
+    errors.each do |error|
+      expect(response.body).to include(error)
+    end
   end
 end
 shared_examples_for 'ToNG(html/json)' do |code|
@@ -75,25 +117,26 @@ shared_examples_for 'ToNG(json/html)' do |code|
     is_expected.to eq(code)
   end
 end
-shared_examples_for 'ToNG(json/json)' do |code, alert, notice|
+shared_examples_for 'ToNG(json/json)' do |code, errors, alert, notice|
   let(:subject_format) { :json }
   let(:accept_headers) { ACCEPT_INC_JSON }
   it "HTTPステータスが#{code}。対象項目が一致する" do
     is_expected.to eq(code)
-    expect(response_json['success']).to eq(false)
+    expect(response_json['success']).to eq(code == 406 ? nil : false)
+    expect(response_json['errors']).to errors.present? ? eq(errors.stringify_keys) : be_nil
     expect(response_json['alert']).to alert.present? ? eq(I18n.t(alert)) : be_nil
     expect(response_json['notice']).to notice.present? ? eq(I18n.t(notice)) : be_nil
   end
 end
-shared_examples_for 'ToNG(html)' do |code|
+shared_examples_for 'ToNG(html)' do |code, errors = nil|
   let(:subject_page) { 1 }
-  it_behaves_like 'ToNG(html/html)', code
+  it_behaves_like 'ToNG(html/html)', code, errors
   it_behaves_like 'ToNG(html/json)', code
 end
-shared_examples_for 'ToNG(json)' do |code, alert = nil, notice = nil|
+shared_examples_for 'ToNG(json)' do |code, errors = nil, alert = nil, notice = nil|
   let(:subject_page) { 1 }
   it_behaves_like 'ToNG(json/html)', 406
-  it_behaves_like 'ToNG(json/json)', code, alert_key(code, alert), notice
+  it_behaves_like 'ToNG(json/json)', code, errors, alert_key(code, alert), notice
 end
 def alert_key(code, alert)
   return alert if alert.present?
@@ -105,6 +148,10 @@ def alert_key(code, alert)
     'alert.user.forbidden'
   when 404
     'alert.page.notfound'
+  when 406
+    nil
+  when 422
+    'errors.messages.not_saved.other'
   else
     raise "code not found.(#{code})"
   end

@@ -17,7 +17,7 @@ class ApplicationAuthController < ApplicationController
   end
 
   # 権限エラー(403)を返却
-  def forbidden_response
+  def response_forbidden
     if format_html?
       head :forbidden
     else
