@@ -33,8 +33,8 @@ ja:
         private: '非公開'
         destroy_requested_at: '削除依頼日時'
         destroy_schedule_at: '削除予定日時'
-        create_user: '登録ユーザー'
-        last_update_user: '最終更新ユーザー'
+        created_user: '作成者'
+        last_updated_user: '最終更新者'
         created_at: '作成日時'
         updated_at: '更新日時'
       member:
@@ -42,8 +42,8 @@ ja:
         space: 'スペース'
         user: 'ユーザー'
         power: '権限'
-        invitation_user: '招待ユーザー'
-        invitationed_at: '招待日時'
+        invitationed_user: '招待者'
+        last_updated_user: '最終更新者'
         created_at: '作成日時'
         updated_at: '更新日時'
         emails: 'メールアドレス'
@@ -73,6 +73,17 @@ ja:
         updated_at: '更新日時'
     errors:
       models:
+        space:
+          attributes:
+            name:
+              blank: '入力してください。'
+              too_short: '%{count}文字以上で入力してください。'
+              too_long: '%{count}文字以下で入力してください。'
+              taken: '同じ名前のスペースが存在します。'
+            private:
+              inclusion: '選択してください。'
+            description:
+              too_long: '%{count}文字以下で入力してください。'
         member:
           attributes:
             power:
@@ -105,8 +116,10 @@ ja:
       user.name: 'メンバー'
       user.email: 'メールアドレス'
       power: '権限'
-      invitation_user.name: '招待者'
+      invitationed_user.name: '招待者'
       invitationed_at: '招待日時'
+      last_updated_user.name: '最終更新者'
+      last_updated_at: '最終更新日時'
   enums:
     infomation:
       label:
@@ -149,6 +162,9 @@ ja:
     user:
       image_update: '画像を変更しました。'
       image_destroy: '画像を削除しました。'
+    space:
+      create: 'スペースを作成しました。'
+      update: 'スペース設定を変更しました。'
     member:
       create: 'メンバー招待の処理が完了しました。結果を確認してください。'
       update: 'メンバー情報を変更しました。'

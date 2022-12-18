@@ -8,7 +8,7 @@ RSpec.describe 'Spaces', type: :request do
   #   未ログイン, ログイン中, ログイン中（削除予約済み）, APIログイン中, APIログイン中（削除予約済み）
   #   ＋URLの拡張子: ない, .json
   #   ＋Acceptヘッダ: HTMLが含まれる, JSONが含まれる
-  describe 'POST #new' do
+  describe 'GET #new' do
     subject { get new_space_path(format: subject_format), headers: auth_headers.merge(accept_headers) }
 
     # テストケース

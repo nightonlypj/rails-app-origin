@@ -4,9 +4,9 @@ json.notice notice if notice.present?
 
 json.email do
   json.count @emails.count
-  json.create_count @create_users.count
-  json.exist_count @exist_users.count
-  json.notfound_count @emails.count - @create_users.count - @exist_users.count
+  json.create_count @create_user_mails.count
+  json.exist_count @exist_user_mails.count
+  json.notfound_count @emails.count - @create_user_mails.count - @exist_user_mails.count
 end
 json.emails do
   json.array! @emails do |email|

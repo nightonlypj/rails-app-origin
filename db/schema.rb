@@ -93,15 +93,19 @@ ActiveRecord::Schema.define(version: 2022_10_11_100201) do
     t.bigint "space_id", null: false, comment: "スペースID"
     t.bigint "user_id", null: false, comment: "ユーザーID"
     t.integer "power", null: false, comment: "権限"
-    t.bigint "invitation_user_id", comment: "招待ユーザーID"
-    t.datetime "invitationed_at", comment: "招待日時"
+    t.bigint "invitationed_user_id", comment: "招待者ID"
+    t.bigint "last_updated_user_id", comment: "最終更新者ID"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
-    t.index ["invitation_user_id"], name: "index_members_on_invitation_user_id"
-    t.index ["invitationed_at", "id"], name: "index_members2"
-    t.index ["space_id", "power"], name: "index_members3"
+    t.index ["created_at", "id"], name: "index_members3"
+    t.index ["invitationed_user_id", "id"], name: "index_members5"
+    t.index ["invitationed_user_id"], name: "index_members_on_invitationed_user_id"
+    t.index ["last_updated_user_id", "id"], name: "index_members6"
+    t.index ["last_updated_user_id"], name: "index_members_on_last_updated_user_id"
+    t.index ["space_id", "power"], name: "index_members2"
     t.index ["space_id", "user_id"], name: "index_members1", unique: true
     t.index ["space_id"], name: "index_members_on_space_id"
+    t.index ["updated_at", "id"], name: "index_members4"
     t.index ["user_id"], name: "index_members_on_user_id"
   end
 
@@ -113,15 +117,15 @@ ActiveRecord::Schema.define(version: 2022_10_11_100201) do
     t.boolean "private", default: true, null: false, comment: "非公開"
     t.datetime "destroy_requested_at", comment: "削除依頼日時"
     t.datetime "destroy_schedule_at", comment: "削除予定日時"
-    t.bigint "create_user_id", null: false, comment: "登録ユーザーID"
-    t.bigint "last_update_user_id", comment: "最終更新ユーザーID"
+    t.bigint "created_user_id", null: false, comment: "作成者ID"
+    t.bigint "last_updated_user_id", comment: "最終更新者ID"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.index ["code"], name: "index_spaces1", unique: true
-    t.index ["create_user_id"], name: "index_spaces_on_create_user_id"
     t.index ["created_at", "id"], name: "index_spaces3"
+    t.index ["created_user_id"], name: "index_spaces_on_created_user_id"
     t.index ["destroy_schedule_at"], name: "index_spaces2"
-    t.index ["last_update_user_id"], name: "index_spaces_on_last_update_user_id"
+    t.index ["last_updated_user_id"], name: "index_spaces_on_last_updated_user_id"
     t.index ["name", "id"], name: "index_spaces4"
   end
 

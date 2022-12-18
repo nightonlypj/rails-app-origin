@@ -155,7 +155,7 @@ class SpacesController < ApplicationAuthController
 
   # Only allow a list of trusted parameters through.
   def space_params(target)
-    return {} if params[:space].blank?
+    params[:space] = Space.new.attributes if params[:space].blank? # NOTE: 変更なしで成功する為
 
     params[:space][:name] = params[:space][:name].to_s.gsub(/(^[[:space:]]+)|([[:space:]]+$)/, '') # NOTE: 前後のスペースを削除
     if Settings['enable_public_space']

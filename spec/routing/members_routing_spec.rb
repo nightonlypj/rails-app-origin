@@ -10,6 +10,9 @@ RSpec.describe MembersController, type: :routing do
 
     it 'routes to #show' do
       # expect(get: '/members/1').not_to be_routable # NOTE: members#index
+      user_code = 'code000000000000000000001'
+      expect(get: "/members/code0001/detail/#{user_code}").to route_to('members#show', code: 'code0001', user_code: user_code)
+      expect(get: "/members/code0001/detail/#{user_code}.json").to route_to('members#show', code: 'code0001', user_code: user_code, format: 'json')
     end
 
     it 'routes to #new' do

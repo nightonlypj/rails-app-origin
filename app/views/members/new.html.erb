@@ -1,6 +1,6 @@
 <% content_for(:html_title) { 'メンバー招待' } %>
 
-<%= render 'users/shared/error_messages', resource: @member %>
+<%= render './users/shared/error_messages', resource: @member %>
 
 <ul class="nav nav-tabs mb-2">
   <li class="nav-item">
@@ -13,7 +13,7 @@
 
 <div class="card card-body mb-2" style="max-width: 720px">
   <h5 class="card-title mb-3">
-    <%= render 'spaces/title', space: @space, current_member: @current_member, suffix_title: nil %>
+    <%= render './spaces/title', space: @space, current_member: @current_member, suffix_title: nil %>
   </h5>
   <div class="card-text mb-3"><%= render 'new' %></div>
 </div>

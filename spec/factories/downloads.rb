@@ -10,7 +10,7 @@ FactoryBot.define do
     association :user
 
     trait :member do
-      model { :member }
+      # model { :member }
       association :space
     end
 

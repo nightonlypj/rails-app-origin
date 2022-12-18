@@ -10,8 +10,13 @@ RSpec.describe 'Spaces', type: :request do
   #   権限: ある（管理者）, ない（投稿者, 閲覧者, なし）
   #   ＋URLの拡張子: ない, .json
   #   ＋Acceptヘッダ: HTMLが含まれる, JSONが含まれる
-  describe 'POST #edit' do
+  describe 'GET #edit' do
     subject { get edit_space_path(code: space.code, format: subject_format), headers: auth_headers.merge(accept_headers) }
+
+    shared_context 'valid_condition' do
+      let_it_be(:space) { FactoryBot.create(:space) }
+      before_all        { FactoryBot.create(:member, :admin, space: space, user: user) if user.present? }
+    end
 
     # テストケース
     shared_examples_for 'ToOK(html/*)' do
@@ -53,7 +58,7 @@ RSpec.describe 'Spaces', type: :request do
 
     context '未ログイン' do
       include_context '未ログイン処理'
-      let_it_be(:space) { FactoryBot.build_stubbed(:space) }
+      include_context 'valid_condition'
       it_behaves_like 'ToLogin(html)'
       it_behaves_like 'ToNG(json)', 406
     end
@@ -65,7 +70,7 @@ RSpec.describe 'Spaces', type: :request do
     end
     context 'ログイン中（削除予約済み）' do
       include_context 'ログイン処理', :destroy_reserved
-      let_it_be(:space) { FactoryBot.build_stubbed(:space) }
+      include_context 'valid_condition'
       it_behaves_like 'ToSpaces(html)', 'alert.user.destroy_reserved'
       it_behaves_like 'ToNG(json)', 406
     end
@@ -77,7 +82,7 @@ RSpec.describe 'Spaces', type: :request do
     end
     context 'APIログイン中（削除予約済み）' do
       include_context 'APIログイン処理', :destroy_reserved
-      let_it_be(:space) { FactoryBot.build_stubbed(:space) }
+      include_context 'valid_condition'
       it_behaves_like 'ToSpaces(html)', 'alert.user.destroy_reserved' # NOTE: HTMLもログイン状態になる
       it_behaves_like 'ToNG(json)', 406
     end

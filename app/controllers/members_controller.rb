@@ -1,10 +1,14 @@
 class MembersController < ApplicationAuthController
   include MembersConcern
+  before_action :response_not_acceptable_for_not_api, only: :show
+  before_action :response_not_acceptable_for_not_html, only: %i[new result edit]
   before_action :authenticate_user!
   before_action :set_space
-  before_action :members_redirect_response_destroy_reserved, only: %i[new create result edit update destroy]
+  before_action :redirect_members_for_destroy_reserved, only: %i[new create result edit update destroy], if: :format_html?
+  before_action :response_api_for_destroy_reserved, only: %i[create update destroy], unless: :format_html?
   before_action :check_power, only: %i[new create result edit update destroy]
-  before_action :set_member, only: %i[edit update]
+  before_action :set_member, only: %i[show edit update]
+  before_action :check_current_member, only: %i[edit update]
   before_action :set_params_index, only: :index
   before_action :set_params_create, :validate_params_create, only: :create
   before_action :set_params_destroy, :validate_params_destroy, only: :destroy
@@ -19,6 +23,9 @@ class MembersController < ApplicationAuthController
     end
   end
 
+  # GET /members/:code/detail/:user_code(.json) メンバー詳細API
+  def show; end
+
   # GET /members/:code/create メンバー招待
   def new
     @member = Member.new
@@ -29,15 +36,15 @@ class MembersController < ApplicationAuthController
   def create
     insert_datas = []
     users = User.where(email: @emails)
-    @exist_users = User.joins(:members).where(members: { space: @space, user: users })
-    @create_users = users - @exist_users
-    @create_users.each do |user|
-      insert_datas.push(@member.attributes.merge({ user_id: user.id, created_at: @member.invitationed_at, updated_at: @member.invitationed_at }))
+    exist_users = User.joins(:members).where(members: { space: @space, user: users })
+    create_users = users - exist_users
+    create_users.each do |user|
+      insert_datas.push(@member.attributes.merge({ user_id: user.id }))
     end
     Member.insert_all!(insert_datas) if insert_datas.present?
 
-    @exist_user_mails = @exist_users.pluck(:email)
-    @create_user_mails = @create_users.pluck(:email)
+    @exist_user_mails = exist_users.pluck(:email)
+    @create_user_mails = create_users.pluck(:email)
     if format_html?
       redirect_to result_member_path(@space.code), notice: t('notice.member.create'), flash: {
         emails: @emails, exist_user_mails: @exist_user_mails, create_user_mails: @create_user_mails,
@@ -60,7 +67,7 @@ class MembersController < ApplicationAuthController
   # POST /members/:code/update/:user_code メンバー情報変更(処理)
   # POST /members/:code/update/:user_code(.json) メンバー情報変更API(処理)
   def update
-    unless @member.update(member_params)
+    unless @member.update(member_params.merge(last_updated_user: current_user))
       if format_html?
         return render :edit, status: :unprocessable_entity
       else
@@ -71,7 +78,7 @@ class MembersController < ApplicationAuthController
     if format_html?
       redirect_to members_path(@space.code, active: @member.user.code), notice: t('notice.member.update')
     else
-      render locals: { notice: t('notice.member.update') }
+      render :show, locals: { notice: t('notice.member.update') }
     end
   end
 
@@ -97,32 +104,36 @@ class MembersController < ApplicationAuthController
 
   private
 
-  def members_redirect_response_destroy_reserved
-    redirect_response_destroy_reserved(members_path(@space.code))
+  def redirect_members_for_destroy_reserved
+    redirect_for_destroy_reserved(members_path(@space.code))
   end
 
   # Use callbacks to share common setup or constraints between actions.
   def set_space
     @space = Space.find_by(code: params[:code])
-    return not_found_response if @space.blank?
+    return response_not_found if @space.blank?
 
     @current_member = Member.where(space: @space, user: current_user).eager_load(:user)&.first
-    forbidden_response if @current_member.blank?
+    response_forbidden if @current_member.blank?
   end
 
   def check_power
-    forbidden_response unless @current_member.power_admin?
+    response_forbidden unless @current_member.power_admin?
   end
 
   def set_member
     @member = Member.where(space: @space).joins(:user).where(user: { code: params[:user_code] })&.first
-    return not_found_response if @member.blank?
+    response_not_found if @member.blank?
+  end
 
-    forbidden_response if @member == @current_member
+  def check_current_member
+    response_forbidden if @member == @current_member
   end
 
   def set_params_create
     @emails = []
+    return if params[:member].blank?
+
     params[:member][:emails]&.split(/\R/)&.each do |email|
       email.strip!
       @emails.push(email) if email.present? && !@emails.include?(email)
@@ -130,7 +141,8 @@ class MembersController < ApplicationAuthController
   end
 
   def validate_params_create
-    @member = Member.new(member_params.merge(space: @space, user: current_user, invitation_user: current_user, invitationed_at: Time.current))
+    now = Time.current
+    @member = Member.new(member_params.merge(space: @space, user: current_user, invitationed_user: current_user, created_at: now, updated_at: now))
     @member.valid?
 
     if @emails.blank?
@@ -142,7 +154,7 @@ class MembersController < ApplicationAuthController
 
     if @member.errors.any?
       if format_html?
-        @member.emails = params[:member][:emails]
+        @member.emails = params[:member][:emails] if params[:member].present?
         render :new, status: :unprocessable_entity
       else
         render './failure', locals: { errors: @member.errors, alert: t('errors.messages.not_saved.other') }, status: :unprocessable_entity
@@ -180,6 +192,8 @@ class MembersController < ApplicationAuthController
 
   # Only allow a list of trusted parameters through.
   def member_params
+    params[:member] = Member.new.attributes if params[:member].blank? # NOTE: 変更なしで成功する為
+
     # ArgumentError対策
     params[:member][:power] = nil if Member.powers[params[:member][:power]].blank?
 

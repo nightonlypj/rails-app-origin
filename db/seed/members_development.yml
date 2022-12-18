@@ -3,244 +3,342 @@
   space_id: 1
   user_id: 1
   power: admin
+  last_updated_user_id: 2
+  created_at: '2000-01-01 12:34:56+0900'
+  updated_at: '2000-02-01 12:34:56+0900'
 - id: 102
   space_id: 1
   user_id: 2
   power: admin
-  invitation_user_id: 1
-  invitationed_at: '2000-01-02 12:34:56+0900'
+  invitationed_user_id: 1
+  last_updated_user_id: null
+  created_at: '2000-01-02 12:34:56+0900'
+  updated_at: '2000-01-02 12:34:56+0900'
 - id: 103
   space_id: 1
   user_id: 3
   power: writer
-  invitation_user_id: 1
-  invitationed_at: '2000-01-03 12:34:56+0900'
+  invitationed_user_id: 0 # NOTE: アカウント削除実施済みの想定
+  last_updated_user_id: 0
+  created_at: '2000-01-03 12:34:56+0900'
+  updated_at: '2000-02-03 12:34:56+0900'
 - id: 104
   space_id: 1
   user_id: 4
   power: writer
-  invitation_user_id: 2
-  invitationed_at: '2000-01-04 12:34:56+0900'
+  invitationed_user_id: 2
+  last_updated_user_id: null
+  created_at: '2000-01-04 12:34:56+0900'
+  updated_at: '2000-01-04 12:34:56+0900'
 - id: 105
   space_id: 1
   user_id: 5
   power: writer
-  invitation_user_id: 2
-  invitationed_at: '2000-01-05 12:34:56+0900'
+  invitationed_user_id: 2
+  last_updated_user_id: null
+  created_at: '2000-01-05 12:34:56+0900'
+  updated_at: '2000-01-05 12:34:56+0900'
 - id: 106
   space_id: 1
   user_id: 6
   power: writer
-  invitation_user_id: 2
-  invitationed_at: '2000-01-06 12:34:56+0900'
+  invitationed_user_id: 2
+  last_updated_user_id: null
+  created_at: '2000-01-06 12:34:56+0900'
+  updated_at: '2000-01-06 12:34:56+0900'
 - id: 107
   space_id: 1
   user_id: 7
   power: writer
-  invitation_user_id: 2
-  invitationed_at: '2000-01-07 12:34:56+0900'
+  invitationed_user_id: 2
+  last_updated_user_id: null
+  created_at: '2000-01-07 12:34:56+0900'
+  updated_at: '2000-01-07 12:34:56+0900'
 - id: 108
   space_id: 1
   user_id: 8
   power: writer
-  invitation_user_id: 2
-  invitationed_at: '2000-01-08 12:34:56+0900'
+  invitationed_user_id: 2
+  last_updated_user_id: null
+  created_at: '2000-01-08 12:34:56+0900'
+  updated_at: '2000-01-08 12:34:56+0900'
 - id: 109
   space_id: 1
   user_id: 9
   power: writer
-  invitation_user_id: 2
-  invitationed_at: '2000-01-09 12:34:56+0900'
+  invitationed_user_id: 2
+  last_updated_user_id: null
+  created_at: '2000-01-09 12:34:56+0900'
+  updated_at: '2000-01-09 12:34:56+0900'
 - id: 110
   space_id: 1
   user_id: 10
   power: writer
-  invitation_user_id: 2
-  invitationed_at: '2000-01-10 12:34:56+0900'
+  invitationed_user_id: 2
+  last_updated_user_id: null
+  created_at: '2000-01-10 12:34:56+0900'
+  updated_at: '2000-01-10 12:34:56+0900'
 - id: 111
   space_id: 1
   user_id: 11
   power: writer
-  invitation_user_id: 2
-  invitationed_at: '2000-01-11 12:34:56+0900'
+  invitationed_user_id: 2
+  last_updated_user_id: null
+  created_at: '2000-01-11 12:34:56+0900'
+  updated_at: '2000-01-11 12:34:56+0900'
 - id: 112
   space_id: 1
   user_id: 12
   power: writer
-  invitation_user_id: 2
-  invitationed_at: '2000-01-12 12:34:56+0900'
+  invitationed_user_id: 2
+  last_updated_user_id: null
+  created_at: '2000-01-12 12:34:56+0900'
+  updated_at: '2000-01-12 12:34:56+0900'
 - id: 113
   space_id: 1
   user_id: 13
   power: reader
-  invitation_user_id: 2
-  invitationed_at: '2000-01-13 12:34:56+0900'
+  invitationed_user_id: 2
+  last_updated_user_id: null
+  created_at: '2000-01-13 12:34:56+0900'
+  updated_at: '2000-01-13 12:34:56+0900'
 - id: 114
   space_id: 1
   user_id: 14
   power: reader
-  invitation_user_id: 2
-  invitationed_at: '2000-01-14 12:34:56+0900'
+  invitationed_user_id: 2
+  last_updated_user_id: null
+  created_at: '2000-01-14 12:34:56+0900'
+  updated_at: '2000-01-14 12:34:56+0900'
 - id: 115
   space_id: 1
   user_id: 15
   power: reader
-  invitation_user_id: 2
-  invitationed_at: '2000-01-15 12:34:56+0900'
+  invitationed_user_id: 2
+  last_updated_user_id: null
+  created_at: '2000-01-15 12:34:56+0900'
+  updated_at: '2000-01-15 12:34:56+0900'
 - id: 116
   space_id: 1
   user_id: 16
   power: reader
-  invitation_user_id: 2
-  invitationed_at: '2000-01-16 12:34:56+0900'
+  invitationed_user_id: 2
+  last_updated_user_id: null
+  created_at: '2000-01-16 12:34:56+0900'
+  updated_at: '2000-01-16 12:34:56+0900'
 - id: 171
   space_id: 1
   user_id: 71
   power: writer
-  invitation_user_id: 2
-  invitationed_at: '2000-07-01 12:34:56+0900'
+  invitationed_user_id: 2
+  last_updated_user_id: null
+  created_at: '2000-07-01 12:34:56+0900'
+  updated_at: '2000-07-01 12:34:56+0900'
 - id: 172
   space_id: 1
   user_id: 72
   power: writer
-  invitation_user_id: 2
-  invitationed_at: '2000-07-02 12:34:56+0900'
+  invitationed_user_id: 2
+  last_updated_user_id: null
+  created_at: '2000-07-02 12:34:56+0900'
+  updated_at: '2000-07-02 12:34:56+0900'
 - id: 173
   space_id: 1
   user_id: 73
   power: writer
-  invitation_user_id: 2
-  invitationed_at: '2000-07-03 12:34:56+0900'
+  invitationed_user_id: 2
+  last_updated_user_id: null
+  created_at: '2000-07-03 12:34:56+0900'
+  updated_at: '2000-07-03 12:34:56+0900'
 - id: 174
   space_id: 1
   user_id: 74
   power: writer
-  invitation_user_id: 2
-  invitationed_at: '2000-07-04 12:34:56+0900'
+  invitationed_user_id: 2
+  last_updated_user_id: null
+  created_at: '2000-07-04 12:34:56+0900'
+  updated_at: '2000-07-04 12:34:56+0900'
 - id: 175
   space_id: 1
   user_id: 75
   power: writer
-  invitation_user_id: 2
-  invitationed_at: '2000-07-05 12:34:56+0900'
+  invitationed_user_id: 2
+  last_updated_user_id: null
+  created_at: '2000-07-05 12:34:56+0900'
+  updated_at: '2000-07-05 12:34:56+0900'
 - id: 176
   space_id: 1
   user_id: 76
   power: writer
-  invitation_user_id: 2
-  invitationed_at: '2000-07-06 12:34:56+0900'
+  invitationed_user_id: 2
+  last_updated_user_id: null
+  created_at: '2000-07-06 12:34:56+0900'
+  updated_at: '2000-07-06 12:34:56+0900'
 - id: 177
   space_id: 1
   user_id: 77
   power: writer
-  invitation_user_id: 2
-  invitationed_at: '2000-07-07 12:34:56+0900'
+  invitationed_user_id: 2
+  last_updated_user_id: null
+  created_at: '2000-07-07 12:34:56+0900'
+  updated_at: '2000-07-07 12:34:56+0900'
 - id: 178
   space_id: 1
   user_id: 78
   power: writer
-  invitation_user_id: 2
-  invitationed_at: '2000-07-08 12:34:56+0900'
+  invitationed_user_id: 2
+  last_updated_user_id: null
+  created_at: '2000-07-08 12:34:56+0900'
+  updated_at: '2000-07-08 12:34:56+0900'
 - id: 179
   space_id: 1
   user_id: 79
   power: writer
-  invitation_user_id: 2
-  invitationed_at: '2000-07-09 12:34:56+0900'
+  invitationed_user_id: 2
+  last_updated_user_id: null
+  created_at: '2000-07-09 12:34:56+0900'
+  updated_at: '2000-07-09 12:34:56+0900'
 - id: 180
   space_id: 1
   user_id: 80
   power: writer
-  invitation_user_id: 2
-  invitationed_at: '2000-07-10 12:34:56+0900'
+  invitationed_user_id: 2
+  last_updated_user_id: null
+  created_at: '2000-07-10 12:34:56+0900'
+  updated_at: '2000-07-10 12:34:56+0900'
 
 - id: 201
   space_id: 2
   user_id: 1
   power: admin
+  last_updated_user_id: null
+  created_at: '2000-01-01 12:34:56+0900'
+  updated_at: '2000-01-01 12:34:56+0900'
 
 - id: 301
   space_id: 3
   user_id: 1
   power: writer
+  last_updated_user_id: null
+  created_at: '2000-01-01 12:34:56+0900'
+  updated_at: '2000-01-01 12:34:56+0900'
 - id: 302
   space_id: 3
   user_id: 2
   power: admin
-  invitation_user_id: 1
-  invitationed_at: '2000-03-02 12:34:56+0900'
+  invitationed_user_id: 1
+  last_updated_user_id: null
+  created_at: '2000-03-02 12:34:56+0900'
+  updated_at: '2000-03-02 12:34:56+0900'
 
 - id: 401
   space_id: 4
   user_id: 1
   power: writer
+  last_updated_user_id: null
+  created_at: '2000-01-01 12:34:56+0900'
+  updated_at: '2000-01-01 12:34:56+0900'
 - id: 402
   space_id: 4
   user_id: 2
   power: admin
-  invitation_user_id: 1
-  invitationed_at: '2000-04-01 12:34:56+0900'
+  invitationed_user_id: 1
+  last_updated_user_id: null
+  created_at: '2000-04-01 12:34:56+0900'
+  updated_at: '2000-04-01 12:34:56+0900'
 
 - id: 501
   space_id: 5
   user_id: 1
   power: reader
+  last_updated_user_id: null
+  created_at: '2000-01-01 12:34:56+0900'
+  updated_at: '2000-01-01 12:34:56+0900'
 - id: 502
   space_id: 5
   user_id: 2
   power: admin
-  invitation_user_id: 1
-  invitationed_at: '2000-05-02 12:34:56+0900'
+  invitationed_user_id: 1
+  last_updated_user_id: null
+  created_at: '2000-05-02 12:34:56+0900'
+  updated_at: '2000-05-02 12:34:56+0900'
 
 - id: 601
   space_id: 6
   user_id: 1
   power: reader
+  last_updated_user_id: null
+  created_at: '2000-01-01 12:34:56+0900'
+  updated_at: '2000-01-01 12:34:56+0900'
 - id: 602
   space_id: 6
   user_id: 2
   power: admin
-  invitation_user_id: 1
-  invitationed_at: '2000-06-02 12:34:56+0900'
+  invitationed_user_id: 1
+  last_updated_user_id: null
+  created_at: '2000-06-02 12:34:56+0900'
+  updated_at: '2000-06-02 12:34:56+0900'
 
 - id: 702
   space_id: 7
   user_id: 2
   power: admin
+  last_updated_user_id: null
+  created_at: '2000-01-01 12:34:56+0900'
+  updated_at: '2000-01-01 12:34:56+0900'
 
 - id: 802
   space_id: 8
   user_id: 2
   power: admin
+  last_updated_user_id: null
+  created_at: '2000-01-01 12:34:56+0900'
+  updated_at: '2000-01-01 12:34:56+0900'
 
 - id: 901
   space_id: 9
   user_id: 1
   power: admin
+  last_updated_user_id: null
+  created_at: '2000-01-01 12:34:56+0900'
+  updated_at: '2000-01-01 12:34:56+0900'
 
 - id: 1001
   space_id: 10
   user_id: 1
   power: writer
+  last_updated_user_id: null
+  created_at: '2000-01-01 12:34:56+0900'
+  updated_at: '2000-01-01 12:34:56+0900'
 - id: 1002
   space_id: 10
   user_id: 2
   power: admin
-  invitation_user_id: 1
-  invitationed_at: '2000-10-02 12:34:56+0900'
+  invitationed_user_id: 1
+  last_updated_user_id: null
+  created_at: '2000-10-02 12:34:56+0900'
+  updated_at: '2000-10-02 12:34:56+0900'
 
 - id: 1101
   space_id: 11
   user_id: 1
   power: reader
+  last_updated_user_id: null
+  created_at: '2000-01-01 12:34:56+0900'
+  updated_at: '2000-01-01 12:34:56+0900'
 - id: 1102
   space_id: 11
   user_id: 2
   power: admin
-  invitation_user_id: 1
-  invitationed_at: '2000-11-02 12:34:56+0900'
+  invitationed_user_id: 1
+  last_updated_user_id: null
+  created_at: '2000-11-02 12:34:56+0900'
+  updated_at: '2000-11-02 12:34:56+0900'
 
 - id: 1202
   space_id: 12
   user_id: 2
   power: admin
+  last_updated_user_id: null
+  created_at: '2000-01-01 12:34:56+0900'
+  updated_at: '2000-01-01 12:34:56+0900'

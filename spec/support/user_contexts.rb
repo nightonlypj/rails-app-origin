@@ -1,5 +1,6 @@
 shared_context '未ログイン処理' do
   let(:auth_headers) { {} }
+  let_it_be(:user) { nil }
 end
 shared_context 'ログイン処理' do |trait = nil, use_image = false|
   include_context 'ユーザー作成', trait, use_image
@@ -64,6 +65,13 @@ shared_context 'アカウントロック解除トークン作成' do |locked, ex
 end
 
 # テスト内容（共通）
+def expect_user_json(response_json_user, user, use_email)
+  expect(response_json_user['code']).to eq(user.code)
+  expect_image_json(response_json_user, user)
+  expect(response_json_user['name']).to eq(user.name)
+  expect(response_json_user['email']).to use_email ? eq(user.email) : be_nil
+end
+
 shared_examples_for 'ToTop' do |alert, notice|
   it 'トップページにリダイレクトする' do
     is_expected.to redirect_to(root_path)

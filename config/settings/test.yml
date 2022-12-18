@@ -48,7 +48,7 @@ test_members:
 
 job_members_limit: 2
 # 招待の最大件数
-create_members_max_count: 2
+create_members_max_count: 3
 
 ## ダウンロード
 # 一覧のデフォルト最大表示件数

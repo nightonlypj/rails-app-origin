@@ -8,7 +8,7 @@
       <div class="form-outline<%= input_size_class_name(@member, :emails) %>">
         <%= form.text_area :emails, rows: 5, class: "form-control#{validate_class_name(validate_enabled, @member, :emails)}" %>
         <%= form.label :emails, class: 'form-label', for: 'member_emails' %>
-        <%= render 'users/shared/field_error_messages', messages: @member.errors[:emails] %>
+        <%= render './users/shared/field_error_messages', messages: @member.errors[:emails] %>
       </div>
     </div>
   </div>
@@ -25,7 +25,7 @@
           <%= form.label key, Member.powers_i18n[key], class: 'form-check-label', for: "member_power_#{key}" %>
         </div>
 <% end %>
-        <%= render 'users/shared/field_error_messages', messages: @member.errors[:power] %>
+        <%= render './users/shared/field_error_messages', messages: @member.errors[:power] %>
       </div>
     </div>
   </div>

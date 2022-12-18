@@ -5,6 +5,7 @@ FactoryBot.define do
     description     { "description(#{code})" }
     private         { true }
     association :created_user, factory: :user
+    association :last_updated_user, factory: :user
 
     # 非公開・公開
     trait :private do

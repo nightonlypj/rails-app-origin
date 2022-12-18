@@ -2,10 +2,34 @@ require 'rails_helper'
 
 RSpec.describe 'Members', type: :request do
   let(:response_json) { JSON.parse(response.body) }
-  let(:response_json_space)           { response_json['space'] }
-  let(:response_json_space_image_url) { response_json['space']['image_url'] }
-  let(:response_json_member)          { response_json['member'] }
-  let(:response_json_members)         { response_json['members'] }
+  let(:response_json_space)   { response_json['space'] }
+  let(:response_json_member)  { response_json['member'] }
+  let(:response_json_members) { response_json['members'] }
+
+  # テスト内容（共通）
+  shared_examples_for 'ToOK[氏名]' do
+    it 'HTTPステータスが200。対象の氏名が含まれる/一致する' do
+      is_expected.to eq(200)
+      if subject_format == :json
+        # JSON
+        expect(response_json_members.count).to eq(members.count)
+        members.each_with_index do |member, index|
+          expect(response_json_members[index]['user']['name']).to eq(member.user.name)
+        end
+      else
+        # HTML
+        members.each do |member|
+          expect(response.body).to include(member.user.name)
+        end
+      end
+    end
+  end
+  shared_examples_for 'ToOK[count]' do
+    it 'HTTPステータスが200。件数が一致する' do
+      is_expected.to eq(200)
+      expect(response_json_members.count).to eq(members.count)
+    end
+  end
 
   # GET /members メンバー一覧
   # GET /members(.json) メンバー一覧API
@@ -53,21 +77,18 @@ RSpec.describe 'Members', type: :request do
         expect(response_json['search_params']).to eq({ text: nil, power: Member.powers.keys.join(','), sort: 'invitationed_at', desc: 1 }.stringify_keys)
 
         expect(response_json_space['code']).to eq(space.code)
-        expect(response_json_space_image_url['mini']).to eq("#{Settings['base_image_url']}#{space.image_url(:mini)}")
-        expect(response_json_space_image_url['small']).to eq("#{Settings['base_image_url']}#{space.image_url(:small)}")
-        expect(response_json_space_image_url['medium']).to eq("#{Settings['base_image_url']}#{space.image_url(:medium)}")
-        expect(response_json_space_image_url['large']).to eq("#{Settings['base_image_url']}#{space.image_url(:large)}")
-        expect(response_json_space_image_url['xlarge']).to eq("#{Settings['base_image_url']}#{space.image_url(:xlarge)}")
+        expect_image_json(response_json_space, space)
         expect(response_json_space['name']).to eq(space.name)
         expect(response_json_space['description']).to eq(space.description)
         expect(response_json_space['private']).to eq(space.private)
         expect(response_json_space['destroy_requested_at']).to eq(I18n.l(space.destroy_requested_at, format: :json, default: nil))
         expect(response_json_space['destroy_schedule_at']).to eq(I18n.l(space.destroy_schedule_at, format: :json, default: nil))
-        if user_power.blank?
-          expect(response_json_space['current_member']).to be_nil
-        else
+
+        if user_power.present?
           expect(response_json_space['current_member']['power']).to eq(user_power.to_s)
           expect(response_json_space['current_member']['power_i18n']).to eq(Member.powers_i18n[user_power])
+        else
+          expect(response_json_space['current_member']).to be_nil
         end
 
         expect(response_json_member['total_count']).to eq(members.count)
@@ -126,16 +147,34 @@ RSpec.describe 'Members', type: :request do
             expect(response.body).not_to include("href=\"#{edit_member_path(space.code, member.user.code)}\"")
           end
           expect(response.body).to include(member.power_i18n) # 権限
-          if member.invitation_user.present?
+
+          if member.invitationed_user.present?
             if user_power == :admin
-              expect(response.body).to include(member.invitation_user.image_url(:small)) # [招待者]画像
-              expect(response.body).to include(member.invitation_user.name) # [招待者]氏名
+              expect(response.body).to include(member.invitationed_user.image_url(:small)) # [招待者]画像
+              expect(response.body).to include(member.invitationed_user.name) # [招待者]氏名
             else
-              # expect(response.body).not_to include(member.invitation_user.image_url(:small)) # NOTE: ユニークじゃない為
-              expect(response.body).not_to include(member.invitation_user.name)
+              # expect(response.body).not_to include(member.invitationed_user.image_url(:small)) # NOTE: ユニークではない為
+              expect(response.body).not_to include(member.invitationed_user.name)
             end
           end
           expect(response.body).to include(I18n.l(member.invitationed_at)) if member.invitationed_at.present?
+
+          if member.last_updated_user.present?
+            if user_power == :admin
+              expect(response.body).to include(member.last_updated_user.image_url(:small)) # [最終更新者]画像
+              expect(response.body).to include(member.last_updated_user.name) # [最終更新者]氏名
+            else
+              # expect(response.body).not_to include(member.last_updated_user.image_url(:small)) # NOTE: ユニークではない為
+              expect(response.body).not_to include(member.last_updated_user.name)
+            end
+          end
+          if member.last_updated_at.present?
+            if user_power == :admin
+              expect(response.body).to include(I18n.l(member.last_updated_at))
+            else
+              expect(response.body).not_to include(I18n.l(member.last_updated_at))
+            end
+          end
         end
       end
     end
@@ -152,38 +191,19 @@ RSpec.describe 'Members', type: :request do
           data = response_json_members[no - start_no]
           member = members[members.count - no]
 
-          data_user = data['user']
-          expect(data_user['code']).to eq(member.user.code)
-          data_user_image_url = data_user['image_url']
-          expect(data_user_image_url['mini']).to eq("#{Settings['base_image_url']}#{member.user.image_url(:mini)}")
-          expect(data_user_image_url['small']).to eq("#{Settings['base_image_url']}#{member.user.image_url(:small)}")
-          expect(data_user_image_url['medium']).to eq("#{Settings['base_image_url']}#{member.user.image_url(:medium)}")
-          expect(data_user_image_url['large']).to eq("#{Settings['base_image_url']}#{member.user.image_url(:large)}")
-          expect(data_user_image_url['xlarge']).to eq("#{Settings['base_image_url']}#{member.user.image_url(:xlarge)}")
-          expect(data_user['name']).to eq(member.user.name)
-          if user_power == :admin
-            expect(data_user['email']).to eq(member.user.email)
-          else
-            expect(data_user['email']).to be_nil
-          end
+          expect_user_json(data['user'], member.user, user_power == :admin)
           expect(data['power']).to eq(member.power)
           expect(data['power_i18n']).to eq(Member.powers_i18n[member.power])
 
-          if member.invitation_user.present? && user_power == :admin
-            data_invitation_user = data['invitation_user']
-            expect(data_invitation_user['code']).to eq(member.invitation_user.code)
-            data_invitation_user_image_url = data_invitation_user['image_url']
-            expect(data_invitation_user_image_url['mini']).to eq("#{Settings['base_image_url']}#{member.invitation_user.image_url(:mini)}")
-            expect(data_invitation_user_image_url['small']).to eq("#{Settings['base_image_url']}#{member.invitation_user.image_url(:small)}")
-            expect(data_invitation_user_image_url['medium']).to eq("#{Settings['base_image_url']}#{member.invitation_user.image_url(:medium)}")
-            expect(data_invitation_user_image_url['large']).to eq("#{Settings['base_image_url']}#{member.invitation_user.image_url(:large)}")
-            expect(data_invitation_user_image_url['xlarge']).to eq("#{Settings['base_image_url']}#{member.invitation_user.image_url(:xlarge)}")
-            expect(data_invitation_user['name']).to eq(member.invitation_user.name)
-            expect(data_invitation_user['email']).to eq(member.invitation_user.email)
+          if user_power == :admin
+            expect_user_json(data['invitationed_user'], member.invitationed_user, true)
+            expect_user_json(data['last_updated_user'], member.last_updated_user, true)
           else
-            expect(data['invitation_user']).to be_nil
+            expect(data['invitationed_user']).to be_nil
+            expect(data['last_updated_user']).to be_nil
           end
-          expect(data['invitationed_at']).to eq(I18n.l(member.invitationed_at, format: :json, default: nil))
+          expect(data['invitationed_at']).to eq(I18n.l(member.invitationed_at, format: :json))
+          expect(data['last_updated_at']).to user_power == :admin ? eq(I18n.l(member.last_updated_at, format: :json, default: nil)) : be_nil
         end
       end
     end
@@ -260,10 +280,6 @@ RSpec.describe 'Members', type: :request do
       it_behaves_like 'リダイレクト(json)', 3
     end
 
-    shared_examples_for '[未ログイン][*]権限がない' do
-      it_behaves_like 'ToLogin(html)'
-      it_behaves_like 'ToNG(json)', 401
-    end
     shared_examples_for '[ログイン中/削除予約済み][*]権限がない' do
       it_behaves_like 'ToNG(html)', 403
       it_behaves_like 'ToNG(json)', 401 # NOTE: APIは未ログイン扱い
@@ -283,11 +299,6 @@ RSpec.describe 'Members', type: :request do
       it_behaves_like '[APIログイン中/削除予約済み][*][ある]メンバーが最大表示数より多い', power
     end
 
-    shared_examples_for '[未ログイン]スペースが存在しない' do
-      let_it_be(:space) { FactoryBot.build_stubbed(:space) }
-      it_behaves_like 'ToLogin(html)'
-      it_behaves_like 'ToNG(json)', 401
-    end
     shared_examples_for '[ログイン中/削除予約済み]スペースが存在しない' do
       let_it_be(:space) { FactoryBot.build_stubbed(:space) }
       it_behaves_like 'ToNG(html)', 404
@@ -297,13 +308,6 @@ RSpec.describe 'Members', type: :request do
       let_it_be(:space) { FactoryBot.build_stubbed(:space) }
       it_behaves_like 'ToNG(html)', 404
       it_behaves_like 'ToNG(json)', 404
-    end
-    shared_examples_for '[未ログイン]スペースが公開' do
-      let_it_be(:space) { FactoryBot.create(:space, :public) }
-      it_behaves_like '[未ログイン][*]権限がない'
-      # it_behaves_like '[未ログイン][公開]権限がある', :admin # NOTE: 未ログインの為、権限がない
-      # it_behaves_like '[未ログイン][公開]権限がある', :writer
-      # it_behaves_like '[未ログイン][公開]権限がある', :reader
     end
     shared_examples_for '[ログイン中/削除予約済み]スペースが公開' do
       let_it_be(:space) { FactoryBot.create(:space, :public) }
@@ -318,13 +322,6 @@ RSpec.describe 'Members', type: :request do
       it_behaves_like '[APIログイン中/削除予約済み][*]権限がある', :admin
       it_behaves_like '[APIログイン中/削除予約済み][*]権限がある', :writer
       it_behaves_like '[APIログイン中/削除予約済み][*]権限がある', :reader
-    end
-    shared_examples_for '[未ログイン]スペースが非公開' do
-      let_it_be(:space) { FactoryBot.create(:space, :private) }
-      it_behaves_like '[未ログイン][*]権限がない'
-      # it_behaves_like '[未ログイン][非公開]権限がある', :admin # NOTE: 未ログインの為、権限がない
-      # it_behaves_like '[未ログイン][非公開]権限がある', :writer
-      # it_behaves_like '[未ログイン][非公開]権限がある', :reader
     end
     shared_examples_for '[ログイン中/削除予約済み]スペースが非公開' do
       let_it_be(:space) { FactoryBot.create(:space, :private) }
@@ -343,9 +340,9 @@ RSpec.describe 'Members', type: :request do
 
     context '未ログイン' do
       include_context '未ログイン処理'
-      it_behaves_like '[未ログイン]スペースが存在しない'
-      it_behaves_like '[未ログイン]スペースが公開'
-      it_behaves_like '[未ログイン]スペースが非公開'
+      let_it_be(:space) { FactoryBot.create(:space, :public) }
+      it_behaves_like 'ToLogin(html)'
+      it_behaves_like 'ToNG(json)', 401
     end
     context 'ログイン中' do
       include_context 'ログイン処理'
@@ -373,15 +370,194 @@ RSpec.describe 'Members', type: :request do
     end
   end
 
+  # 前提条件
+  #   ログイン中（URLの拡張子がない/AcceptヘッダにHTMLが含まれる）, APIログイン中（URLの拡張子が.json/AcceptヘッダにJSONが含まれる）
+  #   検索条件の権限・並び順指定なし, 氏名のみ確認
+  # テストパターン
+  #   権限: 管理者, 投稿者, 閲覧者
+  #   部分一致: 氏名, メールアドレス（管理者のみ表示）
   describe 'GET #index (.search)' do
-    # TODO
+    subject { get members_path(code: space.code, format: subject_format), params: params, headers: auth_headers.merge(accept_headers) }
+    let_it_be(:space) { FactoryBot.create(:space) }
+    let_it_be(:member_all)        { FactoryBot.create(:member, space: space, user: FactoryBot.create(:user, name: '氏名(Aaa)')) }
+    let_it_be(:member_admin_only) { FactoryBot.create(:member, space: space, user: FactoryBot.create(:user, email: '_Aaa@example.com')) }
+    let(:params) { { text: 'aaa' } }
+
+    # テストケース
+    shared_examples_for '管理者' do
+      before_all { FactoryBot.create(:member, space: space, user: user, power: :admin) }
+      let(:members) { [member_admin_only, member_all] }
+      it_behaves_like 'ToOK[氏名]'
+    end
+    shared_examples_for '管理者以外' do |power|
+      before_all { FactoryBot.create(:member, space: space, user: user, power: power) }
+      let(:members) { [member_all] }
+      it_behaves_like 'ToOK[氏名]'
+    end
+
+    shared_examples_for '権限' do
+      it_behaves_like '管理者'
+      it_behaves_like '管理者以外', :writer
+      it_behaves_like '管理者以外', :reader
+    end
+
+    context 'ログイン中（URLの拡張子がない/AcceptヘッダにHTMLが含まれる）' do
+      include_context 'ログイン処理'
+      let(:subject_format) { nil }
+      let(:accept_headers) { ACCEPT_INC_HTML }
+      it_behaves_like '権限'
+    end
+    context 'APIログイン中（URLの拡張子が.json/AcceptヘッダにJSONが含まれる）' do
+      include_context 'APIログイン処理'
+      let(:subject_format) { :json }
+      let(:accept_headers) { ACCEPT_INC_JSON }
+      it_behaves_like '権限'
+    end
   end
 
+  # 前提条件
+  #   ログイン中（URLの拡張子がない/AcceptヘッダにHTMLが含まれる）, APIログイン中（URLの拡張子が.json/AcceptヘッダにJSONが含まれる）
+  #   検索条件のテキスト・並び順指定なし, 氏名のみ確認
+  # テストパターン
+  #   管理者, 投稿者, 閲覧者 の組み合わせ
   describe 'GET #index (.power)' do
-    # TODO
+    subject { get members_path(code: space.code, format: subject_format), params: params, headers: auth_headers.merge(accept_headers) }
+    let_it_be(:space) { FactoryBot.create(:space) }
+    let_it_be(:member_reader) { FactoryBot.create(:member, :reader, space: space) }
+    let_it_be(:member_writer) { FactoryBot.create(:member, :writer, space: space) }
+
+    # テストケース
+    context 'ログイン中（URLの拡張子がない/AcceptヘッダにHTMLが含まれる）' do
+      include_context 'ログイン処理'
+      let_it_be(:member_admin) { FactoryBot.create(:member, :admin, space: space, user: user) }
+      let(:subject_format) { nil }
+      let(:accept_headers) { ACCEPT_INC_HTML }
+      context '■管理者, ■投稿者, ■閲覧者' do
+        let(:params) { { power: { admin: 1, writer: 1, reader: 1 } } }
+        let(:members) { [member_admin, member_writer, member_reader] }
+        it_behaves_like 'ToOK[氏名]'
+      end
+      context '■管理者, ■投稿者, □閲覧者' do
+        let(:params) { { power: { admin: 1, writer: 1, reader: 0 } } }
+        let(:members) { [member_admin, member_writer] }
+        it_behaves_like 'ToOK[氏名]'
+      end
+      context '■管理者, □投稿者, ■閲覧者' do
+        let(:params) { { power: { admin: 1, writer: 0, reader: 1 } } }
+        let(:members) { [member_admin, member_reader] }
+        it_behaves_like 'ToOK[氏名]'
+      end
+      context '□管理者, ■投稿者, ■閲覧者' do
+        let(:params) { { power: { admin: 0, writer: 1, reader: 1 } } }
+        let(:members) { [member_writer, member_reader] }
+        it_behaves_like 'ToOK[氏名]'
+      end
+      context '■管理者, □投稿者, □閲覧者' do
+        let(:params) { { power: { admin: 1, writer: 0, reader: 0 } } }
+        let(:members) { [member_admin] }
+        it_behaves_like 'ToOK[氏名]'
+      end
+      context '□管理者, ■投稿者, □閲覧者' do
+        let(:params) { { power: { admin: 0, writer: 1, reader: 0 } } }
+        let(:members) { [member_writer] }
+        it_behaves_like 'ToOK[氏名]'
+      end
+      context '□管理者, □投稿者, ■閲覧者' do
+        let(:params) { { power: { admin: 0, writer: 0, reader: 1 } } }
+        let(:members) { [member_reader] }
+        it_behaves_like 'ToOK[氏名]'
+      end
+      context '□管理者, □投稿者, □閲覧者' do
+        let(:params) { { power: { admin: 0, writer: 0, reader: 0 } } }
+        let(:members) { [] }
+        it_behaves_like 'ToOK[氏名]'
+      end
+    end
+    context 'APIログイン中（URLの拡張子が.json/AcceptヘッダにJSONが含まれる）' do
+      include_context 'APIログイン処理'
+      let_it_be(:member_admin) { FactoryBot.create(:member, :admin, space: space, user: user) }
+      let(:subject_format) { :json }
+      let(:accept_headers) { ACCEPT_INC_JSON }
+      context '■管理者, ■投稿者, ■閲覧者' do
+        let(:params) { { power: 'admin,writer,reader' } }
+        let(:members) { [member_admin, member_writer, member_reader] }
+        it_behaves_like 'ToOK[氏名]'
+      end
+      context '■管理者, ■投稿者, □閲覧者' do
+        let(:params) { { power: 'admin,writer' } }
+        let(:members) { [member_admin, member_writer] }
+        it_behaves_like 'ToOK[氏名]'
+      end
+      context '■管理者, □投稿者, ■閲覧者' do
+        let(:params) { { power: 'admin,reader' } }
+        let(:members) { [member_admin, member_reader] }
+        it_behaves_like 'ToOK[氏名]'
+      end
+      context '□管理者, ■投稿者, ■閲覧者' do
+        let(:params) { { power: 'writer,reader' } }
+        let(:members) { [member_writer, member_reader] }
+        it_behaves_like 'ToOK[氏名]'
+      end
+      context '■管理者, □投稿者, □閲覧者' do
+        let(:params) { { power: 'admin' } }
+        let(:members) { [member_admin] }
+        it_behaves_like 'ToOK[氏名]'
+      end
+      context '□管理者, ■投稿者, □閲覧者' do
+        let(:params) { { power: 'writer' } }
+        let(:members) { [member_writer] }
+        it_behaves_like 'ToOK[氏名]'
+      end
+      context '□管理者, □投稿者, ■閲覧者' do
+        let(:params) { { power: 'reader' } }
+        let(:members) { [member_reader] }
+        it_behaves_like 'ToOK[氏名]'
+      end
+      context '□管理者, □投稿者, □閲覧者' do
+        let(:params) { { power: '' } }
+        let(:members) { [] }
+        it_behaves_like 'ToOK[氏名]'
+      end
+    end
   end
 
+  # 前提条件
+  #   APIログイン中（URLの拡張子が.json/AcceptヘッダにJSONが含まれる）
+  #   検索条件のテキスト・権限指定なし, 件数のみ確認
+  # テストパターン
+  #   対象: メンバー, メールアドレス, 権限, 招待者, 招待日時, 最終更新者, 最終更新日時
+  #   並び順: ASC, DESC  ※ASCは1つのみ確認
   describe 'GET #index (.order)' do
-    # TODO
+    subject { get members_path(code: space.code, format: subject_format), params: params, headers: auth_headers.merge(accept_headers) }
+    let_it_be(:space) { FactoryBot.create(:space) }
+    let_it_be(:member_reader) { FactoryBot.create(:member, :reader, space: space) }
+    let_it_be(:member_writer) { FactoryBot.create(:member, :writer, space: space) }
+    include_context 'APIログイン処理'
+    let_it_be(:member_admin) { FactoryBot.create(:member, :admin, space: space, user: user) }
+    let_it_be(:members) { [member_admin, member_reader, member_writer] }
+    let(:subject_format) { :json }
+    let(:accept_headers) { ACCEPT_INC_JSON }
+
+    # テストケース
+    context 'メンバー ASC' do
+      let(:params) { { sort: 'user.name', desc: '0' } }
+      it_behaves_like 'ToOK[count]'
+    end
+    context 'メンバー DESC' do
+      let(:params) { { sort: 'user.name', desc: '1' } }
+      it_behaves_like 'ToOK[count]'
+    end
+    context 'メールアドレス DESC' do
+      let(:params) { { sort: 'user.email', desc: '1' } }
+      it_behaves_like 'ToOK[count]'
+    end
+    context '権限 DESC' do
+      let(:params) { { sort: 'power', desc: '1' } }
+      it_behaves_like 'ToOK[count]'
+    end
+    context '招待者 DESC' do
+      let(:params) { { sort: 'invitationed_user.name', desc: '1' } }
+      it_behaves_like 'ToOK[count]'
+    end
   end
 end

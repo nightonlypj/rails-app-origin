@@ -81,8 +81,7 @@ RSpec.describe 'Spaces', type: :request do
       it_behaves_like 'ToOK(json)'
     end
     shared_examples_for '[未ログイン][非公開]権限がない' do
-      it_behaves_like 'ToLogin(html/html)'
-      it_behaves_like 'ToLogin(html/json)'
+      it_behaves_like 'ToLogin(html)'
       it_behaves_like 'ToNG(json)', 401
     end
     shared_examples_for '[ログイン中/削除予約済み][非公開]権限がない' do

@@ -19,6 +19,12 @@ RSpec.describe 'Spaces', type: :request do
     let_it_be(:invalid_attributes) { valid_attributes.merge(name: nil) }
     let(:current_space) { Space.last }
 
+    shared_context 'valid_condition' do
+      let_it_be(:space) { FactoryBot.create(:space) }
+      before_all        { FactoryBot.create(:member, :admin, space: space, user: user) if user.present? }
+      let(:attributes)  { valid_attributes }
+    end
+
     # テスト内容
     shared_examples_for 'OK' do
       it '対象項目が変更される' do
@@ -134,6 +140,8 @@ RSpec.describe 'Spaces', type: :request do
       let(:user_power) { power }
       before_all { FactoryBot.create(:member, power: power, space: space, user: user) if power.present? }
       let(:attributes) { valid_attributes }
+      it_behaves_like 'NG(html)'
+      it_behaves_like 'NG(json)'
       it_behaves_like 'ToNG(html)', 403
       it_behaves_like 'ToNG(json)', 401 # NOTE: APIは未ログイン扱い
     end
@@ -141,6 +149,8 @@ RSpec.describe 'Spaces', type: :request do
       let(:user_power) { power }
       before_all { FactoryBot.create(:member, power: power, space: space, user: user) if power.present? }
       let(:attributes) { valid_attributes }
+      it_behaves_like 'NG(html)'
+      it_behaves_like 'NG(json)'
       it_behaves_like 'ToNG(html)', 403 # NOTE: HTMLもログイン状態になる
       it_behaves_like 'ToNG(json)', 403
     end
@@ -148,12 +158,16 @@ RSpec.describe 'Spaces', type: :request do
     shared_examples_for '[ログイン中]スペースが存在しない' do
       let_it_be(:space) { FactoryBot.build_stubbed(:space) }
       let(:attributes) { valid_attributes }
+      # it_behaves_like 'NG(html)' # NOTE: 存在しない為
+      # it_behaves_like 'NG(json)'
       it_behaves_like 'ToNG(html)', 404
       it_behaves_like 'ToNG(json)', 401 # NOTE: APIは未ログイン扱い
     end
     shared_examples_for '[APIログイン中]スペースが存在しない' do
       let_it_be(:space) { FactoryBot.build_stubbed(:space) }
       let(:attributes) { valid_attributes }
+      # it_behaves_like 'NG(html)' # NOTE: 存在しない為
+      # it_behaves_like 'NG(json)'
       it_behaves_like 'ToNG(html)', 404 # NOTE: HTMLもログイン状態になる
       it_behaves_like 'ToNG(json)', 404
     end
@@ -188,8 +202,7 @@ RSpec.describe 'Spaces', type: :request do
 
     context '未ログイン' do
       include_context '未ログイン処理'
-      let_it_be(:space) { FactoryBot.create(:space) }
-      let(:attributes) { valid_attributes }
+      include_context 'valid_condition'
       it_behaves_like 'NG(html)'
       it_behaves_like 'NG(json)'
       it_behaves_like 'ToLogin(html)'
@@ -203,8 +216,7 @@ RSpec.describe 'Spaces', type: :request do
     end
     context 'ログイン中（削除予約済み）' do
       include_context 'ログイン処理', :destroy_reserved
-      let_it_be(:space) { FactoryBot.create(:space) }
-      let(:attributes) { valid_attributes }
+      include_context 'valid_condition'
       it_behaves_like 'NG(html)'
       it_behaves_like 'NG(json)'
       it_behaves_like 'ToSpaces(html)', 'alert.user.destroy_reserved'
@@ -218,8 +230,7 @@ RSpec.describe 'Spaces', type: :request do
     end
     context 'APIログイン中（削除予約済み）' do
       include_context 'APIログイン処理', :destroy_reserved
-      let_it_be(:space) { FactoryBot.create(:space) }
-      let(:attributes) { valid_attributes }
+      include_context 'valid_condition'
       it_behaves_like 'NG(html)'
       it_behaves_like 'NG(json)'
       it_behaves_like 'ToSpaces(html)', 'alert.user.destroy_reserved' # NOTE: HTMLもログイン状態になる

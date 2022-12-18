@@ -7,9 +7,10 @@ RSpec.describe Download, type: :model do
       expect(download).to be_valid
     end
   end
-  shared_examples_for 'InValid' do
-    it '保存できない' do
+  shared_examples_for 'InValid' do |key, error_msg|
+    it '保存できない。エラーメッセージが一致する' do
       expect(download).to be_invalid
+      expect(download.errors[key]).to eq([error_msg])
     end
   end
   shared_examples_for 'Value' do |value, text = value|
@@ -19,13 +20,15 @@ RSpec.describe Download, type: :model do
   end
 
   # 対象
+  # テストパターン
+  #   ない, 正常値
   describe 'validates :target' do
     let(:download) { FactoryBot.build_stubbed(:download, target: target) }
 
     # テストケース
     context 'ない' do
       let(:target) { nil }
-      it_behaves_like 'InValid'
+      it_behaves_like 'InValid', :target, I18n.t('activerecord.errors.models.download.attributes.target.blank')
     end
     context '正常値' do
       let(:target) { :all }
@@ -34,13 +37,15 @@ RSpec.describe Download, type: :model do
   end
 
   # 形式
+  # テストパターン
+  #   ない, 正常値
   describe 'validates :format' do
     let(:download) { FactoryBot.build_stubbed(:download, format: format) }
 
     # テストケース
     context 'ない' do
       let(:format) { nil }
-      it_behaves_like 'InValid'
+      it_behaves_like 'InValid', :format, I18n.t('activerecord.errors.models.download.attributes.format.blank')
     end
     context '正常値' do
       let(:format) { :csv }
@@ -49,13 +54,15 @@ RSpec.describe Download, type: :model do
   end
 
   # 文字コード
+  # テストパターン
+  #   ない, 正常値
   describe 'validates :char_code' do
     let(:download) { FactoryBot.build_stubbed(:download, char_code: char_code) }
 
     # テストケース
     context 'ない' do
       let(:char_code) { nil }
-      it_behaves_like 'InValid'
+      it_behaves_like 'InValid', :char_code, I18n.t('activerecord.errors.models.download.attributes.char_code.blank')
     end
     context '正常値' do
       let(:char_code) { :sjis }
@@ -64,13 +71,15 @@ RSpec.describe Download, type: :model do
   end
 
   # 改行コード
+  # テストパターン
+  #   ない, 正常値
   describe 'validates :newline_code' do
     let(:download) { FactoryBot.build_stubbed(:download, newline_code: newline_code) }
 
     # テストケース
     context 'ない' do
       let(:newline_code) { nil }
-      it_behaves_like 'InValid'
+      it_behaves_like 'InValid', :newline_code, I18n.t('activerecord.errors.models.download.attributes.newline_code.blank')
     end
     context '正常値' do
       let(:newline_code) { :crlf }
@@ -79,13 +88,15 @@ RSpec.describe Download, type: :model do
   end
 
   # 出力項目
+  # テストパターン
+  #   ない, 正常値, 文字列, 文字列（ハッシュ）
   describe 'validates :output_items' do
     let(:download) { FactoryBot.build_stubbed(:download, output_items: output_items) }
 
     # テストケース
     context 'ない' do
       let(:output_items) { nil }
-      it_behaves_like 'InValid'
+      it_behaves_like 'InValid', :output_items, I18n.t('activerecord.errors.models.download.attributes.output_items.blank')
     end
     context '正常値' do
       let(:output_items) { '["user.name", "power"]' }
@@ -93,11 +104,11 @@ RSpec.describe Download, type: :model do
     end
     context '文字列' do
       let(:output_items) { 'user.name,power' }
-      it_behaves_like 'InValid'
+      it_behaves_like 'InValid', :output_items, I18n.t('activerecord.errors.models.download.attributes.output_items.invalid')
     end
     context '文字列（ハッシュ）' do
       let(:output_items) { '{"text"=>"a"}' }
-      it_behaves_like 'InValid'
+      it_behaves_like 'InValid', :output_items, I18n.t('activerecord.errors.models.download.attributes.output_items.invalid')
     end
   end
 
@@ -108,7 +119,7 @@ RSpec.describe Download, type: :model do
     # テストケース
     shared_examples_for 'ない' do |valid|
       let(:select_items) { nil }
-      it_behaves_like valid ? 'Valid' : 'InValid'
+      it_behaves_like valid ? 'Valid' : 'InValid', :select_items, I18n.t('activerecord.errors.models.download.attributes.select_items.blank')
     end
     shared_examples_for '正常値' do
       let(:select_items) { '["code000000000000000000001", "code000000000000000000002"]' }
@@ -116,11 +127,11 @@ RSpec.describe Download, type: :model do
     end
     shared_examples_for '文字列' do
       let(:select_items) { 'code000000000000000000001,code000000000000000000002' }
-      it_behaves_like 'InValid'
+      it_behaves_like 'InValid', :select_items, I18n.t('activerecord.errors.models.download.attributes.select_items.invalid')
     end
     shared_examples_for '文字列（ハッシュ）' do
       let(:select_items) { '{"text"=>"a"}' }
-      it_behaves_like 'InValid'
+      it_behaves_like 'InValid', :select_items, I18n.t('activerecord.errors.models.download.attributes.select_items.invalid')
     end
 
     context '対象が選択項目' do
@@ -140,13 +151,15 @@ RSpec.describe Download, type: :model do
   end
 
   # 検索パラメータ
+  # テストパターン
+  #   ない, 正常値, 文字列, 文字列（配列）
   describe 'validates :search_params' do
     let(:download) { FactoryBot.build_stubbed(:download, target: target, search_params: search_params) }
 
     # テストケース
     shared_examples_for 'ない' do |valid|
       let(:search_params) { nil }
-      it_behaves_like valid ? 'Valid' : 'InValid'
+      it_behaves_like valid ? 'Valid' : 'InValid', :search_params, I18n.t('activerecord.errors.models.download.attributes.search_params.blank')
     end
     shared_examples_for '正常値' do
       let(:search_params) { '{"text"=>"a"}' }
@@ -154,11 +167,11 @@ RSpec.describe Download, type: :model do
     end
     shared_examples_for '文字列' do
       let(:search_params) { 'a' }
-      it_behaves_like 'InValid'
+      it_behaves_like 'InValid', :search_params, I18n.t('activerecord.errors.models.download.attributes.search_params.invalid')
     end
     shared_examples_for '文字列（配列）' do
       let(:search_params) { '["code000000000000000000001", "code000000000000000000002"]' }
-      it_behaves_like 'InValid'
+      it_behaves_like 'InValid', :search_params, I18n.t('activerecord.errors.models.download.attributes.search_params.invalid')
     end
 
     context '対象が検索' do
@@ -178,6 +191,8 @@ RSpec.describe Download, type: :model do
   end
 
   # 区切り文字
+  # テストパターン
+  #   CSV, TSV
   describe '#col_sep' do
     subject { download.col_sep }
     let(:download) { FactoryBot.create(:download, format: format) }
@@ -193,6 +208,8 @@ RSpec.describe Download, type: :model do
   end
 
   # 改行文字
+  # テストパターン
+  #   CR+LF, LF, CR
   describe '#row_sep' do
     subject { download.row_sep }
     let(:download) { FactoryBot.create(:download, newline_code: newline_code) }

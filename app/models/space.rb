@@ -2,7 +2,7 @@ class Space < ApplicationRecord
   mount_uploader :image, ImageUploader
   attr_accessor :image_delete
 
-  belongs_to :created_user,      class_name: 'User'
+  belongs_to :created_user,      class_name: 'User', optional: true # NOTE: アカウント削除実施済みでも変更できるようにoptionalを追加
   belongs_to :last_updated_user, class_name: 'User', optional: true
   has_many :members, dependent: :destroy
   has_many :users, through: :members

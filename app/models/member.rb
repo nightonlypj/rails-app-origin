@@ -3,7 +3,8 @@ class Member < ApplicationRecord
 
   belongs_to :space
   belongs_to :user
-  belongs_to :invitation_user, class_name: 'User', optional: true
+  belongs_to :invitationed_user, class_name: 'User', optional: true
+  belongs_to :last_updated_user, class_name: 'User', optional: true
 
   validates :power, presence: true
 
@@ -17,18 +18,31 @@ class Member < ApplicationRecord
   scope :search, lambda { |text, current_member|
     return if text&.strip.blank?
 
-    member = all.joins(:user)
     collate = connection_db_config.configuration_hash[:adapter] == 'mysql2' ? ' COLLATE utf8_unicode_ci' : ''
     like = connection_db_config.configuration_hash[:adapter] == 'postgresql' ? 'ILIKE' : 'LIKE'
+    sql = "users.name#{collate} #{like} ?"
+    sql += " OR users.email#{collate} #{like} ?" if current_member.power_admin?
+
+    member = all.joins(:user)
     text.split(/[[:blank:]]+/).each do |word|
       value = "%#{word}%"
       if current_member.power_admin?
-        member = member.where("users.name#{collate} #{like} ? OR users.email#{collate} #{like} ?", value, value)
+        member = member.where(sql, value, value)
       else
-        member = member.where("users.name#{collate} #{like} ?", value)
+        member = member.where(sql, value)
       end
     end
 
     member
   }
+
+  # 招待日時
+  def invitationed_at
+    invitationed_user_id.blank? ? nil : created_at # NOTE: アカウント削除実施済みでも日付が取得できるように[_id]を確認
+  end
+
+  # 最終更新日時
+  def last_updated_at
+    updated_at == created_at ? nil : updated_at
+  end
 end

@@ -64,23 +64,15 @@ def expect_space_json(response_json_space, space, user_power)
   end
 
   if user_power == :admin
-    response_json_space_created_user = response_json_space['created_user']
     if space.created_user.present?
-      expect(response_json_space_created_user['code']).to eq(space.created_user.code)
-      expect_image_json(response_json_space_created_user, space.created_user)
-      expect(response_json_space_created_user['name']).to eq(space.created_user.name)
-      expect(response_json_space_created_user['email']).to eq(space.created_user.email)
+      expect_user_json(response_json_space['created_user'], space.created_user, true)
     else
-      expect(response_json_space_created_user).to be_nil
+      expect(response_json_space['created_user']).to be_nil
     end
-    response_json_space_last_updated_user = response_json_space['last_updated_user']
     if space.last_updated_user.present?
-      expect(response_json_space_last_updated_user['code']).to eq(space.last_updated_user.code)
-      expect_image_json(response_json_space_last_updated_user, space.last_updated_user)
-      expect(response_json_space_last_updated_user['name']).to eq(space.last_updated_user.name)
-      expect(response_json_space_last_updated_user['email']).to eq(space.last_updated_user.email)
+      expect_user_json(response_json_space['last_updated_user'], space.last_updated_user, true)
     else
-      expect(response_json_space_last_updated_user).to be_nil
+      expect(response_json_space['last_updated_user']).to be_nil
     end
     expect(response_json_space['created_at']).to eq(I18n.l(space.created_at, format: :json))
     expect(response_json_space['last_updated_at']).to eq(I18n.l(space.last_updated_at, format: :json, default: nil))
