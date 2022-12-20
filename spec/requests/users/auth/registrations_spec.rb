@@ -224,26 +224,14 @@ RSpec.describe 'Users::Auth::Registrations', type: :request do
     shared_examples_for 'ToOK(json/json)' do
       let(:subject_format) { :json }
       let(:accept_headers) { ACCEPT_INC_JSON }
-      let(:response_json_user)           { response_json['user'] }
-      let(:response_json_user_image_url) { response_json_user['image_url'] }
+      let(:response_json_user) { response_json['user'] }
       it 'HTTPステータスが200。対象項目が一致する。認証ヘッダがある' do
         is_expected.to eq(200)
         expect(response_json['success']).to eq(true)
-        expect(response_json_user['code']).to eq(current_user.code)
-        expect(response_json_user['upload_image']).to eq(current_user.image?)
-        expect(response_json_user_image_url['mini']).to eq("#{Settings['base_image_url']}#{current_user.image_url(:mini)}")
-        expect(response_json_user_image_url['small']).to eq("#{Settings['base_image_url']}#{current_user.image_url(:small)}")
-        expect(response_json_user_image_url['medium']).to eq("#{Settings['base_image_url']}#{current_user.image_url(:medium)}")
-        expect(response_json_user_image_url['large']).to eq("#{Settings['base_image_url']}#{current_user.image_url(:large)}")
-        expect(response_json_user_image_url['xlarge']).to eq("#{Settings['base_image_url']}#{current_user.image_url(:xlarge)}")
-        expect(response_json_user['name']).to eq(current_user.name)
-        expect(response_json_user['email']).to eq(current_user.email)
-
+        expect_user_json(response_json_user, current_user, true)
         expect(response_json_user['provider']).to eq(current_user.provider)
-        ## 削除予約
-        expect(response_json_user['destroy_schedule_days']).to eq(Settings['destroy_schedule_days'])
-        expect(response_json_user['destroy_requested_at']).to eq(I18n.l(current_user.destroy_requested_at, format: :json, default: nil))
-        expect(response_json_user['destroy_schedule_at']).to eq(I18n.l(current_user.destroy_schedule_at, format: :json, default: nil))
+        ## アカウント削除の猶予期間
+        expect(response_json_user['destroy_schedule_days']).to be_nil
         ## お知らせ
         expect(response_json_user['infomation_unread_count']).to be_nil
 
@@ -828,11 +816,11 @@ RSpec.describe 'Users::Auth::Registrations', type: :request do
       #   expect { subject }.to change(User, :count).by(-1)
       # end
       let!(:start_time) { Time.current.floor }
-      it "削除依頼日時が現在日時に、削除予定日時が#{Settings['destroy_schedule_days']}日後に変更される。メールが送信される" do
+      it "削除依頼日時が現在日時に、削除予定日時が#{Settings['user_destroy_schedule_days']}日後に変更される。メールが送信される" do
         subject
         expect(current_user.destroy_requested_at).to be_between(start_time, Time.current)
-        expect(current_user.destroy_schedule_at).to be_between(start_time + Settings['destroy_schedule_days'].days,
-                                                               Time.current + Settings['destroy_schedule_days'].days)
+        expect(current_user.destroy_schedule_at).to be_between(start_time + Settings['user_destroy_schedule_days'].days,
+                                                               Time.current + Settings['user_destroy_schedule_days'].days)
         expect(ActionMailer::Base.deliveries.count).to eq(1)
         expect(ActionMailer::Base.deliveries[0].subject).to eq(get_subject('mailer.user.destroy_reserved.subject')) # アカウント削除受け付けのお知らせ
         expect(ActionMailer::Base.deliveries[0].html_part.body).to include(attributes[:undo_delete_url])

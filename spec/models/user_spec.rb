@@ -7,9 +7,10 @@ RSpec.describe User, type: :model do
       expect(user).to be_valid
     end
   end
-  shared_examples_for 'InValid' do
-    it '保存できない' do
+  shared_examples_for 'InValid' do |key, error_msg|
+    it '保存できない。エラーメッセージが一致する' do
       expect(user).to be_invalid
+      expect(user.errors[key]).to eq([error_msg])
     end
   end
   shared_examples_for 'Count' do |count|
@@ -29,7 +30,7 @@ RSpec.describe User, type: :model do
     # テストケース
     context 'ない' do
       let(:code) { nil }
-      it_behaves_like 'InValid'
+      it_behaves_like 'InValid', :code, I18n.t('activerecord.errors.models.user.attributes.code.blank')
     end
     context '正常値' do
       let(:code) { valid_code }
@@ -38,7 +39,7 @@ RSpec.describe User, type: :model do
     context '重複' do
       before { FactoryBot.create(:user, code: code) }
       let(:code) { valid_code }
-      it_behaves_like 'InValid'
+      it_behaves_like 'InValid', :code, I18n.t('activerecord.errors.models.user.attributes.code.taken')
     end
   end
 
@@ -51,11 +52,11 @@ RSpec.describe User, type: :model do
     # テストケース
     context 'ない' do
       let(:name) { nil }
-      it_behaves_like 'InValid'
+      it_behaves_like 'InValid', :name, I18n.t('activerecord.errors.models.user.attributes.name.blank')
     end
     context '最小文字数よりも少ない' do
       let(:name) { 'a' * (Settings['user_name_minimum'] - 1) }
-      it_behaves_like 'InValid'
+      it_behaves_like 'InValid', :name, I18n.t('activerecord.errors.models.user.attributes.name.too_short').gsub(/%{count}/, Settings['user_name_minimum'].to_s)
     end
     context '最小文字数と同じ' do
       let(:name) { 'a' * Settings['user_name_minimum'] }
@@ -67,7 +68,7 @@ RSpec.describe User, type: :model do
     end
     context '最大文字数よりも多い' do
       let(:name) { 'a' * (Settings['user_name_maximum'] + 1) }
-      it_behaves_like 'InValid'
+      it_behaves_like 'InValid', :name, I18n.t('activerecord.errors.models.user.attributes.name.too_long').gsub(/%{count}/, Settings['user_name_maximum'].to_s)
     end
   end
 
@@ -107,10 +108,10 @@ RSpec.describe User, type: :model do
       end
     end
     context '削除予定日時' do
-      let!(:start_time) { Time.current.floor + Settings['destroy_schedule_days'].days }
+      let!(:start_time) { Time.current.floor + Settings['user_destroy_schedule_days'].days }
       it '現在日時＋設定日数に変更される' do
         is_expected.to eq(true)
-        expect(user.destroy_schedule_at).to be_between(start_time, Time.current + Settings['destroy_schedule_days'].days)
+        expect(user.destroy_schedule_at).to be_between(start_time, Time.current + Settings['user_destroy_schedule_days'].days)
       end
     end
   end

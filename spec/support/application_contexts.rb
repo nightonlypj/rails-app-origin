@@ -15,6 +15,16 @@ def get_subject(key)
 end
 
 # テスト内容（共通）
+def expect_image_json(response_json_model, model)
+  expect(response_json_model['upload_image']).to eq(model.image?)
+  data = response_json_model['image_url']
+  expect(data['mini']).to eq("#{Settings['base_image_url']}#{model.image_url(:mini)}")
+  expect(data['small']).to eq("#{Settings['base_image_url']}#{model.image_url(:small)}")
+  expect(data['medium']).to eq("#{Settings['base_image_url']}#{model.image_url(:medium)}")
+  expect(data['large']).to eq("#{Settings['base_image_url']}#{model.image_url(:large)}")
+  expect(data['xlarge']).to eq("#{Settings['base_image_url']}#{model.image_url(:xlarge)}")
+end
+
 shared_examples_for 'ToOK[status]' do
   it 'HTTPステータスが200' do
     is_expected.to eq(200)
@@ -80,7 +90,7 @@ shared_examples_for 'ToNG(json/json)' do |code, alert, notice|
   let(:accept_headers) { ACCEPT_INC_JSON }
   it "HTTPステータスが#{code}。対象項目が一致する" do
     is_expected.to eq(code)
-    expect(response_json['success']).to eq(false)
+    expect(response_json['success']).to eq(code == 406 ? nil : false)
     expect(response_json['alert']).to alert.present? ? eq(I18n.t(alert)) : be_nil
     expect(response_json['notice']).to notice.present? ? eq(I18n.t(notice)) : be_nil
   end
@@ -105,6 +115,8 @@ def alert_key(code, alert)
     'alert.user.forbidden'
   when 404
     'alert.page.notfound'
+  when 406
+    nil
   else
     raise "code not found.(#{code})"
   end

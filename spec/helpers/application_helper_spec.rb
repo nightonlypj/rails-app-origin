@@ -52,25 +52,17 @@ RSpec.describe ApplicationHelper, type: :helper do
     end
   end
 
-  # 削除予約メッセージを表示するかを返却
+  # アカウント削除予約メッセージを表示するかを返却
   # テストパターン
   #   削除予約: なし, あり
   #   トップページ, アカウント削除取り消し
-  describe 'destroy_reserved_message?' do
-    subject do
-      if user.nil?
-        helper.destroy_reserved_message?
-      else
-        helper.destroy_reserved_message?(user)
-      end
-    end
+  describe 'user_destroy_reserved_message?' do
+    subject { helper.user_destroy_reserved_message? }
     before do
       allow(helper).to receive(:current_user).and_return current_user
       allow(helper).to receive(:controller_name).and_return controller_name
       allow(helper).to receive(:action_name).and_return action_name
     end
-    let_it_be(:user_active)   { FactoryBot.create(:user) }
-    let_it_be(:user_reserved) { FactoryBot.create(:user, :destroy_reserved) }
 
     # テストケース
     shared_examples_for '[なし]トップページ' do
@@ -89,27 +81,18 @@ RSpec.describe ApplicationHelper, type: :helper do
       it_behaves_like 'false'
     end
 
-    context '削除予約なし（パラメータあり）' do
-      let(:user)         { user_active }
-      let(:current_user) { nil }
+    context '削除予約なし' do
+      let_it_be(:current_user) { nil }
       it_behaves_like '[なし]トップページ'
       it_behaves_like '[*]アカウント削除取り消し'
     end
-    context '削除予約なし（パラメータなし）' do
-      let(:user)         { nil }
-      let(:current_user) { user_active }
+    context '削除予約なし' do
+      let_it_be(:current_user) { FactoryBot.create(:user) }
       it_behaves_like '[なし]トップページ'
       it_behaves_like '[*]アカウント削除取り消し'
     end
-    context '削除予約あり（パラメータあり）' do
-      let(:user)         { user_reserved }
-      let(:current_user) { nil }
-      it_behaves_like '[あり]トップページ'
-      it_behaves_like '[*]アカウント削除取り消し'
-    end
-    context '削除予約あり（パラメータなし）' do
-      let(:user)         { nil }
-      let(:current_user) { user_reserved }
+    context '削除予約あり' do
+      let_it_be(:current_user) { FactoryBot.create(:user, :destroy_reserved) }
       it_behaves_like '[あり]トップページ'
       it_behaves_like '[*]アカウント削除取り消し'
     end

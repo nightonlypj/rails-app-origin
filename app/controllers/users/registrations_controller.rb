@@ -3,8 +3,8 @@
 class Users::RegistrationsController < Devise::RegistrationsController
   include Users::RegistrationsConcern
   prepend_before_action :authenticate_scope!, only: %i[edit update image_update image_destroy delete destroy undo_delete undo_destroy]
-  before_action :redirect_for_destroy_reserved, only: %i[edit update image_update image_destroy delete destroy]
-  before_action :redirect_for_not_destroy_reserved, only: %i[undo_delete undo_destroy]
+  before_action :redirect_for_user_destroy_reserved, only: %i[edit update image_update image_destroy delete destroy]
+  before_action :redirect_for_not_user_destroy_reserved, only: %i[undo_delete undo_destroy]
   before_action :configure_sign_up_params, only: %i[create]
   before_action :configure_account_update_params, only: %i[update]
 
@@ -63,8 +63,7 @@ class Users::RegistrationsController < Devise::RegistrationsController
   end
 
   # GET /users/delete アカウント削除
-  # def delete
-  # end
+  def delete; end
 
   # POST /users/delete アカウント削除(処理)
   def destroy
@@ -79,8 +78,7 @@ class Users::RegistrationsController < Devise::RegistrationsController
   end
 
   # GET /users/undo_delete アカウント削除取り消し
-  # def undo_delete
-  # end
+  def undo_delete; end
 
   # POST /users/undo_delete アカウント削除取り消し(処理)
   def undo_destroy

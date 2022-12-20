@@ -101,22 +101,22 @@ class ApplicationController < ActionController::Base
   end
 
   # 削除予約済みの場合、リダイレクトしてメッセージを表示
-  def redirect_for_destroy_reserved
+  def redirect_for_user_destroy_reserved
     redirect_to root_path, alert: t('alert.user.destroy_reserved') if current_user.destroy_reserved?
   end
 
   # 削除予約済みの場合、JSONでメッセージを返却
-  def response_api_for_destroy_reserved
+  def response_api_for_user_destroy_reserved
     render './failure', locals: { alert: t('alert.user.destroy_reserved') }, status: :unprocessable_entity if current_user&.destroy_reserved?
   end
 
   # 削除予約済みでない場合、リダイレクトしてメッセージを表示
-  def redirect_for_not_destroy_reserved
+  def redirect_for_not_user_destroy_reserved
     redirect_to root_path, alert: t('alert.user.not_destroy_reserved') unless current_user.destroy_reserved?
   end
 
   # 削除予約済みでない場合、JSONでメッセージを返却
-  def response_api_for_not_destroy_reserved
+  def response_api_for_not_user_destroy_reserved
     render './failure', locals: { alert: t('alert.user.not_destroy_reserved') }, status: :unprocessable_entity unless current_user&.destroy_reserved?
   end
 

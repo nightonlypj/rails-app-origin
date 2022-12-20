@@ -136,9 +136,12 @@
 
       <main id="main_contents" class="flex-grow-1" style="min-width: 300px">
         <div class="mx-3 mt-3 mb-1">
-<% if destroy_reserved_message? %>
+<% if user_destroy_reserved_message? %>
           <aside>
-            <p class="note note-warning mb-2">このアカウントは<%= l(current_user.destroy_schedule_at.to_date) %>以降に削除されます。<%= link_to '取り消しはこちら', delete_undo_user_registration_path %></p>
+            <p class="note note-warning mb-2">
+              このアカウントは<%= l(current_user.destroy_schedule_at.to_date) %>以降に削除されます。
+              <%= link_to '取り消しはこちら', delete_undo_user_registration_path %>
+            </p>
           </aside>
 <% end %>
 <% if alert.present? %>

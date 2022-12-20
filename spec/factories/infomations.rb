@@ -10,7 +10,7 @@ FactoryBot.define do
 
     # 全員
     trait :all do
-      target { :all }
+      # target { :all }
     end
 
     # 対象ユーザーのみ
