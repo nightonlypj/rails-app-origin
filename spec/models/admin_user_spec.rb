@@ -7,9 +7,10 @@ RSpec.describe AdminUser, type: :model do
       expect(admin_user).to be_valid
     end
   end
-  shared_examples_for 'InValid' do
-    it '保存できない' do
+  shared_examples_for 'InValid' do |key, error_msg|
+    it '保存できない。エラーメッセージが一致する' do
       expect(admin_user).to be_invalid
+      expect(admin_user.errors[key]).to eq([error_msg])
     end
   end
 
@@ -22,11 +23,12 @@ RSpec.describe AdminUser, type: :model do
     # テストケース
     context 'ない' do
       let(:name) { nil }
-      it_behaves_like 'InValid'
+      it_behaves_like 'InValid', :name, I18n.t('activerecord.errors.models.admin_user.attributes.name.blank')
     end
     context '最小文字数よりも少ない' do
       let(:name) { 'a' * (Settings['user_name_minimum'] - 1) }
-      it_behaves_like 'InValid'
+      it_behaves_like 'InValid', :name,
+                      I18n.t('activerecord.errors.models.admin_user.attributes.name.too_short').gsub(/%{count}/, Settings['user_name_minimum'].to_s)
     end
     context '最小文字数と同じ' do
       let(:name) { 'a' * Settings['user_name_minimum'] }
@@ -38,7 +40,8 @@ RSpec.describe AdminUser, type: :model do
     end
     context '最大文字数よりも多い' do
       let(:name) { 'a' * (Settings['user_name_maximum'] + 1) }
-      it_behaves_like 'InValid'
+      it_behaves_like 'InValid', :name,
+                      I18n.t('activerecord.errors.models.admin_user.attributes.name.too_long').gsub(/%{count}/, Settings['user_name_maximum'].to_s)
     end
   end
 end

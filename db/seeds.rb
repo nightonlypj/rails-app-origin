@@ -3,12 +3,12 @@
 
 BULK_MAX_COUNT = 1000
 
-# シーケンス更新 # NOTE: id指定でinsert_allした場合、シーケンスが更新されない為(PostgreSQL)
+# シーケンス更新 # NOTE: id(PK)指定でinsert_allした場合、シーケンスが更新されない為(PostgreSQL)
 def update_sequence
   return if @model.connection_db_config.configuration_hash[:adapter] != 'postgresql'
 
   @model.connection.execute(
-    "SELECT setval(pg_get_serial_sequence('#{@model.table_name}', 'id'), (SELECT MAX(id) FROM #{@model.table_name}))"
+    "SELECT setval(pg_get_serial_sequence('#{@model.table_name}', '#{@model.primary_key}'), (SELECT MAX(#{@model.primary_key}) FROM #{@model.table_name}))"
   )
 end
 
@@ -16,7 +16,7 @@ end
 def insert_contents(bulk_insert)
   count = 0
   insert_datas = []
-  datas = @model.where(id: @ids)
+  datas = @model.where(@model.primary_key => @ids)
   data = @model.new
   now = Time.current
 
@@ -63,12 +63,12 @@ end
 def update_contents(bulk_update, exclude_update_column)
   count = 0
   update_datas = []
-  datas = @model.where(id: @ids)
+  datas = @model.where(@model.primary_key => @ids)
   new_model = @model.new
   now = Time.current
 
   datas.find_each do |data|
-    content = @contents[data.id]
+    content = @contents[data[@model.primary_key]]
     next if content.blank?
 
     exclude_update_column.each { |key| content.delete(key) } if exclude_update_column.present?
@@ -100,7 +100,7 @@ end
 
 # 削除処理
 def delete_contents(destroy)
-  datas = @model.where.not(id: @ids)
+  datas = @model.where.not(@model.primary_key => @ids)
   count = datas.count
   if destroy
     datas.destroy_all
@@ -124,11 +124,11 @@ File.open("#{Rails.root}/db/seeds.yml") do |seed_body|
     p "== file: #{seed['file']}"
     File.open("#{Rails.root}/db/#{seed['file']}") do |file_body|
       yaml = YAML.safe_load(file_body)
-      @contents = yaml.index_by { |content| content['id'] }
-      raise 'idが重複しています。' if yaml.count != @contents.count
+      @model = seed['model'].constantize
+      @contents = yaml.index_by { |content| content[@model.primary_key] }
+      raise "#{@model.primary_key}が重複しています。" if yaml.count != @contents.count
 
       @ids = @contents.keys
-      @model = seed['model'].constantize
       p "count: #{@contents.count}, model: #{@model}"
 
       option = seed['option'].present? ? seed['option'] : {}

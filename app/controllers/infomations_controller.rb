@@ -1,7 +1,7 @@
 class InfomationsController < ApplicationAuthController
   include InfomationsConcern
-  prepend_before_action :response_not_acceptable_for_not_api, only: %i[important]
-  before_action :set_important_infomations, only: %i[important]
+  before_action :response_not_acceptable_for_not_api, only: :important
+  before_action :set_important_infomations, only: :important
 
   # GET /infomations お知らせ一覧
   # GET /infomations(.json) お知らせ一覧API
@@ -15,8 +15,7 @@ class InfomationsController < ApplicationAuthController
   end
 
   # GET /infomations/important(.json) 大切なお知らせ一覧API
-  # def important
-  # end
+  def important; end
 
   # GET /infomations/:id お知らせ詳細
   # GET /infomations/:id(.json) お知らせ詳細API

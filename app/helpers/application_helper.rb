@@ -9,9 +9,11 @@ module ApplicationHelper
     (controller_name == 'registrations' && action_name == 'edit') || (controller_name == 'sessions' && action_name == 'delete')
   end
 
-  # 削除予約メッセージを表示するかを返却
-  def destroy_reserved_message?(user = current_user)
-    controller_name != 'registrations' && action_name != 'undo_delete' && user&.destroy_reserved?
+  # アカウント削除予約メッセージを表示するかを返却
+  def user_destroy_reserved_message?
+    return false unless current_user&.destroy_reserved?
+
+    controller_name != 'registrations' && action_name != 'undo_delete'
   end
 
   # 有効なメールアドレス確認トークンかを返却

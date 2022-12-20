@@ -4,7 +4,7 @@
   <h5 class="card-title mb-3">アカウント削除</h5>
   <div class="card-text mb-3">
     <p>
-      アカウントは<%= Settings['destroy_schedule_days'] %>日後に削除されます。それまでは取り消し可能です。<br>
+      アカウントは<%= Settings['user_destroy_schedule_days'] %>日後に削除されます。それまでは取り消し可能です。<br>
       削除されるまではログインできますが、一部機能が制限されます。
     </p>
     <%= button_to '削除', destroy_user_registration_path, data: { confirm: '本当に削除しますか？' }, method: :post, class: 'btn btn-danger' %>

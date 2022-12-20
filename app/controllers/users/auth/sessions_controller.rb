@@ -3,7 +3,7 @@
 class Users::Auth::SessionsController < DeviseTokenAuth::SessionsController
   include DeviseTokenAuth::Concerns::SetUserByToken
   skip_before_action :verify_authenticity_token
-  prepend_before_action :unauthenticated_response_sign_out, only: %i[destroy], unless: :user_signed_in?
+  prepend_before_action :response_unauthenticated_sign_out, only: %i[destroy], unless: :user_signed_in?
   prepend_before_action :response_not_acceptable_for_not_api
   prepend_before_action :update_request_uid_header
 
@@ -36,7 +36,7 @@ class Users::Auth::SessionsController < DeviseTokenAuth::SessionsController
     @resource
   end
 
-  def unauthenticated_response_sign_out
+  def response_unauthenticated_sign_out
     render './failure', locals: { alert: t('devise_token_auth.sessions.user_not_found') }, status: :unauthorized
   end
 

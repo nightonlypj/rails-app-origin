@@ -70,6 +70,9 @@ def expect_user_json(response_json_user, user, use_email)
   expect_image_json(response_json_user, user)
   expect(response_json_user['name']).to eq(user.name)
   expect(response_json_user['email']).to use_email ? eq(user.email) : be_nil
+  ## 削除予約
+  expect(response_json_user['destroy_requested_at']).to eq(I18n.l(user.destroy_requested_at, format: :json, default: nil))
+  expect(response_json_user['destroy_schedule_at']).to eq(I18n.l(user.destroy_schedule_at, format: :json, default: nil))
 end
 
 shared_examples_for 'ToTop' do |alert, notice|
@@ -88,30 +91,17 @@ shared_examples_for 'ToLogin' do |alert, notice|
 end
 
 shared_context 'Authテスト内容' do
-  let(:response_json_user)           { response_json['user'] }
-  let(:response_json_user_image_url) { response_json_user['image_url'] }
-  let(:response_json_user_spaces)    { response_json_user['spaces'] }
+  let(:response_json_user) { response_json['user'] }
   let(:expect_success_json) do
     expect(response_json['success']).to eq(true)
     expect(response_json['data']).to be_nil
     if current_user.blank?
       expect(response_json_user).to be_nil
     else
-      expect(response_json_user['code']).to eq(current_user.code)
-      expect(response_json_user['upload_image']).to eq(current_user.image?)
-      expect(response_json_user_image_url['mini']).to eq("#{Settings['base_image_url']}#{current_user.image_url(:mini)}")
-      expect(response_json_user_image_url['small']).to eq("#{Settings['base_image_url']}#{current_user.image_url(:small)}")
-      expect(response_json_user_image_url['medium']).to eq("#{Settings['base_image_url']}#{current_user.image_url(:medium)}")
-      expect(response_json_user_image_url['large']).to eq("#{Settings['base_image_url']}#{current_user.image_url(:large)}")
-      expect(response_json_user_image_url['xlarge']).to eq("#{Settings['base_image_url']}#{current_user.image_url(:xlarge)}")
-      expect(response_json_user['name']).to eq(current_user.name)
-      expect(response_json_user['email']).to be_nil
-
+      expect_user_json(response_json_user, current_user, false)
       expect(response_json_user['provider']).to eq(current_user.provider)
-      ## 削除予約
-      expect(response_json_user['destroy_schedule_days']).to eq(Settings['destroy_schedule_days'])
-      expect(response_json_user['destroy_requested_at']).to eq(I18n.l(current_user.destroy_requested_at, format: :json, default: nil))
-      expect(response_json_user['destroy_schedule_at']).to eq(I18n.l(current_user.destroy_schedule_at, format: :json, default: nil))
+      ## アカウント削除の猶予期間
+      expect(response_json_user['destroy_schedule_days']).to eq(Settings['user_destroy_schedule_days'])
       ## お知らせ
       expect(response_json_user['infomation_unread_count']).to eq(current_user.infomation_unread_count)
       ## ダウンロード結果
