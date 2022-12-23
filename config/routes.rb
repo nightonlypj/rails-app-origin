@@ -1,4 +1,5 @@
 Rails.application.routes.draw do
+  resources :invitations
   draw :downloads
   draw :members
   draw :spaces
