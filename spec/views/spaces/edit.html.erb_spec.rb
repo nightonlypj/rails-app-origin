@@ -1,9 +1,7 @@
 require 'rails_helper'
 
 RSpec.describe 'spaces/edit', type: :view do
-  before_all do
-    @space = FactoryBot.create(:space)
-  end
+  before_all { @space = FactoryBot.create(:space) }
 
   it '対象の送信先と項目が含まれる' do
     render

@@ -54,17 +54,17 @@
         </td>
 <% end %>
         <%# メンバー %>
-        <td scope="row" class="ps-2 pe-1 py-2 ">
-          <%= render './users/avatar', user: member.user %>
+        <td scope="row" class="ps-2 pe-1 py-2">
+          <%= render './users/avatar', user: member.user, present: true %>
         </td>
 <% if @current_member.power_admin? %>
         <%# メールアドレス %>
-        <td class="px-1 py-2 ">
+        <td class="px-1 py-2">
           <%= member.user.email %>
         </td>
 <% end %>
         <%# 権限 %>
-        <td class="text-nowrap px-1 py-2 ">
+        <td class="text-nowrap px-1 py-2">
 <% if @current_member.power_admin? && member != @current_member %>
           <a href="<%= edit_member_path(@space.code, member.user.code) %>">
 <% end %>
@@ -76,21 +76,21 @@
         </td>
 <% if @current_member.power_admin? %>
         <%# 招待者 %>
-        <td class="px-1 py-2 ">
-          <%= render './users/avatar', user: member.invitationed_user %>
+        <td class="px-1 py-2<%= ' text-center' if member.invitationed_user.blank? && member.last_updated_user_id.present? %>">
+          <%= render './users/avatar', user: member.invitationed_user, present: member.last_updated_user_id.present? %>
         </td>
 <% end %>
         <%# 招待日時 %>
-        <td class="text-nowrap ps-1 pe-2 py-2 ">
+        <td class="text-nowrap ps-1 pe-2 py-2">
           <%= l(member.invitationed_at, default: nil) %>
         </td>
 <% if @current_member.power_admin? %>
         <%# 最終更新者 %>
-        <td class="px-1 py-2 ">
-          <%= render './users/avatar', user: member.last_updated_user %>
+        <td class="px-1 py-2<%= ' text-center' if member.last_updated_user.blank? && member.last_updated_user_id.present? %>">
+          <%= render './users/avatar', user: member.last_updated_user, present: member.last_updated_user_id.present? %>
         </td>
         <%# 最終更新日時 %>
-        <td class="text-nowrap ps-1 pe-2 py-2 ">
+        <td class="text-nowrap ps-1 pe-2 py-2">
           <%= l(member.last_updated_at, default: nil) %>
         </td>
 <% end %>

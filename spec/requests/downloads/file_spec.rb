@@ -18,6 +18,11 @@ RSpec.describe 'Downloads', type: :request do
   describe 'GET #file' do
     subject { get file_download_path(id: download.id, format: subject_format), headers: auth_headers.merge(accept_headers) }
 
+    shared_context 'set_power' do |power|
+      let(:user_power) { power }
+      before_all { FactoryBot.create(:member, power: power, space: download.space, user: user) if power.present? }
+    end
+
     # テスト内容
     shared_examples_for 'ToOK(html/*)' do
       it 'HTTPステータスが200。対象項目が含まれる' do
@@ -35,24 +40,22 @@ RSpec.describe 'Downloads', type: :request do
 
     # テストケース
     shared_examples_for '[ログイン中/削除予約済み][存在する][ログインユーザー]権限がある' do |power|
-      let_it_be(:user_power) { power }
-      before_all { FactoryBot.create(:member, power: power, space: download.space, user: user) }
+      include_context 'set_power', power
       it_behaves_like 'ToOK(html)'
       it_behaves_like 'ToNG(json)', 401 # NOTE: APIは未ログイン扱い
     end
     shared_examples_for '[APIログイン中/削除予約済み][存在する][ログインユーザー]権限がある' do |power|
-      let_it_be(:user_power) { power }
-      before_all { FactoryBot.create(:member, power: power, space: download.space, user: user) }
+      include_context 'set_power', power
       it_behaves_like 'ToOK(html)' # NOTE: HTMLもログイン状態になる
       it_behaves_like 'ToOK(json)'
     end
     shared_examples_for '[ログイン中/削除予約済み][存在する][ログインユーザー]権限がない' do |power|
-      before_all { FactoryBot.create(:member, power: power, space: download.space, user: user) if power.present? }
+      include_context 'set_power', power
       it_behaves_like 'ToNG(html)', 403
       it_behaves_like 'ToNG(json)', 401 # NOTE: APIは未ログイン扱い
     end
     shared_examples_for '[APIログイン中/削除予約済み][存在する][ログインユーザー]権限がない' do |power|
-      before_all { FactoryBot.create(:member, power: power, space: download.space, user: user) if power.present? }
+      include_context 'set_power', power
       it_behaves_like 'ToNG(html)', 403 # NOTE: HTMLもログイン状態になる
       it_behaves_like 'ToNG(json)', 403
     end

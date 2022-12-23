@@ -18,13 +18,13 @@ FactoryBot.define do
     # 削除予約済み
     trait :destroy_reserved do
       destroy_requested_at { Time.current - 1.minute }
-      destroy_schedule_at  { destroy_requested_at + Settings['destroy_schedule_days'].days }
+      destroy_schedule_at  { destroy_requested_at + Settings['space_destroy_schedule_days'].days }
     end
 
     # 削除対象
     trait :destroy_targeted do
-      destroy_requested_at { Time.current - 1.minute - Settings['destroy_schedule_days'].days }
-      destroy_schedule_at  { destroy_requested_at + Settings['destroy_schedule_days'].days }
+      destroy_requested_at { Time.current - 1.minute - Settings['space_destroy_schedule_days'].days }
+      destroy_schedule_at  { destroy_requested_at + Settings['space_destroy_schedule_days'].days }
     end
   end
 end

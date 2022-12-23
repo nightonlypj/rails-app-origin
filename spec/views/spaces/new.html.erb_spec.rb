@@ -1,9 +1,7 @@
 require 'rails_helper'
 
 RSpec.describe 'spaces/new', type: :view do
-  before_all do
-    @space = Space.new
-  end
+  before_all { @space = Space.new }
 
   it '対象の送信先と項目が含まれる' do
     render

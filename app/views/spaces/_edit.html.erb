@@ -7,7 +7,7 @@
     <div class="col-md-10">
       <%= l(@space.created_at) %>
       <span class="ms-2">
-        <%= render './users/avatar', user: @space.created_user %>
+        <%= render './users/avatar', user: @space.created_user, present: @space.created_user_id.present? %>
       </span>
     </div>
   </div>
@@ -20,7 +20,7 @@
     <div class="col-md-10 mb-2">
       <%= l(@space.last_updated_at, default: 'N/A') %>
       <span class="ms-2">
-        <%= render './users/avatar', user: @space.last_updated_user %>
+        <%= render './users/avatar', user: @space.last_updated_user, present: @space.last_updated_user_id.present? %>
       </span>
     </div>
   </div>

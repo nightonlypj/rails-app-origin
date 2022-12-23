@@ -14,6 +14,11 @@ RSpec.describe 'Spaces', type: :request do
   describe 'GET #index' do
     subject { get space_path(code: space.code, format: subject_format), headers: auth_headers.merge(accept_headers) }
 
+    shared_context 'set_power' do |power|
+      let(:user_power) { power }
+      before_all { FactoryBot.create(:member, power: power, space: space, user: user) if power.present? && user.present? }
+    end
+
     # テスト内容
     shared_examples_for 'ToOK(html/*)' do
       it 'HTTPステータスが200。対象項目が含まれる' do
@@ -50,27 +55,23 @@ RSpec.describe 'Spaces', type: :request do
 
     # テストケース
     shared_examples_for '[ログイン中/削除予約済み][公開]権限がある(html)' do |power|
-      let(:user_power) { power }
-      let(:member_count) { 1 }
-      before_all { FactoryBot.create(:member, power: power, space: space, user: user) }
+      include_context 'set_power', power
       it_behaves_like 'ToOK(html)'
     end
     shared_examples_for '[ログイン中/削除予約済み][公開]権限がある(json)' do |power|
-      let(:user_power) { nil }
-      let(:member_count) { 1 }
+      let(:user_power) { nil } # NOTE: APIは未ログイン扱い
       before_all { FactoryBot.create(:member, power: power, space: space, user: user) }
-      it_behaves_like 'ToOK(json)' # NOTE: APIは未ログイン扱いだが、スペースが公開は見れる
+      let(:member_count) { 1 }
+      it_behaves_like 'ToOK(json)' # NOTE: 公開スペースは見れる
     end
     shared_examples_for '[ログイン中/削除予約済み][非公開]権限がある' do |power|
-      let(:user_power) { power }
-      before_all { FactoryBot.create(:member, power: power, space: space, user: user) }
+      include_context 'set_power', power
       it_behaves_like 'ToOK(html)'
       it_behaves_like 'ToNG(json)', 401 # NOTE: APIは未ログイン扱い
     end
     shared_examples_for '[APIログイン中/削除予約済み][*]権限がある' do |power|
-      let(:user_power) { power }
+      include_context 'set_power', power
       let(:member_count) { 1 }
-      before_all { FactoryBot.create(:member, power: power, space: space, user: user) }
       it_behaves_like 'ToOK(html)' # NOTE: HTMLもログイン状態になる
       it_behaves_like 'ToOK(json)'
     end

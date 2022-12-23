@@ -52,9 +52,16 @@ def expect_space_json(response_json_space, space, user_power)
   expect(response_json_space['name']).to eq(space.name)
   expect(response_json_space['description']).to eq(space.description)
   expect(response_json_space['private']).to eq(space.private)
+
+  ## 削除予約
   expect(response_json_space['destroy_requested_at']).to eq(I18n.l(space.destroy_requested_at, format: :json, default: nil))
   expect(response_json_space['destroy_schedule_at']).to eq(I18n.l(space.destroy_schedule_at, format: :json, default: nil))
-  expect(response_json_space['member_count']).to eq(member_count) # メンバー数
+
+  ## メンバー数
+  expect(response_json_space['member_count']).to eq(member_count)
+
+  ## スペース削除の猶予期間
+  expect(response_json_space['destroy_schedule_days']).to eq(Settings['space_destroy_schedule_days'])
 
   if user_power.present?
     expect(response_json_space['current_member']['power']).to eq(user_power.to_s)
@@ -104,4 +111,26 @@ end
 shared_examples_for 'ToSpaces(html)' do |alert = nil, notice = nil|
   it_behaves_like 'ToSpaces(html/html)', alert, notice
   it_behaves_like 'ToSpaces(html/json)', alert, notice
+end
+
+shared_examples_for 'ToSpace(html/*)' do |alert, notice|
+  it 'スペーストップにリダイレクトする' do
+    is_expected.to redirect_to(space_path(space.code))
+    expect(flash[:alert]).to alert.present? ? eq(I18n.t(alert)) : be_nil
+    expect(flash[:notice]).to notice.present? ? eq(I18n.t(notice)) : be_nil
+  end
+end
+shared_examples_for 'ToSpace(html/html)' do |alert, notice|
+  let(:subject_format) { nil }
+  let(:accept_headers) { ACCEPT_INC_HTML }
+  it_behaves_like 'ToSpace(html/*)', alert, notice
+end
+shared_examples_for 'ToSpace(html/json)' do |alert, notice|
+  let(:subject_format) { nil }
+  let(:accept_headers) { ACCEPT_INC_JSON }
+  it_behaves_like 'ToSpace(html/*)', alert, notice
+end
+shared_examples_for 'ToSpace(html)' do |alert = nil, notice = nil|
+  it_behaves_like 'ToSpace(html/html)', alert, notice
+  it_behaves_like 'ToSpace(html/json)', alert, notice
 end

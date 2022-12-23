@@ -91,7 +91,8 @@ shared_examples_for 'ToLogin' do |alert, notice|
 end
 
 shared_context 'Authテスト内容' do
-  let(:response_json_user) { response_json['user'] }
+  let(:response_json_user)        { response_json['user'] }
+  let(:response_json_user_spaces) { response_json_user['spaces'] }
   let(:expect_success_json) do
     expect(response_json['success']).to eq(true)
     expect(response_json['data']).to be_nil

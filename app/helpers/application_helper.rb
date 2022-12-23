@@ -16,6 +16,20 @@ module ApplicationHelper
     controller_name != 'registrations' && action_name != 'undo_delete'
   end
 
+  # スペース削除予約メッセージを表示するかを返却
+  def space_destroy_reserved_message?
+    return false unless @space&.destroy_reserved?
+
+    case controller_name
+    when 'spaces'
+      !%w[index new create undo_delete undo_destroy].include?(action_name)
+    when 'members'
+      true
+    else
+      false
+    end
+  end
+
   # 有効なメールアドレス確認トークンかを返却
   def user_valid_confirmation_token?
     return false unless devise_mapping.confirmable? && current_user.pending_reconfirmation?

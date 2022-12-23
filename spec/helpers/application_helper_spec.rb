@@ -127,6 +127,73 @@ RSpec.describe ApplicationHelper, type: :helper do
     end
   end
 
+  # スペース削除予約メッセージを表示するかを返却
+  # テストパターン
+  #   削除予約: なし, あり
+  #   トップページ, スペース一覧, スペーストップ, スペース削除取り消し, メンバー一覧
+  describe 'space_destroy_reserved_message?' do
+    subject { helper.space_destroy_reserved_message? }
+    before do
+      @space = space
+      allow(helper).to receive(:controller_name).and_return controller_name
+      allow(helper).to receive(:action_name).and_return action_name
+    end
+
+    # テストケース
+    shared_examples_for '[*]トップページ' do
+      let(:controller_name) { 'top' }
+      let(:action_name)     { 'index' }
+      it_behaves_like 'false'
+    end
+    shared_examples_for '[*]スペース一覧' do
+      let(:controller_name) { 'spaces' }
+      let(:action_name)     { 'index' }
+      it_behaves_like 'false'
+    end
+    shared_examples_for '[なし]スペーストップ' do
+      let(:controller_name) { 'spaces' }
+      let(:action_name)     { 'show' }
+      it_behaves_like 'false'
+    end
+    shared_examples_for '[あり]スペーストップ' do
+      let(:controller_name) { 'spaces' }
+      let(:action_name)     { 'show' }
+      it_behaves_like 'true'
+    end
+    shared_examples_for '[*]スペース削除取り消し' do
+      let(:controller_name) { 'spaces' }
+      let(:action_name)     { 'undo_delete' }
+      it_behaves_like 'false'
+    end
+    shared_examples_for '[なし]メンバー一覧' do
+      let(:controller_name) { 'spaces' }
+      let(:action_name)     { 'show' }
+      it_behaves_like 'false'
+    end
+    shared_examples_for '[あり]メンバー一覧' do
+      let(:controller_name) { 'spaces' }
+      let(:action_name)     { 'show' }
+      it_behaves_like 'true'
+    end
+
+    context '削除予約なし' do
+      let_it_be(:space) { FactoryBot.create(:space) }
+      it_behaves_like '[*]トップページ'
+      it_behaves_like '[*]スペース一覧'
+      it_behaves_like '[なし]スペーストップ'
+      it_behaves_like '[*]スペース削除取り消し'
+      it_behaves_like '[なし]メンバー一覧'
+    end
+    context '削除予約あり' do
+      let_it_be(:space) { FactoryBot.create(:space, :destroy_reserved) }
+      it_behaves_like '[*]トップページ'
+      it_behaves_like '[*]スペース一覧'
+      it_behaves_like '[あり]スペーストップ'
+      it_behaves_like '[*]スペース削除取り消し'
+      it_behaves_like '[あり]メンバー一覧'
+    end
+  end
+
   # 有効なメールアドレス確認トークンかを返却
   # テストパターン
   #   メールアドレス変更: なし, あり, 期限切れ

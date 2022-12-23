@@ -3,7 +3,7 @@ require 'rails_helper'
 RSpec.describe 'Spaces', type: :request do
   let(:response_json) { response.body.present? ? JSON.parse(response.body) : {} }
 
-  # GET /spaces/:code/update スペース設定変更
+  # GET /spaces/update/:code スペース設定変更
   # テストパターン
   #   未ログイン, ログイン中, ログイン中（削除予約済み）, APIログイン中, APIログイン中（削除予約済み）
   #   スペース: 存在しない, 公開, 非公開
@@ -15,7 +15,11 @@ RSpec.describe 'Spaces', type: :request do
 
     shared_context 'valid_condition' do
       let_it_be(:space) { FactoryBot.create(:space) }
-      before_all        { FactoryBot.create(:member, :admin, space: space, user: user) if user.present? }
+      include_context 'set_power', :admin
+    end
+    shared_context 'set_power' do |power|
+      let(:user_power) { power }
+      before_all { FactoryBot.create(:member, power: power, space: space, user: user) if power.present? && user.present? }
     end
 
     # テストケース
@@ -24,14 +28,12 @@ RSpec.describe 'Spaces', type: :request do
     end
 
     shared_examples_for '[ログイン中][*]権限がある' do |power|
-      let(:user_power) { power }
-      before_all { FactoryBot.create(:member, power: power, space: space, user: user) }
+      include_context 'set_power', power
       it_behaves_like 'ToOK(html)'
       it_behaves_like 'ToNG(json)', 406
     end
     shared_examples_for '[ログイン中][*]権限がない' do |power|
-      let(:user_power) { power }
-      before_all { FactoryBot.create(:member, power: power, space: space, user: user) if power.present? }
+      include_context 'set_power', power
       it_behaves_like 'ToNG(html)', 403
       it_behaves_like 'ToNG(json)', 406
     end
@@ -71,7 +73,7 @@ RSpec.describe 'Spaces', type: :request do
     context 'ログイン中（削除予約済み）' do
       include_context 'ログイン処理', :destroy_reserved
       include_context 'valid_condition'
-      it_behaves_like 'ToSpaces(html)', 'alert.user.destroy_reserved'
+      it_behaves_like 'ToSpace(html)', 'alert.user.destroy_reserved'
       it_behaves_like 'ToNG(json)', 406
     end
     context 'APIログイン中' do
@@ -83,7 +85,7 @@ RSpec.describe 'Spaces', type: :request do
     context 'APIログイン中（削除予約済み）' do
       include_context 'APIログイン処理', :destroy_reserved
       include_context 'valid_condition'
-      it_behaves_like 'ToSpaces(html)', 'alert.user.destroy_reserved' # NOTE: HTMLもログイン状態になる
+      it_behaves_like 'ToSpace(html)', 'alert.user.destroy_reserved' # NOTE: HTMLもログイン状態になる
       it_behaves_like 'ToNG(json)', 406
     end
   end

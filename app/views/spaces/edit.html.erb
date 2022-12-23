@@ -2,7 +2,28 @@
 
 <%= render './users/shared/error_messages', resource: @space %>
 
+<ul class="nav nav-tabs mb-2">
+  <li class="nav-item">
+    <%= link_to 'スペース', space_path(@space.code), class: 'nav-link' %>
+  </li>
+  <li class="nav-item">
+    <a data-mdb-toggle="tab" class="nav-link active">スペース設定変更</a>
+  </li>
+</ul>
+
 <div class="card card-body mb-2" style="max-width: 850px">
-  <h5 class="card-title mb-3">スペース設定変更</h5>
   <div class="card-text mb-3"><%= render 'edit' %></div>
+<% unless @space.destroy_reserved? %>
+  <div class="row">
+    <div class="col">
+      <div class="card-footer pb-0 px-0">
+        <nav>
+          <ul class="mt-2 mb-0">
+            <li><%= link_to 'スペース削除', delete_space_path(@space.code) %></li>
+          </ul>
+        </nav>
+      </div>
+    </div>
+  </div>
+<% end %>
 </div>

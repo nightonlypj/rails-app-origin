@@ -165,6 +165,8 @@ ja:
     space:
       create: 'スペースを作成しました。'
       update: 'スペース設定を変更しました。'
+      destroy: 'スペースの削除を受け付けました。'
+      undo_destroy: 'スペース削除の取り消しが完了しました。'
     member:
       create: 'メンバー招待の処理が完了しました。結果を確認してください。'
       update: 'メンバー情報を変更しました。'
@@ -191,6 +193,9 @@ ja:
         undo_delete_url_not_allowed: 'undo_delete_urlが指定されていません。'
     download:
       notfound: 'ファイルが見つかりません。'
+    space:
+      destroy_reserved: 'スペース削除予定の為、この操作はできません。'
+      not_destroy_reserved: '既に取り消し済みか、スペース削除されていません。'
     member:
       destroy:
         codes:

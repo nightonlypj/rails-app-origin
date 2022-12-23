@@ -109,6 +109,50 @@ RSpec.describe Space, type: :model do
     end
   end
 
+  # 削除予約
+  # 前提条件
+  #   削除予約なし
+  describe '#set_destroy_reserve' do
+    subject { space.set_destroy_reserve }
+    let_it_be(:space) { FactoryBot.create(:space) }
+
+    context '削除依頼日時' do
+      let!(:start_time) { Time.current.floor }
+      it '現在日時に変更される' do
+        is_expected.to eq(true)
+        expect(space.destroy_requested_at).to be_between(start_time, Time.current)
+      end
+    end
+    context '削除予定日時' do
+      let!(:start_time) { Time.current.floor + Settings['space_destroy_schedule_days'].days }
+      it '現在日時＋設定日数に変更される' do
+        is_expected.to eq(true)
+        expect(space.destroy_schedule_at).to be_between(start_time, Time.current + Settings['space_destroy_schedule_days'].days)
+      end
+    end
+  end
+
+  # 削除予約取り消し
+  # 前提条件
+  #   削除予約済み
+  describe '#set_undo_destroy_reserve' do
+    subject { space.set_undo_destroy_reserve }
+    let_it_be(:space) { FactoryBot.create(:space, :destroy_reserved) }
+
+    context '削除依頼日時' do
+      it 'なしに変更される' do
+        is_expected.to eq(true)
+        expect(space.destroy_requested_at).to be_nil
+      end
+    end
+    context '削除予定日時' do
+      it 'なしに変更される' do
+        is_expected.to eq(true)
+        expect(space.destroy_schedule_at).to be_nil
+      end
+    end
+  end
+
   # 画像URLを返却
   # テストパターン
   #   画像: ない, ある

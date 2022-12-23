@@ -10,5 +10,7 @@ end
 json.name space.name
 json.description space.description
 json.private space.private
+
+## 削除予約
 json.destroy_requested_at l(space.destroy_requested_at, format: :json, default: nil)
 json.destroy_schedule_at l(space.destroy_schedule_at, format: :json, default: nil)

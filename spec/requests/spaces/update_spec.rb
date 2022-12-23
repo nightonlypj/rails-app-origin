@@ -3,8 +3,8 @@ require 'rails_helper'
 RSpec.describe 'Spaces', type: :request do
   let(:response_json) { JSON.parse(response.body) }
 
-  # POST /spaces/:code/update スペース設定変更(処理)
-  # POST /spaces/:code/update(.json) スペース設定変更API(処理)
+  # POST /spaces/update/:code スペース設定変更(処理)
+  # POST /spaces/update/:code(.json) スペース設定変更API(処理)
   # テストパターン
   #   未ログイン, ログイン中, ログイン中（削除予約済み）, APIログイン中, APIログイン中（削除予約済み）
   #   スペース: 存在しない, 公開, 非公開
@@ -21,8 +21,12 @@ RSpec.describe 'Spaces', type: :request do
 
     shared_context 'valid_condition' do
       let_it_be(:space) { FactoryBot.create(:space) }
-      before_all        { FactoryBot.create(:member, :admin, space: space, user: user) if user.present? }
-      let(:attributes)  { valid_attributes }
+      include_context 'set_power', :admin
+      let(:attributes) { valid_attributes }
+    end
+    shared_context 'set_power' do |power|
+      let(:user_power) { power }
+      before_all { FactoryBot.create(:member, power: power, space: space, user: user) if power.present? && user.present? }
     end
 
     # テスト内容
@@ -121,24 +125,21 @@ RSpec.describe 'Spaces', type: :request do
     end
 
     shared_examples_for '[ログイン中][*]権限がある' do |power|
-      let(:user_power) { power }
-      before_all { FactoryBot.create(:member, power: power, space: space, user: user) }
+      include_context 'set_power', power
       it_behaves_like '[ログイン中][*][ある]パラメータなし'
       it_behaves_like '[ログイン中][*][ある]有効なパラメータ（同名がない）'
       it_behaves_like '[ログイン中][*][ある]有効なパラメータ（同名がある）'
       it_behaves_like '[ログイン中][*][ある]無効なパラメータ'
     end
     shared_examples_for '[APIログイン中][*]権限がある' do |power|
-      let(:user_power) { power }
-      before_all { FactoryBot.create(:member, power: power, space: space, user: user) }
+      include_context 'set_power', power
       it_behaves_like '[APIログイン中][*][ある]パラメータなし'
       it_behaves_like '[APIログイン中][*][ある]有効なパラメータ（同名がない）'
       it_behaves_like '[APIログイン中][*][ある]有効なパラメータ（同名がある）'
       it_behaves_like '[APIログイン中][*][ある]無効なパラメータ'
     end
     shared_examples_for '[ログイン中][*]権限がない' do |power|
-      let(:user_power) { power }
-      before_all { FactoryBot.create(:member, power: power, space: space, user: user) if power.present? }
+      include_context 'set_power', power
       let(:attributes) { valid_attributes }
       it_behaves_like 'NG(html)'
       it_behaves_like 'NG(json)'
@@ -146,8 +147,7 @@ RSpec.describe 'Spaces', type: :request do
       it_behaves_like 'ToNG(json)', 401 # NOTE: APIは未ログイン扱い
     end
     shared_examples_for '[APIログイン中][*]権限がない' do |power|
-      let(:user_power) { power }
-      before_all { FactoryBot.create(:member, power: power, space: space, user: user) if power.present? }
+      include_context 'set_power', power
       let(:attributes) { valid_attributes }
       it_behaves_like 'NG(html)'
       it_behaves_like 'NG(json)'
@@ -219,7 +219,7 @@ RSpec.describe 'Spaces', type: :request do
       include_context 'valid_condition'
       it_behaves_like 'NG(html)'
       it_behaves_like 'NG(json)'
-      it_behaves_like 'ToSpaces(html)', 'alert.user.destroy_reserved'
+      it_behaves_like 'ToSpace(html)', 'alert.user.destroy_reserved'
       it_behaves_like 'ToNG(json)', 401 # NOTE: APIは未ログイン扱い
     end
     context 'APIログイン中' do
@@ -233,7 +233,7 @@ RSpec.describe 'Spaces', type: :request do
       include_context 'valid_condition'
       it_behaves_like 'NG(html)'
       it_behaves_like 'NG(json)'
-      it_behaves_like 'ToSpaces(html)', 'alert.user.destroy_reserved' # NOTE: HTMLもログイン状態になる
+      it_behaves_like 'ToSpace(html)', 'alert.user.destroy_reserved' # NOTE: HTMLもログイン状態になる
       it_behaves_like 'ToNG(json)', 422, nil, 'alert.user.destroy_reserved'
     end
   end

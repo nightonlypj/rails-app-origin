@@ -5,7 +5,7 @@
       <%= form.label :emails, 'メンバー', class: "form-label" %>
     </div>
     <div class="col-md-10 mb-3">
-      <%= render './users/avatar', user: @member.user %>
+      <%= render './users/avatar', user: @member.user, present: true %>
       <div class="mt-1">
         <%= @member.user.email %>
       </div>
@@ -20,7 +20,7 @@
     <div class="col-md-10">
       <%= l(@member.invitationed_at, default: 'N/A') %>
       <span class="ms-2">
-        <%= render './users/avatar', user: @member.invitationed_user %>
+        <%= render './users/avatar', user: @member.invitationed_user, present: @member.invitationed_user_id.present? %>
       </span>
     </div>
   </div>
@@ -34,7 +34,7 @@
     <div class="col-md-10 mb-2">
       <%= l(@member.last_updated_at, default: 'N/A') %>
       <span class="ms-2">
-        <%= render './users/avatar', user: @member.last_updated_user %>
+        <%= render './users/avatar', user: @member.last_updated_user, present: @member.last_updated_user_id.present? %>
       </span>
     </div>
   </div>

@@ -1,5 +1,14 @@
 <% content_for(:html_title) { "#{text_truncate(@space.name, 64)}のメンバー" } %>
 
+<ul class="nav nav-tabs mb-2">
+  <li class="nav-item">
+    <%= link_to 'スペース', space_path(@space.code), class: 'nav-link' %>
+  </li>
+  <li class="nav-item">
+    <a data-mdb-toggle="tab" class="nav-link active">メンバー一覧</a>
+  </li>
+</ul>
+
 <div class="card card-body mb-2">
   <h5 class="card-title mb-3">
     <%= render './spaces/title', space: @space, current_member: @current_member, suffix_title: 'のメンバー' %>

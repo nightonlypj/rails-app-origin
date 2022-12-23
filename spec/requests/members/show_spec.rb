@@ -51,7 +51,7 @@ RSpec.describe 'Members', type: :request do
       it_behaves_like 'ToNG(json)', 403
     end
     shared_examples_for '[APIログイン中/削除予約済み][*]権限がある' do |power|
-      let_it_be(:user_power) { power }
+      let(:user_power) { power }
       before_all { FactoryBot.create(:member, space: space, user: user, power: power) }
       let_it_be(:show_user) { FactoryBot.create(:user) }
       it_behaves_like '[APIログイン中/削除予約済み][*][ある]対象メンバーがいる', power

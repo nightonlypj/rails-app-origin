@@ -32,6 +32,8 @@ default_infomations_limit: 25
 ## スペース
 # 公開スペース使用可否  ※後からfalseに変更しても作成済みの公開スペースは表示されます。
 enable_public_space: true
+# スペース削除の猶予期間（単位：日）
+space_destroy_schedule_days: 14
 # 一覧のデフォルト最大表示件数
 default_spaces_limit: 25
 # コードの文字数

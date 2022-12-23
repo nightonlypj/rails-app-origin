@@ -38,7 +38,7 @@ class Member < ApplicationRecord
 
   # 招待日時
   def invitationed_at
-    invitationed_user_id.blank? ? nil : created_at # NOTE: アカウント削除実施済みでも日付が取得できるように[_id]を確認
+    invitationed_user_id.blank? ? nil : created_at # NOTE: アカウント削除済みでも日付が取得できるように[_id]を確認
   end
 
   # 最終更新日時

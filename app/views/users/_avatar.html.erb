@@ -1,4 +1,9 @@
 <% if user.present? %>
 <%= image_tag user.image_url(:small), class: 'rounded-circle' %>
 <%= user.name %>
+<% if user.destroy_reserved? %>
+<i class="fas fa-trash-alt ms-1" data-mdb-toggle="tooltip" data-mdb-placement="bottom" title="<%= l(user.destroy_schedule_at.to_date) %>以降に削除される予定です。"></i>
+<% end %>
+<% elsif present %>
+N/A
 <% end %>

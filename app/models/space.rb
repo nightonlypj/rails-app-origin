@@ -2,7 +2,7 @@ class Space < ApplicationRecord
   mount_uploader :image, ImageUploader
   attr_accessor :image_delete
 
-  belongs_to :created_user,      class_name: 'User', optional: true # NOTE: アカウント削除実施済みでも変更できるようにoptionalを追加
+  belongs_to :created_user,      class_name: 'User', optional: true # NOTE: アカウント削除済みでも変更できるようにoptionalを追加
   belongs_to :last_updated_user, class_name: 'User', optional: true
   has_many :members, dependent: :destroy
   has_many :users, through: :members
@@ -58,6 +58,16 @@ class Space < ApplicationRecord
   # 削除予約済みか返却
   def destroy_reserved?
     destroy_schedule_at.present?
+  end
+
+  # 削除予約
+  def set_destroy_reserve
+    update!(destroy_requested_at: Time.current, destroy_schedule_at: Time.current + Settings['space_destroy_schedule_days'].days)
+  end
+
+  # 削除予約取り消し
+  def set_undo_destroy_reserve
+    update!(destroy_requested_at: nil, destroy_schedule_at: nil)
   end
 
   # 画像URLを返却

@@ -4,6 +4,9 @@
 
 <ul class="nav nav-tabs mb-2">
   <li class="nav-item">
+    <%= link_to 'スペース', space_path(@space.code), class: 'nav-link' %>
+  </li>
+  <li class="nav-item">
     <%= link_to 'メンバー一覧', members_path(@space.code), class: 'nav-link' %>
   </li>
   <li class="nav-item">

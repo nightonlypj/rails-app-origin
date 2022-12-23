@@ -4,8 +4,8 @@ class MembersController < ApplicationAuthController
   before_action :response_not_acceptable_for_not_html, only: %i[new result edit]
   before_action :authenticate_user!
   before_action :set_space
-  before_action :redirect_members_for_destroy_reserved, only: %i[new create result edit update destroy], if: :format_html?
-  before_action :response_api_for_destroy_reserved, only: %i[create update destroy], unless: :format_html?
+  before_action :redirect_members_for_user_destroy_reserved, only: %i[new create edit update destroy], if: :format_html?
+  before_action :response_api_for_user_destroy_reserved, only: %i[create update destroy], unless: :format_html?
   before_action :check_power, only: %i[new create result edit update destroy]
   before_action :set_member, only: %i[show edit update]
   before_action :check_current_member, only: %i[edit update]
@@ -104,8 +104,8 @@ class MembersController < ApplicationAuthController
 
   private
 
-  def redirect_members_for_destroy_reserved
-    redirect_for_destroy_reserved(members_path(@space.code))
+  def redirect_members_for_user_destroy_reserved
+    redirect_for_user_destroy_reserved(members_path(@space.code))
   end
 
   # Use callbacks to share common setup or constraints between actions.

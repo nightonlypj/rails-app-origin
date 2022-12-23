@@ -1,10 +1,15 @@
 class SpacesController < ApplicationAuthController
-  before_action :response_not_acceptable_for_not_html, only: %i[new edit delete]
-  before_action :authenticate_user!, only: %i[new create edit update delete destroy]
-  before_action :redirect_spaces_for_destroy_reserved, only: %i[new create edit update delete destroy], if: :format_html?
-  before_action :response_api_for_destroy_reserved, only: %i[create update destroy], unless: :format_html?
-  before_action :set_space, only: %i[show edit update delete destroy]
-  before_action :check_power, only: %i[edit update delete destroy]
+  before_action :response_not_acceptable_for_not_html, only: %i[new edit delete undo_delete]
+  before_action :authenticate_user!, only: %i[new create edit update delete destroy undo_delete undo_destroy]
+  before_action :redirect_spaces_for_user_destroy_reserved, only: %i[new create], if: :format_html?
+  before_action :set_space, only: %i[show edit update delete destroy undo_delete undo_destroy]
+  before_action :redirect_space_for_user_destroy_reserved, only: %i[edit update delete destroy undo_delete undo_destroy], if: :format_html?
+  before_action :response_api_for_user_destroy_reserved, only: %i[create update destroy undo_destroy], unless: :format_html?
+  before_action :redirect_space_for_space_destroy_reserved, only: %i[delete destroy], if: :format_html?
+  before_action :response_api_for_space_destroy_reserved, only: :destroy, unless: :format_html?
+  before_action :redirect_space_for_not_space_destroy_reserved, only: %i[undo_delete undo_destroy], if: :format_html?
+  before_action :response_api_for_not_space_destroy_reserved, only: :undo_destroy, unless: :format_html?
+  before_action :check_power, only: %i[edit update delete destroy undo_delete undo_destroy]
   before_action :set_member_count, only: :show
   before_action :validate_params_create, only: :create
   before_action :validate_params_update, only: :update
@@ -62,11 +67,11 @@ class SpacesController < ApplicationAuthController
     end
   end
 
-  # GET /spaces/:code/update スペース設定変更
+  # GET /spaces/update/:code スペース設定変更
   def edit; end
 
-  # POST /spaces/:code/update スペース設定変更(処理)
-  # POST /spaces/:code/update(.json) スペース設定変更API(処理)
+  # POST /spaces/update/:code スペース設定変更(処理)
+  # POST /spaces/update/:code(.json) スペース設定変更API(処理)
   def update
     @space.remove_image! if params[:space].present? && params[:space][:image_delete] == '1'
     @space.save!
@@ -74,27 +79,47 @@ class SpacesController < ApplicationAuthController
     if format_html?
       redirect_to space_path(@space.code), notice: t('notice.space.update')
     else
-      @current_member = Member.where(space: @space, user: current_user)&.first
       set_member_count
       render :show, locals: { notice: t('notice.space.update') }
     end
   end
 
+  # GET /spaces/delete/:code スペース削除
   def delete; end
 
-  # DELETE /spaces/1 or /spaces/1.json
+  # POST /spaces/delete/:code スペース削除(処理)
+  # POST /spaces/delete/:code(.json) スペース削除API(処理)
   def destroy
-    @space.destroy
-    respond_to do |format|
-      format.html { redirect_to spaces_url, notice: 'Space was successfully destroyed.' }
-      format.json { head :no_content }
+    @space.set_destroy_reserve
+
+    if format_html?
+      redirect_to space_path(@space.code), notice: t('notice.space.destroy')
+    else
+      set_member_count
+      render :show, locals: { notice: t('notice.space.destroy') }
+    end
+  end
+
+  # GET /spaces/undo_delete/:code スペース削除取り消し
+  def undo_delete; end
+
+  # POST /spaces/undo_delete/:code スペース削除取り消し(処理)
+  # POST /spaces/undo_delete/:code(.json) スペース削除取り消しAPI(処理)
+  def undo_destroy
+    @space.set_undo_destroy_reserve
+
+    if format_html?
+      redirect_to space_path(@space.code), notice: t('notice.space.undo_destroy')
+    else
+      set_member_count
+      render :show, locals: { notice: t('notice.space.undo_destroy') }
     end
   end
 
   private
 
-  def redirect_spaces_for_destroy_reserved
-    redirect_for_destroy_reserved(spaces_path)
+  def redirect_spaces_for_user_destroy_reserved
+    redirect_for_user_destroy_reserved(spaces_path)
   end
 
   # Use callbacks to share common setup or constraints between actions.
@@ -105,6 +130,26 @@ class SpacesController < ApplicationAuthController
 
     @current_member = current_user.present? ? Member.where(space: @space, user: current_user)&.first : nil
     response_forbidden if @space.private && @current_member.blank?
+  end
+
+  def redirect_space_for_user_destroy_reserved
+    redirect_for_user_destroy_reserved(space_path(@space.code))
+  end
+
+  def redirect_space_for_space_destroy_reserved
+    redirect_to space_path(@space.code), alert: t('alert.space.destroy_reserved') if @space.destroy_reserved?
+  end
+
+  def response_api_for_space_destroy_reserved
+    render './failure', locals: { alert: t('alert.space.destroy_reserved') }, status: :unprocessable_entity if @space.destroy_reserved?
+  end
+
+  def redirect_space_for_not_space_destroy_reserved
+    redirect_to space_path(@space.code), alert: t('alert.space.not_destroy_reserved') unless @space.destroy_reserved?
+  end
+
+  def response_api_for_not_space_destroy_reserved
+    render './failure', locals: { alert: t('alert.space.not_destroy_reserved') }, status: :unprocessable_entity unless @space.destroy_reserved?
   end
 
   def check_power
