@@ -1,0 +1,71 @@
+# NOTE: id = user_id + 連番
+- id: 11
+  user_id: 1
+  status: waiting
+  requested_at: '2000-02-01 12:34:56+0900'
+  model: member
+  space_id: 1
+  target: select
+  format: csv
+  char_code: sjis
+  newline_code: crlf
+  output_items: '["user.name", "user.email", "power"]'
+  select_items: '["code000000000000000000001", "code000000000000000000002"]'
+  search_params: null
+- id: 12
+  user_id: 1
+  status: processing
+  requested_at: '2000-02-02 12:34:56+0900'
+  model: member
+  space_id: 2
+  target: search
+  format: tsv
+  char_code: eucjp
+  newline_code: cr
+  output_items: '["user.name", "user.email", "power"]'
+  select_items: null
+  search_params: '{"text"=>"test", "sort"=>"invitationed_at", "desc"=>"1"}'
+- id: 13
+  user_id: 1
+  status: success
+  requested_at: '2000-02-03 12:34:56+0900'
+  completed_at: '2000-02-03 13:34:56+0900'
+  last_downloaded_at: '2000-02-03 14:34:56+0900'
+  model: member
+  space_id: 1
+  target: all
+  format: csv
+  char_code: utf8
+  newline_code: lf
+  output_items: '["user.name", "user.email", "power"]'
+  select_items: null
+  search_params: null
+- id: 14
+  user_id: 1
+  status: failure
+  requested_at: '2000-02-04 12:34:56+0900'
+  completed_at: '2000-02-04 13:34:56+0900'
+  error_message: 'エラーメッセージ'
+  model: member
+  space_id: 2
+  target: select
+  format: tsv
+  char_code: sjis
+  newline_code: crlf
+  output_items: '["user.name", "user.email", "power"]'
+  select_items: '["code000000000000000000001", "code000000000000000000002"]'
+  search_params: null
+- id: 15
+  user_id: 1
+  status: success
+  requested_at: '2000-02-05 12:34:56+0900'
+  completed_at: '2000-02-05 13:34:56+0900'
+  model: member
+  space_id: 1
+  target: search
+  format: csv
+  char_code: utf8
+  newline_code: lf
+  output_items: '["user.name", "user.email", "power"]'
+  select_items: null
+  search_params: '{"text"=>"test", "sort"=>"invitationed_at", "desc"=>"1"}'

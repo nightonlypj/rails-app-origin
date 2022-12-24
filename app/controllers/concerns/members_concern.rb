@@ -8,7 +8,7 @@ module MembersConcern
     'user.email' => 'users.email',
     'power' => 'members.power',
     'invitationed_user.name' => 'invitationed_users_members.name',
-    'invitationed_at' => 'members.created_at',
+    'invitationed_at' => 'members.invitationed_at',
     'last_updated_user.name' => 'last_updated_users_members.name',
     'last_updated_at' => 'members.updated_at'
   }.freeze

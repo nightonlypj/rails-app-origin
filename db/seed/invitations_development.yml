@@ -1,0 +1,47 @@
+# NOTE: id = space_id + 連番
+- id: 11
+  code: 'invitation000000000000011'
+  space_id: 1
+  domains: 'example11.com'
+  email: null
+  power: reader
+  created_user_id: 1
+  ended_at: null
+  deleted_at: null
+- id: 12
+  code: 'invitation000000000000012'
+  space_id: 1
+  domains: 'example12.com'
+  email: null
+  power: writer
+  created_user_id: 1
+  ended_at: '9000-01-01 12:34:56+0900'
+  deleted_at: null
+- id: 13
+  code: 'invitation000000000000013'
+  space_id: 1
+  domains: 'example13.com'
+  email: null
+  power: admin
+  created_user_id: 1
+  ended_at: '2000-01-01 12:34:56+0900'
+  deleted_at: null
+- id: 14
+  code: 'invitation000000000000014'
+  space_id: 1
+  domains: 'example14.com'
+  email: null
+  power: admin
+  created_user_id: 1
+  ended_at: null
+  deleted_at: '2000-01-01 12:34:56+0900'
+
+- id: 21
+  code: 'invitation000000000000021'
+  space_id: 2
+  domains: 'example21.com'
+  email: null
+  power: reader
+  created_user_id: 1
+  ended_at: null
+  deleted_at: null

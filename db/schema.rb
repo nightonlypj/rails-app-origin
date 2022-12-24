@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2022_10_11_100201) do
+ActiveRecord::Schema.define(version: 2022_12_22_110420) do
 
   create_table "admin_users", charset: "utf8", collation: "utf8_bin", comment: "管理者", force: :cascade do |t|
     t.string "name", null: false, comment: "氏名"
@@ -65,7 +65,9 @@ ActiveRecord::Schema.define(version: 2022_10_11_100201) do
     t.text "search_params", comment: "検索パラメータ"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
+    t.index ["completed_at"], name: "index_downloads2"
     t.index ["space_id"], name: "index_downloads_on_space_id"
+    t.index ["user_id", "requested_at"], name: "index_downloads1"
     t.index ["user_id"], name: "index_downloads_on_user_id"
   end
 
@@ -89,23 +91,52 @@ ActiveRecord::Schema.define(version: 2022_10_11_100201) do
     t.index ["user_id"], name: "index_infomations_on_user_id"
   end
 
+  create_table "invitations", charset: "utf8", collation: "utf8_bin", comment: "招待", force: :cascade do |t|
+    t.string "code", null: false, comment: "コード"
+    t.bigint "space_id", null: false, comment: "スペースID"
+    t.text "domains", comment: "ドメイン"
+    t.string "email", comment: "メールアドレス"
+    t.integer "power", null: false, comment: "権限"
+    t.bigint "created_user_id", null: false, comment: "作成者ID"
+    t.bigint "last_updated_user_id", comment: "最終更新者ID"
+    t.datetime "ended_at", comment: "終了日時"
+    t.datetime "deleted_at", comment: "削除日時"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["code"], name: "index_invitations1", unique: true
+    t.index ["created_at", "id"], name: "index_invitations9"
+    t.index ["created_user_id", "id"], name: "index_invitations7"
+    t.index ["created_user_id"], name: "index_invitations_on_created_user_id"
+    t.index ["deleted_at", "id"], name: "index_invitations6"
+    t.index ["domains"], name: "index_invitations2", length: 1024
+    t.index ["email"], name: "index_invitations3"
+    t.index ["ended_at", "id"], name: "index_invitations5"
+    t.index ["last_updated_user_id", "id"], name: "index_invitations8"
+    t.index ["last_updated_user_id"], name: "index_invitations_on_last_updated_user_id"
+    t.index ["space_id", "power", "id"], name: "index_invitations4"
+    t.index ["space_id"], name: "index_invitations_on_space_id"
+    t.index ["updated_at", "id"], name: "index_invitations10"
+  end
+
   create_table "members", charset: "utf8", collation: "utf8_bin", comment: "メンバー", force: :cascade do |t|
     t.bigint "space_id", null: false, comment: "スペースID"
     t.bigint "user_id", null: false, comment: "ユーザーID"
     t.integer "power", null: false, comment: "権限"
     t.bigint "invitationed_user_id", comment: "招待者ID"
     t.bigint "last_updated_user_id", comment: "最終更新者ID"
+    t.datetime "invitationed_at", comment: "招待日時"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
-    t.index ["created_at", "id"], name: "index_members3"
-    t.index ["invitationed_user_id", "id"], name: "index_members5"
+    t.index ["created_at", "id"], name: "index_members6"
+    t.index ["invitationed_at", "id"], name: "index_members5"
+    t.index ["invitationed_user_id", "id"], name: "index_members3"
     t.index ["invitationed_user_id"], name: "index_members_on_invitationed_user_id"
-    t.index ["last_updated_user_id", "id"], name: "index_members6"
+    t.index ["last_updated_user_id", "id"], name: "index_members4"
     t.index ["last_updated_user_id"], name: "index_members_on_last_updated_user_id"
-    t.index ["space_id", "power"], name: "index_members2"
+    t.index ["space_id", "power", "id"], name: "index_members2"
     t.index ["space_id", "user_id"], name: "index_members1", unique: true
     t.index ["space_id"], name: "index_members_on_space_id"
-    t.index ["updated_at", "id"], name: "index_members4"
+    t.index ["updated_at", "id"], name: "index_members7"
     t.index ["user_id"], name: "index_members_on_user_id"
   end
 
@@ -181,6 +212,7 @@ ActiveRecord::Schema.define(version: 2022_10_11_100201) do
   add_foreign_key "download_files", "downloads"
   add_foreign_key "downloads", "users"
   add_foreign_key "infomations", "users"
+  add_foreign_key "invitations", "spaces"
   add_foreign_key "members", "spaces"
   add_foreign_key "members", "users"
 end

@@ -9,13 +9,15 @@ class CreateMembers < ActiveRecord::Migration[6.1]
       t.references :invitationed_user, type: :bigint, foreign_key: false, comment: '招待者ID'
       t.references :last_updated_user, type: :bigint, foreign_key: false, comment: '最終更新者ID'
 
+      t.datetime :invitationed_at, comment: '招待日時'
       t.timestamps
     end
     add_index :members, [:space_id, :user_id], unique: true, name: 'index_members1'
-    add_index :members, [:space_id, :power],                 name: 'index_members2'
-    add_index :members, [:created_at, :id],                  name: 'index_members3'
-    add_index :members, [:updated_at, :id],                  name: 'index_members4'
-    add_index :members, [:invitationed_user_id, :id],        name: 'index_members5'
-    add_index :members, [:last_updated_user_id, :id],        name: 'index_members6'
+    add_index :members, [:space_id, :power, :id],            name: 'index_members2'
+    add_index :members, [:invitationed_user_id, :id],        name: 'index_members3'
+    add_index :members, [:last_updated_user_id, :id],        name: 'index_members4'
+    add_index :members, [:invitationed_at, :id],             name: 'index_members5'
+    add_index :members, [:created_at, :id],                  name: 'index_members6'
+    add_index :members, [:updated_at, :id],                  name: 'index_members7'
   end
 end

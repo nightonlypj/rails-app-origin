@@ -34,8 +34,35 @@
     bulk_update: true
   env:
     development: true
+- file: 'seed/invitations_development.yml'
+  model: 'Invitation'
+  insert: true
+  update: true
+  option:
+    bulk_insert: true
+    bulk_update: true
+  env:
+    development: true
 - file: 'seed/members_development.yml'
   model: 'Member'
+  insert: true
+  update: true
+  option:
+    bulk_insert: true
+    bulk_update: true
+  env:
+    development: true
+- file: 'seed/downloads_development.yml'
+  model: 'Download'
+  insert: true
+  update: true
+  option:
+    bulk_insert: true
+    bulk_update: true
+  env:
+    development: true
+- file: 'seed/download_files_development.yml'
+  model: 'DownloadFile'
   insert: true
   update: true
   option:

@@ -6,6 +6,7 @@ ja:
     models:
       infomation: 'お知らせ'
       space: 'スペース'
+      invitation: '招待'
       member: 'メンバー'
       download: 'ダウンロード'
       download_file: 'ダウンロードファイル'
@@ -37,6 +38,19 @@ ja:
         last_updated_user: '最終更新者'
         created_at: '作成日時'
         updated_at: '更新日時'
+      invitation:
+        id: 'ID'
+        code: 'コード'
+        space: 'スペース'
+        domains: 'ドメイン'
+        email: 'メールアドレス'
+        power: '権限'
+        created_user: '作成者'
+        last_updated_user: '最終更新者'
+        ended_at: '終了日時'
+        deleted_at: '削除日時'
+        created_at: '作成日時'
+        updated_at: '更新日時'
       member:
         id: 'ID'
         space: 'スペース'
@@ -44,6 +58,7 @@ ja:
         power: '権限'
         invitationed_user: '招待者'
         last_updated_user: '最終更新者'
+        invitationed_at: '招待日時'
         created_at: '作成日時'
         updated_at: '更新日時'
         emails: 'メールアドレス'
@@ -130,6 +145,11 @@ ja:
       target:
         all: '全員'
         user: '対象ユーザーのみ'
+    invitation:
+      power:
+        admin: '管理者'
+        writer: '投稿者'
+        reader: '閲覧者'
     member:
       power:
         admin: '管理者'

@@ -11,9 +11,9 @@ class CreateDownloads < ActiveRecord::Migration[6.1]
       t.integer    :model, null: false, comment: 'モデル'
       t.references :space, type: :bigint, foreign_key: false, comment: 'スペースID'
 
-      t.integer :target      , null: false, comment: '対象'
-      t.integer :format      , null: false, comment: '形式'
-      t.integer :char_code   , null: false, comment: '文字コード'
+      t.integer :target,       null: false, comment: '対象'
+      t.integer :format,       null: false, comment: '形式'
+      t.integer :char_code,    null: false, comment: '文字コード'
       t.integer :newline_code, null: false, comment: '改行コード'
       t.text :output_items,  comment: '出力項目'
       t.text :select_items,  comment: '選択項目'
@@ -21,5 +21,7 @@ class CreateDownloads < ActiveRecord::Migration[6.1]
 
       t.timestamps
     end
+    add_index :downloads, [:user_id, :requested_at], name: 'index_downloads1'
+    add_index :downloads, :completed_at,             name: 'index_downloads2'
   end
 end
