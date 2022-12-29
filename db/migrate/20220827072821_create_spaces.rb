@@ -13,7 +13,6 @@ class CreateSpaces < ActiveRecord::Migration[6.1]
 
       t.references :created_user, null: false, type: :bigint, foreign_key: false, comment: '作成者ID'
       t.references :last_updated_user,         type: :bigint, foreign_key: false, comment: '最終更新者ID'
-
       t.timestamps
     end
     add_index :spaces, :code, unique: true,  name: 'index_spaces1'

@@ -1,4 +1,4 @@
-<% content_for(:html_title) { "#{text_truncate(@space.name, 64)}のメンバー" } %>
+<% content_for(:html_title) { "メンバー: #{text_truncate(@space.name, 64)}" } %>
 
 <ul class="nav nav-tabs mb-2">
   <li class="nav-item">
@@ -11,7 +11,7 @@
 
 <div class="card card-body mb-2">
   <h5 class="card-title mb-3">
-    <%= render './spaces/title', space: @space, current_member: @current_member, suffix_title: 'のメンバー' %>
+    <%= render './spaces/title', space: @space, current_member: @current_member %>
   </h5>
   <div class="card-text">
     <div class="row">
@@ -20,10 +20,14 @@
       </div>
 <% if @current_member.power_admin? %>
       <div class="col-sm-2">
-        <div class="float-end mt-2">
+        <div class="float-end d-flex mt-2">
           <a href="<%= new_member_path(@space.code) %>" class="btn btn-primary text-nowrap">
-            <i class="fas fa-user-plus"></i>
-            メンバー招待
+            <i class="fas fa-user-plus fa-lg"></i>
+            <span class="ms-1">メンバー招待</span>
+          </a>
+          <a href="<%= invitations_path(@space.code) %>" class="btn btn-primary text-nowrap ms-1">
+            <i class="fas fa-clipboard-check fa-lg"></i>
+            <span class="ms-1">招待URL</span>
           </a>
         </div>
       </div>

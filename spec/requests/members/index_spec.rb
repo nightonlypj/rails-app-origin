@@ -43,7 +43,7 @@ RSpec.describe 'Members', type: :request do
   #   ＋URLの拡張子: ない, .json
   #   ＋Acceptヘッダ: HTMLが含まれる, JSONが含まれる
   describe 'GET #index' do
-    subject { get members_path(code: space.code, page: subject_page, format: subject_format), headers: auth_headers.merge(accept_headers) }
+    subject { get members_path(space_code: space.code, page: subject_page, format: subject_format), headers: auth_headers.merge(accept_headers) }
 
     # テスト内容
     shared_examples_for 'ToOK(html/*)' do
@@ -51,7 +51,7 @@ RSpec.describe 'Members', type: :request do
         is_expected.to eq(200)
         expect(response.body).to include(space.image_url(:small)) # 画像
         expect(response.body).to include("href=\"#{space_path(space.code)}\"") # スペーストップ
-        expect(response.body).to include("#{space.name}のメンバー") # 名称
+        expect(response.body).to include(space.name) # 名称
         expect(response.body).to include('非公開') if space.private # 非公開
         expect(response.body).to include(I18n.l(space.destroy_schedule_at.to_date)) if space.destroy_reserved? # 削除予定日時
         expect(response.body).to include(Member.powers_i18n[user_power]) if user_power.present? # 権限
@@ -107,7 +107,7 @@ RSpec.describe 'Members', type: :request do
       let(:url_page)     { link_page >= 2 ? link_page : nil }
       it "#{link_page}ページのパスが含まれる" do
         subject
-        expect(response.body).to include("\"#{members_path(code: space.code, page: url_page)}\"")
+        expect(response.body).to include("\"#{members_path(space_code: space.code, page: url_page)}\"")
       end
     end
     shared_examples_for 'ページネーション非表示' do |page, link_page|
@@ -117,7 +117,7 @@ RSpec.describe 'Members', type: :request do
       let(:url_page)     { link_page >= 2 ? link_page : nil }
       it "#{link_page}ページのパスが含まれない" do
         subject
-        expect(response.body).not_to include("\"#{members_path(code: space.code, page: url_page)}\"")
+        expect(response.body).not_to include("\"#{members_path(space_code: space.code, page: url_page)}\"")
       end
     end
 
@@ -204,7 +204,7 @@ RSpec.describe 'Members', type: :request do
             expect(data['invitationed_user']).to be_nil
             expect(data['last_updated_user']).to be_nil
           end
-          expect(data['invitationed_at']).to eq(I18n.l(member.invitationed_at, format: :json))
+          expect(data['invitationed_at']).to eq(I18n.l(member.invitationed_at, format: :json, default: nil))
           expect(data['last_updated_at']).to user_power == :admin ? eq(I18n.l(member.last_updated_at, format: :json, default: nil)) : be_nil
         end
       end
@@ -216,7 +216,7 @@ RSpec.describe 'Members', type: :request do
       let(:subject_page) { page }
       let(:url_page)     { redirect_page >= 2 ? redirect_page : nil }
       it '最終ページにリダイレクトする' do
-        is_expected.to redirect_to(members_path(code: space.code, page: url_page))
+        is_expected.to redirect_to(members_path(space_code: space.code, page: url_page))
       end
     end
     shared_examples_for 'リダイレクト(json)' do |page|
@@ -379,7 +379,7 @@ RSpec.describe 'Members', type: :request do
   #   権限: 管理者, 投稿者, 閲覧者
   #   部分一致: 氏名, メールアドレス（管理者のみ表示）
   describe 'GET #index (.search)' do
-    subject { get members_path(code: space.code, format: subject_format), params: params, headers: auth_headers.merge(accept_headers) }
+    subject { get members_path(space_code: space.code, format: subject_format), params: params, headers: auth_headers.merge(accept_headers) }
     let_it_be(:space) { FactoryBot.create(:space) }
     let_it_be(:member_all)        { FactoryBot.create(:member, space: space, user: FactoryBot.create(:user, name: '氏名(Aaa)')) }
     let_it_be(:member_admin_only) { FactoryBot.create(:member, space: space, user: FactoryBot.create(:user, email: '_Aaa@example.com')) }
@@ -423,7 +423,7 @@ RSpec.describe 'Members', type: :request do
   # テストパターン
   #   管理者, 投稿者, 閲覧者 の組み合わせ
   describe 'GET #index (.power)' do
-    subject { get members_path(code: space.code, format: subject_format), params: params, headers: auth_headers.merge(accept_headers) }
+    subject { get members_path(space_code: space.code, format: subject_format), params: params, headers: auth_headers.merge(accept_headers) }
     let_it_be(:space) { FactoryBot.create(:space) }
     let_it_be(:member_reader) { FactoryBot.create(:member, :reader, space: space) }
     let_it_be(:member_writer) { FactoryBot.create(:member, :writer, space: space) }
@@ -530,7 +530,7 @@ RSpec.describe 'Members', type: :request do
   #   対象: メンバー, メールアドレス, 権限, 招待者, 招待日時, 最終更新者, 最終更新日時
   #   並び順: ASC, DESC  ※ASCは1つのみ確認
   describe 'GET #index (.order)' do
-    subject { get members_path(code: space.code, format: subject_format), params: params, headers: auth_headers.merge(accept_headers) }
+    subject { get members_path(space_code: space.code, format: subject_format), params: params, headers: auth_headers.merge(accept_headers) }
     let_it_be(:space) { FactoryBot.create(:space) }
     let_it_be(:member_reader) { FactoryBot.create(:member, :reader, space: space) }
     let_it_be(:member_writer) { FactoryBot.create(:member, :writer, space: space) }

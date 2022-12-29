@@ -2,36 +2,48 @@ require 'rails_helper'
 
 RSpec.describe InvitationsController, type: :routing do
   describe 'routing' do
-    it 'routes to #index' do
-      expect(get: '/invitations').to route_to('invitations#index')
-    end
+    let(:space_code) { 'code0001' }
+    let(:code)       { 'invitation000000000000001' }
 
-    it 'routes to #new' do
-      expect(get: '/invitations/new').to route_to('invitations#new')
+    it 'routes to #index' do
+      expect(get: '/invitations').not_to be_routable
+      expect(get: "/invitations/#{space_code}").to route_to('invitations#index', space_code: space_code)
+      expect(get: "/invitations/#{space_code}.json").to route_to('invitations#index', space_code: space_code, format: 'json')
     end
 
     it 'routes to #show' do
-      expect(get: '/invitations/1').to route_to('invitations#show', id: '1')
+      # expect(get: '/invitations/1').not_to be_routable # NOTE: invitations#index
+      expect(get: "/invitations/#{space_code}/detail/#{code}").to route_to('invitations#show', space_code: space_code, code: code)
+      expect(get: "/invitations/#{space_code}/detail/#{code}.json").to route_to('invitations#show', space_code: space_code, code: code, format: 'json')
     end
 
-    it 'routes to #edit' do
-      expect(get: '/invitations/1/edit').to route_to('invitations#edit', id: '1')
+    it 'routes to #new' do
+      # expect(get: '/invitations/new').not_to be_routable # NOTE: invitations#index
+      expect(get: "/invitations/#{space_code}/create").to route_to('invitations#new', space_code: space_code)
     end
 
     it 'routes to #create' do
-      expect(post: '/invitations').to route_to('invitations#create')
+      expect(post: '/invitations').not_to be_routable
+      expect(post: "/invitations/#{space_code}/create").to route_to('invitations#create', space_code: space_code)
+      expect(post: "/invitations/#{space_code}/create.json").to route_to('invitations#create', space_code: space_code, format: 'json')
     end
 
-    it 'routes to #update via PUT' do
-      expect(put: '/invitations/1').to route_to('invitations#update', id: '1')
+    it 'routes to #edit' do
+      expect(get: '/invitations/1/edit').not_to be_routable
+      expect(get: "/invitations/#{space_code}/update").not_to be_routable
+      expect(get: "/invitations/#{space_code}/update/#{code}").to route_to('invitations#edit', space_code: space_code, code: code)
     end
 
-    it 'routes to #update via PATCH' do
-      expect(patch: '/invitations/1').to route_to('invitations#update', id: '1')
+    it 'routes to #update' do
+      expect(put: '/invitations/1').not_to be_routable
+      expect(patch: '/invitations/1').not_to be_routable
+      expect(post: "/invitations/#{space_code}/update").not_to be_routable
+      expect(post: "/invitations/#{space_code}/update/#{code}").to route_to('invitations#update', space_code: space_code, code: code)
+      expect(post: "/invitations/#{space_code}/update/#{code}.json").to route_to('invitations#update', space_code: space_code, code: code, format: 'json')
     end
 
     it 'routes to #destroy' do
-      expect(delete: '/invitations/1').to route_to('invitations#destroy', id: '1')
+      expect(delete: '/invitations/1').not_to be_routable
     end
   end
 end

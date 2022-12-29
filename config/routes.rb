@@ -1,7 +1,7 @@
 Rails.application.routes.draw do
-  resources :invitations
   draw :downloads
   draw :members
+  draw :invitations
   draw :spaces
   draw :infomations
   draw :admin

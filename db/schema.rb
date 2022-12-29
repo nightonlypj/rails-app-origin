@@ -97,10 +97,11 @@ ActiveRecord::Schema.define(version: 2022_12_22_110420) do
     t.text "domains", comment: "ドメイン"
     t.string "email", comment: "メールアドレス"
     t.integer "power", null: false, comment: "権限"
-    t.bigint "created_user_id", null: false, comment: "作成者ID"
-    t.bigint "last_updated_user_id", comment: "最終更新者ID"
+    t.string "memo", comment: "メモ"
     t.datetime "ended_at", comment: "終了日時"
     t.datetime "deleted_at", comment: "削除日時"
+    t.bigint "created_user_id", null: false, comment: "作成者ID"
+    t.bigint "last_updated_user_id", comment: "最終更新者ID"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.index ["code"], name: "index_invitations1", unique: true

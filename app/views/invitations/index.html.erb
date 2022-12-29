@@ -1,25 +1,52 @@
-<p id="notice"><%= notice %></p>
+<% content_for(:html_title) { "招待URL一覧: #{text_truncate(@space.name, 64)}" } %>
 
-<h1>Invitations</h1>
+<ul class="nav nav-tabs mb-2">
+  <li class="nav-item">
+    <%= link_to 'スペース', space_path(@space.code), class: 'nav-link' %>
+  </li>
+  <li class="nav-item">
+    <%= link_to 'メンバー一覧', members_path(@space.code), class: 'nav-link' %>
+  </li>
+  <li class="nav-item">
+    <a data-mdb-toggle="tab" class="nav-link active">招待URL一覧</a>
+  </li>
+</ul>
 
-<table>
-  <thead>
-    <tr>
-      <th colspan="3"></th>
-    </tr>
-  </thead>
+<div class="card card-body mb-2">
+  <h5 class="card-title mb-3">
+    <%= render './spaces/title', space: @space, current_member: @current_member %>
+  </h5>
+  <div class="card-text">
+<% if @invitations.present? %>
+    <div class="row">
+      <div class="col-md-5 d-flex align-items-center">
+        <%= "#{@invitations.total_count.to_s(:delimited)}件" %><%= "中 #{first_page_number(@invitations)}-#{last_page_number(@invitations)}件を表示" if @invitations.total_count > @invitations.limit_value %>
+      </div>
+      <div class="col-md-7">
+        <div class="d-flex float-end table-responsive">
+          <%= paginate @invitations %>
+          <a href="<%= new_invitation_path(@space.code) %>" class="btn btn-primary text-nowrap">
+            <i class="fas fa-clipboard fa-lg"></i>
+            <span class="ms-1">招待URL作成</span>
+          </a>
+        </div>
+      </div>
+    </div>
+<% end %>
 
-  <tbody>
-    <% @invitations.each do |invitation| %>
-      <tr>
-        <td><%= link_to 'Show', invitation %></td>
-        <td><%= link_to 'Edit', edit_invitation_path(invitation) %></td>
-        <td><%= link_to 'Destroy', invitation, method: :delete, data: { confirm: 'Are you sure?' } %></td>
-      </tr>
-    <% end %>
-  </tbody>
-</table>
+<% if @invitations.blank? %>
+    <hr/>
+    <article>
+      対象の招待URLが見つかりません。
+      <hr/>
+    </article>
+<% else %>
+    <hr class="my-2" />
+    <%= render 'lists' %>
+<% end %>
 
-<br>
-
-<%= link_to 'New Invitation', new_invitation_path %>
+    <div class="d-flex justify-content-center table-responsive">
+      <%= paginate @invitations %>
+    </div>
+  </div>
+</div>

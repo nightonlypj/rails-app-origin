@@ -44,6 +44,10 @@ space_name_maximum: 128
 # 説明の最大文字数
 space_description_maximum: 4096
 
+## 招待
+# 一覧のデフォルト最大表示件数
+default_invitations_limit: 25
+
 ## メンバー
 # 一覧のデフォルト最大表示件数
 default_members_limit: 25

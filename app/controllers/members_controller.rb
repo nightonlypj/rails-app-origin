@@ -13,8 +13,8 @@ class MembersController < ApplicationAuthController
   before_action :set_params_create, :validate_params_create, only: :create
   before_action :set_params_destroy, :validate_params_destroy, only: :destroy
 
-  # GET /members/:code メンバー一覧
-  # GET /members/:code(.json) メンバー一覧API
+  # GET /members/:space_code メンバー一覧
+  # GET /members/:space_code(.json) メンバー一覧API
   def index
     @members = members_search.page(params[:page]).per(Settings['default_members_limit'])
 
@@ -23,16 +23,16 @@ class MembersController < ApplicationAuthController
     end
   end
 
-  # GET /members/:code/detail/:user_code(.json) メンバー詳細API
+  # GET /members/:space_code/detail/:user_code(.json) メンバー詳細API
   def show; end
 
-  # GET /members/:code/create メンバー招待
+  # GET /members/:space_code/create メンバー招待
   def new
     @member = Member.new
   end
 
-  # POST /members/:code/create メンバー招待(処理)
-  # POST /members/:code/create(.json) メンバー招待API(処理)
+  # POST /members/:space_code/create メンバー招待(処理)
+  # POST /members/:space_code/create(.json) メンバー招待API(処理)
   def create
     insert_datas = []
     users = User.where(email: @emails)
@@ -56,16 +56,16 @@ class MembersController < ApplicationAuthController
     end
   end
 
-  # GET /members/:code/result メンバー招待（結果）
+  # GET /members/:space_code/result メンバー招待（結果）
   def result
     redirect_to members_path(@space.code) if flash[:emails].blank?
   end
 
-  # GET /members/:code/update/:user_code メンバー情報変更
+  # GET /members/:space_code/update/:user_code メンバー情報変更
   def edit; end
 
-  # POST /members/:code/update/:user_code メンバー情報変更(処理)
-  # POST /members/:code/update/:user_code(.json) メンバー情報変更API(処理)
+  # POST /members/:space_code/update/:user_code メンバー情報変更(処理)
+  # POST /members/:space_code/update/:user_code(.json) メンバー情報変更API(処理)
   def update
     unless @member.update(member_params.merge(last_updated_user: current_user))
       if format_html?
@@ -82,8 +82,8 @@ class MembersController < ApplicationAuthController
     end
   end
 
-  # POST /members/:code/delete メンバー削除(処理)
-  # POST /members/:code/delete(.json) メンバー削除API(処理)
+  # POST /members/:space_code/delete メンバー削除(処理)
+  # POST /members/:space_code/delete(.json) メンバー削除API(処理)
   def destroy
     if @include_myself
       key = 'destroy_include_myself'
@@ -110,7 +110,7 @@ class MembersController < ApplicationAuthController
 
   # Use callbacks to share common setup or constraints between actions.
   def set_space
-    @space = Space.find_by(code: params[:code])
+    @space = Space.find_by(code: params[:space_code])
     return response_not_found if @space.blank?
 
     @current_member = Member.where(space: @space, user: current_user).eager_load(:user)&.first
@@ -142,7 +142,8 @@ class MembersController < ApplicationAuthController
 
   def validate_params_create
     now = Time.current
-    @member = Member.new(member_params.merge(space: @space, user: current_user, invitationed_user: current_user, created_at: now, updated_at: now))
+    @member = Member.new(member_params.merge(space: @space, user: current_user, invitationed_user: current_user, invitationed_at: now,
+                                             created_at: now, updated_at: now))
     @member.valid?
 
     if @emails.blank?

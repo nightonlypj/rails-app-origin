@@ -3,8 +3,8 @@ require 'rails_helper'
 RSpec.describe 'Members', type: :request do
   let(:response_json) { JSON.parse(response.body) }
 
-  # POST /members/:code/update/:user_code メンバー情報変更(処理)
-  # POST /members/:code/update/:user_code(.json) メンバー情報変更API(処理)
+  # POST /members/:space_code/update/:user_code メンバー情報変更(処理)
+  # POST /members/:space_code/update/:user_code(.json) メンバー情報変更API(処理)
   # テストパターン
   #   未ログイン, ログイン中, ログイン中（削除予約済み）, APIログイン中, APIログイン中（削除予約済み）
   #   スペース: 存在しない, 公開, 非公開
@@ -14,7 +14,7 @@ RSpec.describe 'Members', type: :request do
   #   ＋URLの拡張子: ない, .json
   #   ＋Acceptヘッダ: HTMLが含まれる, JSONが含まれる
   describe 'POST #update' do
-    subject { post update_member_path(code: space.code, user_code: show_user.code, format: subject_format), params: { member: attributes }, headers: auth_headers.merge(accept_headers) }
+    subject { post update_member_path(space_code: space.code, user_code: show_user.code, format: subject_format), params: { member: attributes }, headers: auth_headers.merge(accept_headers) }
     let_it_be(:valid_attributes)   { FactoryBot.attributes_for(:member) }
     let_it_be(:invalid_attributes) { valid_attributes.merge(power: nil) }
     let(:current_member) { Member.last }

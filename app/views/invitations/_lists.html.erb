@@ -1,0 +1,82 @@
+<meta name="message" content="<%= t('notice.invitation.copy_success') %>">
+<div class="table-responsive">
+  <table class="table table-sm table-hover table_invitations">
+    <thead class="table-light">
+      <tr>
+        <th scope="col" class="text-nowrap">招待URL</th>
+        <th scope="col" class="text-nowrap">ステータス</th>
+        <th scope="col" class="text-nowrap">メールアドレス</th>
+        <th scope="col" class="text-nowrap">権限</th>
+        <th scope="col" class="text-nowrap">期限</th>
+        <th scope="col" class="text-nowrap">メモ</th>
+        <th scope="col" class="text-nowrap">作成者</th>
+        <th scope="col" class="text-nowrap">
+          作成日時
+          <i class="fas fa-sort-down"></i>
+        </th>
+        <th scope="col" class="text-nowrap">更新者</th>
+        <th scope="col" class="text-nowrap">更新日時</th>
+      </tr>
+    </thead>
+    <tbody>
+<% @invitations.each do |invitation| %>
+      <tr class="align-middle <%= invitation.status == :active ? 'row_active' : 'row_inactive' %> dblclick_to_link" href="<%= edit_invitation_path(@space.code, invitation.code) %>">
+        <%# 招待URL %>
+<% if invitation.status == :active %>
+        <td class="text-center ps-2 pe-1 py-2">
+          <button type="submit" class="btn btn-light btn-floating click_to_copy_clipboard" text="<%= "#{request.base_url}#{new_user_registration_path}?code=#{invitation.code}" %>">
+            <i class="far fa-copy fa-lg" data-mdb-toggle="tooltip" data-mdb-placement="bottom" title="クリップボードにコピー"></i>
+          </button>
+<% else %>
+        <td class="ps-2 pe-1 py-2">
+<% end %>
+        </td>
+        <%# ステータス %>
+        <td class="text-nowrap ps-2 pe-1 py-2">
+          <a href="<%= edit_invitation_path(@space.code, invitation.code) %>">
+<% if invitation.status == :active %>
+            <i class="fas fa-check-circle text-success"></i>
+<% else %>
+            <i class="fas fa-exclamation-triangle text-danger"></i>
+<% end %>
+            <%= invitation.status_i18n %>
+          </a>
+        </td>
+        <%# メールアドレス %>
+        <td scope="row" class="ps-2 pr-1 py-2">
+          *@<%= invitation.domains %>
+        </td>
+        <%# 権限 %>
+        <td class="text-nowrap px-1 py-2">
+          <i class="fas <%= power_class_name(invitation.power) %> text-body"></i>
+          <%= invitation.power_i18n %>
+        </td>
+        <%# 期限 %>
+        <td class="text-center ps-1 pe-2 py-2">
+          <%= l(invitation.ended_at, default: 'なし') %>
+        </td>
+        <%# メモ %>
+        <td class="ps-2 pe-1 py-2">
+          <%= invitation.memo %>
+        </td>
+        <%# 作成者 %>
+        <td class="<%= 'text-center ' if invitation.created_user.blank? %>px-1 py-2">
+          <%= render './users/avatar', user: invitation.created_user, present: invitation.created_user_id.present? %>
+        </td>
+        <%# 作成日時 %>
+        <td class="text-center ps-1 pe-2 py-2">
+          <%= l(invitation.created_at) %>
+        </td>
+        <%# 更新者 %>
+        <td class="<%= 'text-center ' if invitation.last_updated_user.blank? && invitation.last_updated_user_id.present? %>px-1 py-2">
+          <%= render './users/avatar', user: invitation.last_updated_user, present: invitation.last_updated_user_id.present? %>
+        </td>
+        <%# 更新日時 %>
+        <td class="text-center ps-1 pe-2 py-2">
+          <%= l(invitation.last_updated_at, default: nil) %>
+        </td>
+      </tr>
+<% end %>
+    </tbody>
+  </table>
+</div>

@@ -1,9 +1,16 @@
-class InvitationsController < ApplicationController
-  before_action :set_invitation, only: %i[show edit update destroy]
+class InvitationsController < ApplicationAuthController
+  before_action :authenticate_user!
+  before_action :set_space, :check_power
+  before_action :set_invitation, only: %i[show edit update]
 
-  # GET /invitations or /invitations.json
+  # GET /invitations/:space_code 招待URL一覧
+  # GET /invitations/:space_code(.json) 招待URL一覧API
   def index
-    @invitations = Invitation.all
+    @invitations = Invitation.where(space: @space).page(params[:page]).per(Settings['default_invitations_limit']).order(created_at: :desc, id: :desc)
+
+    if format_html? && @invitations.current_page > [@invitations.total_pages, 1].max
+      redirect_to @invitations.total_pages <= 1 ? invitations_path : invitations_path(page: @invitations.total_pages)
+    end
   end
 
   # GET /invitations/1 or /invitations/1.json
@@ -45,18 +52,21 @@ class InvitationsController < ApplicationController
     end
   end
 
-  # DELETE /invitations/1 or /invitations/1.json
-  def destroy
-    @invitation.destroy
-    respond_to do |format|
-      format.html { redirect_to invitations_url, notice: 'Invitation was successfully destroyed.' }
-      format.json { head :no_content }
-    end
-  end
-
   private
 
   # Use callbacks to share common setup or constraints between actions.
+  def set_space
+    @space = Space.find_by(code: params[:space_code])
+    return response_not_found if @space.blank?
+
+    @current_member = Member.where(space: @space, user: current_user).eager_load(:user)&.first
+    response_forbidden if @current_member.blank?
+  end
+
+  def check_power
+    response_forbidden unless @current_member.power_admin?
+  end
+
   def set_invitation
     @invitation = Invitation.find(params[:id])
   end

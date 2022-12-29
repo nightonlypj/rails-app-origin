@@ -7,19 +7,19 @@
           <i class="fas fa-sort-down"></i>
         </th>
         <th scope="col" class="text-nowrap">ステータス</th>
-        <th scope="col" class="text-nowrap">ファイル</th>
+        <th scope="col" class="text-nowrap text-center">ファイル</th>
         <th scope="col" class="text-nowrap d-none d-md-block">対象・形式等</th>
       </tr>
     </thead>
     <tbody>
 <% @downloads.each do |download| %>
-      <tr class="align-middl<%= download_lists_class_name(download, params[:id]) %>">
+      <tr class="align-middle<%= download_lists_class_name(download, params[:id]) %>">
         <%# 依頼日時 %>
         <td scope="row" class="text-nowrap px-1 py-2">
           <%= l(download.requested_at) %>
         </td>
         <%# ステータス %>
-        <td class="text-nowrap text-center px-1 py-2">
+        <td class="text-nowrap px-1 py-2">
 <% if download.status.to_sym == :success %>
           <i class="fas fa-check-circle text-success"></i>
 <% elsif download.status.to_sym == :failure %>
@@ -30,7 +30,7 @@
           <%= download.status_i18n %>
         </td>
         <%# ファイル %>
-        <td class="text-nowrap px-1 py-2">
+        <td class="text-nowrap text-center px-1 py-2">
 <% if download.status.to_sym == :success %>
     		  <a href="<%= file_download_path(download.id) %>" target="_blank" rel="noopener noreferrer" class="<%= 'click_to_sleep_reload' if download.last_downloaded_at.blank? %>">
             <i class="fas fa-download text-body"></i>
@@ -44,7 +44,7 @@
         <%# 対象・形式等 %>
         <td class="d-none d-md-block px-1 py-2">
 <% if download.model.to_sym == :member %>
-          <%= text_truncate(download.space.name, 64) %>のメンバー
+          メンバー: <%= text_truncate(download.space.name, 64) %>
 <% else %>
           <%= download.model_i18n %>
 <% end %>

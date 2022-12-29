@@ -3,7 +3,7 @@ require 'rails_helper'
 RSpec.describe 'Members', type: :request do
   let(:response_json) { JSON.parse(response.body) }
 
-  # GET /members/:code/detail/:user_code(.json) メンバー詳細API
+  # GET /members/:space_code/detail/:user_code(.json) メンバー詳細API
   # テストパターン
   #   未ログイン, ログイン中, ログイン中（削除予約済み）, APIログイン中, APIログイン中（削除予約済み）
   #   スペース: 存在しない, 公開, 非公開
@@ -12,7 +12,7 @@ RSpec.describe 'Members', type: :request do
   #   ＋URLの拡張子: ない, .json
   #   ＋Acceptヘッダ: HTMLが含まれる, JSONが含まれる
   describe 'GET #index' do
-    subject { get member_path(code: space.code, user_code: show_user.code, format: subject_format), headers: auth_headers.merge(accept_headers) }
+    subject { get member_path(space_code: space.code, user_code: show_user.code, format: subject_format), headers: auth_headers.merge(accept_headers) }
 
     shared_context 'valid_condition' do
       let_it_be(:space)     { FactoryBot.create(:space) }

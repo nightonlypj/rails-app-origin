@@ -15,7 +15,7 @@
 <% if @space.last_updated_at.present? || @space.last_updated_user.present? %>
   <div class="row">
     <div class="col-md-2 text-md-end mt-1">
-      <%= form.label :last_updated_at, '最終更新', class: "form-label" %>
+      <%= form.label :last_updated_at, '更新', class: "form-label" %>
     </div>
     <div class="col-md-10 mb-2">
       <%= l(@space.last_updated_at, default: 'N/A') %>

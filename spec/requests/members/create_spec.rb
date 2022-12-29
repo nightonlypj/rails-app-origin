@@ -5,8 +5,8 @@ RSpec.describe 'Members', type: :request do
   let(:response_json_email)  { response_json['email'] }
   let(:response_json_emails) { response_json['emails'] }
 
-  # POST /members/:code/create メンバー招待(処理)
-  # POST /members/:code/create(.json) メンバー招待API(処理)
+  # POST /members/:space_code/create メンバー招待(処理)
+  # POST /members/:space_code/create(.json) メンバー招待API(処理)
   # テストパターン
   #   未ログイン, ログイン中, ログイン中（削除予約済み）, APIログイン中, APIログイン中（削除予約済み）
   #   スペース: 存在しない, 公開, 非公開
@@ -15,7 +15,7 @@ RSpec.describe 'Members', type: :request do
   #   ＋URLの拡張子: ない, .json
   #   ＋Acceptヘッダ: HTMLが含まれる, JSONが含まれる
   describe 'POST #create' do
-    subject { post create_member_path(code: space.code, format: subject_format), params: { member: attributes }, headers: auth_headers.merge(accept_headers) }
+    subject { post create_member_path(space_code: space.code, format: subject_format), params: { member: attributes }, headers: auth_headers.merge(accept_headers) }
     let_it_be(:exist_user)     { FactoryBot.create(:user) }
     let_it_be(:new_user)       { FactoryBot.create(:user) }
     let_it_be(:not_exist_user) { FactoryBot.build_stubbed(:user) }
