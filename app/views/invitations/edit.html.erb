@@ -1,6 +1,25 @@
-<h1>Editing Invitation</h1>
+<% content_for(:html_title) { '招待URL設定変更' } %>
 
-<%= render 'form', invitation: @invitation %>
+<%= render './users/shared/error_messages', resource: @invitation %>
 
-<%= link_to 'Show', @invitation %> |
-<%= link_to 'Back', invitations_path %>
+<ul class="nav nav-tabs mb-2">
+  <li class="nav-item">
+    <%= link_to 'スペース', space_path(@space.code), class: 'nav-link' %>
+  </li>
+  <li class="nav-item">
+    <%= link_to 'メンバー一覧', members_path(@space.code), class: 'nav-link' %>
+  </li>
+  <li class="nav-item">
+    <%= link_to '招待URL一覧', invitations_path(@space.code), class: 'nav-link' %>
+  </li>
+  <li class="nav-item">
+    <a data-mdb-toggle="tab" class="nav-link active">招待URL設定変更</a>
+  </li>
+</ul>
+
+<div class="card card-body mb-2" style="max-width: 850px">
+  <h5 class="card-title mb-3">
+    <%= render './spaces/title', space: @space, current_member: @current_member %>
+  </h5>
+  <div class="card-text mb-3"><%= render 'edit' %></div>
+</div>

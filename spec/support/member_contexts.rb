@@ -2,12 +2,16 @@ shared_context 'メンバー一覧作成' do |admin_count, writer_count, reader_
   let_it_be(:members) do
     now = Time.current
     invitationed_user = FactoryBot.create(:user)
-    [FactoryBot.create(:member, power: user_power, space: space, user: user, created_at: now - 4.days, updated_at: now - 5.days)] +
-      FactoryBot.create_list(:member, admin_count, :admin, space: space, invitationed_user: invitationed_user, created_at: now - 3.days,
-                                                           updated_at: now - 2.days) +
-      FactoryBot.create_list(:member, writer_count, :writer, space: space, invitationed_user: invitationed_user, created_at: now - 1.days,
-                                                             updated_at: now - 1.days) +
-      FactoryBot.create_list(:member, reader_count, :reader, space: space, invitationed_user: invitationed_user)
+    last_updated_user = FactoryBot.create(:user)
+    destroy_user = FactoryBot.build_stubbed(:user)
+    [FactoryBot.create(:member, power: user_power, space: space, user: user,
+                                last_updated_user: last_updated_user, created_at: now - 4.days, updated_at: now - 5.days)] +
+      FactoryBot.create_list(:member, admin_count, :admin, space: space, invitationed_user_id: destroy_user.id,
+                                                           last_updated_user_id: destroy_user.id, created_at: now - 3.days, updated_at: now - 2.days) +
+      FactoryBot.create_list(:member, writer_count, :writer, space: space, invitationed_user: invitationed_user,
+                                                             created_at: now - 1.days, updated_at: now - 1.days) +
+      FactoryBot.create_list(:member, reader_count, :reader, space: space, invitationed_user: invitationed_user,
+                                                             created_at: now, updated_at: now)
   end
 end
 
@@ -19,8 +23,8 @@ def expect_member_json(response_json_member, member, user_power)
   expect(response_json_member['power_i18n']).to eq(member.power_i18n)
 
   if user_power == :admin
-    expect_user_json(response_json_member['invitationed_user'], member.invitationed_user, true)
-    expect_user_json(response_json_member['last_updated_user'], member.last_updated_user, true)
+    expect_user_json(response_json_member['invitationed_user'], member.invitationed_user, true, member.invitationed_user_id.present?)
+    expect_user_json(response_json_member['last_updated_user'], member.last_updated_user, true, member.last_updated_user_id.present?)
   else
     expect(response_json_member['invitationed_user']).to be_nil
     expect(response_json_member['last_updated_user']).to be_nil

@@ -14,6 +14,29 @@ RSpec.describe Space, type: :model do
     end
   end
 
+  # コード
+  # テストパターン
+  #   ない, 正常値, 重複
+  describe 'validates :code' do
+    let(:space)      { FactoryBot.build_stubbed(:space, code: code) }
+    let(:valid_code) { Digest::MD5.hexdigest(SecureRandom.uuid) }
+
+    # テストケース
+    context 'ない' do
+      let(:code) { nil }
+      it_behaves_like 'InValid', :code, I18n.t('activerecord.errors.models.space.attributes.code.blank')
+    end
+    context '正常値' do
+      let(:code) { valid_code }
+      it_behaves_like 'Valid'
+    end
+    context '重複' do
+      before { FactoryBot.create(:space, code: code) }
+      let(:code) { valid_code }
+      it_behaves_like 'InValid', :code, I18n.t('activerecord.errors.models.space.attributes.code.taken')
+    end
+  end
+
   # 名称
   # テストパターン
   #   ない, 最小文字数よりも少ない, 最小文字数と同じ, 最大文字数と同じ, 最大文字数よりも多い

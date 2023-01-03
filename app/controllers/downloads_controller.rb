@@ -122,13 +122,13 @@ class DownloadsController < ApplicationAuthController
       params[:download][:select_items] = params[:download][:select_items]&.split(',')
     end
 
-    # ArgumentError対策
+    # NOTE: ArgumentError対策
     params[:download][:target]       = nil if Download.targets[params[:download][:target]].blank?
     params[:download][:format]       = nil if Download.formats[params[:download][:format]].blank?
     params[:download][:char_code]    = nil if Download.char_codes[params[:download][:char_code]].blank?
     params[:download][:newline_code] = nil if Download.newline_codes[params[:download][:newline_code]].blank?
 
-    # ActionController::Parametersの場合、permitでnilになる為
+    # NOTE: ActionController::Parametersの場合、permitでnilになる為
     params[:download][:output_items] = params[:download][:output_items].to_s if params[:download][:output_items].present?
     params[:download][:select_items] = params[:download][:select_items].to_s if params[:download][:select_items].present?
     params[:download][:search_params] = params[:download][:search_params].to_s if params[:download][:search_params].present?

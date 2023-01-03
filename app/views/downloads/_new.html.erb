@@ -8,18 +8,18 @@
   <div class="row">
     <div class="col-12 col-md-6">
       <%= form.label :target, class: "form-label fw-bolder" %>
-      <div class="form-outline<%= input_size_class_name_vertical(validate_enabled, @download, :target) %>">
+      <div class="<%= input_size_class_name_vertical(validate_enabled, @download, :target) %>">
 <% Download.targets.each do |key, _value| %>
         <div class="form-check form-check-inline<%= validate_class_name(validate_enabled, @download, :target) %>">
           <%= form.radio_button :target, key, class: "form-check-input#{validate_class_name(validate_enabled, @download, :target)}", disabled: !@enable_target.include?(key) %>
           <%= form.label key, Download.targets_i18n[key], class: 'form-check-label', for: "download_target_#{key}" %>
         </div>
 <% end %>
-        <%= render './users/shared/field_error_messages', messages: @download.errors[:target], add_class: 'mt-0' %>
+        <%= render './users/shared/field_error_messages', messages: @download.errors[:target] %>
       </div>
 
       <%= form.label :format, class: "form-label fw-bolder" %>
-      <div class="form-outline<%= input_size_class_name_vertical(validate_enabled, @download, :format) %>">
+      <div class="<%= input_size_class_name_vertical(validate_enabled, @download, :format) %>">
 <% Download.formats.each do |key, _value| %>
         <div class="form-check form-check-inline<%= validate_class_name(validate_enabled, @download, :format) %>">
           <%= form.radio_button :format, key, class: "form-check-input#{validate_class_name(validate_enabled, @download, :format)}" %>
@@ -30,7 +30,7 @@
       </div>
 
       <%= form.label :char_code, class: "form-label fw-bolder" %>
-      <div class="form-outline<%= input_size_class_name_vertical(validate_enabled, @download, :char_code) %>">
+      <div class="<%= input_size_class_name_vertical(validate_enabled, @download, :char_code) %>">
 <% Download.char_codes.each do |key, _value| %>
         <div class="form-check form-check-inline<%= validate_class_name(validate_enabled, @download, :char_code) %>">
           <%= form.radio_button :char_code, key, class: "form-check-input#{validate_class_name(validate_enabled, @download, :char_code)}" %>
@@ -41,7 +41,7 @@
       </div>
 
       <%= form.label :newline_code, class: "form-label fw-bolder" %>
-      <div class="form-outline<%= input_size_class_name_vertical(validate_enabled, @download, :newline_code) %>">
+      <div class="<%= input_size_class_name_vertical(validate_enabled, @download, :newline_code) %>">
 <% Download.newline_codes.each do |key, _value| %>
         <div class="form-check form-check-inline<%= validate_class_name(validate_enabled, @download, :newline_code) %>">
           <%= form.radio_button :newline_code, key, class: "form-check-input#{validate_class_name(validate_enabled, @download, :newline_code)}" %>
@@ -53,7 +53,7 @@
     </div>
     <div class="col-12 col-md-6">
       <%= form.label :output_items, class: "form-label fw-bolder" %>
-      <div class="form-outline<%= input_size_class_name_vertical(validate_enabled, @download, :output_items) %>">
+      <div class="<%= input_size_class_name_vertical(validate_enabled, @download, :output_items) %>">
 <% @items.each do |key, value| %>
         <div class="form-check form-switch pb-2<%= validate_class_name(validate_enabled, @download, :output_items) %>">
           <%= form.check_box "output_items_#{key.to_s}", class: "form-check-input mb-0 #{validate_class_name(validate_enabled, @download, :output_items)}", checked: @download.output_items&.include?(key.to_s) %>

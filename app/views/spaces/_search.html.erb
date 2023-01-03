@@ -1,7 +1,7 @@
 <%= form_with(url: spaces_path, html: { method: :get, novalidate: true, autocomplete: 'on' }, local: true) do |form| %>
   <div class="d-flex align-items-center">
     <div class="form-outline" style="width: 57%; max-width: 400px">
-      <%= form.text_field :text, autocomplete: 'on', class: 'form-control input_to_search_btn_enabled', value: @text, placeholder: '名称や説明を入力' %>
+      <%= form.text_field :text, value: @text, placeholder: '名称や説明を入力', autocomplete: 'on', class: 'form-control input_to_search_btn_enabled' %>
       <%= form.label :text, '検索', class: 'form-label' %>
     </div>
     <button id="search_btn" type="submit" class="btn btn-primary m-1" disabled>

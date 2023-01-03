@@ -20,7 +20,11 @@
     </thead>
     <tbody>
 <% @invitations.each do |invitation| %>
+<% if invitation.status != :email_joined %>
       <tr class="align-middle <%= invitation.status == :active ? 'row_active' : 'row_inactive' %> dblclick_to_link" href="<%= edit_invitation_path(@space.code, invitation.code) %>">
+<% else %>
+      <tr class="align-middle row_inactive">
+<% end %>
         <%# 招待URL %>
 <% if invitation.status == :active %>
         <td class="text-center ps-2 pe-1 py-2">
@@ -33,18 +37,30 @@
         </td>
         <%# ステータス %>
         <td class="text-nowrap ps-2 pe-1 py-2">
+<% if invitation.status != :email_joined %>
           <a href="<%= edit_invitation_path(@space.code, invitation.code) %>">
+<% end %>
 <% if invitation.status == :active %>
             <i class="fas fa-check-circle text-success"></i>
+<% elsif invitation.status == :email_joined %>
+            <i class="fas fa-info-circle text-info"></i>
 <% else %>
             <i class="fas fa-exclamation-triangle text-danger"></i>
 <% end %>
             <%= invitation.status_i18n %>
+<% if invitation.status != :email_joined %>
           </a>
+<% end %>
         </td>
         <%# メールアドレス %>
         <td scope="row" class="ps-2 pr-1 py-2">
-          *@<%= invitation.domains %>
+<% if invitation.email.present? %>
+          <%= invitation.email %><br>
+<% else %>
+<% invitation.domains_array.each do |domain| %>
+          *@<%= domain %><br>
+<% end %>
+<% end %>
         </td>
         <%# 権限 %>
         <td class="text-nowrap px-1 py-2">

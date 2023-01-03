@@ -154,3 +154,7 @@ Style/OptionalBooleanParameter:
 # C: Naming/AccessorMethodName: Do not prefix writer method names with set_.
 Naming/AccessorMethodName:
   Enabled: false
+
+# C: Style/FormatStringToken: Prefer annotated tokens (like %<foo>s) over unannotated tokens (like %s).
+Style/FormatStringToken:
+  Enabled: false

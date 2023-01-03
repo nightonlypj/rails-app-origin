@@ -198,8 +198,8 @@ RSpec.describe 'Members', type: :request do
           expect(data['power_i18n']).to eq(Member.powers_i18n[member.power])
 
           if user_power == :admin
-            expect_user_json(data['invitationed_user'], member.invitationed_user, true)
-            expect_user_json(data['last_updated_user'], member.last_updated_user, true)
+            expect_user_json(data['invitationed_user'], member.invitationed_user, true, member.invitationed_user_id.present?)
+            expect_user_json(data['last_updated_user'], member.last_updated_user, true, member.last_updated_user_id.present?)
           else
             expect(data['invitationed_user']).to be_nil
             expect(data['last_updated_user']).to be_nil

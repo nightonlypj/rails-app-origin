@@ -65,14 +65,22 @@ shared_context 'アカウントロック解除トークン作成' do |locked, ex
 end
 
 # テスト内容（共通）
-def expect_user_json(response_json_user, user, use_email)
-  expect(response_json_user['code']).to eq(user.code)
-  expect_image_json(response_json_user, user)
-  expect(response_json_user['name']).to eq(user.name)
-  expect(response_json_user['email']).to use_email ? eq(user.email) : be_nil
-  ## 削除予約
-  expect(response_json_user['destroy_requested_at']).to eq(I18n.l(user.destroy_requested_at, format: :json, default: nil))
-  expect(response_json_user['destroy_schedule_at']).to eq(I18n.l(user.destroy_schedule_at, format: :json, default: nil))
+def expect_user_json(response_json_user, user, use_email, id_present = nil)
+  if id_present == false
+    expect(response_json_user).to be_nil
+    return
+  end
+
+  if id_present.nil? || user.present?
+    expect(response_json_user['code']).to eq(user.code)
+    expect_image_json(response_json_user, user)
+    expect(response_json_user['name']).to eq(user.name)
+    expect(response_json_user['email']).to use_email ? eq(user.email) : be_nil
+    ## 削除予約
+    expect(response_json_user['destroy_requested_at']).to eq(I18n.l(user.destroy_requested_at, format: :json, default: nil))
+    expect(response_json_user['destroy_schedule_at']).to eq(I18n.l(user.destroy_schedule_at, format: :json, default: nil))
+  end
+  expect(response_json_user['deleted']).to eq(user.blank?) if id_present == true
 end
 
 shared_examples_for 'ToTop' do |alert, notice|

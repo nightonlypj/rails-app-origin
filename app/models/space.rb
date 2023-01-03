@@ -12,7 +12,7 @@ class Space < ApplicationRecord
   validates :code, presence: true
   validates :code, uniqueness: { case_sensitive: true }
   validates :name, presence: true
-  validates :name, length: { in: Settings['space_name_minimum']..Settings['space_name_maximum'] }, if: proc { |space| space.name.present? }
+  validates :name, length: { in: Settings['space_name_minimum']..Settings['space_name_maximum'] }, if: proc { errors[:name].blank? }
   validates :description, length: { maximum: Settings['space_description_maximum'] }, if: proc { |space| space.description.present? }
   validates :private, inclusion: { in: [true, false] } # NOTE: presenceだとfalseもエラーになる為
 

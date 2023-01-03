@@ -44,16 +44,24 @@ space_name_maximum: 128
 # 説明の最大文字数
 space_description_maximum: 4096
 
-## 招待
+## 招待URL
+# 招待削除の猶予期間（単位：日）
+invitation_destroy_schedule_days: 7
 # 一覧のデフォルト最大表示件数
 default_invitations_limit: 25
+# ドメインの最大件数
+invitation_domains_max_count: 10
+# ドメインの最大文字数
+invitation_domain_maximum: 253
+# メモの最大文字数
+invitation_memo_maximum: 64
 
 ## メンバー
 # 一覧のデフォルト最大表示件数
 default_members_limit: 25
 job_members_limit: 1000
-# 招待の最大件数
-create_members_max_count: 100
+# メールアドレスの最大件数
+member_emails_max_count: 100
 
 ## ダウンロード
 # 一覧のデフォルト最大表示件数

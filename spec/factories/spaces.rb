@@ -1,11 +1,10 @@
 FactoryBot.define do
   factory :space do
-    sequence(:code) { |n| Faker::Number.hexadecimal(digits: 3) + n.to_s.rjust(5, '0') }
-    name            { "space(#{code})" }
-    description     { "description(#{code})" }
-    private         { true }
+    sequence(:code)        { |n| Faker::Number.hexadecimal(digits: 3) + n.to_s.rjust(5, '0') }
+    sequence(:name)        { |n| "space(#{n})" }
+    sequence(:description) { |n| "description(#{n})" }
+    private                { true }
     association :created_user, factory: :user
-    association :last_updated_user, factory: :user
 
     # 非公開・公開
     trait :private do

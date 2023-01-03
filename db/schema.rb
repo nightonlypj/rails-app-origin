@@ -99,24 +99,22 @@ ActiveRecord::Schema.define(version: 2022_12_22_110420) do
     t.integer "power", null: false, comment: "権限"
     t.string "memo", comment: "メモ"
     t.datetime "ended_at", comment: "終了日時"
-    t.datetime "deleted_at", comment: "削除日時"
+    t.datetime "destroy_requested_at", comment: "削除依頼日時"
+    t.datetime "destroy_schedule_at", comment: "削除予定日時"
+    t.datetime "email_joined_at", comment: "参加日時"
     t.bigint "created_user_id", null: false, comment: "作成者ID"
     t.bigint "last_updated_user_id", comment: "最終更新者ID"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.index ["code"], name: "index_invitations1", unique: true
-    t.index ["created_at", "id"], name: "index_invitations9"
-    t.index ["created_user_id", "id"], name: "index_invitations7"
+    t.index ["created_at", "id"], name: "index_invitations6"
     t.index ["created_user_id"], name: "index_invitations_on_created_user_id"
-    t.index ["deleted_at", "id"], name: "index_invitations6"
-    t.index ["domains"], name: "index_invitations2", length: 1024
-    t.index ["email"], name: "index_invitations3"
-    t.index ["ended_at", "id"], name: "index_invitations5"
-    t.index ["last_updated_user_id", "id"], name: "index_invitations8"
+    t.index ["destroy_schedule_at"], name: "index_invitations4"
+    t.index ["email"], name: "index_invitations2"
+    t.index ["email_joined_at"], name: "index_invitations5"
+    t.index ["ended_at"], name: "index_invitations3"
     t.index ["last_updated_user_id"], name: "index_invitations_on_last_updated_user_id"
-    t.index ["space_id", "power", "id"], name: "index_invitations4"
     t.index ["space_id"], name: "index_invitations_on_space_id"
-    t.index ["updated_at", "id"], name: "index_invitations10"
   end
 
   create_table "members", charset: "utf8", collation: "utf8_bin", comment: "メンバー", force: :cascade do |t|

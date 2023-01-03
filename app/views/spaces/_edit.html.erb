@@ -31,8 +31,8 @@
       <%= form.label :name, '名称', class: "form-label" %> <span style="color: red">*</span>
     </div>
     <div class="col-md-10">
-      <div class="form-outline<%= input_size_class_name(@space, :name) %>">
-        <%= form.text_field :name, placeholder: '名称を追加', autocomplete: 'off', class: "form-control#{validate_class_name(validate_enabled,  @space, :name)}" %>
+      <div class="<%= input_size_class_name(@space, :name) %>">
+        <%= form.text_field :name, placeholder: '名称を追加', autocomplete: 'off', class: "form-control#{validate_class_name(validate_enabled, @space, :name)}" %>
         <%= render './users/shared/field_error_messages', messages:  @space.errors[:name] %>
       </div>
     </div>
@@ -43,7 +43,7 @@
       <%= form.label :description, '説明', class: "form-label" %>
     </div>
     <div class="col-md-10">
-      <div class="form-outline<%= input_size_class_name(@space, :description) %>">
+      <div class="<%= input_size_class_name(@space, :description) %>">
         <%= form.text_area :description, placeholder: '説明を追加', rows: 5, class: "form-control#{validate_class_name(validate_enabled, @space, :description)}" %>
         <%= render './users/shared/field_error_messages', messages: @space.errors[:description] %>
       </div>
@@ -56,7 +56,7 @@
       <%= form.label :private, '表示', class: "form-label" %> <span style="color: red">*</span>
     </div>
     <div class="col-md-10">
-      <div class="form-outline<%= input_size_class_name(@space, :private) %>">
+      <div class="<%= input_size_class_name_vertical(validate_enabled, @space, :private) %>">
         <div class="form-check form-check-inline<%= validate_class_name(validate_enabled, @space, :private) %>">
           <%= form.radio_button :private, false, class: "form-check-input#{validate_class_name(validate_enabled, @space, :private)}" %>
           <%= form.label false, '誰でも表示できる（公開）', class: 'form-check-label', for: "space_private_false" %>
@@ -85,7 +85,7 @@
         </div>
 <% end %>
       </div>
-      <div class="form-outline<%= input_size_class_name(@space, :image) %>">
+      <div class="<%= input_size_class_name(@space, :image) %>">
         <%= form.file_field :image, class: "form-control#{validate_class_name(validate_enabled, @space, :image)}" %>
         <%= render './users/shared/field_error_messages', messages: @space.errors[:image] %>
       </div>

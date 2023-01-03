@@ -32,15 +32,23 @@ test_spaces:
   public_none_count: 1
   private_admin_count: 1
   private_reader_count: 1
+# コードの文字数
+# space_code_length: 8
 # 名称の最小・最大文字数
 space_name_minimum: 2  # NOTE: 2以上、(7+8?)以下 = "space(#{n})""
 space_name_maximum: 15 # NOTE: (7+8?)以上
 # 説明の最大文字数
-space_description_maximum: 22 # NOTE: (13+8?)以上 = "description(#{code})"
+space_description_maximum: 22 # NOTE: (13+8?)以上 = "description(#{n})"
 
-## 招待
+## 招待URL
 # 一覧のデフォルト最大表示件数
 default_invitations_limit: 2
+# ドメインの最大件数
+# invitation_domains_max_count: 10
+# ドメインの最大文字数
+# invitation_domain_maximum: 253
+# メモの最大文字数
+invitation_memo_maximum: 14 # NOTE: (6+8?)以上 = "memo(#{n})"
 
 ## メンバー
 # 一覧のデフォルト最大表示件数
@@ -49,10 +57,9 @@ test_members:
   admin_count: 1
   writer_count: 1
   reader_count: 1
-
 job_members_limit: 2
-# 招待の最大件数
-create_members_max_count: 3
+# メールアドレスの最大件数
+# member_emails_max_count: 100
 
 ## ダウンロード
 # 一覧のデフォルト最大表示件数

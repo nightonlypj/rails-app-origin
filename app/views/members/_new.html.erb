@@ -18,7 +18,7 @@
       <%= form.label :power, class: "form-label" %> <span style="color: red">*</span>
     </div>
     <div class="col-md-10">
-      <div class="form-outline<%= input_size_class_name(@member, :power) %>">
+      <div class="<%= input_size_class_name_vertical(validate_enabled, @member, :power) %>">
 <% Member.powers.each do |key, _value| %>
         <div class="form-check form-check-inline<%= validate_class_name(validate_enabled, @member, :power) %>">
           <%= form.radio_button :power, key, class: "form-check-input#{validate_class_name(validate_enabled, @member, :power)}" %>

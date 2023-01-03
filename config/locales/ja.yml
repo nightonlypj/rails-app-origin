@@ -47,7 +47,9 @@ ja:
         power: '権限'
         memo: 'メモ'
         ended_at: '終了日時'
-        deleted_at: '削除日時'
+        destroy_requested_at: '削除依頼日時'
+        destroy_schedule_at: '削除予定日時'
+        email_joined_at: '参加日時'
         created_user: '作成者'
         last_updated_user: '最終更新者'
         created_at: '作成日時'
@@ -100,6 +102,22 @@ ja:
               inclusion: '選択してください。'
             description:
               too_long: '%{count}文字以下で入力してください。'
+        invitation:
+          attributes:
+            domains:
+              blank: '入力してください。'
+              max_count: '最大件数(%{count}件)を超えています。'
+              invalid: '形式が正しくありません。(%{domain})'
+            power:
+              blank: '選択してください。'
+            ended_date:
+              invalid: '形式が正しくありません。'
+              notfound: '日付が存在しません。'
+              before: '未来の日付を入力してください。'
+            ended_time:
+              blank: '入力してください。'
+              invalid: '形式が正しくありません。'
+              before: '未来の時間を入力してください。'
         member:
           attributes:
             power:
@@ -107,6 +125,7 @@ ja:
             emails:
               blank: '入力してください。'
               max_count: '最大件数(%{count}件)を超えています。'
+              invalid: '形式が正しくありません。(%{email})'
         download:
           attributes:
             target:
@@ -155,6 +174,7 @@ ja:
         active: '有効'
         expired: '期限切れ'
         deleted: '削除済み'
+        email_joined: '参加済み'
     member:
       power:
         admin: '管理者'
@@ -193,6 +213,8 @@ ja:
       destroy: 'スペースの削除を受け付けました。'
       undo_destroy: 'スペース削除の取り消しが完了しました。'
     invitation:
+      create: '招待URLを作成しました。'
+      update: '招待URL設定を変更しました。'
       copy_success: 'クリップボードにコピーしました。'
     member:
       create: 'メンバー招待の処理が完了しました。結果を確認してください。'
@@ -218,17 +240,19 @@ ja:
         params_blank: 'パラメータが指定されていません。'
         undo_delete_url_blank: 'undo_delete_urlが指定されていません。'
         undo_delete_url_not_allowed: 'undo_delete_urlが指定されていません。'
-    download:
-      notfound: 'ファイルが見つかりません。'
     space:
       destroy_reserved: 'スペース削除予定の為、この操作はできません。'
       not_destroy_reserved: '既に取り消し済みか、スペース削除されていません。'
+    invitation:
+      email_joined: '参加済みの為、この操作はできません。'
     member:
       destroy:
         codes:
           blank: '解除対象が指定されていません。'
           myself: '自分自身は解除できません。他の管理者に依頼してください。'
           notfound: '解除対象が見つかりません。'
+    download:
+      notfound: 'ファイルが見つかりません。'
   errors:
     messages:
       not_exist: '値が存在しません。'

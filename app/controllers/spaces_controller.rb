@@ -165,30 +165,25 @@ class SpacesController < ApplicationAuthController
     @space = Space.new(space_params(:create).merge(code: code, created_user: current_user))
     @space.valid?
     validate_name_uniqueness if @space.errors[:name].blank?
+    return unless @space.errors.any?
 
-    if @space.errors.any?
-      if format_html?
-        render :new, status: :unprocessable_entity
-      else
-        render './failure', locals: { errors: @space.errors, alert: t('errors.messages.not_saved.other') }, status: :unprocessable_entity
-      end
+    if format_html?
+      render :new, status: :unprocessable_entity
+    else
+      render './failure', locals: { errors: @space.errors, alert: t('errors.messages.not_saved.other') }, status: :unprocessable_entity
     end
   end
 
   def validate_params_update
-    params[:space] = Space.new.attributes if params[:space].blank? # NOTE: パラメータなしの場合に変更されず完了する為
-
-    before_name = @space.name
     @space.assign_attributes(space_params(:update).merge(last_updated_user: current_user))
     @space.valid?
-    validate_name_uniqueness if @space.errors[:name].blank? && @space.name != before_name
+    validate_name_uniqueness if @space.errors[:name].blank? && @space.name_changed?
+    return unless @space.errors.any?
 
-    if @space.errors.any?
-      if format_html?
-        render :edit, status: :unprocessable_entity
-      else
-        render './failure', locals: { errors: @space.errors, alert: t('errors.messages.not_saved.other') }, status: :unprocessable_entity
-      end
+    if format_html?
+      render :edit, status: :unprocessable_entity
+    else
+      render './failure', locals: { errors: @space.errors, alert: t('errors.messages.not_saved.other') }, status: :unprocessable_entity
     end
   end
 

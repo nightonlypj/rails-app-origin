@@ -10,7 +10,7 @@ class MembersController < ApplicationAuthController
   before_action :set_member, only: %i[show edit update]
   before_action :check_current_member, only: %i[edit update]
   before_action :set_params_index, only: :index
-  before_action :set_params_create, :validate_params_create, only: :create
+  before_action :validate_params_create, only: :create
   before_action :set_params_destroy, :validate_params_destroy, only: :destroy
 
   # GET /members/:space_code メンバー一覧
@@ -67,7 +67,7 @@ class MembersController < ApplicationAuthController
   # POST /members/:space_code/update/:user_code メンバー情報変更(処理)
   # POST /members/:space_code/update/:user_code(.json) メンバー情報変更API(処理)
   def update
-    unless @member.update(member_params.merge(last_updated_user: current_user))
+    unless @member.update(member_params(:update).merge(last_updated_user: current_user))
       if format_html?
         return render :edit, status: :unprocessable_entity
       else
@@ -130,36 +130,41 @@ class MembersController < ApplicationAuthController
     response_forbidden if @member == @current_member
   end
 
-  def set_params_create
-    @emails = []
-    return if params[:member].blank?
+  def validate_params_create
+    now = Time.current
+    @member = Member.new(member_params(:create).merge(space: @space, user: current_user, invitationed_user: current_user, invitationed_at: now,
+                                                      created_at: now, updated_at: now))
+    @member.valid?
+    validate_emails
+    return unless @member.errors.any?
 
-    params[:member][:emails]&.split(/\R/)&.each do |email|
-      email.strip!
-      @emails.push(email) if email.present? && !@emails.include?(email)
+    if format_html?
+      render :new, status: :unprocessable_entity
+    else
+      render './failure', locals: { errors: @member.errors, alert: t('errors.messages.not_saved.other') }, status: :unprocessable_entity
     end
   end
 
-  def validate_params_create
-    now = Time.current
-    @member = Member.new(member_params.merge(space: @space, user: current_user, invitationed_user: current_user, invitationed_at: now,
-                                             created_at: now, updated_at: now))
-    @member.valid?
+  def validate_emails
+    @emails = []
+    invalid_email = nil
+    @member.emails&.split(/\R/)&.each do |email|
+      email.strip!
+      if email.present? && !@emails.include?(email)
+        @emails.push(email)
+        break if @emails.count > Settings['member_emails_max_count']
+
+        invalid_email = email if invalid_email.blank? && !Devise.email_regexp.match?(email)
+      end
+    end
 
     if @emails.blank?
       @member.errors.add(:emails, :blank)
-    elsif @emails.count > Settings['create_members_max_count']
-      error = t('activerecord.errors.models.member.attributes.emails.max_count').gsub(/%{count}/, Settings['create_members_max_count'].to_s)
+    elsif @emails.count > Settings['member_emails_max_count']
+      error = t('activerecord.errors.models.member.attributes.emails.max_count').gsub(/%{count}/, Settings['member_emails_max_count'].to_s)
       @member.errors.add(:emails, error)
-    end
-
-    if @member.errors.any?
-      if format_html?
-        @member.emails = params[:member][:emails] if params[:member].present?
-        render :new, status: :unprocessable_entity
-      else
-        render './failure', locals: { errors: @member.errors, alert: t('errors.messages.not_saved.other') }, status: :unprocessable_entity
-      end
+    elsif invalid_email.present?
+      @member.errors.add(:emails, t('activerecord.errors.models.member.attributes.emails.invalid').gsub(/%{email}/, invalid_email))
     end
   end
 
@@ -192,12 +197,14 @@ class MembersController < ApplicationAuthController
   end
 
   # Only allow a list of trusted parameters through.
-  def member_params
+  def member_params(target)
     params[:member] = Member.new.attributes if params[:member].blank? # NOTE: 変更なしで成功する為
+    params[:member][:power] = nil if Member.powers[params[:member][:power]].blank? # NOTE: ArgumentError対策
 
-    # ArgumentError対策
-    params[:member][:power] = nil if Member.powers[params[:member][:power]].blank?
-
-    params.require(:member).permit(:power)
+    if target == :create
+      params.require(:member).permit(:emails, :power)
+    else
+      params.require(:member).permit(:power)
+    end
   end
 end
