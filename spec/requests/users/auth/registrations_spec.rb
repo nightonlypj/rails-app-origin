@@ -1020,7 +1020,7 @@ RSpec.describe 'Users::Auth::Registrations', type: :request do
   #   ＋URLの拡張子: .json, ない
   #   ＋Acceptヘッダ: JSONが含まれる, JSONが含まれない
   describe 'POST #undo_destroy' do
-    subject { post destroy_undo_user_auth_registration_path(format: subject_format), headers: auth_headers.merge(accept_headers) }
+    subject { post undo_destroy_user_auth_registration_path(format: subject_format), headers: auth_headers.merge(accept_headers) }
     include_context 'Authテスト内容'
     let(:current_user) { User.find(user.id) }
 

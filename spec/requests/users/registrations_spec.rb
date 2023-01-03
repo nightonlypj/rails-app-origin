@@ -447,7 +447,7 @@ RSpec.describe 'Users::Registrations', type: :request do
   # テストパターン
   #   未ログイン, ログイン中, ログイン中（削除予約済み）
   describe 'POST #undo_destroy' do
-    subject { post destroy_undo_user_registration_path }
+    subject { post undo_destroy_user_registration_path }
     let(:current_user) { User.find(user.id) }
 
     # テスト内容

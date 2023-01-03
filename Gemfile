@@ -87,6 +87,7 @@ gem 'tzinfo-data', platforms: [:mingw, :mswin, :x64_mingw, :jruby]
 # Use Devise
 gem 'devise', '< 4.8.0'
 gem 'devise-i18n'
+gem 'email_validator'
 
 # Use Devise Token Auth
 gem 'devise_token_auth'
