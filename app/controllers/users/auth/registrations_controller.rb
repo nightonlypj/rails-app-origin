@@ -5,20 +5,30 @@ class Users::Auth::RegistrationsController < DeviseTokenAuth::RegistrationsContr
   include DeviseTokenAuth::Concerns::SetUserByToken
   skip_before_action :verify_authenticity_token
   prepend_before_action :response_unauthenticated, only: %i[show update image_update image_destroy destroy undo_destroy], unless: :user_signed_in?
-  prepend_before_action :response_already_authenticated, only: %i[create], if: :user_signed_in?
+  prepend_before_action :response_already_authenticated, only: %i[invitation create], if: :user_signed_in?
   prepend_before_action :response_not_acceptable_for_not_api
   prepend_before_action :update_request_uid_header
   before_action :response_api_for_user_destroy_reserved, only: %i[update image_update image_destroy destroy]
   before_action :response_api_for_not_user_destroy_reserved, only: %i[undo_destroy]
+  before_action :set_invitation, only: %i[invitation create]
   before_action :configure_sign_up_params, only: %i[create]
   before_action :configure_account_update_params, only: %i[update]
   skip_after_action :update_auth_header, only: %i[update image_update]
 
+  # GET /users/auth/invitation(.json) 招待情報取得API
+  def invitation
+    return render './failure', locals: { alert: t('alert.invitation.notfound') }, status: :not_found if @invitation.blank?
+
+    render './users/auth/invitation'
+  end
+
   # POST /users/auth/sign_up(.json) アカウント登録API(処理)
   def create
     params[:code] = create_unique_code(User, 'code', "Users::RegistrationsController.create #{params}")
+    params[:email] = get_email(params) if @invitation.present?
     ActiveRecord::Base.transaction do # NOTE: エラーでROLLBACKされなかった為
       super
+      create_invitation_members(@resource) if @resource.errors.blank?
     end
   end
 

@@ -2,6 +2,10 @@ require 'rails_helper'
 
 RSpec.describe Users::Auth::RegistrationsController, type: :routing do
   describe 'routing' do
+    it 'routes to #invitation' do
+      expect(get: '/users/auth/invitation').to route_to('users/auth/registrations#invitation')
+      expect(get: '/users/auth/invitation.json').to route_to('users/auth/registrations#invitation', format: 'json')
+    end
     it 'routes to #new' do
       # expect(get: '/users/auth/sign_up').to route_to('users/auth/registrations#new')
       expect(get: '/users/auth/sign_up').not_to be_routable

@@ -92,7 +92,7 @@ class MembersController < ApplicationAuthController
     else
       key = 'destroy'
     end
-    notice = t("notice.member.#{key}").gsub(/%{count}/, @codes.count.to_s(:delimited)).gsub(/%{destroy_count}/, @members.count.to_s(:delimited))
+    notice = t("notice.member.#{key}", count: @codes.count.to_s(:delimited), destroy_count: @members.count.to_s(:delimited))
 
     @members.destroy_all
     if format_html?
@@ -161,10 +161,10 @@ class MembersController < ApplicationAuthController
     if @emails.blank?
       @member.errors.add(:emails, :blank)
     elsif @emails.count > Settings['member_emails_max_count']
-      error = t('activerecord.errors.models.member.attributes.emails.max_count').gsub(/%{count}/, Settings['member_emails_max_count'].to_s)
+      error = t('activerecord.errors.models.member.attributes.emails.max_count', count: Settings['member_emails_max_count'])
       @member.errors.add(:emails, error)
     elsif invalid_email.present?
-      @member.errors.add(:emails, t('activerecord.errors.models.member.attributes.emails.invalid').gsub(/%{email}/, invalid_email))
+      @member.errors.add(:emails, t('activerecord.errors.models.member.attributes.emails.invalid', email: invalid_email))
     end
   end
 

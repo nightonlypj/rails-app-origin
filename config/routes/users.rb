@@ -29,6 +29,7 @@ Rails.application.routes.draw do
     put  'users/password',            to: 'users/passwords#update',            as: 'update_user_password'
 
     # Devise Token Auth
+    get  'users/auth/invitation',      to: 'users/auth/registrations#invitation',         as: 'invitation_user_auth_registration'
     post 'users/auth/sign_up',         to: 'users/auth/registrations#create',             as: 'create_user_auth_registration'
     get  'users/auth/detail',          to: 'users/auth/registrations#show',               as: 'show_user_auth_registration'
     post 'users/auth/update',          to: 'users/auth/registrations#update',             as: 'update_user_auth_registration'

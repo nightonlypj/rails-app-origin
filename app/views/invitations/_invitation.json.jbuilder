@@ -1,3 +1,6 @@
+json.status invitation.status
+json.status_i18n invitation.status_i18n
+
 json.code invitation.code
 if invitation.email.present?
   json.email invitation.email
@@ -8,8 +11,6 @@ json.power invitation.power
 json.power_i18n invitation.power_i18n
 json.memo invitation.memo
 
-json.status invitation.status
-json.status_i18n invitation.status_i18n
 json.ended_at l(invitation.ended_at, format: :json, default: nil)
 json.destroy_requested_at l(invitation.destroy_requested_at, format: :json, default: nil)
 json.destroy_schedule_at l(invitation.destroy_schedule_at, format: :json, default: nil)

@@ -5,6 +5,7 @@ class Users::RegistrationsController < Devise::RegistrationsController
   prepend_before_action :authenticate_scope!, only: %i[edit update image_update image_destroy delete destroy undo_delete undo_destroy]
   before_action :redirect_for_user_destroy_reserved, only: %i[edit update image_update image_destroy delete destroy]
   before_action :redirect_for_not_user_destroy_reserved, only: %i[undo_delete undo_destroy]
+  before_action :set_invitation, only: %i[new create]
   before_action :configure_sign_up_params, only: %i[create]
   before_action :configure_account_update_params, only: %i[update]
 
@@ -16,10 +17,14 @@ class Users::RegistrationsController < Devise::RegistrationsController
   # POST /users/sign_up アカウント登録(処理)
   def create
     params[:user][:code] = create_unique_code(User, 'code', "Users::RegistrationsController.create #{params[:user]}")
+    params[:user][:email] = get_email(params[:user]) if @invitation.present?
     ActiveRecord::Base.transaction do
       super
       flash[:alert] = resource.errors[:code].first if resource.errors[:code].present?
-      resource.send_confirmation_instructions if resource.errors.blank? # NOTE: devise_token_auth導入後、送信されなくなった為
+      if resource.errors.blank?
+        create_invitation_members(resource)
+        resource.send_confirmation_instructions # NOTE: devise_token_auth導入後、送信されなくなった為
+      end
     end
   end
 

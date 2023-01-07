@@ -94,8 +94,8 @@ ActiveRecord::Schema.define(version: 2022_12_22_110420) do
   create_table "invitations", charset: "utf8", collation: "utf8_bin", comment: "招待", force: :cascade do |t|
     t.string "code", null: false, comment: "コード"
     t.bigint "space_id", null: false, comment: "スペースID"
-    t.text "domains", comment: "ドメイン"
     t.string "email", comment: "メールアドレス"
+    t.text "domains", comment: "ドメイン"
     t.integer "power", null: false, comment: "権限"
     t.string "memo", comment: "メモ"
     t.datetime "ended_at", comment: "終了日時"

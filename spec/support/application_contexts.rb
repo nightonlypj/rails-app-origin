@@ -25,6 +25,13 @@ def expect_image_json(response_json_model, model)
   expect(data['xlarge']).to eq("#{Settings['base_image_url']}#{model.image_url(:xlarge)}")
 end
 
+def get_locale(key, **replace)
+  result = I18n.t(key, **replace)
+  raise if /translation missing:/.match(result)
+
+  result
+end
+
 shared_examples_for 'ToOK[status]' do
   it 'HTTPステータスが200' do
     is_expected.to eq(200)
@@ -33,7 +40,7 @@ end
 shared_examples_for 'ToError' do |error_msg|
   it 'HTTPステータスが200。対象のエラーメッセージが含まれる' do # NOTE: 再入力
     is_expected.to eq(200)
-    expect(response.body).to include(I18n.t(error_msg))
+    expect(response.body).to include(get_locale(error_msg))
   end
 end
 
@@ -117,15 +124,33 @@ shared_examples_for 'ToNG(json/html)' do |code|
     is_expected.to eq(code)
   end
 end
-shared_examples_for 'ToNG(json/json)' do |code, errors, alert, notice|
+shared_examples_for 'ToNG(json/json)' do |code, errors, alert = nil, notice = nil|
   let(:subject_format) { :json }
   let(:accept_headers) { ACCEPT_INC_JSON }
+  let(:alert_key) do
+    return alert if alert.present?
+
+    case code
+    when 401
+      'devise.failure.unauthenticated'
+    when 403
+      'alert.user.forbidden'
+    when 404
+      'alert.page.notfound'
+    when 406
+      nil
+    when 422
+      'errors.messages.not_saved.other'
+    else
+      raise "code not found.(#{code})"
+    end
+  end
   it "HTTPステータスが#{code}。対象項目が一致する" do
     is_expected.to eq(code)
     expect(response_json['success']).to eq(code == 406 ? nil : false)
     expect(response_json['errors']).to errors.present? ? eq(errors.stringify_keys) : be_nil
-    expect(response_json['alert']).to alert.present? ? eq(I18n.t(alert)) : be_nil
-    expect(response_json['notice']).to notice.present? ? eq(I18n.t(notice)) : be_nil
+    expect(response_json['alert']).to alert_key.present? ? eq(get_locale(alert_key)) : be_nil
+    expect(response_json['notice']).to notice.present? ? eq(get_locale(notice)) : be_nil
   end
 end
 shared_examples_for 'ToNG(html)' do |code, errors = nil|
@@ -136,31 +161,13 @@ end
 shared_examples_for 'ToNG(json)' do |code, errors = nil, alert = nil, notice = nil|
   let(:subject_page) { 1 }
   it_behaves_like 'ToNG(json/html)', 406
-  it_behaves_like 'ToNG(json/json)', code, errors, alert_key(code, alert), notice
-end
-def alert_key(code, alert)
-  return alert if alert.present?
-
-  case code
-  when 401
-    'devise.failure.unauthenticated'
-  when 403
-    'alert.user.forbidden'
-  when 404
-    'alert.page.notfound'
-  when 406
-    nil
-  when 422
-    'errors.messages.not_saved.other'
-  else
-    raise "code not found.(#{code})"
-  end
+  it_behaves_like 'ToNG(json/json)', code, errors, alert, notice
 end
 
 shared_examples_for 'ToLogin(html/*)' do
   it 'ログインにリダイレクトする' do
     is_expected.to redirect_to(new_user_session_path)
-    expect(flash[:alert]).to eq(I18n.t('devise.failure.unauthenticated'))
+    expect(flash[:alert]).to eq(get_locale('devise.failure.unauthenticated'))
     expect(flash[:notice]).to be_nil
   end
 end

@@ -42,8 +42,8 @@ ja:
         id: 'ID'
         code: 'コード'
         space: 'スペース'
-        domains: 'ドメイン'
         email: 'メールアドレス'
+        domains: 'ドメイン'
         power: '権限'
         memo: 'メモ'
         ended_at: '終了日時'
@@ -245,6 +245,7 @@ ja:
       not_destroy_reserved: '既に取り消し済みか、スペース削除されていません。'
     invitation:
       email_joined: '参加済みの為、この操作はできません。'
+      notfound: '招待URLが存在しないか期限が切れています。発行者に確認してください。'
     member:
       destroy:
         codes:

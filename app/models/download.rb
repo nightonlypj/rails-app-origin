@@ -93,8 +93,7 @@ class Download < ApplicationRecord
     end
 
     if notfound_items.present?
-      key = 'activerecord.errors.models.download.attributes.output_items.not_exist'
-      errors.add(:output_items, I18n.t(key).gsub(/%{key}/, notfound_items.join(', ')))
+      errors.add(:output_items, I18n.t('activerecord.errors.models.download.attributes.output_items.not_exist', key: notfound_items.join(', ')))
     end
   end
 end

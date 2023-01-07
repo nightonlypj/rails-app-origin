@@ -4,8 +4,8 @@ class CreateInvitations < ActiveRecord::Migration[6.1]
       t.string :code, null: false, comment: 'コード'
 
       t.references :space, null: false, type: :bigint, foreign_key: true, comment: 'スペースID'
-      t.text       :domains, comment: 'ドメイン'
       t.string     :email,   comment: 'メールアドレス'
+      t.text       :domains, comment: 'ドメイン'
       t.integer    :power, null: false, comment: '権限'
       t.string     :memo, comment: 'メモ'
 

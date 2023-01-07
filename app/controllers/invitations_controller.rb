@@ -136,10 +136,10 @@ class InvitationsController < ApplicationAuthController
     if @domains.blank?
       @invitation.errors.add(:domains, :blank)
     elsif @domains.count > Settings['invitation_domains_max_count']
-      error = t('activerecord.errors.models.invitation.attributes.domains.max_count').gsub(/%{count}/, Settings['invitation_domains_max_count'].to_s)
-      @invitation.errors.add(:domains, error)
+      count = Settings['invitation_domains_max_count'].to_s(:delimited)
+      @invitation.errors.add(:domains, t('activerecord.errors.models.invitation.attributes.domains.max_count', count: count))
     elsif invalid_domain.present?
-      @invitation.errors.add(:domains, t('activerecord.errors.models.invitation.attributes.domains.invalid').gsub(/%{domain}/, invalid_domain))
+      @invitation.errors.add(:domains, t('activerecord.errors.models.invitation.attributes.domains.invalid', domain: invalid_domain))
     end
   end
 

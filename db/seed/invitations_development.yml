@@ -2,8 +2,8 @@
 - id: 11
   code: 'invitation000000000000011'
   space_id: 1
-  domains: '["a.example11.com", "b.example11.com"]'
   email: null
+  domains: '["example.com", "123456789012345678901234567890.example.com"]'
   power: reader
   memo: '期限なし<b>１２３４５６７８９０１２３４５６７８９０１２３４５６７８９０１２３４５６７８９０１２３４５６７８９０１２３</b>'
   ended_at: null
@@ -17,8 +17,8 @@
 - id: 12
   code: 'invitation000000000000012'
   space_id: 1
-  domains: '["example12.com"]'
   email: null
+  domains: '["example.com"]'
   power: writer
   memo: '期限あり'
   ended_at: '9000-01-01 12:34:56+0900'
@@ -32,8 +32,8 @@
 - id: 13
   code: 'invitation000000000000013'
   space_id: 1
-  domains: '["example13.com"]'
   email: null
+  domains: '["example.com"]'
   power: admin
   memo: '期限切れ'
   ended_at: '2000-02-29 12:34:56+0900'
@@ -47,8 +47,8 @@
 - id: 14
   code: 'invitation000000000000014'
   space_id: 1
-  domains: '["example14.com"]'
   email: null
+  domains: '["example.com"]'
   power: admin
   memo: '削除済み'
   ended_at: null
@@ -62,8 +62,8 @@
 - id: 15
   code: 'invitation000000000000015'
   space_id: 1
-  domains: '["example15.com"]'
   email: null
+  domains: '["example.com"]'
   power: admin
   memo: '期限切れ、削除済み'
   ended_at: '2000-02-27 12:34:56+0900'
@@ -77,8 +77,8 @@
 - id: 16
   code: 'invitation000000000000016'
   space_id: 1
-  domains: null
   email: 'user99@example.com'
+  domains: null
   power: writer
   memo: null
   ended_at: '9999-12-31 23:59:59+0900'
@@ -92,8 +92,8 @@
 - id: 17
   code: 'invitation000000000000017'
   space_id: 1
-  domains: null
   email: 'user99@example.com'
+  domains: null
   power: admin
   memo: null
   ended_at: '2000-01-26 12:34:56+0900'
@@ -107,8 +107,8 @@
 - id: 18
   code: 'invitation000000000000018'
   space_id: 1
-  domains: null
   email: 'user2@example.com'
+  domains: null
   power: admin
   memo: null
   ended_at: '9999-12-31 23:59:59+0900'
@@ -123,8 +123,8 @@
 - id: 21
   code: 'invitation000000000000021'
   space_id: 2
-  domains: '["example21.com"]'
   email: null
+  domains: '["example.com"]'
   power: reader
   memo: '期限なし'
   ended_at: null

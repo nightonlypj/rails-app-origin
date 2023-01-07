@@ -38,6 +38,6 @@ class Member < ApplicationRecord
 
   # 最終更新日時
   def last_updated_at
-    updated_at != created_at || (invitationed_at.present? && updated_at != invitationed_at) ? updated_at : nil
+    updated_at != created_at || (invitationed_at.present? && updated_at.floor != invitationed_at) ? updated_at : nil
   end
 end
