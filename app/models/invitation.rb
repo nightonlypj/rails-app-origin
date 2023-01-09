@@ -55,9 +55,9 @@ class Invitation < ApplicationRecord
     begin
       result = Time.new(@year, @month, @day, 23, 59, 59, ended_zone)
       return errors.add(:ended_date, :notfound) if result.day != @day.to_i # NOTE: 存在しない日付は丸められる為
-      return errors.add(:ended_date, :before) if ended_at.blank? && result <= Time.current # NOTE: 元の値が存在しない場合のみ
+      return errors.add(:ended_date, :before) if (ended_at.blank? || (ended_at&.strftime('%Y%m%d') != result.strftime('%Y%m%d'))) && result <= Time.current
     rescue StandardError
-      errors.add(:ended_date, :invalid)
+      errors.add(:ended_zone, :invalid)
     end
   end
 
@@ -72,11 +72,13 @@ class Invitation < ApplicationRecord
 
     begin
       result = Time.new(@year, @month, @day, hour, min, 59, ended_zone)
-      return errors.add(:ended_time, :before) if ended_at.blank? && result <= Time.current # NOTE: 元の値が存在しない場合のみ
+      if (ended_at.blank? || (ended_at&.strftime('%Y%m%d%H%M') != result.strftime('%Y%m%d%H%M'))) && result <= Time.current
+        return errors.add(:ended_time, :before)
+      end
 
       self.new_ended_at = result
     rescue StandardError
-      errors.add(:ended_time, :invalid)
+      errors.add(:ended_zone, :invalid)
     end
   end
 end

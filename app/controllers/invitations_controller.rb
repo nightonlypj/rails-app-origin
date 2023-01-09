@@ -29,7 +29,7 @@ class InvitationsController < ApplicationAuthController
     @invitation = Invitation.new(ended_time: '23:59')
   end
 
-  # POST /invitations/:space_code/create 招待URL作成API(処理)
+  # POST /invitations/:space_code/create 招待URL作成(処理)
   # POST /invitations/:space_code/create(.json) 招待URL作成API(処理)
   def create
     @invitation.domains = @domains
@@ -39,7 +39,7 @@ class InvitationsController < ApplicationAuthController
     if format_html?
       redirect_to invitations_path(@space.code), notice: t('notice.invitation.create')
     else
-      render :show, locals: { notice: t('notice.invitation.create') }
+      render :show, locals: { notice: t('notice.invitation.create') }, status: :created
     end
   end
 

@@ -54,6 +54,9 @@ ja:
         last_updated_user: '最終更新者'
         created_at: '作成日時'
         updated_at: '更新日時'
+        ended_date: '期限（日付）'
+        ended_time: '期限（時間）'
+        ended_zone: '期限（タイムゾーン）'
       member:
         id: 'ID'
         space: 'スペース'
@@ -93,6 +96,9 @@ ja:
       models:
         space:
           attributes:
+            code:
+              blank: 'お問い合わせ頂くか、最初からやり直してください。'
+              taken: '処理に失敗しました。しばらく時間をあけてから、やり直してください。'
             name:
               blank: '入力してください。'
               too_short: '%{count}文字以上で入力してください。'
@@ -104,12 +110,17 @@ ja:
               too_long: '%{count}文字以下で入力してください。'
         invitation:
           attributes:
+            code:
+              blank: 'お問い合わせ頂くか、最初からやり直してください。'
+              taken: '処理に失敗しました。しばらく時間をあけてから、やり直してください。'
             domains:
               blank: '入力してください。'
               max_count: '最大件数(%{count}件)を超えています。'
               invalid: '形式が正しくありません。(%{domain})'
             power:
               blank: '選択してください。'
+            memo:
+              too_long: '%{count}文字以下で入力してください。'
             ended_date:
               invalid: '形式が正しくありません。'
               notfound: '日付が存在しません。'
@@ -118,6 +129,8 @@ ja:
               blank: '入力してください。'
               invalid: '形式が正しくありません。'
               before: '未来の時間を入力してください。'
+            ended_zone:
+              invalid: '形式が正しくありません。'
         member:
           attributes:
             power:

@@ -7,6 +7,10 @@ FactoryBot.define do
     association :space
     association :created_user, factory: :user
 
+    trait :create do
+      domains { "#{Faker::Internet.domain_name}\n#{Faker::Internet.domain_name}" }
+    end
+
     trait :domains do
       domains { [Faker::Internet.domain_name, Faker::Internet.domain_name].to_s }
     end

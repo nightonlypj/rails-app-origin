@@ -154,6 +154,8 @@ shared_examples_for 'ToNG(json/json)' do |code, errors, alert = nil, notice = ni
   end
 end
 shared_examples_for 'ToNG(html)' do |code, errors = nil|
+  raise 'errors blank.' if code == 422 && errors.blank?
+
   let(:subject_page) { 1 }
   it_behaves_like 'ToNG(html/html)', code, errors
   it_behaves_like 'ToNG(html/json)', code

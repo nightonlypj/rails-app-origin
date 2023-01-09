@@ -42,7 +42,12 @@ space_description_maximum: 22 # NOTE: (13+8?)以上 = "description(#{n})"
 
 ## 招待URL
 # 一覧のデフォルト最大表示件数
-default_invitations_limit: 2
+default_invitations_limit: 4 # NOTE: 高速化の為（下記の合計値と一致）
+test_invitations:
+  active_count: 1
+  expired_count: 1
+  deleted_count: 1
+  email_joined_count: 1
 # ドメインの最大件数
 # invitation_domains_max_count: 10
 # ドメインの最大文字数
