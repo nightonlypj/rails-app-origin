@@ -21,8 +21,7 @@ RSpec.describe 'Spaces', type: :request do
       include_context 'set_power', :admin
     end
     shared_context 'set_power' do |power|
-      let(:user_power) { power }
-      before_all { FactoryBot.create(:member, power: power, space: space, user: user) if power.present? && user.present? }
+      before_all { FactoryBot.create(:member, power, space: space, user: user) if power.present? && user.present? }
     end
 
     # テスト内容
@@ -44,19 +43,18 @@ RSpec.describe 'Spaces', type: :request do
       it '取り消したスペースにリダイレクトする' do
         is_expected.to redirect_to(space_path(space.code))
         expect(flash[:alert]).to be_nil
-        expect(flash[:notice]).to eq(I18n.t('notice.space.undo_destroy'))
+        expect(flash[:notice]).to eq(get_locale('notice.space.undo_destroy'))
       end
     end
     shared_examples_for 'ToOK(json/json)' do
       let(:subject_format) { :json }
       let(:accept_headers) { ACCEPT_INC_JSON }
-      let(:member_count) { 1 }
       it 'HTTPステータスが200。対象項目が一致する' do
         is_expected.to eq(200)
         expect(response_json['success']).to eq(true)
         expect(response_json['alert']).to be_nil
-        expect(response_json['notice']).to eq(I18n.t('notice.space.undo_destroy'))
-        expect_space_json(response_json['space'], current_space, :admin)
+        expect(response_json['notice']).to eq(get_locale('notice.space.undo_destroy'))
+        expect_space_json(response_json['space'], current_space, :admin, 1)
       end
     end
 

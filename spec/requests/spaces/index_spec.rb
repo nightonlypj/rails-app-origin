@@ -94,14 +94,14 @@ RSpec.describe 'Spaces', type: :request do
         subject
         (start_no..end_no).each do |no|
           space = user_spaces[user_spaces.count - no]
-          expect(response.body).to include(space.image_url(:small)) # 画像
-          expect(response.body).to include(space.name) # 名称
-          expect(response.body).to include(space.description) # 説明
-          expect(response.body).to include('非公開') if space.private # 非公開
-          expect(response.body).to include(I18n.l(space.destroy_schedule_at.to_date)) if space.destroy_reserved? # 削除予定日時
+          # 名称
+          expect_space_html(response, space, nil, false)
+          # 説明
+          expect(response.body).to include(space.description)
+          # (アクション)
           if @members[space.id].present?
-            expect(response.body).to include(Member.powers_i18n[@members[space.id]]) # 権限
-            expect(response.body).to include("href=\"#{members_path(space.code)}\"") # メンバー一覧
+            expect(response.body).to include(Member.powers_i18n[@members[space.id]])
+            expect(response.body).to include("href=\"#{members_path(space.code)}\"")
           else
             expect(response.body).not_to include("href=\"#{members_path(space.code)}\"")
           end
@@ -120,20 +120,14 @@ RSpec.describe 'Spaces', type: :request do
         (start_no..end_no).each do |no|
           data = response_json_spaces[no - start_no]
           space = spaces[spaces.count - no]
-          expect(data['code']).to eq(space.code)
-          expect_image_json(data, space)
-          expect(data['name']).to eq(space.name)
-          expect(data['description']).to eq(space.description)
-          expect(data['private']).to eq(space.private)
-          expect(data['destroy_requested_at']).to eq(I18n.l(space.destroy_requested_at, format: :json, default: nil))
-          expect(data['destroy_schedule_at']).to eq(I18n.l(space.destroy_schedule_at, format: :json, default: nil))
+          expect_space_basic_json(data, space)
 
           power = members[space.id]
-          if power.blank?
-            expect(data['current_member']).to be_nil
-          else
+          if power.present?
             expect(data['current_member']['power']).to eq(power)
             expect(data['current_member']['power_i18n']).to eq(Member.powers_i18n[power])
+          else
+            expect(data['current_member']).to be_nil
           end
         end
       end
@@ -250,45 +244,44 @@ RSpec.describe 'Spaces', type: :request do
       it_behaves_like 'リダイレクト(json)', 3
     end
 
+    shared_examples_for '[ログイン中/削除予約済み]' do
+      let(:spaces)  { @public_spaces + @public_nojoin_spaces } # NOTE: APIは未ログイン扱いの為、公開しか見れない
+      let(:members) { {} }
+      it_behaves_like '[*]スペースが存在しない'
+      it_behaves_like '[ログイン中/削除予約済み]スペースが最大表示数と同じ'
+      it_behaves_like '[ログイン中/削除予約済み]スペースが最大表示数より多い'
+    end
+    shared_examples_for '[APIログイン中/削除予約済み]' do
+      let(:spaces)  { @public_spaces + @public_nojoin_spaces + @private_spaces }
+      let(:members) { @members }
+      it_behaves_like '[*]スペースが存在しない'
+      it_behaves_like '[APIログイン中/削除予約済み]スペースが最大表示数と同じ'
+      it_behaves_like '[APIログイン中/削除予約済み]スペースが最大表示数より多い'
+    end
+
     context '未ログイン' do
+      include_context '未ログイン処理'
       let(:spaces)  { @public_spaces + @public_nojoin_spaces }
       let(:members) { {} }
-      include_context '未ログイン処理'
       it_behaves_like '[*]スペースが存在しない'
       it_behaves_like '[未ログイン]スペースが最大表示数と同じ'
       it_behaves_like '[未ログイン]スペースが最大表示数より多い'
     end
     context 'ログイン中' do
-      let(:spaces)  { @public_spaces + @public_nojoin_spaces } # NOTE: APIは未ログイン扱いの為、公開しか見れない
-      let(:members) { {} }
       include_context 'ログイン処理'
-      it_behaves_like '[*]スペースが存在しない'
-      it_behaves_like '[ログイン中/削除予約済み]スペースが最大表示数と同じ'
-      it_behaves_like '[ログイン中/削除予約済み]スペースが最大表示数より多い'
+      it_behaves_like '[ログイン中/削除予約済み]'
     end
     context 'ログイン中（削除予約済み）' do
-      let(:spaces)  { @public_spaces + @public_nojoin_spaces } # NOTE: APIは未ログイン扱いの為、公開しか見れない
-      let(:members) { {} }
       include_context 'ログイン処理', :destroy_reserved
-      it_behaves_like '[*]スペースが存在しない'
-      it_behaves_like '[ログイン中/削除予約済み]スペースが最大表示数と同じ'
-      it_behaves_like '[ログイン中/削除予約済み]スペースが最大表示数より多い'
+      it_behaves_like '[ログイン中/削除予約済み]'
     end
     context 'APIログイン中' do
-      let(:spaces)  { @public_spaces + @public_nojoin_spaces + @private_spaces }
-      let(:members) { @members }
       include_context 'APIログイン処理'
-      it_behaves_like '[*]スペースが存在しない'
-      it_behaves_like '[APIログイン中/削除予約済み]スペースが最大表示数と同じ'
-      it_behaves_like '[APIログイン中/削除予約済み]スペースが最大表示数より多い'
+      it_behaves_like '[APIログイン中/削除予約済み]'
     end
     context 'APIログイン中（削除予約済み）' do
-      let(:spaces)  { @public_spaces + @public_nojoin_spaces + @private_spaces }
-      let(:members) { @members }
       include_context 'APIログイン処理', :destroy_reserved
-      it_behaves_like '[*]スペースが存在しない'
-      it_behaves_like '[APIログイン中/削除予約済み]スペースが最大表示数と同じ'
-      it_behaves_like '[APIログイン中/削除予約済み]スペースが最大表示数より多い'
+      it_behaves_like '[APIログイン中/削除予約済み]'
     end
   end
 

@@ -4,7 +4,7 @@ class MembersController < ApplicationAuthController
   before_action :response_not_acceptable_for_not_html, only: %i[new result edit]
   before_action :authenticate_user!
   before_action :set_space
-  before_action :redirect_members_for_user_destroy_reserved, only: %i[new create edit update destroy], if: :format_html?
+  before_action :redirect_members_for_user_destroy_reserved, only: %i[new create result edit update destroy], if: :format_html?
   before_action :response_api_for_user_destroy_reserved, only: %i[create update destroy], unless: :format_html?
   before_action :check_power, only: %i[new create result edit update destroy]
   before_action :set_member, only: %i[show edit update]
@@ -58,7 +58,7 @@ class MembersController < ApplicationAuthController
 
   # GET /members/:space_code/result メンバー招待（結果）
   def result
-    redirect_to members_path(@space.code) if flash[:emails].blank?
+    redirect_to members_path(@space.code) if flash.blank?
   end
 
   # GET /members/:space_code/update/:user_code メンバー情報変更
@@ -88,11 +88,12 @@ class MembersController < ApplicationAuthController
     if @include_myself
       key = 'destroy_include_myself'
     elsif @codes.count != @members.count
-      key = 'destroy_notfound'
+      key = 'destroy_include_notfound'
     else
       key = 'destroy'
     end
-    notice = t("notice.member.#{key}", count: @codes.count.to_s(:delimited), destroy_count: @members.count.to_s(:delimited))
+    @destroy_count = @members.count
+    notice = t("notice.member.#{key}", count: @codes.count.to_s(:delimited), destroy_count: @destroy_count.to_s(:delimited))
 
     @members.destroy_all
     if format_html?
@@ -170,9 +171,11 @@ class MembersController < ApplicationAuthController
 
   def set_params_destroy
     if params[:codes].instance_of?(Array)
-      @codes = params[:codes].uniq.compact
+      @codes = params[:codes].reject(&:empty?).compact.uniq
+    elsif params[:codes].present?
+      @codes = params[:codes].to_unsafe_h.map { |code, value| code if value == '1' }.compact.uniq
     else
-      @codes = params[:codes].to_unsafe_h.map { |code, value| code if value == '1' }.uniq.compact
+      @codes = []
     end
     @include_myself = @codes.include?(@current_member.user.code)
   end

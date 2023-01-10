@@ -26,7 +26,6 @@ RSpec.describe 'Invitations', type: :request do
       let_it_be(:invitation) { FactoryBot.create(:invitation, :active) }
     end
     shared_context 'set_power' do |power|
-      let(:user_power) { power }
       let_it_be(:member_user) { FactoryBot.create(:member, power, space: space, user: user) if power.present? && user.present? }
     end
 

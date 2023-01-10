@@ -25,14 +25,13 @@ RSpec.describe 'Members', type: :request do
     let(:current_member) { Member.last }
 
     shared_context 'valid_condition' do
+      let(:attributes) { valid_attributes }
       let_it_be(:space) { FactoryBot.create(:space) }
       include_context 'set_power', :admin
-      let(:attributes) { valid_attributes }
     end
     shared_context 'set_power' do |power|
-      let(:user_power) { power }
       before_all do
-        FactoryBot.create(:member, power: power, space: space, user: user) if power.present? && user.present?
+        FactoryBot.create(:member, power, space: space, user: user) if power.present? && user.present?
         FactoryBot.create(:member, space: space, user: exist_user)
       end
     end
@@ -60,7 +59,7 @@ RSpec.describe 'Members', type: :request do
       it 'メンバー招待（結果）にリダイレクトする' do
         is_expected.to redirect_to(result_member_path(space.code))
         expect(flash[:alert]).to be_nil
-        expect(flash[:notice]).to eq(I18n.t('notice.member.create'))
+        expect(flash[:notice]).to eq(get_locale('notice.member.create'))
         expect(flash[:emails]).to eq(emails)
         expect(flash[:exist_user_mails]).to eq([exist_user.email])
         expect(flash[:create_user_mails]).to eq([new_user.email])
@@ -70,12 +69,11 @@ RSpec.describe 'Members', type: :request do
     shared_examples_for 'ToOK(json/json)' do
       let(:subject_format) { :json }
       let(:accept_headers) { ACCEPT_INC_JSON }
-      let(:member_count) { 1 }
       it 'HTTPステータスが201。対象項目が一致する' do
         is_expected.to eq(201)
         expect(response_json['success']).to eq(true)
         expect(response_json['alert']).to be_nil
-        expect(response_json['notice']).to eq(I18n.t('notice.member.create'))
+        expect(response_json['notice']).to eq(get_locale('notice.member.create'))
 
         expect(response_json_email['count']).to eq(emails.count)
         expect(response_json_email['create_count']).to eq(1)
@@ -103,15 +101,24 @@ RSpec.describe 'Members', type: :request do
       let(:attributes) { nil }
       it_behaves_like 'NG(html)'
       it_behaves_like 'NG(json)'
-      it_behaves_like 'ToNG(html)', 422
+      it_behaves_like 'ToNG(html)', 422, [
+        get_locale('activerecord.errors.models.member.attributes.emails.blank'),
+        get_locale('activerecord.errors.models.member.attributes.power.blank')
+      ]
       it_behaves_like 'ToNG(json)', 401 # NOTE: APIは未ログイン扱い
     end
     shared_examples_for '[APIログイン中][*][ある]パラメータなし' do
       let(:attributes) { nil }
       it_behaves_like 'NG(html)'
       it_behaves_like 'NG(json)'
-      it_behaves_like 'ToNG(html)', 422, [I18n.t('activerecord.errors.models.member.attributes.emails.blank'), I18n.t('activerecord.errors.models.member.attributes.power.blank')]
-      it_behaves_like 'ToNG(json)', 422, { emails: [I18n.t('activerecord.errors.models.member.attributes.emails.blank')], power: [I18n.t('activerecord.errors.models.member.attributes.power.blank')] }
+      it_behaves_like 'ToNG(html)', 422, [
+        get_locale('activerecord.errors.models.member.attributes.emails.blank'),
+        get_locale('activerecord.errors.models.member.attributes.power.blank')
+      ]
+      it_behaves_like 'ToNG(json)', 422, {
+        emails: [get_locale('activerecord.errors.models.member.attributes.emails.blank')],
+        power: [get_locale('activerecord.errors.models.member.attributes.power.blank')]
+      }
     end
     shared_examples_for '[ログイン中][*][ある]有効なパラメータ' do
       let(:attributes) { valid_attributes }
@@ -131,15 +138,15 @@ RSpec.describe 'Members', type: :request do
       let(:attributes) { invalid_attributes }
       it_behaves_like 'NG(html)'
       it_behaves_like 'NG(json)'
-      it_behaves_like 'ToNG(html)', 422
+      it_behaves_like 'ToNG(html)', 422, [get_locale('activerecord.errors.models.member.attributes.emails.blank')]
       it_behaves_like 'ToNG(json)', 401 # NOTE: APIは未ログイン扱い
     end
     shared_examples_for '[APIログイン中][*][ある]無効なパラメータ' do
       let(:attributes) { invalid_attributes }
       it_behaves_like 'NG(html)'
       it_behaves_like 'NG(json)'
-      it_behaves_like 'ToNG(html)', 422, [I18n.t('activerecord.errors.models.member.attributes.emails.blank')] # NOTE: HTMLもログイン状態になる
-      it_behaves_like 'ToNG(json)', 422, { emails: [I18n.t('activerecord.errors.models.member.attributes.emails.blank')] }
+      it_behaves_like 'ToNG(html)', 422, [get_locale('activerecord.errors.models.member.attributes.emails.blank')] # NOTE: HTMLもログイン状態になる
+      it_behaves_like 'ToNG(json)', 422, { emails: [get_locale('activerecord.errors.models.member.attributes.emails.blank')] }
     end
 
     shared_examples_for '[ログイン中][*]権限がある' do |power|

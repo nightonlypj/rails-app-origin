@@ -7,10 +7,10 @@ RSpec.describe Member, type: :model do
       expect(member).to be_valid
     end
   end
-  shared_examples_for 'InValid' do |key, error_msg|
+  shared_examples_for 'InValid' do
     it '保存できない。エラーメッセージが一致する' do
       expect(member).to be_invalid
-      expect(member.errors[key]).to eq([error_msg])
+      expect(member.errors.messages).to eq(messages)
     end
   end
 
@@ -23,7 +23,8 @@ RSpec.describe Member, type: :model do
     # テストケース
     context 'ない' do
       let(:power) { nil }
-      it_behaves_like 'InValid', :power, I18n.t('activerecord.errors.models.member.attributes.power.blank')
+      let(:messages) { { power: [get_locale('activerecord.errors.models.member.attributes.power.blank')] } }
+      it_behaves_like 'InValid'
     end
     context '正常値' do
       let(:power) { :admin }

@@ -25,8 +25,8 @@ RSpec.describe ApplicationHelper, type: :helper do
   describe 'enable_javascript_search?' do
     subject { helper.enable_javascript_search? }
     before do
-      allow(helper).to receive(:controller_name).and_return controller_name
-      allow(helper).to receive(:action_name).and_return action_name
+      allow(helper).to receive(:controller_name).and_return(controller_name)
+      allow(helper).to receive(:action_name).and_return(action_name)
     end
 
     # テストケース
@@ -135,8 +135,8 @@ RSpec.describe ApplicationHelper, type: :helper do
     subject { helper.space_destroy_reserved_message? }
     before do
       @space = space
-      allow(helper).to receive(:controller_name).and_return controller_name
-      allow(helper).to receive(:action_name).and_return action_name
+      allow(helper).to receive(:controller_name).and_return(controller_name)
+      allow(helper).to receive(:action_name).and_return(action_name)
     end
 
     # テストケース

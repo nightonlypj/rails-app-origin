@@ -26,13 +26,7 @@ RSpec.describe 'Invitations', type: :request do
     shared_examples_for 'ToOK(html/*)' do
       it 'HTTPステータスが200。対象項目が含まれる' do
         is_expected.to eq(200)
-        expect(response.body).to include(space.image_url(:small)) # 画像
-        expect(response.body).to include("href=\"#{space_path(space.code)}\"") # スペーストップ
-        expect(response.body).to include(space.name) # 名称
-        expect(response.body).to include('非公開') if space.private # 非公開
-        expect(response.body).to include(I18n.l(space.destroy_schedule_at.to_date)) if space.destroy_reserved? # 削除予定日時
-        expect(response.body).to include(Invitation.powers_i18n[:admin]) # 権限
-
+        expect_space_html(response, space)
         expect(response.body).to include("href=\"#{new_invitation_path(space.code)}\"") # 招待URL作成
       end
     end

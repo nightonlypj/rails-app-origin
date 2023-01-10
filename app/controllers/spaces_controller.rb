@@ -63,7 +63,7 @@ class SpacesController < ApplicationAuthController
       redirect_to space_path(@space.code), notice: t('notice.space.create')
     else
       set_member_count
-      render :show, locals: { notice: t('notice.space.create') }
+      render :show, locals: { notice: t('notice.space.create') }, status: :created
     end
   end
 

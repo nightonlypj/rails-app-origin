@@ -25,7 +25,10 @@ RSpec.describe 'Invitations', type: :request do
 
     # テスト内容
     shared_examples_for 'ToOK(html/*)' do
-      it_behaves_like 'ToOK[status]'
+      it 'HTTPステータスが200。対象項目が含まれる' do
+        is_expected.to eq(200)
+        expect_space_html(response, space)
+      end
     end
 
     # テストケース

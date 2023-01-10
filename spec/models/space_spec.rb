@@ -7,10 +7,10 @@ RSpec.describe Space, type: :model do
       expect(space).to be_valid
     end
   end
-  shared_examples_for 'InValid' do |key, error_msg|
+  shared_examples_for 'InValid' do
     it '保存できない。エラーメッセージが一致する' do
       expect(space).to be_invalid
-      expect(space.errors[key]).to eq([error_msg])
+      expect(space.errors.messages).to eq(messages)
     end
   end
 
@@ -24,7 +24,8 @@ RSpec.describe Space, type: :model do
     # テストケース
     context 'ない' do
       let(:code) { nil }
-      it_behaves_like 'InValid', :code, I18n.t('activerecord.errors.models.space.attributes.code.blank')
+      let(:messages) { { code: [get_locale('activerecord.errors.models.space.attributes.code.blank')] } }
+      it_behaves_like 'InValid'
     end
     context '正常値' do
       let(:code) { valid_code }
@@ -33,7 +34,8 @@ RSpec.describe Space, type: :model do
     context '重複' do
       before { FactoryBot.create(:space, code: code) }
       let(:code) { valid_code }
-      it_behaves_like 'InValid', :code, I18n.t('activerecord.errors.models.space.attributes.code.taken')
+      let(:messages) { { code: [get_locale('activerecord.errors.models.space.attributes.code.taken')] } }
+      it_behaves_like 'InValid'
     end
   end
 
@@ -46,12 +48,13 @@ RSpec.describe Space, type: :model do
     # テストケース
     context 'ない' do
       let(:name) { nil }
-      it_behaves_like 'InValid', :name, I18n.t('activerecord.errors.models.space.attributes.name.blank')
+      let(:messages) { { name: [get_locale('activerecord.errors.models.space.attributes.name.blank')] } }
+      it_behaves_like 'InValid'
     end
     context '最小文字数よりも少ない' do
       let(:name) { 'a' * (Settings['space_name_minimum'] - 1) }
-      it_behaves_like 'InValid', :name,
-                      I18n.t('activerecord.errors.models.space.attributes.name.too_short').gsub(/%{count}/, Settings['space_name_minimum'].to_s)
+      let(:messages) { { name: [get_locale('activerecord.errors.models.space.attributes.name.too_short', count: Settings['space_name_minimum'])] } }
+      it_behaves_like 'InValid'
     end
     context '最小文字数と同じ' do
       let(:name) { 'a' * Settings['space_name_minimum'] }
@@ -63,8 +66,8 @@ RSpec.describe Space, type: :model do
     end
     context '最大文字数よりも多い' do
       let(:name) { 'a' * (Settings['space_name_maximum'] + 1) }
-      it_behaves_like 'InValid', :name,
-                      I18n.t('activerecord.errors.models.space.attributes.name.too_long').gsub(/%{count}/, Settings['space_name_maximum'].to_s)
+      let(:messages) { { name: [get_locale('activerecord.errors.models.space.attributes.name.too_long', count: Settings['space_name_maximum'])] } }
+      it_behaves_like 'InValid'
     end
   end
 
@@ -85,8 +88,8 @@ RSpec.describe Space, type: :model do
     end
     context '最大文字数よりも多い' do
       let(:description) { 'a' * (Settings['space_description_maximum'] + 1) }
-      it_behaves_like 'InValid', :description,
-                      I18n.t('activerecord.errors.models.space.attributes.description.too_long').gsub(/%{count}/, Settings['space_description_maximum'].to_s)
+      let(:messages) { { description: [get_locale('activerecord.errors.models.space.attributes.description.too_long', count: Settings['space_description_maximum'])] } }
+      it_behaves_like 'InValid'
     end
   end
 
@@ -99,7 +102,8 @@ RSpec.describe Space, type: :model do
     # テストケース
     context 'ない' do
       let(:private) { nil }
-      it_behaves_like 'InValid', :private, I18n.t('activerecord.errors.models.space.attributes.private.inclusion')
+      let(:messages) { { private: [get_locale('activerecord.errors.models.space.attributes.private.inclusion')] } }
+      it_behaves_like 'InValid'
     end
     context 'true' do
       let(:private) { true }

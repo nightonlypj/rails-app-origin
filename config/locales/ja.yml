@@ -233,8 +233,8 @@ ja:
       create: 'メンバー招待の処理が完了しました。結果を確認してください。'
       update: 'メンバー情報を変更しました。'
       destroy: '%{destroy_count}名のメンバーを解除しました。'
-      destroy_notfound: '%{count}名中%{destroy_count}名のメンバーを解除しました。'
-      destroy_include_myself: '%{count}名中%{destroy_count}名のメンバーを解除しました。（自分自身は解除できません。他の管理者に依頼してください。）'
+      destroy_include_notfound: '%{count}名中%{destroy_count}名のメンバーを解除しました。'
+      destroy_include_myself: '%{count}名中%{destroy_count}名のメンバーを解除しました。（自分は解除できません。他の管理者に依頼してください。）'
     download:
       create: 'ダウンロードファイルの作成を開始しました。'
       status:
@@ -263,7 +263,7 @@ ja:
       destroy:
         codes:
           blank: '解除対象が指定されていません。'
-          myself: '自分自身は解除できません。他の管理者に依頼してください。'
+          myself: '自分は解除できません。他の管理者に依頼してください。'
           notfound: '解除対象が見つかりません。'
     download:
       notfound: 'ファイルが見つかりません。'

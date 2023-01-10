@@ -16,18 +16,14 @@ RSpec.describe 'Spaces', type: :request do
 
     shared_context 'set_power' do |power|
       let(:user_power) { power }
-      before_all { FactoryBot.create(:member, power: power, space: space, user: user) if power.present? && user.present? }
+      before_all { FactoryBot.create(:member, power, space: space, user: user) if power.present? && user.present? }
     end
 
     # テスト内容
     shared_examples_for 'ToOK(html/*)' do
       it 'HTTPステータスが200。対象項目が含まれる' do
         is_expected.to eq(200)
-        expect(response.body).to include(space.image_url(:small)) # 画像
-        expect(response.body).to include(space.name) # 名称
-        expect(response.body).to include('非公開') if space.private # 非公開
-        expect(response.body).to include(I18n.l(space.destroy_schedule_at.to_date)) if space.destroy_reserved? # 削除予定日時
-        expect(response.body).to include(Member.powers_i18n[user_power]) if user_power.present? # 権限
+        expect_space_html(response, space, user_power, false)
         if user_power.present?
           expect(response.body).to include("href=\"#{members_path(space.code)}\"") # メンバー一覧
         else
@@ -49,7 +45,7 @@ RSpec.describe 'Spaces', type: :request do
         expect(response_json['success']).to eq(true)
         expect(response_json['alert']).to be_nil
         expect(response_json['notice']).to be_nil
-        expect_space_json(response_json['space'], space, user_power)
+        expect_space_json(response_json['space'], space, user_power, member_count)
       end
     end
 
@@ -60,7 +56,7 @@ RSpec.describe 'Spaces', type: :request do
     end
     shared_examples_for '[ログイン中/削除予約済み][公開]権限がある(json)' do |power|
       let(:user_power) { nil } # NOTE: APIは未ログイン扱い
-      before_all { FactoryBot.create(:member, power: power, space: space, user: user) }
+      before_all { FactoryBot.create(:member, power, space: space, user: user) }
       let(:member_count) { 1 }
       it_behaves_like 'ToOK(json)' # NOTE: 公開スペースは見れる
     end
@@ -145,6 +141,17 @@ RSpec.describe 'Spaces', type: :request do
       it_behaves_like '[APIログイン中/削除予約済み][非公開]権限がない'
     end
 
+    shared_examples_for '[ログイン中/削除予約済み]' do
+      it_behaves_like '[*]スペースが存在しない'
+      it_behaves_like '[ログイン中/削除予約済み]スペースが公開'
+      it_behaves_like '[ログイン中/削除予約済み]スペースが非公開'
+    end
+    shared_examples_for '[APIログイン中/削除予約済み]' do
+      it_behaves_like '[*]スペースが存在しない'
+      it_behaves_like '[APIログイン中/削除予約済み]スペースが公開'
+      it_behaves_like '[APIログイン中/削除予約済み]スペースが非公開'
+    end
+
     context '未ログイン' do
       include_context '未ログイン処理'
       it_behaves_like '[*]スペースが存在しない'
@@ -153,27 +160,19 @@ RSpec.describe 'Spaces', type: :request do
     end
     context 'ログイン中' do
       include_context 'ログイン処理'
-      it_behaves_like '[*]スペースが存在しない'
-      it_behaves_like '[ログイン中/削除予約済み]スペースが公開'
-      it_behaves_like '[ログイン中/削除予約済み]スペースが非公開'
+      it_behaves_like '[ログイン中/削除予約済み]'
     end
     context 'ログイン中（削除予約済み）' do
       include_context 'ログイン処理', :destroy_reserved
-      it_behaves_like '[*]スペースが存在しない'
-      it_behaves_like '[ログイン中/削除予約済み]スペースが公開'
-      it_behaves_like '[ログイン中/削除予約済み]スペースが非公開'
+      it_behaves_like '[ログイン中/削除予約済み]'
     end
     context 'APIログイン中' do
       include_context 'APIログイン処理'
-      it_behaves_like '[*]スペースが存在しない'
-      it_behaves_like '[APIログイン中/削除予約済み]スペースが公開'
-      it_behaves_like '[APIログイン中/削除予約済み]スペースが非公開'
+      it_behaves_like '[APIログイン中/削除予約済み]'
     end
     context 'APIログイン中（削除予約済み）' do
       include_context 'APIログイン処理', :destroy_reserved
-      it_behaves_like '[*]スペースが存在しない'
-      it_behaves_like '[APIログイン中/削除予約済み]スペースが公開'
-      it_behaves_like '[APIログイン中/削除予約済み]スペースが非公開'
+      it_behaves_like '[APIログイン中/削除予約済み]'
     end
   end
 end

@@ -54,7 +54,16 @@ shared_context 'スペース一覧作成' do |public_admin_count, public_none_co
 end
 
 # テスト内容（共通）
-def expect_space_json(response_json_space, space, user_power)
+def expect_space_html(response, space, user_power = :admin, use_link = true)
+  expect(response.body).to include(space.image_url(:small))
+  expect(response.body).to include("href=\"#{space_path(space.code)}\"") if use_link # スペーストップ
+  expect(response.body).to include(space.name)
+  expect(response.body).to include('非公開') if space.private
+  expect(response.body).to include(I18n.l(space.destroy_schedule_at.to_date)) if space.destroy_reserved?
+  expect(response.body).to include(Member.powers_i18n[user_power]) if user_power.present?
+end
+
+def expect_space_basic_json(response_json_space, space)
   expect(response_json_space['code']).to eq(space.code)
   expect_image_json(response_json_space, space)
   expect(response_json_space['name']).to eq(space.name)
@@ -64,6 +73,10 @@ def expect_space_json(response_json_space, space, user_power)
   ## 削除予約
   expect(response_json_space['destroy_requested_at']).to eq(I18n.l(space.destroy_requested_at, format: :json, default: nil))
   expect(response_json_space['destroy_schedule_at']).to eq(I18n.l(space.destroy_schedule_at, format: :json, default: nil))
+end
+
+def expect_space_json(response_json_space, space, user_power, member_count)
+  expect_space_basic_json(response_json_space, space)
 
   ## メンバー数
   expect(response_json_space['member_count']).to eq(member_count)
@@ -94,8 +107,8 @@ end
 shared_examples_for 'ToSpaces(html/*)' do |alert, notice|
   it 'スペース一覧にリダイレクトする' do
     is_expected.to redirect_to(spaces_path)
-    expect(flash[:alert]).to alert.present? ? eq(I18n.t(alert)) : be_nil
-    expect(flash[:notice]).to notice.present? ? eq(I18n.t(notice)) : be_nil
+    expect(flash[:alert]).to alert.present? ? eq(get_locale(alert)) : be_nil
+    expect(flash[:notice]).to notice.present? ? eq(get_locale(notice)) : be_nil
   end
 end
 shared_examples_for 'ToSpaces(html/html)' do |alert, notice|
@@ -116,8 +129,8 @@ end
 shared_examples_for 'ToSpace(html/*)' do |alert, notice|
   it 'スペーストップにリダイレクトする' do
     is_expected.to redirect_to(space_path(space.code))
-    expect(flash[:alert]).to alert.present? ? eq(I18n.t(alert)) : be_nil
-    expect(flash[:notice]).to notice.present? ? eq(I18n.t(notice)) : be_nil
+    expect(flash[:alert]).to alert.present? ? eq(get_locale(alert)) : be_nil
+    expect(flash[:notice]).to notice.present? ? eq(get_locale(notice)) : be_nil
   end
 end
 shared_examples_for 'ToSpace(html/html)' do |alert, notice|

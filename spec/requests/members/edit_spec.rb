@@ -21,15 +21,18 @@ RSpec.describe 'Members', type: :request do
       before_all { FactoryBot.create(:member, space: space, user: show_user) }
     end
     shared_context 'set_power' do |power|
-      let(:user_power) { power }
-      before_all { FactoryBot.create(:member, power: power, space: space, user: user) if power.present? && user.present? }
+      before_all { FactoryBot.create(:member, power, space: space, user: user) if power.present? && user.present? }
+    end
+
+    # テスト内容
+    shared_examples_for 'ToOK(html/*)' do
+      it 'HTTPステータスが200。対象項目が含まれる' do
+        is_expected.to eq(200)
+        expect_space_html(response, space)
+      end
     end
 
     # テストケース
-    shared_examples_for 'ToOK(html/*)' do
-      it_behaves_like 'ToOK[status]'
-    end
-
     shared_examples_for '[ログイン中][*][ある]対象メンバーがいる（他人）' do
       let_it_be(:show_user) { FactoryBot.create(:user) }
       before_all            { FactoryBot.create(:member, space: space, user: show_user) }

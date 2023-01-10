@@ -11,11 +11,12 @@ RSpec.describe 'Spaces', type: :request do
   describe 'GET #new' do
     subject { get new_space_path(format: subject_format), headers: auth_headers.merge(accept_headers) }
 
-    # テストケース
+    # テスト内容
     shared_examples_for 'ToOK(html/*)' do
       it_behaves_like 'ToOK[status]'
     end
 
+    # テストケース
     context '未ログイン' do
       include_context '未ログイン処理'
       it_behaves_like 'ToLogin(html)'

@@ -20,13 +20,12 @@ RSpec.describe 'Spaces', type: :request do
     let(:current_space) { Space.last }
 
     shared_context 'valid_condition' do
+      let(:attributes) { valid_attributes }
       let_it_be(:space) { FactoryBot.create(:space) }
       include_context 'set_power', :admin
-      let(:attributes) { valid_attributes }
     end
     shared_context 'set_power' do |power|
-      let(:user_power) { power }
-      before_all { FactoryBot.create(:member, power: power, space: space, user: user) if power.present? && user.present? }
+      before_all { FactoryBot.create(:member, power, space: space, user: user) if power.present? && user.present? }
     end
 
     # テスト内容
@@ -50,19 +49,18 @@ RSpec.describe 'Spaces', type: :request do
       it '変更したスペースにリダイレクトする' do
         is_expected.to redirect_to(space_path(space.code))
         expect(flash[:alert]).to be_nil
-        expect(flash[:notice]).to eq(I18n.t('notice.space.update'))
+        expect(flash[:notice]).to eq(get_locale('notice.space.update'))
       end
     end
     shared_examples_for 'ToOK(json/json)' do
       let(:subject_format) { :json }
       let(:accept_headers) { ACCEPT_INC_JSON }
-      let(:member_count) { 1 }
       it 'HTTPステータスが200。対象項目が一致する' do
         is_expected.to eq(200)
         expect(response_json['success']).to eq(true)
         expect(response_json['alert']).to be_nil
-        expect(response_json['notice']).to eq(I18n.t('notice.space.update'))
-        expect_space_json(response_json['space'], current_space, :admin)
+        expect(response_json['notice']).to eq(get_locale('notice.space.update'))
+        expect_space_json(response_json['space'], current_space, :admin, 1)
       end
     end
 
@@ -71,15 +69,15 @@ RSpec.describe 'Spaces', type: :request do
       let(:attributes) { nil }
       it_behaves_like 'NG(html)'
       it_behaves_like 'NG(json)'
-      it_behaves_like 'ToNG(html)', 422
+      it_behaves_like 'ToNG(html)', 422, [get_locale('activerecord.errors.models.space.attributes.name.blank')]
       it_behaves_like 'ToNG(json)', 401 # NOTE: APIは未ログイン扱い
     end
     shared_examples_for '[APIログイン中][*][ある]パラメータなし' do
       let(:attributes) { nil }
       it_behaves_like 'NG(html)'
       it_behaves_like 'NG(json)'
-      it_behaves_like 'ToNG(html)', 422, [I18n.t('activerecord.errors.models.space.attributes.name.blank')]
-      it_behaves_like 'ToNG(json)', 422, { name: [I18n.t('activerecord.errors.models.space.attributes.name.blank')] }
+      it_behaves_like 'ToNG(html)', 422, [get_locale('activerecord.errors.models.space.attributes.name.blank')]
+      it_behaves_like 'ToNG(json)', 422, { name: [get_locale('activerecord.errors.models.space.attributes.name.blank')] }
     end
     shared_examples_for '[ログイン中][*][ある]有効なパラメータ（同名がない）' do
       let(:attributes) { valid_attributes }
@@ -99,29 +97,29 @@ RSpec.describe 'Spaces', type: :request do
       let(:attributes) { exist_attributes }
       it_behaves_like 'NG(html)'
       it_behaves_like 'NG(json)'
-      it_behaves_like 'ToNG(html)', 422
+      it_behaves_like 'ToNG(html)', 422, [get_locale('activerecord.errors.models.space.attributes.name.taken')]
       it_behaves_like 'ToNG(json)', 401 # NOTE: APIは未ログイン扱い
     end
     shared_examples_for '[APIログイン中][*][ある]有効なパラメータ（同名がある）' do
       let(:attributes) { exist_attributes }
       it_behaves_like 'NG(html)'
       it_behaves_like 'NG(json)'
-      it_behaves_like 'ToNG(html)', 422, [I18n.t('activerecord.errors.models.space.attributes.name.taken')] # NOTE: HTMLもログイン状態になる
-      it_behaves_like 'ToNG(json)', 422, { name: [I18n.t('activerecord.errors.models.space.attributes.name.taken')] }
+      it_behaves_like 'ToNG(html)', 422, [get_locale('activerecord.errors.models.space.attributes.name.taken')] # NOTE: HTMLもログイン状態になる
+      it_behaves_like 'ToNG(json)', 422, { name: [get_locale('activerecord.errors.models.space.attributes.name.taken')] }
     end
     shared_examples_for '[ログイン中][*][ある]無効なパラメータ' do
       let(:attributes) { invalid_attributes }
       it_behaves_like 'NG(html)'
       it_behaves_like 'NG(json)'
-      it_behaves_like 'ToNG(html)', 422
+      it_behaves_like 'ToNG(html)', 422, [get_locale('activerecord.errors.models.space.attributes.name.blank')]
       it_behaves_like 'ToNG(json)', 401 # NOTE: APIは未ログイン扱い
     end
     shared_examples_for '[APIログイン中][*][ある]無効なパラメータ' do
       let(:attributes) { invalid_attributes }
       it_behaves_like 'NG(html)'
       it_behaves_like 'NG(json)'
-      it_behaves_like 'ToNG(html)', 422, [I18n.t('activerecord.errors.models.space.attributes.name.blank')] # NOTE: HTMLもログイン状態になる
-      it_behaves_like 'ToNG(json)', 422, { name: [I18n.t('activerecord.errors.models.space.attributes.name.blank')] }
+      it_behaves_like 'ToNG(html)', 422, [get_locale('activerecord.errors.models.space.attributes.name.blank')] # NOTE: HTMLもログイン状態になる
+      it_behaves_like 'ToNG(json)', 422, { name: [get_locale('activerecord.errors.models.space.attributes.name.blank')] }
     end
 
     shared_examples_for '[ログイン中][*]権限がある' do |power|

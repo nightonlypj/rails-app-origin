@@ -38,7 +38,7 @@ RSpec.describe 'Members', type: :request do
   # テストパターン
   #   未ログイン, ログイン中, ログイン中（削除予約済み）, APIログイン中, APIログイン中（削除予約済み）
   #   スペース: 存在しない, 公開, 非公開
-  #   権限: ない, ある（管理者, 投稿者, 閲覧者）
+  #   権限: ある（管理者, 投稿者, 閲覧者）, ない
   #   メンバー: いない, 最大表示数と同じ, 最大表示数より多い
   #   ＋URLの拡張子: ない, .json
   #   ＋Acceptヘッダ: HTMLが含まれる, JSONが含まれる
@@ -49,12 +49,7 @@ RSpec.describe 'Members', type: :request do
     shared_examples_for 'ToOK(html/*)' do
       it 'HTTPステータスが200。対象項目が含まれる' do
         is_expected.to eq(200)
-        expect(response.body).to include(space.image_url(:small)) # 画像
-        expect(response.body).to include("href=\"#{space_path(space.code)}\"") # スペーストップ
-        expect(response.body).to include(space.name) # 名称
-        expect(response.body).to include('非公開') if space.private # 非公開
-        expect(response.body).to include(I18n.l(space.destroy_schedule_at.to_date)) if space.destroy_reserved? # 削除予定日時
-        expect(response.body).to include(Member.powers_i18n[user_power]) if user_power.present? # 権限
+        expect_space_html(response, space, user_power)
 
         download_url = create_download_path({ model: :member, space_code: space.code, search_params: { page: subject_page } }).gsub(/&/, '&amp;')
         if user_power == :admin
@@ -131,45 +126,52 @@ RSpec.describe 'Members', type: :request do
         subject
         (start_no..end_no).each do |no|
           member = members[members.count - no]
+          # (メンバー解除)
           if user_power == :admin
-            expect(response.body).to include("id=\"codes[#{member.user.code}]\"") # (メンバー解除)
+            expect(response.body).to include("id=\"codes[#{member.user.code}]\"")
           else
             expect(response.body).not_to include("id=\"codes[#{member.user.code}]\"")
           end
-          expect(response.body).to include(member.user.image_url(:small)) # 画像
-          expect(response.body).to include(member.user.name) # 氏名
+          # メンバー
+          expect(response.body).to include(member.user.image_url(:small))
+          expect(response.body).to include(member.user.name)
+          # メールアドレス
           if user_power == :admin
-            expect(response.body).to include(member.user.email) # メールアドレス
+            expect(response.body).to include(member.user.email)
           else
             expect(response.body).not_to include(member.user.email)
           end
+          url = "href=\"#{edit_member_path(space.code, member.user.code)}\""
           if user_power == :admin && member.user != user
-            expect(response.body).to include("href=\"#{edit_member_path(space.code, member.user.code)}\"") # メンバー情報変更
+            expect(response.body).to include(url)
           else
-            expect(response.body).not_to include("href=\"#{edit_member_path(space.code, member.user.code)}\"")
+            expect(response.body).not_to include(url)
           end
-          expect(response.body).to include(member.power_i18n) # 権限
-
+          # 権限
+          expect(response.body).to include(member.power_i18n)
+          # 招待者
           if member.invitationed_user.present?
             if user_power == :admin
-              expect(response.body).to include(member.invitationed_user.image_url(:small)) # [招待者]画像
-              expect(response.body).to include(member.invitationed_user.name) # [招待者]氏名
+              expect(response.body).to include(member.invitationed_user.image_url(:small))
+              expect(response.body).to include(member.invitationed_user.name)
             else
               # expect(response.body).not_to include(member.invitationed_user.image_url(:small)) # NOTE: ユニークではない為
               expect(response.body).not_to include(member.invitationed_user.name)
             end
           end
+          # 招待日時
           expect(response.body).to include(I18n.l(member.invitationed_at)) if member.invitationed_at.present?
-
+          # 更新者
           if member.last_updated_user.present?
             if user_power == :admin
-              expect(response.body).to include(member.last_updated_user.image_url(:small)) # [最終更新者]画像
-              expect(response.body).to include(member.last_updated_user.name) # [最終更新者]氏名
+              expect(response.body).to include(member.last_updated_user.image_url(:small))
+              expect(response.body).to include(member.last_updated_user.name)
             else
               # expect(response.body).not_to include(member.last_updated_user.image_url(:small)) # NOTE: ユニークではない為
               expect(response.body).not_to include(member.last_updated_user.name)
             end
           end
+          # 更新日時
           if member.last_updated_at.present?
             if user_power == :admin
               expect(response.body).to include(I18n.l(member.last_updated_at))
@@ -190,22 +192,7 @@ RSpec.describe 'Members', type: :request do
         subject
         expect(response_json_members.count).to eq(end_no - start_no + 1)
         (start_no..end_no).each do |no|
-          data = response_json_members[no - start_no]
-          member = members[members.count - no]
-
-          expect_user_json(data['user'], member.user, user_power == :admin)
-          expect(data['power']).to eq(member.power)
-          expect(data['power_i18n']).to eq(Member.powers_i18n[member.power])
-
-          if user_power == :admin
-            expect_user_json(data['invitationed_user'], member.invitationed_user, true, member.invitationed_user_id.present?)
-            expect_user_json(data['last_updated_user'], member.last_updated_user, true, member.last_updated_user_id.present?)
-          else
-            expect(data['invitationed_user']).to be_nil
-            expect(data['last_updated_user']).to be_nil
-          end
-          expect(data['invitationed_at']).to eq(I18n.l(member.invitationed_at, format: :json, default: nil))
-          expect(data['last_updated_at']).to user_power == :admin ? eq(I18n.l(member.last_updated_at, format: :json, default: nil)) : be_nil
+          expect_member_json(response_json_members[no - start_no], members[members.count - no], user_power)
         end
       end
     end
@@ -282,14 +269,6 @@ RSpec.describe 'Members', type: :request do
       it_behaves_like 'リダイレクト(json)', 3
     end
 
-    shared_examples_for '[ログイン中/削除予約済み][*]権限がない' do
-      it_behaves_like 'ToNG(html)', 403
-      it_behaves_like 'ToNG(json)', 401 # NOTE: APIは未ログイン扱い
-    end
-    shared_examples_for '[APIログイン中/削除予約済み][*]権限がない' do
-      it_behaves_like 'ToNG(html)', 403
-      it_behaves_like 'ToNG(json)', 403
-    end
     shared_examples_for '[ログイン中/削除予約済み][*]権限がある' do |power|
       # it_behaves_like '[ログイン中/削除予約済み][*][ある]メンバーがいない', power # NOTE: 自分がいる
       it_behaves_like '[ログイン中/削除予約済み][*][ある]メンバーが最大表示数と同じ', power
@@ -299,6 +278,14 @@ RSpec.describe 'Members', type: :request do
       # it_behaves_like '[APIログイン中/削除予約済み][*][ある]メンバーがいない', power # NOTE: 自分がいる
       it_behaves_like '[APIログイン中/削除予約済み][*][ある]メンバーが最大表示数と同じ', power
       it_behaves_like '[APIログイン中/削除予約済み][*][ある]メンバーが最大表示数より多い', power
+    end
+    shared_examples_for '[ログイン中/削除予約済み][*]権限がない' do
+      it_behaves_like 'ToNG(html)', 403
+      it_behaves_like 'ToNG(json)', 401 # NOTE: APIは未ログイン扱い
+    end
+    shared_examples_for '[APIログイン中/削除予約済み][*]権限がない' do
+      it_behaves_like 'ToNG(html)', 403
+      it_behaves_like 'ToNG(json)', 403
     end
 
     shared_examples_for '[ログイン中/削除予約済み]スペースが存在しない' do
@@ -313,31 +300,42 @@ RSpec.describe 'Members', type: :request do
     end
     shared_examples_for '[ログイン中/削除予約済み]スペースが公開' do
       let_it_be(:space) { FactoryBot.create(:space, :public) }
-      it_behaves_like '[ログイン中/削除予約済み][*]権限がない'
       it_behaves_like '[ログイン中/削除予約済み][*]権限がある', :admin
       it_behaves_like '[ログイン中/削除予約済み][*]権限がある', :writer
       it_behaves_like '[ログイン中/削除予約済み][*]権限がある', :reader
+      it_behaves_like '[ログイン中/削除予約済み][*]権限がない'
     end
     shared_examples_for '[APIログイン中/削除予約済み]スペースが公開' do
       let_it_be(:space) { FactoryBot.create(:space, :public) }
-      it_behaves_like '[APIログイン中/削除予約済み][*]権限がない'
       it_behaves_like '[APIログイン中/削除予約済み][*]権限がある', :admin
       it_behaves_like '[APIログイン中/削除予約済み][*]権限がある', :writer
       it_behaves_like '[APIログイン中/削除予約済み][*]権限がある', :reader
+      it_behaves_like '[APIログイン中/削除予約済み][*]権限がない'
     end
     shared_examples_for '[ログイン中/削除予約済み]スペースが非公開' do
       let_it_be(:space) { FactoryBot.create(:space, :private) }
-      it_behaves_like '[ログイン中/削除予約済み][*]権限がない'
       it_behaves_like '[ログイン中/削除予約済み][*]権限がある', :admin
       it_behaves_like '[ログイン中/削除予約済み][*]権限がある', :writer
       it_behaves_like '[ログイン中/削除予約済み][*]権限がある', :reader
+      it_behaves_like '[ログイン中/削除予約済み][*]権限がない'
     end
     shared_examples_for '[APIログイン中/削除予約済み]スペースが非公開' do
       let_it_be(:space) { FactoryBot.create(:space, :private) }
-      it_behaves_like '[APIログイン中/削除予約済み][*]権限がない'
       it_behaves_like '[APIログイン中/削除予約済み][*]権限がある', :admin
       it_behaves_like '[APIログイン中/削除予約済み][*]権限がある', :writer
       it_behaves_like '[APIログイン中/削除予約済み][*]権限がある', :reader
+      it_behaves_like '[APIログイン中/削除予約済み][*]権限がない'
+    end
+
+    shared_examples_for '[ログイン中/削除予約済み]' do
+      it_behaves_like '[ログイン中/削除予約済み]スペースが存在しない'
+      it_behaves_like '[ログイン中/削除予約済み]スペースが公開'
+      it_behaves_like '[ログイン中/削除予約済み]スペースが非公開'
+    end
+    shared_examples_for '[APIログイン中/削除予約済み]' do
+      it_behaves_like '[APIログイン中/削除予約済み]スペースが存在しない'
+      it_behaves_like '[APIログイン中/削除予約済み]スペースが公開'
+      it_behaves_like '[APIログイン中/削除予約済み]スペースが非公開'
     end
 
     context '未ログイン' do
@@ -348,33 +346,25 @@ RSpec.describe 'Members', type: :request do
     end
     context 'ログイン中' do
       include_context 'ログイン処理'
-      it_behaves_like '[ログイン中/削除予約済み]スペースが存在しない'
-      it_behaves_like '[ログイン中/削除予約済み]スペースが公開'
-      it_behaves_like '[ログイン中/削除予約済み]スペースが非公開'
+      it_behaves_like '[ログイン中/削除予約済み]'
     end
     context 'ログイン中（削除予約済み）' do
       include_context 'ログイン処理', :destroy_reserved
-      it_behaves_like '[ログイン中/削除予約済み]スペースが存在しない'
-      it_behaves_like '[ログイン中/削除予約済み]スペースが公開'
-      it_behaves_like '[ログイン中/削除予約済み]スペースが非公開'
+      it_behaves_like '[ログイン中/削除予約済み]'
     end
     context 'APIログイン中' do
       include_context 'APIログイン処理'
-      it_behaves_like '[APIログイン中/削除予約済み]スペースが存在しない'
-      it_behaves_like '[APIログイン中/削除予約済み]スペースが公開'
-      it_behaves_like '[APIログイン中/削除予約済み]スペースが非公開'
+      it_behaves_like '[APIログイン中/削除予約済み]'
     end
     context 'APIログイン中（削除予約済み）' do
       include_context 'APIログイン処理', :destroy_reserved
-      it_behaves_like '[APIログイン中/削除予約済み]スペースが存在しない'
-      it_behaves_like '[APIログイン中/削除予約済み]スペースが公開'
-      it_behaves_like '[APIログイン中/削除予約済み]スペースが非公開'
+      it_behaves_like '[APIログイン中/削除予約済み]'
     end
   end
 
   # 前提条件
   #   ログイン中（URLの拡張子がない/AcceptヘッダにHTMLが含まれる）, APIログイン中（URLの拡張子が.json/AcceptヘッダにJSONが含まれる）
-  #   検索条件の権限・並び順指定なし, 氏名のみ確認
+  #   権限がある, 検索条件の権限・並び順指定なし, 氏名のみ確認
   # テストパターン
   #   権限: 管理者, 投稿者, 閲覧者
   #   部分一致: 氏名, メールアドレス（管理者のみ表示）
@@ -383,22 +373,27 @@ RSpec.describe 'Members', type: :request do
     let_it_be(:space) { FactoryBot.create(:space) }
     let_it_be(:member_all)        { FactoryBot.create(:member, space: space, user: FactoryBot.create(:user, name: '氏名(Aaa)')) }
     let_it_be(:member_admin_only) { FactoryBot.create(:member, space: space, user: FactoryBot.create(:user, email: '_Aaa@example.com')) }
+    before_all { FactoryBot.create(:member, user: FactoryBot.create(:user, name: '氏名(Aaa)')) } # NOTE: 対象外
     let(:params) { { text: 'aaa' } }
 
+    shared_context 'set_power' do |power|
+      before_all { FactoryBot.create(:member, power, space: space, user: user) }
+    end
+
     # テストケース
-    shared_examples_for '管理者' do
-      before_all { FactoryBot.create(:member, space: space, user: user, power: :admin) }
+    shared_examples_for '管理者' do |power|
+      include_context 'set_power', power
       let(:members) { [member_admin_only, member_all] }
       it_behaves_like 'ToOK[氏名]'
     end
     shared_examples_for '管理者以外' do |power|
-      before_all { FactoryBot.create(:member, space: space, user: user, power: power) }
+      include_context 'set_power', power
       let(:members) { [member_all] }
       it_behaves_like 'ToOK[氏名]'
     end
 
     shared_examples_for '権限' do
-      it_behaves_like '管理者'
+      it_behaves_like '管理者', :admin
       it_behaves_like '管理者以外', :writer
       it_behaves_like '管理者以外', :reader
     end
@@ -419,7 +414,7 @@ RSpec.describe 'Members', type: :request do
 
   # 前提条件
   #   ログイン中（URLの拡張子がない/AcceptヘッダにHTMLが含まれる）, APIログイン中（URLの拡張子が.json/AcceptヘッダにJSONが含まれる）
-  #   検索条件のテキスト・並び順指定なし, 氏名のみ確認
+  #   権限がある, 検索条件のテキスト・並び順指定なし, 氏名のみ確認
   # テストパターン
   #   管理者, 投稿者, 閲覧者 の組み合わせ
   describe 'GET #index (.power)' do
@@ -525,7 +520,7 @@ RSpec.describe 'Members', type: :request do
 
   # 前提条件
   #   APIログイン中（URLの拡張子が.json/AcceptヘッダにJSONが含まれる）
-  #   検索条件のテキスト・権限指定なし, 件数のみ確認
+  #   権限がある, 検索条件のテキスト・権限指定なし, 件数のみ確認
   # テストパターン
   #   対象: メンバー, メールアドレス, 権限, 招待者, 招待日時, 最終更新者, 最終更新日時
   #   並び順: ASC, DESC  ※ASCは1つのみ確認

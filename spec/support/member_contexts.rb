@@ -13,6 +13,7 @@ shared_context 'メンバー一覧作成' do |admin_count, writer_count, reader_
       FactoryBot.create_list(:member, reader_count, :reader, space: space, invitationed_user: invitationed_user,
                                                              created_at: now, updated_at: now)
   end
+  before_all { FactoryBot.create(:member, :admin, user: user) } # NOTE: 対象外
 end
 
 # テスト内容（共通）
@@ -40,8 +41,8 @@ end
 shared_examples_for 'ToMembers(html/*)' do |alert, notice|
   it 'メンバー一覧にリダイレクトする' do
     is_expected.to redirect_to(members_path(space.code))
-    expect(flash[:alert]).to alert.present? ? eq(I18n.t(alert)) : be_nil
-    expect(flash[:notice]).to notice.present? ? eq(I18n.t(notice)) : be_nil
+    expect(flash[:alert]).to alert.present? ? eq(get_locale(alert)) : be_nil
+    expect(flash[:notice]).to notice.present? ? eq(get_locale(notice)) : be_nil
   end
 end
 shared_examples_for 'ToMembers(html/html)' do |alert, notice|
