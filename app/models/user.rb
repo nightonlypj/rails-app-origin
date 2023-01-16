@@ -21,7 +21,7 @@ class User < ApplicationRecord
   validates :name, presence: true
   validates :name, length: { in: Settings['user_name_minimum']..Settings['user_name_maximum'] }, if: proc { |user| user.name.present? }
 
-  scope :by_destroy_reserved, -> { where('destroy_schedule_at <= ?', Time.current) }
+  scope :destroy_target, -> { where(destroy_schedule_at: ..Time.current) }
 
   # 削除予約済みか返却
   def destroy_reserved?

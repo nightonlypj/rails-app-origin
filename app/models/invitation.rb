@@ -12,6 +12,13 @@ class Invitation < ApplicationRecord
   validate :validate_ended_date
   validate :validate_ended_time
 
+  scope :destroy_target, lambda {
+    schedule_date = Time.current - Settings['invitation_destroy_schedule_days'].days
+    where(destroy_schedule_at: ..Time.current)
+      .or(where(destroy_schedule_at: nil, ended_at: ..schedule_date))
+      .or(where(destroy_schedule_at: nil, email_joined_at: ..schedule_date))
+  }
+
   # 権限
   enum power: {
     admin: 1, # 管理者

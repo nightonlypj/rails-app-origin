@@ -4,9 +4,9 @@ class Space < ApplicationRecord
 
   belongs_to :created_user,      class_name: 'User', optional: true # NOTE: アカウント削除済みでも変更できるようにoptionalを追加
   belongs_to :last_updated_user, class_name: 'User', optional: true
-  has_many :downloads, dependent: :destroy
   has_many :members, dependent: :destroy
   has_many :users, through: :members
+  has_many :downloads, dependent: :destroy
   has_many :invitations, dependent: :destroy
 
   validates :code, presence: true
@@ -57,6 +57,7 @@ class Space < ApplicationRecord
   }
   scope :active, -> { where(destroy_schedule_at: nil) }
   scope :destroy_reserved, -> { where.not(destroy_schedule_at: nil) }
+  scope :destroy_target, -> { where(destroy_schedule_at: ..Time.current) }
 
   # 削除予約済みか返却
   def destroy_reserved?

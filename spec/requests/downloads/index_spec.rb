@@ -79,6 +79,8 @@ RSpec.describe 'Downloads', type: :request do
           download = downloads[downloads.count - no]
           # 依頼日時
           expect(response.body).to include(I18n.l(download.requested_at))
+          # 完了日時
+          expect(response.body).to include(I18n.l(download.completed_at)) if download.completed_at.present?
           # ステータス
           expect(response.body).to include(download.status_i18n)
           # ファイル

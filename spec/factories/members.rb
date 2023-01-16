@@ -3,7 +3,6 @@ FactoryBot.define do
     power { :admin }
     association :space
     association :user
-    association :invitationed_user, factory: :user
 
     # 権限
     trait :admin do

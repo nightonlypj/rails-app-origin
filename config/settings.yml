@@ -66,3 +66,5 @@ member_emails_max_count: 100
 ## ダウンロード
 # 一覧のデフォルト最大表示件数
 default_downloads_limit: 25
+# ダウンロード削除の猶予期間（単位：日）
+download_destroy_schedule_days: 7

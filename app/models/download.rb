@@ -15,6 +15,12 @@ class Download < ApplicationRecord
   validates :search_params, text_hash: true, if: proc { |download| download.search_params.present? }
   validate :validate_output_items
 
+  scope :destroy_target, lambda {
+    schedule_date = Time.current - Settings['download_destroy_schedule_days'].days
+    where(completed_at: ..schedule_date)
+      .or(where(completed_at: nil, requested_at: ..schedule_date))
+  }
+
   # ステータス
   enum status: {
     waiting: 0, # 処理待ち

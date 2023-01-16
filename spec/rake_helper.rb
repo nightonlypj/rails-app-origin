@@ -17,9 +17,9 @@ RSpec.configure do |config|
   config.after(:suite) do
     store_dir = User.new.image.store_dir
     if store_dir.start_with?('/tmp/')
-      FileUtils.rm_r(store_dir, secure: true)
+      FileUtils.rm_rf(store_dir, secure: true)
     else
-      p "[Skip]rm -f #{store_dir}"
+      p "[Skip]rm -rf #{store_dir}"
     end
   end
 end

@@ -6,6 +6,7 @@
           依頼日時
           <i class="fas fa-sort-down"></i>
         </th>
+        <th scope="col" class="text-nowrap">完了日時</th>
         <th scope="col" class="text-nowrap">ステータス</th>
         <th scope="col" class="text-nowrap text-center">ファイル</th>
         <th scope="col" class="text-nowrap d-none d-md-block">対象・形式等</th>
@@ -17,6 +18,10 @@
         <%# 依頼日時 %>
         <td scope="row" class="text-nowrap px-1 py-2">
           <%= l(download.requested_at) %>
+        </td>
+        <%# 完了日時 %>
+        <td class="text-nowrap px-1 py-2">
+          <%= l(download.completed_at, default: nil) %>
         </td>
         <%# ステータス %>
         <td class="text-nowrap px-1 py-2">
