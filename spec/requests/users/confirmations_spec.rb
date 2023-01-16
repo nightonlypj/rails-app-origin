@@ -5,8 +5,8 @@ RSpec.describe 'Users::Confirmations', type: :request do
   shared_examples_for 'ToNew' do |alert, notice|
     it 'メールアドレス確認[メール再送]にリダイレクトする' do
       is_expected.to redirect_to(new_user_confirmation_path)
-      expect(flash[:alert]).to alert.present? ? eq(I18n.t(alert)) : be_nil
-      expect(flash[:notice]).to notice.present? ? eq(I18n.t(notice)) : be_nil
+      expect(flash[:alert]).to alert.present? ? eq(get_locale(alert)) : be_nil
+      expect(flash[:notice]).to notice.present? ? eq(get_locale(notice)) : be_nil
     end
   end
 
@@ -85,18 +85,19 @@ RSpec.describe 'Users::Confirmations', type: :request do
       it_behaves_like 'ToError', 'errors.messages.not_found'
     end
 
-    context '未ログイン' do
+    shared_examples_for '[*]' do
       it_behaves_like '[*]有効なパラメータ（メール未確認）'
       it_behaves_like '[*]有効なパラメータ（メール確認済み）'
       it_behaves_like '[*]有効なパラメータ（メールアドレス変更中）'
       it_behaves_like '[*]無効なパラメータ'
     end
+
+    context '未ログイン' do
+      it_behaves_like '[*]'
+    end
     context 'ログイン中' do
       include_context 'ログイン処理'
-      it_behaves_like '[*]有効なパラメータ（メール未確認）'
-      it_behaves_like '[*]有効なパラメータ（メール確認済み）'
-      it_behaves_like '[*]有効なパラメータ（メールアドレス変更中）'
-      it_behaves_like '[*]無効なパラメータ'
+      it_behaves_like '[*]'
     end
   end
 
@@ -206,18 +207,20 @@ RSpec.describe 'Users::Confirmations', type: :request do
       # it_behaves_like '[*][ない]確認日時が確認送信日時より後（確認済み）' # NOTE: トークンが存在しない為、確認日時がない
     end
 
-    context '未ログイン' do
-      it_behaves_like '[未ログイン]トークンが期限内'
+    shared_examples_for '[*]' do
       it_behaves_like '[*]トークンが期限切れ'
       it_behaves_like '[*]トークンが存在しない'
       it_behaves_like '[*]トークンがない'
     end
+
+    context '未ログイン' do
+      it_behaves_like '[未ログイン]トークンが期限内'
+      it_behaves_like '[*]'
+    end
     context 'ログイン中' do
       include_context 'ログイン処理'
       it_behaves_like '[ログイン中]トークンが期限内'
-      it_behaves_like '[*]トークンが期限切れ'
-      it_behaves_like '[*]トークンが存在しない'
-      it_behaves_like '[*]トークンがない'
+      it_behaves_like '[*]'
     end
   end
 end

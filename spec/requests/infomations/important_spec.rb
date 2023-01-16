@@ -59,11 +59,24 @@ RSpec.describe 'Infomations', type: :request do
       it_behaves_like 'ToOK(json)'
       it_behaves_like 'リスト表示(json)'
     end
-    shared_examples_for '[ログイン中/削除予約済み]大切なお知らせがある' do
+    shared_examples_for '[未ログイン以外]大切なお知らせがある' do
       include_context '大切なお知らせ一覧作成', 1, 1, 1, 1
       it_behaves_like 'ToNG(html)', 406
       it_behaves_like 'ToOK(json)'
       it_behaves_like 'リスト表示(json)'
+    end
+
+    shared_examples_for '[ログイン中/削除予約済み]' do
+      let(:infomations) { @all_important_infomations } # NOTE: APIは未ログイン扱いの為、全員のしか見れない
+      include_context 'お知らせ一覧作成', 1, 1, 1, 1
+      it_behaves_like '[*]大切なお知らせがない'
+      it_behaves_like '[未ログイン以外]大切なお知らせがある'
+    end
+    shared_examples_for '[APIログイン中/削除予約済み]' do
+      let(:infomations) { @user_important_infomations }
+      include_context 'お知らせ一覧作成', 1, 1, 1, 1
+      it_behaves_like '[*]大切なお知らせがない'
+      it_behaves_like '[未ログイン以外]大切なお知らせがある'
     end
 
     context '未ログイン' do
@@ -74,32 +87,20 @@ RSpec.describe 'Infomations', type: :request do
       it_behaves_like '[未ログイン]大切なお知らせがある'
     end
     context 'ログイン中' do
-      let(:infomations) { @all_important_infomations } # NOTE: APIは未ログイン扱いの為、全員のしか見れない
       include_context 'ログイン処理'
-      include_context 'お知らせ一覧作成', 1, 1, 1, 1
-      it_behaves_like '[*]大切なお知らせがない'
-      it_behaves_like '[ログイン中/削除予約済み]大切なお知らせがある'
+      it_behaves_like '[ログイン中/削除予約済み]'
     end
     context 'ログイン中（削除予約済み）' do
-      let(:infomations) { @all_important_infomations } # NOTE: APIは未ログイン扱いの為、全員のしか見れない
       include_context 'ログイン処理', :destroy_reserved
-      include_context 'お知らせ一覧作成', 1, 1, 1, 1
-      it_behaves_like '[*]大切なお知らせがない'
-      it_behaves_like '[ログイン中/削除予約済み]大切なお知らせがある'
+      it_behaves_like '[ログイン中/削除予約済み]'
     end
     context 'APIログイン中' do
-      let(:infomations) { @user_important_infomations }
       include_context 'APIログイン処理'
-      include_context 'お知らせ一覧作成', 1, 1, 1, 1
-      it_behaves_like '[*]大切なお知らせがない'
-      it_behaves_like '[ログイン中/削除予約済み]大切なお知らせがある'
+      it_behaves_like '[APIログイン中/削除予約済み]'
     end
     context 'APIログイン中（削除予約済み）' do
-      let(:infomations) { @user_important_infomations }
       include_context 'APIログイン処理', :destroy_reserved
-      include_context 'お知らせ一覧作成', 1, 1, 1, 1
-      it_behaves_like '[*]大切なお知らせがない'
-      it_behaves_like '[ログイン中/削除予約済み]大切なお知らせがある'
+      it_behaves_like '[APIログイン中/削除予約済み]'
     end
   end
 end

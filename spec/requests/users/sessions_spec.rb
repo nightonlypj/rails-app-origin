@@ -165,6 +165,18 @@ RSpec.describe 'Users::Sessions', type: :request do
       it_behaves_like 'NotSendLocked'
     end
 
+    shared_examples_for '[ログイン中/削除予約済み]' do
+      it_behaves_like '[ログイン中/削除予約済み]有効なパラメータ（未ロック）'
+      it_behaves_like '[ログイン中/削除予約済み]有効なパラメータ（ロック中）'
+      it_behaves_like '[ログイン中/削除予約済み]有効なパラメータ（メール未確認）'
+      it_behaves_like '[ログイン中/削除予約済み]有効なパラメータ（メールアドレス変更中）'
+      it_behaves_like '[ログイン中/削除予約済み]有効なパラメータ（削除予約済み）'
+      it_behaves_like '[ログイン中/削除予約済み]無効なパラメータ（存在しない）'
+      it_behaves_like '[ログイン中/削除予約済み]無効なパラメータ（ロック前）'
+      it_behaves_like '[ログイン中/削除予約済み]無効なパラメータ（ロック前の前）'
+      it_behaves_like '[ログイン中/削除予約済み]無効なパラメータ（ロック前の前の前）'
+    end
+
     context '未ログイン' do
       it_behaves_like '[未ログイン]有効なパラメータ（未ロック）'
       it_behaves_like '[未ログイン]有効なパラメータ（ロック中）'
@@ -178,27 +190,11 @@ RSpec.describe 'Users::Sessions', type: :request do
     end
     context 'ログイン中' do
       include_context 'ログイン処理'
-      it_behaves_like '[ログイン中/削除予約済み]有効なパラメータ（未ロック）'
-      it_behaves_like '[ログイン中/削除予約済み]有効なパラメータ（ロック中）'
-      it_behaves_like '[ログイン中/削除予約済み]有効なパラメータ（メール未確認）'
-      it_behaves_like '[ログイン中/削除予約済み]有効なパラメータ（メールアドレス変更中）'
-      it_behaves_like '[ログイン中/削除予約済み]有効なパラメータ（削除予約済み）'
-      it_behaves_like '[ログイン中/削除予約済み]無効なパラメータ（存在しない）'
-      it_behaves_like '[ログイン中/削除予約済み]無効なパラメータ（ロック前）'
-      it_behaves_like '[ログイン中/削除予約済み]無効なパラメータ（ロック前の前）'
-      it_behaves_like '[ログイン中/削除予約済み]無効なパラメータ（ロック前の前の前）'
+      it_behaves_like '[ログイン中/削除予約済み]'
     end
     context 'ログイン中（削除予約済み）' do
       include_context 'ログイン処理', :destroy_reserved
-      it_behaves_like '[ログイン中/削除予約済み]有効なパラメータ（未ロック）'
-      it_behaves_like '[ログイン中/削除予約済み]有効なパラメータ（ロック中）'
-      it_behaves_like '[ログイン中/削除予約済み]有効なパラメータ（メール未確認）'
-      it_behaves_like '[ログイン中/削除予約済み]有効なパラメータ（メールアドレス変更中）'
-      it_behaves_like '[ログイン中/削除予約済み]有効なパラメータ（削除予約済み）'
-      it_behaves_like '[ログイン中/削除予約済み]無効なパラメータ（存在しない）'
-      it_behaves_like '[ログイン中/削除予約済み]無効なパラメータ（ロック前）'
-      it_behaves_like '[ログイン中/削除予約済み]無効なパラメータ（ロック前の前）'
-      it_behaves_like '[ログイン中/削除予約済み]無効なパラメータ（ロック前の前の前）'
+      it_behaves_like '[ログイン中/削除予約済み]'
     end
   end
 

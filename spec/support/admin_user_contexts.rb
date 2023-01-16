@@ -29,14 +29,14 @@ end
 shared_examples_for 'ToAdmin' do |alert, notice|
   it 'RailsAdminにリダイレクトする' do
     is_expected.to redirect_to(rails_admin_path)
-    expect(flash[:alert]).to alert.present? ? eq(I18n.t(alert)) : be_nil
-    expect(flash[:notice]).to notice.present? ? eq(I18n.t(notice)) : be_nil
+    expect(flash[:alert]).to alert.present? ? eq(get_locale(alert)) : be_nil
+    expect(flash[:notice]).to notice.present? ? eq(get_locale(notice)) : be_nil
   end
 end
 shared_examples_for 'ToAdminLogin' do |alert, notice|
   it 'ログイン（管理者）にリダイレクトする' do
     is_expected.to redirect_to(new_admin_user_session_path)
-    expect(flash[:alert]).to alert.present? ? eq(I18n.t(alert)) : be_nil
-    expect(flash[:notice]).to notice.present? ? eq(I18n.t(notice)) : be_nil
+    expect(flash[:alert]).to alert.present? ? eq(get_locale(alert)) : be_nil
+    expect(flash[:notice]).to notice.present? ? eq(get_locale(notice)) : be_nil
   end
 end

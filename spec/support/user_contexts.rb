@@ -77,15 +77,15 @@ end
 shared_examples_for 'ToTop' do |alert, notice|
   it 'トップページにリダイレクトする' do
     is_expected.to redirect_to(root_path)
-    expect(flash[:alert]).to alert.present? ? eq(I18n.t(alert)) : be_nil
-    expect(flash[:notice]).to notice.present? ? eq(I18n.t(notice)) : be_nil
+    expect(flash[:alert]).to alert.present? ? eq(get_locale(alert)) : be_nil
+    expect(flash[:notice]).to notice.present? ? eq(get_locale(notice)) : be_nil
   end
 end
 shared_examples_for 'ToLogin' do |alert, notice|
   it 'ログインにリダイレクトする' do
     is_expected.to redirect_to(new_user_session_path)
-    expect(flash[:alert]).to alert.present? ? eq(I18n.t(alert)) : be_nil
-    expect(flash[:notice]).to notice.present? ? eq(I18n.t(notice)) : be_nil
+    expect(flash[:alert]).to alert.present? ? eq(get_locale(alert)) : be_nil
+    expect(flash[:notice]).to notice.present? ? eq(get_locale(notice)) : be_nil
   end
 end
 

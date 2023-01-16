@@ -9,9 +9,9 @@ RSpec.describe 'Users::Auth::TokenValidations', type: :request do
     let(:accept_headers) { ACCEPT_INC_JSON }
     it '対象のメッセージと一致する' do
       subject
-      expect(response_json['errors'].to_s).to error_msg.present? ? include(I18n.t(error_msg)) : be_blank # 方針: 廃止して、alertへ
-      expect(response_json['alert']).to alert.present? ? eq(I18n.t(alert)) : be_nil # 方針: 追加
-      expect(response_json['notice']).to notice.present? ? eq(I18n.t(notice)) : be_nil # 方針: 追加
+      expect(response_json['errors'].to_s).to error_msg.present? ? include(get_locale(error_msg)) : be_blank # 方針: 廃止して、alertへ
+      expect(response_json['alert']).to alert.present? ? eq(get_locale(alert)) : be_nil # 方針: 追加
+      expect(response_json['notice']).to notice.present? ? eq(get_locale(notice)) : be_nil # 方針: 追加
     end
   end
 
@@ -63,17 +63,19 @@ RSpec.describe 'Users::Auth::TokenValidations', type: :request do
     end
 
     # テストケース
-    context '未ログイン' do
-      include_context '未ログイン処理'
+    shared_examples_for '[未ログイン/ログイン中]' do
       it_behaves_like 'ToNG', 401
       # it_behaves_like 'ToMsg', 'devise_token_auth.token_validations.invalid', nil, nil
       it_behaves_like 'ToMsg', nil, 'devise_token_auth.token_validations.invalid', nil
     end
+
+    context '未ログイン' do
+      include_context '未ログイン処理'
+      it_behaves_like '[未ログイン/ログイン中]'
+    end
     context 'ログイン中' do
       include_context 'ログイン処理'
-      it_behaves_like 'ToNG', 401
-      # it_behaves_like 'ToMsg', 'devise_token_auth.token_validations.invalid', nil, nil
-      it_behaves_like 'ToMsg', nil, 'devise_token_auth.token_validations.invalid', nil
+      it_behaves_like '[未ログイン/ログイン中]'
     end
     context 'APIログイン中' do
       include_context 'APIログイン処理'

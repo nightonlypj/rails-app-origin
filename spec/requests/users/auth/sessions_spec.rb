@@ -9,9 +9,9 @@ RSpec.describe 'Users::Auth::Sessions', type: :request do
     let(:accept_headers) { ACCEPT_INC_JSON }
     it '対象のメッセージと一致する' do
       subject
-      expect(response_json['errors'].to_s).to error_msg.present? ? include(I18n.t(error_msg)) : be_blank # 方針: 廃止して、alertへ
-      expect(response_json['alert']).to alert.present? ? eq(I18n.t(alert)) : be_nil # 方針: 追加
-      expect(response_json['notice']).to notice.present? ? eq(I18n.t(notice)) : be_nil # 方針: 追加
+      expect(response_json['errors'].to_s).to error_msg.present? ? include(get_locale(error_msg)) : be_blank # 方針: 廃止して、alertへ
+      expect(response_json['alert']).to alert.present? ? eq(get_locale(alert)) : be_nil # 方針: 追加
+      expect(response_json['notice']).to notice.present? ? eq(get_locale(notice)) : be_nil # 方針: 追加
     end
   end
 
@@ -269,8 +269,7 @@ RSpec.describe 'Users::Auth::Sessions', type: :request do
       it_behaves_like 'NotSendLocked'
     end
 
-    context '未ログイン' do
-      include_context '未ログイン処理'
+    shared_examples_for '[未ログイン/ログイン中]' do
       it_behaves_like '[未ログイン/ログイン中]パラメータなし'
       it_behaves_like '[未ログイン/ログイン中]有効なパラメータ（未ロック）'
       it_behaves_like '[未ログイン/ログイン中]有効なパラメータ（ロック中）'
@@ -278,56 +277,43 @@ RSpec.describe 'Users::Auth::Sessions', type: :request do
       it_behaves_like '[未ログイン/ログイン中]有効なパラメータ（メールアドレス変更中）'
       it_behaves_like '[未ログイン/ログイン中]有効なパラメータ（削除予約済み）'
       it_behaves_like '[未ログイン/ログイン中]無効なパラメータ（存在しない）'
+    end
+    shared_examples_for '[APIログイン中/削除予約済み]' do
+      it_behaves_like '[APIログイン中/削除予約済み]パラメータなし'
+      it_behaves_like '[APIログイン中/削除予約済み]有効なパラメータ（未ロック）'
+      it_behaves_like '[APIログイン中/削除予約済み]有効なパラメータ（ロック中）'
+      it_behaves_like '[APIログイン中/削除予約済み]有効なパラメータ（メール未確認）'
+      it_behaves_like '[APIログイン中/削除予約済み]有効なパラメータ（メールアドレス変更中）'
+      it_behaves_like '[APIログイン中/削除予約済み]有効なパラメータ（削除予約済み）'
+      it_behaves_like '[APIログイン中/削除予約済み]無効なパラメータ（存在しない）'
+    end
+    shared_examples_for '[*]' do
       it_behaves_like '[*]無効なパラメータ（ロック前）'
       it_behaves_like '[*]無効なパラメータ（ロック前の前）'
       it_behaves_like '[*]無効なパラメータ（ロック前の前の前）'
       it_behaves_like '[*]URLがない'
       it_behaves_like '[*]URLがホワイトリストにない'
+    end
+
+    context '未ログイン' do
+      include_context '未ログイン処理'
+      it_behaves_like '[未ログイン/ログイン中]'
+      it_behaves_like '[*]'
     end
     context 'ログイン中' do
       include_context 'ログイン処理'
-      it_behaves_like '[未ログイン/ログイン中]パラメータなし'
-      it_behaves_like '[未ログイン/ログイン中]有効なパラメータ（未ロック）'
-      it_behaves_like '[未ログイン/ログイン中]有効なパラメータ（ロック中）'
-      it_behaves_like '[未ログイン/ログイン中]有効なパラメータ（メール未確認）'
-      it_behaves_like '[未ログイン/ログイン中]有効なパラメータ（メールアドレス変更中）'
-      it_behaves_like '[未ログイン/ログイン中]有効なパラメータ（削除予約済み）'
-      it_behaves_like '[未ログイン/ログイン中]無効なパラメータ（存在しない）'
-      it_behaves_like '[*]無効なパラメータ（ロック前）'
-      it_behaves_like '[*]無効なパラメータ（ロック前の前）'
-      it_behaves_like '[*]無効なパラメータ（ロック前の前の前）'
-      it_behaves_like '[*]URLがない'
-      it_behaves_like '[*]URLがホワイトリストにない'
+      it_behaves_like '[未ログイン/ログイン中]'
+      it_behaves_like '[*]'
     end
     context 'APIログイン中' do
       include_context 'APIログイン処理'
-      it_behaves_like '[APIログイン中/削除予約済み]パラメータなし'
-      it_behaves_like '[APIログイン中/削除予約済み]有効なパラメータ（未ロック）'
-      it_behaves_like '[APIログイン中/削除予約済み]有効なパラメータ（ロック中）'
-      it_behaves_like '[APIログイン中/削除予約済み]有効なパラメータ（メール未確認）'
-      it_behaves_like '[APIログイン中/削除予約済み]有効なパラメータ（メールアドレス変更中）'
-      it_behaves_like '[APIログイン中/削除予約済み]有効なパラメータ（削除予約済み）'
-      it_behaves_like '[APIログイン中/削除予約済み]無効なパラメータ（存在しない）'
-      it_behaves_like '[*]無効なパラメータ（ロック前）'
-      it_behaves_like '[*]無効なパラメータ（ロック前の前）'
-      it_behaves_like '[*]無効なパラメータ（ロック前の前の前）'
-      it_behaves_like '[*]URLがない'
-      it_behaves_like '[*]URLがホワイトリストにない'
+      it_behaves_like '[APIログイン中/削除予約済み]'
+      it_behaves_like '[*]'
     end
     context 'APIログイン中（削除予約済み）' do
       include_context 'APIログイン処理', :destroy_reserved
-      it_behaves_like '[APIログイン中/削除予約済み]パラメータなし'
-      it_behaves_like '[APIログイン中/削除予約済み]有効なパラメータ（未ロック）'
-      it_behaves_like '[APIログイン中/削除予約済み]有効なパラメータ（ロック中）'
-      it_behaves_like '[APIログイン中/削除予約済み]有効なパラメータ（メール未確認）'
-      it_behaves_like '[APIログイン中/削除予約済み]有効なパラメータ（メールアドレス変更中）'
-      it_behaves_like '[APIログイン中/削除予約済み]有効なパラメータ（削除予約済み）'
-      it_behaves_like '[APIログイン中/削除予約済み]無効なパラメータ（存在しない）'
-      it_behaves_like '[*]無効なパラメータ（ロック前）'
-      it_behaves_like '[*]無効なパラメータ（ロック前の前）'
-      it_behaves_like '[*]無効なパラメータ（ロック前の前の前）'
-      it_behaves_like '[*]URLがない'
-      it_behaves_like '[*]URLがホワイトリストにない'
+      it_behaves_like '[APIログイン中/削除予約済み]'
+      it_behaves_like '[*]'
     end
   end
 
@@ -375,31 +361,33 @@ RSpec.describe 'Users::Auth::Sessions', type: :request do
     end
 
     # テストケース
-    context '未ログイン' do
-      include_context '未ログイン処理'
+    shared_examples_for '[未ログイン/ログイン中]' do
       # it_behaves_like 'ToNG', 404
       it_behaves_like 'ToNG', 401
       # it_behaves_like 'ToMsg', 'devise_token_auth.sessions.user_not_found', nil, nil
       it_behaves_like 'ToMsg', nil, 'devise_token_auth.sessions.user_not_found', nil
+    end
+    shared_examples_for '[APIログイン中/削除予約済み]' do
+      it_behaves_like 'ToOK'
+      # it_behaves_like 'ToMsg', nil, nil, nil
+      it_behaves_like 'ToMsg', nil, nil, 'devise.sessions.signed_out'
+    end
+
+    context '未ログイン' do
+      include_context '未ログイン処理'
+      it_behaves_like '[未ログイン/ログイン中]'
     end
     context 'ログイン中' do
       include_context 'ログイン処理'
-      # it_behaves_like 'ToNG', 404
-      it_behaves_like 'ToNG', 401
-      # it_behaves_like 'ToMsg', 'devise_token_auth.sessions.user_not_found', nil, nil
-      it_behaves_like 'ToMsg', nil, 'devise_token_auth.sessions.user_not_found', nil
+      it_behaves_like '[未ログイン/ログイン中]'
     end
     context 'APIログイン中' do
       include_context 'APIログイン処理'
-      it_behaves_like 'ToOK'
-      # it_behaves_like 'ToMsg', nil, nil, nil
-      it_behaves_like 'ToMsg', nil, nil, 'devise.sessions.signed_out'
+      it_behaves_like '[APIログイン中/削除予約済み]'
     end
     context 'APIログイン中（削除予約済み）' do
       include_context 'APIログイン処理', :destroy_reserved
-      it_behaves_like 'ToOK'
-      # it_behaves_like 'ToMsg', nil, nil, nil
-      it_behaves_like 'ToMsg', nil, nil, 'devise.sessions.signed_out'
+      it_behaves_like '[APIログイン中/削除予約済み]'
     end
   end
 end

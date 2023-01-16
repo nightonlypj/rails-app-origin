@@ -25,8 +25,8 @@ RSpec.describe ApplicationHelper, type: :helper do
   describe 'show_user_accordion?' do
     subject { helper.show_user_accordion? }
     before do
-      allow(helper).to receive(:controller_name).and_return controller_name
-      allow(helper).to receive(:action_name).and_return action_name
+      allow(helper).to receive(:controller_name).and_return(controller_name)
+      allow(helper).to receive(:action_name).and_return(action_name)
     end
 
     # テストケース
@@ -59,9 +59,9 @@ RSpec.describe ApplicationHelper, type: :helper do
   describe 'user_destroy_reserved_message?' do
     subject { helper.user_destroy_reserved_message? }
     before do
-      allow(helper).to receive(:current_user).and_return current_user
-      allow(helper).to receive(:controller_name).and_return controller_name
-      allow(helper).to receive(:action_name).and_return action_name
+      allow(helper).to receive(:current_user).and_return(current_user)
+      allow(helper).to receive(:controller_name).and_return(controller_name)
+      allow(helper).to receive(:action_name).and_return(action_name)
     end
 
     # テストケース
@@ -104,8 +104,8 @@ RSpec.describe ApplicationHelper, type: :helper do
   describe 'user_valid_confirmation_token?' do
     subject { helper.user_valid_confirmation_token? }
     before do
-      allow(helper).to receive(:devise_mapping).and_return Devise.mappings[:user]
-      allow(helper).to receive(:current_user).and_return current_user
+      allow(helper).to receive(:devise_mapping).and_return(Devise.mappings[:user])
+      allow(helper).to receive(:current_user).and_return(current_user)
     end
 
     # テストケース
