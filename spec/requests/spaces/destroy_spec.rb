@@ -16,12 +16,11 @@ RSpec.describe 'Spaces', type: :request do
     subject { post destroy_space_path(code: space.code, format: subject_format), headers: auth_headers.merge(accept_headers) }
     let(:current_space) { Space.last }
 
+    let_it_be(:space_not)    { FactoryBot.build_stubbed(:space) }
+    let_it_be(:space_public) { FactoryBot.create(:space, :public) }
     shared_context 'valid_condition' do
-      let_it_be(:space) { FactoryBot.create(:space) }
-      include_context 'set_power', :admin
-    end
-    shared_context 'set_power' do |power|
-      before_all { FactoryBot.create(:member, power, space: space, user: user) if power.present? && user.present? }
+      let_it_be(:space) { space_public }
+      include_context 'set_member_power', :admin
     end
 
     # テスト内容
@@ -62,28 +61,28 @@ RSpec.describe 'Spaces', type: :request do
 
     # テストケース
     shared_examples_for '[ログイン中][*][ない]権限がある' do |power|
-      include_context 'set_power', power
+      include_context 'set_member_power', power
       it_behaves_like 'OK(html)'
       it_behaves_like 'NG(json)'
       it_behaves_like 'ToOK(html)'
       it_behaves_like 'ToNG(json)', 401 # NOTE: APIは未ログイン扱い
     end
     shared_examples_for '[APIログイン中][*][ない]権限がある' do |power|
-      include_context 'set_power', power
+      include_context 'set_member_power', power
       it_behaves_like 'OK(html)'
       it_behaves_like 'OK(json)'
       it_behaves_like 'ToOK(html)' # NOTE: HTMLもログイン状態になる
       it_behaves_like 'ToOK(json)'
     end
     shared_examples_for '[ログイン中][*][ない]権限がない' do |power|
-      include_context 'set_power', power
+      include_context 'set_member_power', power
       it_behaves_like 'NG(html)'
       it_behaves_like 'NG(json)'
       it_behaves_like 'ToNG(html)', 403
       it_behaves_like 'ToNG(json)', 401 # NOTE: APIは未ログイン扱い
     end
     shared_examples_for '[APIログイン中][*][ない]権限がない' do |power|
-      include_context 'set_power', power
+      include_context 'set_member_power', power
       it_behaves_like 'NG(html)'
       it_behaves_like 'NG(json)'
       it_behaves_like 'ToNG(html)', 403 # NOTE: HTMLもログイン状態になる
@@ -92,13 +91,13 @@ RSpec.describe 'Spaces', type: :request do
 
     shared_examples_for '[ログイン中][*]削除予約がある' do |private|
       let_it_be(:space) { FactoryBot.create(:space, :destroy_reserved, private: private) }
-      include_context 'set_power', :admin
+      include_context 'set_member_power', :admin
       it_behaves_like 'ToSpace(html)', 'alert.space.destroy_reserved'
       it_behaves_like 'ToNG(json)', 401 # NOTE: APIは未ログイン扱い
     end
     shared_examples_for '[APIログイン中][*]削除予約がある' do |private|
       let_it_be(:space) { FactoryBot.create(:space, :destroy_reserved, private: private) }
-      include_context 'set_power', :admin
+      include_context 'set_member_power', :admin
       it_behaves_like 'ToSpace(html)', 'alert.space.destroy_reserved' # NOTE: HTMLもログイン状態になる
       it_behaves_like 'ToNG(json)', 422, nil, 'alert.space.destroy_reserved'
     end
@@ -118,7 +117,7 @@ RSpec.describe 'Spaces', type: :request do
     end
 
     shared_examples_for '[ログイン中]スペースが存在しない' do
-      let_it_be(:space) { FactoryBot.build_stubbed(:space) }
+      let_it_be(:space) { space_not }
       let(:attributes) { valid_attributes }
       # it_behaves_like 'NG(html)' # NOTE: 存在しない為
       # it_behaves_like 'NG(json)'
@@ -126,7 +125,7 @@ RSpec.describe 'Spaces', type: :request do
       it_behaves_like 'ToNG(json)', 401 # NOTE: APIは未ログイン扱い
     end
     shared_examples_for '[APIログイン中]スペースが存在しない' do
-      let_it_be(:space) { FactoryBot.build_stubbed(:space) }
+      let_it_be(:space) { space_not }
       let(:attributes) { valid_attributes }
       # it_behaves_like 'NG(html)' # NOTE: 存在しない為
       # it_behaves_like 'NG(json)'

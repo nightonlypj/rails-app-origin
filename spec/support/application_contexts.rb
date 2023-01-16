@@ -32,6 +32,12 @@ def get_locale(key, **replace)
   result
 end
 
+shared_examples_for 'ToRaise' do |error|
+  it '例外が発生する' do
+    expect { subject }.to raise_error(error)
+  end
+end
+
 shared_examples_for 'ToOK[status]' do
   it 'HTTPステータスが200' do
     is_expected.to eq(200)

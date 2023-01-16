@@ -24,16 +24,14 @@ RSpec.describe 'Members', type: :request do
     let_it_be(:invalid_attributes) { valid_attributes.merge(emails: nil) }
     let(:current_member) { Member.last }
 
+    let_it_be(:space_not)     { FactoryBot.build_stubbed(:space) }
+    let_it_be(:space_public)  { FactoryBot.create(:space, :public) }
+    let_it_be(:space_private) { FactoryBot.create(:space, :private) }
     shared_context 'valid_condition' do
       let(:attributes) { valid_attributes }
-      let_it_be(:space) { FactoryBot.create(:space) }
-      include_context 'set_power', :admin
-    end
-    shared_context 'set_power' do |power|
-      before_all do
-        FactoryBot.create(:member, power, space: space, user: user) if power.present? && user.present?
-        FactoryBot.create(:member, space: space, user: exist_user)
-      end
+      let_it_be(:space) { space_public }
+      include_context 'set_member_power', :admin
+      before_all { FactoryBot.create(:member, space: space, user: exist_user) }
     end
 
     # テスト内容
@@ -150,19 +148,19 @@ RSpec.describe 'Members', type: :request do
     end
 
     shared_examples_for '[ログイン中][*]権限がある' do |power|
-      include_context 'set_power', power
+      include_context 'set_member_power', power
       it_behaves_like '[ログイン中][*][ある]パラメータなし'
       it_behaves_like '[ログイン中][*][ある]有効なパラメータ'
       it_behaves_like '[ログイン中][*][ある]無効なパラメータ'
     end
     shared_examples_for '[APIログイン中][*]権限がある' do |power|
-      include_context 'set_power', power
+      include_context 'set_member_power', power
       it_behaves_like '[APIログイン中][*][ある]パラメータなし'
       it_behaves_like '[APIログイン中][*][ある]有効なパラメータ'
       it_behaves_like '[APIログイン中][*][ある]無効なパラメータ'
     end
     shared_examples_for '[ログイン中][*]権限がない' do |power|
-      include_context 'set_power', power
+      include_context 'set_member_power', power
       let(:attributes) { valid_attributes }
       it_behaves_like 'NG(html)'
       it_behaves_like 'NG(json)'
@@ -170,7 +168,7 @@ RSpec.describe 'Members', type: :request do
       it_behaves_like 'ToNG(json)', 401 # NOTE: APIは未ログイン扱い
     end
     shared_examples_for '[APIログイン中][*]権限がない' do |power|
-      include_context 'set_power', power
+      include_context 'set_member_power', power
       let(:attributes) { valid_attributes }
       it_behaves_like 'NG(html)'
       it_behaves_like 'NG(json)'
@@ -179,7 +177,7 @@ RSpec.describe 'Members', type: :request do
     end
 
     shared_examples_for '[ログイン中]スペースが存在しない' do
-      let_it_be(:space) { FactoryBot.build_stubbed(:space) }
+      let_it_be(:space) { space_not }
       let(:attributes) { valid_attributes }
       it_behaves_like 'NG(html)'
       it_behaves_like 'NG(json)'
@@ -187,7 +185,7 @@ RSpec.describe 'Members', type: :request do
       it_behaves_like 'ToNG(json)', 401 # NOTE: APIは未ログイン扱い
     end
     shared_examples_for '[APIログイン中]スペースが存在しない' do
-      let_it_be(:space) { FactoryBot.build_stubbed(:space) }
+      let_it_be(:space) { space_not }
       let(:attributes) { valid_attributes }
       it_behaves_like 'NG(html)'
       it_behaves_like 'NG(json)'
@@ -195,28 +193,32 @@ RSpec.describe 'Members', type: :request do
       it_behaves_like 'ToNG(json)', 404
     end
     shared_examples_for '[ログイン中]スペースが公開' do
-      let_it_be(:space) { FactoryBot.create(:space, :public) }
+      let_it_be(:space) { space_public }
+      before_all { FactoryBot.create(:member, space: space, user: exist_user) }
       it_behaves_like '[ログイン中][*]権限がある', :admin
       it_behaves_like '[ログイン中][*]権限がない', :writer
       it_behaves_like '[ログイン中][*]権限がない', :reader
       it_behaves_like '[ログイン中][*]権限がない', nil
     end
     shared_examples_for '[APIログイン中]スペースが公開' do
-      let_it_be(:space) { FactoryBot.create(:space, :public) }
+      let_it_be(:space) { space_public }
+      before_all { FactoryBot.create(:member, space: space, user: exist_user) }
       it_behaves_like '[APIログイン中][*]権限がある', :admin
       it_behaves_like '[APIログイン中][*]権限がない', :writer
       it_behaves_like '[APIログイン中][*]権限がない', :reader
       it_behaves_like '[APIログイン中][*]権限がない', nil
     end
     shared_examples_for '[ログイン中]スペースが非公開' do
-      let_it_be(:space) { FactoryBot.create(:space, :private) }
+      let_it_be(:space) { space_private }
+      before_all { FactoryBot.create(:member, space: space, user: exist_user) }
       it_behaves_like '[ログイン中][*]権限がある', :admin
       it_behaves_like '[ログイン中][*]権限がない', :writer
       it_behaves_like '[ログイン中][*]権限がない', :reader
       it_behaves_like '[ログイン中][*]権限がない', nil
     end
     shared_examples_for '[APIログイン中]スペースが非公開' do
-      let_it_be(:space) { FactoryBot.create(:space, :private) }
+      let_it_be(:space) { space_private }
+      before_all { FactoryBot.create(:member, space: space, user: exist_user) }
       it_behaves_like '[APIログイン中][*]権限がある', :admin
       it_behaves_like '[APIログイン中][*]権限がない', :writer
       it_behaves_like '[APIログイン中][*]権限がない', :reader

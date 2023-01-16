@@ -1,4 +1,5 @@
 class DownloadsController < ApplicationAuthController
+  before_action :response_not_acceptable_for_not_html, only: :new
   before_action :authenticate_user!
   before_action :set_params_new, only: :new
   before_action :set_params_create, only: :create
@@ -76,11 +77,14 @@ class DownloadsController < ApplicationAuthController
   # Use callbacks to share common setup or constraints between actions.
   def set_params_new(target_params = params)
     @model = target_params[:model]&.to_sym
-    return response_not_exist_key(:model) if Download.models[@model].blank?
+    return response_param_error(:model, 'blank') if @model.blank?
+    return response_param_error(:model, 'not_exist') if Download.models[@model].blank?
 
     if @model == :member
+      return response_param_error(:space_code, 'blank') if target_params[:space_code].blank?
+
       @space = Space.find_by(code: target_params[:space_code])
-      return response_not_exist_key(:space_code) if @space.blank?
+      return response_param_error(:space_code, 'not_exist') if @space.blank?
 
       @current_member = Member.where(space: @space, user: current_user).eager_load(:user)&.first
       return response_forbidden if @current_member.blank? || !@current_member.power_admin?
@@ -103,12 +107,11 @@ class DownloadsController < ApplicationAuthController
     set_params_new(params[:download])
   end
 
-  def response_not_exist_key(key)
+  def response_param_error(key, error)
     if format_html?
       head :not_found
     else
-      errors = key.present? ? { key => t('errors.messages.not_exist') } : nil
-      render './failure', locals: { errors: errors, alert: t('errors.messages.not_saved.one') }, status: :not_found
+      render './failure', locals: { errors: { key => [t("errors.messages.param.#{error}")] }, alert: t('errors.messages.not_saved.one') }, status: :not_found
     end
   end
 

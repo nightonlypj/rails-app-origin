@@ -7,10 +7,10 @@ RSpec.describe Download, type: :model do
       expect(download).to be_valid
     end
   end
-  shared_examples_for 'InValid' do |key, error_msg|
+  shared_examples_for 'InValid' do
     it '保存できない。エラーメッセージが一致する' do
       expect(download).to be_invalid
-      expect(download.errors[key]).to eq([error_msg])
+      expect(download.errors.messages).to eq(messages)
     end
   end
   shared_examples_for 'Value' do |value, text = value|
@@ -28,7 +28,8 @@ RSpec.describe Download, type: :model do
     # テストケース
     context 'ない' do
       let(:target) { nil }
-      it_behaves_like 'InValid', :target, I18n.t('activerecord.errors.models.download.attributes.target.blank')
+      let(:messages) { { target: [get_locale('activerecord.errors.models.download.attributes.target.blank')] } }
+      it_behaves_like 'InValid'
     end
     context '正常値' do
       let(:target) { :all }
@@ -45,7 +46,8 @@ RSpec.describe Download, type: :model do
     # テストケース
     context 'ない' do
       let(:format) { nil }
-      it_behaves_like 'InValid', :format, I18n.t('activerecord.errors.models.download.attributes.format.blank')
+      let(:messages) { { format: [get_locale('activerecord.errors.models.download.attributes.format.blank')] } }
+      it_behaves_like 'InValid'
     end
     context '正常値' do
       let(:format) { :csv }
@@ -62,7 +64,8 @@ RSpec.describe Download, type: :model do
     # テストケース
     context 'ない' do
       let(:char_code) { nil }
-      it_behaves_like 'InValid', :char_code, I18n.t('activerecord.errors.models.download.attributes.char_code.blank')
+      let(:messages) { { char_code: [get_locale('activerecord.errors.models.download.attributes.char_code.blank')] } }
+      it_behaves_like 'InValid'
     end
     context '正常値' do
       let(:char_code) { :sjis }
@@ -79,7 +82,8 @@ RSpec.describe Download, type: :model do
     # テストケース
     context 'ない' do
       let(:newline_code) { nil }
-      it_behaves_like 'InValid', :newline_code, I18n.t('activerecord.errors.models.download.attributes.newline_code.blank')
+      let(:messages) { { newline_code: [get_locale('activerecord.errors.models.download.attributes.newline_code.blank')] } }
+      it_behaves_like 'InValid'
     end
     context '正常値' do
       let(:newline_code) { :crlf }
@@ -96,7 +100,8 @@ RSpec.describe Download, type: :model do
     # テストケース
     context 'ない' do
       let(:output_items) { nil }
-      it_behaves_like 'InValid', :output_items, I18n.t('activerecord.errors.models.download.attributes.output_items.blank')
+      let(:messages) { { output_items: [get_locale('activerecord.errors.models.download.attributes.output_items.blank')] } }
+      it_behaves_like 'InValid'
     end
     context '正常値' do
       let(:output_items) { '["user.name", "power"]' }
@@ -104,11 +109,13 @@ RSpec.describe Download, type: :model do
     end
     context '文字列' do
       let(:output_items) { 'user.name,power' }
-      it_behaves_like 'InValid', :output_items, I18n.t('activerecord.errors.models.download.attributes.output_items.invalid')
+      let(:messages) { { output_items: [get_locale('activerecord.errors.models.download.attributes.output_items.invalid')] } }
+      it_behaves_like 'InValid'
     end
     context '文字列（ハッシュ）' do
-      let(:output_items) { '{"text"=>"a"}' }
-      it_behaves_like 'InValid', :output_items, I18n.t('activerecord.errors.models.download.attributes.output_items.invalid')
+      let(:output_items) { '{"text"=>"aaa"}' }
+      let(:messages) { { output_items: [get_locale('activerecord.errors.models.download.attributes.output_items.invalid')] } }
+      it_behaves_like 'InValid'
     end
   end
 
@@ -119,7 +126,8 @@ RSpec.describe Download, type: :model do
     # テストケース
     shared_examples_for 'ない' do |valid|
       let(:select_items) { nil }
-      it_behaves_like valid ? 'Valid' : 'InValid', :select_items, I18n.t('activerecord.errors.models.download.attributes.select_items.blank')
+      let(:messages) { { select_items: [get_locale('activerecord.errors.models.download.attributes.select_items.blank')] } }
+      it_behaves_like valid ? 'Valid' : 'InValid'
     end
     shared_examples_for '正常値' do
       let(:select_items) { '["code000000000000000000001", "code000000000000000000002"]' }
@@ -127,11 +135,13 @@ RSpec.describe Download, type: :model do
     end
     shared_examples_for '文字列' do
       let(:select_items) { 'code000000000000000000001,code000000000000000000002' }
-      it_behaves_like 'InValid', :select_items, I18n.t('activerecord.errors.models.download.attributes.select_items.invalid')
+      let(:messages) { { select_items: [get_locale('activerecord.errors.models.download.attributes.select_items.invalid')] } }
+      it_behaves_like 'InValid'
     end
     shared_examples_for '文字列（ハッシュ）' do
-      let(:select_items) { '{"text"=>"a"}' }
-      it_behaves_like 'InValid', :select_items, I18n.t('activerecord.errors.models.download.attributes.select_items.invalid')
+      let(:select_items) { '{"text"=>"aaa"}' }
+      let(:messages) { { select_items: [get_locale('activerecord.errors.models.download.attributes.select_items.invalid')] } }
+      it_behaves_like 'InValid'
     end
 
     context '対象が選択項目' do
@@ -159,19 +169,22 @@ RSpec.describe Download, type: :model do
     # テストケース
     shared_examples_for 'ない' do |valid|
       let(:search_params) { nil }
-      it_behaves_like valid ? 'Valid' : 'InValid', :search_params, I18n.t('activerecord.errors.models.download.attributes.search_params.blank')
+      let(:messages) { { search_params: [get_locale('activerecord.errors.models.download.attributes.search_params.blank')] } }
+      it_behaves_like valid ? 'Valid' : 'InValid'
     end
     shared_examples_for '正常値' do
-      let(:search_params) { '{"text"=>"a"}' }
+      let(:search_params) { '{"text"=>"aaa"}' }
       it_behaves_like 'Valid'
     end
     shared_examples_for '文字列' do
-      let(:search_params) { 'a' }
-      it_behaves_like 'InValid', :search_params, I18n.t('activerecord.errors.models.download.attributes.search_params.invalid')
+      let(:search_params) { 'aaa' }
+      let(:messages) { { search_params: [get_locale('activerecord.errors.models.download.attributes.search_params.invalid')] } }
+      it_behaves_like 'InValid'
     end
     shared_examples_for '文字列（配列）' do
       let(:search_params) { '["code000000000000000000001", "code000000000000000000002"]' }
-      it_behaves_like 'InValid', :search_params, I18n.t('activerecord.errors.models.download.attributes.search_params.invalid')
+      let(:messages) { { search_params: [get_locale('activerecord.errors.models.download.attributes.search_params.invalid')] } }
+      it_behaves_like 'InValid'
     end
 
     context '対象が検索' do

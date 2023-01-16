@@ -12,7 +12,9 @@ class DownloadJob < ApplicationJob
       @download.status = :processing
       @download.save!
 
-      DownloadFile.create!(download: @download, body: file_body)
+      output_items = eval(@download.output_items)
+      DownloadFile.create!(download: @download, body: change_char_code(file_header(output_items) + file_data(output_items)))
+
       @download.status = :success
       @download.completed_at = Time.current
       @download.save!
@@ -30,26 +32,6 @@ class DownloadJob < ApplicationJob
     @download.save!
   end
 
-  def file_body
-    output_items = eval(@download.output_items)
-
-    case @download.model.to_sym
-    when :member
-      set_space
-      file_data = member_file_data(output_items)
-    else
-      raise "model not found.(#{model})"
-    end
-
-    change_char_code(file_header(output_items) + file_data)
-  end
-
-  def set_space
-    @space = @download.space
-    @current_member = Member.where(space: @space, user: @download.user)&.first
-    raise 'current_member not found.' if @current_member.blank?
-  end
-
   def file_header(output_items)
     header = []
     items = I18n.t("items.#{@download.model}")
@@ -61,6 +43,25 @@ class DownloadJob < ApplicationJob
     end
 
     header.to_csv(col_sep: @download.col_sep, row_sep: @download.row_sep)
+  end
+
+  def file_data(output_items)
+    case @download.model.to_sym
+    when :member
+      set_space
+      member_file_data(output_items)
+    else
+      raise "model not found.(#{model})"
+    end
+  end
+
+  def set_space
+    @space = @download.space
+    raise 'space not found.' if @space.blank?
+
+    @current_member = Member.where(space: @space, user: @download.user)&.first
+    raise 'current_member not found.' if @current_member.blank?
+    raise 'power not found.' unless @current_member.power_admin?
   end
 
   def change_char_code(result)

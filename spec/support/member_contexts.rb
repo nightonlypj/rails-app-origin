@@ -16,6 +16,11 @@ shared_context 'メンバー一覧作成' do |admin_count, writer_count, reader_
   before_all { FactoryBot.create(:member, :admin, user: user) } # NOTE: 対象外
 end
 
+shared_context 'set_member_power' do |power|
+  let(:user_power) { power }
+  let_it_be(:member_myself) { FactoryBot.create(:member, power, space: space, user: user) if power.present? && user.present? }
+end
+
 # テスト内容（共通）
 def expect_member_json(response_json_member, member, user_power)
   expect_user_json(response_json_member['user'], member.user, user_power == :admin)

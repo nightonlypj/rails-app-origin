@@ -13,12 +13,12 @@ RSpec.describe 'Members', type: :request do
   describe 'GET #new' do
     subject { get new_member_path(space_code: space.code, format: subject_format), headers: auth_headers.merge(accept_headers) }
 
+    let_it_be(:space_not)     { FactoryBot.build_stubbed(:space) }
+    let_it_be(:space_public)  { FactoryBot.create(:space, :public) }
+    let_it_be(:space_private) { FactoryBot.create(:space, :private) }
     shared_context 'valid_condition' do
-      let_it_be(:space) { FactoryBot.create(:space) }
-      include_context 'set_power', :admin
-    end
-    shared_context 'set_power' do |power|
-      before_all { FactoryBot.create(:member, power, space: space, user: user) if power.present? && user.present? }
+      let_it_be(:space) { space_public }
+      include_context 'set_member_power', :admin
     end
 
     # テスト内容
@@ -31,30 +31,30 @@ RSpec.describe 'Members', type: :request do
 
     # テストケース
     shared_examples_for '[ログイン中][*]権限がある' do |power|
-      include_context 'set_power', power
+      include_context 'set_member_power', power
       it_behaves_like 'ToOK(html)'
       it_behaves_like 'ToNG(json)', 406
     end
     shared_examples_for '[ログイン中][*]権限がない' do |power|
-      include_context 'set_power', power
+      include_context 'set_member_power', power
       it_behaves_like 'ToNG(html)', 403
       it_behaves_like 'ToNG(json)', 406
     end
 
     shared_examples_for '[ログイン中]スペースが存在しない' do
-      let_it_be(:space) { FactoryBot.build_stubbed(:space) }
+      let_it_be(:space) { space_not }
       it_behaves_like 'ToNG(html)', 404
       it_behaves_like 'ToNG(json)', 406
     end
     shared_examples_for '[ログイン中]スペースが公開' do
-      let_it_be(:space) { FactoryBot.create(:space, :public) }
+      let_it_be(:space) { space_public }
       it_behaves_like '[ログイン中][*]権限がある', :admin
       it_behaves_like '[ログイン中][*]権限がない', :writer
       it_behaves_like '[ログイン中][*]権限がない', :reader
       it_behaves_like '[ログイン中][*]権限がない', nil
     end
     shared_examples_for '[ログイン中]スペースが非公開' do
-      let_it_be(:space) { FactoryBot.create(:space, :private) }
+      let_it_be(:space) { space_private }
       it_behaves_like '[ログイン中][*]権限がある', :admin
       it_behaves_like '[ログイン中][*]権限がない', :writer
       it_behaves_like '[ログイン中][*]権限がない', :reader
@@ -81,9 +81,9 @@ RSpec.describe 'Members', type: :request do
     end
     context 'APIログイン中' do
       include_context 'APIログイン処理'
-      it_behaves_like '[ログイン中]スペースが存在しない' # NOTE: HTMLもログイン状態になる
-      it_behaves_like '[ログイン中]スペースが公開'
-      it_behaves_like '[ログイン中]スペースが非公開'
+      include_context 'valid_condition'
+      it_behaves_like 'ToOK(html)' # NOTE: HTMLもログイン状態になる
+      it_behaves_like 'ToNG(json)', 406
     end
     context 'APIログイン中（削除予約済み）' do
       include_context 'APIログイン処理', :destroy_reserved

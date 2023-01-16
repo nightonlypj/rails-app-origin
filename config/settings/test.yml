@@ -68,4 +68,10 @@ job_members_limit: 2
 
 ## ダウンロード
 # 一覧のデフォルト最大表示件数
-default_downloads_limit: 2
+default_downloads_limit: 5
+test_downloads:
+  waiting_count: 1
+  processing_count: 1
+  success_count: 1
+  failure_count: 1
+  downloaded_count: 1

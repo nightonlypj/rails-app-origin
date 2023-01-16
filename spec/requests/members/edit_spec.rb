@@ -14,14 +14,15 @@ RSpec.describe 'Members', type: :request do
   describe 'GET #edit' do
     subject { get edit_member_path(space_code: space.code, user_code: show_user.code, format: subject_format), headers: auth_headers.merge(accept_headers) }
 
+    let_it_be(:space_not)     { FactoryBot.build_stubbed(:space) }
+    let_it_be(:space_public)  { FactoryBot.create(:space, :public) }
+    let_it_be(:space_private) { FactoryBot.create(:space, :private) }
+    let_it_be(:other_user)    { FactoryBot.create(:user) }
     shared_context 'valid_condition' do
-      let_it_be(:space)     { FactoryBot.create(:space) }
-      let_it_be(:show_user) { FactoryBot.create(:user) }
-      include_context 'set_power', :admin
+      let_it_be(:space)     { space_public }
+      let_it_be(:show_user) { other_user }
       before_all { FactoryBot.create(:member, space: space, user: show_user) }
-    end
-    shared_context 'set_power' do |power|
-      before_all { FactoryBot.create(:member, power, space: space, user: user) if power.present? && user.present? }
+      include_context 'set_member_power', :admin
     end
 
     # テスト内容
@@ -34,8 +35,8 @@ RSpec.describe 'Members', type: :request do
 
     # テストケース
     shared_examples_for '[ログイン中][*][ある]対象メンバーがいる（他人）' do
-      let_it_be(:show_user) { FactoryBot.create(:user) }
-      before_all            { FactoryBot.create(:member, space: space, user: show_user) }
+      let_it_be(:show_user) { other_user }
+      before_all { FactoryBot.create(:member, space: space, user: show_user) }
       it_behaves_like 'ToOK(html)'
       it_behaves_like 'ToNG(json)', 406
     end
@@ -45,40 +46,40 @@ RSpec.describe 'Members', type: :request do
       it_behaves_like 'ToNG(json)', 406
     end
     shared_examples_for '[ログイン中][*][ある]対象メンバーがいない' do
-      let_it_be(:show_user) { FactoryBot.create(:user) }
+      let_it_be(:show_user) { other_user }
       it_behaves_like 'ToNG(html)', 404
       it_behaves_like 'ToNG(json)', 406
     end
 
     shared_examples_for '[ログイン中][*]権限がある' do |power|
-      let_it_be(:show_user) { FactoryBot.create(:user) }
-      include_context 'set_power', power
+      let_it_be(:show_user) { other_user }
+      include_context 'set_member_power', power
       it_behaves_like '[ログイン中][*][ある]対象メンバーがいる（他人）'
       it_behaves_like '[ログイン中][*][ある]対象メンバーがいる（自分）'
       it_behaves_like '[ログイン中][*][ある]対象メンバーがいない'
     end
     shared_examples_for '[ログイン中][*]権限がない' do |power|
-      let_it_be(:show_user) { FactoryBot.create(:user) }
-      include_context 'set_power', power
+      let_it_be(:show_user) { other_user }
+      include_context 'set_member_power', power
       it_behaves_like 'ToNG(html)', 403
       it_behaves_like 'ToNG(json)', 406
     end
 
     shared_examples_for '[ログイン中]スペースが存在しない' do
-      let_it_be(:space)     { FactoryBot.build_stubbed(:space) }
-      let_it_be(:show_user) { FactoryBot.create(:user) }
+      let_it_be(:space)     { space_not }
+      let_it_be(:show_user) { other_user }
       it_behaves_like 'ToNG(html)', 404
       it_behaves_like 'ToNG(json)', 406
     end
     shared_examples_for '[ログイン中]スペースが公開' do
-      let_it_be(:space) { FactoryBot.create(:space, :public) }
+      let_it_be(:space) { space_public }
       it_behaves_like '[ログイン中][*]権限がある', :admin
       it_behaves_like '[ログイン中][*]権限がない', :writer
       it_behaves_like '[ログイン中][*]権限がない', :reader
       it_behaves_like '[ログイン中][*]権限がない', nil
     end
     shared_examples_for '[ログイン中]スペースが非公開' do
-      let_it_be(:space) { FactoryBot.create(:space, :private) }
+      let_it_be(:space) { space_private }
       it_behaves_like '[ログイン中][*]権限がある', :admin
       it_behaves_like '[ログイン中][*]権限がない', :writer
       it_behaves_like '[ログイン中][*]権限がない', :reader
@@ -105,9 +106,9 @@ RSpec.describe 'Members', type: :request do
     end
     context 'APIログイン中' do
       include_context 'APIログイン処理'
-      it_behaves_like '[ログイン中]スペースが存在しない' # NOTE: HTMLもログイン状態になる
-      it_behaves_like '[ログイン中]スペースが公開'
-      it_behaves_like '[ログイン中]スペースが非公開'
+      include_context 'valid_condition'
+      it_behaves_like 'ToOK(html)' # NOTE: HTMLもログイン状態になる
+      it_behaves_like 'ToNG(json)', 406
     end
     context 'APIログイン中（削除予約済み）' do
       include_context 'APIログイン処理', :destroy_reserved

@@ -5,7 +5,7 @@ RSpec.describe 'Users::Registrations', type: :request do
   # 前提条件
   #   未ログイン, 招待コードあり
   # テストパターン
-  #   招待コード: 有効, 期限切れ, 削除済み, 参加済み, 存在しない
+  #   招待コード: 有効, 無効（期限切れ, 削除済み, 参加済み）, 存在しない
   describe 'GET #new' do
     subject { get new_user_registration_path(code: invitation.code) }
 
@@ -19,13 +19,13 @@ RSpec.describe 'Users::Registrations', type: :request do
       let(:invitation) { FactoryBot.create(:invitation, :active) }
       it_behaves_like 'ToOK[status]'
     end
-    context '招待コードが期限切れ' do
+    context '招待コードが無効（期限切れ）' do
       it_behaves_like '[無効]', :expired
     end
-    context '招待コードが削除済み' do
+    context '招待コードが無効（削除済み）' do
       it_behaves_like '[無効]', :deleted
     end
-    context '招待コードが参加済み' do
+    context '招待コードが無効（参加済み）' do
       it_behaves_like '[無効]', :email_joined
     end
     context '招待コードが存在しない' do
@@ -38,7 +38,7 @@ RSpec.describe 'Users::Registrations', type: :request do
   # 前提条件
   #   未ログイン, 招待コードあり, 有効なパラメータ
   # テストパターン
-  #   招待コード: 有効, 期限切れ, 削除済み, 参加済み, 存在しない
+  #   招待コード: 有効, 無効（期限切れ, 削除済み, 参加済み）, 存在しない
   #   他のスペースでの招待: なし, あり
   #   対象: メールアドレス, ドメイン
   #   パラメータのメールアドレス/ドメイン: 招待と一致/含まれる, 不一致/含まれない
@@ -164,13 +164,13 @@ RSpec.describe 'Users::Registrations', type: :request do
       it_behaves_like '[有効]他のスペースでの招待なし'
       it_behaves_like '[有効]他のスペースでの招待あり'
     end
-    context '招待コードが期限切れ' do
+    context '招待コードが無効（期限切れ）' do
       it_behaves_like '[無効]', :expired
     end
-    context '招待コードが削除済み' do
+    context '招待コードが無効（削除済み）' do
       it_behaves_like '[無効]', :deleted
     end
-    context '招待コードが参加済み' do
+    context '招待コードが無効（参加済み）' do
       it_behaves_like '[無効]', :email_joined
     end
     context '招待コードが存在しない' do

@@ -66,4 +66,9 @@ FactoryBot.define do
       destroy_schedule_at  { destroy_requested_at + Settings['user_destroy_schedule_days'].days }
     end
   end
+
+  # NOTE: 他のモデルでも使える
+  trait :skip_validate do
+    to_create { |instance| instance.save(validate: false) }
+  end
 end

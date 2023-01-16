@@ -1,6 +1,7 @@
 FactoryBot.define do
   factory :download do
     requested_at { Time.current }
+    # status       { :waiting }
     model        { :member }
     target       { :all }
     format       { :csv }
@@ -9,16 +10,26 @@ FactoryBot.define do
     output_items { ['user.name'] }
     association :user
 
-    trait :member do
-      # model { :member }
-      association :space
+    # ステータス
+    trait :waiting do
+      # status { :waiting }
+    end
+    trait :processing do
+      status { :processing }
+    end
+    trait :success do
+      status       { :success }
+      completed_at { Time.current }
+    end
+    trait :failure do
+      status        { :failure }
+      error_message { 'エラー内容' }
+      completed_at  { Time.current }
     end
 
-    trait :success do
-      status { :success }
-    end
-    trait :complete do
+    trait :downloaded do
       status             { :success }
+      completed_at       { Time.current }
       last_downloaded_at { Time.current }
     end
   end

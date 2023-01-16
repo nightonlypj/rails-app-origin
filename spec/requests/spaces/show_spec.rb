@@ -14,27 +14,27 @@ RSpec.describe 'Spaces', type: :request do
   describe 'GET #index' do
     subject { get space_path(code: space.code, format: subject_format), headers: auth_headers.merge(accept_headers) }
 
-    shared_context 'set_power' do |power|
-      let(:user_power) { power }
-      before_all { FactoryBot.create(:member, power, space: space, user: user) if power.present? && user.present? }
-    end
-
     # テスト内容
     shared_examples_for 'ToOK(html/*)' do
       it 'HTTPステータスが200。対象項目が含まれる' do
         is_expected.to eq(200)
         expect_space_html(response, space, user_power, false)
+
+        url = "href=\"#{members_path(space.code)}\""
         if user_power.present?
-          expect(response.body).to include("href=\"#{members_path(space.code)}\"") # メンバー一覧
+          expect(response.body).to include(url)
         else
-          expect(response.body).not_to include("href=\"#{members_path(space.code)}\"")
+          expect(response.body).not_to include(url)
         end
+
+        url = "href=\"#{edit_space_path(space.code)}\""
         if user_power == :admin
-          expect(response.body).to include("href=\"#{edit_space_path(space.code)}\"") # スペース設定変更
+          expect(response.body).to include(url)
         else
-          expect(response.body).not_to include("href=\"#{edit_space_path(space.code)}\"")
+          expect(response.body).not_to include(url)
         end
-        expect(response.body).to include(space.description) # 説明
+
+        expect(response.body).to include(space.description)
       end
     end
     shared_examples_for 'ToOK(json/json)' do
@@ -51,7 +51,7 @@ RSpec.describe 'Spaces', type: :request do
 
     # テストケース
     shared_examples_for '[ログイン中/削除予約済み][公開]権限がある(html)' do |power|
-      include_context 'set_power', power
+      include_context 'set_member_power', power
       it_behaves_like 'ToOK(html)'
     end
     shared_examples_for '[ログイン中/削除予約済み][公開]権限がある(json)' do |power|
@@ -61,12 +61,12 @@ RSpec.describe 'Spaces', type: :request do
       it_behaves_like 'ToOK(json)' # NOTE: 公開スペースは見れる
     end
     shared_examples_for '[ログイン中/削除予約済み][非公開]権限がある' do |power|
-      include_context 'set_power', power
+      include_context 'set_member_power', power
       it_behaves_like 'ToOK(html)'
       it_behaves_like 'ToNG(json)', 401 # NOTE: APIは未ログイン扱い
     end
     shared_examples_for '[APIログイン中/削除予約済み][*]権限がある' do |power|
-      include_context 'set_power', power
+      include_context 'set_member_power', power
       let(:member_count) { 1 }
       it_behaves_like 'ToOK(html)' # NOTE: HTMLもログイン状態になる
       it_behaves_like 'ToOK(json)'
@@ -103,7 +103,7 @@ RSpec.describe 'Spaces', type: :request do
       it_behaves_like '[*][公開]権限がない'
     end
     shared_examples_for '[ログイン中/削除予約済み]スペースが公開' do
-      let_it_be(:space) { FactoryBot.create(:space, :public) }
+      let_it_be(:space) { FactoryBot.create(:space, :public, created_user: user) }
       it_behaves_like '[ログイン中/削除予約済み][公開]権限がある(html)', :admin
       it_behaves_like '[ログイン中/削除予約済み][公開]権限がある(json)', :admin
       it_behaves_like '[ログイン中/削除予約済み][公開]権限がある(html)', :writer
@@ -113,7 +113,7 @@ RSpec.describe 'Spaces', type: :request do
       it_behaves_like '[*][公開]権限がない'
     end
     shared_examples_for '[APIログイン中/削除予約済み]スペースが公開' do
-      let_it_be(:space) { FactoryBot.create(:space, :public) }
+      let_it_be(:space) { FactoryBot.create(:space, :public, created_user: user, last_updated_user: user) }
       it_behaves_like '[APIログイン中/削除予約済み][*]権限がある', :admin
       it_behaves_like '[APIログイン中/削除予約済み][*]権限がある', :writer
       it_behaves_like '[APIログイン中/削除予約済み][*]権限がある', :reader

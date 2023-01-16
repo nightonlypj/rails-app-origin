@@ -14,9 +14,13 @@ RSpec.describe 'Members', type: :request do
   describe 'GET #index' do
     subject { get member_path(space_code: space.code, user_code: show_user.code, format: subject_format), headers: auth_headers.merge(accept_headers) }
 
+    let_it_be(:space_not)     { FactoryBot.build_stubbed(:space) }
+    let_it_be(:space_public)  { FactoryBot.create(:space, :public) }
+    let_it_be(:space_private) { FactoryBot.create(:space, :private) }
+    let_it_be(:other_user)    { FactoryBot.create(:user) }
     shared_context 'valid_condition' do
-      let_it_be(:space)     { FactoryBot.create(:space) }
-      let_it_be(:show_user) { FactoryBot.create(:user) }
+      let_it_be(:space)     { space_public }
+      let_it_be(:show_user) { other_user }
       let_it_be(:member)    { FactoryBot.create(:member, space: space, user: show_user) }
     end
 
@@ -47,32 +51,32 @@ RSpec.describe 'Members', type: :request do
     shared_examples_for '[APIログイン中/削除予約済み][*]権限がある' do |power|
       let(:user_power) { power }
       before_all { FactoryBot.create(:member, power, space: space, user: user) }
-      let_it_be(:show_user) { FactoryBot.create(:user) }
+      let_it_be(:show_user) { other_user }
       it_behaves_like '[APIログイン中/削除予約済み][*][ある]対象メンバーがいる', power
       it_behaves_like '[APIログイン中/削除予約済み][*][ある]対象メンバーがいない', power
     end
     shared_examples_for '[APIログイン中/削除予約済み][*]権限がない' do
-      let_it_be(:show_user) { FactoryBot.create(:user) }
+      let_it_be(:show_user) { other_user }
       let_it_be(:member)    { FactoryBot.create(:member, space: space, user: show_user) }
       it_behaves_like 'ToNG(html)', 406
       it_behaves_like 'ToNG(json)', 403
     end
 
     shared_examples_for '[APIログイン中/削除予約済み]スペースが存在しない' do
-      let_it_be(:space) { FactoryBot.build_stubbed(:space) }
-      let_it_be(:show_user) { FactoryBot.create(:user) }
+      let_it_be(:space)     { space_not }
+      let_it_be(:show_user) { other_user }
       it_behaves_like 'ToNG(html)', 406
       it_behaves_like 'ToNG(json)', 404
     end
     shared_examples_for '[APIログイン中/削除予約済み]スペースが公開' do
-      let_it_be(:space) { FactoryBot.create(:space, :public) }
+      let_it_be(:space) { space_public }
       it_behaves_like '[APIログイン中/削除予約済み][*]権限がある', :admin
       it_behaves_like '[APIログイン中/削除予約済み][*]権限がある', :writer
       it_behaves_like '[APIログイン中/削除予約済み][*]権限がある', :reader
       it_behaves_like '[APIログイン中/削除予約済み][*]権限がない'
     end
     shared_examples_for '[APIログイン中/削除予約済み]スペースが非公開' do
-      let_it_be(:space) { FactoryBot.create(:space, :private) }
+      let_it_be(:space) { space_private }
       it_behaves_like '[APIログイン中/削除予約済み][*]権限がある', :admin
       it_behaves_like '[APIログイン中/削除予約済み][*]権限がある', :writer
       it_behaves_like '[APIログイン中/削除予約済み][*]権限がある', :reader

@@ -263,7 +263,7 @@ RSpec.describe User, type: :model do
     let_it_be(:current_user) { FactoryBot.create(:user) }
     before_all do
       FactoryBot.create(:download, :success) # 他人
-      FactoryBot.create(:download, :complete, user: current_user) # ダウンロード済み
+      FactoryBot.create(:download, :downloaded, user: current_user) # ダウンロード済み
     end
 
     context '0件' do

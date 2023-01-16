@@ -83,6 +83,15 @@ RSpec.describe 'Spaces', type: :request do
       end
     end
 
+    shared_examples_for 'リスト表示（0件）' do
+      let(:subject_format) { nil }
+      let(:accept_headers) { ACCEPT_INC_HTML }
+      let(:subject_page) { 1 }
+      it '存在しないメッセージが含まれる' do
+        subject
+        expect(response.body).to include('スペースが見つかりません。')
+      end
+    end
     shared_examples_for 'リスト表示' do |page|
       let(:subject_format) { nil }
       let(:accept_headers) { ACCEPT_INC_HTML }
@@ -99,11 +108,12 @@ RSpec.describe 'Spaces', type: :request do
           # 説明
           expect(response.body).to include(space.description)
           # (アクション)
+          url = "href=\"#{members_path(space.code)}\""
           if @members[space.id].present?
             expect(response.body).to include(Member.powers_i18n[@members[space.id]])
-            expect(response.body).to include("href=\"#{members_path(space.code)}\"")
+            expect(response.body).to include(url)
           else
-            expect(response.body).not_to include("href=\"#{members_path(space.code)}\"")
+            expect(response.body).not_to include(url)
           end
         end
       end
@@ -156,8 +166,10 @@ RSpec.describe 'Spaces', type: :request do
       include_context 'スペース一覧作成', 0, 0, 0, 0
       it_behaves_like 'ToOK(html)', 1
       it_behaves_like 'ページネーション非表示', 1, 2
+      it_behaves_like 'リスト表示（0件）'
       it_behaves_like 'リダイレクト', 2, 1
       it_behaves_like 'ToOK(json)', 1
+      it_behaves_like 'リスト表示(json)', 1
       it_behaves_like 'リダイレクト(json)', 2
     end
     shared_examples_for '[未ログイン]スペースが最大表示数と同じ' do
