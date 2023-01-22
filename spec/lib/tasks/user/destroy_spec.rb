@@ -31,9 +31,9 @@ RSpec.describe :user, type: :task do
       it '削除される' do
         task.invoke(dry_run)
         expect(User.count).to eq(before_user_count - users.count)
-        expect(User.where(id: users).exists?).to eq(false)
+        expect(User.exists?(id: users)).to eq(false)
         expect(Infomation.count).to eq(before_infomation_count - infomations.count)
-        expect(Infomation.where(id: infomations).exists?).to eq(false)
+        expect(Infomation.exists?(id: infomations)).to eq(false)
       end
     end
     shared_examples_for 'NG' do

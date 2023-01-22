@@ -32,9 +32,9 @@ def get_locale(key, **replace)
   result
 end
 
-shared_examples_for 'ToRaise' do |error|
+shared_examples_for 'ToRaise' do |message|
   it '例外が発生する' do
-    expect { subject }.to raise_error(error)
+    expect { subject }.to raise_error(message)
   end
 end
 
