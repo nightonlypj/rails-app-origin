@@ -10,16 +10,16 @@ RSpec.describe 'Users::Auth::Passwords', type: :request do
     it '対象のメッセージと一致する' do
       subject
       if error_msg.present?
-        expect(response_json['errors'].to_s).to include(error_msg == 'Unauthorized' ? error_msg : I18n.t(error_msg))
+        expect(response_json['errors'].to_s).to include(error_msg == 'Unauthorized' ? error_msg : get_locale(error_msg))
       else
         expect(response_json['errors'].to_s).to be_blank
       end
       expect(response_json['errors'].class).to eq(error_class) # 方針: バリデーション(Hash)のみ、他はalertへ
       expect(response_json['errors']&.count).to errors_count.positive? ? eq(errors_count) : be_nil
-      expect(response_json['message']).to message.present? ? eq(I18n.t(message)) : be_nil # 方針: 廃止して、noticeへ
+      expect(response_json['message']).to message.present? ? eq(get_locale(message)) : be_nil # 方針: 廃止して、noticeへ
 
-      expect(response_json['alert']).to alert.present? ? eq(I18n.t(alert)) : be_nil # 方針: 追加
-      expect(response_json['notice']).to notice.present? ? eq(I18n.t(notice)) : be_nil # 方針: 追加
+      expect(response_json['alert']).to alert.present? ? eq(get_locale(alert)) : be_nil # 方針: 追加
+      expect(response_json['notice']).to notice.present? ? eq(get_locale(notice)) : be_nil # 方針: 追加
     end
   end
 
@@ -216,8 +216,7 @@ RSpec.describe 'Users::Auth::Passwords', type: :request do
       it_behaves_like 'ToMsg', NilClass, 0, nil, nil, 'devise.failure.already_authenticated', nil
     end
 
-    context '未ログイン' do
-      include_context '未ログイン処理'
+    shared_examples_for '[未ログイン/ログイン中]' do
       it_behaves_like '[未ログイン/ログイン中]パラメータなし'
       it_behaves_like '[未ログイン/ログイン中]有効なパラメータ（未ロック）'
       it_behaves_like '[未ログイン/ログイン中]有効なパラメータ（ロック中）'
@@ -226,15 +225,14 @@ RSpec.describe 'Users::Auth::Passwords', type: :request do
       it_behaves_like '[未ログイン/ログイン中]URLがない'
       it_behaves_like '[未ログイン/ログイン中]URLがホワイトリストにない'
     end
+
+    context '未ログイン' do
+      include_context '未ログイン処理'
+      it_behaves_like '[未ログイン/ログイン中]'
+    end
     context 'ログイン中' do
       include_context 'ログイン処理'
-      it_behaves_like '[未ログイン/ログイン中]パラメータなし'
-      it_behaves_like '[未ログイン/ログイン中]有効なパラメータ（未ロック）'
-      it_behaves_like '[未ログイン/ログイン中]有効なパラメータ（ロック中）'
-      it_behaves_like '[未ログイン/ログイン中]有効なパラメータ（メール未確認）'
-      it_behaves_like '[未ログイン/ログイン中]無効なパラメータ'
-      it_behaves_like '[未ログイン/ログイン中]URLがない'
-      it_behaves_like '[未ログイン/ログイン中]URLがホワイトリストにない'
+      it_behaves_like '[未ログイン/ログイン中]'
     end
     context 'APIログイン中' do
       include_context 'APIログイン処理'
@@ -270,8 +268,8 @@ RSpec.describe 'Users::Auth::Passwords', type: :request do
     shared_examples_for 'ToNG(html/*)' do
       it '指定URL（失敗パラメータ）にリダイレクトする' do
         param = { reset_password: false }
-        param[:alert] = I18n.t(alert) if alert.present?
-        param[:notice] = I18n.t(notice) if notice.present?
+        param[:alert] = get_locale(alert) if alert.present?
+        param[:notice] = get_locale(notice) if notice.present?
         is_expected.to redirect_to("#{FRONT_SITE_URL}?#{URI.encode_www_form(param.sort)}")
       end
     end
@@ -390,8 +388,7 @@ RSpec.describe 'Users::Auth::Passwords', type: :request do
       it_behaves_like 'リダイレクトURLがホワイトリストにない'
     end
 
-    context '未ログイン' do
-      include_context '未ログイン処理'
+    shared_examples_for '[*]' do
       it_behaves_like '[*]トークンが期限内（未ロック）'
       it_behaves_like '[*]トークンが期限内（ロック中）'
       it_behaves_like '[*]トークンが期限内（メール未確認）'
@@ -399,26 +396,19 @@ RSpec.describe 'Users::Auth::Passwords', type: :request do
       it_behaves_like '[*]トークンが存在しない'
       it_behaves_like '[*]トークンがない'
       it_behaves_like '[*]トークンが空'
+    end
+
+    context '未ログイン' do
+      include_context '未ログイン処理'
+      it_behaves_like '[*]'
     end
     context 'ログイン中' do
       include_context 'ログイン処理'
-      it_behaves_like '[*]トークンが期限内（未ロック）'
-      it_behaves_like '[*]トークンが期限内（ロック中）'
-      it_behaves_like '[*]トークンが期限内（メール未確認）'
-      it_behaves_like '[*]トークンが期限切れ'
-      it_behaves_like '[*]トークンが存在しない'
-      it_behaves_like '[*]トークンがない'
-      it_behaves_like '[*]トークンが空'
+      it_behaves_like '[*]'
     end
     context 'APIログイン中' do
       include_context 'APIログイン処理'
-      it_behaves_like '[*]トークンが期限内（未ロック）'
-      it_behaves_like '[*]トークンが期限内（ロック中）'
-      it_behaves_like '[*]トークンが期限内（メール未確認）'
-      it_behaves_like '[*]トークンが期限切れ'
-      it_behaves_like '[*]トークンが存在しない'
-      it_behaves_like '[*]トークンがない'
-      it_behaves_like '[*]トークンが空'
+      it_behaves_like '[*]'
     end
   end
 
@@ -806,8 +796,7 @@ RSpec.describe 'Users::Auth::Passwords', type: :request do
       it_behaves_like '[APIログイン中][存在しない/空]無効なパラメータ（確認なし）'
     end
 
-    context '未ログイン' do
-      include_context '未ログイン処理'
+    shared_examples_for '[未ログイン/ログイン中]' do
       it_behaves_like '[未ログイン/ログイン中]トークンが期限内（未ロック）'
       it_behaves_like '[未ログイン/ログイン中]トークンが期限内（ロック中）'
       it_behaves_like '[未ログイン/ログイン中]トークンが期限内（メール未確認）'
@@ -817,16 +806,14 @@ RSpec.describe 'Users::Auth::Passwords', type: :request do
       it_behaves_like '[未ログイン/ログイン中]トークンがない'
       it_behaves_like '[未ログイン/ログイン中]トークンが空'
     end
+
+    context '未ログイン' do
+      include_context '未ログイン処理'
+      it_behaves_like '[未ログイン/ログイン中]'
+    end
     context 'ログイン中' do
       include_context 'ログイン処理'
-      it_behaves_like '[未ログイン/ログイン中]トークンが期限内（未ロック）'
-      it_behaves_like '[未ログイン/ログイン中]トークンが期限内（ロック中）'
-      it_behaves_like '[未ログイン/ログイン中]トークンが期限内（メール未確認）'
-      it_behaves_like '[未ログイン/ログイン中]トークンが期限内（メールアドレス変更中）'
-      it_behaves_like '[未ログイン/ログイン中]トークンが期限切れ'
-      it_behaves_like '[未ログイン/ログイン中]トークンが存在しない'
-      it_behaves_like '[未ログイン/ログイン中]トークンがない'
-      it_behaves_like '[未ログイン/ログイン中]トークンが空'
+      it_behaves_like '[未ログイン/ログイン中]'
     end
     context 'APIログイン中' do
       include_context 'APIログイン処理'

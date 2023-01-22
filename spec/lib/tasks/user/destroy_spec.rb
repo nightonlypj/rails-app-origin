@@ -4,7 +4,7 @@ RSpec.describe :user, type: :task do
   # ユーザーアカウント削除（削除予定日時以降）
   # テストパターン
   #   削除対象: ない, ある
-  #     削除予定日時: ない, 過去, 未来
+  #     削除予定日時: ない, 未来, 過去
   #     ＋スペース: ある
   #     ＋お知らせ: ない, ある
   #     ＋メンバー: いない, いる
@@ -48,9 +48,9 @@ RSpec.describe :user, type: :task do
       it '削除される（スペース除く）' do
         task.invoke(dry_run)
         expect(User.count).to eq(before_user_count - users.count)
-        expect(User.where(id: users).exists?).to eq(false)
+        expect(User.exists?(id: users)).to eq(false)
         expect(Infomation.count).to eq(before_infomation_count - infomations.count)
-        expect(Infomation.where(id: infomations).exists?).to eq(false)
+        expect(Infomation.exists?(id: infomations)).to eq(false)
 
         expect(Member.count).to eq(before_member_count - members.count)
         expect(Member.where(id: members).exists?).to eq(false)

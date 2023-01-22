@@ -1,5 +1,6 @@
 <% @infomations.each do |infomation| %>
 <article>
+  <%# タイトル %>
   <div>
     <%= render 'label', infomation: infomation %>
     <span class="fw-bolder">
@@ -13,6 +14,7 @@
       (<%= l(infomation.started_at.to_date) %>)
     </span>
   </div>
+  <%# 概要 %>
 <% if infomation.summary.present? %>
   <div class="m-2">
     <%= infomation.summary.html_safe %>

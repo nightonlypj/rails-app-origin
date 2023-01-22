@@ -9,12 +9,12 @@ RSpec.describe 'Users::Auth::Unlocks', type: :request do
     let(:accept_headers) { ACCEPT_INC_JSON }
     it '対象のメッセージと一致する' do
       subject
-      expect(response_json['errors'].to_s).to error_msg.present? ? include(I18n.t(error_msg)) : be_blank
+      expect(response_json['errors'].to_s).to error_msg.present? ? include(get_locale(error_msg)) : be_blank
       expect(response_json['errors'].class).to eq(error_class) # 方針: バリデーション(Hash)のみ、他はalertへ
       expect(response_json['errors']&.count).to errors_count.positive? ? eq(errors_count) : be_nil
-      expect(response_json['message']).to message.present? ? eq(I18n.t(message)) : be_nil # 方針: 廃止して、noticeへ
-      expect(response_json['alert']).to alert.present? ? eq(I18n.t(alert)) : be_nil # 方針: 追加
-      expect(response_json['notice']).to notice.present? ? eq(I18n.t(notice)) : be_nil # 方針: 追加
+      expect(response_json['message']).to message.present? ? eq(get_locale(message)) : be_nil # 方針: 廃止して、noticeへ
+      expect(response_json['alert']).to alert.present? ? eq(get_locale(alert)) : be_nil # 方針: 追加
+      expect(response_json['notice']).to notice.present? ? eq(get_locale(notice)) : be_nil # 方針: 追加
     end
   end
 
@@ -195,8 +195,7 @@ RSpec.describe 'Users::Auth::Unlocks', type: :request do
       it_behaves_like 'ToMsg', NilClass, 0, nil, nil, 'devise.failure.already_authenticated', nil
     end
 
-    context '未ログイン' do
-      include_context '未ログイン処理'
+    shared_examples_for '[未ログイン/ログイン中]' do
       it_behaves_like '[未ログイン/ログイン中]パラメータなし'
       it_behaves_like '[未ログイン/ログイン中]有効なパラメータ（ロック中）'
       it_behaves_like '[未ログイン/ログイン中]有効なパラメータ（未ロック）'
@@ -204,14 +203,14 @@ RSpec.describe 'Users::Auth::Unlocks', type: :request do
       it_behaves_like '[未ログイン/ログイン中]URLがない'
       it_behaves_like '[未ログイン/ログイン中]URLがホワイトリストにない'
     end
+
+    context '未ログイン' do
+      include_context '未ログイン処理'
+      it_behaves_like '[未ログイン/ログイン中]'
+    end
     context 'ログイン中' do
       include_context 'ログイン処理'
-      it_behaves_like '[未ログイン/ログイン中]パラメータなし'
-      it_behaves_like '[未ログイン/ログイン中]有効なパラメータ（ロック中）'
-      it_behaves_like '[未ログイン/ログイン中]有効なパラメータ（未ロック）'
-      it_behaves_like '[未ログイン/ログイン中]無効なパラメータ'
-      it_behaves_like '[未ログイン/ログイン中]URLがない'
-      it_behaves_like '[未ログイン/ログイン中]URLがホワイトリストにない'
+      it_behaves_like '[未ログイン/ログイン中]'
     end
     context 'APIログイン中' do
       include_context 'APIログイン処理'
@@ -295,8 +294,8 @@ RSpec.describe 'Users::Auth::Unlocks', type: :request do
       it '[リダイレクトURLがある]指定URL（成功パラメータ）にリダイレクトする' do
         @redirect_url = FRONT_SITE_URL
         param = { unlock: true }
-        param[:alert] = I18n.t(alert) if alert.present?
-        param[:notice] = I18n.t(notice) if notice.present?
+        param[:alert] = get_locale(alert) if alert.present?
+        param[:notice] = get_locale(notice) if notice.present?
         is_expected.to redirect_to("#{FRONT_SITE_URL}?#{URI.encode_www_form(param.sort)}")
       end
       # it '[リダイレクトURLがない]HTTPステータスが422。対象項目が一致する' do
@@ -323,8 +322,8 @@ RSpec.describe 'Users::Auth::Unlocks', type: :request do
       it '[リダイレクトURLがある]指定URL（失敗パラメータ）にリダイレクトする' do
         @redirect_url = FRONT_SITE_URL
         param = { unlock: false }
-        param[:alert] = I18n.t(alert) if alert.present?
-        param[:notice] = I18n.t(notice) if notice.present?
+        param[:alert] = get_locale(alert) if alert.present?
+        param[:notice] = get_locale(notice) if notice.present?
         is_expected.to redirect_to("#{FRONT_SITE_URL}?#{URI.encode_www_form(param.sort)}")
       end
       # it '[リダイレクトURLがない]HTTPステータスが422。対象項目が一致する' do
@@ -440,26 +439,24 @@ RSpec.describe 'Users::Auth::Unlocks', type: :request do
       # it_behaves_like '[*][空]ロック日時が期限切れ（未ロック）' # NOTE: トークンが存在しない為、ロック日時がない
     end
 
-    context '未ログイン' do
-      include_context '未ログイン処理'
+    shared_examples_for '[*]' do
       it_behaves_like '[*]トークンが存在する'
       it_behaves_like '[*]トークンが存在しない'
       it_behaves_like '[*]トークンがない'
       it_behaves_like '[*]トークンが空'
+    end
+
+    context '未ログイン' do
+      include_context '未ログイン処理'
+      it_behaves_like '[*]'
     end
     context 'ログイン中' do
       include_context 'ログイン処理'
-      it_behaves_like '[*]トークンが存在する'
-      it_behaves_like '[*]トークンが存在しない'
-      it_behaves_like '[*]トークンがない'
-      it_behaves_like '[*]トークンが空'
+      it_behaves_like '[*]'
     end
     context 'APIログイン中' do
       include_context 'APIログイン処理'
-      it_behaves_like '[*]トークンが存在する'
-      it_behaves_like '[*]トークンが存在しない'
-      it_behaves_like '[*]トークンがない'
-      it_behaves_like '[*]トークンが空'
+      it_behaves_like '[*]'
     end
   end
 end

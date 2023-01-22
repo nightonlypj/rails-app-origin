@@ -5,8 +5,8 @@ RSpec.describe 'Users::Registrations', type: :request do
   shared_examples_for 'ToEdit' do |alert, notice|
     it 'ユーザー情報変更にリダイレクトする' do
       is_expected.to redirect_to(edit_user_registration_path)
-      expect(flash[:alert]).to alert.present? ? eq(I18n.t(alert)) : be_nil
-      expect(flash[:notice]).to notice.present? ? eq(I18n.t(notice)) : be_nil
+      expect(flash[:alert]).to alert.present? ? eq(get_locale(alert)) : be_nil
+      expect(flash[:notice]).to notice.present? ? eq(get_locale(notice)) : be_nil
     end
   end
 
@@ -213,6 +213,13 @@ RSpec.describe 'Users::Registrations', type: :request do
       it_behaves_like 'ToTop', 'alert.user.destroy_reserved', nil
     end
 
+    shared_examples_for '[ログイン中]' do
+      it_behaves_like '[ログイン中]有効なパラメータ（変更なし）'
+      it_behaves_like '[ログイン中]有効なパラメータ（変更あり）'
+      it_behaves_like '[ログイン中]無効なパラメータ'
+      it_behaves_like '[ログイン中]現在のパスワードがない'
+    end
+
     context '未ログイン' do
       # it_behaves_like '[未ログイン]有効なパラメータ（変更なし）' # NOTE: 未ログインの為、対象がない
       it_behaves_like '[未ログイン]有効なパラメータ（変更あり）'
@@ -221,17 +228,11 @@ RSpec.describe 'Users::Registrations', type: :request do
     end
     context 'ログイン中' do
       include_context 'ログイン処理', nil, true
-      it_behaves_like '[ログイン中]有効なパラメータ（変更なし）'
-      it_behaves_like '[ログイン中]有効なパラメータ（変更あり）'
-      it_behaves_like '[ログイン中]無効なパラメータ'
-      it_behaves_like '[ログイン中]現在のパスワードがない'
+      it_behaves_like '[ログイン中]'
     end
     context 'ログイン中（メールアドレス変更中）' do
       include_context 'ログイン処理', :email_changed, true
-      it_behaves_like '[ログイン中]有効なパラメータ（変更なし）'
-      it_behaves_like '[ログイン中]有効なパラメータ（変更あり）'
-      it_behaves_like '[ログイン中]無効なパラメータ'
-      it_behaves_like '[ログイン中]現在のパスワードがない'
+      it_behaves_like '[ログイン中]'
     end
     context 'ログイン中（削除予約済み）' do
       include_context 'ログイン処理', :destroy_reserved, true

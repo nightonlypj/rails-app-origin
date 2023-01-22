@@ -2,8 +2,7 @@ require 'rails_helper'
 
 RSpec.describe 'Infomations', type: :request do
   let(:response_json) { response.body.present? ? JSON.parse(response.body) : {} }
-  let(:response_json_infomation)  { response_json['infomation'] }
-  let(:response_json_infomations) { response_json['infomations'] }
+  let(:response_json_infomation) { response_json['infomation'] }
 
   # GET /infomations/:id お知らせ詳細
   # GET /infomations/:id(.json) お知らせ詳細API
@@ -16,7 +15,7 @@ RSpec.describe 'Infomations', type: :request do
   #   ＋Acceptヘッダ: HTMLが含まれる, JSONが含まれる
   describe 'GET #show' do
     subject { get infomation_path(id: infomation.id, format: subject_format), headers: auth_headers.merge(accept_headers) }
-    let_it_be(:outside_user) { FactoryBot.create(:user) }
+    let_it_be(:other_user) { FactoryBot.create(:user) }
 
     shared_context 'お知らせ作成' do
       let_it_be(:infomation) { FactoryBot.create(:infomation, started_at: started_at, ended_at: ended_at, target: target, user_id: user_id) }
@@ -26,10 +25,12 @@ RSpec.describe 'Infomations', type: :request do
     shared_examples_for 'ToOK(html/*)' do
       it 'HTTPステータスが200。対象項目が含まれる' do
         is_expected.to eq(200)
-        expect(response.body).to include(infomation.label_i18n) if infomation.label_i18n.present? # ラベル
-        expect(response.body).to include(infomation.title) # タイトル
-        expect(response.body).to include(infomation.body.present? ? infomation.body : infomation.summary) # 本文, サマリー
-        expect(response.body).to include(I18n.l(infomation.started_at.to_date)) # 掲載開始日
+        # タイトル
+        expect(response.body).to include(infomation.label_i18n) if infomation.label_i18n.present?
+        expect(response.body).to include(infomation.title)
+        expect(response.body).to include(I18n.l(infomation.started_at.to_date))
+        # 本文, サマリー
+        expect(response.body).to include(infomation.body.present? ? infomation.body : infomation.summary)
       end
     end
     shared_examples_for 'ToOK(json/json)' do
@@ -38,14 +39,7 @@ RSpec.describe 'Infomations', type: :request do
       it 'HTTPステータスが200。対象項目が一致する' do
         is_expected.to eq(200)
         expect(response_json['success']).to eq(true)
-        expect(response_json_infomation['label']).to eq(infomation.label) # ラベル
-        expect(response_json_infomation['label_i18n']).to eq(infomation.label_i18n)
-        expect(response_json_infomation['title']).to eq(infomation.title) # タイトル
-        expect(response_json_infomation['summary']).to eq(infomation.summary) # サマリー
-        expect(response_json_infomation['body']).to eq(infomation.body) # 本文
-        expect(response_json_infomation['started_at']).to eq(I18n.l(infomation.started_at, format: :json)) # 掲載開始日
-        expect(response_json_infomation['ended_at']).to eq(I18n.l(infomation.ended_at, format: :json, default: nil)) # 掲載終了日
-        expect(response_json_infomation['target']).to eq(infomation.target) # 対象
+        expect_infomation_json(response_json_infomation, infomation, true)
       end
     end
 
@@ -192,9 +186,20 @@ RSpec.describe 'Infomations', type: :request do
     end
     shared_examples_for '[*]対象が他人' do
       let_it_be(:target)  { :user }
-      let_it_be(:user_id) { outside_user.id }
+      let_it_be(:user_id) { other_user.id }
       it_behaves_like '[*][他人]開始日時が過去'
       it_behaves_like '[*][*]開始日時が未来'
+    end
+
+    shared_examples_for '[ログイン中/削除予約済み]' do
+      it_behaves_like '[*]対象が全員'
+      it_behaves_like '[ログイン中/削除予約済み]対象が自分'
+      it_behaves_like '[*]対象が他人'
+    end
+    shared_examples_for '[APIログイン中/削除予約済み]' do
+      it_behaves_like '[*]対象が全員'
+      it_behaves_like '[APIログイン中/削除予約済み]対象が自分'
+      it_behaves_like '[*]対象が他人'
     end
 
     context '未ログイン' do
@@ -205,27 +210,19 @@ RSpec.describe 'Infomations', type: :request do
     end
     context 'ログイン中' do
       include_context 'ログイン処理'
-      it_behaves_like '[*]対象が全員'
-      it_behaves_like '[ログイン中/削除予約済み]対象が自分'
-      it_behaves_like '[*]対象が他人'
+      it_behaves_like '[ログイン中/削除予約済み]'
     end
     context 'ログイン中（削除予約済み）' do
       include_context 'ログイン処理', :destroy_reserved
-      it_behaves_like '[*]対象が全員'
-      it_behaves_like '[ログイン中/削除予約済み]対象が自分'
-      it_behaves_like '[*]対象が他人'
+      it_behaves_like '[ログイン中/削除予約済み]'
     end
     context 'APIログイン中' do
       include_context 'APIログイン処理'
-      it_behaves_like '[*]対象が全員'
-      it_behaves_like '[APIログイン中/削除予約済み]対象が自分'
-      it_behaves_like '[*]対象が他人'
+      it_behaves_like '[APIログイン中/削除予約済み]'
     end
     context 'APIログイン中（削除予約済み）' do
       include_context 'APIログイン処理', :destroy_reserved
-      it_behaves_like '[*]対象が全員'
-      it_behaves_like '[APIログイン中/削除予約済み]対象が自分'
-      it_behaves_like '[*]対象が他人'
+      it_behaves_like '[APIログイン中/削除予約済み]'
     end
   end
 end

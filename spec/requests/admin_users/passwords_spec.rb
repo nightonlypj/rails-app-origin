@@ -5,8 +5,8 @@ RSpec.describe 'AdminUsers::Passwords', type: :request do
   shared_examples_for 'ToNew' do |alert, notice|
     it 'パスワード再設定[メール送信]にリダイレクトする' do
       is_expected.to redirect_to(new_admin_user_password_path)
-      expect(flash[:alert]).to alert.present? ? eq(I18n.t(alert)) : be_nil
-      expect(flash[:notice]).to notice.present? ? eq(I18n.t(notice)) : be_nil
+      expect(flash[:alert]).to alert.present? ? eq(get_locale(alert)) : be_nil
+      expect(flash[:notice]).to notice.present? ? eq(get_locale(notice)) : be_nil
     end
   end
 
