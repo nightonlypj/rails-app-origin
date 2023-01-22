@@ -4,12 +4,12 @@ class Users::Auth::RegistrationsController < DeviseTokenAuth::RegistrationsContr
   include Users::RegistrationsConcern
   include DeviseTokenAuth::Concerns::SetUserByToken
   skip_before_action :verify_authenticity_token
-  prepend_before_action :unauthenticated_response, only: %i[show update image_update image_destroy destroy undo_destroy], unless: :user_signed_in?
-  prepend_before_action :already_authenticated_response, only: %i[create], if: :user_signed_in?
-  prepend_before_action :not_acceptable_response_not_api_accept
+  prepend_before_action :response_unauthenticated, only: %i[show update image_update image_destroy destroy undo_destroy], unless: :user_signed_in?
+  prepend_before_action :response_already_authenticated, only: %i[create], if: :user_signed_in?
+  prepend_before_action :response_not_acceptable_for_not_api
   prepend_before_action :update_request_uid_header
-  before_action :json_response_destroy_reserved, only: %i[update image_update image_destroy destroy]
-  before_action :json_response_not_destroy_reserved, only: %i[undo_destroy]
+  before_action :response_api_for_user_destroy_reserved, only: %i[update image_update image_destroy destroy]
+  before_action :response_api_for_not_user_destroy_reserved, only: %i[undo_destroy]
   before_action :configure_sign_up_params, only: %i[create]
   before_action :configure_account_update_params, only: %i[update]
   skip_after_action :update_auth_header, only: %i[update image_update]
@@ -17,17 +17,17 @@ class Users::Auth::RegistrationsController < DeviseTokenAuth::RegistrationsContr
   # POST /users/auth/sign_up(.json) アカウント登録API(処理)
   def create
     params[:code] = create_unique_code(User, 'code', "Users::RegistrationsController.create #{params}")
-    ActiveRecord::Base.transaction do # Tips: エラーでROLLBACKされなかった為
+    ActiveRecord::Base.transaction do # NOTE: エラーでROLLBACKされなかった為
       super
     end
   end
 
-  # GET /users/auth/show(.json) 登録情報詳細API
+  # GET /users/auth/detail(.json) ユーザー情報詳細API
   def show
     render './users/auth/show'
   end
 
-  # POST /users/auth/update(.json) 登録情報変更API(処理)
+  # POST /users/auth/update(.json) ユーザー情報変更API(処理)
   def update
     if params[:confirm_redirect_url].blank?
       return render './failure', locals: { alert: t('devise_token_auth.registrations.confirm_redirect_url_blank') }, status: :unprocessable_entity
@@ -36,38 +36,38 @@ class Users::Auth::RegistrationsController < DeviseTokenAuth::RegistrationsContr
       return render './failure', locals: { alert: t('devise_token_auth.registrations.confirm_redirect_url_not_allowed') }, status: :unprocessable_entity
     end
 
-    # Tips: 存在するメールアドレスの場合はエラーにする
+    # NOTE: 存在するメールアドレスの場合はエラーにする
     if @resource.present? && @resource.email != params[:email] && User.find_by(email: params[:email]).present?
-      errors = { email: t('activerecord.errors.models.user.attributes.email.exist') }
+      errors = { email: t('activerecord.errors.models.user.attributes.email.taken') }
       errors[:full_messages] = ["#{t('activerecord.attributes.user.email')} #{errors[:email]}"]
       return render './failure', locals: { errors: errors, alert: t('errors.messages.not_saved.one') }, status: :unprocessable_entity
     end
 
-    params[:password_confirmation] = '' if params[:password_confirmation].nil? # Tips: nilだとチェックされずに保存される為
-    params[:current_password] = '' if params[:current_password].nil? # Tips: nilだとチェックされずに保存される為
+    params[:password_confirmation] = '' if params[:password_confirmation].nil? # NOTE: nilだとチェックされずに保存される為
+    params[:current_password] = '' if params[:current_password].nil? # NOTE: nilだとチェックされずに保存される為
 
     @resource.redirect_url = params[:confirm_redirect_url]
     super
   end
 
-  # POST /users/auth/image/update(.json) 画像変更API(処理)
+  # POST /users/auth/image/update(.json) ユーザー画像変更API(処理)
   def image_update
     if params[:image].blank? || params[:image].class != ActionDispatch::Http::UploadedFile
-      errors = { image: t('errors.messages.image_update_blank') }
+      errors = { image: t('activerecord.errors.models.user.attributes.image.blank') }
       errors[:full_messages] = ["#{t('activerecord.attributes.user.image')} #{errors[:image]}"]
       return render './failure', locals: { errors: errors, alert: t('errors.messages.not_saved.one') }, status: :unprocessable_entity
     end
 
     @user = User.find(@resource.id)
     if @user.update(params.permit(:image))
-      update_auth_header # Tips: 成功時のみ認証情報を返す
+      update_auth_header # NOTE: 成功時のみ認証情報を返す
       render './users/auth/success', locals: { notice: t('notice.user.image_update') }
     else
       render './failure', locals: { errors: @user.errors, alert: t('errors.messages.not_saved.one') }, status: :unprocessable_entity
     end
   end
 
-  # POST /users/auth/image/delete(.json) 画像削除API(処理)
+  # POST /users/auth/image/delete(.json) ユーザー画像削除API(処理)
   def image_destroy
     @user = User.find(@resource.id)
     @user.remove_image!
@@ -130,19 +130,18 @@ class Users::Auth::RegistrationsController < DeviseTokenAuth::RegistrationsContr
 
   def render_update_success
     # render json: { status: 'success', data: resource_data }
-    update_auth_header # Tips: 成功時のみ認証情報を返す
+    update_auth_header # NOTE: 成功時のみ認証情報を返す
 
     notice = @resource.unconfirmed_email.present? ? 'devise.registrations.update_needs_confirmation' : 'devise.registrations.updated'
     render './users/auth/success', locals: { notice: t(notice) }
   end
 
-  # Tips: 未使用
-  # def render_update_error
-  #   # render json: { status: 'error', errors: resource_errors }, status: 422
-  #   render './failure', locals: { errors: resource_errors }, status: :unprocessable_entity
-  # end
+  def render_update_error
+    # render json: { status: 'error', errors: resource_errors }, status: 422
+    render './failure', locals: { errors: resource_errors, alert: t('errors.messages.not_saved.one') }, status: :unprocessable_entity
+  end
 
-  # Tips: 未使用
+  # NOTE: 未使用
   # def render_update_error_user_not_found
   #   # render_error(404, I18n.t('devise_token_auth.registrations.user_not_found'), status: 'error')
   #   render './failure', locals: { alert: t('devise_token_auth.registrations.user_not_found') }, status: :unprocessable_entity

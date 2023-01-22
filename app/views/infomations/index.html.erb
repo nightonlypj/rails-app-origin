@@ -1,13 +1,15 @@
+<% content_for(:html_title) { 'お知らせ' } %>
+
 <div class="card card-body mb-2">
   <h5 class="card-title mb-3">お知らせ</h5>
   <div class="card-text">
-<% if @infomations.total_count > @infomations.limit_value %>
+<% if @infomations.present? %>
     <div class="row">
-      <div class="col-sm-5 d-flex align-items-center">
+      <div class="col-md-5 d-flex align-items-center">
         <%= page_entries_info @infomations %>
       </div>
-      <div class="col-sm-7">
-        <div class="float-sm-end">
+      <div class="col-md-7">
+        <div class="float-end table-responsive">
           <%= paginate @infomations %>
         </div>
       </div>
@@ -21,34 +23,10 @@
       <hr/>
     </article>
 <% end %>
-<% @infomations.each do |infomation| %>
-    <article>
-      <div>
-        <%= render 'label', infomation: infomation %>
-        <span class="fw-bolder">
-<% if infomation.body.present? %>
-          <%= link_to infomation.title, infomation %>
-<% else %>
-          <%= infomation.title %>
-<% end %>
-        </span>
-        <span>
-          (<%= l(infomation.started_at.to_date) %>)
-        </span>
-      </div>
-<% if infomation.summary.present? %>
-      <div class="m-2">
-        <%= infomation.summary.html_safe %>
-      </div>
-<% end %>
-      <hr/>
-    </article>
-<% end %>
+    <%= render 'lists' %>
 
-<% if @infomations.total_pages > 1 %>
-    <div class="d-flex justify-content-center">
+    <div class="d-flex justify-content-center table-responsive">
       <%= paginate @infomations %>
     </div>
-<% end %>
   </div>
 </div>

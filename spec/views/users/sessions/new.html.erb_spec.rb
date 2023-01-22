@@ -1,7 +1,7 @@
 require 'rails_helper'
 
 RSpec.describe 'users/sessions/new', type: :view do
-  before { @resource = User.new }
+  before_all { @resource = User.new }
 
   context do
     it '対象の送信先と項目が含まれる' do

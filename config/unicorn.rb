@@ -2,6 +2,7 @@ unless defined?(DEFAULT_WORKER_PROCESSES)
   DEFAULT_WORKER_PROCESSES = 2
   DEFAULT_TIMEOUT = 60
   DEFAULT_LISTEN = File.expand_path('../tmp/sockets/unicorn.sock', __dir__).freeze
+  DEFAULT_LISTEN_BACKLOG = 1024
   DEFAULT_PID_PATH = File.expand_path('../tmp/pids/unicorn.pid', __dir__).freeze
   DEFAULT_STDERR_PATH = File.expand_path('../log/unicorn_stderr.log', __dir__).freeze
   DEFAULT_STDOUT_PATH = File.expand_path('../log/unicorn_stdout.log', __dir__).freeze
@@ -10,20 +11,27 @@ p "RAILS_ENV: #{ENV['RAILS_ENV'] || 'development(default)'}"
 p "WORKER_PROCESSES: #{ENV['WORKER_PROCESSES'] || "#{DEFAULT_WORKER_PROCESSES}(default)"}"
 p "TIMEOUT: #{ENV['TIMEOUT'] || "#{DEFAULT_TIMEOUT}(default)"}"
 p "LISTEN: #{ENV['LISTEN'] || "#{DEFAULT_LISTEN}(default)"}"
+p "LISTEN_BACKLOG: #{ENV['LISTEN_BACKLOG'] || "#{DEFAULT_LISTEN_BACKLOG}(default)"}"
 pid_path = ENV['PID_PATH'] || DEFAULT_PID_PATH
 p "PID_PATH: #{ENV['PID_PATH'] || "#{DEFAULT_PID_PATH}(default)"}[#{File.exist?(pid_path) ? File.read(pid_path).to_i : 'Not found'}]"
-p "STDERR_PATH: #{ENV['STDERR_PATH'] || "#{DEFAULT_STDERR_PATH}(default)"}"
-p "STDOUT_PATH: #{ENV['STDOUT_PATH'] || "#{DEFAULT_STDOUT_PATH}(default)"}"
+if ENV['RAILS_LOG_TO_STDOUT'].nil?
+  p "STDERR_PATH: #{ENV['STDERR_PATH'] || "#{DEFAULT_STDERR_PATH}(default)"}"
+  p "STDOUT_PATH: #{ENV['STDOUT_PATH'] || "#{DEFAULT_STDOUT_PATH}(default)"}"
+else
+  p "RAILS_LOG_TO_STDOUT: #{ENV['RAILS_LOG_TO_STDOUT']}"
+end
 
 worker_processes Integer(ENV['WORKER_PROCESSES'] || DEFAULT_WORKER_PROCESSES)
 timeout Integer(ENV['TIMEOUT'] || DEFAULT_TIMEOUT)
 preload_app true
 
-listen ENV['LISTEN'] || DEFAULT_LISTEN
+listen ENV['LISTEN'] || DEFAULT_LISTEN, backlog: Integer(ENV['LISTEN_BACKLOG'] || DEFAULT_LISTEN_BACKLOG)
 pid pid_path
 
-stderr_path ENV['STDERR_PATH'] || DEFAULT_STDERR_PATH
-stdout_path ENV['STDOUT_PATH'] || DEFAULT_STDOUT_PATH
+if ENV['RAILS_LOG_TO_STDOUT'].nil?
+  stderr_path ENV['STDERR_PATH'] || DEFAULT_STDERR_PATH
+  stdout_path ENV['STDOUT_PATH'] || DEFAULT_STDOUT_PATH
+end
 
 before_fork do |server, worker|
   defined?(ActiveRecord::Base) and ActiveRecord::Base.connection.disconnect!

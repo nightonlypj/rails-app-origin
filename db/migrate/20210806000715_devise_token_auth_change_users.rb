@@ -11,7 +11,7 @@ class DeviseTokenAuthChangeUsers < ActiveRecord::Migration[6.1]
     add_column :users, :allow_password_change, :boolean, default: false, comment: 'パスワード再設定中'
 
     ## User Info
-    # add_column :users, :nickname, :string, comment: 'ニックネーム' # Tips: 未使用
+    # add_column :users, :nickname, :string, comment: 'ニックネーム' # NOTE: 未使用
 
     ## Tokens
     add_column :users, :tokens, :text, comment: '認証トークン'

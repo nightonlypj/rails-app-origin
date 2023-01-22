@@ -44,13 +44,13 @@ RSpec.describe 'users/registrations/edit', type: :view do
   # テストケース
   context 'ログイン中（メール確認済み）' do
     include_context 'ログイン処理'
-    before { @resource = user }
+    before_all { @resource = user }
     it_behaves_like '入力項目'
     it_behaves_like 'メール確認済み表示'
   end
   context 'ログイン中（メールアドレス変更中）' do
-    include_context 'ログイン処理', :user_email_changed
-    before { @resource = user }
+    include_context 'ログイン処理', :email_changed
+    before_all { @resource = user }
     it_behaves_like '入力項目'
     it_behaves_like 'メールアドレス変更中表示'
   end

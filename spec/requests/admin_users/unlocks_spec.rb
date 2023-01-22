@@ -1,36 +1,7 @@
 require 'rails_helper'
 
 RSpec.describe 'AdminUsers::Unlocks', type: :request do
-  # テスト内容（共通）
-  shared_examples_for 'ToOK' do
-    it 'HTTPステータスが200' do
-      is_expected.to eq(200)
-    end
-  end
-  shared_examples_for 'ToError' do |error_msg|
-    it 'HTTPステータスが200。対象のエラーメッセージが含まれる' do # Tips: 再入力
-      is_expected.to eq(200)
-      expect(response.body).to include(I18n.t(error_msg))
-    end
-  end
-  shared_examples_for 'ToAdmin' do |alert, notice|
-    it 'RailsAdminにリダイレクトする' do
-      is_expected.to redirect_to(rails_admin_path)
-      expect(flash[:alert]).to alert.present? ? eq(I18n.t(alert)) : be_nil
-      expect(flash[:notice]).to notice.present? ? eq(I18n.t(notice)) : be_nil
-    end
-  end
-  shared_examples_for 'ToLogin' do |alert, notice|
-    it 'ログインにリダイレクトする' do
-      is_expected.to redirect_to(new_admin_user_session_path)
-      expect(flash[:alert]).to alert.present? ? eq(I18n.t(alert)) : be_nil
-      expect(flash[:notice]).to notice.present? ? eq(I18n.t(notice)) : be_nil
-    end
-  end
-
-  # GET /admin/unlock/new アカウントロック解除[メール再送]
-  # 前提条件
-  #   なし
+  # GET /admin/unlock/resend アカウントロック解除[メール再送]
   # テストパターン
   #   未ログイン, ログイン中
   describe 'GET #new' do
@@ -38,7 +9,7 @@ RSpec.describe 'AdminUsers::Unlocks', type: :request do
 
     # テストケース
     context '未ログイン' do
-      it_behaves_like 'ToOK'
+      it_behaves_like 'ToOK[status]'
     end
     context 'ログイン中' do
       include_context 'ログイン処理（管理者）'
@@ -46,17 +17,15 @@ RSpec.describe 'AdminUsers::Unlocks', type: :request do
     end
   end
 
-  # POST /admin/unlock/new アカウントロック解除[メール再送](処理)
-  # 前提条件
-  #   なし
+  # POST /admin/unlock/resend アカウントロック解除[メール再送](処理)
   # テストパターン
   #   未ログイン, ログイン中
   #   有効なパラメータ（ロック中, 未ロック）, 無効なパラメータ
   describe 'POST #create' do
     subject { post create_admin_user_unlock_path, params: { admin_user: attributes } }
-    let(:send_admin_user_locked)   { FactoryBot.create(:admin_user_locked) }
-    let(:send_admin_user_unlocked) { FactoryBot.create(:admin_user) }
-    let(:not_admin_user)           { FactoryBot.attributes_for(:admin_user) }
+    let_it_be(:send_admin_user_locked)   { FactoryBot.create(:admin_user, :locked) }
+    let_it_be(:send_admin_user_unlocked) { FactoryBot.create(:admin_user) }
+    let_it_be(:not_admin_user)           { FactoryBot.attributes_for(:admin_user) }
     let(:valid_attributes)   { { email: send_admin_user.email } }
     let(:invalid_attributes) { { email: not_admin_user[:email] } }
 
@@ -82,7 +51,7 @@ RSpec.describe 'AdminUsers::Unlocks', type: :request do
       let(:send_admin_user) { send_admin_user_locked }
       let(:attributes)      { valid_attributes }
       it_behaves_like 'OK'
-      it_behaves_like 'ToLogin', nil, 'devise.unlocks.send_instructions'
+      it_behaves_like 'ToAdminLogin', nil, 'devise.unlocks.send_instructions'
     end
     shared_examples_for '[ログイン中]有効なパラメータ（ロック中）' do
       let(:send_admin_user) { send_admin_user_locked }
@@ -127,8 +96,6 @@ RSpec.describe 'AdminUsers::Unlocks', type: :request do
   end
 
   # GET /admin/unlock アカウントロック解除(処理)
-  # 前提条件
-  #   なし
   # テストパターン
   #   未ログイン, ログイン中
   #   トークン: 存在する, 存在しない, ない
@@ -157,7 +124,7 @@ RSpec.describe 'AdminUsers::Unlocks', type: :request do
     shared_examples_for '[未ログイン][存在する]ロック日時がない（未ロック）' do
       include_context 'アカウントロック解除トークン作成（管理者）', false
       it_behaves_like 'NG'
-      it_behaves_like 'ToLogin', nil, 'devise.unlocks.unlocked' # Tips: 既に解除済み
+      it_behaves_like 'ToAdminLogin', nil, 'devise.unlocks.unlocked' # NOTE: 既に解除済み
     end
     shared_examples_for '[ログイン中][存在する]ロック日時がない（未ロック）' do
       include_context 'アカウントロック解除トークン作成（管理者）', false
@@ -165,25 +132,25 @@ RSpec.describe 'AdminUsers::Unlocks', type: :request do
       it_behaves_like 'ToAdmin', 'devise.failure.already_authenticated', nil
     end
     shared_examples_for '[未ログイン][存在しない]ロック日時がない（未ロック）' do
-      # it_behaves_like 'NG' # Tips: トークンが存在しない為、ロック日時がない
+      # it_behaves_like 'NG' # NOTE: トークンが存在しない為、ロック日時がない
       it_behaves_like 'ToError', 'activerecord.errors.models.admin_user.attributes.unlock_token.invalid'
     end
     shared_examples_for '[ログイン中][存在しない]ロック日時がない（未ロック）' do
-      # it_behaves_like 'NG' # Tips: トークンが存在しない為、ロック日時がない
+      # it_behaves_like 'NG' # NOTE: トークンが存在しない為、ロック日時がない
       it_behaves_like 'ToAdmin', 'devise.failure.already_authenticated', nil
     end
     shared_examples_for '[未ログイン][ない]ロック日時がない（未ロック）' do
-      # it_behaves_like 'NG' # Tips: トークンが存在しない為、ロック日時がない
+      # it_behaves_like 'NG' # NOTE: トークンが存在しない為、ロック日時がない
       it_behaves_like 'ToError', 'activerecord.errors.models.admin_user.attributes.unlock_token.blank'
     end
     shared_examples_for '[ログイン中][ない]ロック日時がない（未ロック）' do
-      # it_behaves_like 'NG' # Tips: トークンが存在しない為、ロック日時がない
+      # it_behaves_like 'NG' # NOTE: トークンが存在しない為、ロック日時がない
       it_behaves_like 'ToAdmin', 'devise.failure.already_authenticated', nil
     end
     shared_examples_for '[未ログイン][存在する]ロック日時が期限内（ロック中）' do
       include_context 'アカウントロック解除トークン作成（管理者）', true
       it_behaves_like 'OK'
-      it_behaves_like 'ToLogin', nil, 'devise.unlocks.unlocked'
+      it_behaves_like 'ToAdminLogin', nil, 'devise.unlocks.unlocked'
     end
     shared_examples_for '[ログイン中][存在する]ロック日時が期限内（ロック中）' do
       include_context 'アカウントロック解除トークン作成（管理者）', true
@@ -193,7 +160,7 @@ RSpec.describe 'AdminUsers::Unlocks', type: :request do
     shared_examples_for '[未ログイン][存在する]ロック日時が期限切れ（未ロック）' do
       include_context 'アカウントロック解除トークン作成（管理者）', true, true
       it_behaves_like 'OK'
-      it_behaves_like 'ToLogin', nil, 'devise.unlocks.unlocked' # Tips: 解除されても良さそう
+      it_behaves_like 'ToAdminLogin', nil, 'devise.unlocks.unlocked' # NOTE: 解除されても良さそう
     end
     shared_examples_for '[ログイン中][存在する]ロック日時が期限切れ（未ロック）' do
       include_context 'アカウントロック解除トークン作成（管理者）', true, true
@@ -214,26 +181,26 @@ RSpec.describe 'AdminUsers::Unlocks', type: :request do
     shared_examples_for '[未ログイン]トークンが存在しない' do
       let(:unlock_token) { NOT_TOKEN }
       it_behaves_like '[未ログイン][存在しない]ロック日時がない（未ロック）'
-      # it_behaves_like '[未ログイン][存在しない]ロック日時が期限内（ロック中）' # Tips: トークンが存在しない為、ロック日時がない
-      # it_behaves_like '[未ログイン][存在しない]ロック日時が期限切れ（未ロック）' # Tips: トークンが存在しない為、ロック日時がない
+      # it_behaves_like '[未ログイン][存在しない]ロック日時が期限内（ロック中）' # NOTE: トークンが存在しない為、ロック日時がない
+      # it_behaves_like '[未ログイン][存在しない]ロック日時が期限切れ（未ロック）' # NOTE: トークンが存在しない為、ロック日時がない
     end
     shared_examples_for '[ログイン中]トークンが存在しない' do
       let(:unlock_token) { NOT_TOKEN }
       it_behaves_like '[ログイン中][存在しない]ロック日時がない（未ロック）'
-      # it_behaves_like '[ログイン中][存在しない]ロック日時が期限内（ロック中）' # Tips: トークンが存在しない為、ロック日時がない
-      # it_behaves_like '[ログイン中][存在しない]ロック日時が期限切れ（未ロック）' # Tips: トークンが存在しない為、ロック日時がない
+      # it_behaves_like '[ログイン中][存在しない]ロック日時が期限内（ロック中）' # NOTE: トークンが存在しない為、ロック日時がない
+      # it_behaves_like '[ログイン中][存在しない]ロック日時が期限切れ（未ロック）' # NOTE: トークンが存在しない為、ロック日時がない
     end
     shared_examples_for '[未ログイン]トークンがない' do
       let(:unlock_token) { nil }
       it_behaves_like '[未ログイン][ない]ロック日時がない（未ロック）'
-      # it_behaves_like '[未ログイン][ない]ロック日時が期限内（ロック中）' # Tips: トークンが存在しない為、ロック日時がない
-      # it_behaves_like '[未ログイン][ない]ロック日時が期限切れ（未ロック）' # Tips: トークンが存在しない為、ロック日時がない
+      # it_behaves_like '[未ログイン][ない]ロック日時が期限内（ロック中）' # NOTE: トークンが存在しない為、ロック日時がない
+      # it_behaves_like '[未ログイン][ない]ロック日時が期限切れ（未ロック）' # NOTE: トークンが存在しない為、ロック日時がない
     end
     shared_examples_for '[ログイン中]トークンがない' do
       let(:unlock_token) { nil }
       it_behaves_like '[ログイン中][ない]ロック日時がない（未ロック）'
-      # it_behaves_like '[ログイン中][ない]ロック日時が期限内（ロック中）' # Tips: トークンが存在しない為、ロック日時がない
-      # it_behaves_like '[ログイン中][ない]ロック日時が期限切れ（未ロック）' # Tips: トークンが存在しない為、ロック日時がない
+      # it_behaves_like '[ログイン中][ない]ロック日時が期限内（ロック中）' # NOTE: トークンが存在しない為、ロック日時がない
+      # it_behaves_like '[ログイン中][ない]ロック日時が期限切れ（未ロック）' # NOTE: トークンが存在しない為、ロック日時がない
     end
 
     context '未ログイン' do

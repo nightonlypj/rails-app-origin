@@ -18,8 +18,8 @@ reset_password_within_hours: 24
 # アカウントロックの有効期間（単位：時間）
 unlock_in_hours: 1
 # アカウント削除の猶予期間（単位：日）
-destroy_schedule_days: 7
-# アカウント削除完了メール送信(true or false)  Tips:「rails user:destroy[false]」をcronで実行（メール送信する場合、夜間は避けた方が良い）
+user_destroy_schedule_days: 7
+# アカウント削除完了メール送信(true or false)  NOTE: 「rails user:destroy[false]」をcronで実行（メール送信する場合、夜間は避けた方が良い）
 sendmail_destroy_completed: true
 # 氏名の最小・最大文字数
 user_name_minimum: 1

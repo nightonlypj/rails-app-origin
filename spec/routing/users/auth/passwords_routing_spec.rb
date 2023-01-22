@@ -6,7 +6,7 @@ RSpec.describe Users::Auth::PasswordsController, type: :routing do
       # expect(get: '/users/auth/password/new').to route_to('users/auth/passwords#new')
       expect(get: '/users/auth/password/new').not_to be_routable
     end
-    it 'routes to #new' do
+    it 'routes to #create' do
       expect(post: '/users/auth/password').to route_to('users/auth/passwords#create')
       expect(post: '/users/auth/password.json').to route_to('users/auth/passwords#create', format: 'json')
     end

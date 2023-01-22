@@ -13,7 +13,7 @@ Rails.application.config.assets.paths << Rails.root.join('node_modules')
 # folder are already added.
 # Rails.application.config.assets.precompile += %w( admin.js admin.css )
 
-# Tips: https://www.tmp1024.com/articles/fix-rails-6-segmentation-error
+# NOTE: https://www.tmp1024.com/articles/fix-rails-6-segmentation-error
 Rails.application.config.assets.configure do |env|
   env.export_concurrent = false
 end

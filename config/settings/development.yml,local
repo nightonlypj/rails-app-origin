@@ -1,3 +1,4 @@
+debug: true
 env_name: '【開発環境】'
 base_domain: 'localhost:3000'
 base_image_url: 'http://localhost:3000'

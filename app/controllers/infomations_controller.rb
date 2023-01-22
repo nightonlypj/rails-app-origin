@@ -1,7 +1,7 @@
 class InfomationsController < ApplicationAuthController
   include InfomationsConcern
-  prepend_before_action :not_acceptable_response_not_api_accept, only: %i[important]
-  before_action :set_important_infomations, only: %i[important]
+  before_action :response_not_acceptable_for_not_api, only: :important
+  before_action :set_important_infomations, only: :important
 
   # GET /infomations お知らせ一覧
   # GET /infomations(.json) お知らせ一覧API
@@ -14,21 +14,16 @@ class InfomationsController < ApplicationAuthController
     end
   end
 
-  # GET /infomations/important(.json) 大切なお知らせAPI
-  # def important
-  # end
+  # GET /infomations/important(.json) 大切なお知らせ一覧API
+  def important; end
 
-  # GET /infomations/1 お知らせ詳細
-  # GET /infomations/1(.json) お知らせ詳細API
+  # GET /infomations/:id お知らせ詳細
+  # GET /infomations/:id(.json) お知らせ詳細API
   def show
-    @infomation = Infomation.find(params[:id])
-    return head :not_found if @infomation.blank? || !@infomation.target_user?(current_user) || @infomation.started_at > Time.current
+    @infomation = Infomation.find_by(id: params[:id])
+    return response_not_found if @infomation.blank? || !@infomation.display_target?(current_user) || @infomation.started_at > Time.current
 
-    if @infomation.ended_at.present? && @infomation.ended_at < Time.current
-      return head :not_found if format_html?
-
-      render './failure', locals: { alert: t('errors.messages.infomation.ended') }, status: :not_found
-    end
+    response_not_found('errors.messages.infomation.ended') if @infomation.ended_at.present? && @infomation.ended_at < Time.current
   end
 
   private

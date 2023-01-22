@@ -1,4 +1,4 @@
-# Tips: 不足分や文言変更したい場合のみ記載。デフォルト: gems/rails_admin-i18n-*/locales/ja.yml
+# NOTE: 不足分や文言変更したい場合のみ記載。デフォルト: gems/rails_admin-i18n-*/locales/ja.yml
 ja:
   admin:
     js:

@@ -1,13 +1,15 @@
-<%= render 'users/shared/error_messages', resource: resource %>
+<% content_for(:html_title) { 'ユーザー情報変更' } %>
+
+<%= render './users/shared/error_messages', resource: resource %>
 
 <div class="card card-body mb-2" style="max-width: 850px">
   <div class="row">
     <div class="col">
-      <h5 class="card-title">登録情報変更</h5>
+      <h5 class="card-title">ユーザー情報変更</h5>
     </div>
   </div>
   <div class="row">
-    <div class="col-md-4 card-text">
+    <div class="col-md-4 card-text" style="min-width: 256px">
       <%= render 'edit_image' %>
     </div>
     <div class="col-md-8 card-text">

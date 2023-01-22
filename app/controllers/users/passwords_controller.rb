@@ -1,12 +1,12 @@
 # frozen_string_literal: true
 
 class Users::PasswordsController < Devise::PasswordsController
-  # GET /users/password/new パスワード再設定[メール送信]
+  # GET /users/password/reset パスワード再設定[メール送信]
   # def new
   #   super
   # end
 
-  # POST /users/password/new パスワード再設定[メール送信](処理)
+  # POST /users/password/reset パスワード再設定[メール送信](処理)
   # def create
   #   super
   # end
@@ -18,12 +18,12 @@ class Users::PasswordsController < Devise::PasswordsController
     super
   end
 
-  # POST /users/password パスワード再設定(処理)
+  # PUT /users/password パスワード再設定(処理)
   def update
     resource = user_reset_password_token(resource_params[:reset_password_token])
     return redirect_to new_user_password_path, alert: invalid_token_message unless resource&.reset_password_period_valid?
 
-    # Tips: メールアドレス変更中でなく、メール未確認の場合は、確認済みにする
+    # NOTE: メールアドレス変更中でなく、メール未確認の場合は、確認済みにする
     resource.update!(confirmed_at: Time.now.utc) if resource.unconfirmed_email.blank? && resource.confirmed_at.blank?
 
     super

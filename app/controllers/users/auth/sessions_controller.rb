@@ -3,8 +3,8 @@
 class Users::Auth::SessionsController < DeviseTokenAuth::SessionsController
   include DeviseTokenAuth::Concerns::SetUserByToken
   skip_before_action :verify_authenticity_token
-  prepend_before_action :unauthenticated_response_sign_out, only: %i[destroy], unless: :user_signed_in?
-  prepend_before_action :not_acceptable_response_not_api_accept
+  prepend_before_action :response_unauthenticated_sign_out, only: %i[destroy], unless: :user_signed_in?
+  prepend_before_action :response_not_acceptable_for_not_api
   prepend_before_action :update_request_uid_header
 
   # POST /users/auth/sign_in(.json) ログインAPI(処理)
@@ -36,13 +36,13 @@ class Users::Auth::SessionsController < DeviseTokenAuth::SessionsController
     @resource
   end
 
-  def unauthenticated_response_sign_out
+  def response_unauthenticated_sign_out
     render './failure', locals: { alert: t('devise_token_auth.sessions.user_not_found') }, status: :unauthorized
   end
 
   protected
 
-  # Tips: 未使用
+  # NOTE: 未使用
   # def render_new_error
   #   # render_error(405, I18n.t('devise_token_auth.sessions.not_supported'))
   #   render './failure', locals: { alert: t('devise_token_auth.registrations.user_not_found') }, status: :not_found
@@ -81,7 +81,7 @@ class Users::Auth::SessionsController < DeviseTokenAuth::SessionsController
     render './users/auth/success', locals: { notice: t('devise.sessions.signed_out') }
   end
 
-  # Tips: 未使用
+  # NOTE: 未使用
   # def render_destroy_error
   #   # render_error(404, I18n.t('devise_token_auth.sessions.user_not_found'))
   #   render './failure', locals: { alert: t('devise_token_auth.sessions.user_not_found') }, status: :unprocessable_entity

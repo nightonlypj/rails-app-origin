@@ -11,23 +11,24 @@ RSpec.describe Users::RegistrationsController, type: :routing do
       expect(post: '/users/sign_up').to route_to('users/registrations#create')
     end
     it 'routes to #edit' do
-      expect(get: '/users/edit').to route_to('users/registrations#edit')
+      expect(get: '/users/edit').not_to be_routable
+      expect(get: '/users/update').to route_to('users/registrations#edit')
     end
     it 'routes to #update' do
       # expect(put: '/users').to route_to('users/registrations#update')
       # expect(patch: '/users').to route_to('users/registrations#update')
       expect(put: '/users').not_to be_routable
       expect(patch: '/users').not_to be_routable
-      expect(post: '/users/edit').to route_to('users/registrations#update')
+      expect(put: '/users/update').to route_to('users/registrations#update')
     end
     it 'routes to #image_update' do
-      expect(get: '/users/image/update').to route_to('users/registrations#edit') # Tips: URL直アクセス対応
+      expect(get: '/users/image/update').to route_to('users/registrations#edit') # NOTE: URL直アクセス対応
       expect(post: '/users/image/update').to route_to('users/registrations#image_update')
     end
     it 'routes to #image_destroy' do
-      expect(delete: '/users/image/destroy').not_to be_routable
-      expect(get: '/users/image/destroy').to route_to('users/registrations#edit') # Tips: URL直アクセス対応
-      expect(post: '/users/image/destroy').to route_to('users/registrations#image_destroy')
+      expect(delete: '/users/image/delete').not_to be_routable
+      expect(get: '/users/image/delete').to route_to('users/registrations#edit') # NOTE: URL直アクセス対応
+      expect(post: '/users/image/delete').to route_to('users/registrations#image_destroy')
     end
     it 'routes to #delete' do
       expect(get: '/users/delete').to route_to('users/registrations#delete')

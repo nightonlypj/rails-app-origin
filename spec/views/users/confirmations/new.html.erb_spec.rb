@@ -1,7 +1,7 @@
 require 'rails_helper'
 
 RSpec.describe 'users/confirmations/new', type: :view do
-  before { @resource = User.new }
+  before_all { @resource = User.new }
 
   # テスト内容
   shared_examples_for '入力項目' do
@@ -49,7 +49,7 @@ RSpec.describe 'users/confirmations/new', type: :view do
     it_behaves_like 'ログイン中表示'
   end
   context 'ログイン中（メールアドレス変更中）' do
-    include_context 'ログイン処理', :user_email_changed
+    include_context 'ログイン処理', :email_changed
     it_behaves_like '入力項目'
     it_behaves_like 'ログイン中表示'
   end

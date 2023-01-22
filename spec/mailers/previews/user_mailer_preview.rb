@@ -2,7 +2,7 @@
 class UserMailerPreview < ActionMailer::Preview
   # アカウント削除受け付けのお知らせ
   def destroy_reserved(undo_delete_url = nil)
-    user = FactoryBot.build_stubbed(:user_destroy_reserved)
+    user = FactoryBot.build_stubbed(:user, :destroy_reserved)
     UserMailer.with(user: user, undo_delete_url: undo_delete_url).destroy_reserved
   end
 
@@ -19,7 +19,7 @@ class UserMailerPreview < ActionMailer::Preview
 
   # アカウント削除完了のお知らせ
   def destroy_completed
-    user = FactoryBot.build_stubbed(:user_destroy_reserved)
+    user = FactoryBot.build_stubbed(:user, :destroy_reserved)
     UserMailer.with(user: user).destroy_completed
   end
 end

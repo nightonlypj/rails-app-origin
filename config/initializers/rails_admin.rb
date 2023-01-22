@@ -1,4 +1,4 @@
-# Tips: Error occurred while loading application: uninitialized constant NestedForm::BuilderMixin (NameError)
+# NOTE: Error occurred while loading application: uninitialized constant NestedForm::BuilderMixin (NameError)
 require 'nested_form/engine'
 require 'nested_form/builder_mixin'
 

@@ -13,14 +13,12 @@ RSpec.describe DeviseMailer, type: :mailer do
   # パスワード再設定方法のお知らせ
   # 前提条件
   #   未ロック
-  # テストパターン
-  #   なし
   describe '#reset_password_instructions' do
-    let(:admin_user) { FactoryBot.build_stubbed(:admin_user) }
-    let(:token)      { Devise.token_generator.digest(self, :reset_password_token, SecureRandom.uuid) }
-    let(:mail)       { DeviseMailer.reset_password_instructions(admin_user, token) }
-    let(:subject)    { 'devise.mailer.reset_password_instructions.admin_user_subject' }
-    let(:url)        { edit_admin_user_password_url(reset_password_token: token) }
+    let_it_be(:admin_user) { FactoryBot.build_stubbed(:admin_user) }
+    let(:token)   { Devise.token_generator.digest(self, :reset_password_token, SecureRandom.uuid) }
+    let(:mail)    { DeviseMailer.reset_password_instructions(admin_user, token) }
+    let(:subject) { 'devise.mailer.reset_password_instructions.admin_user_subject' }
+    let(:url)     { edit_admin_user_password_url(reset_password_token: token) }
 
     it_behaves_like 'Header'
     it 'パスワード再設定のURLが含まれる' do
@@ -32,14 +30,12 @@ RSpec.describe DeviseMailer, type: :mailer do
   # アカウントロックのお知らせ
   # 前提条件
   #   ロック中
-  # テストパターン
-  #   なし
   describe '#unlock_instructions' do
-    let(:admin_user) { FactoryBot.build_stubbed(:admin_user_locked) }
-    let(:token)      { Devise.token_generator.digest(self, :unlock_token, SecureRandom.uuid) }
-    let(:mail)       { DeviseMailer.unlock_instructions(admin_user, token) }
-    let(:subject)    { 'devise.mailer.unlock_instructions.admin_user_subject' }
-    let(:url)        { admin_user_unlock_url(unlock_token: token) }
+    let_it_be(:admin_user) { FactoryBot.build_stubbed(:admin_user, :locked) }
+    let(:token)   { Devise.token_generator.digest(self, :unlock_token, SecureRandom.uuid) }
+    let(:mail)    { DeviseMailer.unlock_instructions(admin_user, token) }
+    let(:subject) { 'devise.mailer.unlock_instructions.admin_user_subject' }
+    let(:url)     { admin_user_unlock_url(unlock_token: token) }
 
     it_behaves_like 'Header'
     it 'アカウントロック解除のURLが含まれる' do
@@ -49,14 +45,10 @@ RSpec.describe DeviseMailer, type: :mailer do
   end
 
   # パスワード変更完了のお知らせ
-  # 前提条件
-  #   なし
-  # テストパターン
-  #   なし
   describe '#password_change' do
-    let(:admin_user) { FactoryBot.build_stubbed(:admin_user) }
-    let(:mail)       { DeviseMailer.password_change(admin_user) }
-    let(:subject)    { 'devise.mailer.password_change.admin_user_subject' }
+    let_it_be(:admin_user) { FactoryBot.build_stubbed(:admin_user) }
+    let(:mail)    { DeviseMailer.password_change(admin_user) }
+    let(:subject) { 'devise.mailer.password_change.admin_user_subject' }
 
     it_behaves_like 'Header'
   end

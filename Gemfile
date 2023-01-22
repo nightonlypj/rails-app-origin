@@ -10,7 +10,7 @@ gem 'sqlite3', '~> 1.4'
 # Use mysql as the database for Active Record
 gem 'mysql2', '>= 0.4.4'
 # Use postgresql as the database for Active Record
-gem 'pg', '~> 1.1'
+# gem 'pg', '~> 1.1'
 # Use Puma as the app server
 gem 'puma', '~> 4.1'
 # Use SCSS for stylesheets
@@ -77,6 +77,8 @@ group :test do
   gem 'webdrivers'
   # Use SimpleCov
   gem 'simplecov'
+  # Use Ruby Tests Profiling Toolbox
+  gem 'test-prof'
 end
 
 # Windows does not include zoneinfo files, so bundle the tzinfo-data gem
@@ -85,6 +87,7 @@ gem 'tzinfo-data', platforms: [:mingw, :mswin, :x64_mingw, :jruby]
 # Use Devise
 gem 'devise', '< 4.8.0'
 gem 'devise-i18n'
+gem 'email_validator'
 
 # Use Devise Token Auth
 gem 'devise_token_auth'

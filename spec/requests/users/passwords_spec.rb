@@ -2,42 +2,15 @@ require 'rails_helper'
 
 RSpec.describe 'Users::Passwords', type: :request do
   # テスト内容（共通）
-  shared_examples_for 'ToOK' do
-    it 'HTTPステータスが200' do
-      is_expected.to eq(200)
-    end
-  end
-  shared_examples_for 'ToError' do |error_msg|
-    it 'HTTPステータスが200。対象のエラーメッセージが含まれる' do # Tips: 再入力
-      is_expected.to eq(200)
-      expect(response.body).to include(I18n.t(error_msg))
-    end
-  end
-  shared_examples_for 'ToTop' do |alert, notice|
-    it 'トップページにリダイレクトする' do
-      is_expected.to redirect_to(root_path)
-      expect(flash[:alert]).to alert.present? ? eq(I18n.t(alert)) : be_nil
-      expect(flash[:notice]).to notice.present? ? eq(I18n.t(notice)) : be_nil
-    end
-  end
-  shared_examples_for 'ToLogin' do |alert, notice|
-    it 'ログインにリダイレクトする' do
-      is_expected.to redirect_to(new_user_session_path)
-      expect(flash[:alert]).to alert.present? ? eq(I18n.t(alert)) : be_nil
-      expect(flash[:notice]).to notice.present? ? eq(I18n.t(notice)) : be_nil
-    end
-  end
   shared_examples_for 'ToNew' do |alert, notice|
     it 'パスワード再設定[メール送信]にリダイレクトする' do
       is_expected.to redirect_to(new_user_password_path)
-      expect(flash[:alert]).to alert.present? ? eq(I18n.t(alert)) : be_nil
-      expect(flash[:notice]).to notice.present? ? eq(I18n.t(notice)) : be_nil
+      expect(flash[:alert]).to alert.present? ? eq(get_locale(alert)) : be_nil
+      expect(flash[:notice]).to notice.present? ? eq(get_locale(notice)) : be_nil
     end
   end
 
-  # GET /users/password/new パスワード再設定[メール送信]
-  # 前提条件
-  #   なし
+  # GET /users/password/reset パスワード再設定[メール送信]
   # テストパターン
   #   未ログイン, ログイン中
   describe 'GET #new' do
@@ -45,7 +18,7 @@ RSpec.describe 'Users::Passwords', type: :request do
 
     # テストケース
     context '未ログイン' do
-      it_behaves_like 'ToOK'
+      it_behaves_like 'ToOK[status]'
     end
     context 'ログイン中' do
       include_context 'ログイン処理'
@@ -53,19 +26,17 @@ RSpec.describe 'Users::Passwords', type: :request do
     end
   end
 
-  # POST /users/password/new パスワード再設定[メール送信](処理)
-  # 前提条件
-  #   なし
+  # POST /users/password/reset パスワード再設定[メール送信](処理)
   # テストパターン
   #   未ログイン, ログイン中
   #   有効なパラメータ（未ロック, ロック中, メール未確認, メールアドレス変更中）, 無効なパラメータ
   describe 'POST #create' do
     subject { post create_user_password_path, params: { user: attributes } }
-    let(:send_user_unlocked)      { FactoryBot.create(:user) }
-    let(:send_user_locked)        { FactoryBot.create(:user_locked) }
-    let(:send_user_unconfirmed)   { FactoryBot.create(:user_unconfirmed) }
-    let(:send_user_email_changed) { FactoryBot.create(:user_email_changed) }
-    let(:not_user)                { FactoryBot.attributes_for(:user) }
+    let_it_be(:send_user_unlocked)      { FactoryBot.create(:user) }
+    let_it_be(:send_user_locked)        { FactoryBot.create(:user, :locked) }
+    let_it_be(:send_user_unconfirmed)   { FactoryBot.create(:user, :unconfirmed) }
+    let_it_be(:send_user_email_changed) { FactoryBot.create(:user, :email_changed) }
+    let_it_be(:not_user)                { FactoryBot.attributes_for(:user) }
     let(:valid_attributes)   { { email: send_user.email } }
     let(:invalid_attributes) { { email: not_user[:email] } }
 
@@ -99,7 +70,7 @@ RSpec.describe 'Users::Passwords', type: :request do
       it_behaves_like 'NG'
       it_behaves_like 'ToTop', 'devise.failure.already_authenticated', nil
     end
-    shared_examples_for '[未ログイン]有効なパラメータ（ロック中）' do # Tips: ロック中も出来ても良さそう
+    shared_examples_for '[未ログイン]有効なパラメータ（ロック中）' do # NOTE: ロック中も出来ても良さそう
       let(:send_user)  { send_user_locked }
       let(:attributes) { valid_attributes }
       it_behaves_like 'OK'
@@ -111,7 +82,7 @@ RSpec.describe 'Users::Passwords', type: :request do
       it_behaves_like 'NG'
       it_behaves_like 'ToTop', 'devise.failure.already_authenticated', nil
     end
-    shared_examples_for '[未ログイン]有効なパラメータ（メール未確認）' do # Tips: メール未確認も出来ても良さそう
+    shared_examples_for '[未ログイン]有効なパラメータ（メール未確認）' do # NOTE: メール未確認も出来ても良さそう
       let(:send_user)  { send_user_unconfirmed }
       let(:attributes) { valid_attributes }
       it_behaves_like 'OK'
@@ -123,7 +94,7 @@ RSpec.describe 'Users::Passwords', type: :request do
       it_behaves_like 'NG'
       it_behaves_like 'ToTop', 'devise.failure.already_authenticated', nil
     end
-    shared_examples_for '[未ログイン]有効なパラメータ（メールアドレス変更中）' do # Tips: メールアドレス変更中も出来ても良さそう
+    shared_examples_for '[未ログイン]有効なパラメータ（メールアドレス変更中）' do # NOTE: メールアドレス変更中も出来ても良さそう
       let(:send_user)  { send_user_email_changed }
       let(:attributes) { valid_attributes }
       it_behaves_like 'OK'
@@ -164,8 +135,6 @@ RSpec.describe 'Users::Passwords', type: :request do
   end
 
   # GET /users/password パスワード再設定
-  # 前提条件
-  #   なし
   # テストパターン
   #   未ログイン, ログイン中
   #   トークン: 期限内（未ロック, ロック中, メール未確認, メールアドレス変更中）, 期限切れ, 存在しない, ない
@@ -175,31 +144,31 @@ RSpec.describe 'Users::Passwords', type: :request do
     # テストケース
     shared_examples_for '[未ログイン]トークンが期限内（未ロック）' do
       include_context 'パスワードリセットトークン作成', true
-      it_behaves_like 'ToOK'
+      it_behaves_like 'ToOK[status]'
     end
     shared_examples_for '[ログイン中]トークンが期限内（未ロック）' do
       include_context 'パスワードリセットトークン作成', true
       it_behaves_like 'ToTop', 'devise.failure.already_authenticated', nil
     end
-    shared_examples_for '[未ログイン]トークンが期限内（ロック中）' do # Tips: ロック中も出来ても良さそう
+    shared_examples_for '[未ログイン]トークンが期限内（ロック中）' do # NOTE: ロック中も出来ても良さそう
       include_context 'パスワードリセットトークン作成', true, true
-      it_behaves_like 'ToOK'
+      it_behaves_like 'ToOK[status]'
     end
     shared_examples_for '[ログイン中]トークンが期限内（ロック中）' do
       include_context 'パスワードリセットトークン作成', true, true
       it_behaves_like 'ToTop', 'devise.failure.already_authenticated', nil
     end
-    shared_examples_for '[未ログイン]トークンが期限内（メール未確認）' do # Tips: メール未確認も出来ても良さそう
+    shared_examples_for '[未ログイン]トークンが期限内（メール未確認）' do # NOTE: メール未確認も出来ても良さそう
       include_context 'パスワードリセットトークン作成', true, false, true
-      it_behaves_like 'ToOK'
+      it_behaves_like 'ToOK[status]'
     end
     shared_examples_for '[ログイン中]トークンが期限内（メール未確認）' do
       include_context 'パスワードリセットトークン作成', true, false, true
       it_behaves_like 'ToTop', 'devise.failure.already_authenticated', nil
     end
-    shared_examples_for '[未ログイン]トークンが期限内（メールアドレス変更中）' do # Tips: メールアドレス変更中も出来ても良さそう
+    shared_examples_for '[未ログイン]トークンが期限内（メールアドレス変更中）' do # NOTE: メールアドレス変更中も出来ても良さそう
       include_context 'パスワードリセットトークン作成', true, false, true, true
-      it_behaves_like 'ToOK'
+      it_behaves_like 'ToOK[status]'
     end
     shared_examples_for '[ログイン中]トークンが期限内（メールアドレス変更中）' do
       include_context 'パスワードリセットトークン作成', true, false, true, true
@@ -251,15 +220,13 @@ RSpec.describe 'Users::Passwords', type: :request do
     end
   end
 
-  # POST /users/password パスワード再設定(処理)
-  # 前提条件
-  #   なし
+  # PUT /users/password パスワード再設定(処理)
   # テストパターン
   #   未ログイン, ログイン中
   #   トークン: 期限内（未ロック, ロック中, メール未確認, メールアドレス変更中）, 期限切れ, 存在しない, ない
   #   有効なパラメータ, 無効なパラメータ
-  describe 'POST #update' do
-    subject { post update_user_password_path, params: { user: attributes } }
+  describe 'PUT #update' do
+    subject { put update_user_password_path, params: { user: attributes } }
     let(:new_password) { Faker::Internet.password(min_length: 8) }
     let(:valid_attributes)   { { reset_password_token: reset_password_token, password: new_password, password_confirmation: new_password } }
     let(:invalid_attributes) { { reset_password_token: reset_password_token, password: nil, password_confirmation: nil } }
@@ -272,7 +239,7 @@ RSpec.describe 'Users::Passwords', type: :request do
         subject
         expect(current_user.reset_password_sent_at).to be_nil
         expect(current_user.confirmed_at).to change_confirmed ? be_between(start_time, Time.current) : eq(send_user.confirmed_at)
-        expect(current_user.locked_at).to be_nil # Tips: ロック中の場合は解除する
+        expect(current_user.locked_at).to be_nil # NOTE: ロック中の場合は解除する
         expect(current_user.failed_attempts).to eq(0)
 
         expect(ActionMailer::Base.deliveries.count).to eq(1)
@@ -318,12 +285,12 @@ RSpec.describe 'Users::Passwords', type: :request do
     end
     shared_examples_for '[未ログイン][存在しない/ない]有効なパラメータ' do
       let(:attributes) { valid_attributes }
-      # it_behaves_like 'NG' # Tips: トークンが存在しない為、送信日時がない
+      # it_behaves_like 'NG' # NOTE: トークンが存在しない為、送信日時がない
       it_behaves_like 'ToNew', 'activerecord.errors.models.user.attributes.reset_password_token.invalid', nil
     end
     shared_examples_for '[ログイン中][存在しない/ない]有効なパラメータ' do
       let(:attributes) { valid_attributes }
-      # it_behaves_like 'NG' # Tips: トークンが存在しない為、送信日時がない
+      # it_behaves_like 'NG' # NOTE: トークンが存在しない為、送信日時がない
       it_behaves_like 'ToTop', 'devise.failure.already_authenticated', nil
     end
     shared_examples_for '[未ログイン][期限内]無効なパラメータ' do
@@ -343,12 +310,12 @@ RSpec.describe 'Users::Passwords', type: :request do
     end
     shared_examples_for '[未ログイン][存在しない/ない]無効なパラメータ' do
       let(:attributes) { invalid_attributes }
-      # it_behaves_like 'NG' # Tips: トークンが存在しない為、送信日時がない
+      # it_behaves_like 'NG' # NOTE: トークンが存在しない為、送信日時がない
       it_behaves_like 'ToNew', 'activerecord.errors.models.user.attributes.reset_password_token.invalid', nil
     end
     shared_examples_for '[ログイン中][存在しない/ない]無効なパラメータ' do
       let(:attributes) { invalid_attributes }
-      # it_behaves_like 'NG' # Tips: トークンが存在しない為、送信日時がない
+      # it_behaves_like 'NG' # NOTE: トークンが存在しない為、送信日時がない
       it_behaves_like 'ToTop', 'devise.failure.already_authenticated', nil
     end
 

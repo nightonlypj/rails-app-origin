@@ -3,8 +3,8 @@
 class Users::RegistrationsController < Devise::RegistrationsController
   include Users::RegistrationsConcern
   prepend_before_action :authenticate_scope!, only: %i[edit update image_update image_destroy delete destroy undo_delete undo_destroy]
-  before_action :redirect_response_destroy_reserved, only: %i[edit update image_update image_destroy delete destroy]
-  before_action :redirect_response_not_destroy_reserved, only: %i[undo_delete undo_destroy]
+  before_action :redirect_for_user_destroy_reserved, only: %i[edit update image_update image_destroy delete destroy]
+  before_action :redirect_for_not_user_destroy_reserved, only: %i[undo_delete undo_destroy]
   before_action :configure_sign_up_params, only: %i[create]
   before_action :configure_account_update_params, only: %i[update]
 
@@ -19,30 +19,30 @@ class Users::RegistrationsController < Devise::RegistrationsController
     ActiveRecord::Base.transaction do
       super
       flash[:alert] = resource.errors[:code].first if resource.errors[:code].present?
-      resource.send_confirmation_instructions if resource.errors.blank? # Tips: devise_token_auth導入後、送信されなくなった為
+      resource.send_confirmation_instructions if resource.errors.blank? # NOTE: devise_token_auth導入後、送信されなくなった為
     end
   end
 
-  # GET /users/edit 登録情報変更
+  # GET /users/update ユーザー情報変更
   # def edit
   #   super
   # end
 
-  # POST /users/edit 登録情報変更(処理)
+  # PUT /users/update ユーザー情報変更(処理)
   def update
-    # Tips: 存在するメールアドレスの場合はエラーにする
+    # NOTE: 存在するメールアドレスの場合はエラーにする
     if resource.email != params[:user][:email] && User.find_by(email: params[:user][:email]).present?
-      resource.errors.add(:email, t('activerecord.errors.models.user.attributes.email.exist'))
+      resource.errors.add(:email, :taken)
       return render :edit
     end
 
     super
   end
 
-  # POST /users/image/update 画像変更(処理)
+  # POST /users/image/update ユーザー画像変更(処理)
   def image_update
     if params.blank? || params[:user].blank?
-      resource.errors.add(:image, t('errors.messages.image_update_blank'))
+      resource.errors.add(:image, :blank)
       return render :edit
     end
 
@@ -54,7 +54,7 @@ class Users::RegistrationsController < Devise::RegistrationsController
     end
   end
 
-  # POST /users/image/destroy 画像削除(処理)
+  # POST /users/image/destroy ユーザー画像削除(処理)
   def image_destroy
     @user = User.find(resource.id)
     @user.remove_image!
@@ -63,8 +63,7 @@ class Users::RegistrationsController < Devise::RegistrationsController
   end
 
   # GET /users/delete アカウント削除
-  # def delete
-  # end
+  def delete; end
 
   # POST /users/delete アカウント削除(処理)
   def destroy
@@ -79,8 +78,7 @@ class Users::RegistrationsController < Devise::RegistrationsController
   end
 
   # GET /users/undo_delete アカウント削除取り消し
-  # def undo_delete
-  # end
+  def undo_delete; end
 
   # POST /users/undo_delete アカウント削除取り消し(処理)
   def undo_destroy

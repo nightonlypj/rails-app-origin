@@ -2,7 +2,7 @@
 
 class DeviseCreateAdminUsers < ActiveRecord::Migration[6.0]
   def change
-    create_table :admin_users do |t|
+    create_table :admin_users, comment: '管理者' do |t|
       t.string :name, null: false, comment: '氏名'
 
       ## Database authenticatable
@@ -36,7 +36,6 @@ class DeviseCreateAdminUsers < ActiveRecord::Migration[6.0]
 
       t.timestamps
     end
-
     add_index :admin_users, :email,                unique: true, name: 'index_admin_users1'
     add_index :admin_users, :reset_password_token, unique: true, name: 'index_admin_users2'
     add_index :admin_users, :confirmation_token,   unique: true, name: 'index_admin_users3'

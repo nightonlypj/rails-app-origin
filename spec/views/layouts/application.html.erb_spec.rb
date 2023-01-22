@@ -7,12 +7,12 @@ RSpec.describe 'layouts/application', type: :view do
       render
       expect(rendered).to include("\"#{new_user_session_path}\"") # ログイン
       expect(rendered).to include("\"#{new_user_registration_path}\"") # アカウント登録
+      expect(rendered).to include("\"#{infomations_path}\"") # お知らせ
     end
     it '対象のパスが含まれない' do
       render
-      expect(rendered).not_to include("\"#{edit_user_registration_path}\"") # 登録情報変更
+      expect(rendered).not_to include("\"#{edit_user_registration_path}\"") # ユーザー情報変更
       expect(rendered).not_to include("\"#{destroy_user_session_path}\"") # ログアウト
-      expect(rendered).not_to include("\"#{infomations_path}\"") # お知らせ
     end
   end
   shared_examples_for 'ログイン中表示' do
@@ -23,7 +23,7 @@ RSpec.describe 'layouts/application', type: :view do
     end
     it '対象のパスが含まれる' do
       render
-      expect(rendered).to include("\"#{edit_user_registration_path}\"") # 登録情報変更
+      expect(rendered).to include("\"#{edit_user_registration_path}\"") # ユーザー情報変更
       expect(rendered).to include("\"#{destroy_user_session_path}\"") # ログアウト
       expect(rendered).to include("\"#{infomations_path}\"") # お知らせ
     end
@@ -53,7 +53,7 @@ RSpec.describe 'layouts/application', type: :view do
     it_behaves_like '削除予約非表示'
   end
   context 'ログイン中（削除予約済み）' do
-    include_context 'ログイン処理', :user_destroy_reserved
+    include_context 'ログイン処理', :destroy_reserved
     it_behaves_like 'ログイン中表示'
     it_behaves_like '削除予約表示'
   end

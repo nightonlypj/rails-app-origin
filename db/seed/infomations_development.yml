@@ -1,321 +1,321 @@
-# Tips: id = target & user_id & 任意
+# NOTE: id = target & user_id + 連番
 - id: 11
-  label: Not
+  label: not
   title: '全員へのお知らせ（掲載終了）'
   summary: '全員へのお知らせの要約<br>2行目'
   body: '全員へのお知らせの本文<br>2行目'
-  started_at: '2020-01-01 00:00:00+0900'
-  ended_at: '2020-12-31 23:59:59+0900'
-  force_started_at: '2021-01-01 00:00:00+0900'
-  force_ended_at: '2020-12-31 23:59:59+0900'
-  target: All
+  started_at: '2000-01-01 00:00:00+0900'
+  ended_at: '2000-12-31 23:59:59+0900'
+  force_started_at: '2000-01-01 00:00:00+0900'
+  force_ended_at: '2000-12-31 23:59:59+0900'
+  target: all
   user_id: null
 - id: 12
-  label: Maintenance
+  label: maintenance
   title: '全員へのお知らせ（掲載中）'
   summary: '全員へのお知らせの要約<br>2行目'
   body: '全員へのお知らせの本文<br>2行目'
-  started_at: '2021-01-01 00:00:00+0900'
+  started_at: '2000-01-01 00:00:00+0900'
   ended_at: null
-  force_started_at: '2021-01-01 00:00:00+0900'
+  force_started_at: '2000-01-01 00:00:00+0900'
   force_ended_at: '9999-12-31 23:59:59+0900'
-  target: All
+  target: all
   user_id: null
 - id: 13
-  label: Hindrance
+  label: hindrance
   title: '全員へのお知らせ（掲載中、要約なし）'
   summary: null
   body: '全員へのお知らせの本文<br>2行目'
-  started_at: '2021-01-01 00:00:00+0900'
+  started_at: '2000-01-01 00:00:00+0900'
   ended_at: null
-  force_started_at: '2021-01-01 00:00:00+0900'
+  force_started_at: '2000-01-01 00:00:00+0900'
   force_ended_at: null
-  target: All
+  target: all
   user_id: null
 - id: 14
-  label: Other
+  label: other
   title: '全員へのお知らせ（掲載中、本文なし）'
   summary: '全員へのお知らせの要約<br>2行目'
   body: null
-  started_at: '2021-01-01 00:00:00+0900'
+  started_at: '2000-01-01 00:00:00+0900'
   ended_at: null
-  force_started_at: '2021-01-01 00:00:00+0900'
+  force_started_at: '2000-01-01 00:00:00+0900'
   force_ended_at: null
-  target: All
+  target: all
   user_id: null
 - id: 15
-  label: Not
+  label: not
   title: '全員へのお知らせ（掲載中、要約・本文なし）'
   summary: null
   body: null
-  started_at: '2021-01-01 00:00:00+0900'
+  started_at: '2000-01-01 00:00:00+0900'
   ended_at: null
-  force_started_at: '2021-01-01 00:00:00+0900'
+  force_started_at: '2000-01-01 00:00:00+0900'
   force_ended_at: null
-  target: All
+  target: all
   user_id: null
 
 - id: 211
-  label: Not
+  label: not
   title: 'user1へのお知らせ（掲載終了）'
   summary: 'user1へのお知らせの要約<br>2行目'
   body: 'user1へのお知らせの本文<br>2行目'
-  started_at: '2020-01-01 00:00:00+0900'
-  ended_at: '2020-12-31 23:59:59+0900'
+  started_at: '2000-01-01 00:00:00+0900'
+  ended_at: '2000-12-31 23:59:59+0900'
   force_started_at: null
   force_ended_at: null
-  target: User
+  target: user
   user_id: 1
 - id: 212
-  label: Not
+  label: not
   title: 'user1へのお知らせ（掲載中）'
   summary: 'user1へのお知らせの要約<br>2行目'
   body: 'user1へのお知らせの本文<br>2行目'
-  started_at: '2021-01-01 00:00:00+0900'
+  started_at: '2000-01-01 00:00:00+0900'
   ended_at: null
   force_started_at: null
   force_ended_at: null
-  target: User
+  target: user
   user_id: 1
 - id: 213
-  label: Not
+  label: not
   title: 'user1へのお知らせ（掲載中、要約なし）'
   summary: null
   body: 'user1へのお知らせの本文<br>2行目'
-  started_at: '2021-01-01 00:00:00+0900'
+  started_at: '2000-01-01 00:00:00+0900'
   ended_at: null
   force_started_at: null
   force_ended_at: null
-  target: User
+  target: user
   user_id: 1
 - id: 214
-  label: Not
+  label: not
   title: 'user1へのお知らせ（掲載中、本文なし）'
   summary: 'user1へのお知らせの要約<br>2行目'
   body: null
-  started_at: '2021-01-01 00:00:00+0900'
+  started_at: '2000-01-01 00:00:00+0900'
   ended_at: null
   force_started_at: null
   force_ended_at: null
-  target: User
+  target: user
   user_id: 1
 - id: 215
-  label: Not
+  label: not
   title: 'user1へのお知らせ（掲載中、要約・本文なし）'
   summary: null
   body: null
-  started_at: '2021-01-01 00:00:00+0900'
+  started_at: '2000-01-01 00:00:00+0900'
   ended_at: null
   force_started_at: null
   force_ended_at: null
-  target: User
+  target: user
   user_id: 1
 
 - id: 2101
-  label: Not
+  label: not
   title: 'user1へのお知らせ 1'
   summary: null
   body: null
-  started_at: '2020-01-01 00:00:00+0900'
+  started_at: '2000-01-01 00:00:00+0900'
   ended_at: null
   force_started_at: null
   force_ended_at: null
-  target: User
+  target: user
   user_id: 1
 - id: 2102
-  label: Not
+  label: not
   title: 'user1へのお知らせ 2'
   summary: null
   body: null
-  started_at: '2020-01-01 00:00:00+0900'
+  started_at: '2000-01-01 00:00:00+0900'
   ended_at: null
   force_started_at: null
   force_ended_at: null
-  target: User
+  target: user
   user_id: 1
 - id: 2103
-  label: Not
+  label: not
   title: 'user1へのお知らせ 3'
   summary: null
   body: null
-  started_at: '2020-01-01 00:00:00+0900'
+  started_at: '2000-01-01 00:00:00+0900'
   ended_at: null
   force_started_at: null
   force_ended_at: null
-  target: User
+  target: user
   user_id: 1
 - id: 2104
-  label: Not
+  label: not
   title: 'user1へのお知らせ 4'
   summary: null
   body: null
-  started_at: '2020-01-01 00:00:00+0900'
+  started_at: '2000-01-01 00:00:00+0900'
   ended_at: null
   force_started_at: null
   force_ended_at: null
-  target: User
+  target: user
   user_id: 1
 - id: 2105
-  label: Not
+  label: not
   title: 'user1へのお知らせ 5'
   summary: null
   body: null
-  started_at: '2020-01-01 00:00:00+0900'
+  started_at: '2000-01-01 00:00:00+0900'
   ended_at: null
   force_started_at: null
   force_ended_at: null
-  target: User
+  target: user
   user_id: 1
 - id: 2106
-  label: Not
+  label: not
   title: 'user1へのお知らせ 6'
   summary: null
   body: null
-  started_at: '2020-01-01 00:00:00+0900'
+  started_at: '2000-01-01 00:00:00+0900'
   ended_at: null
   force_started_at: null
   force_ended_at: null
-  target: User
+  target: user
   user_id: 1
 - id: 2107
-  label: Not
+  label: not
   title: 'user1へのお知らせ 7'
   summary: null
   body: null
-  started_at: '2020-01-01 00:00:00+0900'
+  started_at: '2000-01-01 00:00:00+0900'
   ended_at: null
   force_started_at: null
   force_ended_at: null
-  target: User
+  target: user
   user_id: 1
 - id: 2108
-  label: Not
+  label: not
   title: 'user1へのお知らせ 8'
   summary: null
   body: null
-  started_at: '2020-01-01 00:00:00+0900'
+  started_at: '2000-01-01 00:00:00+0900'
   ended_at: null
   force_started_at: null
   force_ended_at: null
-  target: User
+  target: user
   user_id: 1
 - id: 2109
-  label: Not
+  label: not
   title: 'user1へのお知らせ 9'
   summary: null
   body: null
-  started_at: '2020-01-01 00:00:00+0900'
+  started_at: '2000-01-01 00:00:00+0900'
   ended_at: null
   force_started_at: null
   force_ended_at: null
-  target: User
+  target: user
   user_id: 1
 - id: 2110
-  label: Not
+  label: not
   title: 'user1へのお知らせ 10'
   summary: null
   body: null
-  started_at: '2020-01-01 00:00:00+0900'
+  started_at: '2000-01-01 00:00:00+0900'
   ended_at: null
   force_started_at: null
   force_ended_at: null
-  target: User
+  target: user
   user_id: 1
 - id: 2111
-  label: Not
+  label: not
   title: 'user1へのお知らせ 11'
   summary: null
   body: null
-  started_at: '2020-01-01 00:00:00+0900'
+  started_at: '2000-01-01 00:00:00+0900'
   ended_at: null
   force_started_at: null
   force_ended_at: null
-  target: User
+  target: user
   user_id: 1
 - id: 2112
-  label: Not
+  label: not
   title: 'user1へのお知らせ 12'
   summary: null
   body: null
-  started_at: '2020-01-01 00:00:00+0900'
+  started_at: '2000-01-01 00:00:00+0900'
   ended_at: null
   force_started_at: null
   force_ended_at: null
-  target: User
+  target: user
   user_id: 1
 - id: 2113
-  label: Not
+  label: not
   title: 'user1へのお知らせ 13'
   summary: null
   body: null
-  started_at: '2020-01-01 00:00:00+0900'
+  started_at: '2000-01-01 00:00:00+0900'
   ended_at: null
   force_started_at: null
   force_ended_at: null
-  target: User
+  target: user
   user_id: 1
 - id: 2114
-  label: Not
+  label: not
   title: 'user1へのお知らせ 14'
   summary: null
   body: null
-  started_at: '2020-01-01 00:00:00+0900'
+  started_at: '2000-01-01 00:00:00+0900'
   ended_at: null
   force_started_at: null
   force_ended_at: null
-  target: User
+  target: user
   user_id: 1
 - id: 2115
-  label: Not
+  label: not
   title: 'user1へのお知らせ 15'
   summary: null
   body: null
-  started_at: '2020-01-01 00:00:00+0900'
+  started_at: '2000-01-01 00:00:00+0900'
   ended_at: null
   force_started_at: null
   force_ended_at: null
-  target: User
+  target: user
   user_id: 1
 - id: 2116
-  label: Not
+  label: not
   title: 'user1へのお知らせ 16'
   summary: null
   body: null
-  started_at: '2020-01-01 00:00:00+0900'
+  started_at: '2000-01-01 00:00:00+0900'
   ended_at: null
   force_started_at: null
   force_ended_at: null
-  target: User
+  target: user
   user_id: 1
 - id: 2117
-  label: Not
+  label: not
   title: 'user1へのお知らせ 17'
   summary: null
   body: null
-  started_at: '2020-01-01 00:00:00+0900'
+  started_at: '2000-01-01 00:00:00+0900'
   ended_at: null
   force_started_at: null
   force_ended_at: null
-  target: User
+  target: user
   user_id: 1
 - id: 2118
-  label: Not
+  label: not
   title: 'user1へのお知らせ 18'
   summary: null
   body: null
-  started_at: '2020-01-01 00:00:00+0900'
+  started_at: '2000-01-01 00:00:00+0900'
   ended_at: null
-  target: User
+  target: user
   user_id: 1
 
 - id: 221
-  label: Not
+  label: not
   title: 'user2へのお知らせ（掲載中）'
   summary: 'user2へのお知らせの要約<br>2行目'
   body: 'user2へのお知らせの本文<br>2行目'
-  started_at: '2020-01-01 00:00:00+0900'
+  started_at: '2000-01-01 00:00:00+0900'
   ended_at: null
   force_started_at: null
   force_ended_at: null
-  target: User
+  target: user
   user_id: 2

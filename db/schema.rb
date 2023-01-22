@@ -12,7 +12,7 @@
 
 ActiveRecord::Schema.define(version: 2021_11_30_000939) do
 
-  create_table "admin_users", charset: "utf8mb4", collation: "utf8mb4_bin", force: :cascade do |t|
+  create_table "admin_users", charset: "utf8", collation: "utf8_bin", comment: "管理者", force: :cascade do |t|
     t.string "name", null: false, comment: "氏名"
     t.string "email", default: "", null: false, comment: "メールアドレス"
     t.string "encrypted_password", default: "", null: false, comment: "暗号化されたパスワード"
@@ -39,7 +39,7 @@ ActiveRecord::Schema.define(version: 2021_11_30_000939) do
     t.index ["unlock_token"], name: "index_admin_users4", unique: true
   end
 
-  create_table "infomations", charset: "utf8mb4", collation: "utf8mb4_bin", force: :cascade do |t|
+  create_table "infomations", charset: "utf8", collation: "utf8_bin", comment: "お知らせ", force: :cascade do |t|
     t.string "title", null: false, comment: "タイトル"
     t.string "summary", comment: "概要"
     t.text "body", comment: "本文"
@@ -52,14 +52,15 @@ ActiveRecord::Schema.define(version: 2021_11_30_000939) do
     t.integer "label", default: 0, null: false, comment: "ラベル"
     t.datetime "force_started_at", comment: "強制表示開始日時"
     t.datetime "force_ended_at", comment: "強制表示終了日時"
+    t.index ["force_started_at", "force_ended_at"], name: "index_infomations4"
     t.index ["started_at", "ended_at"], name: "index_infomations2"
     t.index ["started_at", "id"], name: "index_infomations1"
     t.index ["target", "user_id"], name: "index_infomations3"
     t.index ["user_id"], name: "index_infomations_on_user_id"
   end
 
-  create_table "users", charset: "utf8mb4", collation: "utf8mb4_bin", force: :cascade do |t|
-    t.string "code", null: false, comment: "ユーザーコード"
+  create_table "users", charset: "utf8", collation: "utf8_bin", comment: "ユーザー", force: :cascade do |t|
+    t.string "code", null: false, comment: "コード"
     t.string "image", comment: "画像"
     t.string "name", null: false, comment: "氏名"
     t.string "email", default: "", null: false, comment: "メールアドレス"
@@ -97,7 +98,7 @@ ActiveRecord::Schema.define(version: 2021_11_30_000939) do
     t.index ["unlock_token"], name: "index_users4", unique: true
   end
 
-  create_table "versions", charset: "utf8mb4", collation: "utf8mb4_bin", force: :cascade do |t|
+  create_table "versions", charset: "utf8", collation: "utf8_bin", force: :cascade do |t|
     t.string "item_type", null: false
     t.bigint "item_id", null: false
     t.string "event", null: false

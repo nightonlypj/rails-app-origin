@@ -1,36 +1,7 @@
 require 'rails_helper'
 
 RSpec.describe 'Users::Sessions', type: :request do
-  # テスト内容（共通）
-  shared_examples_for 'ToOK' do
-    it 'HTTPステータスが200' do
-      is_expected.to eq(200)
-    end
-  end
-  shared_examples_for 'ToError' do |error_msg|
-    it 'HTTPステータスが200。対象のエラーメッセージが含まれる' do # Tips: 再入力
-      is_expected.to eq(200)
-      expect(response.body).to include(I18n.t(error_msg))
-    end
-  end
-  shared_examples_for 'ToTop' do |alert, notice|
-    it 'トップページにリダイレクトする' do
-      is_expected.to redirect_to(root_path)
-      expect(flash[:alert]).to alert.present? ? eq(I18n.t(alert)) : be_nil
-      expect(flash[:notice]).to notice.present? ? eq(I18n.t(notice)) : be_nil
-    end
-  end
-  shared_examples_for 'ToLogin' do |alert, notice|
-    it 'ログインにリダイレクトする' do
-      is_expected.to redirect_to(new_user_session_path)
-      expect(flash[:alert]).to alert.present? ? eq(I18n.t(alert)) : be_nil
-      expect(flash[:notice]).to notice.present? ? eq(I18n.t(notice)) : be_nil
-    end
-  end
-
   # GET /users/sign_in ログイン
-  # 前提条件
-  #   なし
   # テストパターン
   #   未ログイン, ログイン中, ログイン中（削除予約済み）
   describe 'GET #new' do
@@ -38,35 +9,33 @@ RSpec.describe 'Users::Sessions', type: :request do
 
     # テストケース
     context '未ログイン' do
-      it_behaves_like 'ToOK'
+      it_behaves_like 'ToOK[status]'
     end
     context 'ログイン中' do
       include_context 'ログイン処理'
       it_behaves_like 'ToTop', 'devise.failure.already_authenticated', nil
     end
     context 'ログイン中（削除予約済み）' do
-      include_context 'ログイン処理', :user_destroy_reserved
+      include_context 'ログイン処理', :destroy_reserved
       it_behaves_like 'ToTop', 'devise.failure.already_authenticated', nil
     end
   end
 
   # POST /users/sign_in ログイン(処理)
-  # 前提条件
-  #   なし
   # テストパターン
   #   未ログイン, ログイン中, ログイン中（削除予約済み）
   #   有効なパラメータ（未ロック, ロック中, メール未確認, メールアドレス変更中, 削除予約済み）, 無効なパラメータ（存在しない, ロック前, ロック前の前, ロック前の前の前）
   describe 'POST #create' do
     subject { post create_user_session_path, params: { user: attributes } }
-    let(:send_user_unlocked)         { FactoryBot.create(:user) }
-    let(:send_user_locked)           { FactoryBot.create(:user_locked) }
-    let(:send_user_unconfirmed)      { FactoryBot.create(:user_unconfirmed) }
-    let(:send_user_email_changed)    { FactoryBot.create(:user_email_changed) }
-    let(:send_user_destroy_reserved) { FactoryBot.create(:user_destroy_reserved) }
-    let(:not_user)                   { FactoryBot.attributes_for(:user) }
-    let(:send_user_before_lock1)     { FactoryBot.create(:user_before_lock1) }
-    let(:send_user_before_lock2)     { FactoryBot.create(:user_before_lock2) }
-    let(:send_user_before_lock3)     { FactoryBot.create(:user_before_lock3) }
+    let_it_be(:send_user_unlocked)         { FactoryBot.create(:user) }
+    let_it_be(:send_user_locked)           { FactoryBot.create(:user, :locked) }
+    let_it_be(:send_user_unconfirmed)      { FactoryBot.create(:user, :unconfirmed) }
+    let_it_be(:send_user_email_changed)    { FactoryBot.create(:user, :email_changed) }
+    let_it_be(:send_user_destroy_reserved) { FactoryBot.create(:user, :destroy_reserved) }
+    let_it_be(:not_user)                   { FactoryBot.attributes_for(:user) }
+    let_it_be(:send_user_before_lock1)     { FactoryBot.create(:user, :before_lock1) }
+    let_it_be(:send_user_before_lock2)     { FactoryBot.create(:user, :before_lock2) }
+    let_it_be(:send_user_before_lock3)     { FactoryBot.create(:user, :before_lock3) }
     let(:valid_attributes)        { { email: send_user.email, password: send_user.password } }
     let(:invalid_not_attributes)  { { email: not_user[:email], password: not_user[:password] } }
     let(:invalid_pass_attributes) { { email: send_user.email, password: "n#{send_user.password}" } }
@@ -196,6 +165,18 @@ RSpec.describe 'Users::Sessions', type: :request do
       it_behaves_like 'NotSendLocked'
     end
 
+    shared_examples_for '[ログイン中/削除予約済み]' do
+      it_behaves_like '[ログイン中/削除予約済み]有効なパラメータ（未ロック）'
+      it_behaves_like '[ログイン中/削除予約済み]有効なパラメータ（ロック中）'
+      it_behaves_like '[ログイン中/削除予約済み]有効なパラメータ（メール未確認）'
+      it_behaves_like '[ログイン中/削除予約済み]有効なパラメータ（メールアドレス変更中）'
+      it_behaves_like '[ログイン中/削除予約済み]有効なパラメータ（削除予約済み）'
+      it_behaves_like '[ログイン中/削除予約済み]無効なパラメータ（存在しない）'
+      it_behaves_like '[ログイン中/削除予約済み]無効なパラメータ（ロック前）'
+      it_behaves_like '[ログイン中/削除予約済み]無効なパラメータ（ロック前の前）'
+      it_behaves_like '[ログイン中/削除予約済み]無効なパラメータ（ロック前の前の前）'
+    end
+
     context '未ログイン' do
       it_behaves_like '[未ログイン]有効なパラメータ（未ロック）'
       it_behaves_like '[未ログイン]有効なパラメータ（ロック中）'
@@ -209,33 +190,15 @@ RSpec.describe 'Users::Sessions', type: :request do
     end
     context 'ログイン中' do
       include_context 'ログイン処理'
-      it_behaves_like '[ログイン中/削除予約済み]有効なパラメータ（未ロック）'
-      it_behaves_like '[ログイン中/削除予約済み]有効なパラメータ（ロック中）'
-      it_behaves_like '[ログイン中/削除予約済み]有効なパラメータ（メール未確認）'
-      it_behaves_like '[ログイン中/削除予約済み]有効なパラメータ（メールアドレス変更中）'
-      it_behaves_like '[ログイン中/削除予約済み]有効なパラメータ（削除予約済み）'
-      it_behaves_like '[ログイン中/削除予約済み]無効なパラメータ（存在しない）'
-      it_behaves_like '[ログイン中/削除予約済み]無効なパラメータ（ロック前）'
-      it_behaves_like '[ログイン中/削除予約済み]無効なパラメータ（ロック前の前）'
-      it_behaves_like '[ログイン中/削除予約済み]無効なパラメータ（ロック前の前の前）'
+      it_behaves_like '[ログイン中/削除予約済み]'
     end
     context 'ログイン中（削除予約済み）' do
-      include_context 'ログイン処理', :user_destroy_reserved
-      it_behaves_like '[ログイン中/削除予約済み]有効なパラメータ（未ロック）'
-      it_behaves_like '[ログイン中/削除予約済み]有効なパラメータ（ロック中）'
-      it_behaves_like '[ログイン中/削除予約済み]有効なパラメータ（メール未確認）'
-      it_behaves_like '[ログイン中/削除予約済み]有効なパラメータ（メールアドレス変更中）'
-      it_behaves_like '[ログイン中/削除予約済み]有効なパラメータ（削除予約済み）'
-      it_behaves_like '[ログイン中/削除予約済み]無効なパラメータ（存在しない）'
-      it_behaves_like '[ログイン中/削除予約済み]無効なパラメータ（ロック前）'
-      it_behaves_like '[ログイン中/削除予約済み]無効なパラメータ（ロック前の前）'
-      it_behaves_like '[ログイン中/削除予約済み]無効なパラメータ（ロック前の前の前）'
+      include_context 'ログイン処理', :destroy_reserved
+      it_behaves_like '[ログイン中/削除予約済み]'
     end
   end
 
   # GET /users/sign_out ログアウト
-  # 前提条件
-  #   なし
   # テストパターン
   #   未ログイン, ログイン中, ログイン中（削除予約済み）
   describe 'GET #delete' do
@@ -247,17 +210,15 @@ RSpec.describe 'Users::Sessions', type: :request do
     end
     context 'ログイン中' do
       include_context 'ログイン処理'
-      it_behaves_like 'ToOK'
+      it_behaves_like 'ToOK[status]'
     end
     context 'ログイン中（削除予約済み）' do
-      include_context 'ログイン処理', :user_destroy_reserved
-      it_behaves_like 'ToOK'
+      include_context 'ログイン処理', :destroy_reserved
+      it_behaves_like 'ToOK[status]'
     end
   end
 
   # POST /users/sign_out ログアウト(処理)
-  # 前提条件
-  #   なし
   # テストパターン
   #   未ログイン, ログイン中, ログイン中（削除予約済み）
   describe 'POST #destroy' do
@@ -272,7 +233,7 @@ RSpec.describe 'Users::Sessions', type: :request do
       it_behaves_like 'ToLogin', nil, 'devise.sessions.signed_out'
     end
     context 'ログイン中（削除予約済み）' do
-      include_context 'ログイン処理', :user_destroy_reserved
+      include_context 'ログイン処理', :destroy_reserved
       it_behaves_like 'ToLogin', nil, 'devise.sessions.signed_out'
     end
   end

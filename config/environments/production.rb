@@ -49,7 +49,7 @@ Rails.application.configure do
 
   # Use the lowest log level to ensure availability of diagnostic information
   # when problems arise.
-  config.log_level = :info
+  config.log_level = ENV['LOG_LEVEL'].present? ? ENV['LOG_LEVEL'].to_sym : :info
 
   # Prepend all log lines with the following tags.
   config.log_tags = [:request_id]
@@ -64,7 +64,8 @@ Rails.application.configure do
   config.action_mailer.perform_caching = false
 
   config.action_mailer.default_url_options = { host: Settings['base_domain'], protocol: 'https' }
-  config.action_mailer.delivery_method = :sendmail
+  config.action_mailer.delivery_method = ENV['DELIVERY_METHOD'].present? ? ENV['DELIVERY_METHOD'].to_sym : :sendmail
+  config.action_mailer.smtp_settings = ENV['SMTP_SETTINGS'].present? ? eval(ENV['SMTP_SETTINGS']) : nil
 
   # Ignore bad email addresses and do not raise email delivery errors.
   # Set this to true and configure the email server for immediate delivery to raise delivery errors.

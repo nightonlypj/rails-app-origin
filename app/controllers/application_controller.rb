@@ -3,7 +3,7 @@ class ApplicationController < ActionController::Base
 
   private
 
-  # リクエストのuidヘッダを[id+36**2](36進数)からuidに変更 # Tips: uidがメールアドレスだと、メールアドレス確認後に認証に失敗する為
+  # リクエストのuidヘッダを[id+36**2](36進数)からuidに変更 # NOTE: uidがメールアドレスだと、メールアドレス確認後に認証に失敗する為
   def update_request_uid_header
     return if request.headers['uid'].blank?
 
@@ -37,22 +37,22 @@ class ApplicationController < ActionController::Base
   end
 
   # APIリクエストに不整合がある場合、HTTPステータス406を返却（明示的にAPIのみ対応にする場合に使用）
-  def not_acceptable_response_not_api_accept
+  def response_not_acceptable_for_not_api
     head :not_acceptable if format_html? || !accept_header_api?
   end
 
   # HTMLリクエストに不整合がある場合、HTTPステータス406を返却（明示的にHTMLのみ対応にする場合に使用）
-  def not_acceptable_response_not_html_accept
+  def response_not_acceptable_for_not_html
     head :not_acceptable if !format_html? || !accept_header_html?
   end
 
   # 認証エラーを返却
-  def unauthenticated_response
+  def response_unauthenticated
     render './failure', locals: { alert: t('devise.failure.unauthenticated') }, status: :unauthorized
   end
 
   # 認証済みエラーを返却
-  def already_authenticated_response
+  def response_already_authenticated
     render './failure', locals: { alert: t('devise.failure.already_authenticated') }, status: :unauthorized
   end
 
@@ -101,22 +101,22 @@ class ApplicationController < ActionController::Base
   end
 
   # 削除予約済みの場合、リダイレクトしてメッセージを表示
-  def redirect_response_destroy_reserved
+  def redirect_for_user_destroy_reserved
     redirect_to root_path, alert: t('alert.user.destroy_reserved') if current_user.destroy_reserved?
   end
 
   # 削除予約済みの場合、JSONでメッセージを返却
-  def json_response_destroy_reserved
+  def response_api_for_user_destroy_reserved
     render './failure', locals: { alert: t('alert.user.destroy_reserved') }, status: :unprocessable_entity if current_user&.destroy_reserved?
   end
 
   # 削除予約済みでない場合、リダイレクトしてメッセージを表示
-  def redirect_response_not_destroy_reserved
+  def redirect_for_not_user_destroy_reserved
     redirect_to root_path, alert: t('alert.user.not_destroy_reserved') unless current_user.destroy_reserved?
   end
 
   # 削除予約済みでない場合、JSONでメッセージを返却
-  def json_response_not_destroy_reserved
+  def response_api_for_not_user_destroy_reserved
     render './failure', locals: { alert: t('alert.user.not_destroy_reserved') }, status: :unprocessable_entity unless current_user&.destroy_reserved?
   end
 
@@ -124,7 +124,7 @@ class ApplicationController < ActionController::Base
   def create_unique_code(model, key, logger_message)
     try_count = 1
     loop do
-      code = Digest::MD5.hexdigest(SecureRandom.uuid)
+      code = Digest::MD5.hexdigest(SecureRandom.uuid).to_i(16).to_s(36).rjust(25, '0') # NOTE: 16進数32桁を36進数25桁に変換
       return code if model.where(key => code).blank?
 
       if try_count < 10

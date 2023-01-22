@@ -1,23 +1,21 @@
 require 'rails_helper'
 
 RSpec.describe 'Users::Auth::Sessions', type: :request do
+  let(:response_json) { JSON.parse(response.body) }
+
   # テスト内容（共通）
   shared_examples_for 'ToMsg' do |error_msg, alert, notice|
     let(:subject_format) { :json }
     let(:accept_headers) { ACCEPT_INC_JSON }
     it '対象のメッセージと一致する' do
       subject
-      response_json = JSON.parse(response.body)
-      expect(response_json['errors'].to_s).to error_msg.present? ? include(I18n.t(error_msg)) : be_blank # 方針: 廃止して、alertへ
-
-      expect(response_json['alert']).to alert.present? ? eq(I18n.t(alert)) : be_nil # 方針: 追加
-      expect(response_json['notice']).to notice.present? ? eq(I18n.t(notice)) : be_nil # 方針: 追加
+      expect(response_json['errors'].to_s).to error_msg.present? ? include(get_locale(error_msg)) : be_blank # 方針: 廃止して、alertへ
+      expect(response_json['alert']).to alert.present? ? eq(get_locale(alert)) : be_nil # 方針: 追加
+      expect(response_json['notice']).to notice.present? ? eq(get_locale(notice)) : be_nil # 方針: 追加
     end
   end
 
   # POST /users/auth/sign_in(.json) ログインAPI(処理)
-  # 前提条件
-  #   なし
   # テストパターン
   #   未ログイン, ログイン中, APIログイン中, APIログイン中（削除予約済み）
   #   パラメータなし, 有効なパラメータ（未ロック, ロック中, メール未確認, メールアドレス変更中, 削除予約済み）, 無効なパラメータ（存在しない, ロック前, ロック前の前, ロック前の前の前）, URLがない, URLがホワイトリストにない
@@ -25,15 +23,15 @@ RSpec.describe 'Users::Auth::Sessions', type: :request do
   #   ＋Acceptヘッダ: JSONが含まれる, JSONが含まれない
   describe 'POST #create' do
     subject { post create_user_auth_session_path(format: subject_format), params: attributes, headers: auth_headers.merge(accept_headers) }
-    let(:send_user_unlocked)         { FactoryBot.create(:user) }
-    let(:send_user_locked)           { FactoryBot.create(:user_locked) }
-    let(:send_user_unconfirmed)      { FactoryBot.create(:user_unconfirmed) }
-    let(:send_user_email_changed)    { FactoryBot.create(:user_email_changed) }
-    let(:send_user_destroy_reserved) { FactoryBot.create(:user_destroy_reserved) }
-    let(:not_user)                   { FactoryBot.attributes_for(:user) }
-    let(:send_user_before_lock1)     { FactoryBot.create(:user_before_lock1) }
-    let(:send_user_before_lock2)     { FactoryBot.create(:user_before_lock2) }
-    let(:send_user_before_lock3)     { FactoryBot.create(:user_before_lock3) }
+    let_it_be(:send_user_unlocked)         { FactoryBot.create(:user) }
+    let_it_be(:send_user_locked)           { FactoryBot.create(:user, :locked) }
+    let_it_be(:send_user_unconfirmed)      { FactoryBot.create(:user, :unconfirmed) }
+    let_it_be(:send_user_email_changed)    { FactoryBot.create(:user, :email_changed) }
+    let_it_be(:send_user_destroy_reserved) { FactoryBot.create(:user, :destroy_reserved) }
+    let_it_be(:not_user)                   { FactoryBot.attributes_for(:user) }
+    let_it_be(:send_user_before_lock1)     { FactoryBot.create(:user, :before_lock1) }
+    let_it_be(:send_user_before_lock2)     { FactoryBot.create(:user, :before_lock2) }
+    let_it_be(:send_user_before_lock3)     { FactoryBot.create(:user, :before_lock3) }
     let(:valid_attributes)        { { email: send_user.email, password: send_user.password, unlock_redirect_url: FRONT_SITE_URL } }
     let(:invalid_not_attributes)  { { email: not_user[:email], password: not_user[:password], unlock_redirect_url: FRONT_SITE_URL } }
     let(:invalid_pass_attributes) { { email: send_user.email, password: "n#{send_user.password}", unlock_redirect_url: FRONT_SITE_URL } }
@@ -48,7 +46,6 @@ RSpec.describe 'Users::Auth::Sessions', type: :request do
       let(:accept_headers) { ACCEPT_INC_JSON }
       it 'HTTPステータスが200。対象項目が一致する。認証ヘッダがある' do
         is_expected.to eq(200)
-        # response_json = JSON.parse(response.body)
         # expect(response_json['success']).to eq(success) # 方針: 成功時も返却
         # expect(response_json['data']['id'].present?).to eq(id_present) # 方針: 廃止
         # expect(response_json['data']['name']).to eq(send_user.name)
@@ -68,16 +65,16 @@ RSpec.describe 'Users::Auth::Sessions', type: :request do
     end
 
     shared_examples_for 'ToOK' do # |success, id_present|
+      it_behaves_like 'ToNG(html/html)', 406
+      it_behaves_like 'ToNG(html/json)', 406
+      it_behaves_like 'ToNG(json/html)', 406
       it_behaves_like 'ToOK(json/json)' # , success, id_present
-      it_behaves_like 'To406(json/html)'
-      it_behaves_like 'To406(html/json)'
-      it_behaves_like 'To406(html/html)'
     end
     shared_examples_for 'ToNG' do |code|
+      it_behaves_like 'ToNG(html/html)', 406
+      it_behaves_like 'ToNG(html/json)', 406
+      it_behaves_like 'ToNG(json/html)', 406
       it_behaves_like 'ToNG(json/json)', code
-      it_behaves_like 'To406(json/html)'
-      it_behaves_like 'To406(html/json)'
-      it_behaves_like 'To406(html/html)'
     end
 
     shared_examples_for 'SendLocked' do
@@ -114,10 +111,10 @@ RSpec.describe 'Users::Auth::Sessions', type: :request do
     end
     shared_examples_for '[APIログイン中/削除予約済み]パラメータなし' do
       let(:attributes) { nil }
-      # it_behaves_like 'ToNG', 401 # Tips: フロントと不一致で再ログイン出来なくなる為
+      # it_behaves_like 'ToNG', 401 # NOTE: フロントと不一致で再ログイン出来なくなる為
       it_behaves_like 'ToNG', 400
       # it_behaves_like 'ToMsg', 'devise_token_auth.sessions.bad_credentials', nil, nil
-      # it_behaves_like 'ToMsg', nil, 'devise.failure.already_authenticated', nil # Tips: フロントと不一致で再ログイン出来なくなる為
+      # it_behaves_like 'ToMsg', nil, 'devise.failure.already_authenticated', nil # NOTE: フロントと不一致で再ログイン出来なくなる為
       it_behaves_like 'ToMsg', nil, 'devise_token_auth.sessions.bad_credentials', nil
       it_behaves_like 'NotSendLocked'
     end
@@ -134,10 +131,10 @@ RSpec.describe 'Users::Auth::Sessions', type: :request do
       let(:send_user)  { send_user_unlocked }
       let(:attributes) { valid_attributes }
       # it_behaves_like 'ToOK', nil, true
-      # it_behaves_like 'ToNG', 401 # Tips: フロントと不一致で再ログイン出来なくなる為
+      # it_behaves_like 'ToNG', 401 # NOTE: フロントと不一致で再ログイン出来なくなる為
       it_behaves_like 'ToOK', true, false
       # it_behaves_like 'ToMsg', nil, nil, nil
-      # it_behaves_like 'ToMsg', nil, 'devise.failure.already_authenticated', nil # Tips: フロントと不一致で再ログイン出来なくなる為
+      # it_behaves_like 'ToMsg', nil, 'devise.failure.already_authenticated', nil # NOTE: フロントと不一致で再ログイン出来なくなる為
       it_behaves_like 'ToMsg', nil, nil, 'devise.sessions.signed_in'
       it_behaves_like 'NotSendLocked'
     end
@@ -153,10 +150,10 @@ RSpec.describe 'Users::Auth::Sessions', type: :request do
     shared_examples_for '[APIログイン中/削除予約済み]有効なパラメータ（ロック中）' do
       let(:send_user)  { send_user_locked }
       let(:attributes) { valid_attributes }
-      # it_behaves_like 'ToNG', 401 # Tips: フロントと不一致で再ログイン出来なくなる為
+      # it_behaves_like 'ToNG', 401 # NOTE: フロントと不一致で再ログイン出来なくなる為
       it_behaves_like 'ToNG', 422
       # it_behaves_like 'ToMsg', 'devise.mailer.unlock_instructions.account_lock_msg', nil, nil
-      # it_behaves_like 'ToMsg', nil, 'devise.failure.already_authenticated', nil # Tips: フロントと不一致で再ログイン出来なくなる為
+      # it_behaves_like 'ToMsg', nil, 'devise.failure.already_authenticated', nil # NOTE: フロントと不一致で再ログイン出来なくなる為
       it_behaves_like 'ToMsg', nil, 'devise.failure.locked', nil
       it_behaves_like 'NotSendLocked'
     end
@@ -172,10 +169,10 @@ RSpec.describe 'Users::Auth::Sessions', type: :request do
     shared_examples_for '[APIログイン中/削除予約済み]有効なパラメータ（メール未確認）' do
       let(:send_user)  { send_user_unconfirmed }
       let(:attributes) { valid_attributes }
-      # it_behaves_like 'ToNG', 401 # Tips: フロントと不一致で再ログイン出来なくなる為
+      # it_behaves_like 'ToNG', 401 # NOTE: フロントと不一致で再ログイン出来なくなる為
       it_behaves_like 'ToNG', 422
       # it_behaves_like 'ToMsg', 'devise_token_auth.sessions.not_confirmed', nil, nil
-      # it_behaves_like 'ToMsg', nil, 'devise.failure.already_authenticated', nil # Tips: フロントと不一致で再ログイン出来なくなる為
+      # it_behaves_like 'ToMsg', nil, 'devise.failure.already_authenticated', nil # NOTE: フロントと不一致で再ログイン出来なくなる為
       it_behaves_like 'ToMsg', nil, 'devise.failure.unconfirmed', nil
       it_behaves_like 'NotSendLocked'
     end
@@ -192,10 +189,10 @@ RSpec.describe 'Users::Auth::Sessions', type: :request do
       let(:send_user)  { send_user_email_changed }
       let(:attributes) { valid_attributes }
       # it_behaves_like 'ToOK', nil, true
-      # it_behaves_like 'ToNG', 401 # Tips: フロントと不一致で再ログイン出来なくなる為
+      # it_behaves_like 'ToNG', 401 # NOTE: フロントと不一致で再ログイン出来なくなる為
       it_behaves_like 'ToOK', true, false
       # it_behaves_like 'ToMsg', nil, nil, nil
-      # it_behaves_like 'ToMsg', nil, 'devise.failure.already_authenticated', nil # Tips: フロントと不一致で再ログイン出来なくなる為
+      # it_behaves_like 'ToMsg', nil, 'devise.failure.already_authenticated', nil # NOTE: フロントと不一致で再ログイン出来なくなる為
       it_behaves_like 'ToMsg', nil, nil, 'devise.sessions.signed_in'
       it_behaves_like 'NotSendLocked'
     end
@@ -212,10 +209,10 @@ RSpec.describe 'Users::Auth::Sessions', type: :request do
       let(:send_user)  { send_user_destroy_reserved }
       let(:attributes) { valid_attributes }
       # it_behaves_like 'ToOK', nil, true
-      # it_behaves_like 'ToNG', 401 # Tips: フロントと不一致で再ログイン出来なくなる為
+      # it_behaves_like 'ToNG', 401 # NOTE: フロントと不一致で再ログイン出来なくなる為
       it_behaves_like 'ToOK', true, false
       # it_behaves_like 'ToMsg', nil, nil, nil
-      # it_behaves_like 'ToMsg', nil, 'devise.failure.already_authenticated', nil # Tips: フロントと不一致で再ログイン出来なくなる為
+      # it_behaves_like 'ToMsg', nil, 'devise.failure.already_authenticated', nil # NOTE: フロントと不一致で再ログイン出来なくなる為
       it_behaves_like 'ToMsg', nil, nil, 'devise.sessions.signed_in'
       it_behaves_like 'NotSendLocked'
     end
@@ -229,10 +226,10 @@ RSpec.describe 'Users::Auth::Sessions', type: :request do
     end
     shared_examples_for '[APIログイン中/削除予約済み]無効なパラメータ（存在しない）' do
       let(:attributes) { invalid_not_attributes }
-      # it_behaves_like 'ToNG', 401 # Tips: フロントと不一致で再ログイン出来なくなる為
+      # it_behaves_like 'ToNG', 401 # NOTE: フロントと不一致で再ログイン出来なくなる為
       it_behaves_like 'ToNG', 422
       # it_behaves_like 'ToMsg', 'devise_token_auth.sessions.bad_credentials', nil, nil
-      # it_behaves_like 'ToMsg', nil, 'devise.failure.already_authenticated', nil # Tips: フロントと不一致で再ログイン出来なくなる為
+      # it_behaves_like 'ToMsg', nil, 'devise.failure.already_authenticated', nil # NOTE: フロントと不一致で再ログイン出来なくなる為
       it_behaves_like 'ToMsg', nil, 'devise.failure.invalid', nil
       it_behaves_like 'NotSendLocked'
     end
@@ -272,8 +269,7 @@ RSpec.describe 'Users::Auth::Sessions', type: :request do
       it_behaves_like 'NotSendLocked'
     end
 
-    context '未ログイン' do
-      include_context '未ログイン処理'
+    shared_examples_for '[未ログイン/ログイン中]' do
       it_behaves_like '[未ログイン/ログイン中]パラメータなし'
       it_behaves_like '[未ログイン/ログイン中]有効なパラメータ（未ロック）'
       it_behaves_like '[未ログイン/ログイン中]有効なパラメータ（ロック中）'
@@ -281,62 +277,47 @@ RSpec.describe 'Users::Auth::Sessions', type: :request do
       it_behaves_like '[未ログイン/ログイン中]有効なパラメータ（メールアドレス変更中）'
       it_behaves_like '[未ログイン/ログイン中]有効なパラメータ（削除予約済み）'
       it_behaves_like '[未ログイン/ログイン中]無効なパラメータ（存在しない）'
+    end
+    shared_examples_for '[APIログイン中/削除予約済み]' do
+      it_behaves_like '[APIログイン中/削除予約済み]パラメータなし'
+      it_behaves_like '[APIログイン中/削除予約済み]有効なパラメータ（未ロック）'
+      it_behaves_like '[APIログイン中/削除予約済み]有効なパラメータ（ロック中）'
+      it_behaves_like '[APIログイン中/削除予約済み]有効なパラメータ（メール未確認）'
+      it_behaves_like '[APIログイン中/削除予約済み]有効なパラメータ（メールアドレス変更中）'
+      it_behaves_like '[APIログイン中/削除予約済み]有効なパラメータ（削除予約済み）'
+      it_behaves_like '[APIログイン中/削除予約済み]無効なパラメータ（存在しない）'
+    end
+    shared_examples_for '[*]' do
       it_behaves_like '[*]無効なパラメータ（ロック前）'
       it_behaves_like '[*]無効なパラメータ（ロック前の前）'
       it_behaves_like '[*]無効なパラメータ（ロック前の前の前）'
       it_behaves_like '[*]URLがない'
       it_behaves_like '[*]URLがホワイトリストにない'
+    end
+
+    context '未ログイン' do
+      include_context '未ログイン処理'
+      it_behaves_like '[未ログイン/ログイン中]'
+      it_behaves_like '[*]'
     end
     context 'ログイン中' do
       include_context 'ログイン処理'
-      it_behaves_like '[未ログイン/ログイン中]パラメータなし'
-      it_behaves_like '[未ログイン/ログイン中]有効なパラメータ（未ロック）'
-      it_behaves_like '[未ログイン/ログイン中]有効なパラメータ（ロック中）'
-      it_behaves_like '[未ログイン/ログイン中]有効なパラメータ（メール未確認）'
-      it_behaves_like '[未ログイン/ログイン中]有効なパラメータ（メールアドレス変更中）'
-      it_behaves_like '[未ログイン/ログイン中]有効なパラメータ（削除予約済み）'
-      it_behaves_like '[未ログイン/ログイン中]無効なパラメータ（存在しない）'
-      it_behaves_like '[*]無効なパラメータ（ロック前）'
-      it_behaves_like '[*]無効なパラメータ（ロック前の前）'
-      it_behaves_like '[*]無効なパラメータ（ロック前の前の前）'
-      it_behaves_like '[*]URLがない'
-      it_behaves_like '[*]URLがホワイトリストにない'
+      it_behaves_like '[未ログイン/ログイン中]'
+      it_behaves_like '[*]'
     end
     context 'APIログイン中' do
       include_context 'APIログイン処理'
-      it_behaves_like '[APIログイン中/削除予約済み]パラメータなし'
-      it_behaves_like '[APIログイン中/削除予約済み]有効なパラメータ（未ロック）'
-      it_behaves_like '[APIログイン中/削除予約済み]有効なパラメータ（ロック中）'
-      it_behaves_like '[APIログイン中/削除予約済み]有効なパラメータ（メール未確認）'
-      it_behaves_like '[APIログイン中/削除予約済み]有効なパラメータ（メールアドレス変更中）'
-      it_behaves_like '[APIログイン中/削除予約済み]有効なパラメータ（削除予約済み）'
-      it_behaves_like '[APIログイン中/削除予約済み]無効なパラメータ（存在しない）'
-      it_behaves_like '[*]無効なパラメータ（ロック前）'
-      it_behaves_like '[*]無効なパラメータ（ロック前の前）'
-      it_behaves_like '[*]無効なパラメータ（ロック前の前の前）'
-      it_behaves_like '[*]URLがない'
-      it_behaves_like '[*]URLがホワイトリストにない'
+      it_behaves_like '[APIログイン中/削除予約済み]'
+      it_behaves_like '[*]'
     end
     context 'APIログイン中（削除予約済み）' do
-      include_context 'APIログイン処理', :user_destroy_reserved
-      it_behaves_like '[APIログイン中/削除予約済み]パラメータなし'
-      it_behaves_like '[APIログイン中/削除予約済み]有効なパラメータ（未ロック）'
-      it_behaves_like '[APIログイン中/削除予約済み]有効なパラメータ（ロック中）'
-      it_behaves_like '[APIログイン中/削除予約済み]有効なパラメータ（メール未確認）'
-      it_behaves_like '[APIログイン中/削除予約済み]有効なパラメータ（メールアドレス変更中）'
-      it_behaves_like '[APIログイン中/削除予約済み]有効なパラメータ（削除予約済み）'
-      it_behaves_like '[APIログイン中/削除予約済み]無効なパラメータ（存在しない）'
-      it_behaves_like '[*]無効なパラメータ（ロック前）'
-      it_behaves_like '[*]無効なパラメータ（ロック前の前）'
-      it_behaves_like '[*]無効なパラメータ（ロック前の前の前）'
-      it_behaves_like '[*]URLがない'
-      it_behaves_like '[*]URLがホワイトリストにない'
+      include_context 'APIログイン処理', :destroy_reserved
+      it_behaves_like '[APIログイン中/削除予約済み]'
+      it_behaves_like '[*]'
     end
   end
 
   # POST /users/auth/sign_out(.json) ログアウトAPI(処理)
-  # 前提条件
-  #   なし
   # テストパターン
   #   未ログイン, ログイン中, APIログイン中, APIログイン中（削除予約済み）
   #   ＋URLの拡張子: .json, ない
@@ -367,44 +348,46 @@ RSpec.describe 'Users::Auth::Sessions', type: :request do
     end
 
     shared_examples_for 'ToOK' do
+      it_behaves_like 'ToNG(html/html)', 406
+      it_behaves_like 'ToNG(html/json)', 406
+      it_behaves_like 'ToNG(json/html)', 406
       it_behaves_like 'ToOK(json/json)'
-      it_behaves_like 'To406(json/html)'
-      it_behaves_like 'To406(html/json)'
-      it_behaves_like 'To406(html/html)'
     end
     shared_examples_for 'ToNG' do |code|
+      it_behaves_like 'ToNG(html/html)', 406
+      it_behaves_like 'ToNG(html/json)', 406
+      it_behaves_like 'ToNG(json/html)', 406
       it_behaves_like 'ToNG(json/json)', code
-      it_behaves_like 'To406(json/html)'
-      it_behaves_like 'To406(html/json)'
-      it_behaves_like 'To406(html/html)'
     end
 
     # テストケース
-    context '未ログイン' do
-      include_context '未ログイン処理'
+    shared_examples_for '[未ログイン/ログイン中]' do
       # it_behaves_like 'ToNG', 404
       it_behaves_like 'ToNG', 401
       # it_behaves_like 'ToMsg', 'devise_token_auth.sessions.user_not_found', nil, nil
       it_behaves_like 'ToMsg', nil, 'devise_token_auth.sessions.user_not_found', nil
+    end
+    shared_examples_for '[APIログイン中/削除予約済み]' do
+      it_behaves_like 'ToOK'
+      # it_behaves_like 'ToMsg', nil, nil, nil
+      it_behaves_like 'ToMsg', nil, nil, 'devise.sessions.signed_out'
+    end
+
+    context '未ログイン' do
+      include_context '未ログイン処理'
+      it_behaves_like '[未ログイン/ログイン中]'
     end
     context 'ログイン中' do
       include_context 'ログイン処理'
-      # it_behaves_like 'ToNG', 404
-      it_behaves_like 'ToNG', 401
-      # it_behaves_like 'ToMsg', 'devise_token_auth.sessions.user_not_found', nil, nil
-      it_behaves_like 'ToMsg', nil, 'devise_token_auth.sessions.user_not_found', nil
+      it_behaves_like '[未ログイン/ログイン中]'
     end
     context 'APIログイン中' do
       include_context 'APIログイン処理'
-      it_behaves_like 'ToOK'
-      # it_behaves_like 'ToMsg', nil, nil, nil
-      it_behaves_like 'ToMsg', nil, nil, 'devise.sessions.signed_out'
+      it_behaves_like '[APIログイン中/削除予約済み]'
     end
     context 'APIログイン中（削除予約済み）' do
-      include_context 'APIログイン処理', :user_destroy_reserved
-      it_behaves_like 'ToOK'
-      # it_behaves_like 'ToMsg', nil, nil, nil
-      it_behaves_like 'ToMsg', nil, nil, 'devise.sessions.signed_out'
+      include_context 'APIログイン処理', :destroy_reserved
+      it_behaves_like '[APIログイン中/削除予約済み]'
     end
   end
 end

@@ -1,12 +1,12 @@
 # frozen_string_literal: true
 
 class Users::UnlocksController < Devise::UnlocksController
-  # GET /users/unlock/new アカウントロック解除[メール再送]
+  # GET /users/unlock/resend アカウントロック解除[メール再送]
   # def new
   #   super
   # end
 
-  # POST /users/unlock/new アカウントロック解除[メール再送](処理)
+  # POST /users/unlock/resend アカウントロック解除[メール再送](処理)
   # def create
   #   super
   # end

@@ -14,7 +14,21 @@
  *= require_self
  */
 
- /* Tips: MDB5 3.1.0 バグ対応 */
+ /* NOTE: MDB5 3.1.0 バグ対応 */
 .form-check .form-check-input {
     margin-left: -1.5em !important;
+}
+
+.accordion-button {
+    border-width: 0;
+}
+.accordion-button:not(.collapsed) {
+    /* color: #105cd9; */
+    color: #4f4f4f;
+    /* background-color: #e7f0fe; */
+    background-color: transparent;
+}
+.accordion-button:focus {
+    /* border-color: #1266f1; */
+    border-color: transparent;
 }

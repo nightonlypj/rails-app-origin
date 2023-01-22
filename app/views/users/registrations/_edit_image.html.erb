@@ -1,12 +1,12 @@
 <% validate_enabled = action_name == 'image_update' && resource.errors.any? %>
-<%= form_for(resource, as: resource_name, url: update_user_image_registration_path, html: { method: :post, novalidate: true, id: 'edit_image' }, local: true) do |form| %>
+<%= form_with(model: resource, url: update_user_image_registration_path, html: { method: :post, novalidate: true, autocomplete: 'off', id: 'edit_image' }, local: true) do |form| %>
   <div class="mb-1">
     <%= image_tag current_user.image_url(:xlarge), class: 'rounded-circle' %>
   </div>
 
   <div class="form-outline<%= input_size_class_name(resource, :image) %>">
     <%= form.file_field :image, class: "form-control#{validate_class_name(validate_enabled, resource, :image)}" %>
-    <%= render 'users/shared/field_error_messages', messages: resource.errors[:image] %>
+    <%= render './users/shared/field_error_messages', messages: resource.errors[:image] %>
   </div>
 
   <%= form.submit 'アップロード', class: "btn btn-primary mb-3" %>

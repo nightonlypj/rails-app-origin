@@ -1,35 +1,35 @@
 require 'rails_helper'
 
 RSpec.describe 'Top', type: :request do
+  let(:response_json) { response.body.present? ? JSON.parse(response.body) : {} }
+
   # GET / トップページ
-  # 前提条件
-  #   なし
   # テストパターン
-  #   未ログイン, ログイン中, ログイン中（削除予約済み）
+  #   未ログイン, ログイン中, ログイン中（削除予約済み）, APIログイン中, APIログイン中（削除予約済み）
   #   大切なお知らせ: ない, ある
+  #   ＋URLの拡張子: ない, .json
+  #   ＋Acceptヘッダ: HTMLが含まれる, JSONが含まれる
   describe 'GET #index' do
-    subject { get root_path }
+    subject { get root_path(format: subject_format), headers: auth_headers.merge(accept_headers) }
 
     # テスト内容
-    shared_examples_for 'ToOK' do
-      it 'HTTPステータスが200' do
+    shared_examples_for 'ToOK(html/*)' do
+      it 'HTTPステータスが200。対象項目が含まれる' do
         is_expected.to eq(200)
-      end
-    end
-
-    shared_examples_for 'リスト表示' do
-      it '対象項目が含まれる' do
-        subject
         (1..@user_important_infomations.count).each do |no|
-          info = @user_important_infomations[@user_important_infomations.count - no]
-          expect(response.body).to include(info.label_i18n) if info.label_i18n.present? # ラベル
-          expect(response.body).to include(info.title) # タイトル
-          if info.body.present? || info.summary.present?
-            expect(response.body).to include("\"#{infomation_path(info)}\"") # お知らせ詳細のパス
+          infomation = @user_important_infomations[@user_important_infomations.count - no]
+
+          expect(response.body).to include(infomation.label_i18n) if infomation.label_i18n.present?
+          expect(response.body).to include(infomation.title)
+
+          url = "href=\"#{infomation_path(infomation)}\""
+          if infomation.body.present? || infomation.summary.present?
+            expect(response.body).to include(url)
           else
-            expect(response.body).not_to include("\"#{infomation_path(info)}\"") # Tips: 本文/概要がない場合は遷移しない
+            expect(response.body).not_to include(url)
           end
-          expect(response.body).to include(I18n.l(info.started_at.to_date)) # 掲載開始日
+
+          expect(response.body).to include(I18n.l(infomation.started_at.to_date))
         end
       end
     end
@@ -37,36 +37,52 @@ RSpec.describe 'Top', type: :request do
     # テストケース
     shared_examples_for '[*]大切なお知らせがない' do
       include_context '大切なお知らせ一覧作成', 0, 0, 0, 0
-      it_behaves_like 'ToOK'
-      it_behaves_like 'リスト表示'
+      it_behaves_like 'ToOK(html)'
     end
     shared_examples_for '[未ログイン]大切なお知らせがある' do
       include_context '大切なお知らせ一覧作成', 1, 1, 0, 0
-      it_behaves_like 'ToOK'
-      it_behaves_like 'リスト表示'
+      it_behaves_like 'ToOK(html)'
     end
     shared_examples_for '[ログイン中/削除予約済み]大切なお知らせがある' do
       include_context '大切なお知らせ一覧作成', 1, 1, 1, 1
-      it_behaves_like 'ToOK'
-      it_behaves_like 'リスト表示'
+      it_behaves_like 'ToOK(html)'
+    end
+
+    shared_examples_for '[ログイン中/削除予約済み]' do
+      include_context 'お知らせ一覧作成', 1, 1, 1, 1
+      it_behaves_like '[*]大切なお知らせがない'
+      it_behaves_like '[ログイン中/削除予約済み]大切なお知らせがある'
+      it_behaves_like 'ToNG(json)', 406
+    end
+    shared_examples_for '[APIログイン中/削除予約済み]' do
+      include_context 'お知らせ一覧作成', 1, 1, 1, 1
+      it_behaves_like '[*]大切なお知らせがない'
+      it_behaves_like '[未ログイン]大切なお知らせがある' # NOTE: APIは未ログイン扱い
+      it_behaves_like 'ToNG(json)', 406
     end
 
     context '未ログイン' do
+      include_context '未ログイン処理'
       include_context 'お知らせ一覧作成', 1, 1, 0, 0
       it_behaves_like '[*]大切なお知らせがない'
       it_behaves_like '[未ログイン]大切なお知らせがある'
+      it_behaves_like 'ToNG(json)', 406
     end
     context 'ログイン中' do
       include_context 'ログイン処理'
-      include_context 'お知らせ一覧作成', 1, 1, 1, 1
-      it_behaves_like '[*]大切なお知らせがない'
-      it_behaves_like '[ログイン中/削除予約済み]大切なお知らせがある'
+      it_behaves_like '[ログイン中/削除予約済み]'
     end
     context 'ログイン中（削除予約済み）' do
-      include_context 'ログイン処理', :user_destroy_reserved
-      include_context 'お知らせ一覧作成', 1, 1, 1, 1
-      it_behaves_like '[*]大切なお知らせがない'
-      it_behaves_like '[ログイン中/削除予約済み]大切なお知らせがある'
+      include_context 'ログイン処理', :destroy_reserved
+      it_behaves_like '[ログイン中/削除予約済み]'
+    end
+    context 'APIログイン中' do
+      include_context 'APIログイン処理'
+      it_behaves_like '[APIログイン中/削除予約済み]'
+    end
+    context 'APIログイン中（削除予約済み）' do
+      include_context 'APIログイン処理', :destroy_reserved
+      it_behaves_like '[APIログイン中/削除予約済み]'
     end
   end
 end

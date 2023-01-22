@@ -1,27 +1,29 @@
 require 'rails_helper'
 
 RSpec.describe 'Users::Auth::Passwords', type: :request do
+  let(:response_json) { JSON.parse(response.body) }
+
   # テスト内容（共通）
   shared_examples_for 'ToMsg' do |error_class, errors_count, error_msg, message, alert, notice|
     let(:subject_format) { :json }
     let(:accept_headers) { ACCEPT_INC_JSON }
     it '対象のメッセージと一致する' do
       subject
-      response_json = JSON.parse(response.body)
-      msg = error_msg == 'Unauthorized' ? error_msg : I18n.t(error_msg)
-      expect(response_json['errors'].to_s).to error_msg.present? ? include(msg) : be_blank
+      if error_msg.present?
+        expect(response_json['errors'].to_s).to include(error_msg == 'Unauthorized' ? error_msg : get_locale(error_msg))
+      else
+        expect(response_json['errors'].to_s).to be_blank
+      end
       expect(response_json['errors'].class).to eq(error_class) # 方針: バリデーション(Hash)のみ、他はalertへ
       expect(response_json['errors']&.count).to errors_count.positive? ? eq(errors_count) : be_nil
-      expect(response_json['message']).to message.present? ? eq(I18n.t(message)) : be_nil # 方針: 廃止して、noticeへ
+      expect(response_json['message']).to message.present? ? eq(get_locale(message)) : be_nil # 方針: 廃止して、noticeへ
 
-      expect(response_json['alert']).to alert.present? ? eq(I18n.t(alert)) : be_nil # 方針: 追加
-      expect(response_json['notice']).to notice.present? ? eq(I18n.t(notice)) : be_nil # 方針: 追加
+      expect(response_json['alert']).to alert.present? ? eq(get_locale(alert)) : be_nil # 方針: 追加
+      expect(response_json['notice']).to notice.present? ? eq(get_locale(notice)) : be_nil # 方針: 追加
     end
   end
 
   # POST /users/auth/password(.json) パスワード再設定API[メール送信](処理)
-  # 前提条件
-  #   なし
   # テストパターン
   #   未ログイン, ログイン中, APIログイン中
   #   パラメータなし, 有効なパラメータ（未ロック, ロック中, メール未確認）, 無効なパラメータ, URLがない, URLがホワイトリストにない
@@ -29,10 +31,10 @@ RSpec.describe 'Users::Auth::Passwords', type: :request do
   #   ＋Acceptヘッダ: JSONが含まれる, JSONが含まれない
   describe 'POST #create' do
     subject { post create_user_auth_password_path(format: subject_format), params: attributes, headers: auth_headers.merge(accept_headers) }
-    let(:send_user_unlocked)    { FactoryBot.create(:user) }
-    let(:send_user_locked)      { FactoryBot.create(:user_locked) }
-    let(:send_user_unconfirmed) { FactoryBot.create(:user_unconfirmed) }
-    let(:not_user)              { FactoryBot.attributes_for(:user) }
+    let_it_be(:send_user_unlocked)    { FactoryBot.create(:user) }
+    let_it_be(:send_user_locked)      { FactoryBot.create(:user, :locked) }
+    let_it_be(:send_user_unconfirmed) { FactoryBot.create(:user, :unconfirmed) }
+    let_it_be(:not_user)              { FactoryBot.attributes_for(:user) }
     let(:valid_attributes)       { { email: send_user.email, redirect_url: FRONT_SITE_URL } }
     let(:invalid_attributes)     { { email: not_user[:email], redirect_url: FRONT_SITE_URL } }
     let(:invalid_nil_attributes) { { email: send_user_unlocked.email, redirect_url: nil } }
@@ -84,16 +86,16 @@ RSpec.describe 'Users::Auth::Passwords', type: :request do
     end
 
     shared_examples_for 'ToOK' do
+      it_behaves_like 'ToNG(html/html)', 406
+      it_behaves_like 'ToNG(html/json)', 406
+      it_behaves_like 'ToNG(json/html)', 406
       it_behaves_like 'ToOK(json/json)'
-      it_behaves_like 'To406(json/html)'
-      it_behaves_like 'To406(html/json)'
-      it_behaves_like 'To406(html/html)'
     end
     shared_examples_for 'ToNG' do |code|
+      it_behaves_like 'ToNG(html/html)', 406
+      it_behaves_like 'ToNG(html/json)', 406
+      it_behaves_like 'ToNG(json/html)', 406
       it_behaves_like 'ToNG(json/json)', code
-      it_behaves_like 'To406(json/html)'
-      it_behaves_like 'To406(html/json)'
-      it_behaves_like 'To406(html/html)'
     end
 
     # テストケース
@@ -117,7 +119,7 @@ RSpec.describe 'Users::Auth::Passwords', type: :request do
       let(:send_user)  { send_user_unlocked }
       let(:attributes) { valid_attributes }
       it_behaves_like 'OK'
-      it_behaves_like 'ToOK', nil, 'devise.passwords.send_instructions'
+      it_behaves_like 'ToOK'
       # it_behaves_like 'ToMsg', NilClass, 0, nil, 'devise_token_auth.passwords.sended', nil, nil
       it_behaves_like 'ToMsg', NilClass, 0, nil, nil, nil, 'devise_token_auth.passwords.sended'
     end
@@ -131,11 +133,11 @@ RSpec.describe 'Users::Auth::Passwords', type: :request do
       # it_behaves_like 'ToMsg', NilClass, 0, nil, 'devise_token_auth.passwords.sended', nil, nil
       it_behaves_like 'ToMsg', NilClass, 0, nil, nil, 'devise.failure.already_authenticated', nil
     end
-    shared_examples_for '[未ログイン/ログイン中]有効なパラメータ（ロック中）' do # Tips: ロック中も出来ても良さそう
+    shared_examples_for '[未ログイン/ログイン中]有効なパラメータ（ロック中）' do # NOTE: ロック中も出来ても良さそう
       let(:send_user)  { send_user_locked }
       let(:attributes) { valid_attributes }
       it_behaves_like 'OK'
-      it_behaves_like 'ToOK', nil, 'devise.passwords.send_instructions'
+      it_behaves_like 'ToOK'
       # it_behaves_like 'ToMsg', NilClass, 0, nil, 'devise_token_auth.passwords.sended', nil, nil
       it_behaves_like 'ToMsg', NilClass, 0, nil, nil, nil, 'devise_token_auth.passwords.sended'
     end
@@ -149,11 +151,11 @@ RSpec.describe 'Users::Auth::Passwords', type: :request do
       # it_behaves_like 'ToMsg', NilClass, 0, nil, 'devise_token_auth.passwords.sended', nil, nil
       it_behaves_like 'ToMsg', NilClass, 0, nil, nil, 'devise.failure.already_authenticated', nil
     end
-    shared_examples_for '[未ログイン/ログイン中]有効なパラメータ（メール未確認）' do # Tips: メール未確認も出来ても良さそう
+    shared_examples_for '[未ログイン/ログイン中]有効なパラメータ（メール未確認）' do # NOTE: メール未確認も出来ても良さそう
       let(:send_user)  { send_user_unconfirmed }
       let(:attributes) { valid_attributes }
       it_behaves_like 'OK'
-      it_behaves_like 'ToOK', nil, 'devise.passwords.send_instructions'
+      it_behaves_like 'ToOK'
       # it_behaves_like 'ToMsg', NilClass, 0, nil, 'devise_token_auth.passwords.sended', nil, nil
       it_behaves_like 'ToMsg', NilClass, 0, nil, nil, nil, 'devise_token_auth.passwords.sended'
     end
@@ -214,8 +216,7 @@ RSpec.describe 'Users::Auth::Passwords', type: :request do
       it_behaves_like 'ToMsg', NilClass, 0, nil, nil, 'devise.failure.already_authenticated', nil
     end
 
-    context '未ログイン' do
-      include_context '未ログイン処理'
+    shared_examples_for '[未ログイン/ログイン中]' do
       it_behaves_like '[未ログイン/ログイン中]パラメータなし'
       it_behaves_like '[未ログイン/ログイン中]有効なパラメータ（未ロック）'
       it_behaves_like '[未ログイン/ログイン中]有効なパラメータ（ロック中）'
@@ -224,15 +225,14 @@ RSpec.describe 'Users::Auth::Passwords', type: :request do
       it_behaves_like '[未ログイン/ログイン中]URLがない'
       it_behaves_like '[未ログイン/ログイン中]URLがホワイトリストにない'
     end
+
+    context '未ログイン' do
+      include_context '未ログイン処理'
+      it_behaves_like '[未ログイン/ログイン中]'
+    end
     context 'ログイン中' do
       include_context 'ログイン処理'
-      it_behaves_like '[未ログイン/ログイン中]パラメータなし'
-      it_behaves_like '[未ログイン/ログイン中]有効なパラメータ（未ロック）'
-      it_behaves_like '[未ログイン/ログイン中]有効なパラメータ（ロック中）'
-      it_behaves_like '[未ログイン/ログイン中]有効なパラメータ（メール未確認）'
-      it_behaves_like '[未ログイン/ログイン中]無効なパラメータ'
-      it_behaves_like '[未ログイン/ログイン中]URLがない'
-      it_behaves_like '[未ログイン/ログイン中]URLがホワイトリストにない'
+      it_behaves_like '[未ログイン/ログイン中]'
     end
     context 'APIログイン中' do
       include_context 'APIログイン処理'
@@ -247,8 +247,6 @@ RSpec.describe 'Users::Auth::Passwords', type: :request do
   end
 
   # GET /users/auth/password パスワード再設定
-  # 前提条件
-  #   なし
   # テストパターン
   #   未ログイン, ログイン中, APIログイン中
   #   トークン: 期限内（未ロック, ロック中, メール未確認）, 期限切れ, 存在しない, ない, 空
@@ -262,52 +260,51 @@ RSpec.describe 'Users::Auth::Passwords', type: :request do
     end
 
     # テスト内容
-    shared_examples_for 'ToOK(html)' do
-      let(:subject_format) { nil }
-      let(:redirect_url) { FRONT_SITE_URL }
+    shared_examples_for 'ToOK(html/*)' do
       it '指定URL（成功パラメータ）にリダイレクトする' do
         is_expected.to redirect_to("#{FRONT_SITE_URL}?reset_password_token=#{reset_password_token}")
       end
     end
-    shared_examples_for 'ToNG(html)' do |alert, notice|
-      let(:subject_format) { nil }
-      let(:redirect_url) { FRONT_SITE_URL }
+    shared_examples_for 'ToNG(html/*)' do
       it '指定URL（失敗パラメータ）にリダイレクトする' do
         param = { reset_password: false }
-        param[:alert] = I18n.t(alert) if alert.present?
-        param[:notice] = I18n.t(notice) if notice.present?
+        param[:alert] = get_locale(alert) if alert.present?
+        param[:notice] = get_locale(notice) if notice.present?
         is_expected.to redirect_to("#{FRONT_SITE_URL}?#{URI.encode_www_form(param.sort)}")
       end
     end
-
-    shared_examples_for 'ToOK(html/html)' do |alert, notice|
-      let(:accept_headers) { ACCEPT_INC_HTML }
-      it_behaves_like 'ToOK(html)', alert, notice
-    end
-    shared_examples_for 'ToOK(html/json)' do |alert, notice|
+    shared_examples_for 'ToNG(json/json)' do |code|
+      let(:subject_format) { :json }
       let(:accept_headers) { ACCEPT_INC_JSON }
-      it_behaves_like 'ToOK(html)', alert, notice
-    end
-    shared_examples_for 'ToNG(html/html)' do |alert, notice|
-      let(:accept_headers) { ACCEPT_INC_HTML }
-      it_behaves_like 'ToNG(html)', alert, notice
-    end
-    shared_examples_for 'ToNG(html/json)' do |alert, notice|
-      let(:accept_headers) { ACCEPT_INC_JSON }
-      it_behaves_like 'ToNG(html)', alert, notice
+      it "HTTPステータスが#{code}" do
+        is_expected.to eq(code)
+      end
     end
 
-    shared_examples_for 'ToOK' do |alert, notice|
-      it_behaves_like 'ToOK(html/html)', alert, notice
-      it_behaves_like 'ToOK(html/json)', alert, notice
-      it_behaves_like 'To406(json/html)'
-      it_behaves_like 'To406(json/json)'
+    shared_examples_for 'ToNG(html/html)' do
+      let(:subject_format) { nil }
+      let(:accept_headers) { ACCEPT_INC_HTML }
+      it_behaves_like 'ToNG(html/*)'
     end
-    shared_examples_for 'ToNG' do |alert, notice|
-      it_behaves_like 'ToNG(html/html)', alert, notice
-      it_behaves_like 'ToNG(html/json)', alert, notice
-      it_behaves_like 'To406(json/html)'
-      it_behaves_like 'To406(json/json)'
+    shared_examples_for 'ToNG(html/json)' do
+      let(:subject_format) { nil }
+      let(:accept_headers) { ACCEPT_INC_JSON }
+      it_behaves_like 'ToNG(html/*)'
+    end
+
+    shared_examples_for 'ToOK' do
+      let(:redirect_url) { FRONT_SITE_URL }
+      it_behaves_like 'ToOK(html/html)'
+      it_behaves_like 'ToOK(html/json)'
+      it_behaves_like 'ToNG(json/html)', 406
+      it_behaves_like 'ToNG(json/json)', 406
+    end
+    shared_examples_for 'ToNG' do
+      let(:redirect_url) { FRONT_SITE_URL }
+      it_behaves_like 'ToNG(html/html)'
+      it_behaves_like 'ToNG(html/json)'
+      it_behaves_like 'ToNG(json/html)', 406
+      it_behaves_like 'ToNG(json/json)', 406
     end
 
     shared_examples_for 'リダイレクトURLがない' do
@@ -317,7 +314,6 @@ RSpec.describe 'Users::Auth::Passwords', type: :request do
       # it 'HTTPステータスが422。対象項目が一致する' do
       it 'エラーページにリダイレクトする' do
         # is_expected.to eq(422)
-        # response_json = JSON.parse(response.body)
         # expect(response_json['success']).to eq(false)
         # expect(response_json['errors']).not_to be_nil
         is_expected.to redirect_to(Settings['reset_password_error_url_not'])
@@ -330,7 +326,6 @@ RSpec.describe 'Users::Auth::Passwords', type: :request do
       # it 'HTTPステータスが422。対象項目が一致する' do
       it 'エラーページにリダイレクトする' do
         # is_expected.to eq(422)
-        # response_json = JSON.parse(response.body)
         # expect(response_json['success']).to eq(false)
         # expect(response_json['errors']).not_to be_nil
         is_expected.to redirect_to(Settings['reset_password_error_url_bad'])
@@ -344,49 +339,56 @@ RSpec.describe 'Users::Auth::Passwords', type: :request do
       it_behaves_like 'リダイレクトURLがない'
       it_behaves_like 'リダイレクトURLがホワイトリストにない'
     end
-    shared_examples_for '[*]トークンが期限内（ロック中）' do # Tips: ロック中も出来ても良さそう
+    shared_examples_for '[*]トークンが期限内（ロック中）' do # NOTE: ロック中も出来ても良さそう
       include_context 'パスワードリセットトークン作成', true, true
       it_behaves_like 'ToOK'
       it_behaves_like 'リダイレクトURLがない'
       it_behaves_like 'リダイレクトURLがホワイトリストにない'
     end
-    shared_examples_for '[*]トークンが期限内（メール未確認）' do # Tips: メール未確認も出来ても良さそう
+    shared_examples_for '[*]トークンが期限内（メール未確認）' do # NOTE: メール未確認も出来ても良さそう
       include_context 'パスワードリセットトークン作成', true, false, true
       it_behaves_like 'ToOK'
       it_behaves_like 'リダイレクトURLがない'
       it_behaves_like 'リダイレクトURLがホワイトリストにない'
     end
     shared_examples_for '[*]トークンが期限切れ' do
+      # let(:alert)  { nil } # NOTE: ActionController::RoutingError: Not Found
+      let(:alert)  { 'activerecord.errors.models.user.attributes.reset_password_token.invalid' }
+      let(:notice) { nil }
       include_context 'パスワードリセットトークン作成', false
-      # it_behaves_like 'ToNG', nil, nil # Tips: ActionController::RoutingError: Not Found
-      it_behaves_like 'ToNG', 'activerecord.errors.models.user.attributes.reset_password_token.invalid', nil
+      it_behaves_like 'ToNG'
       it_behaves_like 'リダイレクトURLがない'
       it_behaves_like 'リダイレクトURLがホワイトリストにない'
     end
     shared_examples_for '[*]トークンが存在しない' do
+      # let(:alert)  { nil } # NOTE: ActionController::RoutingError: Not Found
+      let(:alert)  { 'activerecord.errors.models.user.attributes.reset_password_token.invalid' }
+      let(:notice) { nil }
       let(:reset_password_token) { NOT_TOKEN }
-      # it_behaves_like 'ToNG', nil, nil # Tips: ActionController::RoutingError: Not Found
-      it_behaves_like 'ToNG', 'activerecord.errors.models.user.attributes.reset_password_token.invalid', nil
+      it_behaves_like 'ToNG'
       it_behaves_like 'リダイレクトURLがない'
       it_behaves_like 'リダイレクトURLがホワイトリストにない'
     end
     shared_examples_for '[*]トークンがない' do
+      # let(:alert)  { nil } # NOTE: ActionController::RoutingError: Not Found
+      let(:alert)  { 'activerecord.errors.models.user.attributes.reset_password_token.blank' }
+      let(:notice) { nil }
       let(:reset_password_token) { nil }
-      # it_behaves_like 'ToNG', nil, nil # Tips: ActionController::RoutingError: Not Found
-      it_behaves_like 'ToNG', 'activerecord.errors.models.user.attributes.reset_password_token.blank', nil
+      it_behaves_like 'ToNG'
       it_behaves_like 'リダイレクトURLがない'
       it_behaves_like 'リダイレクトURLがホワイトリストにない'
     end
     shared_examples_for '[*]トークンが空' do
+      # let(:alert)  { nil } # NOTE: ActionController::RoutingError: Not Found
+      let(:alert)  { 'activerecord.errors.models.user.attributes.reset_password_token.blank' }
+      let(:notice) { nil }
       let(:reset_password_token) { '' }
-      # it_behaves_like 'ToNG', nil, nil # Tips: ActionController::RoutingError: Not Found
-      it_behaves_like 'ToNG', 'activerecord.errors.models.user.attributes.reset_password_token.blank', nil
+      it_behaves_like 'ToNG'
       it_behaves_like 'リダイレクトURLがない'
       it_behaves_like 'リダイレクトURLがホワイトリストにない'
     end
 
-    context '未ログイン' do
-      include_context '未ログイン処理'
+    shared_examples_for '[*]' do
       it_behaves_like '[*]トークンが期限内（未ロック）'
       it_behaves_like '[*]トークンが期限内（ロック中）'
       it_behaves_like '[*]トークンが期限内（メール未確認）'
@@ -394,32 +396,23 @@ RSpec.describe 'Users::Auth::Passwords', type: :request do
       it_behaves_like '[*]トークンが存在しない'
       it_behaves_like '[*]トークンがない'
       it_behaves_like '[*]トークンが空'
+    end
+
+    context '未ログイン' do
+      include_context '未ログイン処理'
+      it_behaves_like '[*]'
     end
     context 'ログイン中' do
       include_context 'ログイン処理'
-      it_behaves_like '[*]トークンが期限内（未ロック）'
-      it_behaves_like '[*]トークンが期限内（ロック中）'
-      it_behaves_like '[*]トークンが期限内（メール未確認）'
-      it_behaves_like '[*]トークンが期限切れ'
-      it_behaves_like '[*]トークンが存在しない'
-      it_behaves_like '[*]トークンがない'
-      it_behaves_like '[*]トークンが空'
+      it_behaves_like '[*]'
     end
     context 'APIログイン中' do
       include_context 'APIログイン処理'
-      it_behaves_like '[*]トークンが期限内（未ロック）'
-      it_behaves_like '[*]トークンが期限内（ロック中）'
-      it_behaves_like '[*]トークンが期限内（メール未確認）'
-      it_behaves_like '[*]トークンが期限切れ'
-      it_behaves_like '[*]トークンが存在しない'
-      it_behaves_like '[*]トークンがない'
-      it_behaves_like '[*]トークンが空'
+      it_behaves_like '[*]'
     end
   end
 
   # POST /users/auth/password/update(.json) パスワード再設定API(処理)
-  # 前提条件
-  #   なし
   # テストパターン
   #   未ログイン, ログイン中, APIログイン中
   #   トークン: 期限内（未ロック, ロック中, メール未確認, メールアドレス変更中）, 期限切れ, 存在しない, ない, 空
@@ -444,7 +437,7 @@ RSpec.describe 'Users::Auth::Passwords', type: :request do
         subject
         expect(current_user.reset_password_sent_at).to be_nil
         expect(current_user.confirmed_at).to change_confirmed ? be_between(start_time, Time.current) : eq(send_user.confirmed_at)
-        expect(current_user.locked_at).to be_nil # Tips: ロック中の場合は解除する
+        expect(current_user.locked_at).to be_nil # NOTE: ロック中の場合は解除する
         expect(current_user.failed_attempts).to eq(0)
 
         expect(ActionMailer::Base.deliveries.count).to eq(1)
@@ -485,16 +478,16 @@ RSpec.describe 'Users::Auth::Passwords', type: :request do
     end
 
     shared_examples_for 'ToOK' do
+      it_behaves_like 'ToNG(html/html)', 406
+      it_behaves_like 'ToNG(html/json)', 406
+      it_behaves_like 'ToNG(json/html)', 406
       it_behaves_like 'ToOK(json/json)'
-      it_behaves_like 'To406(json/html)'
-      it_behaves_like 'To406(html/json)'
-      it_behaves_like 'To406(html/html)'
     end
     shared_examples_for 'ToNG' do |code| # , uid, client, token|
+      it_behaves_like 'ToNG(html/html)', 406
+      it_behaves_like 'ToNG(html/json)', 406
+      it_behaves_like 'ToNG(json/html)', 406
       it_behaves_like 'ToNG(json/json)', code # , uid, client, token
-      it_behaves_like 'To406(json/html)'
-      it_behaves_like 'To406(html/json)'
-      it_behaves_like 'To406(html/html)'
     end
 
     # テストケース
@@ -516,7 +509,7 @@ RSpec.describe 'Users::Auth::Passwords', type: :request do
     end
     shared_examples_for '[未ログイン/ログイン中][存在しない/ない/空]パラメータなし' do
       let(:attributes) { nil }
-      # it_behaves_like 'NG' # Tips: トークンが存在しない為、送信日時がない
+      # it_behaves_like 'NG' # NOTE: トークンが存在しない為、送信日時がない
       # it_behaves_like 'ToNG', 401, false, false, false
       it_behaves_like 'ToNG', 400, false, false, false
       # it_behaves_like 'ToMsg', Array, 1, 'Unauthorized', nil, nil, nil
@@ -524,7 +517,7 @@ RSpec.describe 'Users::Auth::Passwords', type: :request do
     end
     shared_examples_for '[APIログイン中][存在しない/ない/空]パラメータなし' do
       let(:attributes) { nil }
-      # it_behaves_like 'NG' # Tips: トークンが存在しない為、送信日時がない
+      # it_behaves_like 'NG' # NOTE: トークンが存在しない為、送信日時がない
       # it_behaves_like 'ToNG', 422, true, true, false
       it_behaves_like 'ToNG', 401, false, false, false
       # it_behaves_like 'ToMsg', Array, 1, 'devise_token_auth.passwords.missing_passwords', nil, nil, nil
@@ -572,7 +565,7 @@ RSpec.describe 'Users::Auth::Passwords', type: :request do
     end
     shared_examples_for '[未ログイン/ログイン中][存在しない/ない/空]有効なパラメータ' do
       let(:attributes) { valid_attributes }
-      # it_behaves_like 'NG' # Tips: トークンが存在しない為、送信日時がない
+      # it_behaves_like 'NG' # NOTE: トークンが存在しない為、送信日時がない
       # it_behaves_like 'ToNG', 401, false, false, false
       it_behaves_like 'ToNG', 422, false, false, false
       # it_behaves_like 'ToMsg', Array, 1, 'Unauthorized', nil, nil, nil
@@ -580,7 +573,7 @@ RSpec.describe 'Users::Auth::Passwords', type: :request do
     end
     shared_examples_for '[APIログイン中][存在しない/空]有効なパラメータ' do
       let(:attributes) { valid_attributes }
-      # it_behaves_like 'NG' # Tips: トークンが存在しない為、送信日時がない
+      # it_behaves_like 'NG' # NOTE: トークンが存在しない為、送信日時がない
       # it_behaves_like 'ToNG', 401, false, false, false
       it_behaves_like 'ToNG', 401, false, false, false
       # it_behaves_like 'ToMsg', Array, 1, 'Unauthorized', nil, nil, nil
@@ -588,7 +581,7 @@ RSpec.describe 'Users::Auth::Passwords', type: :request do
     end
     shared_examples_for '[APIログイン中][ない]有効なパラメータ' do
       let(:attributes) { valid_attributes }
-      # it_behaves_like 'NG' # Tips: トークンが存在しない為、送信日時がない
+      # it_behaves_like 'NG' # NOTE: トークンが存在しない為、送信日時がない
       # it_behaves_like 'ToOK'
       it_behaves_like 'ToNG', 401, false, false, false
       # it_behaves_like 'ToMsg', NilClass, 0, nil, 'devise_token_auth.passwords.successfully_updated', nil, nil
@@ -619,7 +612,7 @@ RSpec.describe 'Users::Auth::Passwords', type: :request do
     end
     shared_examples_for '[未ログイン/ログイン中][存在しない/ない/空]無効なパラメータ（なし）' do
       let(:attributes) { invalid_attributes }
-      # it_behaves_like 'NG' # Tips: トークンが存在しない為、送信日時がない
+      # it_behaves_like 'NG' # NOTE: トークンが存在しない為、送信日時がない
       # it_behaves_like 'ToNG', 401, false, false, false
       it_behaves_like 'ToNG', 422, false, false, false
       # it_behaves_like 'ToMsg', Array, 1, 'Unauthorized', nil, nil, nil
@@ -627,7 +620,7 @@ RSpec.describe 'Users::Auth::Passwords', type: :request do
     end
     shared_examples_for '[APIログイン中][存在しない/空]無効なパラメータ（なし）' do
       let(:attributes) { invalid_attributes }
-      # it_behaves_like 'NG' # Tips: トークンが存在しない為、送信日時がない
+      # it_behaves_like 'NG' # NOTE: トークンが存在しない為、送信日時がない
       # it_behaves_like 'ToNG', 401, false, false, false
       it_behaves_like 'ToNG', 401, false, false, false
       # it_behaves_like 'ToMsg', Array, 1, 'Unauthorized', nil, nil, nil
@@ -635,7 +628,7 @@ RSpec.describe 'Users::Auth::Passwords', type: :request do
     end
     shared_examples_for '[APIログイン中][ない]無効なパラメータ（なし）' do
       let(:attributes) { invalid_attributes }
-      # it_behaves_like 'NG' # Tips: トークンが存在しない為、送信日時がない
+      # it_behaves_like 'NG' # NOTE: トークンが存在しない為、送信日時がない
       # it_behaves_like 'ToNG', 422, true, true, false
       it_behaves_like 'ToNG', 401, false, false, false
       # it_behaves_like 'ToMsg', Array, 1, 'devise_token_auth.passwords.missing_passwords', nil, nil, nil
@@ -666,7 +659,7 @@ RSpec.describe 'Users::Auth::Passwords', type: :request do
     end
     shared_examples_for '[未ログイン/ログイン中][存在しない/ない/空]無効なパラメータ（確認なし）' do
       let(:attributes) { invalid_confirm_attributes }
-      # it_behaves_like 'NG' # Tips: トークンが存在しない為、送信日時がない
+      # it_behaves_like 'NG' # NOTE: トークンが存在しない為、送信日時がない
       # it_behaves_like 'ToNG', 401, false, false, false
       it_behaves_like 'ToNG', 422, false, false, false
       # it_behaves_like 'ToMsg', Array, 1, 'Unauthorized', nil, nil, nil
@@ -674,7 +667,7 @@ RSpec.describe 'Users::Auth::Passwords', type: :request do
     end
     shared_examples_for '[APIログイン中][存在しない/空]無効なパラメータ（確認なし）' do
       let(:attributes) { invalid_confirm_attributes }
-      # it_behaves_like 'NG' # Tips: トークンが存在しない為、送信日時がない
+      # it_behaves_like 'NG' # NOTE: トークンが存在しない為、送信日時がない
       # it_behaves_like 'ToNG', 401, false, false, false
       it_behaves_like 'ToNG', 401, false, false, false
       # it_behaves_like 'ToMsg', Array, 1, 'Unauthorized', nil, nil, nil
@@ -682,7 +675,7 @@ RSpec.describe 'Users::Auth::Passwords', type: :request do
     end
     shared_examples_for '[APIログイン中][ない]無効なパラメータ（確認なし）' do
       let(:attributes) { invalid_confirm_attributes }
-      # it_behaves_like 'NG' # Tips: トークンが存在しない為、送信日時がない
+      # it_behaves_like 'NG' # NOTE: トークンが存在しない為、送信日時がない
       # it_behaves_like 'ToNG', 422, true, true, false
       it_behaves_like 'ToNG', 401, false, false, false
       # it_behaves_like 'ToMsg', Array, 1, 'devise_token_auth.passwords.missing_passwords', nil, nil, nil
@@ -802,8 +795,7 @@ RSpec.describe 'Users::Auth::Passwords', type: :request do
       it_behaves_like '[APIログイン中][存在しない/空]無効なパラメータ（確認なし）'
     end
 
-    context '未ログイン' do
-      include_context '未ログイン処理'
+    shared_examples_for '[未ログイン/ログイン中]' do
       it_behaves_like '[未ログイン/ログイン中]トークンが期限内（未ロック）'
       it_behaves_like '[未ログイン/ログイン中]トークンが期限内（ロック中）'
       it_behaves_like '[未ログイン/ログイン中]トークンが期限内（メール未確認）'
@@ -813,16 +805,14 @@ RSpec.describe 'Users::Auth::Passwords', type: :request do
       it_behaves_like '[未ログイン/ログイン中]トークンがない'
       it_behaves_like '[未ログイン/ログイン中]トークンが空'
     end
+
+    context '未ログイン' do
+      include_context '未ログイン処理'
+      it_behaves_like '[未ログイン/ログイン中]'
+    end
     context 'ログイン中' do
       include_context 'ログイン処理'
-      it_behaves_like '[未ログイン/ログイン中]トークンが期限内（未ロック）'
-      it_behaves_like '[未ログイン/ログイン中]トークンが期限内（ロック中）'
-      it_behaves_like '[未ログイン/ログイン中]トークンが期限内（メール未確認）'
-      it_behaves_like '[未ログイン/ログイン中]トークンが期限内（メールアドレス変更中）'
-      it_behaves_like '[未ログイン/ログイン中]トークンが期限切れ'
-      it_behaves_like '[未ログイン/ログイン中]トークンが存在しない'
-      it_behaves_like '[未ログイン/ログイン中]トークンがない'
-      it_behaves_like '[未ログイン/ログイン中]トークンが空'
+      it_behaves_like '[未ログイン/ログイン中]'
     end
     context 'APIログイン中' do
       include_context 'APIログイン処理'

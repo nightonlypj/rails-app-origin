@@ -18,7 +18,7 @@ RSpec.describe DeviseMailer, type: :mailer do
   # テストパターン
   #   リダイレクトURL: ない, ある
   describe '#confirmation_instructions' do
-    let(:user)    { FactoryBot.build_stubbed(:user_unconfirmed) }
+    let_it_be(:user) { FactoryBot.build_stubbed(:user, :unconfirmed) }
     let(:token)   { Devise.token_generator.digest(self, :confirmation_token, SecureRandom.uuid) }
     let(:mail)    { DeviseMailer.confirmation_instructions(user, token, { 'client-config': client_config, 'redirect-url': redirect_url }) }
     let(:subject) { 'devise.mailer.confirmation_instructions.subject' }
@@ -59,7 +59,7 @@ RSpec.describe DeviseMailer, type: :mailer do
   # テストパターン
   #   リダイレクトURL: ない, ある
   describe '#reset_password_instructions' do
-    let(:user)    { FactoryBot.build_stubbed(:user) }
+    let_it_be(:user) { FactoryBot.build_stubbed(:user) }
     let(:token)   { Devise.token_generator.digest(self, :reset_password_token, SecureRandom.uuid) }
     let(:mail)    { DeviseMailer.reset_password_instructions(user, token, { 'client-config': client_config, 'redirect-url': redirect_url }) }
     let(:subject) { 'devise.mailer.reset_password_instructions.subject' }
@@ -102,7 +102,7 @@ RSpec.describe DeviseMailer, type: :mailer do
   # テストパターン
   #   リダイレクトURL: ない, ある
   describe '#unlock_instructions' do
-    let(:user)    { FactoryBot.build_stubbed(:user_locked) }
+    let_it_be(:user) { FactoryBot.build_stubbed(:user, :locked) }
     let(:token)   { Devise.token_generator.digest(self, :unlock_token, SecureRandom.uuid) }
     let(:mail)    { DeviseMailer.unlock_instructions(user, token, { 'client-config': client_config, 'redirect-url': redirect_url }) }
     let(:subject) { 'devise.mailer.unlock_instructions.subject' }
@@ -140,10 +140,8 @@ RSpec.describe DeviseMailer, type: :mailer do
   # メールアドレス変更受け付けのお知らせ
   # 前提条件
   #   メールアドレス変更中
-  # テストパターン
-  #   なし
   describe '#email_changed' do
-    let(:user)    { FactoryBot.build_stubbed(:user_email_changed) }
+    let_it_be(:user) { FactoryBot.build_stubbed(:user, :email_changed) }
     let(:mail)    { DeviseMailer.email_changed(user) }
     let(:subject) { 'devise.mailer.email_changed.subject' }
 
@@ -155,12 +153,8 @@ RSpec.describe DeviseMailer, type: :mailer do
   end
 
   # パスワード変更完了のお知らせ
-  # 前提条件
-  #   なし
-  # テストパターン
-  #   なし
   describe '#password_change' do
-    let(:user)    { FactoryBot.build_stubbed(:user) }
+    let_it_be(:user) { FactoryBot.build_stubbed(:user) }
     let(:mail)    { DeviseMailer.password_change(user) }
     let(:subject) { 'devise.mailer.password_change.subject' }
 

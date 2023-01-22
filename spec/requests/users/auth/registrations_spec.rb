@@ -1,26 +1,24 @@
 require 'rails_helper'
 
 RSpec.describe 'Users::Auth::Registrations', type: :request do
+  let(:response_json) { JSON.parse(response.body) }
+
   # テスト内容（共通）
   shared_examples_for 'ToMsg' do |error_class, errors_count, error_msg, message, alert, notice|
     let(:subject_format) { :json }
     let(:accept_headers) { ACCEPT_INC_JSON }
     it '対象のメッセージと一致する' do
       subject
-      response_json = JSON.parse(response.body)
-      expect(response_json['errors'].to_s).to error_msg.present? ? include(I18n.t(error_msg)) : be_blank
+      expect(response_json['errors'].to_s).to error_msg.present? ? include(get_locale(error_msg)) : be_blank
       expect(response_json['errors'].class).to eq(error_class) # 方針: バリデーション(Hash)のみ、他はalertへ
       expect(response_json['errors']&.count).to errors_count.positive? ? eq(errors_count) : be_nil
-      expect(response_json['message']).to message.present? ? eq(I18n.t(message)) : be_nil # 方針: 廃止して、noticeへ
-
-      expect(response_json['alert']).to alert.present? ? eq(I18n.t(alert)) : be_nil # 方針: 追加
-      expect(response_json['notice']).to notice.present? ? eq(I18n.t(notice)) : be_nil # 方針: 追加
+      expect(response_json['message']).to message.present? ? eq(get_locale(message)) : be_nil # 方針: 廃止して、noticeへ
+      expect(response_json['alert']).to alert.present? ? eq(get_locale(alert)) : be_nil # 方針: 追加
+      expect(response_json['notice']).to notice.present? ? eq(get_locale(notice)) : be_nil # 方針: 追加
     end
   end
 
   # POST /users/auth/sign_up(.json) アカウント登録API(処理)
-  # 前提条件
-  #   なし
   # テストパターン
   #   未ログイン, ログイン中, APIログイン中
   #   パラメータなし, 有効なパラメータ, 無効なパラメータ, URLがない, URLがホワイトリストにない
@@ -28,8 +26,8 @@ RSpec.describe 'Users::Auth::Registrations', type: :request do
   #   ＋Acceptヘッダ: JSONが含まれる, JSONが含まれない
   describe 'POST #create' do
     subject { post create_user_auth_registration_path(format: subject_format), params: attributes, headers: auth_headers.merge(accept_headers) }
-    let(:new_user)   { FactoryBot.attributes_for(:user) }
-    let(:exist_user) { FactoryBot.create(:user) }
+    let_it_be(:new_user)   { FactoryBot.attributes_for(:user) }
+    let_it_be(:exist_user) { FactoryBot.create(:user) }
     let(:valid_attributes)       { { name: new_user[:name], email: new_user[:email], password: new_user[:password], confirm_success_url: FRONT_SITE_URL } }
     let(:invalid_attributes)     { { name: exist_user.name, email: exist_user.email, password: exist_user.password, confirm_success_url: FRONT_SITE_URL } }
     let(:invalid_nil_attributes) { { name: new_user[:name], email: new_user[:email], password: new_user[:password], confirm_success_url: nil } }
@@ -70,7 +68,6 @@ RSpec.describe 'Users::Auth::Registrations', type: :request do
       let(:accept_headers) { ACCEPT_INC_JSON }
       it 'HTTPステータスが200。対象項目が一致する。認証ヘッダがない' do
         is_expected.to eq(200)
-        # response_json = JSON.parse(response.body)
         # expect(response_json['status']).to eq(status) # 方針: 廃止して、successに統一
         # expect(response_json['success']).to eq(success)
         # expect(response_json['data'].present?).to eq(data_present) # 方針: 廃止
@@ -83,7 +80,6 @@ RSpec.describe 'Users::Auth::Registrations', type: :request do
       let(:accept_headers) { ACCEPT_INC_JSON }
       it "HTTPステータスが#{code}。対象項目が一致する。認証ヘッダがない" do
         is_expected.to eq(code) # 方針(優先順): 401: ログイン中, 400:パラメータなし, 422: 無効なパラメータ・状態
-        # response_json = JSON.parse(response.body)
         # expect(response_json['status']).to eq(status) # 方針: 廃止して、successに統一
         # expect(response_json['success']).to eq(success)
         # expect(response_json['data'].present?).to eq(data_present) # 方針: 廃止
@@ -93,16 +89,16 @@ RSpec.describe 'Users::Auth::Registrations', type: :request do
     end
 
     shared_examples_for 'ToOK' do # |status, success, data_present|
+      it_behaves_like 'ToNG(html/html)', 406
+      it_behaves_like 'ToNG(html/json)', 406
+      it_behaves_like 'ToNG(json/html)', 406
       it_behaves_like 'ToOK(json/json)' # , status, success, data_present
-      it_behaves_like 'To406(json/html)'
-      it_behaves_like 'To406(html/json)'
-      it_behaves_like 'To406(html/html)'
     end
     shared_examples_for 'ToNG' do |code| # , status, success, data_present|
+      it_behaves_like 'ToNG(html/html)', 406
+      it_behaves_like 'ToNG(html/json)', 406
+      it_behaves_like 'ToNG(json/html)', 406
       it_behaves_like 'ToNG(json/json)', code # , status, success, data_present
-      it_behaves_like 'To406(json/html)'
-      it_behaves_like 'To406(html/json)'
-      it_behaves_like 'To406(html/html)'
     end
 
     # テストケース
@@ -188,21 +184,21 @@ RSpec.describe 'Users::Auth::Registrations', type: :request do
       it_behaves_like 'ToMsg', NilClass, 0, nil, nil, 'devise.failure.already_authenticated', nil
     end
 
-    context '未ログイン' do
-      include_context '未ログイン処理'
+    shared_examples_for '[未ログイン/ログイン中]' do
       it_behaves_like '[未ログイン/ログイン中]パラメータなし'
       it_behaves_like '[未ログイン/ログイン中]有効なパラメータ'
       it_behaves_like '[未ログイン/ログイン中]無効なパラメータ'
       it_behaves_like '[未ログイン/ログイン中]URLがない'
       it_behaves_like '[未ログイン/ログイン中]URLがホワイトリストにない'
     end
+
+    context '未ログイン' do
+      include_context '未ログイン処理'
+      it_behaves_like '[未ログイン/ログイン中]'
+    end
     context 'ログイン中' do
       include_context '未ログイン処理'
-      it_behaves_like '[未ログイン/ログイン中]パラメータなし'
-      it_behaves_like '[未ログイン/ログイン中]有効なパラメータ'
-      it_behaves_like '[未ログイン/ログイン中]無効なパラメータ'
-      it_behaves_like '[未ログイン/ログイン中]URLがない'
-      it_behaves_like '[未ログイン/ログイン中]URLがホワイトリストにない'
+      it_behaves_like '[未ログイン/ログイン中]'
     end
     context 'APIログイン中' do
       include_context 'APIログイン処理'
@@ -214,9 +210,7 @@ RSpec.describe 'Users::Auth::Registrations', type: :request do
     end
   end
 
-  # GET /users/auth/show(.json) 登録情報詳細API
-  # 前提条件
-  #   なし
+  # GET /users/auth/detail(.json) ユーザー情報詳細API
   # テストパターン
   #   未ログイン, ログイン中, APIログイン中, APIログイン中（削除予約済み）
   #   ＋URLの拡張子: .json, ない
@@ -230,40 +224,27 @@ RSpec.describe 'Users::Auth::Registrations', type: :request do
     shared_examples_for 'ToOK(json/json)' do
       let(:subject_format) { :json }
       let(:accept_headers) { ACCEPT_INC_JSON }
+      let(:response_json_user) { response_json['user'] }
       it 'HTTPステータスが200。対象項目が一致する。認証ヘッダがある' do
         is_expected.to eq(200)
-        response_json = JSON.parse(response.body)
         expect(response_json['success']).to eq(true)
-        expect(response_json['user']['provider']).to eq(current_user.provider)
-        expect(response_json['user']['code']).to eq(current_user.code)
-        expect(response_json['user']['upload_image']).to eq(current_user.image?)
-        expect(response_json['user']['image_url']['mini']).to eq("#{Settings['base_image_url']}#{current_user.image_url(:mini)}")
-        expect(response_json['user']['image_url']['small']).to eq("#{Settings['base_image_url']}#{current_user.image_url(:small)}")
-        expect(response_json['user']['image_url']['medium']).to eq("#{Settings['base_image_url']}#{current_user.image_url(:medium)}")
-        expect(response_json['user']['image_url']['large']).to eq("#{Settings['base_image_url']}#{current_user.image_url(:large)}")
-        expect(response_json['user']['image_url']['xlarge']).to eq("#{Settings['base_image_url']}#{current_user.image_url(:xlarge)}")
-        expect(response_json['user']['name']).to eq(current_user.name)
-        expect(response_json['user']['email']).to eq(current_user.email)
-        ## Trackable
-        expect(response_json['user']['sign_in_count']).to eq(current_user.sign_in_count)
-        current_sign_in_at = current_user.current_sign_in_at.present? ? I18n.l(current_user.current_sign_in_at, format: :json) : nil
-        expect(response_json['user']['current_sign_in_at']).to eq(current_sign_in_at)
-        last_sign_in_at = current_user.last_sign_in_at.present? ? I18n.l(current_user.last_sign_in_at, format: :json) : nil
-        expect(response_json['user']['last_sign_in_at']).to eq(last_sign_in_at)
-        expect(response_json['user']['current_sign_in_ip']).to eq(current_user.current_sign_in_ip)
-        expect(response_json['user']['last_sign_in_ip']).to eq(current_user.last_sign_in_ip)
-        ## Confirmable
-        expect(response_json['user']['unconfirmed_email']).to eq(current_user.unconfirmed_email.present? ? current_user.unconfirmed_email : nil)
-        ## 削除予約
-        expect(response_json['user']['destroy_schedule_days']).to eq(Settings['destroy_schedule_days'])
-        destroy_requested_at = current_user.destroy_requested_at.present? ? I18n.l(current_user.destroy_requested_at, format: :json) : nil
-        expect(response_json['user']['destroy_requested_at']).to eq(destroy_requested_at)
-        destroy_schedule_at = current_user.destroy_schedule_at.present? ? I18n.l(current_user.destroy_schedule_at, format: :json) : nil
-        expect(response_json['user']['destroy_schedule_at']).to eq(destroy_schedule_at)
+        expect_user_json(response_json_user, current_user, true)
+        expect(response_json_user['provider']).to eq(current_user.provider)
+        ## アカウント削除の猶予期間
+        expect(response_json_user['destroy_schedule_days']).to be_nil
         ## お知らせ
-        expect(response_json['user']['infomation_unread_count']).to eq(current_user.infomation_unread_count)
+        expect(response_json_user['infomation_unread_count']).to be_nil
+
+        ## Trackable
+        expect(response_json_user['sign_in_count']).to eq(current_user.sign_in_count)
+        expect(response_json_user['current_sign_in_at']).to eq(I18n.l(current_user.current_sign_in_at, format: :json, default: nil))
+        expect(response_json_user['last_sign_in_at']).to eq(I18n.l(current_user.last_sign_in_at, format: :json, default: nil))
+        expect(response_json_user['current_sign_in_ip']).to eq(current_user.current_sign_in_ip)
+        expect(response_json_user['last_sign_in_ip']).to eq(current_user.last_sign_in_ip)
+        ## Confirmable
+        expect(response_json_user['unconfirmed_email']).to eq(current_user.unconfirmed_email.present? ? current_user.unconfirmed_email : nil)
         ## 作成日時
-        expect(response_json['user']['created_at']).to eq(current_user.created_at.present? ? I18n.l(current_user.created_at, format: :json) : nil)
+        expect(response_json_user['created_at']).to eq(I18n.l(current_user.created_at, format: :json))
 
         expect_exist_auth_header
       end
@@ -279,53 +260,56 @@ RSpec.describe 'Users::Auth::Registrations', type: :request do
     end
 
     shared_examples_for 'ToOK' do
+      it_behaves_like 'ToNG(html/html)', 406
+      it_behaves_like 'ToNG(html/json)', 406
+      it_behaves_like 'ToNG(json/html)', 406
       it_behaves_like 'ToOK(json/json)'
-      it_behaves_like 'To406(json/html)'
-      it_behaves_like 'To406(html/json)'
-      it_behaves_like 'To406(html/html)'
     end
     shared_examples_for 'ToNG' do |code|
+      it_behaves_like 'ToNG(html/html)', 406
+      it_behaves_like 'ToNG(html/json)', 406
+      it_behaves_like 'ToNG(json/html)', 406
       it_behaves_like 'ToNG(json/json)', code
-      it_behaves_like 'To406(json/html)'
-      it_behaves_like 'To406(html/json)'
-      it_behaves_like 'To406(html/html)'
+    end
+
+    shared_examples_for '[未ログイン/ログイン中]' do
+      it_behaves_like 'ToNG', 401
+      it_behaves_like 'ToMsg', NilClass, 0, nil, nil, 'devise.failure.unauthenticated', nil
+    end
+    shared_examples_for '[APIログイン中/削除予約済み]' do
+      it_behaves_like 'ToOK'
+      it_behaves_like 'ToMsg', NilClass, 0, nil, nil, nil, nil
     end
 
     # テストケース
     context '未ログイン' do
       include_context '未ログイン処理'
-      it_behaves_like 'ToNG', 401
-      it_behaves_like 'ToMsg', NilClass, 0, nil, nil, 'devise.failure.unauthenticated', nil
+      it_behaves_like '[未ログイン/ログイン中]'
     end
     context 'ログイン中' do
       include_context 'ログイン処理'
-      it_behaves_like 'ToNG', 401
-      it_behaves_like 'ToMsg', NilClass, 0, nil, nil, 'devise.failure.unauthenticated', nil
+      it_behaves_like '[未ログイン/ログイン中]'
     end
     context 'APIログイン中' do
-      include_context 'APIログイン処理', :user_email_changed, true
-      it_behaves_like 'ToOK'
-      it_behaves_like 'ToMsg', NilClass, 0, nil, nil, nil, nil
+      include_context 'APIログイン処理', :email_changed, true
+      it_behaves_like '[APIログイン中/削除予約済み]'
     end
     context 'APIログイン中（削除予約済み）' do
-      include_context 'APIログイン処理', :user_destroy_reserved, true
-      it_behaves_like 'ToOK'
-      it_behaves_like 'ToMsg', NilClass, 0, nil, nil, nil, nil
+      include_context 'APIログイン処理', :destroy_reserved, true
+      it_behaves_like '[APIログイン中/削除予約済み]'
     end
   end
 
-  # POST /users/auth/update(.json) 登録情報変更API(処理)
-  # 前提条件
-  #   なし
+  # POST /users/auth/update(.json) ユーザー情報変更API(処理)
   # テストパターン
   #   未ログイン, ログイン中, APIログイン中, APIログイン中（削除予約済み）
-  #   パラメータなし, 有効なパラメータ（変更なし, あり）, 無効なパラメータ, URLがない, URLがホワイトリストにない
+  #   パラメータなし, 有効なパラメータ（変更なし, あり）, 無効なパラメータ, 現在のパスワードがない, URLがない, URLがホワイトリストにない
   #   ＋URLの拡張子: .json, ない
   #   ＋Acceptヘッダ: JSONが含まれる, JSONが含まれない
   describe 'POST #update' do
     subject { post update_user_auth_registration_path(format: subject_format), params: attributes, headers: auth_headers.merge(accept_headers) }
-    let(:new_user)   { FactoryBot.attributes_for(:user) }
-    let(:exist_user) { FactoryBot.create(:user) }
+    let_it_be(:new_user)   { FactoryBot.attributes_for(:user) }
+    let_it_be(:exist_user) { FactoryBot.create(:user) }
     let(:nochange_attributes)    { { name: user.name, email: user.email, password: user.password, confirm_redirect_url: FRONT_SITE_URL } }
     let(:valid_attributes)       { { name: new_user[:name], email: new_user[:email], password: new_user[:password], confirm_redirect_url: FRONT_SITE_URL } }
     let(:invalid_attributes)     { { name: exist_user.name, email: exist_user.email, password: exist_user.password, confirm_redirect_url: FRONT_SITE_URL } }
@@ -344,7 +328,7 @@ RSpec.describe 'Users::Auth::Registrations', type: :request do
         subject
         expect(current_user.unconfirmed_email).to change_email ? eq(attributes[:email]) : eq(user.unconfirmed_email) # 確認待ちメールアドレス
         expect(current_user.name).to eq(attributes[:name]) # 氏名
-        expect(current_user.image.url).to eq(user.image.url) # 画像 # Tips: 変更されない
+        expect(current_user.image.url).to eq(user.image.url) # 画像 # NOTE: 変更されない
 
         expect(ActionMailer::Base.deliveries.count).to eq(change_email ? 3 : 1)
         expect(ActionMailer::Base.deliveries[0].subject).to eq(get_subject('devise.mailer.email_changed.subject')) if change_email # メールアドレス変更受け付けのお知らせ
@@ -376,7 +360,6 @@ RSpec.describe 'Users::Auth::Registrations', type: :request do
       let(:accept_headers) { ACCEPT_INC_JSON }
       it 'HTTPステータスが200。対象項目が一致する。認証ヘッダがある' do
         is_expected.to eq(200)
-        # response_json = JSON.parse(response.body)
         # expect(response_json['status']).to eq(status) # 方針: 廃止して、successに統一
         # expect(response_json['success']).to eq(success)
         # expect(response_json['data']['id'].present?).to eq(id_present) # 方針: 廃止
@@ -391,7 +374,6 @@ RSpec.describe 'Users::Auth::Registrations', type: :request do
       let(:accept_headers) { ACCEPT_INC_JSON }
       it "HTTPステータスが#{code}。対象項目が一致する。認証ヘッダがない" do
         is_expected.to eq(code) # 方針(優先順): 401: 未ログイン, 400:パラメータなし, 422: 無効なパラメータ・状態
-        # response_json = JSON.parse(response.body)
         # expect(response_json['status']).to eq(status) # 方針: 廃止して、successに統一
         # expect(response_json['success']).to eq(success)
         # expect(response_json['data']).to be_nil
@@ -401,22 +383,22 @@ RSpec.describe 'Users::Auth::Registrations', type: :request do
     end
 
     shared_examples_for 'ToOK' do
+      it_behaves_like 'ToNG(html/html)', 406
+      it_behaves_like 'ToNG(html/json)', 406
+      it_behaves_like 'ToNG(json/html)', 406
       it_behaves_like 'ToOK(json/json)'
-      it_behaves_like 'To406(json/html)'
-      it_behaves_like 'To406(html/json)'
-      it_behaves_like 'To406(html/html)'
     end
-    shared_examples_for 'ToNG' do |code|
-      it_behaves_like 'ToNG(json/json)', code
-      it_behaves_like 'To406(json/html)'
-      it_behaves_like 'To406(html/json)'
-      it_behaves_like 'To406(html/html)'
+    shared_examples_for 'ToNG' do |code| # , status, success|
+      it_behaves_like 'ToNG(html/html)', 406
+      it_behaves_like 'ToNG(html/json)', 406
+      it_behaves_like 'ToNG(json/html)', 406
+      it_behaves_like 'ToNG(json/json)', code # , status, success
     end
 
     # テストケース
     shared_examples_for '[未ログイン/ログイン中]パラメータなし' do
       let(:attributes) { nil }
-      # it_behaves_like 'NG' # Tips: 未ログインの為、対象がない
+      # it_behaves_like 'NG' # NOTE: 未ログインの為、対象がない
       # it_behaves_like 'ToNG', 422, 'error', false
       it_behaves_like 'ToNG', 401, nil, false
       # it_behaves_like 'ToMsg', Array, 1, 'errors.messages.validate_account_update_params', nil, nil, nil
@@ -449,7 +431,7 @@ RSpec.describe 'Users::Auth::Registrations', type: :request do
     end
     shared_examples_for '[未ログイン/ログイン中]有効なパラメータ（変更あり）' do
       let(:attributes) { valid_attributes.merge(password_confirmation: valid_attributes[:password]) }
-      # it_behaves_like 'NG' # Tips: 未ログインの為、対象がない
+      # it_behaves_like 'NG' # NOTE: 未ログインの為、対象がない
       # it_behaves_like 'ToNG', 404, 'error', false
       it_behaves_like 'ToNG', 401, nil, false
       # it_behaves_like 'ToMsg', Array, 1, 'devise_token_auth.registrations.user_not_found', nil, nil, nil
@@ -474,7 +456,7 @@ RSpec.describe 'Users::Auth::Registrations', type: :request do
     end
     shared_examples_for '[未ログイン/ログイン中]無効なパラメータ' do
       let(:attributes) { invalid_attributes.merge(password_confirmation: invalid_attributes[:password]) }
-      # it_behaves_like 'NG' # Tips: 未ログインの為、対象がない
+      # it_behaves_like 'NG' # NOTE: 未ログインの為、対象がない
       # it_behaves_like 'ToNG', 404, 'error', false
       it_behaves_like 'ToNG', 401, nil, false
       # it_behaves_like 'ToMsg', Array, 1, 'devise_token_auth.registrations.user_not_found', nil, nil, nil
@@ -487,7 +469,7 @@ RSpec.describe 'Users::Auth::Registrations', type: :request do
       # it_behaves_like 'ToOK', 'success', nil, true
       it_behaves_like 'ToNG', 422, nil, false
       # it_behaves_like 'ToMsg', NilClass, 0, nil, nil, nil, nil
-      it_behaves_like 'ToMsg', Hash, 2, 'activerecord.errors.models.user.attributes.email.exist', nil, 'errors.messages.not_saved.one', nil
+      it_behaves_like 'ToMsg', Hash, 2, 'activerecord.errors.models.user.attributes.email.taken', nil, 'errors.messages.not_saved.one', nil
     end
     shared_examples_for '[削除予約済み]無効なパラメータ' do
       let(:attributes) { invalid_attributes.merge(password_confirmation: invalid_attributes[:password], current_password: user.password) }
@@ -498,9 +480,23 @@ RSpec.describe 'Users::Auth::Registrations', type: :request do
       # it_behaves_like 'ToMsg', NilClass, 0, nil, nil, nil, nil
       it_behaves_like 'ToMsg', NilClass, 0, nil, nil, 'alert.user.destroy_reserved', nil
     end
+    shared_examples_for '[APIログイン中]現在のパスワードがない' do
+      let(:attributes) { valid_attributes.merge(password_confirmation: valid_attributes[:password], current_password: nil) }
+      it_behaves_like 'NG'
+      # it_behaves_like 'ToNG', 422, 'error', nil
+      it_behaves_like 'ToNG', 422, nil, false
+      # it_behaves_like 'ToMsg', Hash, 2, 'activerecord.errors.models.user.attributes.current_password.blank', nil, nil, nil
+      it_behaves_like 'ToMsg', Hash, 2, 'activerecord.errors.models.user.attributes.current_password.blank', nil, 'errors.messages.not_saved.one', nil
+    end
+    shared_examples_for '[削除予約済み]現在のパスワードがない' do
+      let(:attributes) { valid_attributes.merge(password_confirmation: valid_attributes[:password], current_password: nil) }
+      it_behaves_like 'NG'
+      it_behaves_like 'ToNG', 422, nil, false
+      it_behaves_like 'ToMsg', NilClass, 0, nil, nil, 'alert.user.destroy_reserved', nil
+    end
     shared_examples_for '[未ログイン/ログイン中]URLがない' do
       let(:attributes) { invalid_nil_attributes.merge(password_confirmation: invalid_nil_attributes[:password]) }
-      # it_behaves_like 'NG' # Tips: 未ログインの為、対象がない
+      # it_behaves_like 'NG' # NOTE: 未ログインの為、対象がない
       # it_behaves_like 'ToNG', 404, 'error', false
       it_behaves_like 'ToNG', 401, nil, false
       # it_behaves_like 'ToMsg', Array, 1, 'devise_token_auth.registrations.user_not_found', nil, nil, nil
@@ -526,7 +522,7 @@ RSpec.describe 'Users::Auth::Registrations', type: :request do
     end
     shared_examples_for '[未ログイン/ログイン中]URLがホワイトリストにない' do
       let(:attributes) { invalid_bad_attributes.merge(password_confirmation: invalid_bad_attributes[:password]) }
-      # it_behaves_like 'NG' # Tips: 未ログインの為、対象がない
+      # it_behaves_like 'NG' # NOTE: 未ログインの為、対象がない
       # it_behaves_like 'ToNG', 404, 'error', false
       it_behaves_like 'ToNG', 401, nil, false
       # it_behaves_like 'ToMsg', Array, 1, 'devise_token_auth.registrations.user_not_found', nil, nil, nil
@@ -551,47 +547,47 @@ RSpec.describe 'Users::Auth::Registrations', type: :request do
       it_behaves_like 'ToMsg', NilClass, 0, nil, nil, 'alert.user.destroy_reserved', nil
     end
 
-    context '未ログイン' do
-      include_context '未ログイン処理'
+    shared_examples_for '[未ログイン/ログイン中]' do
       it_behaves_like '[未ログイン/ログイン中]パラメータなし'
-      # it_behaves_like '[未ログイン/ログイン中]有効なパラメータ（変更なし）' # Tips: 未ログインの為、対象がない
+      # it_behaves_like '[未ログイン/ログイン中]有効なパラメータ（変更なし）' # NOTE: 未ログインの為、対象がない
       it_behaves_like '[未ログイン/ログイン中]有効なパラメータ（変更あり）'
       it_behaves_like '[未ログイン/ログイン中]無効なパラメータ'
+      # it_behaves_like '[未ログイン/ログイン中]現在のパスワードがない' # NOTE: 未ログインの為、対象がない
       it_behaves_like '[未ログイン/ログイン中]URLがない'
       it_behaves_like '[未ログイン/ログイン中]URLがホワイトリストにない'
+    end
+
+    context '未ログイン' do
+      include_context '未ログイン処理'
+      it_behaves_like '[未ログイン/ログイン中]'
     end
     context 'ログイン中' do
       include_context 'ログイン処理'
-      it_behaves_like '[未ログイン/ログイン中]パラメータなし'
-      # it_behaves_like '[未ログイン/ログイン中]有効なパラメータ（変更なし）' # Tips: 未ログインの為、対象がない
-      it_behaves_like '[未ログイン/ログイン中]有効なパラメータ（変更あり）'
-      it_behaves_like '[未ログイン/ログイン中]無効なパラメータ'
-      it_behaves_like '[未ログイン/ログイン中]URLがない'
-      it_behaves_like '[未ログイン/ログイン中]URLがホワイトリストにない'
+      it_behaves_like '[未ログイン/ログイン中]'
     end
     context 'APIログイン中' do
-      include_context 'APIログイン処理', :user, true
+      include_context 'APIログイン処理', nil, true
       it_behaves_like '[APIログイン中/削除予約済み]パラメータなし'
       it_behaves_like '[APIログイン中]有効なパラメータ（変更なし）'
       it_behaves_like '[APIログイン中]有効なパラメータ（変更あり）'
       it_behaves_like '[APIログイン中]無効なパラメータ'
+      it_behaves_like '[APIログイン中]現在のパスワードがない'
       it_behaves_like '[APIログイン中]URLがない'
       it_behaves_like '[APIログイン中]URLがホワイトリストにない'
     end
     context 'APIログイン中（削除予約済み）' do
-      include_context 'APIログイン処理', :user_destroy_reserved, true
+      include_context 'APIログイン処理', :destroy_reserved, true
       it_behaves_like '[APIログイン中/削除予約済み]パラメータなし'
       it_behaves_like '[削除予約済み]有効なパラメータ（変更なし）'
       it_behaves_like '[削除予約済み]有効なパラメータ（変更あり）'
       it_behaves_like '[削除予約済み]無効なパラメータ'
+      it_behaves_like '[削除予約済み]現在のパスワードがない'
       it_behaves_like '[削除予約済み]URLがない'
       it_behaves_like '[削除予約済み]URLがホワイトリストにない'
     end
   end
 
-  # POST /users/auth/image/update(.json) 画像変更API(処理)
-  # 前提条件
-  #   なし
+  # POST /users/auth/image/update(.json) ユーザー画像変更API(処理)
   # テストパターン
   #   未ログイン, ログイン中, APIログイン中, APIログイン中（削除予約済み）
   #   有効なパラメータ, 無効なパラメータ
@@ -642,22 +638,22 @@ RSpec.describe 'Users::Auth::Registrations', type: :request do
     end
 
     shared_examples_for 'ToOK' do
+      it_behaves_like 'ToNG(html/html)', 406
+      it_behaves_like 'ToNG(html/json)', 406
+      it_behaves_like 'ToNG(json/html)', 406
       it_behaves_like 'ToOK(json/json)'
-      it_behaves_like 'To406(json/html)'
-      it_behaves_like 'To406(html/json)'
-      it_behaves_like 'To406(html/html)'
     end
     shared_examples_for 'ToNG' do |code|
+      it_behaves_like 'ToNG(html/html)', 406
+      it_behaves_like 'ToNG(html/json)', 406
+      it_behaves_like 'ToNG(json/html)', 406
       it_behaves_like 'ToNG(json/json)', code
-      it_behaves_like 'To406(json/html)'
-      it_behaves_like 'To406(html/json)'
-      it_behaves_like 'To406(html/html)'
     end
 
     # テストケース
     shared_examples_for '[未ログイン/ログイン中]有効なパラメータ' do
       let(:attributes) { valid_attributes }
-      # it_behaves_like 'NG' # Tips: 未ログインの為、対象がない
+      # it_behaves_like 'NG' # NOTE: 未ログインの為、対象がない
       it_behaves_like 'ToNG', 401
       it_behaves_like 'ToMsg', NilClass, 0, nil, nil, 'devise.failure.unauthenticated', nil
     end
@@ -666,10 +662,6 @@ RSpec.describe 'Users::Auth::Registrations', type: :request do
       it_behaves_like 'OK'
       it_behaves_like 'ToOK'
       it_behaves_like 'ToMsg', NilClass, 0, nil, nil, nil, 'notice.user.image_update'
-      after do
-        current_user.remove_image!
-        current_user.save!
-      end
     end
     shared_examples_for '[削除予約済み]有効なパラメータ' do
       let(:attributes) { valid_attributes }
@@ -679,7 +671,7 @@ RSpec.describe 'Users::Auth::Registrations', type: :request do
     end
     shared_examples_for '[未ログイン/ログイン中]無効なパラメータ' do
       let(:attributes) { invalid_attributes }
-      # it_behaves_like 'NG' # Tips: 未ログインの為、対象がない
+      # it_behaves_like 'NG' # NOTE: 未ログインの為、対象がない
       it_behaves_like 'ToNG', 401
       it_behaves_like 'ToMsg', NilClass, 0, nil, nil, 'devise.failure.unauthenticated', nil
     end
@@ -687,7 +679,7 @@ RSpec.describe 'Users::Auth::Registrations', type: :request do
       let(:attributes) { invalid_attributes }
       it_behaves_like 'NG'
       it_behaves_like 'ToNG', 422
-      it_behaves_like 'ToMsg', Hash, 2, 'errors.messages.image_update_blank', nil, 'errors.messages.not_saved.one', nil
+      it_behaves_like 'ToMsg', Hash, 2, 'activerecord.errors.models.user.attributes.image.blank', nil, 'errors.messages.not_saved.one', nil
     end
     shared_examples_for '[削除予約済み]無効なパラメータ' do
       let(:attributes) { invalid_attributes }
@@ -712,15 +704,13 @@ RSpec.describe 'Users::Auth::Registrations', type: :request do
       it_behaves_like '[APIログイン中]無効なパラメータ'
     end
     context 'APIログイン中（削除予約済み）' do
-      include_context 'APIログイン処理', :user_destroy_reserved
+      include_context 'APIログイン処理', :destroy_reserved
       it_behaves_like '[削除予約済み]有効なパラメータ'
       it_behaves_like '[削除予約済み]無効なパラメータ'
     end
   end
 
-  # POST /users/auth/image/delete(.json) 画像削除API(処理)
-  # 前提条件
-  #   なし
+  # POST /users/auth/image/delete(.json) ユーザー画像削除API(処理)
   # テストパターン
   #   未ログイン, ログイン中, APIログイン中, APIログイン中（削除予約済み）
   #   ＋URLの拡張子: .json, ない
@@ -768,39 +758,39 @@ RSpec.describe 'Users::Auth::Registrations', type: :request do
     end
 
     shared_examples_for 'ToOK' do
+      it_behaves_like 'ToNG(html/html)', 406
+      it_behaves_like 'ToNG(html/json)', 406
+      it_behaves_like 'ToNG(json/html)', 406
       it_behaves_like 'ToOK(json/json)'
-      it_behaves_like 'To406(json/html)'
-      it_behaves_like 'To406(html/json)'
-      it_behaves_like 'To406(html/html)'
     end
     shared_examples_for 'ToNG' do |code|
+      it_behaves_like 'ToNG(html/html)', 406
+      it_behaves_like 'ToNG(html/json)', 406
+      it_behaves_like 'ToNG(json/html)', 406
       it_behaves_like 'ToNG(json/json)', code
-      it_behaves_like 'To406(json/html)'
-      it_behaves_like 'To406(html/json)'
-      it_behaves_like 'To406(html/html)'
     end
 
     # テストケース
     context '未ログイン' do
       include_context '未ログイン処理'
-      # it_behaves_like 'NG' # Tips: 未ログインの為、対象がない
+      # it_behaves_like 'NG' # NOTE: 未ログインの為、対象がない
       it_behaves_like 'ToNG', 401
       it_behaves_like 'ToMsg', NilClass, 0, nil, nil, 'devise.failure.unauthenticated', nil
     end
     context 'ログイン中' do
-      include_context 'ログイン処理', :user, true
+      include_context 'ログイン処理', nil, true
       it_behaves_like 'NG'
       it_behaves_like 'ToNG', 401
       it_behaves_like 'ToMsg', NilClass, 0, nil, nil, 'devise.failure.unauthenticated', nil
     end
     context 'APIログイン中' do
-      include_context 'APIログイン処理', :user, true
+      include_context 'APIログイン処理', nil, true
       it_behaves_like 'OK'
       it_behaves_like 'ToOK'
       it_behaves_like 'ToMsg', NilClass, 0, nil, nil, nil, 'notice.user.image_destroy'
     end
     context 'APIログイン中（削除予約済み）' do
-      include_context 'APIログイン処理', :user_destroy_reserved, true
+      include_context 'APIログイン処理', :destroy_reserved, true
       it_behaves_like 'NG'
       it_behaves_like 'ToNG', 422
       it_behaves_like 'ToMsg', NilClass, 0, nil, nil, 'alert.user.destroy_reserved', nil
@@ -808,8 +798,6 @@ RSpec.describe 'Users::Auth::Registrations', type: :request do
   end
 
   # POST /users/auth/delete(.json) アカウント削除API(処理)
-  # 前提条件
-  #   なし
   # テストパターン
   #   未ログイン, ログイン中, APIログイン中, APIログイン中（削除予約済み）
   #   パラメータなし, 有効なパラメータ, URLがない, URLがホワイトリストにない
@@ -831,11 +819,11 @@ RSpec.describe 'Users::Auth::Registrations', type: :request do
       #   expect { subject }.to change(User, :count).by(-1)
       # end
       let!(:start_time) { Time.current.floor }
-      it "削除依頼日時が現在日時に、削除予定日時が#{Settings['destroy_schedule_days']}日後に変更される。メールが送信される" do
+      it "削除依頼日時が現在日時に、削除予定日時が#{Settings['user_destroy_schedule_days']}日後に変更される。メールが送信される" do
         subject
         expect(current_user.destroy_requested_at).to be_between(start_time, Time.current)
-        expect(current_user.destroy_schedule_at).to be_between(start_time + Settings['destroy_schedule_days'].days,
-                                                               Time.current + Settings['destroy_schedule_days'].days)
+        expect(current_user.destroy_schedule_at).to be_between(start_time + Settings['user_destroy_schedule_days'].days,
+                                                               Time.current + Settings['user_destroy_schedule_days'].days)
         expect(ActionMailer::Base.deliveries.count).to eq(1)
         expect(ActionMailer::Base.deliveries[0].subject).to eq(get_subject('mailer.user.destroy_reserved.subject')) # アカウント削除受け付けのお知らせ
         expect(ActionMailer::Base.deliveries[0].html_part.body).to include(attributes[:undo_delete_url])
@@ -848,12 +836,10 @@ RSpec.describe 'Users::Auth::Registrations', type: :request do
       # it '削除されない' do
       #   expect { subject }.to change(User, :count).by(0)
       # end
-      let!(:before_destroy_requested_at) { user.destroy_requested_at }
-      let!(:before_destroy_schedule_at)  { user.destroy_schedule_at }
       it '削除依頼日時・削除予定日時が変更されない。メールが送信されない' do
         subject
-        expect(current_user.destroy_requested_at).to eq(before_destroy_requested_at)
-        expect(current_user.destroy_schedule_at).to eq(before_destroy_schedule_at)
+        expect(current_user.destroy_requested_at).to eq(user.destroy_requested_at)
+        expect(current_user.destroy_schedule_at).to eq(user.destroy_schedule_at)
         expect(ActionMailer::Base.deliveries.count).to eq(0)
       end
     end
@@ -863,7 +849,6 @@ RSpec.describe 'Users::Auth::Registrations', type: :request do
       let(:accept_headers) { ACCEPT_INC_JSON }
       it 'HTTPステータスが200。対象項目が一致する。認証ヘッダがない' do
         is_expected.to eq(200)
-        # response_json = JSON.parse(response.body)
         # expect(response_json['status']).to eq(status) # 方針: 廃止して、successに統一
         # expect(response_json['success']).to eq(success)
         # expect(response_json['data']).to be_nil
@@ -876,7 +861,6 @@ RSpec.describe 'Users::Auth::Registrations', type: :request do
       let(:accept_headers) { ACCEPT_INC_JSON }
       it "HTTPステータスが#{code}。対象項目が一致する。認証ヘッダがない" do
         is_expected.to eq(code) # 方針(優先順): 401: 未ログイン, 422: 無効なパラメータ・状態
-        # response_json = JSON.parse(response.body)
         # expect(response_json['status']).to eq(status) # 方針: 廃止して、successに統一
         # expect(response_json['success']).to eq(success)
         # expect(response_json['data']).to be_nil
@@ -886,22 +870,22 @@ RSpec.describe 'Users::Auth::Registrations', type: :request do
     end
 
     shared_examples_for 'ToOK' do # |status, success|
+      it_behaves_like 'ToNG(html/html)', 406
+      it_behaves_like 'ToNG(html/json)', 406
+      it_behaves_like 'ToNG(json/html)', 406
       it_behaves_like 'ToOK(json/json)' # , status, success
-      it_behaves_like 'To406(json/html)'
-      it_behaves_like 'To406(html/json)'
-      it_behaves_like 'To406(html/html)'
     end
     shared_examples_for 'ToNG' do |code| # , status, success|
+      it_behaves_like 'ToNG(html/html)', 406
+      it_behaves_like 'ToNG(html/json)', 406
+      it_behaves_like 'ToNG(json/html)', 406
       it_behaves_like 'ToNG(json/json)', code # , status, success
-      it_behaves_like 'To406(json/html)'
-      it_behaves_like 'To406(html/json)'
-      it_behaves_like 'To406(html/html)'
     end
 
     # テストケース
     shared_examples_for '[未ログイン/ログイン中]パラメータなし' do
       let(:attributes) { nil }
-      # it_behaves_like 'NG' # Tips: 未ログインの為、対象がない
+      # it_behaves_like 'NG' # NOTE: 未ログインの為、対象がない
       # it_behaves_like 'ToNG', 404, 'error', false
       it_behaves_like 'ToNG', 401, nil, false
       # it_behaves_like 'ToMsg', NilClass, 0, 'devise_token_auth.registrations.account_to_destroy_not_found', nil, nil, nil
@@ -909,7 +893,7 @@ RSpec.describe 'Users::Auth::Registrations', type: :request do
     end
     shared_examples_for '[未ログイン/ログイン中]有効なパラメータ' do
       let(:attributes) { valid_attributes }
-      # it_behaves_like 'NG' # Tips: 未ログインの為、対象がない
+      # it_behaves_like 'NG' # NOTE: 未ログインの為、対象がない
       # it_behaves_like 'ToNG', 404, 'error', false
       it_behaves_like 'ToNG', 401, nil, false
       # it_behaves_like 'ToMsg', NilClass, 0, 'devise_token_auth.registrations.account_to_destroy_not_found', nil, nil, nil
@@ -917,7 +901,7 @@ RSpec.describe 'Users::Auth::Registrations', type: :request do
     end
     shared_examples_for '[未ログイン/ログイン中]URLがない' do
       let(:attributes) { invalid_nil_attributes }
-      # it_behaves_like 'NG' # Tips: 未ログインの為、対象がない
+      # it_behaves_like 'NG' # NOTE: 未ログインの為、対象がない
       # it_behaves_like 'ToNG', 404, 'error', false
       it_behaves_like 'ToNG', 401, nil, false
       # it_behaves_like 'ToMsg', NilClass, 0, 'devise_token_auth.registrations.account_to_destroy_not_found', nil, nil, nil
@@ -925,7 +909,7 @@ RSpec.describe 'Users::Auth::Registrations', type: :request do
     end
     shared_examples_for '[未ログイン/ログイン中]URLがホワイトリストにない' do
       let(:attributes) { invalid_bad_attributes }
-      # it_behaves_like 'NG' # Tips: 未ログインの為、対象がない
+      # it_behaves_like 'NG' # NOTE: 未ログインの為、対象がない
       # it_behaves_like 'ToNG', 404, 'error', false
       it_behaves_like 'ToNG', 401, nil, false
       # it_behaves_like 'ToMsg', NilClass, 0, 'devise_token_auth.registrations.account_to_destroy_not_found', nil, nil, nil
@@ -1003,19 +987,20 @@ RSpec.describe 'Users::Auth::Registrations', type: :request do
       it_behaves_like 'ToMsg', NilClass, 0, nil, nil, 'alert.user.destroy_reserved', nil
     end
 
-    context '未ログイン' do
-      include_context '未ログイン処理'
+    shared_examples_for '[未ログイン/ログイン中]' do
       it_behaves_like '[未ログイン/ログイン中]パラメータなし'
       it_behaves_like '[未ログイン/ログイン中]有効なパラメータ'
       it_behaves_like '[未ログイン/ログイン中]URLがない'
       it_behaves_like '[未ログイン/ログイン中]URLがホワイトリストにない'
     end
+
+    context '未ログイン' do
+      include_context '未ログイン処理'
+      it_behaves_like '[未ログイン/ログイン中]'
+    end
     context 'ログイン中' do
       include_context 'ログイン処理'
-      it_behaves_like '[未ログイン/ログイン中]パラメータなし'
-      it_behaves_like '[未ログイン/ログイン中]有効なパラメータ'
-      it_behaves_like '[未ログイン/ログイン中]URLがない'
-      it_behaves_like '[未ログイン/ログイン中]URLがホワイトリストにない'
+      it_behaves_like '[未ログイン/ログイン中]'
     end
     context 'APIログイン中' do
       include_context 'APIログイン処理'
@@ -1025,7 +1010,7 @@ RSpec.describe 'Users::Auth::Registrations', type: :request do
       it_behaves_like '[APIログイン中]URLがホワイトリストにない'
     end
     context 'APIログイン中（削除予約済み）' do
-      include_context 'APIログイン処理', :user_destroy_reserved
+      include_context 'APIログイン処理', :destroy_reserved
       it_behaves_like '[削除予約済み]パラメータなし'
       it_behaves_like '[削除予約済み]有効なパラメータ'
       it_behaves_like '[削除予約済み]URLがない'
@@ -1034,14 +1019,12 @@ RSpec.describe 'Users::Auth::Registrations', type: :request do
   end
 
   # POST /users/auth/undo_delete(.json) アカウント削除取り消しAPI(処理)
-  # 前提条件
-  #   なし
   # テストパターン
   #   未ログイン, ログイン中, APIログイン中, APIログイン中（削除予約済み）
   #   ＋URLの拡張子: .json, ない
   #   ＋Acceptヘッダ: JSONが含まれる, JSONが含まれない
   describe 'POST #undo_destroy' do
-    subject { post destroy_undo_user_auth_registration_path(format: subject_format), headers: auth_headers.merge(accept_headers) }
+    subject { post undo_destroy_user_auth_registration_path(format: subject_format), headers: auth_headers.merge(accept_headers) }
     include_context 'Authテスト内容'
     let(:current_user) { User.find(user.id) }
 
@@ -1088,22 +1071,22 @@ RSpec.describe 'Users::Auth::Registrations', type: :request do
     end
 
     shared_examples_for 'ToOK' do
+      it_behaves_like 'ToNG(html/html)', 406
+      it_behaves_like 'ToNG(html/json)', 406
+      it_behaves_like 'ToNG(json/html)', 406
       it_behaves_like 'ToOK(json/json)'
-      it_behaves_like 'To406(json/html)'
-      it_behaves_like 'To406(html/json)'
-      it_behaves_like 'To406(html/html)'
     end
     shared_examples_for 'ToNG' do |code|
+      it_behaves_like 'ToNG(html/html)', 406
+      it_behaves_like 'ToNG(html/json)', 406
+      it_behaves_like 'ToNG(json/html)', 406
       it_behaves_like 'ToNG(json/json)', code
-      it_behaves_like 'To406(json/html)'
-      it_behaves_like 'To406(html/json)'
-      it_behaves_like 'To406(html/html)'
     end
 
     # テストケース
     context '未ログイン' do
       include_context '未ログイン処理'
-      # it_behaves_like 'NG' # Tips: 未ログインの為、対象がない
+      # it_behaves_like 'NG' # NOTE: 未ログインの為、対象がない
       it_behaves_like 'ToNG', 401
       it_behaves_like 'ToMsg', NilClass, 0, nil, nil, 'devise.failure.unauthenticated', nil
     end
@@ -1120,7 +1103,7 @@ RSpec.describe 'Users::Auth::Registrations', type: :request do
       it_behaves_like 'ToMsg', NilClass, 0, nil, nil, 'alert.user.not_destroy_reserved', nil
     end
     context 'APIログイン中（削除予約済み）' do
-      include_context 'APIログイン処理', :user_destroy_reserved
+      include_context 'APIログイン処理', :destroy_reserved
       it_behaves_like 'OK'
       it_behaves_like 'ToOK'
       it_behaves_like 'ToMsg', NilClass, 0, nil, nil, nil, 'devise.registrations.undo_destroy_reserved'

@@ -1,17 +1,17 @@
 <% validate_enabled = resource.errors.any? %>
-<%= form_for(resource, as: resource_name, url: update_admin_user_password_path(reset_password_token: params[:reset_password_token]), html: { method: :post, novalidate: true }, local: true) do |form| %>
+<%= form_with(model: resource, url: update_admin_user_password_path(reset_password_token: params[:reset_password_token]), html: { method: :put, novalidate: true, autocomplete: 'off' }, local: true) do |form| %>
   <%= form.hidden_field :reset_password_token %>
 
   <div class="form-outline<%= input_size_class_name(resource, :password) %>">
     <%= form.password_field :password, autocomplete: 'new-password', class: "form-control#{validate_class_name(validate_enabled, resource, :password, :password_confirmation)}" %>
-    <%= form.label "新しいパスワード#{" [#{@minimum_password_length}文字以上]" if @minimum_password_length}", class: 'form-label', for: 'admin_user_password' %>
-    <%= render 'admin_users/shared/field_error_messages', messages: resource.errors[:password] %>
+    <%= form.label :password, "新しいパスワード#{" [#{@minimum_password_length}文字以上]" if @minimum_password_length}", class: 'form-label', for: 'admin_user_password' %>
+    <%= render './admin_users/shared/field_error_messages', messages: resource.errors[:password] %>
   </div>
 
   <div class="form-outline<%= input_size_class_name(resource, :password_confirmation) %>">
     <%= form.password_field :password_confirmation, autocomplete: 'new-password', class: "form-control#{validate_class_name(validate_enabled, resource, :password_confirmation, :password)}" %>
-    <%= form.label '新しいパスワード(確認)', class: 'form-label', for: 'admin_user_password_confirmation' %>
-    <%= render 'admin_users/shared/field_error_messages', messages: resource.errors[:password_confirmation] %>
+    <%= form.label :password_confirmation, '新しいパスワード(確認)', class: 'form-label', for: 'admin_user_password_confirmation' %>
+    <%= render './admin_users/shared/field_error_messages', messages: resource.errors[:password_confirmation] %>
   </div>
 
   <%= form.submit '変更', class: 'btn btn-primary' %>

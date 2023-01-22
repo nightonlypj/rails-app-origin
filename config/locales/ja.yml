@@ -7,7 +7,7 @@ ja:
       infomation: 'お知らせ'
     attributes:
       infomation:
-        id: 'お知らせID'
+        id: 'ID'
         label: 'ラベル'
         title: 'タイトル'
         summary: '概要'
@@ -23,28 +23,29 @@ ja:
   enums:
     infomation:
       label:
-        Not: ''
-        Hindrance: '障害'
-        Maintenance: 'メンテナンス'
-        Other: 'その他'
+        not: ''
+        maintenance: 'メンテナンス'
+        hindrance: '障害'
+        other: 'その他'
       target:
-        All: '全員'
-        User: '対象ユーザーのみ'
+        all: '全員'
+        user: '対象ユーザーのみ'
   notice:
     user:
       image_update: '画像を変更しました。'
       image_destroy: '画像を削除しました。'
   alert:
+    page:
+      notfound: 'ページが見つかりません。'
     user:
       destroy_reserved: 'アカウント削除予定の為、この操作はできません。'
-      not_destroy_reserved: '既に取り消し済みか、アカウント削除していません。'
+      not_destroy_reserved: '既に取り消し済みか、アカウント削除されていません。'
       destroy:
         params_blank: 'パラメータが指定されていません。'
         undo_delete_url_blank: 'undo_delete_urlが指定されていません。'
         undo_delete_url_not_allowed: 'undo_delete_urlが指定されていません。'
   errors:
     messages:
-      image_update_blank: '選択してください。'
       infomation:
         ended: '掲載期間が終了しました。'
   mailer:

@@ -1,4 +1,7 @@
+<% content_for(:html_title) { (@infomation.label_i18n.present? ? "[#{@infomation.label_i18n}]" : '') + @infomation.title } %>
+
 <div class="card card-body mb-2">
+  <%# タイトル %>
   <h5 class="card-title mb-3">
     <%= render 'label', infomation: @infomation %>
     <span class="fw-bolder">
@@ -8,6 +11,7 @@
       (<%= l(@infomation.started_at.to_date) %>)
     </span>
   </h5>
+  <%# 本文, サマリー %>
   <div class="card-text mb-3">
 <% if @infomation.body.present? %>
     <%= @infomation.body.html_safe %>

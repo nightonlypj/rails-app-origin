@@ -36,6 +36,7 @@ $ cd rails-app-origin
 
 $ docker-compose build
 $ docker-compose up
+（DBのみ起動 $ docker-compose up db）
 または $ docker-compose up --build
 ```
 ※終了は、Ctrl+C
@@ -139,8 +140,10 @@ rvm 1.29.12 (latest) by Michal Papis, Piotr Kuczynski, Wayne E. Seguin [https://
 ```
 ```
 $ rvm list known
+（$ rvm list）
 [ruby-]3[.0.0]
 $ rvm install 3.0
+（$ rvm --default use 3.0）
 
 $ ruby -v
 ruby 3.0.0p0 (2020-12-25 revision 95aff21468) [arm64-darwin20]

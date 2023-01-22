@@ -17,9 +17,9 @@ RSpec.describe AdminUsers::SessionsController, type: :routing do
       # expect(get: '/admin_users/sign_out').to route_to('admin_users/sessions#destroy')
       expect(delete: '/admin_users/sign_out').not_to be_routable
       expect(get: '/admin_users/sign_out').not_to be_routable
-      expect(get: '/admin/sign_out').to route_to('admin_users/sessions#destroy') # Tips: URL直アクセス対応
+      expect(get: '/admin/sign_out').to route_to('admin_users/sessions#destroy') # NOTE: URL直アクセス対応
       expect(post: '/admin/sign_out').to route_to('admin_users/sessions#destroy')
-      expect(delete: '/admin/sign_out').to route_to('admin_users/sessions#destroy') # Tips: RailsAdmin用
+      expect(delete: '/admin/sign_out').to route_to('admin_users/sessions#destroy') # NOTE: RailsAdmin用
     end
   end
 end

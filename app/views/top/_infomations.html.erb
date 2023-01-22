@@ -3,7 +3,7 @@
   <div class="card-text">
 <% @infomations.each do |infomation| %>
     <article class="mb-1">
-      <%= render 'infomations/label', infomation: infomation %>
+      <%= render './infomations/label', infomation: infomation %>
       <span>
 <% if infomation.body.present? || infomation.summary.present? %>
         <%= link_to infomation.title, infomation_path(infomation) %>

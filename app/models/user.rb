@@ -7,17 +7,17 @@ class User < ApplicationRecord
          :recoverable, :rememberable, :validatable,
          :confirmable, :lockable, :timeoutable, :trackable
   include DeviseTokenAuth::Concerns::User
-  attr_accessor :redirect_url # Tips: /users/auth/{update,sign_in}で使用
+  attr_accessor :redirect_url, :cache_infomation_unread_count # NOTE: redirect_urlは/users/auth/{update,sign_in}で使用
 
   mount_uploader :image, ImageUploader
-  has_many :infomation, dependent: :destroy
+  has_many :infomations, dependent: :destroy
 
   validates :code, presence: true
   validates :code, uniqueness: { case_sensitive: true }
   validates :name, presence: true
   validates :name, length: { in: Settings['user_name_minimum']..Settings['user_name_maximum'] }, if: proc { |user| user.name.present? }
 
-  scope :by_destroy_reserved, -> { where('destroy_schedule_at <= ?', Time.current) }
+  scope :destroy_target, -> { where(destroy_schedule_at: ..Time.current) }
 
   # 削除予約済みか返却
   def destroy_reserved?
@@ -26,7 +26,7 @@ class User < ApplicationRecord
 
   # 削除予約
   def set_destroy_reserve
-    update!(destroy_requested_at: Time.current, destroy_schedule_at: Time.current + Settings['destroy_schedule_days'].days)
+    update!(destroy_requested_at: Time.current, destroy_schedule_at: Time.current + Settings['user_destroy_schedule_days'].days)
   end
 
   # 削除予約取り消し
@@ -55,6 +55,9 @@ class User < ApplicationRecord
 
   # お知らせの未読数を返却
   def infomation_unread_count
-    Infomation.by_target(self).by_unread(infomation_check_last_started_at).count
+    return @cache_infomation_unread_count if @cache_infomation_unread_count.present?
+
+    @cache_infomation_unread_count = Infomation.by_target(self).by_unread(infomation_check_last_started_at).count
+    @cache_infomation_unread_count
   end
 end
