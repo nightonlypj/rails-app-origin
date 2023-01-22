@@ -72,7 +72,7 @@ RSpec.describe :invitation, type: :task do
       it '削除される（ユーザー・スペース除く）' do
         task.invoke(dry_run)
         expect(Invitation.count).to eq(before_invitation_count - invitations.count)
-        expect(Invitation.where(id: invitations).exists?).to eq(false)
+        expect(Invitation.exists?(id: invitations)).to eq(false)
         expect(User.count).to eq(before_user_count)
         expect(Space.count).to eq(before_space_count)
       end

@@ -67,17 +67,19 @@ RSpec.describe 'Members', type: :request do
     # テストケース
     shared_examples_for '[ログイン中][*][ある][他人]パラメータなし' do
       let(:attributes) { nil }
+      message = get_locale('activerecord.errors.models.member.attributes.power.blank')
       it_behaves_like 'NG(html)'
       it_behaves_like 'NG(json)'
-      it_behaves_like 'ToNG(html)', 422, [get_locale('activerecord.errors.models.member.attributes.power.blank')]
+      it_behaves_like 'ToNG(html)', 422, [message]
       it_behaves_like 'ToNG(json)', 401 # NOTE: APIは未ログイン扱い
     end
     shared_examples_for '[APIログイン中][*][ある][他人]パラメータなし' do
       let(:attributes) { nil }
+      message = get_locale('activerecord.errors.models.member.attributes.power.blank')
       it_behaves_like 'NG(html)'
       it_behaves_like 'NG(json)'
-      it_behaves_like 'ToNG(html)', 422, [get_locale('activerecord.errors.models.member.attributes.power.blank')]
-      it_behaves_like 'ToNG(json)', 422, { power: [get_locale('activerecord.errors.models.member.attributes.power.blank')] }
+      it_behaves_like 'ToNG(html)', 422, [message] # NOTE: HTMLもログイン状態になる
+      it_behaves_like 'ToNG(json)', 422, { power: [message] }
     end
     shared_examples_for '[ログイン中][*][ある][他人]有効なパラメータ' do
       let(:attributes) { valid_attributes }
@@ -95,17 +97,19 @@ RSpec.describe 'Members', type: :request do
     end
     shared_examples_for '[ログイン中][*][ある][他人]無効なパラメータ' do
       let(:attributes) { invalid_attributes }
+      message = get_locale('activerecord.errors.models.member.attributes.power.blank')
       it_behaves_like 'NG(html)'
       it_behaves_like 'NG(json)'
-      it_behaves_like 'ToNG(html)', 422, [get_locale('activerecord.errors.models.member.attributes.power.blank')]
+      it_behaves_like 'ToNG(html)', 422, [message]
       it_behaves_like 'ToNG(json)', 401 # NOTE: APIは未ログイン扱い
     end
     shared_examples_for '[APIログイン中][*][ある][他人]無効なパラメータ' do
       let(:attributes) { invalid_attributes }
+      message = get_locale('activerecord.errors.models.member.attributes.power.blank')
       it_behaves_like 'NG(html)'
       it_behaves_like 'NG(json)'
-      it_behaves_like 'ToNG(html)', 422, [get_locale('activerecord.errors.models.member.attributes.power.blank')] # NOTE: HTMLもログイン状態になる
-      it_behaves_like 'ToNG(json)', 422, { power: [get_locale('activerecord.errors.models.member.attributes.power.blank')] }
+      it_behaves_like 'ToNG(html)', 422, [message] # NOTE: HTMLもログイン状態になる
+      it_behaves_like 'ToNG(json)', 422, { power: [message] }
     end
 
     shared_examples_for '[ログイン中][*][ある]対象メンバーがいる（他人）' do

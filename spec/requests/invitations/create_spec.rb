@@ -9,13 +9,16 @@ RSpec.describe 'Invitations', type: :request do
   #   未ログイン, ログイン中, ログイン中（削除予約済み）, APIログイン中, APIログイン中（削除予約済み）
   #   スペース: 存在しない, 公開, 非公開
   #   権限: ある（管理者）, ない（投稿者, 閲覧者, なし）
-  #   パラメータなし, 有効なパラメータ, 無効なパラメータ
+  #   パラメータなし, 有効なパラメータ（ドメイン: 1件, 最大数と同じ）, 無効なパラメータ（ドメイン: ない, 最大数より多い, 不正な形式が含まれる）
   #   ＋URLの拡張子: ない, .json
   #   ＋Acceptヘッダ: HTMLが含まれる, JSONが含まれる
   describe 'POST #create' do
     subject { post create_invitation_path(space_code: space.code, format: subject_format), params: { invitation: attributes }, headers: auth_headers.merge(accept_headers) }
-    let_it_be(:valid_attributes)   { FactoryBot.attributes_for(:invitation, :create) }
-    let_it_be(:invalid_attributes) { valid_attributes.merge(domains: nil) }
+    let_it_be(:valid_attributes)     { FactoryBot.attributes_for(:invitation, :create) }
+    let_it_be(:valid_attributes_max) { FactoryBot.attributes_for(:invitation, :create_max) }
+    let_it_be(:invalid_attributes)        { valid_attributes.merge(domains: nil) }
+    let_it_be(:invalid_attributes_over)   { valid_attributes.merge(domains: "#{valid_attributes_max[:domains]}\n#{valid_attributes[:domains]}") }
+    let_it_be(:invalid_attributes_format) { valid_attributes.merge(domains: "#{valid_attributes[:domains]}\naaa") }
     let(:current_invitation) { Invitation.last }
 
     let_it_be(:space_not)     { FactoryBot.build_stubbed(:space) }
@@ -71,67 +74,116 @@ RSpec.describe 'Invitations', type: :request do
     # テストケース
     shared_examples_for '[ログイン中][*][ある]パラメータなし' do
       let(:attributes) { nil }
+      msg_domains = get_locale('activerecord.errors.models.invitation.attributes.domains.blank')
+      msg_power   = get_locale('activerecord.errors.models.invitation.attributes.power.blank')
       it_behaves_like 'NG(html)'
       it_behaves_like 'NG(json)'
-      it_behaves_like 'ToNG(html)', 422, [
-        get_locale('activerecord.errors.models.invitation.attributes.domains.blank'),
-        get_locale('activerecord.errors.models.invitation.attributes.power.blank')
-      ]
+      it_behaves_like 'ToNG(html)', 422, [msg_domains, msg_power]
       it_behaves_like 'ToNG(json)', 401 # NOTE: APIは未ログイン扱い
     end
     shared_examples_for '[APIログイン中][*][ある]パラメータなし' do
       let(:attributes) { nil }
+      msg_domains = get_locale('activerecord.errors.models.invitation.attributes.domains.blank')
+      msg_power   = get_locale('activerecord.errors.models.invitation.attributes.power.blank')
       it_behaves_like 'NG(html)'
       it_behaves_like 'NG(json)'
-      it_behaves_like 'ToNG(html)', 422, [
-        get_locale('activerecord.errors.models.invitation.attributes.domains.blank'),
-        get_locale('activerecord.errors.models.invitation.attributes.power.blank')
-      ]
-      it_behaves_like 'ToNG(json)', 422, {
-        domains: [get_locale('activerecord.errors.models.invitation.attributes.domains.blank')],
-        power: [get_locale('activerecord.errors.models.invitation.attributes.power.blank')]
-      }
+      it_behaves_like 'ToNG(html)', 422, [msg_domains, msg_power]
+      it_behaves_like 'ToNG(json)', 422, { domains: [msg_domains], power: [msg_power] }
     end
-    shared_examples_for '[ログイン中][*][ある]有効なパラメータ' do
+    shared_examples_for '[ログイン中][*][ある]有効なパラメータ（ドメインが1件）' do
       let(:attributes) { valid_attributes }
       it_behaves_like 'OK(html)'
       it_behaves_like 'NG(json)'
       it_behaves_like 'ToOK(html)'
       it_behaves_like 'ToNG(json)', 401 # NOTE: APIは未ログイン扱い
     end
-    shared_examples_for '[APIログイン中][*][ある]有効なパラメータ' do
+    shared_examples_for '[APIログイン中][*][ある]有効なパラメータ（ドメインが1件）' do
       let(:attributes) { valid_attributes }
       it_behaves_like 'OK(html)'
       it_behaves_like 'OK(json)'
       it_behaves_like 'ToOK(html)' # NOTE: HTMLもログイン状態になる
       it_behaves_like 'ToOK(json)'
     end
-    shared_examples_for '[ログイン中][*][ある]無効なパラメータ' do
-      let(:attributes) { invalid_attributes }
-      it_behaves_like 'NG(html)'
+    shared_examples_for '[ログイン中][*][ある]有効なパラメータ（ドメインが最大数と同じ）' do
+      let(:attributes) { valid_attributes_max }
+      it_behaves_like 'OK(html)'
       it_behaves_like 'NG(json)'
-      it_behaves_like 'ToNG(html)', 422, [get_locale('activerecord.errors.models.invitation.attributes.domains.blank')]
+      it_behaves_like 'ToOK(html)'
       it_behaves_like 'ToNG(json)', 401 # NOTE: APIは未ログイン扱い
     end
-    shared_examples_for '[APIログイン中][*][ある]無効なパラメータ' do
+    shared_examples_for '[APIログイン中][*][ある]有効なパラメータ（ドメインが最大数と同じ）' do
+      let(:attributes) { valid_attributes_max }
+      it_behaves_like 'OK(html)'
+      it_behaves_like 'OK(json)'
+      it_behaves_like 'ToOK(html)' # NOTE: HTMLもログイン状態になる
+      it_behaves_like 'ToOK(json)'
+    end
+    shared_examples_for '[ログイン中][*][ある]無効なパラメータ（ドメインがない）' do
       let(:attributes) { invalid_attributes }
+      message = get_locale('activerecord.errors.models.invitation.attributes.domains.blank')
       it_behaves_like 'NG(html)'
       it_behaves_like 'NG(json)'
-      it_behaves_like 'ToNG(html)', 422, [get_locale('activerecord.errors.models.invitation.attributes.domains.blank')] # NOTE: HTMLもログイン状態になる
-      it_behaves_like 'ToNG(json)', 422, { domains: [get_locale('activerecord.errors.models.invitation.attributes.domains.blank')] }
+      it_behaves_like 'ToNG(html)', 422, [message]
+      it_behaves_like 'ToNG(json)', 401 # NOTE: APIは未ログイン扱い
+    end
+    shared_examples_for '[APIログイン中][*][ある]無効なパラメータ（ドメインがない）' do
+      let(:attributes) { invalid_attributes }
+      message = get_locale('activerecord.errors.models.invitation.attributes.domains.blank')
+      it_behaves_like 'NG(html)'
+      it_behaves_like 'NG(json)'
+      it_behaves_like 'ToNG(html)', 422, [message] # NOTE: HTMLもログイン状態になる
+      it_behaves_like 'ToNG(json)', 422, { domains: [message] }
+    end
+    shared_examples_for '[ログイン中][*][ある]無効なパラメータ（ドメインが最大数より多い）' do
+      let(:attributes) { invalid_attributes_over }
+      message = get_locale('activerecord.errors.models.invitation.attributes.domains.max_count', count: Settings['invitation_domains_max_count'])
+      it_behaves_like 'NG(html)'
+      it_behaves_like 'NG(json)'
+      it_behaves_like 'ToNG(html)', 422, [message]
+      it_behaves_like 'ToNG(json)', 401 # NOTE: APIは未ログイン扱い
+    end
+    shared_examples_for '[APIログイン中][*][ある]無効なパラメータ（ドメインが最大数より多い）' do
+      let(:attributes) { invalid_attributes_over }
+      message = get_locale('activerecord.errors.models.invitation.attributes.domains.max_count', count: Settings['invitation_domains_max_count'])
+      it_behaves_like 'NG(html)'
+      it_behaves_like 'NG(json)'
+      it_behaves_like 'ToNG(html)', 422, [message] # NOTE: HTMLもログイン状態になる
+      it_behaves_like 'ToNG(json)', 422, { domains: [message] }
+    end
+    shared_examples_for '[ログイン中][*][ある]無効なパラメータ（ドメインに不正な形式が含まれる）' do
+      let(:attributes) { invalid_attributes_format }
+      message = get_locale('activerecord.errors.models.invitation.attributes.domains.invalid', domain: 'aaa')
+      it_behaves_like 'NG(html)'
+      it_behaves_like 'NG(json)'
+      it_behaves_like 'ToNG(html)', 422, [message]
+      it_behaves_like 'ToNG(json)', 401 # NOTE: APIは未ログイン扱い
+    end
+    shared_examples_for '[APIログイン中][*][ある]無効なパラメータ（ドメインに不正な形式が含まれる）' do
+      let(:attributes) { invalid_attributes_format }
+      message = get_locale('activerecord.errors.models.invitation.attributes.domains.invalid', domain: 'aaa')
+      it_behaves_like 'NG(html)'
+      it_behaves_like 'NG(json)'
+      it_behaves_like 'ToNG(html)', 422, [message] # NOTE: HTMLもログイン状態になる
+      it_behaves_like 'ToNG(json)', 422, { domains: [message] }
     end
 
     shared_examples_for '[ログイン中][*]権限がある' do |power|
       include_context 'set_member_power', power
       it_behaves_like '[ログイン中][*][ある]パラメータなし'
-      it_behaves_like '[ログイン中][*][ある]有効なパラメータ'
-      it_behaves_like '[ログイン中][*][ある]無効なパラメータ'
+      it_behaves_like '[ログイン中][*][ある]有効なパラメータ（ドメインが1件）'
+      it_behaves_like '[ログイン中][*][ある]有効なパラメータ（ドメインが最大数と同じ）'
+      it_behaves_like '[ログイン中][*][ある]無効なパラメータ（ドメインがない）'
+      it_behaves_like '[ログイン中][*][ある]無効なパラメータ（ドメインが最大数より多い）'
+      it_behaves_like '[ログイン中][*][ある]無効なパラメータ（ドメインに不正な形式が含まれる）'
     end
     shared_examples_for '[APIログイン中][*]権限がある' do |power|
       include_context 'set_member_power', power
       it_behaves_like '[APIログイン中][*][ある]パラメータなし'
-      it_behaves_like '[APIログイン中][*][ある]有効なパラメータ'
-      it_behaves_like '[APIログイン中][*][ある]無効なパラメータ'
+      it_behaves_like '[APIログイン中][*][ある]有効なパラメータ（ドメインが1件）'
+      it_behaves_like '[APIログイン中][*][ある]有効なパラメータ（ドメインが最大数と同じ）'
+      it_behaves_like '[APIログイン中][*][ある]無効なパラメータ（ドメインがない）'
+      it_behaves_like '[APIログイン中][*][ある]無効なパラメータ（ドメインが最大数より多い）'
+      it_behaves_like '[APIログイン中][*][ある]無効なパラメータ（ドメインに不正な形式が含まれる）'
     end
     shared_examples_for '[ログイン中][*]権限がない' do |power|
       include_context 'set_member_power', power

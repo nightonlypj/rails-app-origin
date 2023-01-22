@@ -93,7 +93,7 @@ RSpec.describe Download, type: :model do
 
   # 出力項目
   # テストパターン
-  #   ない, 正常値, 文字列, 文字列（ハッシュ）
+  #   ない, 正常値, 文字列, 文字列（ハッシュ）, 存在しない値を含む
   describe 'validates :output_items' do
     let(:download) { FactoryBot.build_stubbed(:download, output_items: output_items) }
 
@@ -115,6 +115,11 @@ RSpec.describe Download, type: :model do
     context '文字列（ハッシュ）' do
       let(:output_items) { '{"text"=>"aaa"}' }
       let(:messages) { { output_items: [get_locale('activerecord.errors.models.download.attributes.output_items.invalid')] } }
+      it_behaves_like 'InValid'
+    end
+    context '存在しない値を含む' do
+      let(:output_items) { '["user.name", "aaa", "bbb"]' }
+      let(:messages) { { output_items: [get_locale('activerecord.errors.models.download.attributes.output_items.not_exist', key: 'aaa, bbb')] } }
       it_behaves_like 'InValid'
     end
   end

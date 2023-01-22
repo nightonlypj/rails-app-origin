@@ -10,6 +10,10 @@ FactoryBot.define do
     output_items { ['user.name'] }
     association :user
 
+    trait :create_space do
+      association :space
+    end
+
     # ステータス
     trait :waiting do
       # status { :waiting }

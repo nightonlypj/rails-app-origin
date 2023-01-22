@@ -166,12 +166,12 @@ RSpec.describe ApplicationHelper, type: :helper do
       it_behaves_like 'false'
     end
     shared_examples_for '[ある]メンバー一覧' do
-      let(:controller_name) { 'spaces' }
+      let(:controller_name) { 'members' }
       let(:action_name)     { 'show' }
       it_behaves_like 'true'
     end
     shared_examples_for '[ない]メンバー一覧' do
-      let(:controller_name) { 'spaces' }
+      let(:controller_name) { 'members' }
       let(:action_name)     { 'show' }
       it_behaves_like 'false'
     end

@@ -49,7 +49,7 @@ test_invitations:
   deleted_count: 1
   email_joined_count: 1
 # ドメインの最大件数
-# invitation_domains_max_count: 10
+invitation_domains_max_count: 2 # NOTE: 2以上
 # ドメインの最大文字数
 # invitation_domain_maximum: 253
 # メモの最大文字数
@@ -64,7 +64,7 @@ test_members:
   reader_count: 1
 job_members_limit: 2
 # メールアドレスの最大件数
-# member_emails_max_count: 100
+member_emails_max_count: 3 # NOTE: テストパターンに合わせる
 
 ## ダウンロード
 # 一覧のデフォルト最大表示件数

@@ -9,7 +9,14 @@ RSpec.describe DownloadJob, type: :job do
   #   権限: ある（管理者）, ない（投稿者, 閲覧者）, なし
   #   対象/形式/文字コード/改行コード: 選択項目/CSV/Shift_JIS/CR+LF, 検索/CSV/EUC-JP/CR, 全て/TSV/UTF-8/LF
   describe '.perform' do
-    subject { described_class.new.perform(download) }
+    let(:download_job) { described_class.new }
+    subject { download_job.perform(download) }
+    before do # NOTE: let_it_beだと他のテストでセットした値が残る為、初期化
+      download.status = :waiting
+      download.error_message = nil
+      download.completed_at = nil
+    end
+
     let_it_be(:user)  { FactoryBot.create(:user) }
     let_it_be(:space) { FactoryBot.create(:space) }
     let(:current_download)      { Download.find(download.id) }
@@ -45,15 +52,16 @@ RSpec.describe DownloadJob, type: :job do
         expect(current_download_file.body.encode(Encoding::UTF_8)).to eq(result_body) # NOTE: UTF-8に変換して期待値と比較
       end
     end
-    shared_examples_for 'NG' do
-      # let!(:start_time) { Time.current.floor }
-      # it '例外が発生し、対象項目が設定される' do
-      #   subject
-      # rescue StandardError => e
-      #   expect(current_download.status.to_sym).to eq(:failure) # NOTE: Specだとrescue_fromが呼び出されない
-      #   expect(current_download.error_message).to eq(e.message)
-      #   expect(current_download.completed_at).to be_between(start_time, Time.current)
-      # end
+    shared_examples_for 'NG' do |message|
+      let!(:start_time) { Time.current.floor }
+      it '例外が発生し、対象項目が設定される' do
+        subject
+      rescue StandardError => e
+        download_job.status_failure(e) # NOTE: Specだとrescue_fromが呼び出されない為
+        expect(current_download.status.to_sym).to eq(:failure)
+        expect(current_download.error_message).to eq(message)
+        expect(current_download.completed_at).to be_between(start_time, Time.current)
+      end
     end
 
     # テストケース
@@ -82,7 +90,7 @@ RSpec.describe DownloadJob, type: :job do
     end
 
     shared_examples_for '[member][ある]選択項目/CSV/Shift_JIS/CR+LF' do
-      let(:download) do
+      let_it_be(:download) do
         FactoryBot.create(:download, user: user, model: 'member', space: space, output_items: output_items,
                                      target: :select, select_items: [member1.user.code, member2.user.code],
                                      format: :csv, char_code: :sjis, newline_code: :crlf)
@@ -92,7 +100,7 @@ RSpec.describe DownloadJob, type: :job do
       it_behaves_like 'OK'
     end
     shared_examples_for '[member][ある]検索/CSV/EUC-JP/CR' do
-      let(:download) do
+      let_it_be(:download) do
         FactoryBot.create(:download, user: user, model: 'member', space: space, output_items: output_items,
                                      target: :search, search_params: { 'text' => 'aaa' },
                                      format: :csv, char_code: :eucjp, newline_code: :cr)
@@ -102,7 +110,7 @@ RSpec.describe DownloadJob, type: :job do
       it_behaves_like 'OK'
     end
     shared_examples_for '[member][ある]全て/TSV/UTF-8/LF' do
-      let(:download) do
+      let_it_be(:download) do
         FactoryBot.create(:download, user: user, model: 'member', space: space, output_items: output_items,
                                      target: :all,
                                      format: :tsv, char_code: :utf8, newline_code: :lf)
@@ -114,7 +122,7 @@ RSpec.describe DownloadJob, type: :job do
 
     shared_examples_for '[member]権限がある' do |power|
       include_context 'set_member_power', power
-      let(:output_items) { I18n.t('items.member').stringify_keys.keys }
+      let_it_be(:output_items) { I18n.t('items.member').stringify_keys.keys }
       it_behaves_like '[member][ある]選択項目/CSV/Shift_JIS/CR+LF'
       it_behaves_like '[member][ある]検索/CSV/EUC-JP/CR'
       it_behaves_like '[member][ある]全て/TSV/UTF-8/LF'

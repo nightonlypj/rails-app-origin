@@ -44,9 +44,9 @@ RSpec.describe :download, type: :task do
       it '削除される（ユーザー・スペース除く）' do
         task.invoke(dry_run)
         expect(Download.count).to eq(before_download_count - downloads.count)
-        expect(Download.where(id: downloads).exists?).to eq(false)
+        expect(Download.exists?(id: downloads)).to eq(false)
         expect(DownloadFile.count).to eq(before_download_file_count - download_files.count)
-        expect(DownloadFile.where(id: download_files).exists?).to eq(false)
+        expect(DownloadFile.exists?(id: download_files)).to eq(false)
         expect(User.count).to eq(before_user_count)
         expect(Space.count).to eq(before_space_count)
       end

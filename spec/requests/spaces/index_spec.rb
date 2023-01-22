@@ -7,7 +7,7 @@ RSpec.describe 'Spaces', type: :request do
 
   # テスト内容（共通）
   shared_examples_for 'ToOK[名称]' do
-    it 'HTTPステータスが200。対象の名称が含まれる/一致する' do
+    it 'HTTPステータスが200。対象の名称が一致する/含まれる' do
       Settings['default_spaces_limit'] = spaces.count if spaces.count.positive?
       is_expected.to eq(200)
       if subject_format == :json
@@ -16,6 +16,13 @@ RSpec.describe 'Spaces', type: :request do
         spaces.each_with_index do |space, index|
           expect(response_json_spaces[index]['name']).to eq(space.name)
         end
+
+        if Settings['enable_public_space']
+          default_params = { text: nil, public: 1, private: 1, join: 1, nojoin: 1, active: 1, destroy: 0 }
+        else
+          default_params = { text: nil, active: 1, destroy: 0 }
+        end
+        expect(response_json['search_params']).to eq(default_params.merge(params).stringify_keys)
       else
         # HTML
         spaces.each do |space|

@@ -8,7 +8,7 @@ RSpec.describe 'Members', type: :request do
 
   # テスト内容（共通）
   shared_examples_for 'ToOK[氏名]' do
-    it 'HTTPステータスが200。対象の氏名が含まれる/一致する' do
+    it 'HTTPステータスが200。対象の氏名が一致する/含まれる' do
       is_expected.to eq(200)
       if subject_format == :json
         # JSON
@@ -16,6 +16,9 @@ RSpec.describe 'Members', type: :request do
         members.each_with_index do |member, index|
           expect(response_json_members[index]['user']['name']).to eq(member.user.name)
         end
+
+        default_params = { text: nil, power: Member.powers.keys.join(','), sort: 'invitationed_at', desc: 1 }
+        expect(response_json['search_params']).to eq(default_params.merge(params).stringify_keys)
       else
         # HTML
         members.each do |member|
@@ -87,12 +90,8 @@ RSpec.describe 'Members', type: :request do
         expect(response_json_space['destroy_requested_at']).to eq(I18n.l(space.destroy_requested_at, format: :json, default: nil))
         expect(response_json_space['destroy_schedule_at']).to eq(I18n.l(space.destroy_schedule_at, format: :json, default: nil))
 
-        if user_power.present?
-          expect(response_json_space['current_member']['power']).to eq(user_power.to_s)
-          expect(response_json_space['current_member']['power_i18n']).to eq(Member.powers_i18n[user_power])
-        else
-          expect(response_json_space['current_member']).to be_nil
-        end
+        expect(response_json_space['current_member']['power']).to eq(user_power.to_s)
+        expect(response_json_space['current_member']['power_i18n']).to eq(Member.powers_i18n[user_power])
 
         expect(response_json_member['total_count']).to eq(members.count)
         expect(response_json_member['current_page']).to eq(subject_page)
@@ -383,8 +382,8 @@ RSpec.describe 'Members', type: :request do
     before_all { FactoryBot.create(:member, user: FactoryBot.create(:user, name: '氏名(Aaa)')) } # NOTE: 対象外
 
     # テスト内容
-    shared_examples_for 'リスト表示（0件）' do
-      it '存在しないメッセージが含まれる' do
+    shared_examples_for 'ToNG[0件]' do
+      it '0件/存在しないメッセージが含まれる' do
         is_expected.to eq(200)
         if subject_format == :json
           # JSON
@@ -409,7 +408,7 @@ RSpec.describe 'Members', type: :request do
     end
     shared_examples_for '[*]不一致' do
       let(:params) { { text: 'zzz' } }
-      it_behaves_like 'リスト表示（0件）'
+      it_behaves_like 'ToNG[0件]'
     end
 
     shared_examples_for '管理者' do |power|

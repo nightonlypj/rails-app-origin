@@ -14,7 +14,7 @@
     </thead>
     <tbody>
 <% @downloads.each do |download| %>
-      <tr class="align-middle<%= download_lists_class_name(download, params[:id]) %>">
+      <tr class="align-middle<%= download_lists_class_name(download, @target_id) %>">
         <%# 依頼日時 %>
         <td scope="row" class="text-nowrap px-1 py-2">
           <%= l(download.requested_at) %>

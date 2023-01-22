@@ -7,24 +7,15 @@ class DownloadsController < ApplicationAuthController
   # GET /downloads ダウンロード結果一覧
   # GET /downloads(.json) ダウンロード結果一覧API
   def index
-    @downloads = Download.where(user: current_user)
+    @id = params[:id].present? ? params[:id].to_i : nil
+    @downloads = Download.where(user: current_user).search(@id)
                          .page(params[:page]).per(Settings['default_downloads_limit']).order(id: :desc)
 
     if format_html? && @downloads.current_page > [@downloads.total_pages, 1].max
       return redirect_to @downloads.total_pages <= 1 ? downloads_path : downloads_path(page: @downloads.total_pages)
     end
 
-    @download = nil
-    if format_html? && params[:id].present?
-      @downloads.each do |item| # NOTE: 一覧から取得。DBから取得するとstatusが異なる可能性がある為
-        if item.id == params[:id].to_i
-          @download = item
-          break
-        end
-      end
-      @download = Download.where(id: params[:id], user: current_user).first if @download.blank?
-      flash[:notice] = @download.present? && @download.last_downloaded_at.blank? ? t("notice.download.status.#{@download.status}") : nil
-    end
+    set_flash_index
   end
 
   # GET /downloads/file/:id ダウンロード
@@ -66,13 +57,39 @@ class DownloadsController < ApplicationAuthController
 
     DownloadJob.perform_later(@download)
     if format_html?
-      redirect_to downloads_path(id: @download.id)
+      redirect_to downloads_path(target_id: @download.id)
     else
       render locals: { notice: t('notice.download.create') }, status: :created
     end
   end
 
   private
+
+  def set_flash_index
+    @alert = nil
+    @notice = nil
+    @target_id = params[:target_id].present? ? params[:target_id].to_i : nil
+    return if @target_id.blank?
+
+    @download = nil
+    @downloads.each do |item| # NOTE: 一覧から取得。DBから取得するとstatusが異なる可能性がある為
+      if item.id == @target_id
+        @download = item
+        break
+      end
+    end
+
+    @download = Download.where(id: @target_id, user: current_user).first if @download.blank?
+    return if @download.blank? || @download.last_downloaded_at.present?
+
+    if @download.status.to_sym == :failure
+      @alert = t('alert.download.status.failure')
+      flash[:alert] = @alert if format_html?
+    else
+      @notice = t("notice.download.status.#{@download.status}")
+      flash[:notice] = @notice if format_html?
+    end
+  end
 
   # Use callbacks to share common setup or constraints between actions.
   def set_params_new(target_params = params)

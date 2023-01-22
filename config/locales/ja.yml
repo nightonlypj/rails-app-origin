@@ -216,32 +216,13 @@ ja:
         crlf: 'CR+LF'
         lf: 'LF'
         cr: 'CR'
-  notice:
-    user:
-      image_update: '画像を変更しました。'
-      image_destroy: '画像を削除しました。'
-    space:
-      create: 'スペースを作成しました。'
-      update: 'スペース設定を変更しました。'
-      destroy: 'スペースの削除を受け付けました。'
-      undo_destroy: 'スペース削除の取り消しが完了しました。'
-    invitation:
-      create: '招待URLを作成しました。'
-      update: '招待URL設定を変更しました。'
-      copy_success: 'クリップボードにコピーしました。'
-    member:
-      create: 'メンバー招待の処理が完了しました。結果を確認してください。'
-      update: 'メンバー情報を変更しました。'
-      destroy: '%{destroy_count}名のメンバーを解除しました。'
-      destroy_include_notfound: '%{count}名中%{destroy_count}名のメンバーを解除しました。'
-      destroy_include_myself: '%{count}名中%{destroy_count}名のメンバーを解除しました。（自分は解除できません。他の管理者に依頼してください。）'
-    download:
-      create: 'ダウンロードファイルの作成を開始しました。'
-      status:
-        waiting: 'ダウンロードファイルの作成を開始しました。完了まで暫くお待ちください。'
-        processing: 'ダウンロードファイルの作成を開始しました。完了まで暫くお待ちください。'
-        success: 'ダウンロードファイルの作成が完了しました。ダウンロード結果からダウンロードしてください。'
-        failure: 'ダウンロードファイルの作成に失敗しました。お問い合わせ頂くか、やり直してください。'
+  errors:
+    messages:
+      param:
+        blank: '値がありません。'
+        not_exist: '値が存在しません。'
+      infomation:
+        ended: '掲載期間が終了しました。'
   alert:
     page:
       notfound: 'ページが見つかりません。'
@@ -267,13 +248,33 @@ ja:
           notfound: '解除対象が見つかりません。'
     download:
       notfound: 'ファイルが見つかりません。'
-  errors:
-    messages:
-      param:
-        blank: '値がありません。'
-        not_exist: '値が存在しません。'
-      infomation:
-        ended: '掲載期間が終了しました。'
+      status:
+        failure: 'ダウンロードファイルの作成に失敗しました。お問い合わせ頂くか、やり直してください。'
+  notice:
+    user:
+      image_update: '画像を変更しました。'
+      image_destroy: '画像を削除しました。'
+    space:
+      create: 'スペースを作成しました。'
+      update: 'スペース設定を変更しました。'
+      destroy: 'スペースの削除を受け付けました。'
+      undo_destroy: 'スペース削除の取り消しが完了しました。'
+    invitation:
+      create: '招待URLを作成しました。'
+      update: '招待URL設定を変更しました。'
+      copy_success: 'クリップボードにコピーしました。'
+    member:
+      create: 'メンバー招待の処理が完了しました。結果を確認してください。'
+      update: 'メンバー情報を変更しました。'
+      destroy: '%{destroy_count}名のメンバーを解除しました。'
+      destroy_include_notfound: '%{count}名中%{destroy_count}名のメンバーを解除しました。'
+      destroy_include_myself: '%{count}名中%{destroy_count}名のメンバーを解除しました。（自分は解除できません。他の管理者に依頼してください。）'
+    download:
+      create: 'ダウンロードファイルの作成を開始しました。'
+      status:
+        waiting: 'ダウンロードファイルの作成を開始しました。完了まで暫くお待ちください。'
+        processing: 'ダウンロードファイルの作成を開始しました。完了まで暫くお待ちください。'
+        success: 'ダウンロードファイルの作成が完了しました。ダウンロード結果からダウンロードしてください。'
   mailer:
     user:
       destroy_reserved:

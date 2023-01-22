@@ -8,11 +8,22 @@ FactoryBot.define do
     association :created_user, factory: :user
 
     trait :create do
-      domains { "#{Faker::Internet.domain_name}\n#{Faker::Internet.domain_name}" }
+      domains { Faker::Internet.domain_name }
+    end
+    trait :create_max do
+      domains do
+        result = []
+        domain = Faker::Internet.domain_name
+        (1..Settings['invitation_domains_max_count']).each do |index|
+          result.push("#{index}.#{domain}")
+        end
+
+        result.join("\n")
+      end
     end
 
     trait :domains do
-      domains { [Faker::Internet.domain_name, Faker::Internet.domain_name].to_s }
+      # domains { [Faker::Internet.domain_name].to_s }
     end
     trait :email do
       email   { Faker::Internet.safe_email }

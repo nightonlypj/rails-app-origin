@@ -195,11 +195,9 @@ RSpec.describe 'Users::Auth::Registrations', type: :request do
     end
     shared_examples_for '[有効][*][ドメイン]パラメータのドメインが招待に含まれない' do
       let(:attributes) { valid_attributes_domain_diff }
+      message = get_locale('activerecord.errors.models.user.attributes.email.invalid')
       it_behaves_like 'NG'
-      it_behaves_like 'ToNG(json/json)', 422, {
-        email: [get_locale('activerecord.errors.models.user.attributes.email.invalid')],
-        full_messages: ["#{User.human_attribute_name(:email)} #{get_locale('activerecord.errors.models.user.attributes.email.invalid')}"]
-      }
+      it_behaves_like 'ToNG(json/json)', 422, { email: [message], full_messages: ["#{User.human_attribute_name(:email)} #{message}"] }
     end
 
     shared_examples_for '[有効][*]対象がメールアドレス' do
