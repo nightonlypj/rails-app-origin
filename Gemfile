@@ -116,3 +116,7 @@ gem 'enum_help'
 
 # Use Unicorn
 gem 'unicorn'
+
+# Use Exception Notification
+gem 'exception_notification'
+gem 'slack-notifier'

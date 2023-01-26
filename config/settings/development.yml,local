@@ -9,3 +9,14 @@ default_unlock_success_url: ''
 mailer_from:
   name: '%{app_name}'
   email: 'noreply@localhost'
+exception_notifier:
+  email_enabled: true
+  email_config:
+    email_prefix: '[WARNING]【開発環境】'
+    sender_address: '<noreply@localhost>'
+    exception_recipients: 'warning@localhost'
+  slack_enabled: false
+  slack_config:
+    webhook_url: 'https://hooks.slack.com/services/xxxxxxxx'
+    additional_parameters:
+      color: 'warning'

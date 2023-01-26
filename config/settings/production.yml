@@ -9,3 +9,14 @@ default_unlock_success_url: <%= ENV['DEFAULT_UNLOCK_SUCCESS_URL'] %> # (空)
 mailer_from:
   name: <%= ENV['MAILER_FROM_NAME'] || "'%{app_name}'" %>
   email: <%= ENV['MAILER_FROM_EMAIL'] || "noreply@#{ENV['BASE_DOMAIN']}" %> # noreply@example.com
+exception_notifier:
+  email_enabled: <%= ENV['EXCEPTION_NOTIFIER_EMAIL'] == '1' || false %> # 1
+  email_config:
+    email_prefix: <%= ENV['EXCEPTION_NOTIFIER_EMAIL_PREFIX'] || "[WARNING]#{ENV['ENV_NAME']}" %>
+    sender_address: <%= ENV['EXCEPTION_NOTIFIER_EMAIL_SENDER'] || "noreply@#{ENV['BASE_DOMAIN']}" %> # noreply@example.com
+    exception_recipients: <%= eval(ENV['EXCEPTION_NOTIFIER_EMAIL_RECIPIENTS'] || '[]') %> # ['warning@example.com']
+  slack_enabled: <%= ENV['EXCEPTION_NOTIFIER_SLACK'] == '1' || false %> # 1
+  slack_config:
+    webhook_url: <%= ENV['EXCEPTION_NOTIFIER_SLACK_WEBHOOK_URL'] || false %> # https://hooks.slack.com/services/xxxxxxxx
+    additional_parameters:
+      color: <%= ENV['EXCEPTION_NOTIFIER_SLACK_COLOR'] || 'warning' %>

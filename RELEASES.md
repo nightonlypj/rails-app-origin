@@ -1,5 +1,10 @@
 # リリースノート
 
+## 1.6.0 (Sprint 11)
+
+- エラー時にメール/Slack送信して気付けるようにしたい
+  - https://dev.azure.com/nightonly/rails-app-origin/_workitems/edit/189/
+
 ## 1.5.0 (Sprint 10)
 
 - 左メニューを表示したい

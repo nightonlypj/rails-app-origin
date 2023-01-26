@@ -9,6 +9,9 @@ default_unlock_success_url: ''
 mailer_from:
   name: '%{app_name}'
   email: 'noreply@localhost.test'
+exception_notifier:
+  email_enabled: false
+  slack_enabled: false
 
 ## ユーザー
 # ユーザー名の最小・最大文字数
