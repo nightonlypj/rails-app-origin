@@ -40,7 +40,7 @@ RSpec.describe 'Users::Auth::Unlocks', type: :request do
     shared_examples_for 'OK' do
       let(:subject_format) { :json }
       let(:accept_headers) { ACCEPT_INC_JSON }
-      let(:url)       { "http://#{Settings['base_domain']}#{user_auth_unlock_path}" }
+      let(:url)       { "http://#{Settings.base_domain}#{user_auth_unlock_path}" }
       let(:url_param) { "redirect_url=#{URI.encode_www_form_component(attributes[:redirect_url])}" }
       it 'メールが送信される' do
         subject
@@ -305,7 +305,7 @@ RSpec.describe 'Users::Auth::Unlocks', type: :request do
         # expect(response_json['success']).to eq(false)
         # expect(response_json['errors']).not_to be_nil
         # expect(response_json['message']).to be_nil
-        is_expected.to redirect_to(Settings['unlock_success_url_not'])
+        is_expected.to redirect_to(Settings.unlock_success_url_not)
       end
       # it '[リダイレクトURLがホワイトリストにない]HTTPステータスが422。対象項目が一致する' do
       it '[リダイレクトURLがホワイトリストにない]成功ページにリダイレクトする' do
@@ -314,7 +314,7 @@ RSpec.describe 'Users::Auth::Unlocks', type: :request do
         # expect(response_json['success']).to eq(false)
         # expect(response_json['errors']).not_to be_nil
         # expect(response_json['message']).to be_nil
-        is_expected.to redirect_to(Settings['unlock_success_url_bad'])
+        is_expected.to redirect_to(Settings.unlock_success_url_bad)
       end
     end
     shared_examples_for 'ToNG(html/*)' do
@@ -333,7 +333,7 @@ RSpec.describe 'Users::Auth::Unlocks', type: :request do
         # expect(response_json['success']).to eq(false)
         # expect(response_json['errors']).not_to be_nil
         # expect(response_json['message']).to be_nil
-        is_expected.to redirect_to(Settings['unlock_error_url_not'])
+        is_expected.to redirect_to(Settings.unlock_error_url_not)
       end
       # it '[リダイレクトURLがホワイトリストにない]HTTPステータスが422。対象項目が一致する' do
       it '[リダイレクトURLがホワイトリストにない]エラーページにリダイレクトする' do
@@ -342,7 +342,7 @@ RSpec.describe 'Users::Auth::Unlocks', type: :request do
         # expect(response_json['success']).to eq(false)
         # expect(response_json['errors']).not_to be_nil
         # expect(response_json['message']).to be_nil
-        is_expected.to redirect_to(Settings['unlock_error_url_bad'])
+        is_expected.to redirect_to(Settings.unlock_error_url_bad)
       end
     end
     shared_examples_for 'ToNG(json/json)' do |code|

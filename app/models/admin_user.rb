@@ -8,5 +8,5 @@ class AdminUser < ApplicationRecord
          :lockable, :timeoutable, :trackable
 
   validates :name, presence: true
-  validates :name, length: { in: Settings['user_name_minimum']..Settings['user_name_maximum'] }, if: proc { |admin_user| admin_user.name.present? }
+  validates :name, length: { in: Settings.user_name_minimum..Settings.user_name_maximum }, if: proc { |admin_user| admin_user.name.present? }
 end

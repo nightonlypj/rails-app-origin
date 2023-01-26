@@ -20,8 +20,8 @@ class Users::Auth::PasswordsController < DeviseTokenAuth::PasswordsController
 
   # GET /users/auth/password パスワード再設定
   def edit
-    return redirect_to Settings['reset_password_error_url_not'] if @redirect_url.blank?
-    return redirect_to Settings['reset_password_error_url_bad'] if blacklisted_redirect_url?(@redirect_url)
+    return redirect_to Settings.reset_password_error_url_not if @redirect_url.blank?
+    return redirect_to Settings.reset_password_error_url_bad if blacklisted_redirect_url?(@redirect_url)
 
     super
   end

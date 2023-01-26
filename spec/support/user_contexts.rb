@@ -100,7 +100,7 @@ shared_context 'Authテスト内容' do
       expect_user_json(response_json_user, current_user, false)
       expect(response_json_user['provider']).to eq(current_user.provider)
       ## アカウント削除の猶予期間
-      expect(response_json_user['destroy_schedule_days']).to eq(Settings['user_destroy_schedule_days'])
+      expect(response_json_user['destroy_schedule_days']).to eq(Settings.user_destroy_schedule_days)
       ## お知らせ
       expect(response_json_user['infomation_unread_count']).to eq(current_user.infomation_unread_count)
     end

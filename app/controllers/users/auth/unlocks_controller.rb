@@ -52,8 +52,8 @@ class Users::Auth::UnlocksController < DeviseTokenAuth::UnlocksController
       @resource.save!
       yield @resource if block_given?
 
-      return redirect_to Settings['unlock_success_url_not'] if @redirect_url.blank?
-      return redirect_to Settings['unlock_success_url_bad'] if blacklisted_redirect_url?(@redirect_url)
+      return redirect_to Settings.unlock_success_url_not if @redirect_url.blank?
+      return redirect_to Settings.unlock_success_url_bad if blacklisted_redirect_url?(@redirect_url)
 
       # redirect_header_options = { unlock: true }
       redirect_header_options = { unlock: true, notice: t('devise.unlocks.unlocked') }
@@ -68,7 +68,7 @@ class Users::Auth::UnlocksController < DeviseTokenAuth::UnlocksController
   private
 
   def validate_redirect_url_param
-    @redirect_url = params.fetch(:redirect_url, Settings['default_unlock_success_url'])
+    @redirect_url = params.fetch(:redirect_url, Settings.default_unlock_success_url)
     # return render_create_error_missing_redirect_url unless @redirect_url
     # return render_error_not_allowed_redirect_url if blacklisted_redirect_url?(@redirect_url)
   end
@@ -98,8 +98,8 @@ class Users::Auth::UnlocksController < DeviseTokenAuth::UnlocksController
 
   def render_show_error
     # raise ActionController::RoutingError, 'Not Found'
-    return redirect_to Settings['unlock_error_url_not'] if @redirect_url.blank?
-    return redirect_to Settings['unlock_error_url_bad'] if blacklisted_redirect_url?(@redirect_url)
+    return redirect_to Settings.unlock_error_url_not if @redirect_url.blank?
+    return redirect_to Settings.unlock_error_url_bad if blacklisted_redirect_url?(@redirect_url)
 
     alert = t("activerecord.errors.models.user.attributes.unlock_token.#{params[:unlock_token].blank? ? 'blank' : 'invalid'}")
     redirect_header_options = { unlock: false, alert: alert }

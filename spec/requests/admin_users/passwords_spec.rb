@@ -40,7 +40,7 @@ RSpec.describe 'AdminUsers::Passwords', type: :request do
 
     # テスト内容
     shared_examples_for 'OK' do
-      let(:url) { "http://#{Settings['base_domain']}#{edit_admin_user_password_path}" }
+      let(:url) { "http://#{Settings.base_domain}#{edit_admin_user_password_path}" }
       it 'メールが送信される' do
         subject
         expect(ActionMailer::Base.deliveries.count).to eq(1)

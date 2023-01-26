@@ -40,7 +40,7 @@ RSpec.describe 'Users::Registrations', type: :request do
 
     # テスト内容
     shared_examples_for 'OK' do
-      let(:url) { "http://#{Settings['base_domain']}#{user_confirmation_path}" }
+      let(:url) { "http://#{Settings.base_domain}#{user_confirmation_path}" }
       it '作成・対象項目が設定される。メールが送信される' do
         expect do
           subject
@@ -131,7 +131,7 @@ RSpec.describe 'Users::Registrations', type: :request do
 
     # テスト内容
     shared_examples_for 'OK' do |change_email|
-      let(:url) { "http://#{Settings['base_domain']}#{user_confirmation_path}" }
+      let(:url) { "http://#{Settings.base_domain}#{user_confirmation_path}" }
       it '対象項目が変更される。メールが送信される' do
         subject
         expect(current_user.unconfirmed_email).to change_email ? eq(attributes[:email]) : eq(user.unconfirmed_email) # 確認待ちメールアドレス
@@ -383,12 +383,12 @@ RSpec.describe 'Users::Registrations', type: :request do
     # テスト内容
     shared_examples_for 'OK' do
       let!(:start_time) { Time.current.floor }
-      let(:url) { "http://#{Settings['base_domain']}#{delete_undo_user_registration_path}" }
-      it "削除依頼日時が現在日時に、削除予定日時が#{Settings['user_destroy_schedule_days']}日後に変更される。メールが送信される" do
+      let(:url) { "http://#{Settings.base_domain}#{delete_undo_user_registration_path}" }
+      it "削除依頼日時が現在日時に、削除予定日時が#{Settings.user_destroy_schedule_days}日後に変更される。メールが送信される" do
         subject
         expect(current_user.destroy_requested_at).to be_between(start_time, Time.current)
-        expect(current_user.destroy_schedule_at).to be_between(start_time + Settings['user_destroy_schedule_days'].days,
-                                                               Time.current + Settings['user_destroy_schedule_days'].days)
+        expect(current_user.destroy_schedule_at).to be_between(start_time + Settings.user_destroy_schedule_days.days,
+                                                               Time.current + Settings.user_destroy_schedule_days.days)
         expect(ActionMailer::Base.deliveries.count).to eq(1)
         expect(ActionMailer::Base.deliveries[0].subject).to eq(get_subject('mailer.user.destroy_reserved.subject')) # アカウント削除受け付けのお知らせ
         expect(ActionMailer::Base.deliveries[0].html_part.body).to include(url)

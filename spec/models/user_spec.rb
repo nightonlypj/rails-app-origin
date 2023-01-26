@@ -58,21 +58,21 @@ RSpec.describe User, type: :model do
       it_behaves_like 'InValid'
     end
     context '最小文字数よりも少ない' do
-      let(:name) { 'a' * (Settings['user_name_minimum'] - 1) }
-      let(:messages) { { name: [get_locale('activerecord.errors.models.user.attributes.name.too_short', count: Settings['user_name_minimum'])] } }
+      let(:name) { 'a' * (Settings.user_name_minimum - 1) }
+      let(:messages) { { name: [get_locale('activerecord.errors.models.user.attributes.name.too_short', count: Settings.user_name_minimum)] } }
       it_behaves_like 'InValid'
     end
     context '最小文字数と同じ' do
-      let(:name) { 'a' * Settings['user_name_minimum'] }
+      let(:name) { 'a' * Settings.user_name_minimum }
       it_behaves_like 'Valid'
     end
     context '最大文字数と同じ' do
-      let(:name) { 'a' * Settings['user_name_maximum'] }
+      let(:name) { 'a' * Settings.user_name_maximum }
       it_behaves_like 'Valid'
     end
     context '最大文字数よりも多い' do
-      let(:name) { 'a' * (Settings['user_name_maximum'] + 1) }
-      let(:messages) { { name: [get_locale('activerecord.errors.models.user.attributes.name.too_long', count: Settings['user_name_maximum'])] } }
+      let(:name) { 'a' * (Settings.user_name_maximum + 1) }
+      let(:messages) { { name: [get_locale('activerecord.errors.models.user.attributes.name.too_long', count: Settings.user_name_maximum)] } }
       it_behaves_like 'InValid'
     end
   end
@@ -113,10 +113,10 @@ RSpec.describe User, type: :model do
       end
     end
     context '削除予定日時' do
-      let!(:start_time) { Time.current.floor + Settings['user_destroy_schedule_days'].days }
+      let!(:start_time) { Time.current.floor + Settings.user_destroy_schedule_days.days }
       it '現在日時＋設定日数に変更される' do
         is_expected.to eq(true)
-        expect(user.destroy_schedule_at).to be_between(start_time, Time.current + Settings['user_destroy_schedule_days'].days)
+        expect(user.destroy_schedule_at).to be_between(start_time, Time.current + Settings.user_destroy_schedule_days.days)
       end
     end
   end

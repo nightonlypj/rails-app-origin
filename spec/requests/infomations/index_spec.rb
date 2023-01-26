@@ -29,8 +29,8 @@ RSpec.describe 'Infomations', type: :request do
         expect(response_json['success']).to eq(true)
         expect(response_json_infomation['total_count']).to eq(infomations.count)
         expect(response_json_infomation['current_page']).to eq(subject_page)
-        expect(response_json_infomation['total_pages']).to eq((infomations.count - 1).div(Settings['default_infomations_limit']) + 1)
-        expect(response_json_infomation['limit_value']).to eq(Settings['default_infomations_limit'])
+        expect(response_json_infomation['total_pages']).to eq((infomations.count - 1).div(Settings.default_infomations_limit) + 1)
+        expect(response_json_infomation['limit_value']).to eq(Settings.default_infomations_limit)
       end
     end
 
@@ -68,8 +68,8 @@ RSpec.describe 'Infomations', type: :request do
       let(:subject_format) { nil }
       let(:accept_headers) { ACCEPT_INC_HTML }
       let(:subject_page) { page }
-      let(:start_no)     { (Settings['default_infomations_limit'] * (page - 1)) + 1 }
-      let(:end_no)       { [@user_infomations.count, Settings['default_infomations_limit'] * page].min }
+      let(:start_no)     { (Settings.default_infomations_limit * (page - 1)) + 1 }
+      let(:end_no)       { [@user_infomations.count, Settings.default_infomations_limit * page].min }
       it '対象項目が含まれる' do
         subject
         (start_no..end_no).each do |no|
@@ -95,8 +95,8 @@ RSpec.describe 'Infomations', type: :request do
       let(:subject_format) { :json }
       let(:accept_headers) { ACCEPT_INC_JSON }
       let(:subject_page) { page }
-      let(:start_no)     { (Settings['default_infomations_limit'] * (page - 1)) + 1 }
-      let(:end_no)       { [infomations.count, Settings['default_infomations_limit'] * page].min }
+      let(:start_no)     { (Settings.default_infomations_limit * (page - 1)) + 1 }
+      let(:end_no)       { [infomations.count, Settings.default_infomations_limit * page].min }
       it '件数・対象項目が一致する' do
         subject
         expect(response_json_infomations.count).to eq(end_no - start_no + 1)
@@ -139,8 +139,8 @@ RSpec.describe 'Infomations', type: :request do
       it_behaves_like 'リダイレクト(json)', 2
     end
     shared_examples_for '[未ログイン]お知らせが最大表示数と同じ' do
-      count = Settings['test_infomations']
-      include_context 'お知らせ一覧作成', count['all_forever_count'] + count['user_forever_count'], count['all_future_count'] + count['user_future_count'], 0, 0
+      count = Settings.test_infomations_count
+      include_context 'お知らせ一覧作成', count.all_forever + count.user_forever, count.all_future + count.user_future, 0, 0
       it_behaves_like 'ToOK(html)', 1
       it_behaves_like 'ページネーション非表示', 1, 2
       it_behaves_like 'リスト表示', 1
@@ -150,8 +150,8 @@ RSpec.describe 'Infomations', type: :request do
       it_behaves_like 'リダイレクト(json)', 2
     end
     shared_examples_for '[ログイン中/削除予約済み]お知らせが最大表示数と同じ' do
-      count = Settings['test_infomations']
-      include_context 'お知らせ一覧作成', count['all_forever_count'], count['all_future_count'], count['user_forever_count'], count['user_future_count']
+      count = Settings.test_infomations_count
+      include_context 'お知らせ一覧作成', count.all_forever, count.all_future, count.user_forever, count.user_future
       it_behaves_like 'ToOK(html)', 1
       it_behaves_like 'ページネーション非表示', 1, 2
       it_behaves_like 'リスト表示', 1
@@ -161,8 +161,8 @@ RSpec.describe 'Infomations', type: :request do
       it_behaves_like 'リダイレクト(json)', 2
     end
     shared_examples_for '[APIログイン中/削除予約済み]お知らせが最大表示数と同じ' do
-      count = Settings['test_infomations']
-      include_context 'お知らせ一覧作成', count['all_forever_count'], count['all_future_count'], count['user_forever_count'], count['user_future_count']
+      count = Settings.test_infomations_count
+      include_context 'お知らせ一覧作成', count.all_forever, count.all_future, count.user_forever, count.user_future
       it_behaves_like 'ToOK(html)', 1
       it_behaves_like 'ページネーション非表示', 1, 2
       it_behaves_like 'リスト表示', 1
@@ -172,8 +172,8 @@ RSpec.describe 'Infomations', type: :request do
       it_behaves_like 'リダイレクト(json)', 2
     end
     shared_examples_for '[未ログイン]お知らせが最大表示数より多い' do
-      count = Settings['test_infomations']
-      include_context 'お知らせ一覧作成', count['all_forever_count'] + count['user_forever_count'], count['all_future_count'] + count['user_future_count'] + 1, 0, 0
+      count = Settings.test_infomations_count
+      include_context 'お知らせ一覧作成', count.all_forever + count.user_forever, count.all_future + count.user_future + 1, 0, 0
       it_behaves_like 'ToOK(html)', 1
       it_behaves_like 'ToOK(html)', 2
       it_behaves_like 'ページネーション表示', 1, 2
@@ -188,8 +188,8 @@ RSpec.describe 'Infomations', type: :request do
       it_behaves_like 'リダイレクト(json)', 3
     end
     shared_examples_for '[ログイン中/削除予約済み]お知らせが最大表示数より多い' do
-      count = Settings['test_infomations']
-      include_context 'お知らせ一覧作成', count['all_forever_count'], count['all_future_count'], count['user_forever_count'], count['user_future_count'] + 1
+      count = Settings.test_infomations_count
+      include_context 'お知らせ一覧作成', count.all_forever, count.all_future, count.user_forever, count.user_future + 1
       it_behaves_like 'ToOK(html)', 1
       it_behaves_like 'ToOK(html)', 2
       it_behaves_like 'ページネーション表示', 1, 2
@@ -204,8 +204,8 @@ RSpec.describe 'Infomations', type: :request do
       # it_behaves_like 'リダイレクト(json)', 3
     end
     shared_examples_for '[APIログイン中/削除予約済み]お知らせが最大表示数より多い' do
-      count = Settings['test_infomations']
-      include_context 'お知らせ一覧作成', count['all_forever_count'], count['all_future_count'], count['user_forever_count'], count['user_future_count'] + 1
+      count = Settings.test_infomations_count
+      include_context 'お知らせ一覧作成', count.all_forever, count.all_future, count.user_forever, count.user_future + 1
       it_behaves_like 'ToOK(html)', 1
       it_behaves_like 'ToOK(html)', 2
       it_behaves_like 'ページネーション表示', 1, 2
