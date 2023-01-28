@@ -65,6 +65,12 @@ group :development do
   gem 'rails-erd'
   # Use Bullet
   gem 'bullet'
+  # Use Capistrano
+  gem 'capistrano', '~> 3.0'
+  gem 'capistrano-rvm'
+  gem 'capistrano-rails'
+  gem 'capistrano-bundler'
+  gem 'capistrano3-unicorn'
 end
 gem 'listen', '>= 3.0.5', '< 3.2'
 gem 'letter_opener_web'
