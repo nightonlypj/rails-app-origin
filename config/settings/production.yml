@@ -17,6 +17,6 @@ exception_notifier:
     exception_recipients: <%= eval(ENV['EXCEPTION_NOTIFIER_EMAIL_RECIPIENTS'] || '[]') %> # ['warning@example.com']
   slack_enabled: <%= ENV['EXCEPTION_NOTIFIER_SLACK'] == '1' || false %> # 1
   slack_config:
-    webhook_url: <%= ENV['EXCEPTION_NOTIFIER_SLACK_WEBHOOK_URL'] || false %> # https://hooks.slack.com/services/xxxxxxxx
+    webhook_url: <%= ENV['EXCEPTION_NOTIFIER_SLACK_WEBHOOK_URL'] %> # https://hooks.slack.com/services/xxxxxxxx
     additional_parameters:
       color: <%= ENV['EXCEPTION_NOTIFIER_SLACK_COLOR'] || 'warning' %>

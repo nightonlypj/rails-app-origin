@@ -2,6 +2,8 @@
 
 ## 1.6.0 (Sprint 11)
 
+- Capistranoでデプロイできるようにしたい
+  - https://dev.azure.com/nightonly/rails-app-origin/_workitems/edit/308/
 - エラー時にメール/Slack送信して気付けるようにしたい
   - https://dev.azure.com/nightonly/rails-app-origin/_workitems/edit/189/
 
