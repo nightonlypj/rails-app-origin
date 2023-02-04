@@ -1,7 +1,18 @@
 class ApplicationController < ActionController::Base
+  before_action :prepare_exception_notifier
   after_action :update_response_uid_header
 
   private
+
+  # 例外通知に情報を追加
+  def prepare_exception_notifier
+    return if Rails.env.test?
+
+    request.env['exception_notifier.exception_data'] = {
+      current_user: { id: current_user&.id },
+      url: request.url
+    }
+  end
 
   # リクエストのuidヘッダを[id+36**2](36進数)からuidに変更 # NOTE: uidがメールアドレスだと、メールアドレス確認後に認証に失敗する為
   def update_request_uid_header

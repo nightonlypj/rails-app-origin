@@ -31,7 +31,7 @@ RSpec.describe 'Users::Unlocks', type: :request do
 
     # テスト内容
     shared_examples_for 'OK' do
-      let(:url) { "http://#{Settings['base_domain']}#{user_unlock_path}" }
+      let(:url) { "http://#{Settings.base_domain}#{user_unlock_path}" }
       it 'メールが送信される' do
         subject
         expect(ActionMailer::Base.deliveries.count).to eq(1)

@@ -5,7 +5,7 @@ RSpec.describe UserMailer, type: :mailer do
   shared_examples_for 'Header' do
     it 'タイトル・送信者のメールアドレスが設定と、宛先がユーザーのメールアドレスと一致する' do
       expect(mail.subject).to eq(get_subject(subject))
-      expect(mail.from).to eq([Settings['mailer_from']['email']])
+      expect(mail.from).to eq([Settings.mailer_from.email])
       expect(mail.to).to eq([user.email])
     end
   end

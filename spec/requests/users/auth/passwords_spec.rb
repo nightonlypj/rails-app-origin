@@ -46,7 +46,7 @@ RSpec.describe 'Users::Auth::Passwords', type: :request do
     shared_examples_for 'OK' do
       let(:subject_format) { :json }
       let(:accept_headers) { ACCEPT_INC_JSON }
-      let(:url)       { "http://#{Settings['base_domain']}#{edit_user_auth_password_path}" }
+      let(:url)       { "http://#{Settings.base_domain}#{edit_user_auth_password_path}" }
       let(:url_param) { "redirect_url=#{URI.encode_www_form_component(attributes[:redirect_url])}" }
       it 'メールが送信される' do
         subject
@@ -316,7 +316,7 @@ RSpec.describe 'Users::Auth::Passwords', type: :request do
         # is_expected.to eq(422)
         # expect(response_json['success']).to eq(false)
         # expect(response_json['errors']).not_to be_nil
-        is_expected.to redirect_to(Settings['reset_password_error_url_not'])
+        is_expected.to redirect_to(Settings.reset_password_error_url_not)
       end
     end
     shared_examples_for 'リダイレクトURLがホワイトリストにない' do
@@ -328,7 +328,7 @@ RSpec.describe 'Users::Auth::Passwords', type: :request do
         # is_expected.to eq(422)
         # expect(response_json['success']).to eq(false)
         # expect(response_json['errors']).not_to be_nil
-        is_expected.to redirect_to(Settings['reset_password_error_url_bad'])
+        is_expected.to redirect_to(Settings.reset_password_error_url_bad)
       end
     end
 

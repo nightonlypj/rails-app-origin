@@ -58,21 +58,21 @@ RSpec.describe User, type: :model do
       it_behaves_like 'InValid'
     end
     context '最小文字数よりも少ない' do
-      let(:name) { 'a' * (Settings['user_name_minimum'] - 1) }
-      let(:messages) { { name: [get_locale('activerecord.errors.models.user.attributes.name.too_short', count: Settings['user_name_minimum'])] } }
+      let(:name) { 'a' * (Settings.user_name_minimum - 1) }
+      let(:messages) { { name: [get_locale('activerecord.errors.models.user.attributes.name.too_short', count: Settings.user_name_minimum)] } }
       it_behaves_like 'InValid'
     end
     context '最小文字数と同じ' do
-      let(:name) { 'a' * Settings['user_name_minimum'] }
+      let(:name) { 'a' * Settings.user_name_minimum }
       it_behaves_like 'Valid'
     end
     context '最大文字数と同じ' do
-      let(:name) { 'a' * Settings['user_name_maximum'] }
+      let(:name) { 'a' * Settings.user_name_maximum }
       it_behaves_like 'Valid'
     end
     context '最大文字数よりも多い' do
-      let(:name) { 'a' * (Settings['user_name_maximum'] + 1) }
-      let(:messages) { { name: [get_locale('activerecord.errors.models.user.attributes.name.too_long', count: Settings['user_name_maximum'])] } }
+      let(:name) { 'a' * (Settings.user_name_maximum + 1) }
+      let(:messages) { { name: [get_locale('activerecord.errors.models.user.attributes.name.too_long', count: Settings.user_name_maximum)] } }
       it_behaves_like 'InValid'
     end
   end
@@ -101,44 +101,32 @@ RSpec.describe User, type: :model do
   # 削除予約
   # 前提条件
   #   削除予約なし
-  describe '#set_destroy_reserve' do
-    subject { user.set_destroy_reserve }
-    let_it_be(:user) { FactoryBot.create(:user) }
+  describe '#set_destroy_reserve!' do
+    subject { user.set_destroy_reserve! }
+    let(:user) { FactoryBot.create(:user) }
+    let(:current_user) { User.find(user.id) }
 
-    context '削除依頼日時' do
-      let!(:start_time) { Time.current.floor }
-      it '現在日時に変更される' do
-        is_expected.to eq(true)
-        expect(user.destroy_requested_at).to be_between(start_time, Time.current)
-      end
-    end
-    context '削除予定日時' do
-      let!(:start_time) { Time.current.floor + Settings['user_destroy_schedule_days'].days }
-      it '現在日時＋設定日数に変更される' do
-        is_expected.to eq(true)
-        expect(user.destroy_schedule_at).to be_between(start_time, Time.current + Settings['user_destroy_schedule_days'].days)
-      end
+    let!(:start_time) { Time.current.floor }
+    let!(:start_time_schedule) { Time.current.floor + Settings.user_destroy_schedule_days.days }
+    it '削除依頼日時が現在日時、削除予定日時が現在日時＋設定日数に変更され、保存される' do
+      is_expected.to eq(true)
+      expect(current_user.destroy_requested_at).to be_between(start_time, Time.current)
+      expect(current_user.destroy_schedule_at).to be_between(start_time_schedule, Time.current + Settings.user_destroy_schedule_days.days)
     end
   end
 
   # 削除予約取り消し
   # 前提条件
   #   削除予約済み
-  describe '#set_undo_destroy_reserve' do
-    subject { user.set_undo_destroy_reserve }
-    let_it_be(:user) { FactoryBot.create(:user, :destroy_reserved) }
+  describe '#set_undo_destroy_reserve!' do
+    subject { user.set_undo_destroy_reserve! }
+    let(:user) { FactoryBot.create(:user, :destroy_reserved) }
+    let(:current_user) { User.find(user.id) }
 
-    context '削除依頼日時' do
-      it 'なしに変更される' do
-        is_expected.to eq(true)
-        expect(user.destroy_requested_at).to be_nil
-      end
-    end
-    context '削除予定日時' do
-      it 'なしに変更される' do
-        is_expected.to eq(true)
-        expect(user.destroy_schedule_at).to be_nil
-      end
+    it '削除依頼日時・削除予定日時がなしに変更される' do
+      is_expected.to eq(true)
+      expect(user.destroy_requested_at).to be_nil
+      expect(user.destroy_schedule_at).to be_nil
     end
   end
 

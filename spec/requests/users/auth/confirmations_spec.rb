@@ -42,7 +42,7 @@ RSpec.describe 'Users::Auth::Confirmations', type: :request do
     shared_examples_for 'OK' do
       let(:subject_format) { :json }
       let(:accept_headers) { ACCEPT_INC_JSON }
-      let(:url)       { "http://#{Settings['base_domain']}#{user_auth_confirmation_path}" }
+      let(:url)       { "http://#{Settings.base_domain}#{user_auth_confirmation_path}" }
       let(:url_param) { "redirect_url=#{URI.encode_www_form_component(attributes[:redirect_url])}" }
       it 'メールが送信される' do
         subject
@@ -249,12 +249,12 @@ RSpec.describe 'Users::Auth::Confirmations', type: :request do
       it '[リダイレクトURLがない]成功ページにリダイレクトする' do
         @redirect_url = nil
         # is_expected.to redirect_to(/^#{not_redirect_url}\?.*account_confirmation_success=true.*$/) # NOTE: ログイン中はaccess-token等も入る
-        is_expected.to redirect_to(Settings['confirmation_success_url_not'])
+        is_expected.to redirect_to(Settings.confirmation_success_url_not)
       end
       it '[リダイレクトURLがホワイトリストにない]成功ページにリダイレクトする' do
         @redirect_url = BAD_SITE_URL
         # is_expected.to redirect_to(/^#{@redirect_url}\?.*account_confirmation_success=true.*$/) # NOTE: ログイン中はaccess-token等も入る
-        is_expected.to redirect_to(Settings['confirmation_success_url_bad'])
+        is_expected.to redirect_to(Settings.confirmation_success_url_bad)
       end
     end
     shared_examples_for 'ToNG(html/*)' do
@@ -268,12 +268,12 @@ RSpec.describe 'Users::Auth::Confirmations', type: :request do
       it '[リダイレクトURLがない]エラーページにリダイレクトする' do
         @redirect_url = nil
         # is_expected.to redirect_to(/^#{not_redirect_url}\?.*account_confirmation_success=true.*$/) # NOTE: ログイン中はaccess-token等も入る
-        is_expected.to redirect_to(Settings['confirmation_error_url_not'])
+        is_expected.to redirect_to(Settings.confirmation_error_url_not)
       end
       it '[リダイレクトURLがホワイトリストにない]エラーページにリダイレクトする' do
         @redirect_url = BAD_SITE_URL
         # is_expected.to redirect_to(/^#{BAD_SITE_URL}\?.*account_confirmation_success=true.*$/) # NOTE: ログイン中はaccess-token等も入る
-        is_expected.to redirect_to(Settings['confirmation_error_url_bad'])
+        is_expected.to redirect_to(Settings.confirmation_error_url_bad)
       end
     end
     shared_examples_for 'ToNG(json/json)' do |code|

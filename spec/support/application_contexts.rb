@@ -11,18 +11,18 @@ ACCEPT_INC_JSON = { 'accept' => 'application/json,text/plain,*/*' }.freeze
 
 # メールタイトルを返却
 def get_subject(key)
-  I18n.t(key, app_name: I18n.t('app_name'), env_name: Settings['env_name'])
+  I18n.t(key, app_name: I18n.t('app_name'), env_name: Settings.env_name || '')
 end
 
 # テスト内容（共通）
 def expect_image_json(response_json_model, model)
   expect(response_json_model['upload_image']).to eq(model.image?)
   data = response_json_model['image_url']
-  expect(data['mini']).to eq("#{Settings['base_image_url']}#{model.image_url(:mini)}")
-  expect(data['small']).to eq("#{Settings['base_image_url']}#{model.image_url(:small)}")
-  expect(data['medium']).to eq("#{Settings['base_image_url']}#{model.image_url(:medium)}")
-  expect(data['large']).to eq("#{Settings['base_image_url']}#{model.image_url(:large)}")
-  expect(data['xlarge']).to eq("#{Settings['base_image_url']}#{model.image_url(:xlarge)}")
+  expect(data['mini']).to eq("#{Settings.base_image_url}#{model.image_url(:mini)}")
+  expect(data['small']).to eq("#{Settings.base_image_url}#{model.image_url(:small)}")
+  expect(data['medium']).to eq("#{Settings.base_image_url}#{model.image_url(:medium)}")
+  expect(data['large']).to eq("#{Settings.base_image_url}#{model.image_url(:large)}")
+  expect(data['xlarge']).to eq("#{Settings.base_image_url}#{model.image_url(:xlarge)}")
 end
 
 def get_locale(key, **replace)

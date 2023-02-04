@@ -1,6 +1,6 @@
 Rails.application.configure do
   # Settings specified here will take precedence over those in config/application.rb.
-  config.hosts << Settings['base_domain']
+  config.hosts << Settings.base_domain
 
   # Code is not reloaded between requests.
   config.cache_classes = true
@@ -63,7 +63,7 @@ Rails.application.configure do
 
   config.action_mailer.perform_caching = false
 
-  config.action_mailer.default_url_options = { host: Settings['base_domain'], protocol: 'https' }
+  config.action_mailer.default_url_options = { host: Settings.base_domain, protocol: 'https' }
   config.action_mailer.delivery_method = ENV['DELIVERY_METHOD'].present? ? ENV['DELIVERY_METHOD'].to_sym : :sendmail
   config.action_mailer.smtp_settings = ENV['SMTP_SETTINGS'].present? ? eval(ENV['SMTP_SETTINGS']) : nil
 

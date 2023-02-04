@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
     <meta http-equiv="x-ua-compatible" content="ie=edge" />
-    <title><%= content_for?(:html_title) ? yield(:html_title) + ' - ' : '' %><%= "#{t('app_name')} Admin#{Settings['env_name']}" %></title>
+    <title><%= content_for?(:html_title) ? yield(:html_title) + ' - ' : '' %><%= "#{t('app_name')} Admin#{Settings.env_name}" %></title>
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.4/css/all.css" />
@@ -19,7 +19,7 @@
         <div class="container-fluid">
           <a href="<%= new_admin_user_session_path %>" class="navbar-brand">
             <%= t('app_name') %> Admin
-            <span class="d-none d-sm-block"><%= Settings['env_name'] %></span>
+            <span class="d-none d-sm-block"><%= Settings.env_name %></span>
           </a>
           <nav class="nav align-items-center">
 <% unless admin_user_signed_in? %>

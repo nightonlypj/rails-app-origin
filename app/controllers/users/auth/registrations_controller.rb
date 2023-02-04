@@ -97,7 +97,7 @@ class Users::Auth::RegistrationsController < DeviseTokenAuth::RegistrationsContr
 
     if @resource
       # @resource.destroy
-      @resource.set_destroy_reserve
+      @resource.set_destroy_reserve!
       UserMailer.with(user: @resource, undo_delete_url: params[:undo_delete_url]).destroy_reserved.deliver_now
 
       yield @resource if block_given?
@@ -109,7 +109,7 @@ class Users::Auth::RegistrationsController < DeviseTokenAuth::RegistrationsContr
 
   # POST /users/auth/undo_delete(.json) アカウント削除取り消しAPI(処理)
   def undo_destroy
-    @resource.set_undo_destroy_reserve
+    @resource.set_undo_destroy_reserve!
     UserMailer.with(user: @resource).undo_destroy_reserved.deliver_now
 
     render './users/auth/success', locals: { notice: t('devise.registrations.undo_destroy_reserved') }

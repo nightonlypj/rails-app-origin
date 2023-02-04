@@ -30,8 +30,8 @@ class Users::Auth::ConfirmationsController < DeviseTokenAuth::ConfirmationsContr
     if @resource.errors.empty?
       yield @resource if block_given?
 
-      return redirect_to Settings['confirmation_success_url_not'] if redirect_url.blank?
-      return redirect_to Settings['confirmation_success_url_bad'] if blacklisted_redirect_url?(redirect_url)
+      return redirect_to Settings.confirmation_success_url_not if redirect_url.blank?
+      return redirect_to Settings.confirmation_success_url_bad if blacklisted_redirect_url?(redirect_url)
 
       # redirect_header_options = { account_confirmation_success: true }
       redirect_header_options = { account_confirmation_success: true, notice: t('devise.confirmations.confirmed') }
@@ -46,13 +46,13 @@ class Users::Auth::ConfirmationsController < DeviseTokenAuth::ConfirmationsContr
       # else
       # raise ActionController::RoutingError, 'Not Found'
     elsif already_confirmed?(@resource)
-      return redirect_to Settings['confirmation_success_url_not'] if redirect_url.blank?
-      return redirect_to Settings['confirmation_success_url_bad'] if blacklisted_redirect_url?(redirect_url)
+      return redirect_to Settings.confirmation_success_url_not if redirect_url.blank?
+      return redirect_to Settings.confirmation_success_url_bad if blacklisted_redirect_url?(redirect_url)
 
       redirect_header_options = { account_confirmation_success: true, alert: t('errors.messages.already_confirmed') }
     else
-      return redirect_to Settings['confirmation_error_url_not'] if redirect_url.blank?
-      return redirect_to Settings['confirmation_error_url_bad'] if blacklisted_redirect_url?(redirect_url)
+      return redirect_to Settings.confirmation_error_url_not if redirect_url.blank?
+      return redirect_to Settings.confirmation_error_url_bad if blacklisted_redirect_url?(redirect_url)
 
       redirect_header_options = { account_confirmation_success: false, alert: t('activerecord.errors.models.user.attributes.confirmation_token.invalid') }
     end

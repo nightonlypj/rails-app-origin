@@ -16,7 +16,7 @@ gem 'puma', '~> 4.1'
 # Use SCSS for stylesheets
 gem 'sass-rails', '>= 6'
 # Transpile app-like JavaScript. Read more: https://github.com/rails/webpacker
-gem 'webpacker', '~> 4.0'
+gem 'webpacker', '~> 5.0'
 # Turbolinks makes navigating your web application faster. Read more: https://github.com/turbolinks/turbolinks
 gem 'turbolinks', '~> 5'
 # Build JSON APIs with ease. Read more: https://github.com/rails/jbuilder
@@ -65,6 +65,13 @@ group :development do
   gem 'rails-erd'
   # Use Bullet
   gem 'bullet'
+  # Use Capistrano
+  gem 'capistrano', '~> 3.0'
+  gem 'capistrano-rvm'
+  gem 'capistrano-rails'
+  gem 'capistrano-bundler'
+  gem 'capistrano-yarn'
+  gem 'capistrano3-unicorn'
 end
 gem 'listen', '>= 3.0.5', '< 3.2'
 gem 'letter_opener_web'
@@ -116,3 +123,7 @@ gem 'enum_help'
 
 # Use Unicorn
 gem 'unicorn'
+
+# Use Exception Notification
+gem 'exception_notification'
+gem 'slack-notifier'

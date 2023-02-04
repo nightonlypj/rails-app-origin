@@ -81,7 +81,7 @@ RSpec.describe 'Users::Auth::Sessions', type: :request do
     shared_examples_for 'SendLocked' do
       let(:subject_format) { :json }
       let(:accept_headers) { ACCEPT_INC_JSON }
-      let(:url) { "http://#{Settings['base_domain']}#{user_auth_unlock_path}" }
+      let(:url) { "http://#{Settings.base_domain}#{user_auth_unlock_path}" }
       let(:url_param) { "redirect_url=#{URI.encode_www_form_component(attributes[:unlock_redirect_url])}" }
       it 'メールが送信される' do
         subject
