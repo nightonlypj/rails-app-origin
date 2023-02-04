@@ -16,8 +16,7 @@ class DownloadJob < ApplicationJob
       output_items = eval(@download.output_items)
       DownloadFile.create!(download: @download, body: change_char_code(file_header(output_items) + file_data(output_items)))
 
-      @download.status = :success
-      @download.completed_at = Time.current
+      @download.attributes = { status: :success, completed_at: Time.current }
       @download.save!
     end
 
@@ -26,10 +25,13 @@ class DownloadJob < ApplicationJob
 
   # ステータスを失敗に変更 # NOTE: テストの為、publicに記載
   def status_failure(error)
-    @download.status = :failure
-    @download.error_message = error.message
-    @download.completed_at = Time.current
-    logger.warn("[WARN]Failed save: download.id = #{@download.id}, error_message = #{error.message}") unless @download.save(validate: false)
+    # 例外通知
+    ExceptionNotifier.notify_exception(error)
+
+    if @download.present?
+      @download.attributes = { status: :failure, error_message: error&.message, completed_at: Time.current }
+      logger.warn("[WARN]Failed save: download.id = #{@download.id}, error_message = #{error&.message}") unless @download.save(validate: false)
+    end
   end
 
   private
