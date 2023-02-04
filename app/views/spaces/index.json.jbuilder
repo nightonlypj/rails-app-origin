@@ -1,7 +1,7 @@
 json.success true
 json.search_params do
   json.text @text
-  if Settings['enable_public_space']
+  if Settings.enable_public_space
     json.public @checked[:public] ? 1 : 0
     json.private @checked[:private] ? 1 : 0
     json.join @checked[:join] ? 1 : 0

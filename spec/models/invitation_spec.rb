@@ -96,12 +96,12 @@ RSpec.describe Invitation, type: :model do
       it_behaves_like 'Valid'
     end
     context '最大文字数と同じ' do
-      let(:memo) { 'a' * Settings['invitation_memo_maximum'] }
+      let(:memo) { 'a' * Settings.invitation_memo_maximum }
       it_behaves_like 'Valid'
     end
     context '最大文字数よりも多い' do
-      let(:memo) { 'a' * (Settings['invitation_memo_maximum'] + 1) }
-      let(:messages) { { memo: [get_locale('activerecord.errors.models.invitation.attributes.memo.too_long', count: Settings['invitation_memo_maximum'])] } }
+      let(:memo) { 'a' * (Settings.invitation_memo_maximum + 1) }
+      let(:messages) { { memo: [get_locale('activerecord.errors.models.invitation.attributes.memo.too_long', count: Settings.invitation_memo_maximum)] } }
       it_behaves_like 'InValid'
     end
   end

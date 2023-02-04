@@ -1,5 +1,5 @@
 namespace :invitation do
-  desc "招待削除（削除予定日時または終了日時か参加日時から#{Settings['invitation_destroy_schedule_days']}日後以降）"
+  desc "招待削除（削除予定日時または終了日時か参加日時から#{Settings.invitation_destroy_schedule_days}日後以降）"
   task(:destroy, [:dry_run] => :environment) do |task, args|
     args.with_defaults(dry_run: 'true')
     dry_run = (args.dry_run != 'false')
@@ -15,7 +15,7 @@ namespace :invitation do
       count = invitations.count
       logger.info("count: #{count}")
 
-      schedule_date = Time.current - Settings['invitation_destroy_schedule_days'].days
+      schedule_date = Time.current - Settings.invitation_destroy_schedule_days.days
       invitations.find_each.with_index(1) do |invitation, index|
         logger.info("[#{index}/#{count}] id: #{invitation.id}, destroy_schedule_at: #{invitation.destroy_schedule_at}, " \
           + "ended_at: #{invitation.ended_at}, email_joined_at: #{invitation.email_joined_at}")

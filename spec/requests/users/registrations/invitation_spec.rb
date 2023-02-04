@@ -61,7 +61,7 @@ RSpec.describe 'Users::Registrations', type: :request do
     # テスト内容
     shared_examples_for 'OK' do
       let!(:start_time) { Time.current.floor }
-      let(:url) { "http://#{Settings['base_domain']}#{user_confirmation_path}" }
+      let(:url) { "http://#{Settings.base_domain}#{user_confirmation_path}" }
       it '作成・対象項目が設定される。メールが送信される' do
         expect do
           subject

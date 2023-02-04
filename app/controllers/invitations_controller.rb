@@ -14,7 +14,7 @@ class InvitationsController < ApplicationAuthController
   # GET /invitations/:space_code 招待URL一覧
   # GET /invitations/:space_code(.json) 招待URL一覧API
   def index
-    @invitations = Invitation.where(space: @space).page(params[:page]).per(Settings['default_invitations_limit']).order(created_at: :desc, id: :desc)
+    @invitations = Invitation.where(space: @space).page(params[:page]).per(Settings.default_invitations_limit).order(created_at: :desc, id: :desc)
 
     if format_html? && @invitations.current_page > [@invitations.total_pages, 1].max
       redirect_to @invitations.total_pages <= 1 ? invitations_path : invitations_path(page: @invitations.total_pages)
@@ -52,7 +52,7 @@ class InvitationsController < ApplicationAuthController
     @invitation.ended_at = @invitation.new_ended_at
     if %w[1 true].include?(@invitation.delete.to_s) && @invitation.destroy_schedule_at.blank?
       @invitation.destroy_requested_at = Time.current
-      @invitation.destroy_schedule_at  = Time.current + Settings['invitation_destroy_schedule_days'].days
+      @invitation.destroy_schedule_at  = Time.current + Settings.invitation_destroy_schedule_days.days
     end
     if %w[1 true].include?(@invitation.undo_delete.to_s) && @invitation.destroy_schedule_at.present?
       @invitation.destroy_requested_at = nil
@@ -127,7 +127,7 @@ class InvitationsController < ApplicationAuthController
       domain.strip!
       if domain.present? && !@domains.include?(domain)
         @domains.push(domain)
-        break if @domains.count > Settings['invitation_domains_max_count']
+        break if @domains.count > Settings.invitation_domains_max_count
 
         invalid_domain = domain if invalid_domain.blank? && !Devise.email_regexp.match?("test@#{domain}")
       end
@@ -135,8 +135,8 @@ class InvitationsController < ApplicationAuthController
 
     if @domains.blank?
       @invitation.errors.add(:domains, :blank)
-    elsif @domains.count > Settings['invitation_domains_max_count']
-      count = Settings['invitation_domains_max_count'].to_s(:delimited)
+    elsif @domains.count > Settings.invitation_domains_max_count
+      count = Settings.invitation_domains_max_count.to_s(:delimited)
       @invitation.errors.add(:domains, t('activerecord.errors.models.invitation.attributes.domains.max_count', count: count))
     elsif invalid_domain.present?
       @invitation.errors.add(:domains, t('activerecord.errors.models.invitation.attributes.domains.invalid', domain: invalid_domain))

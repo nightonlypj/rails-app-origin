@@ -16,7 +16,7 @@ class MembersController < ApplicationAuthController
   # GET /members/:space_code メンバー一覧
   # GET /members/:space_code(.json) メンバー一覧API
   def index
-    @members = members_search.page(params[:page]).per(Settings['default_members_limit'])
+    @members = members_search.page(params[:page]).per(Settings.default_members_limit)
 
     if format_html? && @members.current_page > [@members.total_pages, 1].max
       redirect_to @members.total_pages <= 1 ? members_path : members_path(page: @members.total_pages)
@@ -153,7 +153,7 @@ class MembersController < ApplicationAuthController
       email.strip!
       if email.present? && !@emails.include?(email)
         @emails.push(email)
-        break if @emails.count > Settings['member_emails_max_count']
+        break if @emails.count > Settings.member_emails_max_count
 
         invalid_email = email if invalid_email.blank? && !Devise.email_regexp.match?(email)
       end
@@ -161,8 +161,8 @@ class MembersController < ApplicationAuthController
 
     if @emails.blank?
       @member.errors.add(:emails, :blank)
-    elsif @emails.count > Settings['member_emails_max_count']
-      error = t('activerecord.errors.models.member.attributes.emails.max_count', count: Settings['member_emails_max_count'])
+    elsif @emails.count > Settings.member_emails_max_count
+      error = t('activerecord.errors.models.member.attributes.emails.max_count', count: Settings.member_emails_max_count)
       @member.errors.add(:emails, error)
     elsif invalid_email.present?
       @member.errors.add(:emails, t('activerecord.errors.models.member.attributes.emails.invalid', email: invalid_email))

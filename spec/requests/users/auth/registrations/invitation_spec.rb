@@ -115,7 +115,7 @@ RSpec.describe 'Users::Auth::Registrations', type: :request do
       let(:subject_format) { :json }
       let(:accept_headers) { ACCEPT_INC_JSON }
       let!(:start_time) { Time.current.floor }
-      let(:url)       { "http://#{Settings['base_domain']}#{user_auth_confirmation_path}" }
+      let(:url)       { "http://#{Settings.base_domain}#{user_auth_confirmation_path}" }
       let(:url_param) { "redirect_url=#{URI.encode_www_form_component(attributes[:confirm_success_url])}" }
       it '作成・対象項目が設定される。メールが送信される' do
         expect do

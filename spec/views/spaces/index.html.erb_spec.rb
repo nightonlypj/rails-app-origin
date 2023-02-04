@@ -24,7 +24,7 @@ RSpec.describe 'spaces/index', type: :view do
         assert_select 'button[type=?]', 'submit'
         if signed_in
           assert_select 'input[name=?]', 'option'
-          if Settings['enable_public_space']
+          if Settings.enable_public_space
             assert_select 'input[name=?]', 'public'
             assert_select 'input[name=?]', 'private'
             assert_select 'input[name=?]', 'join'

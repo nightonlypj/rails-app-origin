@@ -85,7 +85,7 @@ module MembersConcern
     base_members = @download.target.to_sym == :select ? members_select(eval(@download.select_items)) : members_search
     page = 1
     loop do
-      members = base_members.page(page).per(Settings['job_members_limit'])
+      members = base_members.page(page).per(Settings.job_members_limit)
       members.each do |member|
         data = []
         output_items.each do |output_item|

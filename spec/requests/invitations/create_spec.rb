@@ -136,7 +136,7 @@ RSpec.describe 'Invitations', type: :request do
     end
     shared_examples_for '[ログイン中][*][ある]無効なパラメータ（ドメインが最大数より多い）' do
       let(:attributes) { invalid_attributes_over }
-      message = get_locale('activerecord.errors.models.invitation.attributes.domains.max_count', count: Settings['invitation_domains_max_count'])
+      message = get_locale('activerecord.errors.models.invitation.attributes.domains.max_count', count: Settings.invitation_domains_max_count)
       it_behaves_like 'NG(html)'
       it_behaves_like 'NG(json)'
       it_behaves_like 'ToNG(html)', 422, [message]
@@ -144,7 +144,7 @@ RSpec.describe 'Invitations', type: :request do
     end
     shared_examples_for '[APIログイン中][*][ある]無効なパラメータ（ドメインが最大数より多い）' do
       let(:attributes) { invalid_attributes_over }
-      message = get_locale('activerecord.errors.models.invitation.attributes.domains.max_count', count: Settings['invitation_domains_max_count'])
+      message = get_locale('activerecord.errors.models.invitation.attributes.domains.max_count', count: Settings.invitation_domains_max_count)
       it_behaves_like 'NG(html)'
       it_behaves_like 'NG(json)'
       it_behaves_like 'ToNG(html)', 422, [message] # NOTE: HTMLもログイン状態になる

@@ -34,7 +34,7 @@ RSpec.describe 'Invitations', type: :request do
     # テスト内容
     shared_examples_for 'OK' do
       let!(:start_time) { Time.current.floor }
-      let(:schedule_days) { Settings['invitation_destroy_schedule_days'].days }
+      let(:schedule_days) { Settings.invitation_destroy_schedule_days.days }
       it '対象項目が変更される' do
         subject
         expect(current_invitation.memo).to eq(attributes[:memo])

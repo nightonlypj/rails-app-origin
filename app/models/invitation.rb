@@ -8,12 +8,12 @@ class Invitation < ApplicationRecord
   validates :code, presence: true
   validates :code, uniqueness: { case_sensitive: true }
   validates :power, presence: true
-  validates :memo, length: { maximum: Settings['invitation_memo_maximum'] }, if: proc { |invitation| invitation.memo.present? }
+  validates :memo, length: { maximum: Settings.invitation_memo_maximum }, if: proc { |invitation| invitation.memo.present? }
   validate :validate_ended_date
   validate :validate_ended_time
 
   scope :destroy_target, lambda {
-    schedule_date = Time.current - Settings['invitation_destroy_schedule_days'].days
+    schedule_date = Time.current - Settings.invitation_destroy_schedule_days.days
     where(destroy_schedule_at: ..Time.current)
       .or(where(destroy_schedule_at: nil, ended_at: ..schedule_date))
       .or(where(destroy_schedule_at: nil, email_joined_at: ..schedule_date))

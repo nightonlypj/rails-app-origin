@@ -8,7 +8,7 @@ RSpec.describe 'Spaces', type: :request do
   # テスト内容（共通）
   shared_examples_for 'ToOK[名称]' do
     it 'HTTPステータスが200。対象の名称が一致する/含まれる' do
-      Settings['default_spaces_limit'] = spaces.count if spaces.count.positive?
+      Settings.default_spaces_limit = spaces.count if spaces.count.positive?
       is_expected.to eq(200)
       if subject_format == :json
         # JSON
@@ -17,7 +17,7 @@ RSpec.describe 'Spaces', type: :request do
           expect(response_json_spaces[index]['name']).to eq(space.name)
         end
 
-        if Settings['enable_public_space']
+        if Settings.enable_public_space
           default_params = { text: nil, public: 1, private: 1, join: 1, nojoin: 1, active: 1, destroy: 0 }
         else
           default_params = { text: nil, active: 1, destroy: 0 }
@@ -56,7 +56,7 @@ RSpec.describe 'Spaces', type: :request do
       it 'HTTPステータスが200。対象項目が一致する' do
         is_expected.to eq(200)
         expect(response_json['success']).to eq(true)
-        if Settings['enable_public_space']
+        if Settings.enable_public_space
           search_params = { text: nil, public: 1, private: 1, join: 1, nojoin: 1, active: 1, destroy: 0 }
         else
           search_params = { text: nil, active: 1, destroy: 0 }
@@ -64,8 +64,8 @@ RSpec.describe 'Spaces', type: :request do
         expect(response_json['search_params']).to eq(search_params.stringify_keys)
         expect(response_json_space['total_count']).to eq(spaces.count)
         expect(response_json_space['current_page']).to eq(subject_page)
-        expect(response_json_space['total_pages']).to eq((spaces.count - 1).div(Settings['default_spaces_limit']) + 1)
-        expect(response_json_space['limit_value']).to eq(Settings['default_spaces_limit'])
+        expect(response_json_space['total_pages']).to eq((spaces.count - 1).div(Settings.default_spaces_limit) + 1)
+        expect(response_json_space['limit_value']).to eq(Settings.default_spaces_limit)
       end
     end
 
@@ -104,8 +104,8 @@ RSpec.describe 'Spaces', type: :request do
       let(:accept_headers) { ACCEPT_INC_HTML }
       let(:subject_page) { page }
       let(:user_spaces)  { @public_spaces + @public_nojoin_spaces + @private_spaces }
-      let(:start_no)     { (Settings['default_spaces_limit'] * (page - 1)) + 1 }
-      let(:end_no)       { [user_spaces.count, Settings['default_spaces_limit'] * page].min }
+      let(:start_no)     { (Settings.default_spaces_limit * (page - 1)) + 1 }
+      let(:end_no)       { [user_spaces.count, Settings.default_spaces_limit * page].min }
       it '対象項目が含まれる' do
         subject
         (start_no..end_no).each do |no|
@@ -129,8 +129,8 @@ RSpec.describe 'Spaces', type: :request do
       let(:subject_format) { :json }
       let(:accept_headers) { ACCEPT_INC_JSON }
       let(:subject_page) { page }
-      let(:start_no)     { (Settings['default_spaces_limit'] * (page - 1)) + 1 }
-      let(:end_no)       { [spaces.count, Settings['default_spaces_limit'] * page].min }
+      let(:start_no)     { (Settings.default_spaces_limit * (page - 1)) + 1 }
+      let(:end_no)       { [spaces.count, Settings.default_spaces_limit * page].min }
       it '件数・対象項目が一致する' do
         subject
         expect(response_json_spaces.count).to eq(end_no - start_no + 1)
@@ -180,9 +180,8 @@ RSpec.describe 'Spaces', type: :request do
       it_behaves_like 'リダイレクト(json)', 2
     end
     shared_examples_for '[未ログイン]スペースが最大表示数と同じ' do
-      count = Settings['test_spaces']
-      all = count['public_admin_count'] + count['public_none_count'] + count['private_admin_count'] + count['private_reader_count']
-      include_context 'スペース一覧作成', 0, all, 0, 0
+      count = Settings.test_spaces_count
+      include_context 'スペース一覧作成', 0, count.public_admin + count.public_none + count.private_admin + count.private_reader, 0, 0
       it_behaves_like 'ToOK(html)', 1
       it_behaves_like 'ページネーション非表示', 1, 2
       it_behaves_like 'リスト表示', 1
@@ -192,8 +191,8 @@ RSpec.describe 'Spaces', type: :request do
       it_behaves_like 'リダイレクト(json)', 2
     end
     shared_examples_for '[ログイン中/削除予約済み]スペースが最大表示数と同じ' do
-      count = Settings['test_spaces']
-      include_context 'スペース一覧作成', count['public_admin_count'], count['public_none_count'], count['private_admin_count'], count['private_reader_count']
+      count = Settings.test_spaces_count
+      include_context 'スペース一覧作成', count.public_admin, count.public_none, count.private_admin, count.private_reader
       it_behaves_like 'ToOK(html)', 1
       it_behaves_like 'ページネーション非表示', 1, 2
       it_behaves_like 'リスト表示', 1
@@ -203,8 +202,8 @@ RSpec.describe 'Spaces', type: :request do
       it_behaves_like 'リダイレクト(json)', 2
     end
     shared_examples_for '[APIログイン中/削除予約済み]スペースが最大表示数と同じ' do
-      count = Settings['test_spaces']
-      include_context 'スペース一覧作成', count['public_admin_count'], count['public_none_count'], count['private_admin_count'], count['private_reader_count']
+      count = Settings.test_spaces_count
+      include_context 'スペース一覧作成', count.public_admin, count.public_none, count.private_admin, count.private_reader
       it_behaves_like 'ToOK(html)', 1
       it_behaves_like 'ページネーション非表示', 1, 2
       it_behaves_like 'リスト表示', 1
@@ -214,8 +213,8 @@ RSpec.describe 'Spaces', type: :request do
       it_behaves_like 'リダイレクト(json)', 2
     end
     shared_examples_for '[未ログイン]スペースが最大表示数より多い' do
-      count = Settings['test_spaces']
-      all = count['public_admin_count'] + count['public_none_count'] + count['private_admin_count'] + count['private_reader_count']
+      count = Settings.test_spaces_count
+      all = count.public_admin + count.public_none + count.private_admin + count.private_reader
       include_context 'スペース一覧作成', 0, all + 1, 0, 0
       it_behaves_like 'ToOK(html)', 1
       it_behaves_like 'ToOK(html)', 2
@@ -231,8 +230,8 @@ RSpec.describe 'Spaces', type: :request do
       it_behaves_like 'リダイレクト(json)', 3
     end
     shared_examples_for '[ログイン中/削除予約済み]スペースが最大表示数より多い' do
-      count = Settings['test_spaces']
-      include_context 'スペース一覧作成', count['public_admin_count'], count['public_none_count'] + 1, count['private_admin_count'], count['private_reader_count']
+      count = Settings.test_spaces_count
+      include_context 'スペース一覧作成', count.public_admin, count.public_none + 1, count.private_admin, count.private_reader
       it_behaves_like 'ToOK(html)', 1
       it_behaves_like 'ToOK(html)', 2
       it_behaves_like 'ページネーション表示', 1, 2
@@ -247,8 +246,8 @@ RSpec.describe 'Spaces', type: :request do
       # it_behaves_like 'リダイレクト(json)', 3
     end
     shared_examples_for '[APIログイン中/削除予約済み]スペースが最大表示数より多い' do
-      count = Settings['test_spaces']
-      include_context 'スペース一覧作成', count['public_admin_count'], count['public_none_count'] + 1, count['private_admin_count'], count['private_reader_count']
+      count = Settings.test_spaces_count
+      include_context 'スペース一覧作成', count.public_admin, count.public_none + 1, count.private_admin, count.private_reader
       it_behaves_like 'ToOK(html)', 1
       it_behaves_like 'ToOK(html)', 2
       it_behaves_like 'ページネーション表示', 1, 2
@@ -400,7 +399,7 @@ RSpec.describe 'Spaces', type: :request do
 
     shared_examples_for 'オプション' do
       it_behaves_like '全て1'
-      if Settings['enable_public_space']
+      if Settings.enable_public_space
         it_behaves_like '公開・非公開が1と0'
         it_behaves_like '公開・非公開が0と1'
         it_behaves_like '公開・非公開が0と0'

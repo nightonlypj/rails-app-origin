@@ -6,5 +6,5 @@ json.invitation do
   json.partial! 'invitation', invitation: @invitation
 
   ## 招待削除の猶予期間
-  json.destroy_schedule_days Settings['invitation_destroy_schedule_days']
+  json.destroy_schedule_days Settings.invitation_destroy_schedule_days
 end

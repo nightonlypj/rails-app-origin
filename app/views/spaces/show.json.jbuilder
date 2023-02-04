@@ -9,7 +9,7 @@ json.space do
   json.member_count @member_count
 
   ## スペース削除の猶予期間
-  json.destroy_schedule_days Settings['space_destroy_schedule_days']
+  json.destroy_schedule_days Settings.space_destroy_schedule_days
 
   if @current_member.present?
     json.current_member do

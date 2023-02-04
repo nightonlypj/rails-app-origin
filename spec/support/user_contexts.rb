@@ -122,11 +122,11 @@ shared_context 'Authテスト内容' do
         expect(data['code']).to eq(space.code)
 
         data_image_url = data['image_url']
-        expect(data_image_url['mini']).to eq("#{Settings['base_image_url']}#{space.image_url(:mini)}")
-        expect(data_image_url['small']).to eq("#{Settings['base_image_url']}#{space.image_url(:small)}")
-        expect(data_image_url['medium']).to eq("#{Settings['base_image_url']}#{space.image_url(:medium)}")
-        expect(data_image_url['large']).to eq("#{Settings['base_image_url']}#{space.image_url(:large)}")
-        expect(data_image_url['xlarge']).to eq("#{Settings['base_image_url']}#{space.image_url(:xlarge)}")
+        expect(data_image_url['mini']).to eq("#{Settings.base_image_url}#{space.image_url(:mini)}")
+        expect(data_image_url['small']).to eq("#{Settings.base_image_url}#{space.image_url(:small)}")
+        expect(data_image_url['medium']).to eq("#{Settings.base_image_url}#{space.image_url(:medium)}")
+        expect(data_image_url['large']).to eq("#{Settings.base_image_url}#{space.image_url(:large)}")
+        expect(data_image_url['xlarge']).to eq("#{Settings.base_image_url}#{space.image_url(:xlarge)}")
 
         expect(data['name']).to eq(space.name)
         expect(data['description']).to eq(space.description)

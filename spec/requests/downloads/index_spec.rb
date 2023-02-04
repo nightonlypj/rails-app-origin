@@ -35,8 +35,8 @@ RSpec.describe 'Downloads', type: :request do
 
         expect(response_json_download['total_count']).to eq(downloads.count)
         expect(response_json_download['current_page']).to eq(subject_page)
-        expect(response_json_download['total_pages']).to eq((downloads.count - 1).div(Settings['default_downloads_limit']) + 1)
-        expect(response_json_download['limit_value']).to eq(Settings['default_downloads_limit'])
+        expect(response_json_download['total_pages']).to eq((downloads.count - 1).div(Settings.default_downloads_limit) + 1)
+        expect(response_json_download['limit_value']).to eq(Settings.default_downloads_limit)
 
         expect(response_json['undownloaded_count']).to eq(user.undownloaded_count)
       end
@@ -76,8 +76,8 @@ RSpec.describe 'Downloads', type: :request do
       let(:subject_format) { nil }
       let(:accept_headers) { ACCEPT_INC_HTML }
       let(:subject_page) { page }
-      let(:start_no)     { (Settings['default_downloads_limit'] * (page - 1)) + 1 }
-      let(:end_no)       { [downloads.count, Settings['default_downloads_limit'] * page].min }
+      let(:start_no)     { (Settings.default_downloads_limit * (page - 1)) + 1 }
+      let(:end_no)       { [downloads.count, Settings.default_downloads_limit * page].min }
       it '対象項目が含まれる' do
         subject
         (start_no..end_no).each do |no|
@@ -112,8 +112,8 @@ RSpec.describe 'Downloads', type: :request do
       let(:subject_format) { :json }
       let(:accept_headers) { ACCEPT_INC_JSON }
       let(:subject_page) { page }
-      let(:start_no)     { (Settings['default_downloads_limit'] * (page - 1)) + 1 }
-      let(:end_no)       { [downloads.count, Settings['default_downloads_limit'] * page].min }
+      let(:start_no)     { (Settings.default_downloads_limit * (page - 1)) + 1 }
+      let(:end_no)       { [downloads.count, Settings.default_downloads_limit * page].min }
       it '件数・対象項目が一致する' do
         subject
         expect(response_json_downloads.count).to eq(end_no - start_no + 1)
@@ -160,8 +160,8 @@ RSpec.describe 'Downloads', type: :request do
       it_behaves_like 'リダイレクト(json)', 2
     end
     shared_examples_for '[ログイン中/削除予約済み]ダウンロード結果が最大表示数と同じ' do
-      count = Settings['test_downloads']
-      include_context 'ダウンロード結果一覧作成', count['waiting_count'], count['processing_count'], count['success_count'], count['failure_count'], count['downloaded_count']
+      count = Settings.test_downloads_count
+      include_context 'ダウンロード結果一覧作成', count.waiting, count.processing, count.success, count.failure, count.downloaded
       it_behaves_like 'ToOK(html)', 1
       it_behaves_like 'ページネーション非表示', 1, 2
       it_behaves_like 'リスト表示', 1
@@ -169,8 +169,8 @@ RSpec.describe 'Downloads', type: :request do
       it_behaves_like 'ToNG(json)', 401 # NOTE: APIは未ログイン扱い
     end
     shared_examples_for '[APIログイン中/削除予約済み]ダウンロード結果が最大表示数と同じ' do
-      count = Settings['test_downloads']
-      include_context 'ダウンロード結果一覧作成', count['waiting_count'], count['processing_count'], count['success_count'], count['failure_count'], count['downloaded_count']
+      count = Settings.test_downloads_count
+      include_context 'ダウンロード結果一覧作成', count.waiting, count.processing, count.success, count.failure, count.downloaded
       it_behaves_like 'ToOK(html)', 1
       it_behaves_like 'ページネーション非表示', 1, 2
       it_behaves_like 'リスト表示', 1
@@ -180,8 +180,8 @@ RSpec.describe 'Downloads', type: :request do
       it_behaves_like 'リダイレクト(json)', 2
     end
     shared_examples_for '[ログイン中/削除予約済み]ダウンロード結果が最大表示数より多い' do
-      count = Settings['test_downloads']
-      include_context 'ダウンロード結果一覧作成', count['waiting_count'], count['processing_count'], count['success_count'], count['failure_count'], count['downloaded_count'] + 1
+      count = Settings.test_downloads_count
+      include_context 'ダウンロード結果一覧作成', count.waiting, count.processing, count.success, count.failure, count.downloaded + 1
       it_behaves_like 'ToOK(html)', 1
       it_behaves_like 'ToOK(html)', 2
       it_behaves_like 'ページネーション表示', 1, 2
@@ -192,8 +192,8 @@ RSpec.describe 'Downloads', type: :request do
       it_behaves_like 'ToNG(json)', 401 # NOTE: APIは未ログイン扱い
     end
     shared_examples_for '[APIログイン中/削除予約済み]ダウンロード結果が最大表示数より多い' do
-      count = Settings['test_downloads']
-      include_context 'ダウンロード結果一覧作成', count['waiting_count'], count['processing_count'], count['success_count'], count['failure_count'], count['downloaded_count'] + 1
+      count = Settings.test_downloads_count
+      include_context 'ダウンロード結果一覧作成', count.waiting, count.processing, count.success, count.failure, count.downloaded + 1
       it_behaves_like 'ToOK(html)', 1
       it_behaves_like 'ToOK(html)', 2
       it_behaves_like 'ページネーション表示', 1, 2
@@ -352,33 +352,33 @@ RSpec.describe 'Downloads', type: :request do
 
     # テストケース
     shared_examples_for '対象IDが一覧に存在する(notice)' do |status|
-      before_all { FactoryBot.create_list(:download, Settings['default_downloads_limit'], user: user, space: space) }
+      before_all { FactoryBot.create_list(:download, Settings.default_downloads_limit, user: user, space: space) }
       let_it_be(:download) { FactoryBot.create(:download, status, user: user, space: space) }
       it_behaves_like 'OK', status, nil, "notice.download.status.#{status}"
     end
     shared_examples_for '対象IDが一覧に存在しない(notice)' do |status|
       let_it_be(:download) { FactoryBot.create(:download, status, user: user, space: space) }
-      before_all { FactoryBot.create_list(:download, Settings['default_downloads_limit'], user: user, space: space) }
+      before_all { FactoryBot.create_list(:download, Settings.default_downloads_limit, user: user, space: space) }
       it_behaves_like 'OK', status, nil, "notice.download.status.#{status}"
     end
     shared_examples_for '対象IDが一覧に存在する(alert)' do |status|
-      before_all { FactoryBot.create_list(:download, Settings['default_downloads_limit'], user: user, space: space) }
+      before_all { FactoryBot.create_list(:download, Settings.default_downloads_limit, user: user, space: space) }
       let_it_be(:download) { FactoryBot.create(:download, status, user: user, space: space) }
       it_behaves_like 'OK', status, "alert.download.status.#{status}", nil
     end
     shared_examples_for '対象IDが一覧に存在しない(alert)' do |status|
       let_it_be(:download) { FactoryBot.create(:download, status, user: user, space: space) }
-      before_all { FactoryBot.create_list(:download, Settings['default_downloads_limit'], user: user, space: space) }
+      before_all { FactoryBot.create_list(:download, Settings.default_downloads_limit, user: user, space: space) }
       it_behaves_like 'OK', status, "alert.download.status.#{status}", nil
     end
     shared_examples_for '対象IDが一覧に存在する(nil)' do |status|
-      before_all { FactoryBot.create_list(:download, Settings['default_downloads_limit'], user: user, space: space) }
+      before_all { FactoryBot.create_list(:download, Settings.default_downloads_limit, user: user, space: space) }
       let_it_be(:download) { FactoryBot.create(:download, status, user: user, space: space) }
       it_behaves_like 'OK', :success, nil, nil
     end
     shared_examples_for '対象IDが一覧に存在しない(nil)' do |status|
       let_it_be(:download) { FactoryBot.create(:download, status, user: user, space: space) }
-      before_all { FactoryBot.create_list(:download, Settings['default_downloads_limit'], user: user, space: space) }
+      before_all { FactoryBot.create_list(:download, Settings.default_downloads_limit, user: user, space: space) }
       it_behaves_like 'OK', :success, nil, nil
     end
     shared_examples_for '対象IDが存在しない' do

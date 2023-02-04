@@ -82,7 +82,7 @@ def expect_space_json(response_json_space, space, user_power, member_count)
   expect(response_json_space['member_count']).to eq(member_count)
 
   ## スペース削除の猶予期間
-  expect(response_json_space['destroy_schedule_days']).to eq(Settings['space_destroy_schedule_days'])
+  expect(response_json_space['destroy_schedule_days']).to eq(Settings.space_destroy_schedule_days)
 
   if user_power.present?
     expect(response_json_space['current_member']['power']).to eq(user_power.to_s)

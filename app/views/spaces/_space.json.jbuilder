@@ -1,11 +1,11 @@
 json.code space.code
 json.upload_image space.image?
 json.image_url do
-  json.mini "#{Settings['base_image_url']}#{space.image_url(:mini)}"
-  json.small "#{Settings['base_image_url']}#{space.image_url(:small)}"
-  json.medium "#{Settings['base_image_url']}#{space.image_url(:medium)}"
-  json.large "#{Settings['base_image_url']}#{space.image_url(:large)}"
-  json.xlarge "#{Settings['base_image_url']}#{space.image_url(:xlarge)}"
+  json.mini "#{Settings.base_image_url}#{space.image_url(:mini)}"
+  json.small "#{Settings.base_image_url}#{space.image_url(:small)}"
+  json.medium "#{Settings.base_image_url}#{space.image_url(:medium)}"
+  json.large "#{Settings.base_image_url}#{space.image_url(:large)}"
+  json.xlarge "#{Settings.base_image_url}#{space.image_url(:xlarge)}"
 end
 json.name space.name
 json.description space.description

@@ -9,7 +9,7 @@ class DownloadsController < ApplicationAuthController
   def index
     @id = params[:id].present? ? params[:id].to_i : nil
     @downloads = Download.where(user: current_user).search(@id)
-                         .page(params[:page]).per(Settings['default_downloads_limit']).order(id: :desc)
+                         .page(params[:page]).per(Settings.default_downloads_limit).order(id: :desc)
 
     if format_html? && @downloads.current_page > [@downloads.total_pages, 1].max
       return redirect_to @downloads.total_pages <= 1 ? downloads_path : downloads_path(page: @downloads.total_pages)

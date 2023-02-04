@@ -17,7 +17,7 @@ class Download < ApplicationRecord
 
   scope :search, ->(id) { where(id: id) if id.present? }
   scope :destroy_target, lambda {
-    schedule_date = Time.current - Settings['download_destroy_schedule_days'].days
+    schedule_date = Time.current - Settings.download_destroy_schedule_days.days
     where(completed_at: ..schedule_date)
       .or(where(completed_at: nil, requested_at: ..schedule_date))
   }

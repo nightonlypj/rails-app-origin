@@ -52,8 +52,8 @@ RSpec.describe 'Invitations', type: :request do
 
         expect(response_json_invitation['total_count']).to eq(invitations.count)
         expect(response_json_invitation['current_page']).to eq(subject_page)
-        expect(response_json_invitation['total_pages']).to eq((invitations.count - 1).div(Settings['default_invitations_limit']) + 1)
-        expect(response_json_invitation['limit_value']).to eq(Settings['default_invitations_limit'])
+        expect(response_json_invitation['total_pages']).to eq((invitations.count - 1).div(Settings.default_invitations_limit) + 1)
+        expect(response_json_invitation['limit_value']).to eq(Settings.default_invitations_limit)
       end
     end
 
@@ -91,8 +91,8 @@ RSpec.describe 'Invitations', type: :request do
       let(:subject_format) { nil }
       let(:accept_headers) { ACCEPT_INC_HTML }
       let(:subject_page) { page }
-      let(:start_no)     { (Settings['default_invitations_limit'] * (page - 1)) + 1 }
-      let(:end_no)       { [invitations.count, Settings['default_invitations_limit'] * page].min }
+      let(:start_no)     { (Settings.default_invitations_limit * (page - 1)) + 1 }
+      let(:end_no)       { [invitations.count, Settings.default_invitations_limit * page].min }
       it '対象項目が含まれる' do
         subject
         (start_no..end_no).each do |no|
@@ -147,8 +147,8 @@ RSpec.describe 'Invitations', type: :request do
       let(:subject_format) { :json }
       let(:accept_headers) { ACCEPT_INC_JSON }
       let(:subject_page) { page }
-      let(:start_no)     { (Settings['default_invitations_limit'] * (page - 1)) + 1 }
-      let(:end_no)       { [invitations.count, Settings['default_invitations_limit'] * page].min }
+      let(:start_no)     { (Settings.default_invitations_limit * (page - 1)) + 1 }
+      let(:end_no)       { [invitations.count, Settings.default_invitations_limit * page].min }
       it '件数・対象項目が一致する' do
         subject
         expect(response_json_invitations.count).to eq(end_no - start_no + 1)
@@ -196,8 +196,8 @@ RSpec.describe 'Invitations', type: :request do
       it_behaves_like 'リダイレクト(json)', 2
     end
     shared_examples_for '[ログイン中/削除予約済み][*][ある]招待URLが最大表示数と同じ' do
-      count = Settings['test_invitations']
-      include_context '招待URL一覧作成', count['active_count'], count['expired_count'], count['deleted_count'], count['email_joined_count']
+      count = Settings.test_invitations_count
+      include_context '招待URL一覧作成', count.active, count.expired, count.deleted, count.email_joined
       it_behaves_like 'ToOK(html)', 1
       it_behaves_like 'ページネーション非表示', 1, 2
       it_behaves_like 'リスト表示', 1
@@ -205,8 +205,8 @@ RSpec.describe 'Invitations', type: :request do
       it_behaves_like 'ToNG(json)', 401 # NOTE: APIは未ログイン扱い
     end
     shared_examples_for '[APIログイン中/削除予約済み][*][ある]招待URLが最大表示数と同じ' do
-      count = Settings['test_invitations']
-      include_context '招待URL一覧作成', count['active_count'], count['expired_count'], count['deleted_count'], count['email_joined_count']
+      count = Settings.test_invitations_count
+      include_context '招待URL一覧作成', count.active, count.expired, count.deleted, count.email_joined
       it_behaves_like 'ToOK(html)', 1 # NOTE: HTMLもログイン状態になる
       it_behaves_like 'ページネーション非表示', 1, 2
       it_behaves_like 'リスト表示', 1
@@ -216,8 +216,8 @@ RSpec.describe 'Invitations', type: :request do
       it_behaves_like 'リダイレクト(json)', 2
     end
     shared_examples_for '[ログイン中/削除予約済み][*][ある]招待URLが最大表示数より多い' do
-      count = Settings['test_invitations']
-      include_context '招待URL一覧作成', count['active_count'], count['expired_count'], count['deleted_count'], count['email_joined_count'] + 1
+      count = Settings.test_invitations_count
+      include_context '招待URL一覧作成', count.active, count.expired, count.deleted, count.email_joined + 1
       it_behaves_like 'ToOK(html)', 1
       it_behaves_like 'ToOK(html)', 2
       it_behaves_like 'ページネーション表示', 1, 2
@@ -228,8 +228,8 @@ RSpec.describe 'Invitations', type: :request do
       it_behaves_like 'ToNG(json)', 401 # NOTE: APIは未ログイン扱い
     end
     shared_examples_for '[APIログイン中/削除予約済み][*][ある]招待URLが最大表示数より多い' do
-      count = Settings['test_invitations']
-      include_context '招待URL一覧作成', count['active_count'], count['expired_count'], count['deleted_count'], count['email_joined_count'] + 1
+      count = Settings.test_invitations_count
+      include_context '招待URL一覧作成', count.active, count.expired, count.deleted, count.email_joined + 1
       it_behaves_like 'ToOK(html)', 1 # NOTE: HTMLもログイン状態になる
       it_behaves_like 'ToOK(html)', 2
       it_behaves_like 'ページネーション表示', 1, 2

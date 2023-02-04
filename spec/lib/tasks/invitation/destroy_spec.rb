@@ -1,7 +1,7 @@
 require 'rake_helper'
 
 RSpec.describe :invitation, type: :task do
-  # 招待削除（削除予定日時または終了日時か参加日時から#{Settings['invitation_destroy_schedule_days']}日後以降）
+  # 招待削除（削除予定日時または終了日時か参加日時から#{Settings.invitation_destroy_schedule_days}日後以降）
   # テストパターン
   #   削除対象: ない, ある
   #     削除予定日時: ない, 過去, 未来
@@ -12,8 +12,8 @@ RSpec.describe :invitation, type: :task do
   #   ドライラン: true, false
   describe 'invitation:destroy' do
     let(:task) { Rake.application['invitation:destroy'] }
-    let_it_be(:before_date) { Time.current - Settings['invitation_destroy_schedule_days'].days - 1.minute }
-    let_it_be(:after_date)  { Time.current - Settings['invitation_destroy_schedule_days'].days + 1.minute }
+    let_it_be(:before_date) { Time.current - Settings.invitation_destroy_schedule_days.days - 1.minute }
+    let_it_be(:after_date)  { Time.current - Settings.invitation_destroy_schedule_days.days + 1.minute }
     before_all do
       user = FactoryBot.create(:user)
       space = FactoryBot.create(:space, created_user: user)

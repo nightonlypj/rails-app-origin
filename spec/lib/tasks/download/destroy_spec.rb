@@ -1,7 +1,7 @@
 require 'rake_helper'
 
 RSpec.describe :download, type: :task do
-  # ダウンロード削除（完了日時か依頼日時の#{Settings['download_destroy_schedule_days']}日後以降）
+  # ダウンロード削除（完了日時か依頼日時の#{Settings.download_destroy_schedule_days}日後以降）
   # テストパターン
   #   削除対象: ない, ある
   #     完了日時: ない, 現在日時＋設定日数以前, 現在日時＋設定日数以降
@@ -12,8 +12,8 @@ RSpec.describe :download, type: :task do
   #   ドライラン: true, false
   describe 'download:destroy' do
     let(:task) { Rake.application['download:destroy'] }
-    let_it_be(:before_date) { Time.current - Settings['download_destroy_schedule_days'].days - 1.minute }
-    let_it_be(:after_date)  { Time.current - Settings['download_destroy_schedule_days'].days + 1.minute }
+    let_it_be(:before_date) { Time.current - Settings.download_destroy_schedule_days.days - 1.minute }
+    let_it_be(:after_date)  { Time.current - Settings.download_destroy_schedule_days.days + 1.minute }
     before_all do
       user = FactoryBot.create(:user)
       space = FactoryBot.create(:space, created_user: user)

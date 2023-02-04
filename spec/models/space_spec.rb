@@ -52,21 +52,21 @@ RSpec.describe Space, type: :model do
       it_behaves_like 'InValid'
     end
     context '最小文字数よりも少ない' do
-      let(:name) { 'a' * (Settings['space_name_minimum'] - 1) }
-      let(:messages) { { name: [get_locale('activerecord.errors.models.space.attributes.name.too_short', count: Settings['space_name_minimum'])] } }
+      let(:name) { 'a' * (Settings.space_name_minimum - 1) }
+      let(:messages) { { name: [get_locale('activerecord.errors.models.space.attributes.name.too_short', count: Settings.space_name_minimum)] } }
       it_behaves_like 'InValid'
     end
     context '最小文字数と同じ' do
-      let(:name) { 'a' * Settings['space_name_minimum'] }
+      let(:name) { 'a' * Settings.space_name_minimum }
       it_behaves_like 'Valid'
     end
     context '最大文字数と同じ' do
-      let(:name) { 'a' * Settings['space_name_maximum'] }
+      let(:name) { 'a' * Settings.space_name_maximum }
       it_behaves_like 'Valid'
     end
     context '最大文字数よりも多い' do
-      let(:name) { 'a' * (Settings['space_name_maximum'] + 1) }
-      let(:messages) { { name: [get_locale('activerecord.errors.models.space.attributes.name.too_long', count: Settings['space_name_maximum'])] } }
+      let(:name) { 'a' * (Settings.space_name_maximum + 1) }
+      let(:messages) { { name: [get_locale('activerecord.errors.models.space.attributes.name.too_long', count: Settings.space_name_maximum)] } }
       it_behaves_like 'InValid'
     end
   end
@@ -83,12 +83,12 @@ RSpec.describe Space, type: :model do
       it_behaves_like 'Valid'
     end
     context '最大文字数と同じ' do
-      let(:description) { 'a' * Settings['space_description_maximum'] }
+      let(:description) { 'a' * Settings.space_description_maximum }
       it_behaves_like 'Valid'
     end
     context '最大文字数よりも多い' do
-      let(:description) { 'a' * (Settings['space_description_maximum'] + 1) }
-      let(:messages) { { description: [get_locale('activerecord.errors.models.space.attributes.description.too_long', count: Settings['space_description_maximum'])] } }
+      let(:description) { 'a' * (Settings.space_description_maximum + 1) }
+      let(:messages) { { description: [get_locale('activerecord.errors.models.space.attributes.description.too_long', count: Settings.space_description_maximum)] } }
       it_behaves_like 'InValid'
     end
   end
@@ -139,44 +139,32 @@ RSpec.describe Space, type: :model do
   # 削除予約
   # 前提条件
   #   削除予約なし
-  describe '#set_destroy_reserve' do
-    subject { space.set_destroy_reserve }
-    let_it_be(:space) { FactoryBot.create(:space) }
+  describe '#set_destroy_reserve!' do
+    subject { space.set_destroy_reserve! }
+    let(:space) { FactoryBot.create(:space) }
+    let(:current_space) { Space.find(space.id) }
 
-    context '削除依頼日時' do
-      let!(:start_time) { Time.current.floor }
-      it '現在日時に変更される' do
-        is_expected.to eq(true)
-        expect(space.destroy_requested_at).to be_between(start_time, Time.current)
-      end
-    end
-    context '削除予定日時' do
-      let!(:start_time) { Time.current.floor + Settings['space_destroy_schedule_days'].days }
-      it '現在日時＋設定日数に変更される' do
-        is_expected.to eq(true)
-        expect(space.destroy_schedule_at).to be_between(start_time, Time.current + Settings['space_destroy_schedule_days'].days)
-      end
+    let!(:start_time) { Time.current.floor }
+    let!(:start_time_schedule) { Time.current.floor + Settings.space_destroy_schedule_days.days }
+    it '削除依頼日時が現在日時、削除予定日時が現在日時＋設定日数に変更され、保存される' do
+      is_expected.to eq(true)
+      expect(current_space.destroy_requested_at).to be_between(start_time, Time.current)
+      expect(current_space.destroy_schedule_at).to be_between(start_time_schedule, Time.current + Settings.space_destroy_schedule_days.days)
     end
   end
 
   # 削除予約取り消し
   # 前提条件
   #   削除予約済み
-  describe '#set_undo_destroy_reserve' do
-    subject { space.set_undo_destroy_reserve }
-    let_it_be(:space) { FactoryBot.create(:space, :destroy_reserved) }
+  describe '#set_undo_destroy_reserve!' do
+    subject { space.set_undo_destroy_reserve! }
+    let(:space) { FactoryBot.create(:space, :destroy_reserved) }
+    let(:current_space) { Space.find(space.id) }
 
-    context '削除依頼日時' do
-      it 'なしに変更される' do
-        is_expected.to eq(true)
-        expect(space.destroy_requested_at).to be_nil
-      end
-    end
-    context '削除予定日時' do
-      it 'なしに変更される' do
-        is_expected.to eq(true)
-        expect(space.destroy_schedule_at).to be_nil
-      end
+    it '削除依頼日時・削除予定日時がなしに変更される' do
+      is_expected.to eq(true)
+      expect(space.destroy_requested_at).to be_nil
+      expect(space.destroy_schedule_at).to be_nil
     end
   end
 

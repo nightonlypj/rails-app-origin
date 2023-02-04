@@ -12,8 +12,8 @@ class Space < ApplicationRecord
   validates :code, presence: true
   validates :code, uniqueness: { case_sensitive: true }
   validates :name, presence: true
-  validates :name, length: { in: Settings['space_name_minimum']..Settings['space_name_maximum'] }, if: proc { errors[:name].blank? }
-  validates :description, length: { maximum: Settings['space_description_maximum'] }, if: proc { |space| space.description.present? }
+  validates :name, length: { in: Settings.space_name_minimum..Settings.space_name_maximum }, if: proc { errors[:name].blank? }
+  validates :description, length: { maximum: Settings.space_description_maximum }, if: proc { |space| space.description.present? }
   validates :private, inclusion: { in: [true, false] } # NOTE: presenceだとfalseもエラーになる為
 
   scope :by_target, lambda { |current_user, checked|
@@ -65,12 +65,12 @@ class Space < ApplicationRecord
   end
 
   # 削除予約
-  def set_destroy_reserve
-    update!(destroy_requested_at: Time.current, destroy_schedule_at: Time.current + Settings['space_destroy_schedule_days'].days)
+  def set_destroy_reserve!
+    update!(destroy_requested_at: Time.current, destroy_schedule_at: Time.current + Settings.space_destroy_schedule_days.days)
   end
 
   # 削除予約取り消し
-  def set_undo_destroy_reserve
+  def set_undo_destroy_reserve!
     update!(destroy_requested_at: nil, destroy_schedule_at: nil)
   end
 

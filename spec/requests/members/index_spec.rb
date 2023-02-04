@@ -95,8 +95,8 @@ RSpec.describe 'Members', type: :request do
 
         expect(response_json_member['total_count']).to eq(members.count)
         expect(response_json_member['current_page']).to eq(subject_page)
-        expect(response_json_member['total_pages']).to eq((members.count - 1).div(Settings['default_members_limit']) + 1)
-        expect(response_json_member['limit_value']).to eq(Settings['default_members_limit'])
+        expect(response_json_member['total_pages']).to eq((members.count - 1).div(Settings.default_members_limit) + 1)
+        expect(response_json_member['limit_value']).to eq(Settings.default_members_limit)
       end
     end
 
@@ -125,8 +125,8 @@ RSpec.describe 'Members', type: :request do
       let(:subject_format) { nil }
       let(:accept_headers) { ACCEPT_INC_HTML }
       let(:subject_page) { page }
-      let(:start_no)     { (Settings['default_members_limit'] * (page - 1)) + 1 }
-      let(:end_no)       { [members.count, Settings['default_members_limit'] * page].min }
+      let(:start_no)     { (Settings.default_members_limit * (page - 1)) + 1 }
+      let(:end_no)       { [members.count, Settings.default_members_limit * page].min }
       it '対象項目が含まれる' do
         subject
         (start_no..end_no).each do |no|
@@ -192,8 +192,8 @@ RSpec.describe 'Members', type: :request do
       let(:subject_format) { :json }
       let(:accept_headers) { ACCEPT_INC_JSON }
       let(:subject_page) { page }
-      let(:start_no)     { (Settings['default_members_limit'] * (page - 1)) + 1 }
-      let(:end_no)       { [members.count, Settings['default_members_limit'] * page].min }
+      let(:start_no)     { (Settings.default_members_limit * (page - 1)) + 1 }
+      let(:end_no)       { [members.count, Settings.default_members_limit * page].min }
       it '件数・対象項目が一致する' do
         subject
         expect(response_json_members.count).to eq(end_no - start_no + 1)
@@ -224,8 +224,8 @@ RSpec.describe 'Members', type: :request do
     # テストケース
     shared_examples_for '[ログイン中/削除予約済み][*][ある]メンバーが最大表示数と同じ' do |power|
       let_it_be(:user_power) { power }
-      count = Settings['test_members']
-      include_context 'メンバー一覧作成', count['admin_count'], count['writer_count'], count['reader_count']
+      count = Settings.test_members_count
+      include_context 'メンバー一覧作成', count.admin, count.writer, count.reader
       it_behaves_like 'ToOK(html)', 1
       it_behaves_like 'ページネーション非表示', 1, 2
       it_behaves_like 'リスト表示', 1
@@ -234,8 +234,8 @@ RSpec.describe 'Members', type: :request do
     end
     shared_examples_for '[APIログイン中/削除予約済み][*][ある]メンバーが最大表示数と同じ' do |power|
       let_it_be(:user_power) { power }
-      count = Settings['test_members']
-      include_context 'メンバー一覧作成', count['admin_count'], count['writer_count'], count['reader_count']
+      count = Settings.test_members_count
+      include_context 'メンバー一覧作成', count.admin, count.writer, count.reader
       it_behaves_like 'ToOK(html)', 1 # NOTE: HTMLもログイン状態になる
       it_behaves_like 'ページネーション非表示', 1, 2
       it_behaves_like 'リスト表示', 1
@@ -246,8 +246,8 @@ RSpec.describe 'Members', type: :request do
     end
     shared_examples_for '[ログイン中/削除予約済み][*][ある]メンバーが最大表示数より多い' do |power|
       let_it_be(:user_power) { power }
-      count = Settings['test_members']
-      include_context 'メンバー一覧作成', count['admin_count'], count['writer_count'], count['reader_count'] + 1
+      count = Settings.test_members_count
+      include_context 'メンバー一覧作成', count.admin, count.writer, count.reader + 1
       it_behaves_like 'ToOK(html)', 1
       it_behaves_like 'ToOK(html)', 2
       it_behaves_like 'ページネーション表示', 1, 2
@@ -259,8 +259,8 @@ RSpec.describe 'Members', type: :request do
     end
     shared_examples_for '[APIログイン中/削除予約済み][*][ある]メンバーが最大表示数より多い' do |power|
       let_it_be(:user_power) { power }
-      count = Settings['test_members']
-      include_context 'メンバー一覧作成', count['admin_count'], count['writer_count'], count['reader_count'] + 1
+      count = Settings.test_members_count
+      include_context 'メンバー一覧作成', count.admin, count.writer, count.reader + 1
       it_behaves_like 'ToOK(html)', 1 # NOTE: HTMLもログイン状態になる
       it_behaves_like 'ToOK(html)', 2
       it_behaves_like 'ページネーション表示', 1, 2

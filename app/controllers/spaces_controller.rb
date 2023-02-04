@@ -19,7 +19,7 @@ class SpacesController < ApplicationAuthController
   def index
     @text = params[:text]&.slice(..(255 - 1))
     @option = params[:option] == '1'
-    force_true = !Settings['enable_public_space']
+    force_true = !Settings.enable_public_space
     @checked = {
       public: params[:public] != '0' || force_true,
       private: params[:private] != '0' || force_true,
@@ -30,7 +30,7 @@ class SpacesController < ApplicationAuthController
     }
 
     @spaces = Space.by_target(current_user, @checked).search(@text)
-                   .page(params[:page]).per(Settings['default_spaces_limit']).order(created_at: :desc, id: :desc)
+                   .page(params[:page]).per(Settings.default_spaces_limit).order(created_at: :desc, id: :desc)
     @members = []
     if current_user.present?
       members = Member.where(space_id: @spaces.ids, user: current_user)
@@ -90,7 +90,7 @@ class SpacesController < ApplicationAuthController
   # POST /spaces/delete/:code スペース削除(処理)
   # POST /spaces/delete/:code(.json) スペース削除API(処理)
   def destroy
-    @space.set_destroy_reserve
+    @space.set_destroy_reserve!
 
     if format_html?
       redirect_to space_path(@space.code), notice: t('notice.space.destroy')
@@ -106,7 +106,7 @@ class SpacesController < ApplicationAuthController
   # POST /spaces/undo_delete/:code スペース削除取り消し(処理)
   # POST /spaces/undo_delete/:code(.json) スペース削除取り消しAPI(処理)
   def undo_destroy
-    @space.set_undo_destroy_reserve
+    @space.set_undo_destroy_reserve!
 
     if format_html?
       redirect_to space_path(@space.code), notice: t('notice.space.undo_destroy')
@@ -161,7 +161,7 @@ class SpacesController < ApplicationAuthController
   end
 
   def validate_params_create
-    code = create_unique_code(Space, 'code', "SpacesController.create #{params}", Settings['space_code_length'])
+    code = create_unique_code(Space, 'code', "SpacesController.create #{params}", Settings.space_code_length)
     @space = Space.new(space_params(:create).merge(code: code, created_user: current_user))
     @space.valid?
     validate_name_uniqueness if @space.errors[:name].blank?
@@ -198,7 +198,7 @@ class SpacesController < ApplicationAuthController
     params[:space] = Space.new.attributes if params[:space].blank? # NOTE: 変更なしで成功する為
 
     params[:space][:name] = params[:space][:name].to_s.gsub(/(^[[:space:]]+)|([[:space:]]+$)/, '') # NOTE: 前後のスペースを削除
-    if Settings['enable_public_space']
+    if Settings.enable_public_space
       params[:space][:private] = nil if format_html? && !%w[true false].include?(params[:space][:private]) # NOTE: nilがエラーにならない為
     else
       params[:space][:private] = true if target == :create
