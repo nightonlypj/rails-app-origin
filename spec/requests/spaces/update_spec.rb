@@ -214,7 +214,7 @@ RSpec.describe 'Spaces', type: :request do
     context 'ログイン中' do
       include_context 'ログイン処理'
       it_behaves_like '[ログイン中]スペースが存在しない'
-      it_behaves_like '[ログイン中]スペースが公開'
+      it_behaves_like '[ログイン中]スペースが公開' if Settings.enable_public_space
       it_behaves_like '[ログイン中]スペースが非公開'
     end
     context 'ログイン中（削除予約済み）' do
@@ -228,7 +228,7 @@ RSpec.describe 'Spaces', type: :request do
     context 'APIログイン中' do
       include_context 'APIログイン処理'
       it_behaves_like '[APIログイン中]スペースが存在しない'
-      it_behaves_like '[APIログイン中]スペースが公開'
+      it_behaves_like '[APIログイン中]スペースが公開' if Settings.enable_public_space
       it_behaves_like '[APIログイン中]スペースが非公開'
     end
     context 'APIログイン中（削除予約済み）' do

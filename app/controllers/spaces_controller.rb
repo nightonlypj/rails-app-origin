@@ -49,6 +49,7 @@ class SpacesController < ApplicationAuthController
   # GET /spaces/create スペース作成
   def new
     @space = Space.new
+    @space.private = !Settings.enable_public_space || Settings.default_private_space
   end
 
   # POST /spaces/create スペース作成(処理)

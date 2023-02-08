@@ -54,8 +54,8 @@ shared_context 'スペース一覧作成' do |public_admin_count, public_none_co
 end
 
 # テスト内容（共通）
-def expect_space_html(response, space, user_power = :admin, use_link = true)
-  expect(response.body).to include(space.image_url(:small))
+def expect_space_html(response, space, user_power = :admin, use_link = true, image_version = :small)
+  expect(response.body).to include(space.image_url(image_version))
   expect(response.body).to include("href=\"#{space_path(space.code)}\"") if use_link # スペーストップ
   expect(response.body).to include(space.name)
   expect(response.body).to include('非公開') if space.private

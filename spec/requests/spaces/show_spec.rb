@@ -18,7 +18,7 @@ RSpec.describe 'Spaces', type: :request do
     shared_examples_for 'ToOK(html/*)' do
       it 'HTTPステータスが200。対象項目が含まれる' do
         is_expected.to eq(200)
-        expect_space_html(response, space, user_power, false)
+        expect_space_html(response, space, user_power, false, :medium)
 
         url = "href=\"#{members_path(space.code)}\""
         if user_power.present?

@@ -352,54 +352,54 @@ RSpec.describe 'Spaces', type: :request do
       it_behaves_like 'ToOK[名称]'
     end
     shared_examples_for '公開・非公開が1と0' do
-      let(:params) { { public: 1, private: 0, join: 1, nojoin: 1, active: 1, destroy: 1 } }
-      let(:spaces) { (@public_spaces + @public_nojoin_spaces + @public_nojoin_destroy_spaces).reverse }
+      let(:params) { { public: 1, private: 0 } }
+      let(:spaces) { (@public_spaces + @public_nojoin_spaces).reverse }
       it_behaves_like 'ToOK[名称]'
     end
     shared_examples_for '公開・非公開が0と1' do
-      let(:params) { { public: 0, private: 1, join: 1, nojoin: 1, active: 1, destroy: 1 } }
+      let(:params) { { public: 0, private: 1 } }
       let(:spaces) { @private_spaces.reverse }
       it_behaves_like 'ToOK[名称]'
     end
     shared_examples_for '公開・非公開が0と0' do
-      let(:params) { { public: 0, private: 0, join: 1, nojoin: 1, active: 1, destroy: 1 } }
+      let(:params) { { public: 0, private: 0 } }
       let(:spaces) { [] }
       it_behaves_like 'ToOK[名称]'
     end
     shared_examples_for '参加・未参加が1と0' do
-      let(:params) { { public: 1, private: 1, join: 1, nojoin: 0, active: 1, destroy: 1 } }
+      let(:params) { { join: 1, nojoin: 0 } }
       let(:spaces) { (@public_spaces + @private_spaces).reverse }
       it_behaves_like 'ToOK[名称]'
     end
     shared_examples_for '参加・未参加が0と1' do
-      let(:params) { { public: 1, private: 1, join: 0, nojoin: 1, active: 1, destroy: 1 } }
-      let(:spaces) { (@public_nojoin_spaces + @public_nojoin_destroy_spaces).reverse }
+      let(:params) { { join: 0, nojoin: 1 } }
+      let(:spaces) { @public_nojoin_spaces }
       it_behaves_like 'ToOK[名称]'
     end
     shared_examples_for '参加・未参加が0と0' do
-      let(:params) { { public: 1, private: 1, join: 0, nojoin: 0, active: 1, destroy: 1 } }
+      let(:params) { { join: 0, nojoin: 0 } }
       let(:spaces) { [] }
       it_behaves_like 'ToOK[名称]'
     end
     shared_examples_for '有効・削除予定が1と0' do
-      let(:params) { { public: 1, private: 1, join: 1, nojoin: 1, active: 1, destroy: 0 } }
+      let(:params) { { active: 1, destroy: 0 } }
       let(:spaces) { (@public_spaces + @public_nojoin_spaces + @private_spaces).reverse }
       it_behaves_like 'ToOK[名称]'
     end
     shared_examples_for '有効・削除予定が0と1' do
-      let(:params) { { public: 1, private: 1, join: 1, nojoin: 1, active: 0, destroy: 1 } }
+      let(:params) { { active: 0, destroy: 1 } }
       let(:spaces) { @public_nojoin_destroy_spaces.reverse }
       it_behaves_like 'ToOK[名称]'
     end
     shared_examples_for '有効・削除予定が0と0' do
-      let(:params) { { public: 1, private: 1, join: 1, nojoin: 1, active: 0, destroy: 0 } }
+      let(:params) { { active: 0, destroy: 0 } }
       let(:spaces) { [] }
       it_behaves_like 'ToOK[名称]'
     end
 
     shared_examples_for 'オプション' do
-      it_behaves_like '全て1'
       if Settings.enable_public_space
+        it_behaves_like '全て1'
         it_behaves_like '公開・非公開が1と0'
         it_behaves_like '公開・非公開が0と1'
         it_behaves_like '公開・非公開が0と0'

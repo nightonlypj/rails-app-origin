@@ -12,7 +12,11 @@ RSpec.describe 'top/index', type: :view do
   shared_examples_for 'ログイン中表示' do
     it '対象のパスが含まれる' do
       render
-      expect(rendered).to include("\"#{spaces_path}\"") # スペース一覧
+      if Settings.enable_public_space
+        expect(rendered).to include("\"#{spaces_path}\"") # スペース一覧
+      else
+        expect(rendered).not_to include("\"#{spaces_path}\"")
+      end
       expect(rendered).to include("\"#{create_space_path}\"") # スペース作成
     end
   end
