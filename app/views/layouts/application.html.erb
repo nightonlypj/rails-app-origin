@@ -30,7 +30,7 @@
             </div>
             <a href="<%= root_path %>" class="navbar-brand">
               <%= image_tag "/logo.png", id: 'app_logo', width: '40px', height: '40px' %>
-              <span id="app_name" class="text-truncate" style="max-width: 125px"><%= "#{t('app_name')}#{Settings.env_name}" %></span>
+              <span id="app_name" class="text-truncate" style="max-width: 125px"><%= "#{t('app_name')}#{t('sub_title')}#{Settings.env_name}" %></span>
             </a>
           </div>
           <nav id="nav_right" class="nav align-items-center">

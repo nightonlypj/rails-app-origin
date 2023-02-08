@@ -1,5 +1,6 @@
 ja:
   app_name: 'RailsAppOrigin'
+  sub_title: ': ベースアプリケーション'
   my_name: 'My name'
   my_url: 'https://example.com'
   activerecord:
