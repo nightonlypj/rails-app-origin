@@ -1,5 +1,5 @@
 {
-  "name": "rails_app_origin",
+  "name": "rails-app-origin",
   "private": true,
   "dependencies": {
     "@rails/actioncable": "^6.0.0",

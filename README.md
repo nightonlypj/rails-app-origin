@@ -178,12 +178,12 @@ $ nvm --version
 ```
 ```
 $ nvm ls-remote | grep 'Latest LTS'
-       v14.17.6   (Latest LTS: Fermium)
-$ nvm install v14.17.6
+       v16.19.0   (Latest LTS: Gallium)
+$ nvm install v16.19.0
 ※バージョンは異なっても良いが、本番の環境に合わせるのがベスト
 
 $ node -v
-v14.17.6
+v16.19.0
 ```
 
 ### yarnインストール
@@ -296,6 +296,7 @@ Bundle complete!
 $ yarn install
 Done
 
+$ rails db:create
 $ rails db:migrate
 ※「Mysql2::Error: Specified key was too long; max key length is 767 bytes」の場合は「rails db:migrate:reset」で回避
 
