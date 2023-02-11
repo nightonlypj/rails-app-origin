@@ -194,17 +194,10 @@
     </div>
 
     <footer id="footer" class="bg-light" style="min-width: 300px">
-      <div class="text-center p-3">
-        Copyright &copy; <%= link_to t('my_name'), t('my_url'), target: :_blank, rel: %i[noopener noreferrer] %> All Rights Reserved.
+      <div class="d-flex justify-content-center p-3">
+        <span class="d-none d-sm-block">Copyright&nbsp;</span><span class="text-truncate">&copy; <%= link_to t('my_name'), t('my_url'), target: :_blank, rel: %i[noopener noreferrer] %> All Rights Reserved.</span>
       </div>
-<% if Rails.env.development? %>
-      <h5>development</h5>
-      <ul>
-        <li><%= link_to 'LetterOpenerWeb', letter_opener_web_path %></li>
-        <li><%= link_to 'ActionMailer Preview', '/rails/mailers' %></li>
-        <li><%= link_to "#{t('app_name')} Admin", new_admin_user_session_path %></li>
-      </ul>
-<% end %>
+      <%= render './layouts/development' if Rails.env.development? %>
     </footer>
   </body>
   <script type="text/javascript" src="<%= config.asset_host %>/js/mdb.min.js?v3.1.0"></script>

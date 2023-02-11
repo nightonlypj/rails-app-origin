@@ -1,11 +1,17 @@
 class ApplicationAuthController < ApplicationController
   include DeviseTokenAuth::Concerns::SetUserByToken
   skip_before_action :verify_authenticity_token, unless: :format_html?
+  before_action :response_not_acceptable_for_api_mode_not_api
+  before_action :standard_devise_support
   prepend_before_action :response_not_acceptable_for_diff_format_accept
   prepend_before_action :update_request_uid_header
-  before_action :standard_devise_support
 
   private
+
+  # APIのみモードでAPIリクエストでない場合、HTTPステータス406を返却
+  def response_not_acceptable_for_api_mode_not_api
+    head :not_acceptable if Settings.api_only_mode && format_html?
+  end
 
   # リクエストに不整合がある場合、HTTPステータス406を返却
   def response_not_acceptable_for_diff_format_accept

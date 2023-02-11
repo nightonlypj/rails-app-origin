@@ -8,6 +8,11 @@ RSpec.describe 'Users::Unlocks', type: :request do
     subject { get new_user_unlock_path }
 
     # テストケース
+    if Settings.api_only_mode
+      it_behaves_like 'ToNG(html)', 404
+      next
+    end
+
     context '未ログイン' do
       it_behaves_like 'ToOK[status]'
     end
@@ -47,6 +52,14 @@ RSpec.describe 'Users::Unlocks', type: :request do
     end
 
     # テストケース
+    if Settings.api_only_mode
+      let(:send_user)  { send_user_locked }
+      let(:attributes) { valid_attributes }
+      it_behaves_like 'NG'
+      it_behaves_like 'ToNG(html)', 404
+      next
+    end
+
     shared_examples_for '[未ログイン]有効なパラメータ（ロック中）' do
       let(:send_user)  { send_user_locked }
       let(:attributes) { valid_attributes }
@@ -121,6 +134,13 @@ RSpec.describe 'Users::Unlocks', type: :request do
     end
 
     # テストケース
+    if Settings.api_only_mode
+      include_context 'アカウントロック解除トークン作成', true
+      it_behaves_like 'NG'
+      it_behaves_like 'ToNG(html)', 404
+      next
+    end
+
     shared_examples_for '[未ログイン][存在する]ロック日時がない（未ロック）' do
       include_context 'アカウントロック解除トークン作成', false
       it_behaves_like 'NG'

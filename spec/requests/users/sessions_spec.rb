@@ -8,6 +8,11 @@ RSpec.describe 'Users::Sessions', type: :request do
     subject { get new_user_session_path }
 
     # テストケース
+    if Settings.api_only_mode
+      it_behaves_like 'ToNG(html)', 404
+      next
+    end
+
     context '未ログイン' do
       it_behaves_like 'ToOK[status]'
     end
@@ -58,6 +63,14 @@ RSpec.describe 'Users::Sessions', type: :request do
     end
 
     # テストケース
+    if Settings.api_only_mode
+      let(:send_user)  { send_user_unlocked }
+      let(:attributes) { valid_attributes }
+      it_behaves_like 'ToNG(html)', 404
+      it_behaves_like 'NotSendLocked'
+      next
+    end
+
     shared_examples_for '[未ログイン]有効なパラメータ（未ロック）' do
       let(:send_user)  { send_user_unlocked }
       let(:attributes) { valid_attributes }
@@ -205,6 +218,12 @@ RSpec.describe 'Users::Sessions', type: :request do
     subject { get delete_user_session_path }
 
     # テストケース
+    if Settings.api_only_mode
+      include_context 'ログイン処理'
+      it_behaves_like 'ToNG(html)', 404
+      next
+    end
+
     context '未ログイン' do
       it_behaves_like 'ToTop', 'devise.sessions.already_signed_out', nil
     end
@@ -225,6 +244,12 @@ RSpec.describe 'Users::Sessions', type: :request do
     subject { post destroy_user_session_path }
 
     # テストケース
+    if Settings.api_only_mode
+      include_context 'ログイン処理'
+      it_behaves_like 'ToNG(html)', 404
+      next
+    end
+
     context '未ログイン' do
       it_behaves_like 'ToLogin', nil, 'devise.sessions.already_signed_out'
     end

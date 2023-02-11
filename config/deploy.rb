@@ -58,7 +58,7 @@ namespace :deploy do
     desc 'Runs ln -sfn public/<set :robots_txt> public/robots.txt'
     task :robots_txt do
       on roles(:web) do
-        within "#{current_path}/public" do
+        within "#{release_path}/public" do
           execute :ln, "-sfn #{fetch(:robots_txt)} robots.txt"
         end
       end
@@ -68,7 +68,7 @@ namespace :deploy do
   desc 'Runs rake db:seed'
   task :seed do
     on roles(:db) do
-      within current_path do
+      within release_path do
         execute :rake, 'db:seed'
       end
     end

@@ -1,6 +1,8 @@
 require 'rails_helper'
 
 RSpec.describe 'infomations/show', type: :view do
+  next if Settings.api_only_mode
+
   before_all { @infomation = FactoryBot.create(:infomation) }
 
   context do

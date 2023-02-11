@@ -2,6 +2,7 @@
 
 class Users::SessionsController < Devise::SessionsController
   # before_action :configure_sign_in_params, only: %i[create]
+  prepend_before_action :response_not_found_for_api_mode_not_api
 
   # GET /users/sign_in ログイン
   # def new

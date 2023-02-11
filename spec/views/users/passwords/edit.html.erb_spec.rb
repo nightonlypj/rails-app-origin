@@ -1,6 +1,8 @@
 require 'rails_helper'
 
 RSpec.describe 'users/passwords/edit', type: :view do
+  next if Settings.api_only_mode
+
   before do
     @resource = User.new
     params[:reset_password_token] = SecureRandom.uuid

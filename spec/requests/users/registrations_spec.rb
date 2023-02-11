@@ -17,6 +17,11 @@ RSpec.describe 'Users::Registrations', type: :request do
     subject { get new_user_registration_path }
 
     # テストケース
+    if Settings.api_only_mode
+      it_behaves_like 'ToNG(html)', 404
+      next
+    end
+
     context '未ログイン' do
       it_behaves_like 'ToOK[status]'
     end
@@ -60,6 +65,13 @@ RSpec.describe 'Users::Registrations', type: :request do
     end
 
     # テストケース
+    if Settings.api_only_mode
+      let(:attributes) { valid_attributes }
+      it_behaves_like 'NG'
+      it_behaves_like 'ToNG(html)', 404
+      next
+    end
+
     shared_examples_for '[未ログイン]有効なパラメータ' do
       let(:attributes) { valid_attributes }
       it_behaves_like 'OK'
@@ -99,6 +111,12 @@ RSpec.describe 'Users::Registrations', type: :request do
     subject { get edit_user_registration_path }
 
     # テストケース
+    if Settings.api_only_mode
+      include_context 'ログイン処理'
+      it_behaves_like 'ToNG(html)', 404
+      next
+    end
+
     context '未ログイン' do
       it_behaves_like 'ToLogin', 'devise.failure.unauthenticated', nil
     end
@@ -160,6 +178,14 @@ RSpec.describe 'Users::Registrations', type: :request do
     end
 
     # テストケース
+    if Settings.api_only_mode
+      include_context 'ログイン処理', nil, true
+      let(:attributes) { valid_attributes.merge(current_password: user.password) }
+      it_behaves_like 'NG'
+      it_behaves_like 'ToNG(html)', 404
+      next
+    end
+
     shared_examples_for '[ログイン中]有効なパラメータ（変更なし）' do
       let(:attributes) { nochange_attributes.merge(current_password: user.password) }
       it_behaves_like 'OK', false
@@ -268,6 +294,14 @@ RSpec.describe 'Users::Registrations', type: :request do
     end
 
     # テストケース
+    if Settings.api_only_mode
+      include_context 'ログイン処理'
+      let(:attributes) { valid_attributes }
+      it_behaves_like 'NG'
+      it_behaves_like 'ToNG(html)', 404
+      next
+    end
+
     shared_examples_for '[未ログイン]有効なパラメータ' do
       let(:attributes) { valid_attributes }
       # it_behaves_like 'NG' # NOTE: 未ログインの為、対象がない
@@ -337,6 +371,13 @@ RSpec.describe 'Users::Registrations', type: :request do
     end
 
     # テストケース
+    if Settings.api_only_mode
+      include_context 'ログイン処理', nil, true
+      it_behaves_like 'NG'
+      it_behaves_like 'ToNG(html)', 404
+      next
+    end
+
     context '未ログイン' do
       # it_behaves_like 'NG' # NOTE: 未ログインの為、対象がない
       it_behaves_like 'ToLogin', 'devise.failure.unauthenticated', nil
@@ -360,6 +401,12 @@ RSpec.describe 'Users::Registrations', type: :request do
     subject { get delete_user_registration_path }
 
     # テストケース
+    if Settings.api_only_mode
+      include_context 'ログイン処理'
+      it_behaves_like 'ToNG(html)', 404
+      next
+    end
+
     context '未ログイン' do
       it_behaves_like 'ToLogin', 'devise.failure.unauthenticated', nil
     end
@@ -405,6 +452,13 @@ RSpec.describe 'Users::Registrations', type: :request do
     end
 
     # テストケース
+    if Settings.api_only_mode
+      include_context 'ログイン処理'
+      it_behaves_like 'NG'
+      it_behaves_like 'ToNG(html)', 404
+      next
+    end
+
     context '未ログイン' do
       # it_behaves_like 'NG' # NOTE: 未ログインの為、対象がない
       it_behaves_like 'ToLogin', 'devise.failure.unauthenticated', nil
@@ -431,6 +485,12 @@ RSpec.describe 'Users::Registrations', type: :request do
     subject { get delete_undo_user_registration_path }
 
     # テストケース
+    if Settings.api_only_mode
+      include_context 'ログイン処理', :destroy_reserved
+      it_behaves_like 'ToNG(html)', 404
+      next
+    end
+
     context '未ログイン' do
       it_behaves_like 'ToLogin', 'devise.failure.unauthenticated', nil
     end
@@ -471,6 +531,13 @@ RSpec.describe 'Users::Registrations', type: :request do
     end
 
     # テストケース
+    if Settings.api_only_mode
+      include_context 'ログイン処理', :destroy_reserved
+      it_behaves_like 'NG'
+      it_behaves_like 'ToNG(html)', 404
+      next
+    end
+
     context '未ログイン' do
       # it_behaves_like 'NG' # NOTE: 未ログインの為、対象がない
       it_behaves_like 'ToLogin', 'devise.failure.unauthenticated', nil

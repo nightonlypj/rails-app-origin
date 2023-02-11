@@ -1,6 +1,8 @@
 require 'rails_helper'
 
 RSpec.describe 'users/registrations/edit', type: :view do
+  next if Settings.api_only_mode
+
   # テスト内容
   shared_examples_for '入力項目' do
     it '対象の送信先と項目が含まれる' do

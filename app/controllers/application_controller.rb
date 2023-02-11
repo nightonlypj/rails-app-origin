@@ -47,6 +47,11 @@ class ApplicationController < ActionController::Base
       !(%r{,\*/\*[,;]} =~ ",#{request.headers[:ACCEPT]},").nil?
   end
 
+  # APIのみモードでAPIリクエストでない場合、存在しない(404)を返却
+  def response_not_found_for_api_mode_not_api
+    head :not_found if Settings.api_only_mode && format_html?
+  end
+
   # APIリクエストに不整合がある場合、HTTPステータス406を返却（明示的にAPIのみ対応にする場合に使用）
   def response_not_acceptable_for_not_api
     head :not_acceptable if format_html? || !accept_header_api?

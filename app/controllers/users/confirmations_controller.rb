@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
 class Users::ConfirmationsController < Devise::ConfirmationsController
+  prepend_before_action :response_not_found_for_api_mode_not_api
+
   # GET /users/confirmation/resend メールアドレス確認[メール再送]
   # def new
   #   super
