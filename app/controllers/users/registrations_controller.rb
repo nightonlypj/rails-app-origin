@@ -2,11 +2,12 @@
 
 class Users::RegistrationsController < Devise::RegistrationsController
   include Users::RegistrationsConcern
-  prepend_before_action :authenticate_scope!, only: %i[edit update image_update image_destroy delete destroy undo_delete undo_destroy]
   before_action :redirect_for_user_destroy_reserved, only: %i[edit update image_update image_destroy delete destroy]
   before_action :redirect_for_not_user_destroy_reserved, only: %i[undo_delete undo_destroy]
   before_action :configure_sign_up_params, only: %i[create]
   before_action :configure_account_update_params, only: %i[update]
+  prepend_before_action :authenticate_scope!, only: %i[edit update image_update image_destroy delete destroy undo_delete undo_destroy]
+  prepend_before_action :response_not_found_for_api_mode_not_api
 
   # GET /users/sign_up アカウント登録
   # def new

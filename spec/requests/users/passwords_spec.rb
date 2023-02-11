@@ -17,6 +17,11 @@ RSpec.describe 'Users::Passwords', type: :request do
     subject { get new_user_password_path }
 
     # テストケース
+    if Settings.api_only_mode
+      it_behaves_like 'ToNG(html)', 404
+      next
+    end
+
     context '未ログイン' do
       it_behaves_like 'ToOK[status]'
     end
@@ -58,6 +63,15 @@ RSpec.describe 'Users::Passwords', type: :request do
     end
 
     # テストケース
+    if Settings.api_only_mode
+      include_context 'ログイン処理'
+      let(:send_user)  { send_user_unlocked }
+      let(:attributes) { valid_attributes }
+      it_behaves_like 'NG'
+      it_behaves_like 'ToNG(html)', 404
+      next
+    end
+
     shared_examples_for '[未ログイン]有効なパラメータ（未ロック）' do
       let(:send_user)  { send_user_unlocked }
       let(:attributes) { valid_attributes }
@@ -142,6 +156,12 @@ RSpec.describe 'Users::Passwords', type: :request do
     subject { get edit_user_password_path(reset_password_token: reset_password_token) }
 
     # テストケース
+    if Settings.api_only_mode
+      include_context 'パスワードリセットトークン作成', true
+      it_behaves_like 'ToNG(html)', 404
+      next
+    end
+
     shared_examples_for '[未ログイン]トークンが期限内（未ロック）' do
       include_context 'パスワードリセットトークン作成', true
       it_behaves_like 'ToOK[status]'
@@ -256,6 +276,14 @@ RSpec.describe 'Users::Passwords', type: :request do
     end
 
     # テストケース
+    if Settings.api_only_mode
+      include_context 'パスワードリセットトークン作成', true
+      let(:attributes) { valid_attributes }
+      it_behaves_like 'NG'
+      it_behaves_like 'ToNG(html)', 404
+      next
+    end
+
     shared_examples_for '[未ログイン][期限内]有効なパラメータ' do
       let(:attributes) { valid_attributes }
       it_behaves_like 'OK'

@@ -2,6 +2,8 @@
 
 ## 1.6.0 (Sprint 11)
 
+- 設定でHTMLを返さないようにできるようにしたい（APIのみモード）
+  - https://dev.azure.com/nightonly/rails-app-origin/_workitems/edit/511/
 - Capistranoでデプロイできるようにしたい
   - https://dev.azure.com/nightonly/rails-app-origin/_workitems/edit/308/
 - エラー時にメール/Slack送信して気付けるようにしたい

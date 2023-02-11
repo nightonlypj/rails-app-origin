@@ -1,6 +1,8 @@
 require 'rails_helper'
 
 RSpec.describe 'layouts/application', type: :view do
+  next if Settings.api_only_mode
+
   # テスト内容
   shared_examples_for '未ログイン表示' do
     it '対象のパスが含まれる' do

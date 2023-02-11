@@ -36,7 +36,7 @@ group :development, :test do
   # Call 'byebug' anywhere in the code to stop execution and get a debugger console
   gem 'byebug', platforms: [:mri, :mingw, :x64_mingw]
   # Use RSpec
-  gem 'rspec-rails', '>= 4.0.0' # Tips: https://qiita.com/amatsukix/items/578f85cf4565ca2a797c
+  gem 'rspec-rails', '>= 4.0.0' # NOTE: https://qiita.com/amatsukix/items/578f85cf4565ca2a797c
   gem 'spring-commands-rspec'
   gem 'factory_bot_rails'
   # Use RuboCop
@@ -45,13 +45,13 @@ group :development, :test do
   # Use Brakeman
   gem 'brakeman'
 end
-gem 'faker' # Tips: テスト以外でも使えるように
-gem 'rexml' # Tips: rails aborted! LoadError: cannot load such file -- rexml/document
+gem 'faker' # NOTE: テスト以外でも使えるように
+gem 'rexml' # NOTE: rails aborted! LoadError: cannot load such file -- rexml/document
 
 group :development do
   # Access an interactive console on exception pages or by calling 'console' anywhere in the code.
   gem 'web-console', '>= 3.3.0'
-  # gem 'listen', '>= 3.0.5', '< 3.2' # Tips: LoadError: Could not load the 'listen' gem. Add `gem 'listen'` to the development group of your Gemfile
+  # gem 'listen', '>= 3.0.5', '< 3.2' # NOTE: LoadError: Could not load the 'listen' gem. Add `gem 'listen'` to the development group of your Gemfile
   # Spring speeds up development by keeping your application running in the background. Read more: https://github.com/rails/spring
   gem 'spring'
   gem 'spring-watcher-listen', '~> 2.0.0'
@@ -60,7 +60,7 @@ group :development do
   gem 'redcarpet'
   gem 'yard'
   # Use LetterOpenerWeb
-  # gem 'letter_opener_web' # Tips: NameError: uninitialized constant LetterOpenerWeb
+  # gem 'letter_opener_web' # NOTE: NameError: uninitialized constant LetterOpenerWeb
   # Use Rails ERD
   gem 'rails-erd'
   # Use Bullet

@@ -3,11 +3,11 @@
 class Users::Auth::UnlocksController < DeviseTokenAuth::UnlocksController
   include DeviseTokenAuth::Concerns::SetUserByToken
   skip_before_action :verify_authenticity_token
+  before_action :validate_redirect_url_param, only: %i[create show] # NOTE: 追加
   prepend_before_action :response_already_authenticated, only: %i[create], if: :user_signed_in?
   prepend_before_action :response_not_acceptable_for_not_api, only: %i[create]
   prepend_before_action :response_not_acceptable_for_not_html, only: %i[show]
   prepend_before_action :update_request_uid_header
-  before_action :validate_redirect_url_param, only: %i[create show] # NOTE: 追加
 
   # POST /users/auth/unlock(.json) アカウントロック解除API[メール再送](処理)
   def create

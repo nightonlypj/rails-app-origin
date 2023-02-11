@@ -130,10 +130,14 @@ RSpec.describe 'Infomations', type: :request do
     # テストケース
     shared_examples_for '[*]お知らせがない' do
       include_context 'お知らせ一覧作成', 0, 0, 0, 0
-      it_behaves_like 'ToOK(html)', 1
-      it_behaves_like 'ページネーション非表示', 1, 2
-      it_behaves_like 'リスト表示（0件）'
-      it_behaves_like 'リダイレクト', 2, 1
+      if Settings.api_only_mode
+        it_behaves_like 'ToNG(html)', 406
+      else
+        it_behaves_like 'ToOK(html)', 1
+        it_behaves_like 'ページネーション非表示', 1, 2
+        it_behaves_like 'リスト表示（0件）'
+        it_behaves_like 'リダイレクト', 2, 1
+      end
       it_behaves_like 'ToOK(json)', 1
       it_behaves_like 'リスト表示(json)', 1
       it_behaves_like 'リダイレクト(json)', 2
@@ -141,10 +145,14 @@ RSpec.describe 'Infomations', type: :request do
     shared_examples_for '[未ログイン]お知らせが最大表示数と同じ' do
       count = Settings.test_infomations_count
       include_context 'お知らせ一覧作成', count.all_forever + count.user_forever, count.all_future + count.user_future, 0, 0
-      it_behaves_like 'ToOK(html)', 1
-      it_behaves_like 'ページネーション非表示', 1, 2
-      it_behaves_like 'リスト表示', 1
-      it_behaves_like 'リダイレクト', 2, 1
+      if Settings.api_only_mode
+        it_behaves_like 'ToNG(html)', 406
+      else
+        it_behaves_like 'ToOK(html)', 1
+        it_behaves_like 'ページネーション非表示', 1, 2
+        it_behaves_like 'リスト表示', 1
+        it_behaves_like 'リダイレクト', 2, 1
+      end
       it_behaves_like 'ToOK(json)', 1
       it_behaves_like 'リスト表示(json)', 1
       it_behaves_like 'リダイレクト(json)', 2
@@ -152,10 +160,14 @@ RSpec.describe 'Infomations', type: :request do
     shared_examples_for '[ログイン中/削除予約済み]お知らせが最大表示数と同じ' do
       count = Settings.test_infomations_count
       include_context 'お知らせ一覧作成', count.all_forever, count.all_future, count.user_forever, count.user_future
-      it_behaves_like 'ToOK(html)', 1
-      it_behaves_like 'ページネーション非表示', 1, 2
-      it_behaves_like 'リスト表示', 1
-      it_behaves_like 'リダイレクト', 2, 1
+      if Settings.api_only_mode
+        it_behaves_like 'ToNG(html)', 406
+      else
+        it_behaves_like 'ToOK(html)', 1
+        it_behaves_like 'ページネーション非表示', 1, 2
+        it_behaves_like 'リスト表示', 1
+        it_behaves_like 'リダイレクト', 2, 1
+      end
       it_behaves_like 'ToOK(json)', 1
       it_behaves_like 'リスト表示(json)', 1
       it_behaves_like 'リダイレクト(json)', 2
@@ -163,10 +175,14 @@ RSpec.describe 'Infomations', type: :request do
     shared_examples_for '[APIログイン中/削除予約済み]お知らせが最大表示数と同じ' do
       count = Settings.test_infomations_count
       include_context 'お知らせ一覧作成', count.all_forever, count.all_future, count.user_forever, count.user_future
-      it_behaves_like 'ToOK(html)', 1
-      it_behaves_like 'ページネーション非表示', 1, 2
-      it_behaves_like 'リスト表示', 1
-      it_behaves_like 'リダイレクト', 2, 1
+      if Settings.api_only_mode
+        it_behaves_like 'ToNG(html)', 406
+      else
+        it_behaves_like 'ToOK(html)', 1
+        it_behaves_like 'ページネーション非表示', 1, 2
+        it_behaves_like 'リスト表示', 1
+        it_behaves_like 'リダイレクト', 2, 1
+      end
       it_behaves_like 'ToOK(json)', 1
       it_behaves_like 'リスト表示(json)', 1
       it_behaves_like 'リダイレクト(json)', 2
@@ -174,13 +190,17 @@ RSpec.describe 'Infomations', type: :request do
     shared_examples_for '[未ログイン]お知らせが最大表示数より多い' do
       count = Settings.test_infomations_count
       include_context 'お知らせ一覧作成', count.all_forever + count.user_forever, count.all_future + count.user_future + 1, 0, 0
-      it_behaves_like 'ToOK(html)', 1
-      it_behaves_like 'ToOK(html)', 2
-      it_behaves_like 'ページネーション表示', 1, 2
-      it_behaves_like 'ページネーション表示', 2, 1
-      it_behaves_like 'リスト表示', 1
-      it_behaves_like 'リスト表示', 2
-      it_behaves_like 'リダイレクト', 3, 2
+      if Settings.api_only_mode
+        it_behaves_like 'ToNG(html)', 406
+      else
+        it_behaves_like 'ToOK(html)', 1
+        it_behaves_like 'ToOK(html)', 2
+        it_behaves_like 'ページネーション表示', 1, 2
+        it_behaves_like 'ページネーション表示', 2, 1
+        it_behaves_like 'リスト表示', 1
+        it_behaves_like 'リスト表示', 2
+        it_behaves_like 'リダイレクト', 3, 2
+      end
       it_behaves_like 'ToOK(json)', 1
       it_behaves_like 'ToOK(json)', 2
       it_behaves_like 'リスト表示(json)', 1
@@ -190,13 +210,17 @@ RSpec.describe 'Infomations', type: :request do
     shared_examples_for '[ログイン中/削除予約済み]お知らせが最大表示数より多い' do
       count = Settings.test_infomations_count
       include_context 'お知らせ一覧作成', count.all_forever, count.all_future, count.user_forever, count.user_future + 1
-      it_behaves_like 'ToOK(html)', 1
-      it_behaves_like 'ToOK(html)', 2
-      it_behaves_like 'ページネーション表示', 1, 2
-      it_behaves_like 'ページネーション表示', 2, 1
-      it_behaves_like 'リスト表示', 1
-      it_behaves_like 'リスト表示', 2
-      it_behaves_like 'リダイレクト', 3, 2
+      if Settings.api_only_mode
+        it_behaves_like 'ToNG(html)', 406
+      else
+        it_behaves_like 'ToOK(html)', 1
+        it_behaves_like 'ToOK(html)', 2
+        it_behaves_like 'ページネーション表示', 1, 2
+        it_behaves_like 'ページネーション表示', 2, 1
+        it_behaves_like 'リスト表示', 1
+        it_behaves_like 'リスト表示', 2
+        it_behaves_like 'リダイレクト', 3, 2
+      end
       # it_behaves_like 'ToOK(json)', 1 # NOTE: APIは未ログイン扱いの為
       # it_behaves_like 'ToOK(json)', 2
       # it_behaves_like 'リスト表示(json)', 1
@@ -206,13 +230,17 @@ RSpec.describe 'Infomations', type: :request do
     shared_examples_for '[APIログイン中/削除予約済み]お知らせが最大表示数より多い' do
       count = Settings.test_infomations_count
       include_context 'お知らせ一覧作成', count.all_forever, count.all_future, count.user_forever, count.user_future + 1
-      it_behaves_like 'ToOK(html)', 1
-      it_behaves_like 'ToOK(html)', 2
-      it_behaves_like 'ページネーション表示', 1, 2
-      it_behaves_like 'ページネーション表示', 2, 1
-      it_behaves_like 'リスト表示', 1
-      it_behaves_like 'リスト表示', 2
-      it_behaves_like 'リダイレクト', 3, 2
+      if Settings.api_only_mode
+        it_behaves_like 'ToNG(html)', 406
+      else
+        it_behaves_like 'ToOK(html)', 1
+        it_behaves_like 'ToOK(html)', 2
+        it_behaves_like 'ページネーション表示', 1, 2
+        it_behaves_like 'ページネーション表示', 2, 1
+        it_behaves_like 'リスト表示', 1
+        it_behaves_like 'リスト表示', 2
+        it_behaves_like 'リダイレクト', 3, 2
+      end
       it_behaves_like 'ToOK(json)', 1
       it_behaves_like 'ToOK(json)', 2
       it_behaves_like 'リスト表示(json)', 1

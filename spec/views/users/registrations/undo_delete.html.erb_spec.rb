@@ -1,6 +1,8 @@
 require 'rails_helper'
 
 RSpec.describe 'users/registrations/undo_delete', type: :view do
+  next if Settings.api_only_mode
+
   include_context 'ログイン処理', :destroy_reserved
   before_all { @resource = user }
 
