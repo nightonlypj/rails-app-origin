@@ -226,20 +226,28 @@ RSpec.describe 'Members', type: :request do
       let_it_be(:user_power) { power }
       count = Settings.test_members_count
       include_context 'メンバー一覧作成', count.admin, count.writer, count.reader
-      it_behaves_like 'ToOK(html)', 1
-      it_behaves_like 'ページネーション非表示', 1, 2
-      it_behaves_like 'リスト表示', 1
-      it_behaves_like 'リダイレクト', 2, 1
+      if Settings.api_only_mode
+        it_behaves_like 'ToNG(html)', 406
+      else
+        it_behaves_like 'ToOK(html)', 1
+        it_behaves_like 'ページネーション非表示', 1, 2
+        it_behaves_like 'リスト表示', 1
+        it_behaves_like 'リダイレクト', 2, 1
+      end
       it_behaves_like 'ToNG(json)', 401 # NOTE: APIは未ログイン扱い
     end
     shared_examples_for '[APIログイン中/削除予約済み][*][ある]メンバーが最大表示数と同じ' do |power|
       let_it_be(:user_power) { power }
       count = Settings.test_members_count
       include_context 'メンバー一覧作成', count.admin, count.writer, count.reader
-      it_behaves_like 'ToOK(html)', 1 # NOTE: HTMLもログイン状態になる
-      it_behaves_like 'ページネーション非表示', 1, 2
-      it_behaves_like 'リスト表示', 1
-      it_behaves_like 'リダイレクト', 2, 1
+      if Settings.api_only_mode
+        it_behaves_like 'ToNG(html)', 406
+      else
+        it_behaves_like 'ToOK(html)', 1 # NOTE: HTMLもログイン状態になる
+        it_behaves_like 'ページネーション非表示', 1, 2
+        it_behaves_like 'リスト表示', 1
+        it_behaves_like 'リダイレクト', 2, 1
+      end
       it_behaves_like 'ToOK(json)', 1
       it_behaves_like 'リスト表示(json)', 1
       it_behaves_like 'リダイレクト(json)', 2
@@ -248,26 +256,34 @@ RSpec.describe 'Members', type: :request do
       let_it_be(:user_power) { power }
       count = Settings.test_members_count
       include_context 'メンバー一覧作成', count.admin, count.writer, count.reader + 1
-      it_behaves_like 'ToOK(html)', 1
-      it_behaves_like 'ToOK(html)', 2
-      it_behaves_like 'ページネーション表示', 1, 2
-      it_behaves_like 'ページネーション表示', 2, 1
-      it_behaves_like 'リスト表示', 1
-      it_behaves_like 'リスト表示', 2
-      it_behaves_like 'リダイレクト', 3, 2
+      if Settings.api_only_mode
+        it_behaves_like 'ToNG(html)', 406
+      else
+        it_behaves_like 'ToOK(html)', 1
+        it_behaves_like 'ToOK(html)', 2
+        it_behaves_like 'ページネーション表示', 1, 2
+        it_behaves_like 'ページネーション表示', 2, 1
+        it_behaves_like 'リスト表示', 1
+        it_behaves_like 'リスト表示', 2
+        it_behaves_like 'リダイレクト', 3, 2
+      end
       it_behaves_like 'ToNG(json)', 401 # NOTE: APIは未ログイン扱い
     end
     shared_examples_for '[APIログイン中/削除予約済み][*][ある]メンバーが最大表示数より多い' do |power|
       let_it_be(:user_power) { power }
       count = Settings.test_members_count
       include_context 'メンバー一覧作成', count.admin, count.writer, count.reader + 1
-      it_behaves_like 'ToOK(html)', 1 # NOTE: HTMLもログイン状態になる
-      it_behaves_like 'ToOK(html)', 2
-      it_behaves_like 'ページネーション表示', 1, 2
-      it_behaves_like 'ページネーション表示', 2, 1
-      it_behaves_like 'リスト表示', 1
-      it_behaves_like 'リスト表示', 2
-      it_behaves_like 'リダイレクト', 3, 2
+      if Settings.api_only_mode
+        it_behaves_like 'ToNG(html)', 406
+      else
+        it_behaves_like 'ToOK(html)', 1 # NOTE: HTMLもログイン状態になる
+        it_behaves_like 'ToOK(html)', 2
+        it_behaves_like 'ページネーション表示', 1, 2
+        it_behaves_like 'ページネーション表示', 2, 1
+        it_behaves_like 'リスト表示', 1
+        it_behaves_like 'リスト表示', 2
+        it_behaves_like 'リダイレクト', 3, 2
+      end
       it_behaves_like 'ToOK(json)', 1
       it_behaves_like 'ToOK(json)', 2
       it_behaves_like 'リスト表示(json)', 1
@@ -286,22 +302,22 @@ RSpec.describe 'Members', type: :request do
       it_behaves_like '[APIログイン中/削除予約済み][*][ある]メンバーが最大表示数より多い', power
     end
     shared_examples_for '[ログイン中/削除予約済み][*]権限がない' do
-      it_behaves_like 'ToNG(html)', 403
+      it_behaves_like 'ToNG(html)', Settings.api_only_mode ? 406 : 403
       it_behaves_like 'ToNG(json)', 401 # NOTE: APIは未ログイン扱い
     end
     shared_examples_for '[APIログイン中/削除予約済み][*]権限がない' do
-      it_behaves_like 'ToNG(html)', 403
+      it_behaves_like 'ToNG(html)', Settings.api_only_mode ? 406 : 403
       it_behaves_like 'ToNG(json)', 403
     end
 
     shared_examples_for '[ログイン中/削除予約済み]スペースが存在しない' do
       let_it_be(:space) { space_not }
-      it_behaves_like 'ToNG(html)', 404
+      it_behaves_like 'ToNG(html)', Settings.api_only_mode ? 406 : 404
       it_behaves_like 'ToNG(json)', 401 # NOTE: APIは未ログイン扱い
     end
     shared_examples_for '[APIログイン中/削除予約済み]スペースが存在しない' do
       let_it_be(:space) { space_not }
-      it_behaves_like 'ToNG(html)', 404
+      it_behaves_like 'ToNG(html)', Settings.api_only_mode ? 406 : 404
       it_behaves_like 'ToNG(json)', 404
     end
     shared_examples_for '[ログイン中/削除予約済み]スペースが公開' do
@@ -347,7 +363,11 @@ RSpec.describe 'Members', type: :request do
     context '未ログイン' do
       include_context '未ログイン処理'
       let_it_be(:space) { space_public }
-      it_behaves_like 'ToLogin(html)'
+      if Settings.api_only_mode
+        it_behaves_like 'ToNG(html)', 406
+      else
+        it_behaves_like 'ToLogin(html)'
+      end
       it_behaves_like 'ToNG(json)', 401
     end
     context 'ログイン中' do
@@ -429,6 +449,8 @@ RSpec.describe 'Members', type: :request do
     end
 
     context 'ログイン中（URLの拡張子がない/AcceptヘッダにHTMLが含まれる）' do
+      next if Settings.api_only_mode
+
       include_context 'ログイン処理'
       let(:subject_format) { nil }
       let(:accept_headers) { ACCEPT_INC_HTML }
@@ -455,6 +477,8 @@ RSpec.describe 'Members', type: :request do
 
     # テストケース
     context 'ログイン中（URLの拡張子がない/AcceptヘッダにHTMLが含まれる）' do
+      next if Settings.api_only_mode
+
       include_context 'ログイン処理'
       let_it_be(:member_admin) { FactoryBot.create(:member, :admin, space: space, user: user) }
       let(:subject_format) { nil }

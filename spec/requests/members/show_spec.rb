@@ -11,7 +11,7 @@ RSpec.describe 'Members', type: :request do
   #   対象メンバー: いる, いない
   #   ＋URLの拡張子: ない, .json
   #   ＋Acceptヘッダ: HTMLが含まれる, JSONが含まれる
-  describe 'GET #index' do
+  describe 'GET #show' do
     subject { get member_path(space_code: space.code, user_code: show_user.code, format: subject_format), headers: auth_headers.merge(accept_headers) }
 
     let_it_be(:space_not)     { FactoryBot.build_stubbed(:space) }

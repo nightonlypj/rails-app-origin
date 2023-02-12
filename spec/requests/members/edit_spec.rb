@@ -34,6 +34,14 @@ RSpec.describe 'Members', type: :request do
     end
 
     # テストケース
+    if Settings.api_only_mode
+      include_context 'APIログイン処理'
+      include_context 'valid_condition'
+      it_behaves_like 'ToNG(html)', 406
+      it_behaves_like 'ToNG(json)', 406
+      next
+    end
+
     shared_examples_for '[ログイン中][*][ある]対象メンバーがいる（他人）' do
       let_it_be(:show_user) { other_user }
       before_all { FactoryBot.create(:member, space: space, user: show_user) }

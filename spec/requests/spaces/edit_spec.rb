@@ -23,10 +23,20 @@ RSpec.describe 'Spaces', type: :request do
 
     # テスト内容
     shared_examples_for 'ToOK(html/*)' do
-      it_behaves_like 'ToOK[status]'
+      it 'HTTPステータスが200' do
+        is_expected.to eq(200)
+      end
     end
 
     # テストケース
+    if Settings.api_only_mode
+      include_context 'APIログイン処理'
+      include_context 'valid_condition'
+      it_behaves_like 'ToNG(html)', 406
+      it_behaves_like 'ToNG(json)', 406
+      next
+    end
+
     shared_examples_for '[ログイン中][*]権限がある' do |power|
       include_context 'set_member_power', power
       it_behaves_like 'ToOK(html)'

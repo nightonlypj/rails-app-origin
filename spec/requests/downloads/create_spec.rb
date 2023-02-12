@@ -87,8 +87,12 @@ RSpec.describe 'Downloads', type: :request do
       msg_newline_code = get_locale('activerecord.errors.models.download.attributes.newline_code.blank')
       msg_output_items = get_locale('activerecord.errors.models.download.attributes.output_items.blank')
       it_behaves_like 'NG(html)'
+      if Settings.api_only_mode
+        it_behaves_like 'ToNG(html)', 406
+      else
+        it_behaves_like 'ToNG(html)', 422, [msg_target, msg_format, msg_char_code, msg_newline_code, msg_output_items]
+      end
       it_behaves_like 'NG(json)'
-      it_behaves_like 'ToNG(html)', 422, [msg_target, msg_format, msg_char_code, msg_newline_code, msg_output_items]
       it_behaves_like 'ToNG(json)', 401 # NOTE: APIは未ログイン扱い
     end
     shared_examples_for '[APIログイン中/削除予約済み][member][ある]パラメータなし' do
@@ -99,40 +103,61 @@ RSpec.describe 'Downloads', type: :request do
       msg_newline_code = get_locale('activerecord.errors.models.download.attributes.newline_code.blank')
       msg_output_items = get_locale('activerecord.errors.models.download.attributes.output_items.blank')
       it_behaves_like 'NG(html)'
+      if Settings.api_only_mode
+        it_behaves_like 'ToNG(html)', 406
+      else
+        it_behaves_like 'ToNG(html)', 422, [msg_target, msg_format, msg_char_code, msg_newline_code, msg_output_items]
+      end
       it_behaves_like 'NG(json)'
-      it_behaves_like 'ToNG(html)', 422, [msg_target, msg_format, msg_char_code, msg_newline_code, msg_output_items]
       it_behaves_like 'ToNG(json)', 422, { target: [msg_target], format: [msg_format], char_code: [msg_char_code],
                                            newline_code: [msg_newline_code], output_items: [msg_output_items] }
     end
     shared_examples_for '[ログイン中/削除予約済み][member][ある]有効なパラメータ' do
       let(:attributes) { valid_attributes.merge(params).merge(add_attributes) }
-      it_behaves_like 'OK(html)'
+      if Settings.api_only_mode
+        it_behaves_like 'NG(html)'
+        it_behaves_like 'ToNG(html)', 406
+      else
+        it_behaves_like 'OK(html)'
+        it_behaves_like 'ToOK(html)'
+      end
       it_behaves_like 'NG(json)'
-      it_behaves_like 'ToOK(html)'
       it_behaves_like 'ToNG(json)', 401 # NOTE: APIは未ログイン扱い
     end
     shared_examples_for '[APIログイン中/削除予約済み][member][ある]有効なパラメータ' do
       let(:attributes) { valid_attributes.merge(params).merge(add_attributes) }
       message = get_locale('activerecord.errors.models.download.attributes.output_items.blank')
       it_behaves_like 'NG(html)' # NOTE: HTMLもログイン状態になるが、パラメータが異なる為
+      if Settings.api_only_mode
+        it_behaves_like 'ToNG(html)', 406
+      else
+        it_behaves_like 'ToNG(html)', 422, [message] # NOTE: HTMLもログイン状態になるが、パラメータが異なる為
+      end
       it_behaves_like 'OK(json)'
-      it_behaves_like 'ToNG(html)', 422, [message] # NOTE: HTMLもログイン状態になるが、パラメータが異なる為
       it_behaves_like 'ToOK(json)'
     end
     shared_examples_for '[ログイン中/削除予約済み][member][ある]無効なパラメータ' do
       let(:attributes) { invalid_attributes.merge(params).merge(add_attributes) }
       message = get_locale('activerecord.errors.models.download.attributes.target.blank')
       it_behaves_like 'NG(html)'
+      if Settings.api_only_mode
+        it_behaves_like 'ToNG(html)', 406
+      else
+        it_behaves_like 'ToNG(html)', 422, [message]
+      end
       it_behaves_like 'NG(json)'
-      it_behaves_like 'ToNG(html)', 422, [message]
       it_behaves_like 'ToNG(json)', 401 # NOTE: APIは未ログイン扱い
     end
     shared_examples_for '[APIログイン中/削除予約済み][member][ある]無効なパラメータ' do
       let(:attributes) { invalid_attributes.merge(params).merge(add_attributes) }
       message = get_locale('activerecord.errors.models.download.attributes.target.blank')
       it_behaves_like 'NG(html)'
+      if Settings.api_only_mode
+        it_behaves_like 'ToNG(html)', 406
+      else
+        it_behaves_like 'ToNG(html)', 422, [message] # NOTE: HTMLもログイン状態になる
+      end
       it_behaves_like 'NG(json)'
-      it_behaves_like 'ToNG(html)', 422, [message] # NOTE: HTMLもログイン状態になる
       it_behaves_like 'ToNG(json)', 422, { target: [message] }
     end
 
@@ -152,16 +177,16 @@ RSpec.describe 'Downloads', type: :request do
       include_context 'set_member_power', power
       let(:attributes) { valid_attributes.merge(params) }
       it_behaves_like 'NG(html)'
+      it_behaves_like 'ToNG(html)', Settings.api_only_mode ? 406 : 403
       it_behaves_like 'NG(json)'
-      it_behaves_like 'ToNG(html)', 403
       it_behaves_like 'ToNG(json)', 401 # NOTE: APIは未ログイン扱い
     end
     shared_examples_for '[APIログイン中/削除予約済み][member]権限がない' do |power|
       include_context 'set_member_power', power
       let(:attributes) { valid_attributes.merge(params) }
       it_behaves_like 'NG(html)'
+      it_behaves_like 'ToNG(html)', Settings.api_only_mode ? 406 : 403 # NOTE: HTMLもログイン状態になる
       it_behaves_like 'NG(json)'
-      it_behaves_like 'ToNG(html)', 403 # NOTE: HTMLもログイン状態になる
       it_behaves_like 'ToNG(json)', 403
     end
 
@@ -200,49 +225,63 @@ RSpec.describe 'Downloads', type: :request do
     shared_examples_for '[ログイン中/削除予約済み]modelがmember（spaceが存在しない）' do
       let(:params) { { model: 'member', space_code: space_not.code, output_items: nil, 'output_items_user.name': '1' } }
       let(:attributes) { valid_attributes.merge(params) }
-      it_behaves_like 'ToNG(html)', 404
+      it_behaves_like 'ToNG(html)', Settings.api_only_mode ? 406 : 404
       it_behaves_like 'ToNG(json)', 401 # NOTE: APIは未ログイン扱い
     end
     shared_examples_for '[APIログイン中/削除予約済み]modelがmember（spaceが存在しない）' do
       let(:params) { { model: 'member', space_code: space_not.code, output_items: nil, 'output_items_user.name': '1' } }
       let(:attributes) { valid_attributes.merge(params) }
-      it_behaves_like 'ToNG(html)', 404 # NOTE: HTMLもログイン状態になる
+      it_behaves_like 'NG(html)'
+      it_behaves_like 'ToNG(html)', Settings.api_only_mode ? 406 : 404 # NOTE: HTMLもログイン状態になる
+      it_behaves_like 'NG(json)'
       it_behaves_like 'ToNG(json)', 404, { space_code: [get_locale('errors.messages.param.not_exist')] }, 'errors.messages.not_saved.one'
     end
     shared_examples_for '[ログイン中/削除予約済み]modelがmember（spaceがない）' do
       let(:params) { { model: 'member', space_code: nil, output_items: nil, 'output_items_user.name': '1' } }
       let(:attributes) { valid_attributes.merge(params) }
-      it_behaves_like 'ToNG(html)', 404
+      it_behaves_like 'NG(html)'
+      it_behaves_like 'ToNG(html)', Settings.api_only_mode ? 406 : 404
+      it_behaves_like 'NG(json)'
       it_behaves_like 'ToNG(json)', 401 # NOTE: APIは未ログイン扱い
     end
     shared_examples_for '[APIログイン中/削除予約済み]modelがmember（spaceがない）' do
       let(:params) { { model: 'member', space_code: nil, output_items: nil, 'output_items_user.name': '1' } }
       let(:attributes) { valid_attributes.merge(params) }
-      it_behaves_like 'ToNG(html)', 404 # NOTE: HTMLもログイン状態になる
+      it_behaves_like 'NG(html)'
+      it_behaves_like 'ToNG(html)', Settings.api_only_mode ? 406 : 404 # NOTE: HTMLもログイン状態になる
+      it_behaves_like 'NG(json)'
       it_behaves_like 'ToNG(json)', 404, { space_code: [get_locale('errors.messages.param.blank')] }, 'errors.messages.not_saved.one'
     end
     shared_examples_for '[ログイン中/削除予約済み]modelが存在しない' do
       let(:params) { { model: 'xxx' } }
       let(:attributes) { valid_attributes.merge(params) }
-      it_behaves_like 'ToNG(html)', 404
+      it_behaves_like 'NG(html)'
+      it_behaves_like 'ToNG(html)', Settings.api_only_mode ? 406 : 404
+      it_behaves_like 'NG(json)'
       it_behaves_like 'ToNG(json)', 401 # NOTE: APIは未ログイン扱い
     end
     shared_examples_for '[APIログイン中/削除予約済み]modelが存在しない' do
       let(:params) { { model: 'xxx' } }
       let(:attributes) { valid_attributes.merge(params) }
-      it_behaves_like 'ToNG(html)', 404 # NOTE: HTMLもログイン状態になる
+      it_behaves_like 'NG(html)'
+      it_behaves_like 'ToNG(html)', Settings.api_only_mode ? 406 : 404 # NOTE: HTMLもログイン状態になる
+      it_behaves_like 'NG(json)'
       it_behaves_like 'ToNG(json)', 404, { model: [get_locale('errors.messages.param.not_exist')] }, 'errors.messages.not_saved.one'
     end
     shared_examples_for '[ログイン中/削除予約済み]modelがない' do
       let(:params) { { model: nil } }
       let(:attributes) { valid_attributes.merge(params) }
-      it_behaves_like 'ToNG(html)', 404
+      it_behaves_like 'NG(html)'
+      it_behaves_like 'ToNG(html)', Settings.api_only_mode ? 406 : 404
+      it_behaves_like 'NG(json)'
       it_behaves_like 'ToNG(json)', 401 # NOTE: APIは未ログイン扱い
     end
     shared_examples_for '[APIログイン中/削除予約済み]modelがない' do
       let(:params) { { model: nil } }
       let(:attributes) { valid_attributes.merge(params) }
-      it_behaves_like 'ToNG(html)', 404 # NOTE: HTMLもログイン状態になる
+      it_behaves_like 'NG(html)'
+      it_behaves_like 'ToNG(html)', Settings.api_only_mode ? 406 : 404 # NOTE: HTMLもログイン状態になる
+      it_behaves_like 'NG(json)'
       it_behaves_like 'ToNG(json)', 404, { model: [get_locale('errors.messages.param.blank')] }, 'errors.messages.not_saved.one'
     end
 
@@ -265,8 +304,12 @@ RSpec.describe 'Downloads', type: :request do
       include_context '未ログイン処理'
       include_context 'valid_condition'
       it_behaves_like 'NG(html)'
+      if Settings.api_only_mode
+        it_behaves_like 'ToNG(html)', 406
+      else
+        it_behaves_like 'ToLogin(html)'
+      end
       it_behaves_like 'NG(json)'
-      it_behaves_like 'ToLogin(html)'
       it_behaves_like 'ToNG(json)', 401
     end
     context 'ログイン中' do

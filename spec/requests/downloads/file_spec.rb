@@ -46,30 +46,38 @@ RSpec.describe 'Downloads', type: :request do
     # テストケース
     shared_examples_for '[ログイン中/削除予約済み][成功][ログインユーザー]権限がある' do |power|
       include_context 'set_member_power', power
-      it_behaves_like 'ToOK(html)'
+      if Settings.api_only_mode
+        it_behaves_like 'ToNG(html)', 406
+      else
+        it_behaves_like 'ToOK(html)'
+      end
       it_behaves_like 'ToNG(json)', 401 # NOTE: APIは未ログイン扱い
     end
     shared_examples_for '[APIログイン中/削除予約済み][成功][ログインユーザー]権限がある' do |power|
       include_context 'set_member_power', power
-      it_behaves_like 'ToOK(html)' # NOTE: HTMLもログイン状態になる
+      if Settings.api_only_mode
+        it_behaves_like 'ToNG(html)', 406
+      else
+        it_behaves_like 'ToOK(html)' # NOTE: HTMLもログイン状態になる
+      end
       it_behaves_like 'ToOK(json)'
     end
     shared_examples_for '[ログイン中/削除予約済み][成功][ログインユーザー]権限がない' do |power|
       include_context 'set_member_power', power
-      it_behaves_like 'ToNG(html)', 403
+      it_behaves_like 'ToNG(html)', Settings.api_only_mode ? 406 : 403
       it_behaves_like 'ToNG(json)', 401 # NOTE: APIは未ログイン扱い
     end
     shared_examples_for '[APIログイン中/削除予約済み][成功][ログインユーザー]権限がない' do |power|
       include_context 'set_member_power', power
-      it_behaves_like 'ToNG(html)', 403 # NOTE: HTMLもログイン状態になる
+      it_behaves_like 'ToNG(html)', Settings.api_only_mode ? 406 : 403 # NOTE: HTMLもログイン状態になる
       it_behaves_like 'ToNG(json)', 403
     end
     shared_examples_for '[ログイン中/削除予約済み][成功][その他ユーザー]権限がない' do
-      it_behaves_like 'ToNG(html)', 404
+      it_behaves_like 'ToNG(html)', Settings.api_only_mode ? 406 : 404
       it_behaves_like 'ToNG(json)', 401 # NOTE: APIは未ログイン扱い
     end
     shared_examples_for '[APIログイン中/削除予約済み][成功][その他ユーザー]権限がない' do
-      it_behaves_like 'ToNG(html)', 404
+      it_behaves_like 'ToNG(html)', Settings.api_only_mode ? 406 : 404
       it_behaves_like 'ToNG(json)', 404, nil, 'alert.download.notfound'
     end
 
@@ -113,23 +121,31 @@ RSpec.describe 'Downloads', type: :request do
     shared_examples_for '[ログイン中/削除予約済み]IDが存在する（状態が成功以外）' do |status|
       include_context 'user_condition', status
       include_context 'set_member_power', :admin
-      it_behaves_like 'ToOK(html)'
+      if Settings.api_only_mode
+        it_behaves_like 'ToNG(html)', 406
+      else
+        it_behaves_like 'ToOK(html)'
+      end
       it_behaves_like 'ToNG(json)', 401 # NOTE: APIは未ログイン扱い
     end
     shared_examples_for '[APIログイン中/削除予約済み]IDが存在する（状態が成功以外）' do |status|
       include_context 'user_condition', status
       include_context 'set_member_power', :admin
-      it_behaves_like 'ToOK(html)' # NOTE: HTMLもログイン状態になる
+      if Settings.api_only_mode
+        it_behaves_like 'ToNG(html)', 406
+      else
+        it_behaves_like 'ToOK(html)' # NOTE: HTMLもログイン状態になる
+      end
       it_behaves_like 'ToOK(json)'
     end
     shared_examples_for '[ログイン中/削除予約済み]IDが存在しない' do
       let_it_be(:download) { FactoryBot.build_stubbed(:download) }
-      it_behaves_like 'ToNG(html)', 404
+      it_behaves_like 'ToNG(html)', Settings.api_only_mode ? 406 : 404
       it_behaves_like 'ToNG(json)', 401 # NOTE: APIは未ログイン扱い
     end
     shared_examples_for '[APIログイン中/削除予約済み]IDが存在しない' do
       let_it_be(:download) { FactoryBot.build_stubbed(:download) }
-      it_behaves_like 'ToNG(html)', 404
+      it_behaves_like 'ToNG(html)', Settings.api_only_mode ? 406 : 404
       it_behaves_like 'ToNG(json)', 404, nil, 'alert.download.notfound'
     end
 
@@ -151,7 +167,11 @@ RSpec.describe 'Downloads', type: :request do
     context '未ログイン' do
       include_context '未ログイン処理'
       include_context 'other_user_condition'
-      it_behaves_like 'ToLogin(html)'
+      if Settings.api_only_mode
+        it_behaves_like 'ToNG(html)', 406
+      else
+        it_behaves_like 'ToLogin(html)'
+      end
       it_behaves_like 'ToNG(json)', 401
     end
     context 'ログイン中' do

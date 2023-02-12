@@ -102,99 +102,161 @@ RSpec.describe 'Members', type: :request do
     shared_examples_for '[ログイン中][*][ある]パラメータなし' do
       let(:params) { nil }
       it_behaves_like 'NG(html)'
+      if Settings.api_only_mode
+        it_behaves_like 'ToNG(html)', 406
+      else
+        it_behaves_like 'ToMembers(html)', 'alert.member.destroy.codes.blank'
+      end
       it_behaves_like 'NG(json)'
-      it_behaves_like 'ToMembers(html)', 'alert.member.destroy.codes.blank'
       it_behaves_like 'ToNG(json)', 401 # NOTE: APIは未ログイン扱い
     end
     shared_examples_for '[APIログイン中][*][ある]パラメータなし' do
       let(:params) { nil }
       it_behaves_like 'NG(html)'
+      if Settings.api_only_mode
+        it_behaves_like 'ToNG(html)', 406
+      else
+        it_behaves_like 'ToMembers(html)', 'alert.member.destroy.codes.blank' # NOTE: HTMLもログイン状態になる
+      end
       it_behaves_like 'NG(json)'
-      it_behaves_like 'ToMembers(html)', 'alert.member.destroy.codes.blank' # NOTE: HTMLもログイン状態になる
       it_behaves_like 'ToNG(json)', 422, nil, 'alert.member.destroy.codes.blank'
     end
     shared_examples_for '[ログイン中][*][ある]有効なパラメータ（他人のコードのみ）' do
       include_context 'set_params1', true
-      it_behaves_like 'OK(html)'
+      if Settings.api_only_mode
+        it_behaves_like 'NG(html)'
+        it_behaves_like 'ToNG(html)', 406
+      else
+        it_behaves_like 'OK(html)'
+        it_behaves_like 'ToOK(html)'
+      end
       it_behaves_like 'NG(json)'
-      it_behaves_like 'ToOK(html)'
       it_behaves_like 'ToNG(json)', 401 # NOTE: APIは未ログイン扱い
     end
     shared_examples_for '[APIログイン中][*][ある]有効なパラメータ（他人のコードのみ）' do
       include_context 'set_params1', false
-      it_behaves_like 'OK(html)'
+      if Settings.api_only_mode
+        it_behaves_like 'NG(html)'
+        it_behaves_like 'ToNG(html)', 406
+      else
+        it_behaves_like 'OK(html)'
+        it_behaves_like 'ToOK(html)' # NOTE: HTMLもログイン状態になる
+      end
       it_behaves_like 'OK(json)'
-      it_behaves_like 'ToOK(html)' # NOTE: HTMLもログイン状態になる
       it_behaves_like 'ToOK(json)'
     end
     shared_examples_for '[ログイン中][*][ある]有効なパラメータ（自分のコードも含む）' do
       include_context 'set_params_include_myself', true
-      it_behaves_like 'OK(html)'
+      if Settings.api_only_mode
+        it_behaves_like 'NG(html)'
+        it_behaves_like 'ToNG(html)', 406
+      else
+        it_behaves_like 'OK(html)'
+        it_behaves_like 'ToOK(html)'
+      end
       it_behaves_like 'NG(json)'
-      it_behaves_like 'ToOK(html)'
       it_behaves_like 'ToNG(json)', 401 # NOTE: APIは未ログイン扱い
     end
     shared_examples_for '[APIログイン中][*][ある]有効なパラメータ（自分のコードも含む）' do
       include_context 'set_params_include_myself', false
-      it_behaves_like 'OK(html)'
+      if Settings.api_only_mode
+        it_behaves_like 'NG(html)'
+        it_behaves_like 'ToNG(html)', 406
+      else
+        it_behaves_like 'OK(html)'
+        it_behaves_like 'ToOK(html)' # NOTE: HTMLもログイン状態になる
+      end
       it_behaves_like 'OK(json)'
-      it_behaves_like 'ToOK(html)' # NOTE: HTMLもログイン状態になる
       it_behaves_like 'ToOK(json)'
     end
     shared_examples_for '[ログイン中][*][ある]有効なパラメータ（存在しないコードも含む）' do
       include_context 'set_params_include_notfound', true
-      it_behaves_like 'OK(html)'
+      if Settings.api_only_mode
+        it_behaves_like 'NG(html)'
+        it_behaves_like 'ToNG(html)', 406
+      else
+        it_behaves_like 'OK(html)'
+        it_behaves_like 'ToOK(html)'
+      end
       it_behaves_like 'NG(json)'
-      it_behaves_like 'ToOK(html)'
       it_behaves_like 'ToNG(json)', 401 # NOTE: APIは未ログイン扱い
     end
     shared_examples_for '[APIログイン中][*][ある]有効なパラメータ（存在しないコードも含む）' do
       include_context 'set_params_include_notfound', false
-      it_behaves_like 'OK(html)'
+      if Settings.api_only_mode
+        it_behaves_like 'NG(html)'
+        it_behaves_like 'ToNG(html)', 406
+      else
+        it_behaves_like 'OK(html)'
+        it_behaves_like 'ToOK(html)' # NOTE: HTMLもログイン状態になる
+      end
       it_behaves_like 'OK(json)'
-      it_behaves_like 'ToOK(html)' # NOTE: HTMLもログイン状態になる
       it_behaves_like 'ToOK(json)'
     end
     shared_examples_for '[ログイン中][*][ある]無効なパラメータ（コードなし）' do
       let(:params) { { codes: {} } }
       it_behaves_like 'NG(html)'
+      if Settings.api_only_mode
+        it_behaves_like 'ToNG(html)', 406
+      else
+        it_behaves_like 'ToMembers(html)', 'alert.member.destroy.codes.blank'
+      end
       it_behaves_like 'NG(json)'
-      it_behaves_like 'ToMembers(html)', 'alert.member.destroy.codes.blank'
       it_behaves_like 'ToNG(json)', 401 # NOTE: APIは未ログイン扱い
     end
     shared_examples_for '[APIログイン中][*][ある]無効なパラメータ（コードなし）' do
       let(:params) { { codes: [] } }
       it_behaves_like 'NG(html)'
+      if Settings.api_only_mode
+        it_behaves_like 'ToNG(html)', 406
+      else
+        it_behaves_like 'ToMembers(html)', 'alert.member.destroy.codes.blank' # NOTE: HTMLもログイン状態になる
+      end
       it_behaves_like 'NG(json)'
-      it_behaves_like 'ToMembers(html)', 'alert.member.destroy.codes.blank' # NOTE: HTMLもログイン状態になる
       it_behaves_like 'ToNG(json)', 422, nil, 'alert.member.destroy.codes.blank'
     end
     shared_examples_for '[ログイン中][*][ある]無効なパラメータ（自分のコードのみ）' do
       include_context 'set_params_myself', true
       it_behaves_like 'NG(html)'
+      if Settings.api_only_mode
+        it_behaves_like 'ToNG(html)', 406
+      else
+        it_behaves_like 'ToMembers(html)', 'alert.member.destroy.codes.myself'
+      end
       it_behaves_like 'NG(json)'
-      it_behaves_like 'ToMembers(html)', 'alert.member.destroy.codes.myself'
       it_behaves_like 'ToNG(json)', 401 # NOTE: APIは未ログイン扱い
     end
     shared_examples_for '[APIログイン中][*][ある]無効なパラメータ（自分のコードのみ）' do
       include_context 'set_params_myself', false
       it_behaves_like 'NG(html)'
+      if Settings.api_only_mode
+        it_behaves_like 'ToNG(html)', 406
+      else
+        it_behaves_like 'ToMembers(html)', 'alert.member.destroy.codes.myself' # NOTE: HTMLもログイン状態になる
+      end
       it_behaves_like 'NG(json)'
-      it_behaves_like 'ToMembers(html)', 'alert.member.destroy.codes.myself' # NOTE: HTMLもログイン状態になる
       it_behaves_like 'ToNG(json)', 422, nil, 'alert.member.destroy.codes.myself'
     end
     shared_examples_for '[ログイン中][*][ある]無効なパラメータ（存在しないコードのみ）' do
       include_context 'set_params_notfound', true
       it_behaves_like 'NG(html)'
+      if Settings.api_only_mode
+        it_behaves_like 'ToNG(html)', 406
+      else
+        it_behaves_like 'ToMembers(html)', 'alert.member.destroy.codes.notfound'
+      end
       it_behaves_like 'NG(json)'
-      it_behaves_like 'ToMembers(html)', 'alert.member.destroy.codes.notfound'
       it_behaves_like 'ToNG(json)', 401 # NOTE: APIは未ログイン扱い
     end
     shared_examples_for '[APIログイン中][*][ある]無効なパラメータ（存在しないコードのみ）' do
       include_context 'set_params_notfound', false
       it_behaves_like 'NG(html)'
+      if Settings.api_only_mode
+        it_behaves_like 'ToNG(html)', 406
+      else
+        it_behaves_like 'ToMembers(html)', 'alert.member.destroy.codes.notfound' # NOTE: HTMLもログイン状態になる
+      end
       it_behaves_like 'NG(json)'
-      it_behaves_like 'ToMembers(html)', 'alert.member.destroy.codes.notfound' # NOTE: HTMLもログイン状態になる
       it_behaves_like 'ToNG(json)', 422, nil, 'alert.member.destroy.codes.notfound'
     end
 
@@ -222,16 +284,16 @@ RSpec.describe 'Members', type: :request do
       include_context 'set_member_power', power
       include_context 'set_params1', true
       it_behaves_like 'NG(html)'
+      it_behaves_like 'ToNG(html)', Settings.api_only_mode ? 406 : 403
       it_behaves_like 'NG(json)'
-      it_behaves_like 'ToNG(html)', 403
       it_behaves_like 'ToNG(json)', 401 # NOTE: APIは未ログイン扱い
     end
     shared_examples_for '[APIログイン中][*]権限がない' do |power|
       include_context 'set_member_power', power
       include_context 'set_params1', false
       it_behaves_like 'NG(html)'
+      it_behaves_like 'ToNG(html)', Settings.api_only_mode ? 406 : 403 # NOTE: HTMLもログイン状態になる
       it_behaves_like 'NG(json)'
-      it_behaves_like 'ToNG(html)', 403 # NOTE: HTMLもログイン状態になる
       it_behaves_like 'ToNG(json)', 403
     end
 
@@ -239,16 +301,16 @@ RSpec.describe 'Members', type: :request do
       let_it_be(:space) { space_not }
       let(:params) { { codes: {} } }
       it_behaves_like 'NG(html)'
+      it_behaves_like 'ToNG(html)', Settings.api_only_mode ? 406 : 404
       it_behaves_like 'NG(json)'
-      it_behaves_like 'ToNG(html)', 404
       it_behaves_like 'ToNG(json)', 401 # NOTE: APIは未ログイン扱い
     end
     shared_examples_for '[APIログイン中]スペースが存在しない' do
       let_it_be(:space) { space_not }
       let(:params) { { codes: [] } }
       it_behaves_like 'NG(html)'
+      it_behaves_like 'ToNG(html)', Settings.api_only_mode ? 406 : 404 # NOTE: HTMLもログイン状態になる
       it_behaves_like 'NG(json)'
-      it_behaves_like 'ToNG(html)', 404 # NOTE: HTMLもログイン状態になる
       it_behaves_like 'ToNG(json)', 404
     end
     shared_examples_for '[ログイン中]スペースが公開' do
@@ -288,8 +350,12 @@ RSpec.describe 'Members', type: :request do
       include_context '未ログイン処理'
       include_context 'valid_condition', true
       it_behaves_like 'NG(html)'
+      if Settings.api_only_mode
+        it_behaves_like 'ToNG(html)', 406
+      else
+        it_behaves_like 'ToLogin(html)'
+      end
       it_behaves_like 'NG(json)'
-      it_behaves_like 'ToLogin(html)'
       it_behaves_like 'ToNG(json)', 401
     end
     context 'ログイン中' do
@@ -302,8 +368,12 @@ RSpec.describe 'Members', type: :request do
       include_context 'ログイン処理', :destroy_reserved
       include_context 'valid_condition', true
       it_behaves_like 'NG(html)'
+      if Settings.api_only_mode
+        it_behaves_like 'ToNG(html)', 406
+      else
+        it_behaves_like 'ToMembers(html)', 'alert.user.destroy_reserved'
+      end
       it_behaves_like 'NG(json)'
-      it_behaves_like 'ToMembers(html)', 'alert.user.destroy_reserved'
       it_behaves_like 'ToNG(json)', 401 # NOTE: APIは未ログイン扱い
     end
     context 'APIログイン中' do
@@ -316,8 +386,12 @@ RSpec.describe 'Members', type: :request do
       include_context 'APIログイン処理', :destroy_reserved
       include_context 'valid_condition', false
       it_behaves_like 'NG(html)'
+      if Settings.api_only_mode
+        it_behaves_like 'ToNG(html)', 406
+      else
+        it_behaves_like 'ToMembers(html)', 'alert.user.destroy_reserved' # NOTE: HTMLもログイン状態になる
+      end
       it_behaves_like 'NG(json)'
-      it_behaves_like 'ToMembers(html)', 'alert.user.destroy_reserved' # NOTE: HTMLもログイン状態になる
       it_behaves_like 'ToNG(json)', 422, nil, 'alert.user.destroy_reserved'
     end
   end

@@ -32,6 +32,14 @@ RSpec.describe 'Invitations', type: :request do
     end
 
     # テストケース
+    if Settings.api_only_mode
+      include_context 'APIログイン処理'
+      include_context 'valid_condition'
+      it_behaves_like 'ToNG(html)', 406
+      it_behaves_like 'ToNG(json)', 406
+      next
+    end
+
     shared_examples_for '[ログイン中/削除予約済み][*][ある]招待コードが存在する' do |status|
       let_it_be(:invitation) { FactoryBot.create(:invitation, status, space: space) }
       it_behaves_like 'ToOK(html)'

@@ -144,37 +144,53 @@ RSpec.describe 'Downloads', type: :request do
     # テストケース
     shared_examples_for '[ログイン中/削除予約済み]ダウンロード結果が存在しない' do
       include_context 'ダウンロード結果一覧作成', 0, 0, 0, 0, 0
-      it_behaves_like 'ToOK(html)', 1
-      it_behaves_like 'ページネーション非表示', 1, 2
-      it_behaves_like 'リスト表示（0件）'
-      it_behaves_like 'リダイレクト', 2, 1
+      if Settings.api_only_mode
+        it_behaves_like 'ToNG(html)', 406
+      else
+        it_behaves_like 'ToOK(html)', 1
+        it_behaves_like 'ページネーション非表示', 1, 2
+        it_behaves_like 'リスト表示（0件）'
+        it_behaves_like 'リダイレクト', 2, 1
+      end
       it_behaves_like 'ToNG(json)', 401 # NOTE: APIは未ログイン扱い
     end
     shared_examples_for '[APIログイン中/削除予約済み]ダウンロード結果が存在しない' do
       include_context 'ダウンロード結果一覧作成', 0, 0, 0, 0, 0
-      it_behaves_like 'ToOK(html)', 1 # NOTE: HTMLもログイン状態になる
-      it_behaves_like 'ページネーション非表示', 1, 2
-      it_behaves_like 'リスト表示（0件）'
-      it_behaves_like 'リダイレクト', 2, 1
+      if Settings.api_only_mode
+        it_behaves_like 'ToNG(html)', 406
+      else
+        it_behaves_like 'ToOK(html)', 1 # NOTE: HTMLもログイン状態になる
+        it_behaves_like 'ページネーション非表示', 1, 2
+        it_behaves_like 'リスト表示（0件）'
+        it_behaves_like 'リダイレクト', 2, 1
+      end
       it_behaves_like 'ToOK(json)', 1
       it_behaves_like 'リダイレクト(json)', 2
     end
     shared_examples_for '[ログイン中/削除予約済み]ダウンロード結果が最大表示数と同じ' do
       count = Settings.test_downloads_count
       include_context 'ダウンロード結果一覧作成', count.waiting, count.processing, count.success, count.failure, count.downloaded
-      it_behaves_like 'ToOK(html)', 1
-      it_behaves_like 'ページネーション非表示', 1, 2
-      it_behaves_like 'リスト表示', 1
-      it_behaves_like 'リダイレクト', 2, 1
+      if Settings.api_only_mode
+        it_behaves_like 'ToNG(html)', 406
+      else
+        it_behaves_like 'ToOK(html)', 1
+        it_behaves_like 'ページネーション非表示', 1, 2
+        it_behaves_like 'リスト表示', 1
+        it_behaves_like 'リダイレクト', 2, 1
+      end
       it_behaves_like 'ToNG(json)', 401 # NOTE: APIは未ログイン扱い
     end
     shared_examples_for '[APIログイン中/削除予約済み]ダウンロード結果が最大表示数と同じ' do
       count = Settings.test_downloads_count
       include_context 'ダウンロード結果一覧作成', count.waiting, count.processing, count.success, count.failure, count.downloaded
-      it_behaves_like 'ToOK(html)', 1
-      it_behaves_like 'ページネーション非表示', 1, 2
-      it_behaves_like 'リスト表示', 1
-      it_behaves_like 'リダイレクト', 2, 1
+      if Settings.api_only_mode
+        it_behaves_like 'ToNG(html)', 406
+      else
+        it_behaves_like 'ToOK(html)', 1
+        it_behaves_like 'ページネーション非表示', 1, 2
+        it_behaves_like 'リスト表示', 1
+        it_behaves_like 'リダイレクト', 2, 1
+      end
       it_behaves_like 'ToOK(json)', 1
       it_behaves_like 'リスト表示(json)', 1
       it_behaves_like 'リダイレクト(json)', 2
@@ -182,25 +198,33 @@ RSpec.describe 'Downloads', type: :request do
     shared_examples_for '[ログイン中/削除予約済み]ダウンロード結果が最大表示数より多い' do
       count = Settings.test_downloads_count
       include_context 'ダウンロード結果一覧作成', count.waiting, count.processing, count.success, count.failure, count.downloaded + 1
-      it_behaves_like 'ToOK(html)', 1
-      it_behaves_like 'ToOK(html)', 2
-      it_behaves_like 'ページネーション表示', 1, 2
-      it_behaves_like 'ページネーション表示', 2, 1
-      it_behaves_like 'リスト表示', 1
-      it_behaves_like 'リスト表示', 2
-      it_behaves_like 'リダイレクト', 3, 2
+      if Settings.api_only_mode
+        it_behaves_like 'ToNG(html)', 406
+      else
+        it_behaves_like 'ToOK(html)', 1
+        it_behaves_like 'ToOK(html)', 2
+        it_behaves_like 'ページネーション表示', 1, 2
+        it_behaves_like 'ページネーション表示', 2, 1
+        it_behaves_like 'リスト表示', 1
+        it_behaves_like 'リスト表示', 2
+        it_behaves_like 'リダイレクト', 3, 2
+      end
       it_behaves_like 'ToNG(json)', 401 # NOTE: APIは未ログイン扱い
     end
     shared_examples_for '[APIログイン中/削除予約済み]ダウンロード結果が最大表示数より多い' do
       count = Settings.test_downloads_count
       include_context 'ダウンロード結果一覧作成', count.waiting, count.processing, count.success, count.failure, count.downloaded + 1
-      it_behaves_like 'ToOK(html)', 1
-      it_behaves_like 'ToOK(html)', 2
-      it_behaves_like 'ページネーション表示', 1, 2
-      it_behaves_like 'ページネーション表示', 2, 1
-      it_behaves_like 'リスト表示', 1
-      it_behaves_like 'リスト表示', 2
-      it_behaves_like 'リダイレクト', 3, 2
+      if Settings.api_only_mode
+        it_behaves_like 'ToNG(html)', 406
+      else
+        it_behaves_like 'ToOK(html)', 1
+        it_behaves_like 'ToOK(html)', 2
+        it_behaves_like 'ページネーション表示', 1, 2
+        it_behaves_like 'ページネーション表示', 2, 1
+        it_behaves_like 'リスト表示', 1
+        it_behaves_like 'リスト表示', 2
+        it_behaves_like 'リダイレクト', 3, 2
+      end
       it_behaves_like 'ToOK(json)', 1
       it_behaves_like 'ToOK(json)', 2
       it_behaves_like 'リスト表示(json)', 1
@@ -221,7 +245,11 @@ RSpec.describe 'Downloads', type: :request do
 
     context '未ログイン' do
       include_context '未ログイン処理'
-      it_behaves_like 'ToLogin(html)'
+      if Settings.api_only_mode
+        it_behaves_like 'ToNG(html)', 406
+      else
+        it_behaves_like 'ToLogin(html)'
+      end
       it_behaves_like 'ToNG(json)', 401
     end
     context 'ログイン中' do
@@ -302,6 +330,8 @@ RSpec.describe 'Downloads', type: :request do
     end
 
     context 'ログイン中（URLの拡張子がない/AcceptヘッダにHTMLが含まれる）' do
+      next if Settings.api_only_mode
+
       include_context 'ログイン処理'
       let(:subject_format) { nil }
       let(:accept_headers) { ACCEPT_INC_HTML }
@@ -401,6 +431,8 @@ RSpec.describe 'Downloads', type: :request do
     end
 
     context 'ログイン中（URLの拡張子がない/AcceptヘッダにHTMLが含まれる）' do
+      next if Settings.api_only_mode
+
       include_context 'ログイン処理'
       let(:subject_format) { nil }
       let(:accept_headers) { ACCEPT_INC_HTML }

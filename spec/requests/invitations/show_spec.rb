@@ -11,7 +11,7 @@ RSpec.describe 'Invitations', type: :request do
   #   招待コード: 存在する（有効, 期限切れ, 削除済み, 参加済み）, 存在しない
   #   ＋URLの拡張子: ない, .json
   #   ＋Acceptヘッダ: HTMLが含まれる, JSONが含まれる
-  describe 'GET #index' do
+  describe 'GET #show' do
     subject { get invitation_path(space_code: space.code, code: invitation.code, format: subject_format), headers: auth_headers.merge(accept_headers) }
 
     let_it_be(:space_not)     { FactoryBot.build_stubbed(:space) }

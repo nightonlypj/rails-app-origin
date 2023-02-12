@@ -30,6 +30,14 @@ RSpec.describe 'Members', type: :request do
     end
 
     # テストケース
+    if Settings.api_only_mode
+      include_context 'APIログイン処理'
+      include_context 'valid_condition'
+      it_behaves_like 'ToNG(html)', 406
+      it_behaves_like 'ToNG(json)', 406
+      next
+    end
+
     shared_examples_for '[ログイン中][*]権限がある' do |power|
       include_context 'set_member_power', power
       it_behaves_like 'ToOK(html)'

@@ -11,7 +11,7 @@ RSpec.describe 'Spaces', type: :request do
   #   権限: ある（管理者, 投稿者, 閲覧者）, ない,
   #   ＋URLの拡張子: ない, .json
   #   ＋Acceptヘッダ: HTMLが含まれる, JSONが含まれる
-  describe 'GET #index' do
+  describe 'GET #show' do
     subject { get space_path(code: space.code, format: subject_format), headers: auth_headers.merge(accept_headers) }
 
     # テスト内容
@@ -52,7 +52,11 @@ RSpec.describe 'Spaces', type: :request do
     # テストケース
     shared_examples_for '[ログイン中/削除予約済み][公開]権限がある(html)' do |power|
       include_context 'set_member_power', power
-      it_behaves_like 'ToOK(html)'
+      if Settings.api_only_mode
+        it_behaves_like 'ToNG(html)', 406
+      else
+        it_behaves_like 'ToOK(html)'
+      end
     end
     shared_examples_for '[ログイン中/削除予約済み][公開]権限がある(json)' do |power|
       let(:user_power) { nil } # NOTE: APIは未ログイン扱い
@@ -62,37 +66,53 @@ RSpec.describe 'Spaces', type: :request do
     end
     shared_examples_for '[ログイン中/削除予約済み][非公開]権限がある' do |power|
       include_context 'set_member_power', power
-      it_behaves_like 'ToOK(html)'
+      if Settings.api_only_mode
+        it_behaves_like 'ToNG(html)', 406
+      else
+        it_behaves_like 'ToOK(html)'
+      end
       it_behaves_like 'ToNG(json)', 401 # NOTE: APIは未ログイン扱い
     end
     shared_examples_for '[APIログイン中/削除予約済み][*]権限がある' do |power|
       include_context 'set_member_power', power
       let(:member_count) { 1 }
-      it_behaves_like 'ToOK(html)' # NOTE: HTMLもログイン状態になる
+      if Settings.api_only_mode
+        it_behaves_like 'ToNG(html)', 406
+      else
+        it_behaves_like 'ToOK(html)' # NOTE: HTMLもログイン状態になる
+      end
       it_behaves_like 'ToOK(json)'
     end
     shared_examples_for '[*][公開]権限がない' do
       let(:user_power) { nil }
       let(:member_count) { 0 }
-      it_behaves_like 'ToOK(html)'
+      if Settings.api_only_mode
+        it_behaves_like 'ToNG(html)', 406
+      else
+        it_behaves_like 'ToOK(html)'
+      end
       it_behaves_like 'ToOK(json)'
     end
     shared_examples_for '[未ログイン][非公開]権限がない' do
-      it_behaves_like 'ToLogin(html)'
+      if Settings.api_only_mode
+        it_behaves_like 'ToNG(html)', 406
+      else
+        it_behaves_like 'ToLogin(html)'
+      end
       it_behaves_like 'ToNG(json)', 401
     end
     shared_examples_for '[ログイン中/削除予約済み][非公開]権限がない' do
-      it_behaves_like 'ToNG(html)', 403
+      it_behaves_like 'ToNG(html)', Settings.api_only_mode ? 406 : 403
       it_behaves_like 'ToNG(json)', 401 # NOTE: APIは未ログイン扱い
     end
     shared_examples_for '[APIログイン中/削除予約済み][非公開]権限がない' do
-      it_behaves_like 'ToNG(html)', 403 # NOTE: HTMLもログイン状態になる
+      it_behaves_like 'ToNG(html)', Settings.api_only_mode ? 406 : 403 # NOTE: HTMLもログイン状態になる
       it_behaves_like 'ToNG(json)', 403
     end
 
     shared_examples_for '[*]スペースが存在しない' do
       let_it_be(:space) { FactoryBot.build_stubbed(:space) }
-      it_behaves_like 'ToNG(html)', 404
+      it_behaves_like 'ToNG(html)', Settings.api_only_mode ? 406 : 404
       it_behaves_like 'ToNG(json)', 404
     end
     shared_examples_for '[未ログイン]スペースが公開' do

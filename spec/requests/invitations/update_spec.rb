@@ -79,45 +79,71 @@ RSpec.describe 'Invitations', type: :request do
     shared_examples_for '[ログイン中][*][ある][存在する]パラメータなし' do
       let(:attributes) { nil }
       it_behaves_like 'NG(html)'
+      if Settings.api_only_mode
+        it_behaves_like 'ToNG(html)', 406
+      else
+        it_behaves_like 'ToOK(html)' # NOTE: 必須項目がない為、変更なしで成功する
+      end
       it_behaves_like 'NG(json)'
-      it_behaves_like 'ToOK(html)' # NOTE: 必須項目がない為、変更なしで成功する
       it_behaves_like 'ToNG(json)', 401 # NOTE: APIは未ログイン扱い
     end
     shared_examples_for '[APIログイン中][*][ある][存在する]パラメータなし' do
       let(:attributes) { nil }
       it_behaves_like 'NG(html)'
+      if Settings.api_only_mode
+        it_behaves_like 'ToNG(html)', 406
+      else
+        it_behaves_like 'ToOK(html)' # NOTE: 必須項目がない為、変更なしで成功する
+      end
       it_behaves_like 'NG(json)'
-      it_behaves_like 'ToOK(html)' # NOTE: 必須項目がない為、変更なしで成功する
       it_behaves_like 'ToOK(json)' # NOTE: 必須項目がない為、変更なしで成功する
     end
     shared_examples_for '[ログイン中][*][ある][存在する]有効なパラメータ' do |add_attributes|
       let(:attributes) { valid_attributes.merge(add_attributes) }
-      it_behaves_like 'OK(html)'
+      if Settings.api_only_mode
+        it_behaves_like 'NG(html)'
+        it_behaves_like 'ToNG(html)', 406
+      else
+        it_behaves_like 'OK(html)'
+        it_behaves_like 'ToOK(html)'
+      end
       it_behaves_like 'NG(json)'
-      it_behaves_like 'ToOK(html)'
       it_behaves_like 'ToNG(json)', 401 # NOTE: APIは未ログイン扱い
     end
     shared_examples_for '[APIログイン中][*][ある][存在する]有効なパラメータ' do |add_attributes|
       let(:attributes) { valid_attributes.merge(add_attributes) }
-      it_behaves_like 'OK(html)'
+      if Settings.api_only_mode
+        it_behaves_like 'NG(html)'
+        it_behaves_like 'ToNG(html)', 406
+      else
+        it_behaves_like 'OK(html)'
+        it_behaves_like 'ToOK(html)' # NOTE: HTMLもログイン状態になる
+      end
       it_behaves_like 'OK(json)'
-      it_behaves_like 'ToOK(html)' # NOTE: HTMLもログイン状態になる
       it_behaves_like 'ToOK(json)'
     end
     shared_examples_for '[ログイン中][*][ある][存在する]無効なパラメータ' do
       let(:attributes) { invalid_attributes }
       message = get_locale('activerecord.errors.models.invitation.attributes.ended_time.blank')
       it_behaves_like 'NG(html)'
+      if Settings.api_only_mode
+        it_behaves_like 'ToNG(html)', 406
+      else
+        it_behaves_like 'ToNG(html)', 422, [message]
+      end
       it_behaves_like 'NG(json)'
-      it_behaves_like 'ToNG(html)', 422, [message]
       it_behaves_like 'ToNG(json)', 401 # NOTE: APIは未ログイン扱い
     end
     shared_examples_for '[APIログイン中][*][ある][存在する]無効なパラメータ' do
       let(:attributes) { invalid_attributes }
       message = get_locale('activerecord.errors.models.invitation.attributes.ended_time.blank')
       it_behaves_like 'NG(html)'
+      if Settings.api_only_mode
+        it_behaves_like 'ToNG(html)', 406
+      else
+        it_behaves_like 'ToNG(html)', 422, [message] # NOTE: HTMLもログイン状態になる
+      end
       it_behaves_like 'NG(json)'
-      it_behaves_like 'ToNG(html)', 422, [message] # NOTE: HTMLもログイン状態になる
       it_behaves_like 'ToNG(json)', 422, { ended_time: [message] }
     end
 
@@ -142,25 +168,41 @@ RSpec.describe 'Invitations', type: :request do
     shared_examples_for '[ログイン中][*][ある]招待コードが参加済み' do
       let_it_be(:invitation) { FactoryBot.create(:invitation, :email_joined, space: space) }
       let(:attributes) { valid_attributes }
-      it_behaves_like 'ToInvitations(html)', 'alert.invitation.email_joined'
+      it_behaves_like 'NG(html)'
+      if Settings.api_only_mode
+        it_behaves_like 'ToNG(html)', 406
+      else
+        it_behaves_like 'ToInvitations(html)', 'alert.invitation.email_joined'
+      end
+      it_behaves_like 'NG(json)'
       it_behaves_like 'ToNG(json)', 401 # NOTE: APIは未ログイン扱い
     end
     shared_examples_for '[APIログイン中][*][ある]招待コードが参加済み' do
       let_it_be(:invitation) { FactoryBot.create(:invitation, :email_joined, space: space) }
       let(:attributes) { valid_attributes }
-      it_behaves_like 'ToInvitations(html)', 'alert.invitation.email_joined' # NOTE: HTMLもログイン状態になる
+      it_behaves_like 'NG(html)'
+      if Settings.api_only_mode
+        it_behaves_like 'ToNG(html)', 406
+      else
+        it_behaves_like 'ToInvitations(html)', 'alert.invitation.email_joined' # NOTE: HTMLもログイン状態になる
+      end
+      it_behaves_like 'NG(json)'
       it_behaves_like 'ToNG(json)', 422, nil, 'alert.invitation.email_joined'
     end
     shared_examples_for '[ログイン中][*][ある]招待コードが存在しない' do
       let_it_be(:invitation) { FactoryBot.build_stubbed(:invitation) }
       let(:attributes) { valid_attributes }
-      it_behaves_like 'ToNG(html)', 404
+      # it_behaves_like 'NG(html)' # NOTE: 存在しない為
+      it_behaves_like 'ToNG(html)', Settings.api_only_mode ? 406 : 404
+      # it_behaves_like 'NG(json)'
       it_behaves_like 'ToNG(json)', 401 # NOTE: APIは未ログイン扱い
     end
     shared_examples_for '[APIログイン中][*][ある]招待コードが存在しない' do
       let_it_be(:invitation) { FactoryBot.build_stubbed(:invitation) }
       let(:attributes) { valid_attributes }
-      it_behaves_like 'ToNG(html)', 404 # NOTE: HTMLもログイン状態になる
+      # it_behaves_like 'NG(html)' # NOTE: 存在しない為
+      it_behaves_like 'ToNG(html)', Settings.api_only_mode ? 406 : 404 # NOTE: HTMLもログイン状態になる
+      # it_behaves_like 'NG(json)'
       it_behaves_like 'ToNG(json)', 404
     end
 
@@ -185,8 +227,8 @@ RSpec.describe 'Invitations', type: :request do
       let_it_be(:invitation) { FactoryBot.create(:invitation, :active) }
       let(:attributes) { valid_attributes }
       it_behaves_like 'NG(html)'
+      it_behaves_like 'ToNG(html)', Settings.api_only_mode ? 406 : 403
       it_behaves_like 'NG(json)'
-      it_behaves_like 'ToNG(html)', 403
       it_behaves_like 'ToNG(json)', 401 # NOTE: APIは未ログイン扱い
     end
     shared_examples_for '[APIログイン中][*]権限がない' do |power|
@@ -194,8 +236,8 @@ RSpec.describe 'Invitations', type: :request do
       let_it_be(:invitation) { FactoryBot.create(:invitation, :active) }
       let(:attributes) { valid_attributes }
       it_behaves_like 'NG(html)'
+      it_behaves_like 'ToNG(html)', Settings.api_only_mode ? 406 : 403 # NOTE: HTMLもログイン状態になる
       it_behaves_like 'NG(json)'
-      it_behaves_like 'ToNG(html)', 403 # NOTE: HTMLもログイン状態になる
       it_behaves_like 'ToNG(json)', 403
     end
 
@@ -217,8 +259,8 @@ RSpec.describe 'Invitations', type: :request do
       let_it_be(:invitation) { FactoryBot.create(:invitation, :active) }
       let(:attributes) { valid_attributes }
       # it_behaves_like 'NG(html)' # NOTE: 存在しない為
+      it_behaves_like 'ToNG(html)', Settings.api_only_mode ? 406 : 404
       # it_behaves_like 'NG(json)'
-      it_behaves_like 'ToNG(html)', 404
       it_behaves_like 'ToNG(json)', 401 # NOTE: APIは未ログイン扱い
     end
     shared_examples_for '[APIログイン中]スペースが存在しない' do
@@ -226,8 +268,8 @@ RSpec.describe 'Invitations', type: :request do
       let_it_be(:invitation) { FactoryBot.create(:invitation, :active) }
       let(:attributes) { valid_attributes }
       # it_behaves_like 'NG(html)' # NOTE: 存在しない為
+      it_behaves_like 'ToNG(html)', Settings.api_only_mode ? 406 : 404 # NOTE: HTMLもログイン状態になる
       # it_behaves_like 'NG(json)'
-      it_behaves_like 'ToNG(html)', 404 # NOTE: HTMLもログイン状態になる
       it_behaves_like 'ToNG(json)', 404
     end
     shared_examples_for '[ログイン中]スペースが公開' do
@@ -267,8 +309,12 @@ RSpec.describe 'Invitations', type: :request do
       include_context '未ログイン処理'
       include_context 'valid_condition'
       it_behaves_like 'NG(html)'
+      if Settings.api_only_mode
+        it_behaves_like 'ToNG(html)', 406
+      else
+        it_behaves_like 'ToLogin(html)'
+      end
       it_behaves_like 'NG(json)'
-      it_behaves_like 'ToLogin(html)'
       it_behaves_like 'ToNG(json)', 401
     end
     context 'ログイン中' do
@@ -283,8 +329,12 @@ RSpec.describe 'Invitations', type: :request do
       include_context 'ログイン処理', :destroy_reserved
       include_context 'valid_condition'
       it_behaves_like 'NG(html)'
+      if Settings.api_only_mode
+        it_behaves_like 'ToNG(html)', 406
+      else
+        it_behaves_like 'ToInvitations(html)', 'alert.user.destroy_reserved'
+      end
       it_behaves_like 'NG(json)'
-      it_behaves_like 'ToInvitations(html)', 'alert.user.destroy_reserved'
       it_behaves_like 'ToNG(json)', 401 # NOTE: APIは未ログイン扱い
     end
     context 'APIログイン中' do
@@ -299,8 +349,12 @@ RSpec.describe 'Invitations', type: :request do
       include_context 'APIログイン処理', :destroy_reserved
       include_context 'valid_condition'
       it_behaves_like 'NG(html)'
+      if Settings.api_only_mode
+        it_behaves_like 'ToNG(html)', 406
+      else
+        it_behaves_like 'ToInvitations(html)', 'alert.user.destroy_reserved' # NOTE: HTMLもログイン状態になる
+      end
       it_behaves_like 'NG(json)'
-      it_behaves_like 'ToInvitations(html)', 'alert.user.destroy_reserved' # NOTE: HTMLもログイン状態になる
       it_behaves_like 'ToNG(json)', 422, nil, 'alert.user.destroy_reserved'
     end
   end

@@ -7,6 +7,8 @@ RSpec.describe 'Users::Registrations', type: :request do
   # テストパターン
   #   招待コード: 有効, 無効（期限切れ, 削除済み, 参加済み）, 存在しない
   describe 'GET #new' do
+    next if Settings.api_only_mode
+
     subject { get new_user_registration_path(code: invitation.code) }
 
     # テストケース
@@ -43,6 +45,8 @@ RSpec.describe 'Users::Registrations', type: :request do
   #   対象: メールアドレス, ドメイン
   #   パラメータのメールアドレス/ドメイン: 招待と一致/含まれる, 不一致/含まれない
   describe 'POST #create' do
+    next if Settings.api_only_mode
+
     subject { post create_user_registration_path(code: invitation.code), params: { user: attributes } }
     let_it_be(:new_user) { FactoryBot.attributes_for(:user, email: 'test@example.com') }
     let_it_be(:valid_attributes_email)       { { name: new_user[:name], email: new_user[:email], password: new_user[:password] } }
