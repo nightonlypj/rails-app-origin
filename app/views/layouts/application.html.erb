@@ -144,10 +144,12 @@
           <span class="mx-2 my-1">ダウンロード結果</span>
         </a>
 <% end %>
+<% if user_signed_in? || Settings.enable_public_space %>
         <a href="<%= spaces_path %>" class="btn btn-link d-flex align-items-center link-dark" style="font-size: 1rem">
           <i class="fas fa-folder-open fa-lg"></i>
           <span class="mx-2 my-1">スペース</span>
         </a>
+<% end %>
 <% if user_signed_in? %>
 <% current_user.spaces.active.each do |space| %>
         <a href="<%= space_path(space.code) %>" class="btn btn-link d-flex align-items-center link-dark">
