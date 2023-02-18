@@ -5,6 +5,7 @@ ja:
   my_url: 'https://example.com'
   activerecord:
     models:
+      holiday: '祝日'
       infomation: 'お知らせ'
       space: 'スペース'
       invitation: '招待'
@@ -12,6 +13,10 @@ ja:
       download: 'ダウンロード'
       download_file: 'ダウンロードファイル'
     attributes:
+      holiday:
+        id: 'ID'
+        date: '日付'
+        name: '名称'
       infomation:
         id: 'ID'
         label: 'ラベル'

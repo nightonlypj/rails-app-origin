@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2022_12_22_110420) do
+ActiveRecord::Schema.define(version: 2023_02_17_225608) do
 
   create_table "admin_users", charset: "utf8", collation: "utf8_bin", comment: "管理者", force: :cascade do |t|
     t.string "name", null: false, comment: "氏名"
@@ -69,6 +69,14 @@ ActiveRecord::Schema.define(version: 2022_12_22_110420) do
     t.index ["space_id"], name: "index_downloads_on_space_id"
     t.index ["user_id", "requested_at"], name: "index_downloads1"
     t.index ["user_id"], name: "index_downloads_on_user_id"
+  end
+
+  create_table "holidays", charset: "utf8", collation: "utf8_bin", comment: "祝日", force: :cascade do |t|
+    t.date "date", null: false, comment: "日付"
+    t.string "name", null: false, comment: "名称"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["date"], name: "index_holidays1", unique: true
   end
 
   create_table "infomations", charset: "utf8", collation: "utf8_bin", comment: "お知らせ", force: :cascade do |t|
