@@ -14,6 +14,18 @@
       - 'password'
   env:
     development: true
+- file: 'seed/holidays.yml'
+  model: 'Holiday'
+  insert: true
+  update: true
+  # delete: true
+  option:
+    bulk_insert: true
+    bulk_update: true
+    destroy: true
+  env:
+    production: true
+    development: true
 - file: 'seed/infomations_development.yml'
   model: 'Infomation'
   insert: true

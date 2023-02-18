@@ -2,6 +2,8 @@
 
 ## 1.6.0 (Sprint 11)
 
+- 祝日データを持ちたい
+  - https://dev.azure.com/nightonly/rails-app-origin/_workitems/edit/516/
 - 設定でHTMLを返さないようにできるようにしたい（APIのみモード）
   - https://dev.azure.com/nightonly/rails-app-origin/_workitems/edit/511/
 - Capistranoでデプロイできるようにしたい

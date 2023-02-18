@@ -137,3 +137,7 @@ Style/ConditionalAssignment:
 # C: Style/GuardClause: Use a guard clause (*) instead of wrapping the code inside a conditional expression.
 Style/GuardClause:
   Enabled: false
+
+# C: [Correctable] Style/BlockComments: Do not use block comments.
+Style/BlockComments:
+  Enabled: false

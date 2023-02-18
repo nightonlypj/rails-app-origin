@@ -5,8 +5,13 @@ ja:
   my_url: 'https://example.com'
   activerecord:
     models:
+      holiday: '祝日'
       infomation: 'お知らせ'
     attributes:
+      holiday:
+        id: 'ID'
+        date: '日付'
+        name: '名称'
       infomation:
         id: 'ID'
         label: 'ラベル'

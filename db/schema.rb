@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_11_30_000939) do
+ActiveRecord::Schema.define(version: 2023_02_17_225608) do
 
   create_table "admin_users", charset: "utf8", collation: "utf8_bin", comment: "管理者", force: :cascade do |t|
     t.string "name", null: false, comment: "氏名"
@@ -37,6 +37,14 @@ ActiveRecord::Schema.define(version: 2021_11_30_000939) do
     t.index ["email"], name: "index_admin_users1", unique: true
     t.index ["reset_password_token"], name: "index_admin_users2", unique: true
     t.index ["unlock_token"], name: "index_admin_users4", unique: true
+  end
+
+  create_table "holidays", charset: "utf8", collation: "utf8_bin", comment: "祝日", force: :cascade do |t|
+    t.date "date", null: false, comment: "日付"
+    t.string "name", null: false, comment: "名称"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["date"], name: "index_holidays1", unique: true
   end
 
   create_table "infomations", charset: "utf8", collation: "utf8_bin", comment: "お知らせ", force: :cascade do |t|
