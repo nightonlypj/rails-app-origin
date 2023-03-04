@@ -1,5 +1,6 @@
 DEFAULT_PID_PATH = File.expand_path('../../tmp/pids/unicorn.pid', __dir__).freeze
 
+# :nocov:
 namespace :unicorn do
   desc 'Unicorn起動(bundle exec unicorn)'
   task(:start) do
@@ -50,3 +51,4 @@ namespace :unicorn do
     sh "kill -#{signal} `cat #{pid_path}`"
   end
 end
+# :nocov:
