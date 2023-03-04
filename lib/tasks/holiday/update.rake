@@ -1,6 +1,6 @@
 # 国民の祝日について - 内閣府
 #  https://www8.cao.go.jp/chosei/shukujitsu/gaiyou.html
-HOLIDAY_CSV = 'https://www8.cao.go.jp/chosei/shukujitsu/syukujitsu.csv'.freeze
+HOLIDAY_CSV_URL = 'https://www8.cao.go.jp/chosei/shukujitsu/syukujitsu.csv'.freeze
 HOLIDAY_HEADER_DATE = '国民の祝日・休日月日'.freeze
 HOLIDAY_HEADER_NAME = '国民の祝日・休日名称'.freeze
 
@@ -19,7 +19,7 @@ namespace :holiday do
     logger.info("dry_run: #{dry_run}")
 
     datas = {}
-    body = OpenURI.open_uri(HOLIDAY_CSV).read
+    body = OpenURI.open_uri(HOLIDAY_CSV_URL).read
     body.force_encoding(NKF.guess(body))
     CSV.parse(body.encode(Encoding::UTF_8), headers: true) do |row|
       datas[row[HOLIDAY_HEADER_DATE].to_date] = row[HOLIDAY_HEADER_NAME].strip

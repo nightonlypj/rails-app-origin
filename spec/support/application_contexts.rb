@@ -50,12 +50,14 @@ shared_examples_for 'ToError' do |error_msg|
   end
 end
 
+# :nocov:
 shared_examples_for 'OK' do
   raise '各Specに作成してください。'
 end
 shared_examples_for 'NG' do
   raise '各Specに作成してください。'
 end
+# :nocov:
 shared_examples_for 'OK(html)' do
   let(:subject_format) { nil }
   let(:accept_headers) { ACCEPT_INC_HTML }
@@ -77,12 +79,14 @@ shared_examples_for 'NG(json)' do
   it_behaves_like 'NG'
 end
 
+# :nocov:
 shared_examples_for 'ToOK(html/*)' do
   raise '各Specに作成してください。'
 end
 shared_examples_for 'ToOK(json/json)' do
   raise '各Specに作成してください。'
 end
+# :nocov:
 shared_examples_for 'ToOK(html/html)' do
   let(:subject_format) { nil }
   let(:accept_headers) { ACCEPT_INC_HTML }
@@ -148,7 +152,9 @@ shared_examples_for 'ToNG(json/json)' do |code, errors, alert = nil, notice = ni
     when 422
       'errors.messages.not_saved.other'
     else
+      # :nocov:
       raise "code not found.(#{code})"
+      # :nocov:
     end
   end
   it "HTTPステータスが#{code}。対象項目が一致する" do

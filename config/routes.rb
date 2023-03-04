@@ -1,5 +1,5 @@
 Rails.application.routes.draw do
-  get 'holidays/index'
+  draw :holidays
   draw :infomations
   draw :admin
   draw :users

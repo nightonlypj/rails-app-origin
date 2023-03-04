@@ -1,6 +1,6 @@
 FactoryBot.define do
   factory :holiday do
-    date { Time.current }
-    name { "祝日(#{I18n.l(date.to_date)})" }
+    date { Time.current.to_date }
+    name { "holiday(#{I18n.l(date)})" }
   end
 end

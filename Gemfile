@@ -86,6 +86,8 @@ group :test do
   gem 'simplecov'
   # Use Ruby Tests Profiling Toolbox
   gem 'test-prof'
+  # Use WebMock
+  gem "webmock"
 end
 
 # Windows does not include zoneinfo files, so bundle the tzinfo-data gem
