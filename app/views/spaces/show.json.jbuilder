@@ -25,13 +25,14 @@ json.space do
         json.deleted @space.created_user.blank?
       end
     end
+    json.created_at l(@space.created_at, format: :json)
+
     if @space.last_updated_user_id.present?
       json.last_updated_user do
         json.partial! './users/auth/user', user: @space.last_updated_user, use_email: true if @space.last_updated_user.present?
         json.deleted @space.last_updated_user.blank?
       end
     end
-    json.created_at l(@space.created_at, format: :json)
     json.last_updated_at l(@space.last_updated_at, format: :json, default: nil)
   end
 end

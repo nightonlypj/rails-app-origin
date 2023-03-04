@@ -70,7 +70,9 @@ class Download < ApplicationRecord
     when :tsv
       "\t"
     else
+      # :nocov:
       raise "format not found.(#{format})"
+      # :nocov:
     end
   end
 
@@ -84,7 +86,9 @@ class Download < ApplicationRecord
     when :cr
       "\r"
     else
+      # :nocov:
       raise "newline_code not found.(#{newline_code})"
+      # :nocov:
     end
   end
 

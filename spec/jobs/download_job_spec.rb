@@ -47,7 +47,9 @@ RSpec.describe DownloadJob, type: :job do
         when :utf8
           current_download_file.body.force_encoding(Encoding::UTF_8)
         else
+          # :nocov:
           raise "char_code not found.(#{download.char_code})"
+          # :nocov:
         end
         expect(current_download_file.body.encode(Encoding::UTF_8)).to eq(result_body) # NOTE: UTF-8に変換して期待値と比較
       end

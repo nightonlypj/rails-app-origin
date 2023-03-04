@@ -35,6 +35,12 @@ class Member < ApplicationRecord
 
     member
   }
+  scope :by_power, lambda { |power|
+    return none if power.count.zero?
+    return if power.count >= Member.powers.count
+
+    where(power: power)
+  }
 
   # 最終更新日時
   def last_updated_at

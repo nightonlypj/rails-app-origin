@@ -93,13 +93,15 @@ def expect_space_json(response_json_space, space, user_power, member_count)
 
   if user_power == :admin
     expect_user_json(response_json_space['created_user'], space.created_user, true, space.created_user_id.present?)
-    expect_user_json(response_json_space['last_updated_user'], space.last_updated_user, true, space.last_updated_user_id.present?)
     expect(response_json_space['created_at']).to eq(I18n.l(space.created_at, format: :json))
+
+    expect_user_json(response_json_space['last_updated_user'], space.last_updated_user, true, space.last_updated_user_id.present?)
     expect(response_json_space['last_updated_at']).to eq(I18n.l(space.last_updated_at, format: :json, default: nil))
   else
     expect(response_json_space['created_user']).to be_nil
-    expect(response_json_space['last_updated_user']).to be_nil
     expect(response_json_space['created_at']).to be_nil
+
+    expect(response_json_space['last_updated_user']).to be_nil
     expect(response_json_space['last_updated_at']).to be_nil
   end
 end

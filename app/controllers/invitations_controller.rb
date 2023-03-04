@@ -2,7 +2,7 @@ class InvitationsController < ApplicationAuthController
   before_action :response_not_acceptable_for_not_api, only: :show
   before_action :response_not_acceptable_for_not_html, only: %i[new edit]
   before_action :authenticate_user!
-  before_action :set_space
+  before_action :set_space_current_member
   before_action :redirect_invitations_for_user_destroy_reserved, only: %i[new create edit update], if: :format_html?
   before_action :response_api_for_user_destroy_reserved, only: %i[create update], unless: :format_html?
   before_action :check_power
@@ -74,14 +74,6 @@ class InvitationsController < ApplicationAuthController
   end
 
   # Use callbacks to share common setup or constraints between actions.
-  def set_space
-    @space = Space.find_by(code: params[:space_code])
-    return response_not_found if @space.blank?
-
-    @current_member = Member.where(space: @space, user: current_user).eager_load(:user)&.first
-    response_forbidden if @current_member.blank?
-  end
-
   def check_power
     response_forbidden unless @current_member.power_admin?
   end

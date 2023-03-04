@@ -42,8 +42,9 @@ def expect_invitation_json(response_json_invitation, invitation)
   expect(response_json_invitation['email_joined_at']).to eq(I18n.l(invitation.email_joined_at, format: :json, default: nil))
 
   expect_user_json(response_json_invitation['created_user'], invitation.created_user, true, invitation.created_user_id.present?)
-  expect_user_json(response_json_invitation['last_updated_user'], invitation.last_updated_user, true, invitation.last_updated_user_id.present?)
   expect(response_json_invitation['created_at']).to eq(I18n.l(invitation.created_at, format: :json))
+
+  expect_user_json(response_json_invitation['last_updated_user'], invitation.last_updated_user, true, invitation.last_updated_user_id.present?)
   expect(response_json_invitation['last_updated_at']).to eq(I18n.l(invitation.last_updated_at, format: :json, default: nil))
 end
 

@@ -21,7 +21,7 @@
 - id: 3
   code: 'code0003'
   name: '非公開スペース(投稿者/管理者)'
-  description: "非公開スペース(投稿者/管理者)\n2行目"
+  description: null
   private: true
   created_user_id: 1
   last_updated_user_id: 2
@@ -30,7 +30,7 @@
 - id: 4
   code: 'code0004'
   name: '公開スペース(投稿者/管理者)'
-  description: "公開スペース(投稿者/管理者)\n2行目"
+  description: null
   private: false
   created_user_id: 1
   last_updated_user_id: 2

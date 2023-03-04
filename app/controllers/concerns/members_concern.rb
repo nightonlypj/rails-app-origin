@@ -30,23 +30,26 @@ module MembersConcern
     when 'last_updated_at'
       I18n.l(member.last_updated_at, default: nil)
     else
+      # :nocov:
       raise "output_item not found.(#{output_item})"
+      # :nocov:
     end
   end
 
   def set_params_index(search_params = params, sort_only = false)
-    @power = {}
+    @power = {} # NOTE: HTMLで使用
     @powers = []
     if sort_only
       @text = nil
-      @option = nil
+      @option = nil # NOTE: HTMLで使用
 
-      Member.powers.each do |_key, value|
+      Member.powers.each do |key, value|
         @power[value] = true
+        @powers.push(key)
       end
     else
       @text = search_params[:text]&.slice(..(255 - 1))
-      @option = search_params[:option] == '1'
+      @option = search_params[:option] == '1' # NOTE: HTMLで使用
 
       Member.powers.each do |key, value|
         if power_include_key?(search_params[:power], key)
@@ -72,7 +75,7 @@ module MembersConcern
   end
 
   def members_search
-    Member.where(space: @space, power: @power.keys).search(@text, @current_member).eager_load(:user, :invitationed_user, :last_updated_user)
+    Member.where(space: @space).search(@text, @current_member).by_power(@powers).eager_load(:user, :invitationed_user, :last_updated_user)
           .order(SORT_COLUMN[@sort] + (@desc ? ' DESC' : ''), id: :desc)
   end
 

@@ -2,7 +2,7 @@ class SpacesController < ApplicationAuthController
   before_action :response_not_acceptable_for_not_html, only: %i[new edit delete undo_delete]
   before_action :authenticate_user!, only: %i[new create edit update delete destroy undo_delete undo_destroy]
   before_action :redirect_spaces_for_user_destroy_reserved, only: %i[new create], if: :format_html?
-  before_action :set_space, only: %i[show edit update delete destroy undo_delete undo_destroy]
+  before_action :set_space_current_member, only: %i[show edit update delete destroy undo_delete undo_destroy]
   before_action :redirect_space_for_user_destroy_reserved, only: %i[edit update delete destroy undo_delete undo_destroy], if: :format_html?
   before_action :response_api_for_user_destroy_reserved, only: %i[create update destroy undo_destroy], unless: :format_html?
   before_action :redirect_space_for_space_destroy_reserved, only: %i[delete destroy], if: :format_html?
@@ -124,7 +124,7 @@ class SpacesController < ApplicationAuthController
   end
 
   # Use callbacks to share common setup or constraints between actions.
-  def set_space
+  def set_space_current_member
     @space = Space.find_by(code: params[:code])
     return response_not_found if @space.blank?
     return authenticate_user! if @space.private && !user_signed_in?

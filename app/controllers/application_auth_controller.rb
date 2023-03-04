@@ -45,6 +45,15 @@ class ApplicationAuthController < ApplicationController
     DeviseTokenAuth.enable_standard_devise_support = format_html?
   end
 
+  # スペースとユーザーのメンバー情報をセット
+  def set_space_current_member
+    @space = Space.find_by(code: params[:space_code])
+    return response_not_found if @space.blank?
+
+    @current_member = Member.where(space: @space, user: current_user).eager_load(:user)&.first
+    response_forbidden if @current_member.blank?
+  end
+
   protected
 
   def render_authenticate_error
