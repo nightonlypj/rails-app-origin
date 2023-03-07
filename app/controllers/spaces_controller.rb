@@ -19,18 +19,17 @@ class SpacesController < ApplicationAuthController
   def index
     @text = params[:text]&.slice(..(255 - 1))
     @option = params[:option] == '1'
-    force_true = !Settings.enable_public_space
     @checked = {
-      public: params[:public] != '0' || force_true,
-      private: params[:private] != '0' || force_true,
-      join: params[:join] != '0' || force_true,
-      nojoin: params[:nojoin] != '0' || force_true,
+      public: params[:public] != '0',
+      private: params[:private] != '0',
+      join: params[:join] != '0',
+      nojoin: params[:nojoin] != '0',
       active: params[:active] != '0',
       destroy: params[:destroy] == '1'
     }
 
-    @spaces = Space.by_target(current_user, @checked).search(@text)
-                   .page(params[:page]).per(Settings.default_spaces_limit).order(created_at: :desc, id: :desc)
+    @spaces = Space.by_target(current_user, @checked).search(@text).order(created_at: :desc, id: :desc)
+                   .page(params[:page]).per(Settings.default_spaces_limit)
     @members = []
     if current_user.present?
       members = Member.where(space_id: @spaces.ids, user: current_user)
@@ -129,7 +128,7 @@ class SpacesController < ApplicationAuthController
     return response_not_found if @space.blank?
     return authenticate_user! if @space.private && !user_signed_in?
 
-    @current_member = current_user.present? ? Member.where(space: @space, user: current_user)&.first : nil
+    @current_member = current_user.present? ? Member.where(space: @space, user: current_user).first : nil
     response_forbidden if @space.private && @current_member.blank?
   end
 
@@ -205,6 +204,7 @@ class SpacesController < ApplicationAuthController
       params[:space][:private] = true if target == :create
       params[:space][:private] = @space.private if target == :update
     end
+    params[:space][:description] = params[:space][:description]&.gsub(/\R/, "\n") # NOTE: 改行コードを統一
 
     params.require(:space).permit(:name, :description, :private, :image)
   end

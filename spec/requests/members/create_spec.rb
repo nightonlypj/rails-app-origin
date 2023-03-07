@@ -20,7 +20,7 @@ RSpec.describe 'Members', type: :request do
     let_it_be(:new_user)       { FactoryBot.create(:user, email: 'new@example.com') }
     let_it_be(:not_exist_user) { FactoryBot.build_stubbed(:user, email: 'not_exist@example.com') }
     let_it_be(:emails)         { [exist_user.email, new_user.email, not_exist_user.email] }
-    let_it_be(:valid_attributes) { FactoryBot.attributes_for(:member).merge({ emails: emails.join("\r\n") }) }
+    let_it_be(:valid_attributes)          { FactoryBot.attributes_for(:member).merge(emails: emails.join("\r\n")) }
     let_it_be(:invalid_attributes)        { valid_attributes.merge(emails: nil) }
     let_it_be(:invalid_attributes_over)   { valid_attributes.merge(emails: (emails + ['over@example.com']).join("\r\n")) }
     let_it_be(:invalid_attributes_format) { valid_attributes.merge(emails: [exist_user.email, 'aaa'].join("\r\n")) }

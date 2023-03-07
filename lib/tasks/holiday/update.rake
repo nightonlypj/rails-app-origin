@@ -36,7 +36,7 @@ namespace :holiday do
         if holidays[key].blank?
           insert_datas.push(date: key, name: value, created_at: now, updated_at: now)
         else
-          update_datas.push(holidays[key].attributes.merge(name: value, updated_at: now))
+          update_datas.push(holidays[key].attributes.symbolize_keys.merge(name: value, updated_at: now))
         end
       end
 

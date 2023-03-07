@@ -17,11 +17,7 @@ RSpec.describe 'Spaces', type: :request do
           expect(response_json_spaces[index]['name']).to eq(space.name)
         end
 
-        if Settings.enable_public_space
-          default_params = { text: nil, public: 1, private: 1, join: 1, nojoin: 1, active: 1, destroy: 0 }
-        else
-          default_params = { text: nil, active: 1, destroy: 0 }
-        end
+        default_params = { text: nil, public: 1, private: 1, join: 1, nojoin: 1, active: 1, destroy: 0 }
         expect(response_json['search_params']).to eq(default_params.merge(params).stringify_keys)
       else
         # HTML
@@ -56,11 +52,7 @@ RSpec.describe 'Spaces', type: :request do
       it 'HTTPステータスが200。対象項目が一致する' do
         is_expected.to eq(200)
         expect(response_json['success']).to eq(true)
-        if Settings.enable_public_space
-          search_params = { text: nil, public: 1, private: 1, join: 1, nojoin: 1, active: 1, destroy: 0 }
-        else
-          search_params = { text: nil, active: 1, destroy: 0 }
-        end
+        search_params = { text: nil, public: 1, private: 1, join: 1, nojoin: 1, active: 1, destroy: 0 }
         expect(response_json['search_params']).to eq(search_params.stringify_keys)
         expect(response_json_space['total_count']).to eq(spaces.count)
         expect(response_json_space['current_page']).to eq(subject_page)
@@ -428,15 +420,13 @@ RSpec.describe 'Spaces', type: :request do
     end
 
     shared_examples_for 'オプション' do
-      if Settings.enable_public_space
-        it_behaves_like '全て1'
-        it_behaves_like '公開・非公開が1と0'
-        it_behaves_like '公開・非公開が0と1'
-        it_behaves_like '公開・非公開が0と0'
-        it_behaves_like '参加・未参加が1と0'
-        it_behaves_like '参加・未参加が0と1'
-        it_behaves_like '参加・未参加が0と0'
-      end
+      it_behaves_like '全て1'
+      it_behaves_like '公開・非公開が1と0'
+      it_behaves_like '公開・非公開が0と1'
+      it_behaves_like '公開・非公開が0と0'
+      it_behaves_like '参加・未参加が1と0'
+      it_behaves_like '参加・未参加が0と1'
+      it_behaves_like '参加・未参加が0と0'
       it_behaves_like '有効・削除予定が1と0'
       it_behaves_like '有効・削除予定が0と1'
       it_behaves_like '有効・削除予定が0と0'

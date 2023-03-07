@@ -28,7 +28,7 @@
 <% if @space.description.present? %>
   <div class="card-text">
 <% @space.description.split("\n").each do |value| %>
-    <div><%= value %></div>
+    <%= value %><br>
 <% end %>
   </div>
 <% end %>

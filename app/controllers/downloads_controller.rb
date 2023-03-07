@@ -8,8 +8,8 @@ class DownloadsController < ApplicationAuthController
   # GET /downloads(.json) ダウンロード結果一覧API
   def index
     @id = params[:id].present? ? params[:id].to_i : nil
-    @downloads = Download.where(user: current_user).search(@id)
-                         .page(params[:page]).per(Settings.default_downloads_limit).order(id: :desc)
+    @downloads = Download.where(user: current_user).search(@id).order(id: :desc)
+                         .page(params[:page]).per(Settings.default_downloads_limit)
 
     if format_html? && @downloads.current_page > [@downloads.total_pages, 1].max
       return redirect_to @downloads.total_pages <= 1 ? downloads_path : downloads_path(page: @downloads.total_pages)
@@ -25,7 +25,7 @@ class DownloadsController < ApplicationAuthController
     return response_not_found('alert.download.notfound') if @download.blank? || @download.user != current_user
 
     if @download.model.to_sym == :member
-      current_member = Member.where(space: @download.space, user: current_user)&.first
+      current_member = Member.where(space: @download.space, user: current_user).first
       return response_forbidden if current_member.blank? || !current_member.power_admin?
     end
 
@@ -103,7 +103,7 @@ class DownloadsController < ApplicationAuthController
       @space = Space.find_by(code: target_params[:space_code])
       return response_param_error(:space_code, 'not_exist') if @space.blank?
 
-      @current_member = Member.where(space: @space, user: current_user).eager_load(:user)&.first
+      @current_member = Member.where(space: @space, user: current_user).eager_load(:user).first
       return response_forbidden if @current_member.blank? || !@current_member.power_admin?
     else
       @space = nil

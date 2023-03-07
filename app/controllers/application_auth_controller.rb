@@ -50,7 +50,7 @@ class ApplicationAuthController < ApplicationController
     @space = Space.find_by(code: params[:space_code])
     return response_not_found if @space.blank?
 
-    @current_member = Member.where(space: @space, user: current_user).eager_load(:user)&.first
+    @current_member = Member.where(space: @space, user: current_user).eager_load(:user).first
     response_forbidden if @current_member.blank?
   end
 

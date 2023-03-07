@@ -39,7 +39,7 @@ class MembersController < ApplicationAuthController
     exist_users = User.joins(:members).where(members: { space: @space, user: users })
     create_users = users - exist_users
     create_users.each do |user|
-      insert_datas.push(@member.attributes.merge({ user_id: user.id }))
+      insert_datas.push(@member.attributes.symbolize_keys.merge(user_id: user.id))
     end
     Member.insert_all!(insert_datas) if insert_datas.present?
 
@@ -115,7 +115,7 @@ class MembersController < ApplicationAuthController
   end
 
   def set_member
-    @member = Member.where(space: @space).joins(:user).where(user: { code: params[:user_code] })&.first
+    @member = Member.where(space: @space).joins(:user).where(user: { code: params[:user_code] }).first
     response_not_found if @member.blank?
   end
 
@@ -181,13 +181,12 @@ class MembersController < ApplicationAuthController
       @members = Member.where(space: @space).joins(:user).where(user: { code: delete_codes })
       alert = 'alert.member.destroy.codes.notfound' if @members.empty?
     end
+    return if alert.blank?
 
-    if alert.present?
-      if format_html?
-        redirect_to members_path, alert: t(alert)
-      else
-        render './failure', locals: { alert: t(alert) }, status: :unprocessable_entity
-      end
+    if format_html?
+      redirect_to members_path, alert: t(alert)
+    else
+      render './failure', locals: { alert: t(alert) }, status: :unprocessable_entity
     end
   end
 

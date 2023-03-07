@@ -8,13 +8,6 @@ class Member < ApplicationRecord
 
   validates :power, presence: true
 
-  # 権限
-  enum power: {
-    admin: 1, # 管理者
-    writer: 2, # 投稿者
-    reader: 3 # 閲覧者
-  }, _prefix: true
-
   scope :search, lambda { |text, current_member|
     return if text&.strip.blank?
 
@@ -41,6 +34,13 @@ class Member < ApplicationRecord
 
     where(power: power)
   }
+
+  # 権限
+  enum power: {
+    admin: 1, # 管理者
+    writer: 2, # 投稿者
+    reader: 3 # 閲覧者
+  }, _prefix: true
 
   # 最終更新日時
   def last_updated_at

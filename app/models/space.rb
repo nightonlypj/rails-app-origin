@@ -17,7 +17,7 @@ class Space < ApplicationRecord
   validates :private, inclusion: { in: [true, false] } # NOTE: presenceだとfalseもエラーになる為
 
   scope :by_target, lambda { |current_user, checked|
-    return where(id: []) if (!checked[:public] && !checked[:private]) || (!checked[:join] && !checked[:nojoin]) || (!checked[:active] && !checked[:destroy])
+    return none if (!checked[:public] && !checked[:private]) || (!checked[:join] && !checked[:nojoin]) || (!checked[:active] && !checked[:destroy])
 
     if checked[:public] && checked[:private] && current_user.present?
       space = where(private: false).left_joins(:members).or(where(members: { user: current_user }))

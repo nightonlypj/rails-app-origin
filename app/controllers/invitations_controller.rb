@@ -14,7 +14,8 @@ class InvitationsController < ApplicationAuthController
   # GET /invitations/:space_code 招待URL一覧
   # GET /invitations/:space_code(.json) 招待URL一覧API
   def index
-    @invitations = Invitation.where(space: @space).page(params[:page]).per(Settings.default_invitations_limit).order(created_at: :desc, id: :desc)
+    @invitations = Invitation.where(space: @space).order(created_at: :desc, id: :desc)
+                             .page(params[:page]).per(Settings.default_invitations_limit)
 
     if format_html? && @invitations.current_page > [@invitations.total_pages, 1].max
       redirect_to @invitations.total_pages <= 1 ? invitations_path : invitations_path(page: @invitations.total_pages)
@@ -79,7 +80,7 @@ class InvitationsController < ApplicationAuthController
   end
 
   def set_invitation
-    @invitation = Invitation.where(space: @space, code: params[:code])&.first
+    @invitation = Invitation.where(space: @space, code: params[:code]).first
     return response_not_found if @invitation.blank?
 
     if @invitation.ended_at.present?

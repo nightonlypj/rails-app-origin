@@ -11,6 +11,11 @@
 - エラー時にメール/Slack送信して気付けるようにしたい
   - https://dev.azure.com/nightonly/rails-app-origin/_workitems/edit/189/
 
+### spaceブランチ
+
+- トップに公開スペースを表示したい
+  - https://dev.azure.com/nightonly/rails-app-origin/_workitems/edit/519/
+
 ## 1.5.0 (Sprint 10)
 
 - 左メニューを表示したい

@@ -10,7 +10,7 @@ module Users::RegistrationsConcern
     @invitation = nil
     return if @code.blank?
 
-    @invitation = Invitation.where(code: @code)&.first
+    @invitation = Invitation.where(code: @code).first
     return if @invitation.present? && @invitation.status == :active
 
     if format_html?
@@ -38,14 +38,14 @@ module Users::RegistrationsConcern
     if @invitation.present?
       if @invitation.email.present?
         # メールアドレスで招待
-        insert_datas.push(member.attributes.merge({ space_id: @invitation.space_id, power: @invitation.power,
-                                                    invitationed_user_id: @invitation.created_user_id, invitationed_at: @invitation.created_at }))
+        insert_datas.push(member.attributes.symbolize_keys.merge(space_id: @invitation.space_id, power: @invitation.power,
+                                                                 invitationed_user_id: @invitation.created_user_id, invitationed_at: @invitation.created_at))
         invitation_ids.push(@invitation.id)
       else
         # URLで招待
         invitationed_user = @invitation.last_updated_user.present? ? @invitation.last_updated_user : @invitation.created_user
-        insert_datas.push(member.attributes.merge({ space_id: @invitation.space_id, power: @invitation.power,
-                                                    invitationed_user_id: invitationed_user.id, invitationed_at: now }))
+        insert_datas.push(member.attributes.symbolize_keys.merge(space_id: @invitation.space_id, power: @invitation.power,
+                                                                 invitationed_user_id: invitationed_user.id, invitationed_at: now))
       end
       space_ids.push(@invitation.space_id)
     end
@@ -56,8 +56,8 @@ module Users::RegistrationsConcern
       invitation_ids.push(invitation.id) if invitation.email_joined_at.blank?
       next if invitation.status != :active || space_ids.include?(invitation.space_id)
 
-      insert_datas.push(member.attributes.merge({ space_id: invitation.space_id, power: invitation.power,
-                                                  invitationed_user_id: invitation.created_user_id, invitationed_at: invitation.created_at }))
+      insert_datas.push(member.attributes.symbolize_keys.merge(space_id: invitation.space_id, power: invitation.power,
+                                                               invitationed_user_id: invitation.created_user_id, invitationed_at: invitation.created_at))
       space_ids.push(invitation.space_id)
     end
 
