@@ -151,9 +151,9 @@ RSpec.describe 'Invitations', type: :request do
       let_it_be(:invitation) { FactoryBot.create(:invitation, status, space: space) }
       it_behaves_like '[ログイン中][*][ある][存在する]パラメータなし'
       it_behaves_like '[ログイン中][*][ある][存在する]有効なパラメータ', {}
-      it_behaves_like '[ログイン中][*][ある][存在する]有効なパラメータ', { delete: '1' }
-      it_behaves_like '[ログイン中][*][ある][存在する]有効なパラメータ', { undo_delete: '1' }
-      it_behaves_like '[ログイン中][*][ある][存在する]有効なパラメータ', { delete: '1', undo_delete: '1' }
+      it_behaves_like '[ログイン中][*][ある][存在する]有効なパラメータ', { delete: true } # TODO: APIとまとめる
+      it_behaves_like '[ログイン中][*][ある][存在する]有効なパラメータ', { undo_delete: true }
+      it_behaves_like '[ログイン中][*][ある][存在する]有効なパラメータ', { delete: true, undo_delete: true }
       it_behaves_like '[ログイン中][*][ある][存在する]無効なパラメータ'
     end
     shared_examples_for '[APIログイン中][*][ある]招待コードが存在する' do |status|

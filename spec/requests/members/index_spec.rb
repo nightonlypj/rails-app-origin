@@ -59,7 +59,7 @@ RSpec.describe 'Members', type: :request do
         expect_space_html(response, space, user_power)
 
         new_url = "href=\"#{new_member_path(space.code)}\""
-        download_url = "href=\"#{create_download_path({ model: :member, space_code: space.code, search_params: { page: subject_page } }).gsub(/&/, '&amp;')}\""
+        download_url = "href=\"#{create_download_path(model: :member, space_code: space.code, search_params: { page: subject_page }).gsub(/&/, '&amp;')}\""
         destroy_url = "action=\"#{destroy_member_path(space.code)}\""
         if user_power == :admin
           expect(response.body).to include(new_url)

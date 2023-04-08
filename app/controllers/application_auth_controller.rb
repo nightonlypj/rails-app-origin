@@ -54,6 +54,21 @@ class ApplicationAuthController < ApplicationController
     response_forbidden if @current_member.blank?
   end
 
+  # スペースとユーザーのメンバー情報をセット（privateのみ認証必須）
+  def set_space_current_member_auth_private(code = params[:space_code])
+    @space = Space.find_by(code: code)
+    return response_not_found if @space.blank?
+    return authenticate_user! if @space.private && !user_signed_in?
+
+    @current_member = current_user.present? ? Member.where(space: @space, user: current_user).first : nil
+    response_forbidden if @space.private && @current_member.blank?
+  end
+
+  # 権限チェック（管理者）
+  def check_power_admin
+    response_forbidden unless @current_member&.power_admin?
+  end
+
   protected
 
   def render_authenticate_error

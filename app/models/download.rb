@@ -8,11 +8,11 @@ class Download < ApplicationRecord
   validates :char_code, presence: true
   validates :newline_code, presence: true
   validates :output_items, presence: true
-  validates :output_items, text_array: true, if: proc { |download| download.output_items.present? }
+  validates :output_items, text_array: true, allow_blank: true
   validates :select_items, presence: true, if: proc { |download| download.target&.to_sym == :select }
-  validates :select_items, text_array: true, if: proc { |download| download.select_items.present? }
+  validates :select_items, text_array: true, allow_blank: true
   validates :search_params, presence: true, if: proc { |download| download.target&.to_sym == :search }
-  validates :search_params, text_hash: true, if: proc { |download| download.search_params.present? }
+  validates :search_params, text_hash: true, allow_blank: true
   validate :validate_output_items
 
   scope :search, ->(id) { where(id: id) if id.present? }
@@ -24,10 +24,10 @@ class Download < ApplicationRecord
 
   # ステータス
   enum status: {
-    waiting: 0, # 処理待ち
+    waiting: 0,    # 処理待ち
     processing: 1, # 処理中
-    success: 7, # 成功
-    failure: 9 # 失敗
+    success: 7,    # 成功
+    failure: 9     # 失敗
   }, _prefix: true
 
   # モデル
@@ -45,21 +45,21 @@ class Download < ApplicationRecord
   # 形式
   enum format: {
     csv: 1, # CSV
-    tsv: 2 # TSV
+    tsv: 2  # TSV
   }, _prefix: true
 
   # 文字コード
   enum char_code: {
-    sjis: 1, # Shift_JIS
+    sjis: 1,  # Shift_JIS
     eucjp: 2, # EUC-JP
-    utf8: 3 # UTF-8
+    utf8: 3   # UTF-8
   }, _prefix: true
 
   # 改行コード
   enum newline_code: {
     crlf: 1, # CR+LF
-    lf: 2, # LF
-    cr: 3 # CR
+    lf: 2,   # LF
+    cr: 3    # CR
   }, _prefix: true
 
   # 区切り文字
@@ -102,9 +102,8 @@ class Download < ApplicationRecord
     eval(output_items).each do |output_item|
       notfound_items.push(output_item) if items[output_item.to_sym].blank?
     end
+    return if notfound_items.blank?
 
-    if notfound_items.present?
-      errors.add(:output_items, I18n.t('activerecord.errors.models.download.attributes.output_items.not_exist', key: notfound_items.join(', ')))
-    end
+    errors.add(:output_items, I18n.t('activerecord.errors.models.download.attributes.output_items.not_exist', key: notfound_items.join(', ')))
   end
 end

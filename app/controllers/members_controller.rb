@@ -6,7 +6,7 @@ class MembersController < ApplicationAuthController
   before_action :set_space_current_member
   before_action :redirect_members_for_user_destroy_reserved, only: %i[new create result edit update destroy], if: :format_html?
   before_action :response_api_for_user_destroy_reserved, only: %i[create update destroy], unless: :format_html?
-  before_action :check_power, only: %i[new create result edit update destroy]
+  before_action :check_power_admin, only: %i[new create result edit update destroy]
   before_action :set_member, only: %i[show edit update]
   before_action :check_current_member, only: %i[edit update]
   before_action :set_params_index, only: :index
@@ -110,10 +110,6 @@ class MembersController < ApplicationAuthController
   end
 
   # Use callbacks to share common setup or constraints between actions.
-  def check_power
-    response_forbidden unless @current_member.power_admin?
-  end
-
   def set_member
     @member = Member.where(space: @space).joins(:user).where(user: { code: params[:user_code] }).first
     response_not_found if @member.blank?

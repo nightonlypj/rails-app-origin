@@ -2,14 +2,14 @@ class SpacesController < ApplicationAuthController
   before_action :response_not_acceptable_for_not_html, only: %i[new edit delete undo_delete]
   before_action :authenticate_user!, only: %i[new create edit update delete destroy undo_delete undo_destroy]
   before_action :redirect_spaces_for_user_destroy_reserved, only: %i[new create], if: :format_html?
-  before_action :set_space_current_member, only: %i[show edit update delete destroy undo_delete undo_destroy]
+  before_action :set_space_current_member_auth_private_code, only: %i[show edit update delete destroy undo_delete undo_destroy]
   before_action :redirect_space_for_user_destroy_reserved, only: %i[edit update delete destroy undo_delete undo_destroy], if: :format_html?
   before_action :response_api_for_user_destroy_reserved, only: %i[create update destroy undo_destroy], unless: :format_html?
   before_action :redirect_space_for_space_destroy_reserved, only: %i[delete destroy], if: :format_html?
   before_action :response_api_for_space_destroy_reserved, only: :destroy, unless: :format_html?
   before_action :redirect_space_for_not_space_destroy_reserved, only: %i[undo_delete undo_destroy], if: :format_html?
   before_action :response_api_for_not_space_destroy_reserved, only: :undo_destroy, unless: :format_html?
-  before_action :check_power, only: %i[edit update delete destroy undo_delete undo_destroy]
+  before_action :check_power_admin, only: %i[edit update delete destroy undo_delete undo_destroy]
   before_action :set_member_count, only: :show
   before_action :validate_params_create, only: :create
   before_action :validate_params_update, only: :update
@@ -73,7 +73,7 @@ class SpacesController < ApplicationAuthController
   # POST /spaces/update/:code スペース設定変更(処理)
   # POST /spaces/update/:code(.json) スペース設定変更API(処理)
   def update
-    @space.remove_image! if params[:space].present? && params[:space][:image_delete] == '1'
+    @space.remove_image! if @space.image_delete
     @space.save!
 
     if format_html?
@@ -123,13 +123,8 @@ class SpacesController < ApplicationAuthController
   end
 
   # Use callbacks to share common setup or constraints between actions.
-  def set_space_current_member
-    @space = Space.find_by(code: params[:code])
-    return response_not_found if @space.blank?
-    return authenticate_user! if @space.private && !user_signed_in?
-
-    @current_member = current_user.present? ? Member.where(space: @space, user: current_user).first : nil
-    response_forbidden if @space.private && @current_member.blank?
+  def set_space_current_member_auth_private_code
+    set_space_current_member_auth_private(params[:code])
   end
 
   def redirect_space_for_user_destroy_reserved
@@ -150,10 +145,6 @@ class SpacesController < ApplicationAuthController
 
   def response_api_for_not_space_destroy_reserved
     render './failure', locals: { alert: t('alert.space.not_destroy_reserved') }, status: :unprocessable_entity unless @space.destroy_reserved?
-  end
-
-  def check_power
-    response_forbidden unless @current_member&.power_admin?
   end
 
   def set_member_count
@@ -200,12 +191,17 @@ class SpacesController < ApplicationAuthController
     params[:space][:name] = params[:space][:name].to_s.gsub(/(^[[:space:]]+)|([[:space:]]+$)/, '') # NOTE: 前後のスペースを削除
     if Settings.enable_public_space
       params[:space][:private] = nil if format_html? && !%w[true false].include?(params[:space][:private]) # NOTE: nilがエラーにならない為
+    elsif target == :create
+      params[:space][:private] = true
     else
-      params[:space][:private] = true if target == :create
-      params[:space][:private] = @space.private if target == :update
+      params[:space][:private] = @space.private
     end
     params[:space][:description] = params[:space][:description]&.gsub(/\R/, "\n") # NOTE: 改行コードを統一
 
-    params.require(:space).permit(:name, :description, :private, :image)
+    if target == :create
+      params.require(:space).permit(:name, :description, :private, :image)
+    else
+      params.require(:space).permit(:name, :description, :private, :image, :image_delete)
+    end
   end
 end

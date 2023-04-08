@@ -47,7 +47,7 @@
         <div class="d-flex float-end table-responsive">
           <%= paginate @members %>
 <% if @current_member.power_admin? %>
-          <a href="<%= create_download_path({ model: :member, space_code: @space.code, search_params: request.query_parameters }) %>" class="btn btn-dark d-flex align-items-center text-nowrap click_to_redirect_add_codes">
+          <a href="<%= create_download_path(model: :member, space_code: @space.code, search_params: request.query_parameters) %>" class="btn btn-dark d-flex align-items-center text-nowrap click_to_redirect_add_codes">
             <i class="fas fa-download"></i>
             <span class="d-none d-md-block ms-1">ダウンロード</span>
           </a>

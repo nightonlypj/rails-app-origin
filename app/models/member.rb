@@ -1,5 +1,5 @@
 class Member < ApplicationRecord
-  attr_accessor :emails # NOTE: メンバー招待で使用
+  attr_accessor :emails
 
   belongs_to :space
   belongs_to :user
@@ -37,9 +37,9 @@ class Member < ApplicationRecord
 
   # 権限
   enum power: {
-    admin: 1, # 管理者
+    admin: 1,  # 管理者
     writer: 2, # 投稿者
-    reader: 3 # 閲覧者
+    reader: 3  # 閲覧者
   }, _prefix: true
 
   # 最終更新日時

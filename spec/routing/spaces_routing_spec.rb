@@ -1,9 +1,9 @@
 require 'rails_helper'
 
 RSpec.describe SpacesController, type: :routing do
-  let(:code) { 'code0001' }
-
   describe 'routing' do
+    let(:code) { 'code0001' }
+
     it 'routes to #index' do
       expect(get: '/spaces').to route_to('spaces#index')
       expect(get: '/spaces.json').to route_to('spaces#index', format: 'json')

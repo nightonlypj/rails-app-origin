@@ -10,6 +10,7 @@ RSpec.describe 'Spaces', type: :request do
   #   スペース: 存在しない, 公開, 非公開
   #   権限: ある（管理者）, ない（投稿者, 閲覧者, なし）
   #   パラメータなし, 有効なパラメータ（同名がない, ある）, 無効なパラメータ
+  # TODO: 有効なパラメータ（画像削除）
   #   ＋URLの拡張子: ない, .json
   #   ＋Acceptヘッダ: HTMLが含まれる, JSONが含まれる
   describe 'POST #update' do

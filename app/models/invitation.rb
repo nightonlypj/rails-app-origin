@@ -6,9 +6,9 @@ class Invitation < ApplicationRecord
   belongs_to :last_updated_user, class_name: 'User', optional: true
 
   validates :code, presence: true
-  validates :code, uniqueness: { case_sensitive: true }
+  validates :code, uniqueness: { case_sensitive: true }, allow_blank: true
   validates :power, presence: true
-  validates :memo, length: { maximum: Settings.invitation_memo_maximum }, if: proc { |invitation| invitation.memo.present? }
+  validates :memo, length: { maximum: Settings.invitation_memo_maximum }, allow_blank: true
   validate :validate_ended_date
   validate :validate_ended_time
 
@@ -21,9 +21,9 @@ class Invitation < ApplicationRecord
 
   # 権限
   enum power: {
-    admin: 1, # 管理者
+    admin: 1,  # 管理者
     writer: 2, # 投稿者
-    reader: 3 # 閲覧者
+    reader: 3  # 閲覧者
   }, _prefix: true
 
   # ステータス
