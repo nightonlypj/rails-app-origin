@@ -13,9 +13,9 @@ class User < ApplicationRecord
   has_many :infomations, dependent: :destroy
 
   validates :code, presence: true
-  validates :code, uniqueness: { case_sensitive: true }
+  validates :code, uniqueness: { case_sensitive: true }, allow_blank: true
   validates :name, presence: true
-  validates :name, length: { in: Settings.user_name_minimum..Settings.user_name_maximum }, if: proc { |user| user.name.present? }
+  validates :name, length: { in: Settings.user_name_minimum..Settings.user_name_maximum }, allow_blank: true
 
   scope :destroy_target, -> { where(destroy_schedule_at: ..Time.current) }
 

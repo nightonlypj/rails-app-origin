@@ -5,9 +5,9 @@ class Users::Auth::PasswordsController < DeviseTokenAuth::PasswordsController
   skip_before_action :verify_authenticity_token
   prepend_before_action :response_already_authenticated, only: %i[create update], if: :user_signed_in?
   prepend_before_action :response_not_acceptable_for_not_api, only: %i[create update]
-  prepend_before_action :response_not_acceptable_for_not_html, only: %i[edit]
+  prepend_before_action :response_not_acceptable_for_not_html, only: :edit
   prepend_before_action :update_request_uid_header
-  skip_after_action :update_auth_header, only: %i[update]
+  skip_after_action :update_auth_header, only: :update
 
   # POST /users/auth/password(.json) パスワード再設定API[メール送信](処理)
   def create

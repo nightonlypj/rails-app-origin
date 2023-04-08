@@ -3,7 +3,7 @@
 class AdminUsers::SessionsController < Devise::SessionsController
   layout 'admin_users'
 
-  # before_action :configure_sign_in_params, only: %i[create]
+  # before_action :configure_sign_in_params, only: :create
 
   # GET /admin/sign_in ログイン
   # def new

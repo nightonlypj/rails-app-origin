@@ -8,10 +8,12 @@ class ApplicationController < ActionController::Base
   def prepare_exception_notifier
     return if Rails.env.test?
 
+    # :nocov:
     request.env['exception_notifier.exception_data'] = {
       current_user: { id: current_user&.id },
       url: request.url
     }
+    # :nocov:
   end
 
   # リクエストのuidヘッダを[id+36**2](36進数)からuidに変更 # NOTE: uidがメールアドレスだと、メールアドレス確認後に認証に失敗する為
@@ -143,6 +145,7 @@ class ApplicationController < ActionController::Base
       code = Digest::MD5.hexdigest(SecureRandom.uuid).to_i(16).to_s(36).rjust(25, '0') # NOTE: 16進数32桁を36進数25桁に変換
       return code if model.where(key => code).blank?
 
+      # :nocov:
       if try_count < 10
         logger.warn("[WARN](#{try_count})Not unique code(#{code}): #{logger_message}")
       elsif try_count >= 10
@@ -150,6 +153,7 @@ class ApplicationController < ActionController::Base
         return code
       end
       try_count += 1
+      # :nocov:
     end
   end
 end
