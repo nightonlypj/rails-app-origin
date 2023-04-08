@@ -58,7 +58,7 @@ class ApplicationAuthController < ApplicationController
 
   def render_authenticate_error
     if format_html?
-      warden.authenticate!({ scope: :user })
+      warden.authenticate!(scope: :user)
     else
       response_unauthenticated
     end

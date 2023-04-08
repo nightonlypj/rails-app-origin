@@ -5,10 +5,10 @@ class Users::Auth::RegistrationsController < DeviseTokenAuth::RegistrationsContr
   include DeviseTokenAuth::Concerns::SetUserByToken
   skip_before_action :verify_authenticity_token
   before_action :response_api_for_user_destroy_reserved, only: %i[update image_update image_destroy destroy]
-  before_action :response_api_for_not_user_destroy_reserved, only: %i[undo_destroy]
+  before_action :response_api_for_not_user_destroy_reserved, only: :undo_destroy
   before_action :set_invitation, only: %i[invitation create]
-  before_action :configure_sign_up_params, only: %i[create]
-  before_action :configure_account_update_params, only: %i[update]
+  before_action :configure_sign_up_params, only: :create
+  before_action :configure_account_update_params, only: :update
   prepend_before_action :response_unauthenticated, only: %i[show update image_update image_destroy destroy undo_destroy], unless: :user_signed_in?
   prepend_before_action :response_already_authenticated, only: %i[invitation create], if: :user_signed_in?
   prepend_before_action :response_not_acceptable_for_not_api
