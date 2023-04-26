@@ -159,11 +159,11 @@ class MembersController < ApplicationAuthController
 
   def set_params_destroy
     if params[:codes].instance_of?(Array)
-      @codes = params[:codes].reject(&:empty?).compact.uniq
+      @codes = params[:codes].compact_blank.uniq
     elsif params[:codes].present?
       @codes = params[:codes].to_unsafe_h.map { |code, value| code if value == '1' }.compact.uniq
     else
-      @codes = []
+      @codes = nil
     end
     @include_myself = @codes.include?(@current_member.user.code)
   end
@@ -174,7 +174,7 @@ class MembersController < ApplicationAuthController
     alert = 'alert.member.destroy.codes.myself' if @codes.count == 1 && @include_myself
     if alert.blank?
       delete_codes = @include_myself ? @codes.reject { |key| key == @current_member.user.code } : @codes
-      @members = Member.where(space: @space).joins(:user).where(user: { code: delete_codes })
+      @members = Member.where(space: @space).joins(:user).where(user: { code: delete_codes }).order(:id)
       alert = 'alert.member.destroy.codes.notfound' if @members.empty?
     end
     return if alert.blank?
