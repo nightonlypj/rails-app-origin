@@ -32,6 +32,7 @@ ja:
         not: ''
         maintenance: 'メンテナンス'
         hindrance: '障害'
+        update: 'アップデート'
         other: 'その他'
       target:
         all: '全員'

@@ -12,7 +12,7 @@
 
 ActiveRecord::Schema.define(version: 2023_02_17_225608) do
 
-  create_table "admin_users", charset: "utf8", collation: "utf8_bin", comment: "管理者", force: :cascade do |t|
+  create_table "admin_users", charset: "utf8mb4", comment: "管理者", force: :cascade do |t|
     t.string "name", null: false, comment: "氏名"
     t.string "email", default: "", null: false, comment: "メールアドレス"
     t.string "encrypted_password", default: "", null: false, comment: "暗号化されたパスワード"
@@ -39,7 +39,7 @@ ActiveRecord::Schema.define(version: 2023_02_17_225608) do
     t.index ["unlock_token"], name: "index_admin_users4", unique: true
   end
 
-  create_table "holidays", charset: "utf8", collation: "utf8_bin", comment: "祝日", force: :cascade do |t|
+  create_table "holidays", charset: "utf8mb4", comment: "祝日", force: :cascade do |t|
     t.date "date", null: false, comment: "日付"
     t.string "name", null: false, comment: "名称"
     t.datetime "created_at", precision: 6, null: false
@@ -47,7 +47,7 @@ ActiveRecord::Schema.define(version: 2023_02_17_225608) do
     t.index ["date"], name: "index_holidays1", unique: true
   end
 
-  create_table "infomations", charset: "utf8", collation: "utf8_bin", comment: "お知らせ", force: :cascade do |t|
+  create_table "infomations", charset: "utf8mb4", comment: "お知らせ", force: :cascade do |t|
     t.string "title", null: false, comment: "タイトル"
     t.string "summary", comment: "概要"
     t.text "body", comment: "本文"
@@ -67,7 +67,7 @@ ActiveRecord::Schema.define(version: 2023_02_17_225608) do
     t.index ["user_id"], name: "index_infomations_on_user_id"
   end
 
-  create_table "users", charset: "utf8", collation: "utf8_bin", comment: "ユーザー", force: :cascade do |t|
+  create_table "users", charset: "utf8mb4", comment: "ユーザー", force: :cascade do |t|
     t.string "code", null: false, comment: "コード"
     t.string "image", comment: "画像"
     t.string "name", null: false, comment: "氏名"
@@ -106,7 +106,7 @@ ActiveRecord::Schema.define(version: 2023_02_17_225608) do
     t.index ["unlock_token"], name: "index_users4", unique: true
   end
 
-  create_table "versions", charset: "utf8", collation: "utf8_bin", force: :cascade do |t|
+  create_table "versions", charset: "utf8mb4", force: :cascade do |t|
     t.string "item_type", null: false
     t.bigint "item_id", null: false
     t.string "event", null: false

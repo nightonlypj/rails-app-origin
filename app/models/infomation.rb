@@ -15,7 +15,8 @@ class Infomation < ApplicationRecord
     not: 0,         # （なし）
     maintenance: 1, # メンテナンス
     hindrance: 2,   # 障害
-    other: 999      # その他
+    update: 3,      # アップデート
+    other: 9        # その他
   }, _prefix: true
 
   # 対象
