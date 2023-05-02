@@ -13,7 +13,9 @@ module DeviseViewSpecHelper
 
   # Proxy to devise map name
   def resource_name
+    # :nocov:
     devise_mapping.name
+    # :nocov:
   end
 
   # Proxy to devise map class

@@ -121,8 +121,10 @@ class Users::Auth::PasswordsController < DeviseTokenAuth::PasswordsController
 
   def render_not_found_error
     if Devise.paranoid
+      # :nocov:
       # render_error(404, I18n.t('devise_token_auth.passwords.sended_paranoid'))
       render './failure', locals: { alert: t('devise_token_auth.passwords.sended_paranoid') }, status: :unprocessable_entity
+      # :nocov:
     else
       # render_error(404, I18n.t('devise_token_auth.passwords.user_not_found', email: @email))
       errors = { email: t('devise_token_auth.passwords.user_not_found') }
