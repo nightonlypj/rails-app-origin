@@ -11,23 +11,13 @@ class SpacesController < ApplicationAuthController
   before_action :response_api_for_not_space_destroy_reserved, only: :undo_destroy, unless: :format_html?
   before_action :check_power_admin, only: %i[edit update delete destroy undo_delete undo_destroy]
   before_action :set_member_count, only: :show
+  before_action :set_params_index, only: :index
   before_action :validate_params_create, only: :create
   before_action :validate_params_update, only: :update
 
   # GET /spaces スペース一覧
   # GET /spaces(.json) スペース一覧API
   def index
-    @text = params[:text]&.slice(..(255 - 1))
-    @option = params[:option] == '1'
-    @checked = {
-      public: params[:public] != '0',
-      private: params[:private] != '0',
-      join: params[:join] != '0',
-      nojoin: params[:nojoin] != '0',
-      active: params[:active] != '0',
-      destroy: params[:destroy] == '1'
-    }
-
     @spaces = Space.by_target(current_user, @checked).search(@text).order(created_at: :desc, id: :desc)
                    .page(params[:page]).per(Settings.default_spaces_limit)
     @members = []
@@ -149,6 +139,19 @@ class SpacesController < ApplicationAuthController
 
   def set_member_count
     @member_count = Member.where(space: @space).count
+  end
+
+  def set_params_index
+    @text = params[:text]&.slice(..(255 - 1))
+    @option = params[:option] == '1'
+    @checked = {
+      public: params[:public] != '0',
+      private: params[:private] != '0',
+      join: params[:join] != '0',
+      nojoin: params[:nojoin] != '0',
+      active: params[:active] != '0',
+      destroy: params[:destroy] == '1'
+    }
   end
 
   def validate_params_create

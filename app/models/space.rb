@@ -45,12 +45,12 @@ class Space < ApplicationRecord
   scope :search, lambda { |text|
     return if text&.strip.blank?
 
+    sql = "name #{search_like} ? OR description #{search_like} ?"
+
     space = all
-    collate = connection_db_config.configuration_hash[:adapter] == 'mysql2' ? ' COLLATE utf8_unicode_ci' : ''
-    like = connection_db_config.configuration_hash[:adapter] == 'postgresql' ? 'ILIKE' : 'LIKE'
     text.split(/[[:blank:]]+/).each do |word|
       value = "%#{word}%"
-      space = space.where("name#{collate} #{like} ? OR description#{collate} #{like} ?", value, value)
+      space = space.where(sql, value, value)
     end
 
     space

@@ -163,7 +163,7 @@ class MembersController < ApplicationAuthController
     elsif params[:codes].present?
       @codes = params[:codes].to_unsafe_h.map { |code, value| code if value == '1' }.compact.uniq
     else
-      @codes = nil
+      @codes = []
     end
     @include_myself = @codes.include?(@current_member.user.code)
   end
