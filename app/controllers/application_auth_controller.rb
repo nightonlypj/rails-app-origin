@@ -20,11 +20,9 @@ class ApplicationAuthController < ApplicationController
 
   # 権限エラー(403)を返却
   def response_forbidden
-    if format_html?
-      head :forbidden
-    else
-      render './failure', locals: { alert: t('alert.user.forbidden') }, status: :forbidden
-    end
+    return head :forbidden if format_html?
+
+    render './failure', locals: { alert: t('alert.user.forbidden') }, status: :forbidden
   end
 
   # 存在しない(404)を返却

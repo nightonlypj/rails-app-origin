@@ -46,14 +46,14 @@ class MembersController < ApplicationAuthController
     @exist_user_mails = exist_users.pluck(:email)
     @create_user_mails = create_users.pluck(:email)
     if format_html?
-      redirect_to result_member_path(@space.code), notice: t('notice.member.create'), flash: {
+      return redirect_to result_member_path(@space.code), notice: t('notice.member.create'), flash: {
         emails: @emails, exist_user_mails: @exist_user_mails, create_user_mails: @create_user_mails,
         power: @member.power
       }
-    else
-      @user_codes = users.pluck(:code)
-      render :result, locals: { notice: t('notice.member.create') }, status: :created
     end
+
+    @user_codes = users.pluck(:code)
+    render :result, locals: { notice: t('notice.member.create') }, status: :created
   end
 
   # GET /members/:space_code/result メンバー招待（結果）
@@ -68,18 +68,13 @@ class MembersController < ApplicationAuthController
   # POST /members/:space_code/update/:user_code(.json) メンバー情報変更API(処理)
   def update
     unless @member.update(member_params(:update).merge(last_updated_user: current_user))
-      if format_html?
-        return render :edit, status: :unprocessable_entity
-      else
-        return render './failure', locals: { errors: @member.errors, alert: t('errors.messages.not_saved.other') }, status: :unprocessable_entity
-      end
-    end
+      return render :edit, status: :unprocessable_entity if format_html?
 
-    if format_html?
-      redirect_to members_path(@space.code, active: @member.user.code), notice: t('notice.member.update')
-    else
-      render :show, locals: { notice: t('notice.member.update') }
+      return render './failure', locals: { errors: @member.errors, alert: t('errors.messages.not_saved.other') }, status: :unprocessable_entity
     end
+    return redirect_to members_path(@space.code, active: @member.user.code), notice: t('notice.member.update') if format_html?
+
+    render :show, locals: { notice: t('notice.member.update') }
   end
 
   # POST /members/:space_code/delete メンバー削除(処理)
@@ -96,11 +91,9 @@ class MembersController < ApplicationAuthController
     notice = t("notice.member.#{key}", count: @codes.count.to_s(:delimited), destroy_count: @destroy_count.to_s(:delimited))
 
     @members.destroy_all
-    if format_html?
-      redirect_to members_path(@space.code), notice: notice
-    else
-      render locals: { notice: notice }
-    end
+    return redirect_to members_path(@space.code), notice: notice if format_html?
+
+    render locals: { notice: notice }
   end
 
   private
@@ -126,12 +119,9 @@ class MembersController < ApplicationAuthController
     @member.valid?
     validate_emails
     return unless @member.errors.any?
+    return render :new, status: :unprocessable_entity if format_html?
 
-    if format_html?
-      render :new, status: :unprocessable_entity
-    else
-      render './failure', locals: { errors: @member.errors, alert: t('errors.messages.not_saved.other') }, status: :unprocessable_entity
-    end
+    render './failure', locals: { errors: @member.errors, alert: t('errors.messages.not_saved.other') }, status: :unprocessable_entity
   end
 
   def validate_emails
@@ -178,12 +168,9 @@ class MembersController < ApplicationAuthController
       alert = 'alert.member.destroy.codes.notfound' if @members.empty?
     end
     return if alert.blank?
+    return redirect_to members_path, alert: t(alert) if format_html?
 
-    if format_html?
-      redirect_to members_path, alert: t(alert)
-    else
-      render './failure', locals: { alert: t(alert) }, status: :unprocessable_entity
-    end
+    render './failure', locals: { alert: t(alert) }, status: :unprocessable_entity
   end
 
   # Only allow a list of trusted parameters through.

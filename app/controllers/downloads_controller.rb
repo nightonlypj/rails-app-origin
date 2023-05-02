@@ -48,19 +48,15 @@ class DownloadsController < ApplicationAuthController
   def create
     @download = Download.new(download_params.merge(model: @model, space: @space, user: current_user, requested_at: Time.current))
     unless @download.save
-      if format_html?
-        return render :new, status: :unprocessable_entity
-      else
-        return render './failure', locals: { errors: @download.errors, alert: t('errors.messages.not_saved.other') }, status: :unprocessable_entity
-      end
+      return render :new, status: :unprocessable_entity if format_html?
+
+      return render './failure', locals: { errors: @download.errors, alert: t('errors.messages.not_saved.other') }, status: :unprocessable_entity
     end
 
     DownloadJob.perform_later(@download)
-    if format_html?
-      redirect_to downloads_path(target_id: @download.id)
-    else
-      render locals: { notice: t('notice.download.create') }, status: :created
-    end
+    return redirect_to downloads_path(target_id: @download.id) if format_html?
+
+    render locals: { notice: t('notice.download.create') }, status: :created
   end
 
   private
@@ -106,8 +102,10 @@ class DownloadsController < ApplicationAuthController
       @current_member = Member.where(space: @space, user: current_user).eager_load(:user).first
       return response_forbidden if @current_member.blank? || !@current_member.power_admin?
     else
+      # :nocov:
       @space = nil
       @current_member = nil
+      # :nocov:
     end
 
     if format_html?
@@ -125,11 +123,9 @@ class DownloadsController < ApplicationAuthController
   end
 
   def response_param_error(key, error)
-    if format_html?
-      head :not_found
-    else
-      render './failure', locals: { errors: { key => [t("errors.messages.param.#{error}")] }, alert: t('errors.messages.not_saved.one') }, status: :not_found
-    end
+    return head :not_found if format_html?
+
+    render './failure', locals: { errors: { key => [t("errors.messages.param.#{error}")] }, alert: t('errors.messages.not_saved.one') }, status: :not_found
   end
 
   # Only allow a list of trusted parameters through.

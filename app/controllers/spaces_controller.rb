@@ -48,13 +48,10 @@ class SpacesController < ApplicationAuthController
       @space.save!
       @current_member = Member.create!(space: @space, user: current_user, power: :admin)
     end
+    return redirect_to space_path(@space.code), notice: t('notice.space.create') if format_html?
 
-    if format_html?
-      redirect_to space_path(@space.code), notice: t('notice.space.create')
-    else
-      set_member_count
-      render :show, locals: { notice: t('notice.space.create') }, status: :created
-    end
+    set_member_count
+    render :show, locals: { notice: t('notice.space.create') }, status: :created
   end
 
   # GET /spaces/update/:code スペース設定変更
@@ -65,13 +62,10 @@ class SpacesController < ApplicationAuthController
   def update
     @space.remove_image! if @space.image_delete
     @space.save!
+    return redirect_to space_path(@space.code), notice: t('notice.space.update') if format_html?
 
-    if format_html?
-      redirect_to space_path(@space.code), notice: t('notice.space.update')
-    else
-      set_member_count
-      render :show, locals: { notice: t('notice.space.update') }
-    end
+    set_member_count
+    render :show, locals: { notice: t('notice.space.update') }
   end
 
   # GET /spaces/delete/:code スペース削除
@@ -81,13 +75,10 @@ class SpacesController < ApplicationAuthController
   # POST /spaces/delete/:code(.json) スペース削除API(処理)
   def destroy
     @space.set_destroy_reserve!
+    return redirect_to space_path(@space.code), notice: t('notice.space.destroy') if format_html?
 
-    if format_html?
-      redirect_to space_path(@space.code), notice: t('notice.space.destroy')
-    else
-      set_member_count
-      render :show, locals: { notice: t('notice.space.destroy') }
-    end
+    set_member_count
+    render :show, locals: { notice: t('notice.space.destroy') }
   end
 
   # GET /spaces/undo_delete/:code スペース削除取り消し
@@ -97,13 +88,10 @@ class SpacesController < ApplicationAuthController
   # POST /spaces/undo_delete/:code(.json) スペース削除取り消しAPI(処理)
   def undo_destroy
     @space.set_undo_destroy_reserve!
+    return redirect_to space_path(@space.code), notice: t('notice.space.undo_destroy') if format_html?
 
-    if format_html?
-      redirect_to space_path(@space.code), notice: t('notice.space.undo_destroy')
-    else
-      set_member_count
-      render :show, locals: { notice: t('notice.space.undo_destroy') }
-    end
+    set_member_count
+    render :show, locals: { notice: t('notice.space.undo_destroy') }
   end
 
   private
@@ -160,12 +148,9 @@ class SpacesController < ApplicationAuthController
     @space.valid?
     validate_name_uniqueness if @space.errors[:name].blank?
     return unless @space.errors.any?
+    return render :new, status: :unprocessable_entity if format_html?
 
-    if format_html?
-      render :new, status: :unprocessable_entity
-    else
-      render './failure', locals: { errors: @space.errors, alert: t('errors.messages.not_saved.other') }, status: :unprocessable_entity
-    end
+    render './failure', locals: { errors: @space.errors, alert: t('errors.messages.not_saved.other') }, status: :unprocessable_entity
   end
 
   def validate_params_update
@@ -173,12 +158,9 @@ class SpacesController < ApplicationAuthController
     @space.valid?
     validate_name_uniqueness if @space.errors[:name].blank? && @space.name_changed?
     return unless @space.errors.any?
+    return render :edit, status: :unprocessable_entity if format_html?
 
-    if format_html?
-      render :edit, status: :unprocessable_entity
-    else
-      render './failure', locals: { errors: @space.errors, alert: t('errors.messages.not_saved.other') }, status: :unprocessable_entity
-    end
+    render './failure', locals: { errors: @space.errors, alert: t('errors.messages.not_saved.other') }, status: :unprocessable_entity
   end
 
   def validate_name_uniqueness

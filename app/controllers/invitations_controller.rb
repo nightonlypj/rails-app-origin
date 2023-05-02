@@ -36,12 +36,9 @@ class InvitationsController < ApplicationAuthController
     @invitation.domains = @domains
     @invitation.ended_at = @invitation.new_ended_at
     @invitation.save!
+    return redirect_to invitations_path(@space.code), notice: t('notice.invitation.create') if format_html?
 
-    if format_html?
-      redirect_to invitations_path(@space.code), notice: t('notice.invitation.create')
-    else
-      render :show, locals: { notice: t('notice.invitation.create') }, status: :created
-    end
+    render :show, locals: { notice: t('notice.invitation.create') }, status: :created
   end
 
   # GET /invitations/:space_code/update/:code 招待URL設定変更
@@ -60,12 +57,9 @@ class InvitationsController < ApplicationAuthController
       @invitation.destroy_schedule_at  = nil
     end
     @invitation.save!
+    return redirect_to invitations_path(@space.code), notice: t('notice.invitation.update') if format_html?
 
-    if format_html?
-      redirect_to invitations_path(@space.code), notice: t('notice.invitation.update')
-    else
-      render :show, locals: { notice: t('notice.invitation.update') }
-    end
+    render :show, locals: { notice: t('notice.invitation.update') }
   end
 
   private
@@ -87,12 +81,9 @@ class InvitationsController < ApplicationAuthController
 
   def check_email_joined
     return if @invitation.email_joined_at.blank?
+    return redirect_to invitations_path(@space.code), alert: t('alert.invitation.email_joined') if format_html?
 
-    if format_html?
-      redirect_to invitations_path(@space.code), alert: t('alert.invitation.email_joined')
-    else
-      render './failure', locals: { alert: t('alert.invitation.email_joined') }, status: :unprocessable_entity
-    end
+    render './failure', locals: { alert: t('alert.invitation.email_joined') }, status: :unprocessable_entity
   end
 
   def validate_params_create
@@ -101,12 +92,9 @@ class InvitationsController < ApplicationAuthController
     @invitation.valid?
     validate_domains
     return unless @invitation.errors.any?
+    return render :new, status: :unprocessable_entity if format_html?
 
-    if format_html?
-      render :new, status: :unprocessable_entity
-    else
-      render './failure', locals: { errors: @invitation.errors, alert: t('errors.messages.not_saved.other') }, status: :unprocessable_entity
-    end
+    render './failure', locals: { errors: @invitation.errors, alert: t('errors.messages.not_saved.other') }, status: :unprocessable_entity
   end
 
   def validate_domains
@@ -135,12 +123,9 @@ class InvitationsController < ApplicationAuthController
   def validate_params_update
     @invitation.assign_attributes(invitation_params(:update).merge(last_updated_user: current_user))
     return if @invitation.valid?
+    return render :edit, status: :unprocessable_entity if format_html?
 
-    if format_html?
-      render :edit, status: :unprocessable_entity
-    else
-      render './failure', locals: { errors: @invitation.errors, alert: t('errors.messages.not_saved.other') }, status: :unprocessable_entity
-    end
+    render './failure', locals: { errors: @invitation.errors, alert: t('errors.messages.not_saved.other') }, status: :unprocessable_entity
   end
 
   # Only allow a list of trusted parameters through.
