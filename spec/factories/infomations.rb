@@ -20,7 +20,7 @@ FactoryBot.define do
 
     # 終了なし
     trait :forever do
-      label    { :hindrance }
+      label    { :update }
       ended_at { nil }
     end
 
