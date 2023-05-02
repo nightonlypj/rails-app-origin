@@ -15,11 +15,7 @@ class ApplicationAuthController < ApplicationController
 
   # リクエストに不整合がある場合、HTTPステータス406を返却
   def response_not_acceptable_for_diff_format_accept
-    if format_html?
-      head :not_acceptable unless accept_header_html?
-    else
-      head :not_acceptable unless accept_header_api?
-    end
+    head :not_acceptable if (format_html? && !accept_header_html?) || (!format_html? && !accept_header_api?)
   end
 
   # 権限エラー(403)を返却
@@ -33,11 +29,9 @@ class ApplicationAuthController < ApplicationController
 
   # 存在しない(404)を返却
   def response_not_found(alert = 'alert.page.notfound')
-    if format_html?
-      head :not_found
-    else
-      render './failure', locals: { alert: t(alert) }, status: :not_found
-    end
+    return head :not_found if format_html?
+
+    render './failure', locals: { alert: t(alert) }, status: :not_found
   end
 
   # URLの拡張子がない場合のみ、Device認証を有効にする（APIでCSRFトークン検証をしない為）
@@ -72,10 +66,8 @@ class ApplicationAuthController < ApplicationController
   protected
 
   def render_authenticate_error
-    if format_html?
-      warden.authenticate!(scope: :user)
-    else
-      response_unauthenticated
-    end
+    return warden.authenticate!(scope: :user) if format_html?
+
+    response_unauthenticated
   end
 end
