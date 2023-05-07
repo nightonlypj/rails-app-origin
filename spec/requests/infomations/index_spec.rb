@@ -27,10 +27,14 @@ RSpec.describe 'Infomations', type: :request do
       it 'HTTPステータスが200。対象項目が一致する' do
         is_expected.to eq(200)
         expect(response_json['success']).to eq(true)
+
         expect(response_json_infomation['total_count']).to eq(infomations.count)
         expect(response_json_infomation['current_page']).to eq(subject_page)
         expect(response_json_infomation['total_pages']).to eq((infomations.count - 1).div(Settings.default_infomations_limit) + 1)
         expect(response_json_infomation['limit_value']).to eq(Settings.default_infomations_limit)
+        expect(response_json_infomation.count).to eq(4)
+
+        expect(response_json.count).to eq(3)
       end
     end
 
@@ -103,8 +107,8 @@ RSpec.describe 'Infomations', type: :request do
         (start_no..end_no).each do |no|
           data = response_json_infomations[no - start_no]
           infomation = infomations[infomations.count - no]
-          expect(data['id']).to eq(infomation.id)
-          expect_infomation_json(data, infomation, false)
+          count = expect_infomation_json(data, infomation, { id: true, body: false })
+          expect(data.count).to eq(count)
         end
       end
     end

@@ -64,14 +64,22 @@ shared_context 'アカウントロック解除トークン作成' do |locked, ex
 end
 
 # テスト内容（共通）
-def expect_user_json(response_json_user, user, use_email)
+def expect_user_json(response_json_user, user, use = { email: false })
+  result = 6
   expect(response_json_user['code']).to eq(user.code)
   expect_image_json(response_json_user, user)
   expect(response_json_user['name']).to eq(user.name)
-  expect(response_json_user['email']).to use_email ? eq(user.email) : be_nil
+  if use[:email]
+    expect(response_json_user['email']).to eq(user.email)
+    result += 1
+  else
+    expect(response_json_user['email']).to be_nil
+  end
   ## 削除予約
   expect(response_json_user['destroy_requested_at']).to eq(I18n.l(user.destroy_requested_at, format: :json, default: nil))
   expect(response_json_user['destroy_schedule_at']).to eq(I18n.l(user.destroy_schedule_at, format: :json, default: nil))
+
+  result
 end
 
 shared_examples_for 'ToTop' do |alert, notice|
@@ -97,12 +105,13 @@ shared_context 'Authテスト内容' do
     if current_user.blank?
       expect(response_json_user).to be_nil
     else
-      expect_user_json(response_json_user, current_user, false)
+      count = expect_user_json(response_json_user, current_user, { email: false })
       expect(response_json_user['provider']).to eq(current_user.provider)
       ## アカウント削除の猶予期間
       expect(response_json_user['destroy_schedule_days']).to eq(Settings.user_destroy_schedule_days)
       ## お知らせ
       expect(response_json_user['infomation_unread_count']).to eq(current_user.infomation_unread_count)
+      expect(response_json_user.count).to eq(count + 3)
     end
   end
   let(:expect_failure_json) do

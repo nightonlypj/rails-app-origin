@@ -40,6 +40,8 @@ RSpec.describe 'Holidays', type: :request do
           expect(response_json_holidays[index]['date']).to eq(I18n.l(holiday.date, format: :json))
           expect(response_json_holidays[index]['name']).to eq(holiday.name)
         end
+
+        expect(response_json.count).to eq(3)
       end
     end
 
