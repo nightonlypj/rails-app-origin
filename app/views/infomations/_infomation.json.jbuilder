@@ -1,3 +1,4 @@
+json.id infomation.id if use_id
 json.label infomation.label
 json.label_i18n infomation.label_i18n
 json.title infomation.title

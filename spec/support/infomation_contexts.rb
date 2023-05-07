@@ -73,12 +73,19 @@ shared_context '大切なお知らせ一覧作成' do |all_forever_count, all_fu
 end
 
 # テスト内容（共通）
-def expect_infomation_json(response_json_infomation, infomation, use_body)
+def expect_infomation_json(response_json_infomation, infomation, use = { id: false, body: false })
+  result = 8
+  if use[:id]
+    expect(response_json_infomation['id']).to eq(infomation.id)
+    result += 1
+  else
+    expect(response_json_infomation['id']).to be_nil
+  end
   expect(response_json_infomation['label']).to eq(infomation.label)
   expect(response_json_infomation['label_i18n']).to eq(infomation.label_i18n)
   expect(response_json_infomation['title']).to eq(infomation.title)
   expect(response_json_infomation['summary']).to eq(infomation.summary)
-  if use_body
+  if use[:body]
     expect(response_json_infomation['body']).to eq(infomation.body)
     expect(response_json_infomation['body_present']).to be_nil
   else
@@ -88,4 +95,6 @@ def expect_infomation_json(response_json_infomation, infomation, use_body)
   expect(response_json_infomation['started_at']).to eq(I18n.l(infomation.started_at, format: :json))
   expect(response_json_infomation['ended_at']).to eq(I18n.l(infomation.ended_at, format: :json, default: nil))
   expect(response_json_infomation['target']).to eq(infomation.target)
+
+  result
 end

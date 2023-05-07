@@ -17,12 +17,14 @@ end
 # テスト内容（共通）
 def expect_image_json(response_json_model, model)
   expect(response_json_model['upload_image']).to eq(model.image?)
+
   data = response_json_model['image_url']
   expect(data['mini']).to eq("#{Settings.base_image_url}#{model.image_url(:mini)}")
   expect(data['small']).to eq("#{Settings.base_image_url}#{model.image_url(:small)}")
   expect(data['medium']).to eq("#{Settings.base_image_url}#{model.image_url(:medium)}")
   expect(data['large']).to eq("#{Settings.base_image_url}#{model.image_url(:large)}")
   expect(data['xlarge']).to eq("#{Settings.base_image_url}#{model.image_url(:xlarge)}")
+  expect(data.count).to eq(5)
 end
 
 def get_locale(key, **replace)

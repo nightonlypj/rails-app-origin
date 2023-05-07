@@ -229,15 +229,9 @@ RSpec.describe 'Users::Auth::Registrations', type: :request do
       it 'HTTPステータスが200。対象項目が一致する。認証ヘッダがある' do
         is_expected.to eq(200)
         expect(response_json['success']).to eq(true)
-        expect_user_json(response_json_user, current_user, true)
-        expect(response_json_user['provider']).to eq(current_user.provider)
-        ## アカウント削除の猶予期間
-        expect(response_json_user['destroy_schedule_days']).to be_nil
-        ## お知らせ
-        expect(response_json_user['infomation_unread_count']).to be_nil
-        ## ダウンロード結果
-        expect(response_json_user['undownloaded_count']).to be_nil
 
+        count = expect_user_json(response_json_user, current_user, { email: true })
+        expect(response_json_user['provider']).to eq(current_user.provider)
         ## Trackable
         expect(response_json_user['sign_in_count']).to eq(current_user.sign_in_count)
         expect(response_json_user['current_sign_in_at']).to eq(I18n.l(current_user.current_sign_in_at, format: :json, default: nil))
@@ -248,7 +242,9 @@ RSpec.describe 'Users::Auth::Registrations', type: :request do
         expect(response_json_user['unconfirmed_email']).to eq(current_user.unconfirmed_email.present? ? current_user.unconfirmed_email : nil)
         ## 作成日時
         expect(response_json_user['created_at']).to eq(I18n.l(current_user.created_at, format: :json))
+        expect(response_json_user.count).to eq(count + 8)
 
+        expect(response_json.count).to eq(2)
         expect_exist_auth_header
       end
     end
