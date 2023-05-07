@@ -121,23 +121,19 @@ shared_context 'Authテスト内容' do
       inside_spaces.sort_by(&:name).each_with_index do |space, index|
         data = response_json_user_spaces[index]
         expect(data['code']).to eq(space.code)
-
-        data_image_url = data['image_url']
-        expect(data_image_url['mini']).to eq("#{Settings.base_image_url}#{space.image_url(:mini)}")
-        expect(data_image_url['small']).to eq("#{Settings.base_image_url}#{space.image_url(:small)}")
-        expect(data_image_url['medium']).to eq("#{Settings.base_image_url}#{space.image_url(:medium)}")
-        expect(data_image_url['large']).to eq("#{Settings.base_image_url}#{space.image_url(:large)}")
-        expect(data_image_url['xlarge']).to eq("#{Settings.base_image_url}#{space.image_url(:xlarge)}")
-
+        expect_image_json(data, space)
         expect(data['name']).to eq(space.name)
         expect(data['description']).to eq(space.description)
         expect(data['private']).to eq(space.private)
         expect(data['destroy_requested_at']).to eq(I18n.l(space.destroy_requested_at, format: :json, default: nil))
         expect(data['destroy_schedule_at']).to eq(I18n.l(space.destroy_schedule_at, format: :json, default: nil))
 
+        data_current_member = data['current_member']
         power = @members[space.id]
-        expect(data['current_member']['power']).to eq(power)
-        expect(data['current_member']['power_i18n']).to eq(Member.powers_i18n[power])
+        expect(data_current_member['power']).to eq(power)
+        expect(data_current_member['power_i18n']).to eq(Member.powers_i18n[power])
+        expect(data_current_member.count).to eq(2)
+        expect(data.count).to eq(9)
       end
 
       expect(response_json_user.count).to eq(count + 3 + 2)

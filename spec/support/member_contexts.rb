@@ -23,24 +23,44 @@ end
 
 # テスト内容（共通）
 def expect_member_json(response_json_member, member, user_power)
-  expect_user_json(response_json_member['user'], member.user, user_power == :admin)
+  result = 4
+
+  data = response_json_member['user']
+  count = expect_user_json(data, member.user, { email: user_power == :admin })
+  expect(data.count).to eq(count)
 
   expect(response_json_member['power']).to eq(member.power)
   expect(response_json_member['power_i18n']).to eq(member.power_i18n)
 
-  if user_power == :admin
-    expect_user_json(response_json_member['invitationed_user'], member.invitationed_user, true, member.invitationed_user_id.present?)
-    expect_user_json(response_json_member['last_updated_user'], member.last_updated_user, true, member.last_updated_user_id.present?)
+  data = response_json_member['invitationed_user']
+  if user_power == :admin && member.invitationed_user_id.present?
+    count = member.invitationed_user.present? ? expect_user_json(data, member.invitationed_user, { email: true }) : 0
+    expect(data['deleted']).to eq(member.invitationed_user.blank?)
+    expect(data.count).to eq(count + 1)
+    result += 1
   else
-    expect(response_json_member['invitationed_user']).to be_nil
-    expect(response_json_member['last_updated_user']).to be_nil
+    expect(data).to be_nil
   end
   expect(response_json_member['invitationed_at']).to eq(I18n.l(member.invitationed_at, format: :json, default: nil))
-  if user_power == :admin
-    expect(response_json_member['last_updated_at']).to eq(I18n.l(member.last_updated_at, format: :json, default: nil))
+
+  data = response_json_member['last_updated_user']
+  if user_power == :admin && member.last_updated_user_id.present?
+    count = member.last_updated_user.present? ? expect_user_json(data, member.last_updated_user, { email: true }) : 0
+    expect(data['deleted']).to eq(member.last_updated_user.blank?)
+    expect(data.count).to eq(count + 1)
+    result += 1
   else
-    expect(response_json_member['last_updated_at']).to be_nil
+    expect(data).to be_nil
   end
+  data = response_json_member['last_updated_at']
+  if user_power == :admin
+    expect(data).to eq(I18n.l(member.last_updated_at, format: :json, default: nil))
+    result += 1
+  else
+    expect(data).to be_nil
+  end
+
+  result
 end
 
 shared_examples_for 'ToMembers(html/*)' do |alert, notice|

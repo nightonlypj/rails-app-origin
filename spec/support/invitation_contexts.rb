@@ -21,6 +21,7 @@ end
 
 # テスト内容（共通）
 def expect_invitation_json(response_json_invitation, invitation)
+  result = 12
   expect(response_json_invitation['status']).to eq(invitation.status.to_s)
   expect(response_json_invitation['status_i18n']).to eq(invitation.status_i18n)
 
@@ -39,13 +40,36 @@ def expect_invitation_json(response_json_invitation, invitation)
   expect(response_json_invitation['ended_at']).to eq(I18n.l(invitation.ended_at, format: :json, default: nil))
   expect(response_json_invitation['destroy_requested_at']).to eq(I18n.l(invitation.destroy_requested_at, format: :json, default: nil))
   expect(response_json_invitation['destroy_schedule_at']).to eq(I18n.l(invitation.destroy_schedule_at, format: :json, default: nil))
-  expect(response_json_invitation['email_joined_at']).to eq(I18n.l(invitation.email_joined_at, format: :json, default: nil))
+  if invitation.email.present?
+    expect(response_json_invitation['email_joined_at']).to eq(I18n.l(invitation.email_joined_at, format: :json, default: nil))
+    result += 1
+  else
+    expect(response_json_invitation['email_joined_at']).to be_nil
+  end
 
-  expect_user_json(response_json_invitation['created_user'], invitation.created_user, true, invitation.created_user_id.present?)
+  data = response_json_invitation['created_user']
+  if invitation.created_user_id.present?
+    count = invitation.created_user.present? ? expect_user_json(data, invitation.created_user, { email: true }) : 0
+    expect(data['deleted']).to eq(invitation.created_user.blank?)
+    expect(data.count).to eq(count + 1)
+    result += 1
+  else
+    expect(data).to be_nil
+  end
   expect(response_json_invitation['created_at']).to eq(I18n.l(invitation.created_at, format: :json))
 
-  expect_user_json(response_json_invitation['last_updated_user'], invitation.last_updated_user, true, invitation.last_updated_user_id.present?)
+  data = response_json_invitation['last_updated_user']
+  if invitation.last_updated_user_id.present?
+    count = invitation.last_updated_user.present? ? expect_user_json(data, invitation.last_updated_user, { email: true }) : 0
+    expect(data['deleted']).to eq(invitation.last_updated_user.blank?)
+    expect(data.count).to eq(count + 1)
+    result += 1
+  else
+    expect(data).to be_nil
+  end
   expect(response_json_invitation['last_updated_at']).to eq(I18n.l(invitation.last_updated_at, format: :json, default: nil))
+
+  result
 end
 
 shared_examples_for 'ToInvitations(html/*)' do |alert, notice|

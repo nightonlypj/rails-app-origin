@@ -5,6 +5,7 @@ RSpec.describe 'Invitations', type: :request do
   let(:response_json_space)       { response_json['space'] }
   let(:response_json_invitation)  { response_json['invitation'] }
   let(:response_json_invitations) { response_json['invitations'] }
+  let(:response_json_space_current_member) { response_json_space['current_member'] }
 
   # GET /invitations/:space_code 招待URL一覧
   # GET /invitations/:space_code(.json) 招待URL一覧API
@@ -47,13 +48,18 @@ RSpec.describe 'Invitations', type: :request do
         expect(response_json_space['destroy_requested_at']).to eq(I18n.l(space.destroy_requested_at, format: :json, default: nil))
         expect(response_json_space['destroy_schedule_at']).to eq(I18n.l(space.destroy_schedule_at, format: :json, default: nil))
 
-        expect(response_json_space['current_member']['power']).to eq(:admin.to_s)
-        expect(response_json_space['current_member']['power_i18n']).to eq(Invitation.powers_i18n[:admin])
+        expect(response_json_space_current_member['power']).to eq(:admin.to_s)
+        expect(response_json_space_current_member['power_i18n']).to eq(Invitation.powers_i18n[:admin])
+        expect(response_json_space_current_member.count).to eq(2)
+        expect(response_json_space.count).to eq(9)
 
         expect(response_json_invitation['total_count']).to eq(invitations.count)
         expect(response_json_invitation['current_page']).to eq(subject_page)
         expect(response_json_invitation['total_pages']).to eq((invitations.count - 1).div(Settings.default_invitations_limit) + 1)
         expect(response_json_invitation['limit_value']).to eq(Settings.default_invitations_limit)
+        expect(response_json_invitation.count).to eq(4)
+
+        expect(response_json.count).to eq(4)
       end
     end
 
@@ -153,7 +159,9 @@ RSpec.describe 'Invitations', type: :request do
         subject
         expect(response_json_invitations.count).to eq(end_no - start_no + 1)
         (start_no..end_no).each do |no|
-          expect_invitation_json(response_json_invitations[no - start_no], invitations[invitations.count - no])
+          data = response_json_invitations[no - start_no]
+          count = expect_invitation_json(data, invitations[invitations.count - no])
+          expect(data.count).to eq(count)
         end
       end
     end

@@ -37,8 +37,10 @@ RSpec.describe 'Downloads', type: :request do
         expect(response_json_download['current_page']).to eq(subject_page)
         expect(response_json_download['total_pages']).to eq((downloads.count - 1).div(Settings.default_downloads_limit) + 1)
         expect(response_json_download['limit_value']).to eq(Settings.default_downloads_limit)
+        expect(response_json_download.count).to eq(4)
 
         expect(response_json['undownloaded_count']).to eq(user.undownloaded_count)
+        expect(response_json.count).to eq(5)
       end
     end
 
@@ -118,7 +120,9 @@ RSpec.describe 'Downloads', type: :request do
         subject
         expect(response_json_downloads.count).to eq(end_no - start_no + 1)
         (start_no..end_no).each do |no|
-          expect_download_json(response_json_downloads[no - start_no], downloads[downloads.count - no])
+          data = response_json_downloads[no - start_no]
+          count = expect_download_json(data, downloads[downloads.count - no])
+          expect(data.count).to eq(count)
         end
       end
     end

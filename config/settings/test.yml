@@ -71,7 +71,7 @@ member_emails_max_count: 3 # NOTE: テストパターンに合わせる
 
 ## ダウンロード
 # 一覧のデフォルト最大表示件数
-default_downloads_limit: 5
+default_downloads_limit: 5 # NOTE: 高速化の為（下記の合計値と一致）
 test_downloads_count:
   waiting: 1
   processing: 1

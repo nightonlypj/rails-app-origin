@@ -54,10 +54,14 @@ RSpec.describe 'Spaces', type: :request do
         expect(response_json['success']).to eq(true)
         search_params = { text: nil, public: 1, private: 1, join: 1, nojoin: 1, active: 1, destroy: 0 }
         expect(response_json['search_params']).to eq(search_params.stringify_keys)
+
         expect(response_json_space['total_count']).to eq(spaces.count)
         expect(response_json_space['current_page']).to eq(subject_page)
         expect(response_json_space['total_pages']).to eq((spaces.count - 1).div(Settings.default_spaces_limit) + 1)
         expect(response_json_space['limit_value']).to eq(Settings.default_spaces_limit)
+        expect(response_json_space.count).to eq(4)
+
+        expect(response_json.count).to eq(4)
       end
     end
 
@@ -129,15 +133,19 @@ RSpec.describe 'Spaces', type: :request do
         (start_no..end_no).each do |no|
           data = response_json_spaces[no - start_no]
           space = spaces[spaces.count - no]
-          expect_space_basic_json(data, space)
+          count = expect_space_basic_json(data, space)
 
           power = members[space.id]
+          data_current_member = data['current_member']
           if power.present?
-            expect(data['current_member']['power']).to eq(power)
-            expect(data['current_member']['power_i18n']).to eq(Member.powers_i18n[power])
+            expect(data_current_member['power']).to eq(power)
+            expect(data_current_member['power_i18n']).to eq(Member.powers_i18n[power])
+            expect(data_current_member.count).to eq(2)
+            count += 1
           else
-            expect(data['current_member']).to be_nil
+            expect(data_current_member).to be_nil
           end
+          expect(data.count).to eq(count)
         end
       end
     end

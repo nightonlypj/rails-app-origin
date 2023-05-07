@@ -2,6 +2,7 @@ require 'rails_helper'
 
 RSpec.describe 'Invitations', type: :request do
   let(:response_json) { JSON.parse(response.body) }
+  let(:response_json_invitation) { response_json['invitation'] }
 
   # POST /invitations/:space_code/update/:code 招待URL設定変更API(処理)
   # POST /invitations/:space_code/update/:code(.json) 招待URL設定変更API(処理)
@@ -69,9 +70,14 @@ RSpec.describe 'Invitations', type: :request do
       it 'HTTPステータスが200。対象項目が一致する' do
         is_expected.to eq(200)
         expect(response_json['success']).to eq(true)
-        expect(response_json['alert']).to be_nil
         expect(response_json['notice']).to eq(get_locale('notice.invitation.update'))
-        expect_invitation_json(response_json['invitation'], current_invitation)
+
+        count = expect_invitation_json(response_json_invitation, current_invitation)
+        ## 招待削除の猶予期間
+        expect(response_json_invitation['destroy_schedule_days']).to eq(Settings.invitation_destroy_schedule_days)
+        expect(response_json_invitation.count).to eq(count + 1)
+
+        expect(response_json.count).to eq(3)
       end
     end
 

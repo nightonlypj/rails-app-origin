@@ -89,12 +89,11 @@ RSpec.describe 'Members', type: :request do
       it 'HTTPステータスが200。対象項目が一致する' do
         is_expected.to eq(200)
         expect(response_json['success']).to eq(true)
-        expect(response_json['alert']).to be_nil
         expect(response_json['notice']).to eq(get_locale("notice.member.#{notice_key}", count: input_count, destroy_count: destroy_count))
-
         expect(response_json['count']).to eq(input_count)
         expect(response_json['destroy_count']).to eq(destroy_count)
         expect(response_json['include_myself']).to eq(include_myself)
+        expect(response_json.count).to eq(5)
       end
     end
 

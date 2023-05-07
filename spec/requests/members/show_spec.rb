@@ -2,6 +2,7 @@ require 'rails_helper'
 
 RSpec.describe 'Members', type: :request do
   let(:response_json) { JSON.parse(response.body) }
+  let(:response_json_member) { response_json['member'] }
 
   # GET /members/:space_code/detail/:user_code(.json) メンバー詳細API
   # テストパターン
@@ -31,9 +32,11 @@ RSpec.describe 'Members', type: :request do
       it 'HTTPステータスが200。対象項目が一致する' do
         is_expected.to eq(200)
         expect(response_json['success']).to eq(true)
-        expect(response_json['alert']).to be_nil
-        expect(response_json['notice']).to be_nil
-        expect_member_json(response_json['member'], member, user_power)
+
+        count = expect_member_json(response_json_member, member, user_power)
+        expect(response_json_member.count).to eq(count)
+
+        expect(response_json.count).to eq(2)
       end
     end
 

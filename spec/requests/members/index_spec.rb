@@ -5,6 +5,7 @@ RSpec.describe 'Members', type: :request do
   let(:response_json_space)   { response_json['space'] }
   let(:response_json_member)  { response_json['member'] }
   let(:response_json_members) { response_json['members'] }
+  let(:response_json_space_current_member) { response_json_space['current_member'] }
 
   # テスト内容（共通）
   shared_examples_for 'ToOK[氏名]' do
@@ -90,13 +91,18 @@ RSpec.describe 'Members', type: :request do
         expect(response_json_space['destroy_requested_at']).to eq(I18n.l(space.destroy_requested_at, format: :json, default: nil))
         expect(response_json_space['destroy_schedule_at']).to eq(I18n.l(space.destroy_schedule_at, format: :json, default: nil))
 
-        expect(response_json_space['current_member']['power']).to eq(user_power.to_s)
-        expect(response_json_space['current_member']['power_i18n']).to eq(Member.powers_i18n[user_power])
+        expect(response_json_space_current_member['power']).to eq(user_power.to_s)
+        expect(response_json_space_current_member['power_i18n']).to eq(Member.powers_i18n[user_power])
+        expect(response_json_space_current_member.count).to eq(2)
+        expect(response_json_space.count).to eq(9)
 
         expect(response_json_member['total_count']).to eq(members.count)
         expect(response_json_member['current_page']).to eq(subject_page)
         expect(response_json_member['total_pages']).to eq((members.count - 1).div(Settings.default_members_limit) + 1)
         expect(response_json_member['limit_value']).to eq(Settings.default_members_limit)
+        expect(response_json_member.count).to eq(4)
+
+        expect(response_json.count).to eq(5)
       end
     end
 
@@ -198,7 +204,9 @@ RSpec.describe 'Members', type: :request do
         subject
         expect(response_json_members.count).to eq(end_no - start_no + 1)
         (start_no..end_no).each do |no|
-          expect_member_json(response_json_members[no - start_no], members[members.count - no], user_power)
+          data = response_json_members[no - start_no]
+          count = expect_member_json(data, members[members.count - no], user_power)
+          expect(data.count).to eq(count)
         end
       end
     end

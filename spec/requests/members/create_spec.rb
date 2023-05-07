@@ -72,13 +72,13 @@ RSpec.describe 'Members', type: :request do
       it 'HTTPステータスが201。対象項目が一致する' do
         is_expected.to eq(201)
         expect(response_json['success']).to eq(true)
-        expect(response_json['alert']).to be_nil
         expect(response_json['notice']).to eq(get_locale('notice.member.create'))
 
         expect(response_json_email['count']).to eq(emails.count)
         expect(response_json_email['create_count']).to eq(1)
         expect(response_json_email['exist_count']).to eq(1)
         expect(response_json_email['notfound_count']).to eq(1)
+        expect(response_json_email.count).to eq(4)
 
         expect(response_json_emails[0]['email']).to eq(emails[0])
         expect(response_json_emails[0]['result']).to eq('exist')
@@ -89,10 +89,12 @@ RSpec.describe 'Members', type: :request do
         expect(response_json_emails[2]['email']).to eq(emails[2])
         expect(response_json_emails[2]['result']).to eq('notfound')
         expect(response_json_emails[2]['result_i18n']).to eq('アカウントが存在しません。登録後に招待してください。')
+        expect(response_json_emails.count).to eq(3)
+
         expect(response_json['power']).to eq(attributes[:power].to_s)
         expect(response_json['power_i18n']).to eq(Member.powers_i18n[attributes[:power].to_s])
-
         expect(response_json['user_codes'].sort).to eq([exist_user.code, new_user.code].sort)
+        expect(response_json.count).to eq(7)
       end
     end
 

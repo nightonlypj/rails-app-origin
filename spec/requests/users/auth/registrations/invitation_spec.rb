@@ -21,6 +21,7 @@ RSpec.describe 'Users::Auth::Registrations', type: :request do
       it 'HTTPステータスが200。対象項目が一致する' do
         is_expected.to eq(200)
         expect(response_json['success']).to eq(true)
+
         if invitation.email.present?
           expect(response_json_invitation['email']).to eq(invitation.email)
           expect(response_json_invitation['domains']).to be_nil
@@ -28,6 +29,9 @@ RSpec.describe 'Users::Auth::Registrations', type: :request do
           expect(response_json_invitation['email']).to be_nil
           expect(response_json_invitation['domains']).to eq(invitation.domains_array)
         end
+        expect(response_json_invitation.count).to eq(1)
+
+        expect(response_json.count).to eq(2)
       end
     end
 

@@ -2,6 +2,7 @@ require 'rails_helper'
 
 RSpec.describe 'Spaces', type: :request do
   let(:response_json) { response.body.present? ? JSON.parse(response.body) : {} }
+  let(:response_json_space) { response_json['space'] }
 
   # GET /s/:code スペーストップ
   # GET /s/:code(.json) スペース詳細API
@@ -43,9 +44,11 @@ RSpec.describe 'Spaces', type: :request do
       it 'HTTPステータスが200。対象項目が一致する' do
         is_expected.to eq(200)
         expect(response_json['success']).to eq(true)
-        expect(response_json['alert']).to be_nil
-        expect(response_json['notice']).to be_nil
-        expect_space_json(response_json['space'], space, user_power, member_count)
+
+        count = expect_space_json(response_json_space, space, user_power, member_count)
+        expect(response_json_space.count).to eq(count)
+
+        expect(response_json.count).to eq(2)
       end
     end
 

@@ -2,6 +2,7 @@ require 'rails_helper'
 
 RSpec.describe 'Spaces', type: :request do
   let(:response_json) { JSON.parse(response.body) }
+  let(:response_json_space) { response_json['space'] }
 
   # POST /spaces/delete/:code スペース削除(処理)
   # POST /spaces/delete/:code(.json) スペース削除API(処理)
@@ -53,9 +54,12 @@ RSpec.describe 'Spaces', type: :request do
       it 'HTTPステータスが200。対象項目が一致する' do
         is_expected.to eq(200)
         expect(response_json['success']).to eq(true)
-        expect(response_json['alert']).to be_nil
         expect(response_json['notice']).to eq(get_locale('notice.space.destroy'))
-        expect_space_json(response_json['space'], current_space, :admin, 1)
+
+        count = expect_space_json(response_json_space, current_space, :admin, 1)
+        expect(response_json_space.count).to eq(count)
+
+        expect(response_json.count).to eq(3)
       end
     end
 

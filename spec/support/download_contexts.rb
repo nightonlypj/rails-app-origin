@@ -12,6 +12,7 @@ end
 
 # テスト内容（共通）
 def expect_download_json(response_json_download, download)
+  result = 16
   expect(response_json_download['id']).to eq(download.id)
   expect(response_json_download['status']).to eq(download.status)
   expect(response_json_download['status_i18n']).to eq(download.status_i18n)
@@ -21,7 +22,15 @@ def expect_download_json(response_json_download, download)
 
   expect(response_json_download['model']).to eq(download.model)
   expect(response_json_download['model_i18n']).to eq(download.model_i18n)
-  expect_space_basic_json(response_json_download['space'], download.space) if download.model.to_sym == :member
+
+  data = response_json_download['space']
+  if download.model.to_sym == :member
+    count = expect_space_basic_json(data, download.space)
+    expect(data.count).to eq(count)
+    result += 1
+  else
+    expect(data).to be_nil
+  end
 
   expect(response_json_download['target']).to eq(download.target)
   expect(response_json_download['target_i18n']).to eq(download.target_i18n)
@@ -31,4 +40,6 @@ def expect_download_json(response_json_download, download)
   expect(response_json_download['char_code_i18n']).to eq(download.char_code_i18n)
   expect(response_json_download['newline_code']).to eq(download.newline_code)
   expect(response_json_download['newline_code_i18n']).to eq(download.newline_code_i18n)
+
+  result
 end

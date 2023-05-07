@@ -2,6 +2,7 @@ require 'rails_helper'
 
 RSpec.describe 'Downloads', type: :request do
   let(:response_json) { JSON.parse(response.body) }
+  let(:response_json_download) { response_json['download'] }
 
   # POST /downloads/create ダウンロード依頼(処理)
   # POST /downloads/create(.json) ダウンロード依頼API(処理)
@@ -72,9 +73,12 @@ RSpec.describe 'Downloads', type: :request do
       it 'HTTPステータスが201。対象項目が一致する' do
         is_expected.to eq(201)
         expect(response_json['success']).to eq(true)
-        expect(response_json['alert']).to be_nil
         expect(response_json['notice']).to eq(get_locale('notice.download.create'))
-        expect_download_json(response_json['download'], current_download)
+
+        count = expect_download_json(response_json_download, current_download)
+        expect(response_json_download.count).to eq(count)
+
+        expect(response_json.count).to eq(3)
       end
     end
 
