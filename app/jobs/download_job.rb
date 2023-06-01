@@ -65,7 +65,7 @@ class DownloadJob < ApplicationJob
     @space = @download.space
     raise 'space not found.' if @space.blank?
 
-    @current_member = Member.where(space: @space, user: @download.user).first
+    @current_member = Member.find_by(space: @space, user: @download.user)
     raise 'current_member not found.' if @current_member.blank?
     raise 'power not found.' unless @current_member.power_admin?
   end

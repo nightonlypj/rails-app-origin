@@ -16,17 +16,17 @@ RSpec.describe ApplicationHelper, type: :helper do
     context 'スペース一覧' do
       let(:controller_name) { 'spaces' }
       let(:action_name)     { 'index' }
-      it_behaves_like 'true'
+      it_behaves_like 'Value', true
     end
     context 'スペース詳細' do
       let(:controller_name) { 'spaces' }
       let(:action_name)     { 'show' }
-      it_behaves_like 'false'
+      it_behaves_like 'Value', false
     end
     context 'メンバー一覧' do
       let(:controller_name) { 'members' }
       let(:action_name)     { 'index' }
-      it_behaves_like 'true'
+      it_behaves_like 'Value', true
     end
   end
 
@@ -126,37 +126,37 @@ RSpec.describe ApplicationHelper, type: :helper do
     shared_examples_for '[*]トップページ' do
       let(:controller_name) { 'top' }
       let(:action_name)     { 'index' }
-      it_behaves_like 'false'
+      it_behaves_like 'Value', false
     end
     shared_examples_for '[*]スペース一覧' do
       let(:controller_name) { 'spaces' }
       let(:action_name)     { 'index' }
-      it_behaves_like 'false'
+      it_behaves_like 'Value', false
     end
     shared_examples_for '[ある]スペーストップ' do
       let(:controller_name) { 'spaces' }
       let(:action_name)     { 'show' }
-      it_behaves_like 'true'
+      it_behaves_like 'Value', true
     end
     shared_examples_for '[ない]スペーストップ' do
       let(:controller_name) { 'spaces' }
       let(:action_name)     { 'show' }
-      it_behaves_like 'false'
+      it_behaves_like 'Value', false
     end
     shared_examples_for '[*]スペース削除取り消し' do
       let(:controller_name) { 'spaces' }
       let(:action_name)     { 'undo_delete' }
-      it_behaves_like 'false'
+      it_behaves_like 'Value', false
     end
     shared_examples_for '[ある]メンバー一覧' do
       let(:controller_name) { 'members' }
       let(:action_name)     { 'show' }
-      it_behaves_like 'true'
+      it_behaves_like 'Value', true
     end
     shared_examples_for '[ない]メンバー一覧' do
       let(:controller_name) { 'members' }
       let(:action_name)     { 'show' }
-      it_behaves_like 'false'
+      it_behaves_like 'Value', false
     end
 
     context '削除予約がある' do
@@ -316,23 +316,23 @@ RSpec.describe ApplicationHelper, type: :helper do
     context 'enabledがfalse' do
       let(:enabled) { false }
       let(:key)     { :not }
-      it_behaves_like 'value', ' mb-3'
+      it_behaves_like 'Value', ' mb-3'
     end
     context 'enabledがtrue' do
       let(:enabled) { true }
       context 'errorsなし' do
         let(:key) { :not } # NOTE: errorsなしの為、keyが存在する事はない
-        it_behaves_like 'value', ' mb-0'
+        it_behaves_like 'Value', ' mb-0'
       end
       context 'errorsあり' do
         before_all { user.errors.add(:email, 'メッセージ') }
         context 'keyが存在しない' do
           let(:key) { :not }
-          it_behaves_like 'value', ' mb-0'
+          it_behaves_like 'Value', ' mb-0'
         end
         context 'keyが存在する' do
           let(:key) { :email }
-          it_behaves_like 'value', ' mb-4'
+          it_behaves_like 'Value', ' mb-4'
         end
       end
     end

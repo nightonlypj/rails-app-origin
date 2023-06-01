@@ -26,9 +26,9 @@ shared_context 'スペース一覧作成' do |public_admin_count, public_none_co
 
     # 非公開（管理者）
     @private_spaces = []
-    if private_admin_count.positive?
+    if private_admin_count > 0
       spaces = FactoryBot.create_list(:space, private_admin_count, :private, description: '非公開（管理者）', created_user_id: destroy_user.id,
-                                                                             last_updated_user_id: destroy_user.id, created_at: now - 2.days, updated_at: now - 1.days)
+                                                                             last_updated_user_id: destroy_user.id, created_at: now - 2.days, updated_at: now - 1.day)
       spaces.each do |space|
         FactoryBot.create(:member, :admin, space: space, user: user)
         @members[space.id] = 'admin'
@@ -37,9 +37,9 @@ shared_context 'スペース一覧作成' do |public_admin_count, public_none_co
     end
 
     # 非公開（閲覧者）
-    if private_reader_count.positive?
+    if private_reader_count > 0
       spaces = FactoryBot.create_list(:space, private_reader_count, :private, description: '非公開（閲覧者）', created_user: created_user,
-                                                                              created_at: now - 1.days, updated_at: now - 1.days)
+                                                                              created_at: now - 1.day, updated_at: now - 1.day)
       spaces.each do |space|
         FactoryBot.create(:member, :reader, space: space, user: user)
         @members[space.id] = 'reader'
@@ -99,7 +99,7 @@ def expect_space_json(response_json_space, space, user_power, member_count)
 
   data = response_json_space['created_user']
   if user_power == :admin && space.created_user_id.present?
-    count = space.created_user.present? ? expect_user_json(data, space.created_user, { email: true }) : 0
+    count = expect_user_json(data, space.created_user, { email: true })
     expect(data['deleted']).to eq(space.created_user.blank?)
     expect(data.count).to eq(count + 1)
     result += 1
@@ -116,7 +116,7 @@ def expect_space_json(response_json_space, space, user_power, member_count)
 
   data = response_json_space['last_updated_user']
   if user_power == :admin && space.last_updated_user_id.present?
-    count = space.last_updated_user.present? ? expect_user_json(data, space.last_updated_user, { email: true }) : 0
+    count = expect_user_json(data, space.last_updated_user, { email: true })
     expect(data['deleted']).to eq(space.last_updated_user.blank?)
     expect(data.count).to eq(count + 1)
     result += 1

@@ -25,7 +25,7 @@ class DownloadsController < ApplicationAuthController
     return response_not_found('alert.download.notfound') if @download.blank? || @download.user != current_user
 
     if @download.model.to_sym == :member
-      current_member = Member.where(space: @download.space, user: current_user).first
+      current_member = Member.find_by(space: @download.space, user: current_user)
       return response_forbidden if current_member.blank? || !current_member.power_admin?
     end
 
@@ -75,7 +75,7 @@ class DownloadsController < ApplicationAuthController
       end
     end
 
-    @download = Download.where(id: @target_id, user: current_user).first if @download.blank?
+    @download = Download.find_by(id: @target_id, user: current_user) if @download.blank?
     return if @download.blank? || @download.last_downloaded_at.present?
 
     if @download.status.to_sym == :failure

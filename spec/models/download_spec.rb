@@ -1,29 +1,11 @@
 require 'rails_helper'
 
 RSpec.describe Download, type: :model do
-  # テスト内容（共通）
-  shared_examples_for 'Valid' do
-    it '保存できる' do
-      expect(download).to be_valid
-    end
-  end
-  shared_examples_for 'InValid' do
-    it '保存できない。エラーメッセージが一致する' do
-      expect(download).to be_invalid
-      expect(download.errors.messages).to eq(messages)
-    end
-  end
-  shared_examples_for 'Value' do |value, text = value|
-    it "#{text}が返却される" do
-      is_expected.to eq(value)
-    end
-  end
-
   # 対象
   # テストパターン
   #   ない, 正常値
   describe 'validates :target' do
-    let(:download) { FactoryBot.build_stubbed(:download, target: target) }
+    let(:model) { FactoryBot.build_stubbed(:download, target: target) }
 
     # テストケース
     context 'ない' do
@@ -41,7 +23,7 @@ RSpec.describe Download, type: :model do
   # テストパターン
   #   ない, 正常値
   describe 'validates :format' do
-    let(:download) { FactoryBot.build_stubbed(:download, format: format) }
+    let(:model) { FactoryBot.build_stubbed(:download, format: format) }
 
     # テストケース
     context 'ない' do
@@ -59,7 +41,7 @@ RSpec.describe Download, type: :model do
   # テストパターン
   #   ない, 正常値
   describe 'validates :char_code' do
-    let(:download) { FactoryBot.build_stubbed(:download, char_code: char_code) }
+    let(:model) { FactoryBot.build_stubbed(:download, char_code: char_code) }
 
     # テストケース
     context 'ない' do
@@ -77,7 +59,7 @@ RSpec.describe Download, type: :model do
   # テストパターン
   #   ない, 正常値
   describe 'validates :newline_code' do
-    let(:download) { FactoryBot.build_stubbed(:download, newline_code: newline_code) }
+    let(:model) { FactoryBot.build_stubbed(:download, newline_code: newline_code) }
 
     # テストケース
     context 'ない' do
@@ -95,7 +77,7 @@ RSpec.describe Download, type: :model do
   # テストパターン
   #   ない, 正常値, 文字列, 文字列（ハッシュ）, 存在しない値を含む
   describe 'validates :output_items' do
-    let(:download) { FactoryBot.build_stubbed(:download, output_items: output_items) }
+    let(:model) { FactoryBot.build_stubbed(:download, output_items: output_items) }
 
     # テストケース
     context 'ない' do
@@ -126,7 +108,7 @@ RSpec.describe Download, type: :model do
 
   # 選択項目
   describe 'validates :select_items' do
-    let(:download) { FactoryBot.build_stubbed(:download, target: target, select_items: select_items) }
+    let(:model) { FactoryBot.build_stubbed(:download, target: target, select_items: select_items) }
 
     # テストケース
     shared_examples_for 'ない' do |valid|
@@ -169,7 +151,7 @@ RSpec.describe Download, type: :model do
   # テストパターン
   #   ない, 正常値, 文字列, 文字列（配列）
   describe 'validates :search_params' do
-    let(:download) { FactoryBot.build_stubbed(:download, target: target, search_params: search_params) }
+    let(:model) { FactoryBot.build_stubbed(:download, target: target, search_params: search_params) }
 
     # テストケース
     shared_examples_for 'ない' do |valid|

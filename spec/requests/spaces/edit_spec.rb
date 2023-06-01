@@ -7,6 +7,7 @@ RSpec.describe 'Spaces', type: :request do
   # テストパターン
   #   未ログイン, ログイン中, ログイン中（削除予約済み）, APIログイン中, APIログイン中（削除予約済み）
   #   スペース: 存在しない, 公開, 非公開
+  #   削除予約: ある, ない
   #   権限: ある（管理者）, ない（投稿者, 閲覧者, なし）
   #   ＋URLの拡張子: ない, .json
   #   ＋Acceptヘッダ: HTMLが含まれる, JSONが含まれる
@@ -15,7 +16,6 @@ RSpec.describe 'Spaces', type: :request do
 
     let_it_be(:space_not)     { FactoryBot.build_stubbed(:space) }
     let_it_be(:space_public)  { FactoryBot.create(:space, :public) }
-    let_it_be(:space_private) { FactoryBot.create(:space, :private) }
     shared_context 'valid_condition' do
       let_it_be(:space) { space_public }
       include_context 'set_member_power', :admin
@@ -37,15 +37,51 @@ RSpec.describe 'Spaces', type: :request do
       next
     end
 
-    shared_examples_for '[ログイン中][*]権限がある' do |power|
+    shared_examples_for '[ログイン中][*][ある]権限がある' do |power|
+      include_context 'set_member_power', power
+      it_behaves_like 'ToSpace(html)', 'alert.space.destroy_reserved'
+      it_behaves_like 'ToNG(json)', 406
+    end
+    shared_examples_for '[ログイン中][*][ない]権限がある' do |power|
       include_context 'set_member_power', power
       it_behaves_like 'ToOK(html)'
       it_behaves_like 'ToNG(json)', 406
     end
-    shared_examples_for '[ログイン中][*]権限がない' do |power|
+    shared_examples_for '[ログイン中][*][ある]権限がない' do |power|
+      include_context 'set_member_power', power
+      it_behaves_like 'ToSpace(html)', 'alert.space.destroy_reserved'
+      it_behaves_like 'ToNG(json)', 406
+    end
+    shared_examples_for '[ログイン中][*][ない]権限がない' do |power|
       include_context 'set_member_power', power
       it_behaves_like 'ToNG(html)', 403
       it_behaves_like 'ToNG(json)', 406
+    end
+    shared_examples_for '[ログイン中][*][ある]権限がない（なし）' do
+      it_behaves_like 'ToNG(html)', 403
+      it_behaves_like 'ToNG(json)', 406
+    end
+
+    shared_examples_for '[ログイン中][公開]削除予約がある' do |private|
+      let_it_be(:space) { FactoryBot.create(:space, :destroy_reserved, private: private) }
+      it_behaves_like '[ログイン中][*][ある]権限がある', :admin
+      it_behaves_like '[ログイン中][*][ある]権限がない', :writer
+      it_behaves_like '[ログイン中][*][ある]権限がない', :reader
+      it_behaves_like '[ログイン中][*][ある]権限がない', nil
+    end
+    shared_examples_for '[ログイン中][非公開]削除予約がある' do |private|
+      let_it_be(:space) { FactoryBot.create(:space, :destroy_reserved, private: private) }
+      it_behaves_like '[ログイン中][*][ある]権限がある', :admin
+      it_behaves_like '[ログイン中][*][ある]権限がない', :writer
+      it_behaves_like '[ログイン中][*][ある]権限がない', :reader
+      it_behaves_like '[ログイン中][*][ある]権限がない（なし）'
+    end
+    shared_examples_for '[ログイン中][*]削除予約がない' do |private|
+      let_it_be(:space) { FactoryBot.create(:space, private: private) }
+      it_behaves_like '[ログイン中][*][ない]権限がある', :admin
+      it_behaves_like '[ログイン中][*][ない]権限がない', :writer
+      it_behaves_like '[ログイン中][*][ない]権限がない', :reader
+      it_behaves_like '[ログイン中][*][ない]権限がない', nil
     end
 
     shared_examples_for '[ログイン中]スペースが存在しない' do
@@ -54,18 +90,12 @@ RSpec.describe 'Spaces', type: :request do
       it_behaves_like 'ToNG(json)', 406
     end
     shared_examples_for '[ログイン中]スペースが公開' do
-      let_it_be(:space) { space_public }
-      it_behaves_like '[ログイン中][*]権限がある', :admin
-      it_behaves_like '[ログイン中][*]権限がない', :writer
-      it_behaves_like '[ログイン中][*]権限がない', :reader
-      it_behaves_like '[ログイン中][*]権限がない', nil
+      it_behaves_like '[ログイン中][公開]削除予約がある', false
+      it_behaves_like '[ログイン中][*]削除予約がない', false
     end
     shared_examples_for '[ログイン中]スペースが非公開' do
-      let_it_be(:space) { space_private }
-      it_behaves_like '[ログイン中][*]権限がある', :admin
-      it_behaves_like '[ログイン中][*]権限がない', :writer
-      it_behaves_like '[ログイン中][*]権限がない', :reader
-      it_behaves_like '[ログイン中][*]権限がない', nil
+      it_behaves_like '[ログイン中][非公開]削除予約がある', true
+      it_behaves_like '[ログイン中][*]削除予約がない', true
     end
 
     context '未ログイン' do

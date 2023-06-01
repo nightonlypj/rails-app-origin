@@ -10,7 +10,7 @@ module Users::RegistrationsConcern
     @invitation = nil
     return if @code.blank?
 
-    @invitation = Invitation.where(code: @code).first
+    @invitation = Invitation.find_by(code: @code)
     return if @invitation.present? && @invitation.status == :active
     return render './error', locals: { alert: t('alert.invitation.notfound') }, status: :not_found if format_html?
 

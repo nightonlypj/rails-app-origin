@@ -5,6 +5,7 @@ RSpec.describe 'Downloads', type: :request do
   let(:response_json_download)  { response_json['download'] }
   let(:response_json_downloads) { response_json['downloads'] }
   let(:response_json_target)    { response_json['target'] }
+  let(:default_params) { { id: nil, target_id: nil } }
 
   # GET /downloads ダウンロード結果一覧
   # GET /downloads(.json) ダウンロード結果一覧API
@@ -31,7 +32,7 @@ RSpec.describe 'Downloads', type: :request do
       it 'HTTPステータスが200。対象項目が一致する' do
         is_expected.to eq(200)
         expect(response_json['success']).to eq(true)
-        expect(response_json['search_params']).to eq({ id: nil, target_id: nil }.stringify_keys)
+        expect(response_json['search_params']).to eq(default_params.stringify_keys)
 
         expect(response_json_download['total_count']).to eq(downloads.count)
         expect(response_json_download['current_page']).to eq(subject_page)
@@ -290,10 +291,10 @@ RSpec.describe 'Downloads', type: :request do
           # JSON
           expect(response_json_downloads.count).to eq(downloads.count)
           downloads.each_with_index do |download, index|
-            expect(response_json_downloads[index]['requested_at']).to eq(I18n.l(download.requested_at, format: :json))
+            expect(response_json_downloads[downloads.count - index - 1]['requested_at']).to eq(I18n.l(download.requested_at, format: :json))
           end
 
-          expect(response_json['search_params']).to eq(params.stringify_keys)
+          expect(response_json['search_params']).to eq(default_params.merge(params).stringify_keys)
         else
           # HTML
           downloads.each do |download|
@@ -351,7 +352,7 @@ RSpec.describe 'Downloads', type: :request do
 
   # 前提条件
   #   ログイン中（URLの拡張子がない/AcceptヘッダにHTMLが含まれる）, APIログイン中（URLの拡張子が.json/AcceptヘッダにJSONが含まれる）
-  #   対象IDあり, 検索条件なし, 依頼日時/対象のみ確認
+  #   対象IDあり, 依頼日時/対象のみ確認
   # テストパターン
   #   対象ID: 一覧に存在する, 一覧に存在しない, 存在しない
   #   ステータス: 処理待ち, 処理中, 成功, 失敗, ダウンロード済み
@@ -365,7 +366,7 @@ RSpec.describe 'Downloads', type: :request do
         is_expected.to eq(200)
         if subject_format == :json
           # JSON
-          expect(response_json['search_params']).to eq({ id: nil, target_id: download.id }.stringify_keys)
+          expect(response_json['search_params']).to eq(default_params.merge(target_id: download.id).stringify_keys)
 
           if status.present?
             expect(response_json_target['status']).to eq(status.to_s)
@@ -385,53 +386,53 @@ RSpec.describe 'Downloads', type: :request do
     end
 
     # テストケース
-    shared_examples_for '対象IDが一覧に存在する(notice)' do |status|
+    shared_examples_for '一覧に存在する(notice)' do |status|
       before_all { FactoryBot.create_list(:download, Settings.default_downloads_limit, user: user, space: space) }
       let_it_be(:download) { FactoryBot.create(:download, status, user: user, space: space) }
       it_behaves_like 'OK', status, nil, "notice.download.status.#{status}"
     end
-    shared_examples_for '対象IDが一覧に存在しない(notice)' do |status|
+    shared_examples_for '一覧に存在しない(notice)' do |status|
       let_it_be(:download) { FactoryBot.create(:download, status, user: user, space: space) }
       before_all { FactoryBot.create_list(:download, Settings.default_downloads_limit, user: user, space: space) }
       it_behaves_like 'OK', status, nil, "notice.download.status.#{status}"
     end
-    shared_examples_for '対象IDが一覧に存在する(alert)' do |status|
+    shared_examples_for '一覧に存在する(alert)' do |status|
       before_all { FactoryBot.create_list(:download, Settings.default_downloads_limit, user: user, space: space) }
       let_it_be(:download) { FactoryBot.create(:download, status, user: user, space: space) }
       it_behaves_like 'OK', status, "alert.download.status.#{status}", nil
     end
-    shared_examples_for '対象IDが一覧に存在しない(alert)' do |status|
+    shared_examples_for '一覧に存在しない(alert)' do |status|
       let_it_be(:download) { FactoryBot.create(:download, status, user: user, space: space) }
       before_all { FactoryBot.create_list(:download, Settings.default_downloads_limit, user: user, space: space) }
       it_behaves_like 'OK', status, "alert.download.status.#{status}", nil
     end
-    shared_examples_for '対象IDが一覧に存在する(nil)' do |status|
+    shared_examples_for '一覧に存在する(nil)' do |status|
       before_all { FactoryBot.create_list(:download, Settings.default_downloads_limit, user: user, space: space) }
       let_it_be(:download) { FactoryBot.create(:download, status, user: user, space: space) }
       it_behaves_like 'OK', :success, nil, nil
     end
-    shared_examples_for '対象IDが一覧に存在しない(nil)' do |status|
+    shared_examples_for '一覧に存在しない(nil)' do |status|
       let_it_be(:download) { FactoryBot.create(:download, status, user: user, space: space) }
       before_all { FactoryBot.create_list(:download, Settings.default_downloads_limit, user: user, space: space) }
       it_behaves_like 'OK', :success, nil, nil
     end
-    shared_examples_for '対象IDが存在しない' do
+    shared_examples_for '存在しない' do
       let_it_be(:download) { FactoryBot.build_stubbed(:download) }
       it_behaves_like 'OK', nil, nil, nil
     end
 
     shared_examples_for '対象ID' do
-      it_behaves_like '対象IDが一覧に存在する(notice)', :waiting
-      it_behaves_like '対象IDが一覧に存在する(notice)', :processing
-      it_behaves_like '対象IDが一覧に存在する(notice)', :success
-      it_behaves_like '対象IDが一覧に存在する(alert)', :failure
-      it_behaves_like '対象IDが一覧に存在する(nil)', :downloaded
-      it_behaves_like '対象IDが一覧に存在しない(notice)', :waiting
-      it_behaves_like '対象IDが一覧に存在しない(notice)', :processing
-      it_behaves_like '対象IDが一覧に存在しない(notice)', :success
-      it_behaves_like '対象IDが一覧に存在しない(alert)', :failure
-      it_behaves_like '対象IDが一覧に存在しない(nil)', :downloaded
-      it_behaves_like '対象IDが存在しない'
+      it_behaves_like '一覧に存在する(notice)', :waiting
+      it_behaves_like '一覧に存在する(notice)', :processing
+      it_behaves_like '一覧に存在する(notice)', :success
+      it_behaves_like '一覧に存在する(alert)', :failure
+      it_behaves_like '一覧に存在する(nil)', :downloaded
+      it_behaves_like '一覧に存在しない(notice)', :waiting
+      it_behaves_like '一覧に存在しない(notice)', :processing
+      it_behaves_like '一覧に存在しない(notice)', :success
+      it_behaves_like '一覧に存在しない(alert)', :failure
+      it_behaves_like '一覧に存在しない(nil)', :downloaded
+      it_behaves_like '存在しない'
     end
 
     context 'ログイン中（URLの拡張子がない/AcceptヘッダにHTMLが含まれる）' do

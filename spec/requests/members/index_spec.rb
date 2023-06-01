@@ -6,20 +6,24 @@ RSpec.describe 'Members', type: :request do
   let(:response_json_member)  { response_json['member'] }
   let(:response_json_members) { response_json['members'] }
   let(:response_json_space_current_member) { response_json_space['current_member'] }
+  let(:default_params) { { text: nil, power: Member.powers.keys.join(','), sort: 'invitationed_at', desc: 1 } }
 
   # テスト内容（共通）
   shared_examples_for 'ToOK[氏名]' do
+    let!(:default_members_limit) { Settings.default_members_limit }
+    before { Settings.default_members_limit = [default_members_limit, members.count].max }
+    after  { Settings.default_members_limit = default_members_limit }
     it 'HTTPステータスが200。対象の氏名が一致する/含まれる' do
       is_expected.to eq(200)
       if subject_format == :json
         # JSON
         expect(response_json_members.count).to eq(members.count)
         members.each_with_index do |member, index|
-          expect(response_json_members[index]['user']['name']).to eq(member.user.name)
+          expect(response_json_members[members.count - index - 1]['user']['name']).to eq(member.user.name)
         end
 
-        default_params = { text: nil, power: Member.powers.keys.join(','), sort: 'invitationed_at', desc: 1 }
-        expect(response_json['search_params']).to eq(default_params.merge(params).stringify_keys)
+        input_params = params.to_h { |key, value| [key, %i[text power sort].include?(key) ? value : value.to_i] }
+        expect(response_json['search_params']).to eq(default_params.merge(input_params).stringify_keys)
       else
         # HTML
         members.each do |member|
@@ -32,6 +36,9 @@ RSpec.describe 'Members', type: :request do
     it 'HTTPステータスが200。件数が一致する' do
       is_expected.to eq(200)
       expect(response_json_members.count).to eq(members.count)
+
+      input_params = params.to_h { |key, value| [key, %i[text power sort].include?(key) ? value : value.to_i] }
+      expect(response_json['search_params']).to eq(default_params.merge(input_params).stringify_keys)
     end
   end
 
@@ -42,7 +49,7 @@ RSpec.describe 'Members', type: :request do
   # テストパターン
   #   未ログイン, ログイン中, ログイン中（削除予約済み）, APIログイン中, APIログイン中（削除予約済み）
   #   スペース: 存在しない, 公開, 非公開
-  #   権限: ある（管理者, 投稿者, 閲覧者）, ない
+  #   権限: ある（管理者〜閲覧者）, ない
   #   メンバー: いない, 最大表示数と同じ, 最大表示数より多い
   #   ＋URLの拡張子: ない, .json
   #   ＋Acceptヘッダ: HTMLが含まれる, JSONが含まれる
@@ -79,7 +86,7 @@ RSpec.describe 'Members', type: :request do
       it 'HTTPステータスが200。対象項目が一致する' do
         is_expected.to eq(200)
         expect(response_json['success']).to eq(true)
-        expect(response_json['search_params']).to eq({ text: nil, power: Member.powers.keys.join(','), sort: 'invitationed_at', desc: 1 }.stringify_keys)
+        expect(response_json['search_params']).to eq(default_params.stringify_keys)
 
         expect(response_json_space['code']).to eq(space.code)
         expect_image_json(response_json_space, space)
@@ -331,28 +338,24 @@ RSpec.describe 'Members', type: :request do
     shared_examples_for '[ログイン中/削除予約済み]スペースが公開' do
       let_it_be(:space) { space_public }
       it_behaves_like '[ログイン中/削除予約済み][*]権限がある', :admin
-      it_behaves_like '[ログイン中/削除予約済み][*]権限がある', :writer
       it_behaves_like '[ログイン中/削除予約済み][*]権限がある', :reader
       it_behaves_like '[ログイン中/削除予約済み][*]権限がない'
     end
     shared_examples_for '[APIログイン中/削除予約済み]スペースが公開' do
       let_it_be(:space) { space_public }
       it_behaves_like '[APIログイン中/削除予約済み][*]権限がある', :admin
-      it_behaves_like '[APIログイン中/削除予約済み][*]権限がある', :writer
       it_behaves_like '[APIログイン中/削除予約済み][*]権限がある', :reader
       it_behaves_like '[APIログイン中/削除予約済み][*]権限がない'
     end
     shared_examples_for '[ログイン中/削除予約済み]スペースが非公開' do
       let_it_be(:space) { space_private }
       it_behaves_like '[ログイン中/削除予約済み][*]権限がある', :admin
-      it_behaves_like '[ログイン中/削除予約済み][*]権限がある', :writer
       it_behaves_like '[ログイン中/削除予約済み][*]権限がある', :reader
       it_behaves_like '[ログイン中/削除予約済み][*]権限がない'
     end
     shared_examples_for '[APIログイン中/削除予約済み]スペースが非公開' do
       let_it_be(:space) { space_private }
       it_behaves_like '[APIログイン中/削除予約済み][*]権限がある', :admin
-      it_behaves_like '[APIログイン中/削除予約済み][*]権限がある', :writer
       it_behaves_like '[APIログイン中/削除予約済み][*]権限がある', :reader
       it_behaves_like '[APIログイン中/削除予約済み][*]権限がない'
     end
@@ -398,10 +401,10 @@ RSpec.describe 'Members', type: :request do
 
   # 前提条件
   #   ログイン中（URLの拡張子がない/AcceptヘッダにHTMLが含まれる）, APIログイン中（URLの拡張子が.json/AcceptヘッダにJSONが含まれる）
-  #   権限がある, 検索条件の権限・並び順指定なし, 氏名のみ確認
+  #   権限がある, 検索オプションなし, 氏名のみ確認
   # テストパターン
-  #   権限: 管理者, 投稿者, 閲覧者
-  #   部分一致, 不一致: 氏名, メールアドレス（管理者のみ表示）
+  #   権限: 管理者〜閲覧者
+  #   部分一致（大文字・小文字を区別しない）, 不一致: 氏名, メールアドレス（管理者のみ表示）
   describe 'GET #index (.search)' do
     subject { get members_path(space_code: space.code, format: subject_format), params: params, headers: auth_headers.merge(accept_headers) }
     let_it_be(:space)             { FactoryBot.create(:space) }
@@ -426,7 +429,7 @@ RSpec.describe 'Members', type: :request do
     # テストケース
     shared_examples_for '[管理者]部分一致' do
       let(:params) { { text: 'aaa' } }
-      let(:members) { [member_admin_only, member_all] }
+      let(:members) { [member_all, member_admin_only] }
       it_behaves_like 'ToOK[氏名]'
     end
     shared_examples_for '[管理者以外]部分一致' do
@@ -452,7 +455,6 @@ RSpec.describe 'Members', type: :request do
 
     shared_examples_for '権限' do
       it_behaves_like '管理者', :admin
-      it_behaves_like '管理者以外', :writer
       it_behaves_like '管理者以外', :reader
     end
 
@@ -474,7 +476,7 @@ RSpec.describe 'Members', type: :request do
 
   # 前提条件
   #   ログイン中（URLの拡張子がない/AcceptヘッダにHTMLが含まれる）, APIログイン中（URLの拡張子が.json/AcceptヘッダにJSONが含まれる）
-  #   権限がある, 検索条件のテキスト・並び順指定なし, 氏名のみ確認
+  #   権限あり, 検索テキスト、並び順指定なし, 氏名のみ確認
   # テストパターン
   #   管理者, 投稿者, 閲覧者 の組み合わせ
   describe 'GET #index (.power)' do
@@ -493,22 +495,22 @@ RSpec.describe 'Members', type: :request do
       let(:accept_headers) { ACCEPT_INC_HTML }
       context '■管理者, ■投稿者, ■閲覧者' do
         let(:params) { { power: { admin: 1, writer: 1, reader: 1 } } }
-        let(:members) { [member_admin, member_writer, member_reader] }
+        let(:members) { [member_reader, member_writer, member_admin] }
         it_behaves_like 'ToOK[氏名]'
       end
       context '■管理者, ■投稿者, □閲覧者' do
         let(:params) { { power: { admin: 1, writer: 1, reader: 0 } } }
-        let(:members) { [member_admin, member_writer] }
+        let(:members) { [member_writer, member_admin] }
         it_behaves_like 'ToOK[氏名]'
       end
       context '■管理者, □投稿者, ■閲覧者' do
         let(:params) { { power: { admin: 1, writer: 0, reader: 1 } } }
-        let(:members) { [member_admin, member_reader] }
+        let(:members) { [member_reader, member_admin] }
         it_behaves_like 'ToOK[氏名]'
       end
       context '□管理者, ■投稿者, ■閲覧者' do
         let(:params) { { power: { admin: 0, writer: 1, reader: 1 } } }
-        let(:members) { [member_writer, member_reader] }
+        let(:members) { [member_reader, member_writer] }
         it_behaves_like 'ToOK[氏名]'
       end
       context '■管理者, □投稿者, □閲覧者' do
@@ -539,22 +541,22 @@ RSpec.describe 'Members', type: :request do
       let(:accept_headers) { ACCEPT_INC_JSON }
       context '■管理者, ■投稿者, ■閲覧者' do
         let(:params) { { power: 'admin,writer,reader' } }
-        let(:members) { [member_admin, member_writer, member_reader] }
+        let(:members) { [member_reader, member_writer, member_admin] }
         it_behaves_like 'ToOK[氏名]'
       end
       context '■管理者, ■投稿者, □閲覧者' do
         let(:params) { { power: 'admin,writer' } }
-        let(:members) { [member_admin, member_writer] }
+        let(:members) { [member_writer, member_admin] }
         it_behaves_like 'ToOK[氏名]'
       end
       context '■管理者, □投稿者, ■閲覧者' do
         let(:params) { { power: 'admin,reader' } }
-        let(:members) { [member_admin, member_reader] }
+        let(:members) { [member_reader, member_admin] }
         it_behaves_like 'ToOK[氏名]'
       end
       context '□管理者, ■投稿者, ■閲覧者' do
         let(:params) { { power: 'writer,reader' } }
-        let(:members) { [member_writer, member_reader] }
+        let(:members) { [member_reader, member_writer] }
         it_behaves_like 'ToOK[氏名]'
       end
       context '■管理者, □投稿者, □閲覧者' do
@@ -582,20 +584,23 @@ RSpec.describe 'Members', type: :request do
 
   # 前提条件
   #   APIログイン中（URLの拡張子が.json/AcceptヘッダにJSONが含まれる）
-  #   権限がある, 検索条件のテキスト・権限指定なし, 件数のみ確認
+  #   権限あり, 検索テキスト、権限指定なし, 件数のみ確認
   # テストパターン
   #   対象: メンバー, メールアドレス, 権限, 招待者, 招待日時, 最終更新者, 最終更新日時
   #   並び順: ASC, DESC  ※ASCは1つのみ確認
   describe 'GET #index (.order)' do
     subject { get members_path(space_code: space.code, format: subject_format), params: params, headers: auth_headers.merge(accept_headers) }
-    let_it_be(:space)         { FactoryBot.create(:space) }
-    let_it_be(:member_reader) { FactoryBot.create(:member, :reader, space: space) }
-    let_it_be(:member_writer) { FactoryBot.create(:member, :writer, space: space) }
-    include_context 'APIログイン処理'
-    let_it_be(:member_admin) { FactoryBot.create(:member, :admin, space: space, user: user) }
-    let_it_be(:members) { [member_admin, member_reader, member_writer] }
     let(:subject_format) { :json }
     let(:accept_headers) { ACCEPT_INC_JSON }
+
+    include_context 'APIログイン処理'
+    let_it_be(:space) { FactoryBot.create(:space) }
+    let_it_be(:members) do
+      [
+        FactoryBot.create(:member, :writer, space: space),
+        FactoryBot.create(:member, :admin, space: space, user: user)
+      ]
+    end
 
     # テストケース
     context 'メンバー ASC' do
@@ -616,6 +621,18 @@ RSpec.describe 'Members', type: :request do
     end
     context '招待者 DESC' do
       let(:params) { { sort: 'invitationed_user.name', desc: '1' } }
+      it_behaves_like 'ToOK[count](json)'
+    end
+    context '招待日時 DESC' do
+      let(:params) { { sort: 'invitationed_at', desc: '1' } }
+      it_behaves_like 'ToOK[count](json)'
+    end
+    context '最終更新者 DESC' do
+      let(:params) { { sort: 'last_updated_user.name', desc: '1' } }
+      it_behaves_like 'ToOK[count](json)'
+    end
+    context '最終更新日時 DESC' do
+      let(:params) { { sort: 'last_updated_at', desc: '1' } }
       it_behaves_like 'ToOK[count](json)'
     end
   end

@@ -24,12 +24,15 @@ def expect_download_json(response_json_download, download)
   expect(response_json_download['model_i18n']).to eq(download.model_i18n)
 
   data = response_json_download['space']
-  if download.model.to_sym == :member
+  case download.model.to_sym
+  when :member
     count = expect_space_basic_json(data, download.space)
     expect(data.count).to eq(count)
     result += 1
   else
-    expect(data).to be_nil
+    # :nocov:
+    raise "model not found.(#{model})"
+    # :nocov:
   end
 
   expect(response_json_download['target']).to eq(download.target)

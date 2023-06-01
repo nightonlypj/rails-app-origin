@@ -9,7 +9,7 @@ shared_context '招待URL一覧作成' do |active_count, expired_count, deleted_
       FactoryBot.create_list(:invitation, expired_count, :expired, space: space, created_user: created_user,
                                                                    last_updated_user_id: destroy_user.id, created_at: now - 3.days, updated_at: now - 2.days) +
       FactoryBot.create_list(:invitation, deleted_count, :deleted, space: space, created_user: created_user,
-                                                                   created_at: now - 1.days, updated_at: now - 1.days) +
+                                                                   created_at: now - 1.day, updated_at: now - 1.day) +
       FactoryBot.create_list(:invitation, email_joined_count, :email_joined, space: space, created_user: created_user,
                                                                              created_at: now, updated_at: now)
   end
@@ -21,7 +21,7 @@ end
 
 # テスト内容（共通）
 def expect_invitation_json(response_json_invitation, invitation)
-  result = 12
+  result = 13
   expect(response_json_invitation['status']).to eq(invitation.status.to_s)
   expect(response_json_invitation['status_i18n']).to eq(invitation.status_i18n)
 
@@ -48,19 +48,15 @@ def expect_invitation_json(response_json_invitation, invitation)
   end
 
   data = response_json_invitation['created_user']
-  if invitation.created_user_id.present?
-    count = invitation.created_user.present? ? expect_user_json(data, invitation.created_user, { email: true }) : 0
-    expect(data['deleted']).to eq(invitation.created_user.blank?)
-    expect(data.count).to eq(count + 1)
-    result += 1
-  else
-    expect(data).to be_nil
-  end
+  count = expect_user_json(data, invitation.created_user, { email: true })
+  expect(data['deleted']).to eq(invitation.created_user.blank?)
+  expect(data.count).to eq(count + 1)
+
   expect(response_json_invitation['created_at']).to eq(I18n.l(invitation.created_at, format: :json))
 
   data = response_json_invitation['last_updated_user']
   if invitation.last_updated_user_id.present?
-    count = invitation.last_updated_user.present? ? expect_user_json(data, invitation.last_updated_user, { email: true }) : 0
+    count = expect_user_json(data, invitation.last_updated_user, { email: true })
     expect(data['deleted']).to eq(invitation.last_updated_user.blank?)
     expect(data.count).to eq(count + 1)
     result += 1

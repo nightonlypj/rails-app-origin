@@ -5,8 +5,8 @@ class SpacesController < ApplicationAuthController
   before_action :set_space_current_member_auth_private_code, only: %i[show edit update delete destroy undo_delete undo_destroy]
   before_action :redirect_space_for_user_destroy_reserved, only: %i[edit update delete destroy undo_delete undo_destroy], if: :format_html?
   before_action :response_api_for_user_destroy_reserved, only: %i[create update destroy undo_destroy], unless: :format_html?
-  before_action :redirect_space_for_space_destroy_reserved, only: %i[delete destroy], if: :format_html?
-  before_action :response_api_for_space_destroy_reserved, only: :destroy, unless: :format_html?
+  before_action :redirect_space_for_space_destroy_reserved, only: %i[edit update delete destroy], if: :format_html?
+  before_action :response_api_for_space_destroy_reserved, only: %i[update destroy], unless: :format_html?
   before_action :redirect_space_for_not_space_destroy_reserved, only: %i[undo_delete undo_destroy], if: :format_html?
   before_action :response_api_for_not_space_destroy_reserved, only: :undo_destroy, unless: :format_html?
   before_action :check_power_admin, only: %i[edit update delete destroy undo_delete undo_destroy]

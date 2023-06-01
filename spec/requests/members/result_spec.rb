@@ -53,18 +53,18 @@ RSpec.describe 'Members', type: :request do
         emails.each do |email|
           expect(response.body).to include(email)
         end
-        if create_user_mails.count.positive?
+        if create_user_mails.count > 0
           expect(response.body).to include('招待しました。')
           expect(response.body).to include(Member.powers_i18n[:admin])
         else
           expect(response.body).not_to include('招待しました。')
         end
-        if exist_user_mails.count.positive?
+        if exist_user_mails.count > 0
           expect(response.body).to include('既に参加しています。')
         else
           expect(response.body).not_to include('既に参加しています。')
         end
-        if (emails.count - create_user_mails.count - exist_user_mails.count).positive?
+        if (emails.count - create_user_mails.count - exist_user_mails.count) > 0
           expect(response.body).to include('アカウントが存在しません。登録後に招待してください。')
         else
           expect(response.body).not_to include('アカウントが存在しません。登録後に招待してください。')

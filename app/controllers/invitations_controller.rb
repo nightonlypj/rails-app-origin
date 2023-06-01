@@ -70,7 +70,7 @@ class InvitationsController < ApplicationAuthController
 
   # Use callbacks to share common setup or constraints between actions.
   def set_invitation
-    @invitation = Invitation.where(space: @space, code: params[:code]).first
+    @invitation = Invitation.find_by(space: @space, code: params[:code])
     return response_not_found if @invitation.blank?
 
     if @invitation.ended_at.present?

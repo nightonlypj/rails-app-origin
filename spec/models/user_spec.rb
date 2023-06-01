@@ -1,6 +1,14 @@
 require 'rails_helper'
 
 RSpec.describe User, type: :model do
+  # テスト内容（共通）
+  shared_examples_for 'Count' do |count|
+    it "#{count}が返却され、キャッシュされる" do
+      is_expected.to eq(count)
+      expect(cache).to eq(count)
+    end
+  end
+
   # コード
   # テストパターン
   #   ない, 正常値, 重複
@@ -171,14 +179,6 @@ RSpec.describe User, type: :model do
       user.infomation_unread_count
     end
     let(:cache) { user.cache_infomation_unread_count }
-
-    # テスト内容
-    shared_examples_for 'Count' do |count|
-      it "#{count}が返却され、キャッシュされる" do
-        is_expected.to eq(count)
-        expect(cache).to eq(count)
-      end
-    end
 
     # テストケース
     shared_examples_for '[*]0件' do

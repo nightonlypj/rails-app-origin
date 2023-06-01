@@ -1,24 +1,11 @@
 require 'rails_helper'
 
 RSpec.describe Space, type: :model do
-  # テスト内容（共通）
-  shared_examples_for 'Valid' do
-    it '保存できる' do
-      expect(space).to be_valid
-    end
-  end
-  shared_examples_for 'InValid' do
-    it '保存できない。エラーメッセージが一致する' do
-      expect(space).to be_invalid
-      expect(space.errors.messages).to eq(messages)
-    end
-  end
-
   # コード
   # テストパターン
   #   ない, 正常値, 重複
   describe 'validates :code' do
-    let(:space)      { FactoryBot.build_stubbed(:space, code: code) }
+    let(:model) { FactoryBot.build_stubbed(:space, code: code) }
     let(:valid_code) { Digest::MD5.hexdigest(SecureRandom.uuid) }
 
     # テストケース
@@ -41,9 +28,9 @@ RSpec.describe Space, type: :model do
 
   # 名称
   # テストパターン
-  #   ない, 最小文字数よりも少ない, 最小文字数と同じ, 最大文字数と同じ, 最大文字数よりも多い
+  #   ない, 最小文字数より少ない, 最小文字数と同じ, 最大文字数と同じ, 最大文字数より多い
   describe 'validates :name' do
-    let(:space) { FactoryBot.build_stubbed(:space, name: name) }
+    let(:model) { FactoryBot.build_stubbed(:space, name: name) }
 
     # テストケース
     context 'ない' do
@@ -51,7 +38,7 @@ RSpec.describe Space, type: :model do
       let(:messages) { { name: [get_locale('activerecord.errors.models.space.attributes.name.blank')] } }
       it_behaves_like 'InValid'
     end
-    context '最小文字数よりも少ない' do
+    context '最小文字数より少ない' do
       let(:name) { 'a' * (Settings.space_name_minimum - 1) }
       let(:messages) { { name: [get_locale('activerecord.errors.models.space.attributes.name.too_short', count: Settings.space_name_minimum)] } }
       it_behaves_like 'InValid'
@@ -64,7 +51,7 @@ RSpec.describe Space, type: :model do
       let(:name) { 'a' * Settings.space_name_maximum }
       it_behaves_like 'Valid'
     end
-    context '最大文字数よりも多い' do
+    context '最大文字数より多い' do
       let(:name) { 'a' * (Settings.space_name_maximum + 1) }
       let(:messages) { { name: [get_locale('activerecord.errors.models.space.attributes.name.too_long', count: Settings.space_name_maximum)] } }
       it_behaves_like 'InValid'
@@ -73,9 +60,9 @@ RSpec.describe Space, type: :model do
 
   # 説明
   # テストパターン
-  #   ない, 最大文字数と同じ, 最大文字数よりも多い
+  #   ない, 最大文字数と同じ, 最大文字数より多い
   describe 'validates :description' do
-    let(:space) { FactoryBot.build_stubbed(:space, description: description) }
+    let(:model) { FactoryBot.build_stubbed(:space, description: description) }
 
     # テストケース
     context 'ない' do
@@ -86,7 +73,7 @@ RSpec.describe Space, type: :model do
       let(:description) { 'a' * Settings.space_description_maximum }
       it_behaves_like 'Valid'
     end
-    context '最大文字数よりも多い' do
+    context '最大文字数より多い' do
       let(:description) { 'a' * (Settings.space_description_maximum + 1) }
       let(:messages) { { description: [get_locale('activerecord.errors.models.space.attributes.description.too_long', count: Settings.space_description_maximum)] } }
       it_behaves_like 'InValid'
@@ -97,7 +84,7 @@ RSpec.describe Space, type: :model do
   # テストパターン
   #   ない, true, false
   describe 'validates :private' do
-    let(:space) { FactoryBot.build_stubbed(:space, private: private) }
+    let(:model) { FactoryBot.build_stubbed(:space, private: private) }
 
     # テストケース
     context 'ない' do
@@ -227,9 +214,7 @@ RSpec.describe Space, type: :model do
     # テストケース
     context '更新日時が作成日時と同じ' do
       let(:space) { FactoryBot.create(:space) }
-      it 'なし' do
-        is_expected.to eq(nil)
-      end
+      it_behaves_like 'Value', nil, 'nil'
     end
     context '更新日時が作成日時以降' do
       let(:space) { FactoryBot.create(:space, created_at: Time.current - 1.hour, updated_at: Time.current) }

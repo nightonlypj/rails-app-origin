@@ -52,7 +52,7 @@ class ApplicationAuthController < ApplicationController
     return response_not_found if @space.blank?
     return authenticate_user! if @space.private && !user_signed_in?
 
-    @current_member = current_user.present? ? Member.where(space: @space, user: current_user).first : nil
+    @current_member = current_user.present? ? Member.find_by(space: @space, user: current_user) : nil
     response_forbidden if @space.private && @current_member.blank?
   end
 

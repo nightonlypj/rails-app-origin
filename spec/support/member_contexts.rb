@@ -34,7 +34,7 @@ def expect_member_json(response_json_member, member, user_power)
 
   data = response_json_member['invitationed_user']
   if user_power == :admin && member.invitationed_user_id.present?
-    count = member.invitationed_user.present? ? expect_user_json(data, member.invitationed_user, { email: true }) : 0
+    count = expect_user_json(data, member.invitationed_user, { email: true })
     expect(data['deleted']).to eq(member.invitationed_user.blank?)
     expect(data.count).to eq(count + 1)
     result += 1
@@ -45,7 +45,7 @@ def expect_member_json(response_json_member, member, user_power)
 
   data = response_json_member['last_updated_user']
   if user_power == :admin && member.last_updated_user_id.present?
-    count = member.last_updated_user.present? ? expect_user_json(data, member.last_updated_user, { email: true }) : 0
+    count = expect_user_json(data, member.last_updated_user, { email: true })
     expect(data['deleted']).to eq(member.last_updated_user.blank?)
     expect(data.count).to eq(count + 1)
     result += 1

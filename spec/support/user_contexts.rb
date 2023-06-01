@@ -66,6 +66,8 @@ end
 
 # テスト内容（共通）
 def expect_user_json(response_json_user, user, use = { email: false })
+  return 0 if user.blank?
+
   result = 6
   expect(response_json_user['code']).to eq(user.code)
   expect_image_json(response_json_user, user)

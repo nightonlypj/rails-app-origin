@@ -27,7 +27,7 @@ class Member < ApplicationRecord
     member
   }
   scope :by_power, lambda { |power|
-    return none if power.count.zero?
+    return none if power.count == 0
     return if power.count >= Member.powers.count
 
     where(power: power)

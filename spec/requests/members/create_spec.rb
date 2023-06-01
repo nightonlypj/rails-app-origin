@@ -15,7 +15,7 @@ RSpec.describe 'Members', type: :request do
   #   ＋URLの拡張子: ない, .json
   #   ＋Acceptヘッダ: HTMLが含まれる, JSONが含まれる
   describe 'POST #create' do
-    subject { post create_member_path(space_code: space.code, format: subject_format), params: { member: attributes }, headers: auth_headers.merge(accept_headers) }
+    subject { post create_member_path(space_code: space.code, format: subject_format), params: params, headers: auth_headers.merge(accept_headers) }
     let_it_be(:exist_user)     { FactoryBot.create(:user, email: 'exist@example.com') }
     let_it_be(:new_user)       { FactoryBot.create(:user, email: 'new@example.com') }
     let_it_be(:not_exist_user) { FactoryBot.build_stubbed(:user, email: 'not_exist@example.com') }
@@ -30,7 +30,7 @@ RSpec.describe 'Members', type: :request do
     let_it_be(:space_public)  { FactoryBot.create(:space, :public) }
     let_it_be(:space_private) { FactoryBot.create(:space, :private) }
     shared_context 'valid_condition' do
-      let(:attributes) { valid_attributes }
+      let(:params) { { member: valid_attributes } }
       let_it_be(:space) { space_public }
       include_context 'set_member_power', :admin
       before_all { FactoryBot.create(:member, space: space, user: exist_user) }
@@ -100,7 +100,7 @@ RSpec.describe 'Members', type: :request do
 
     # テストケース
     shared_examples_for '[ログイン中][*][ある]パラメータなし' do
-      let(:attributes) { nil }
+      let(:params) { nil }
       msg_emails = get_locale('activerecord.errors.models.member.attributes.emails.blank')
       msg_power  = get_locale('activerecord.errors.models.member.attributes.power.blank')
       it_behaves_like 'NG(html)'
@@ -113,7 +113,7 @@ RSpec.describe 'Members', type: :request do
       it_behaves_like 'ToNG(json)', 401 # NOTE: APIは未ログイン扱い
     end
     shared_examples_for '[APIログイン中][*][ある]パラメータなし' do
-      let(:attributes) { nil }
+      let(:params) { nil }
       msg_emails = get_locale('activerecord.errors.models.member.attributes.emails.blank')
       msg_power  = get_locale('activerecord.errors.models.member.attributes.power.blank')
       it_behaves_like 'NG(html)'
@@ -126,6 +126,7 @@ RSpec.describe 'Members', type: :request do
       it_behaves_like 'ToNG(json)', 422, { emails: [msg_emails], power: [msg_power] }
     end
     shared_examples_for '[ログイン中][*][ある]有効なパラメータ（メールアドレスが最大数と同じ）' do
+      let(:params) { { member: attributes } }
       let(:attributes) { valid_attributes }
       if Settings.api_only_mode
         it_behaves_like 'NG(html)'
@@ -138,6 +139,7 @@ RSpec.describe 'Members', type: :request do
       it_behaves_like 'ToNG(json)', 401 # NOTE: APIは未ログイン扱い
     end
     shared_examples_for '[APIログイン中][*][ある]有効なパラメータ（メールアドレスが最大数と同じ）' do
+      let(:params) { { member: attributes } }
       let(:attributes) { valid_attributes }
       if Settings.api_only_mode
         it_behaves_like 'NG(html)'
@@ -150,7 +152,7 @@ RSpec.describe 'Members', type: :request do
       it_behaves_like 'ToOK(json)'
     end
     shared_examples_for '[ログイン中][*][ある]無効なパラメータ（メールアドレスがない）' do
-      let(:attributes) { invalid_attributes }
+      let(:params) { { member: invalid_attributes } }
       message = get_locale('activerecord.errors.models.member.attributes.emails.blank')
       it_behaves_like 'NG(html)'
       if Settings.api_only_mode
@@ -162,7 +164,7 @@ RSpec.describe 'Members', type: :request do
       it_behaves_like 'ToNG(json)', 401 # NOTE: APIは未ログイン扱い
     end
     shared_examples_for '[APIログイン中][*][ある]無効なパラメータ（メールアドレスがない）' do
-      let(:attributes) { invalid_attributes }
+      let(:params) { { member: invalid_attributes } }
       message = get_locale('activerecord.errors.models.member.attributes.emails.blank')
       it_behaves_like 'NG(html)'
       if Settings.api_only_mode
@@ -174,7 +176,7 @@ RSpec.describe 'Members', type: :request do
       it_behaves_like 'ToNG(json)', 422, { emails: [message] }
     end
     shared_examples_for '[ログイン中][*][ある]無効なパラメータ（メールアドレスが最大数より多い）' do
-      let(:attributes) { invalid_attributes_over }
+      let(:params) { { member: invalid_attributes_over } }
       message = get_locale('activerecord.errors.models.member.attributes.emails.max_count', count: Settings.member_emails_max_count)
       it_behaves_like 'NG(html)'
       if Settings.api_only_mode
@@ -186,7 +188,7 @@ RSpec.describe 'Members', type: :request do
       it_behaves_like 'ToNG(json)', 401 # NOTE: APIは未ログイン扱い
     end
     shared_examples_for '[APIログイン中][*][ある]無効なパラメータ（メールアドレスが最大数より多い）' do
-      let(:attributes) { invalid_attributes_over }
+      let(:params) { { member: invalid_attributes_over } }
       message = get_locale('activerecord.errors.models.member.attributes.emails.max_count', count: Settings.member_emails_max_count)
       it_behaves_like 'NG(html)'
       if Settings.api_only_mode
@@ -198,7 +200,7 @@ RSpec.describe 'Members', type: :request do
       it_behaves_like 'ToNG(json)', 422, { emails: [message] }
     end
     shared_examples_for '[ログイン中][*][ある]無効なパラメータ（メールアドレスに不正な形式が含まれる）' do
-      let(:attributes) { invalid_attributes_format }
+      let(:params) { { member: invalid_attributes_format } }
       message = get_locale('activerecord.errors.models.member.attributes.emails.invalid', email: 'aaa')
       it_behaves_like 'NG(html)'
       if Settings.api_only_mode
@@ -210,7 +212,7 @@ RSpec.describe 'Members', type: :request do
       it_behaves_like 'ToNG(json)', 401 # NOTE: APIは未ログイン扱い
     end
     shared_examples_for '[APIログイン中][*][ある]無効なパラメータ（メールアドレスに不正な形式が含まれる）' do
-      let(:attributes) { invalid_attributes_format }
+      let(:params) { { member: invalid_attributes_format } }
       message = get_locale('activerecord.errors.models.member.attributes.emails.invalid', email: 'aaa')
       it_behaves_like 'NG(html)'
       if Settings.api_only_mode
@@ -240,7 +242,7 @@ RSpec.describe 'Members', type: :request do
     end
     shared_examples_for '[ログイン中][*]権限がない' do |power|
       include_context 'set_member_power', power
-      let(:attributes) { valid_attributes }
+      let(:params) { { member: valid_attributes } }
       it_behaves_like 'NG(html)'
       it_behaves_like 'ToNG(html)', Settings.api_only_mode ? 406 : 403
       it_behaves_like 'NG(json)'
@@ -248,7 +250,7 @@ RSpec.describe 'Members', type: :request do
     end
     shared_examples_for '[APIログイン中][*]権限がない' do |power|
       include_context 'set_member_power', power
-      let(:attributes) { valid_attributes }
+      let(:params) { { member: valid_attributes } }
       it_behaves_like 'NG(html)'
       it_behaves_like 'ToNG(html)', Settings.api_only_mode ? 406 : 403 # NOTE: HTMLもログイン状態になる
       it_behaves_like 'NG(json)'
@@ -257,7 +259,7 @@ RSpec.describe 'Members', type: :request do
 
     shared_examples_for '[ログイン中]スペースが存在しない' do
       let_it_be(:space) { space_not }
-      let(:attributes) { valid_attributes }
+      let(:params) { { member: valid_attributes } }
       it_behaves_like 'NG(html)'
       it_behaves_like 'ToNG(html)', Settings.api_only_mode ? 406 : 404
       it_behaves_like 'NG(json)'
@@ -265,7 +267,7 @@ RSpec.describe 'Members', type: :request do
     end
     shared_examples_for '[APIログイン中]スペースが存在しない' do
       let_it_be(:space) { space_not }
-      let(:attributes) { valid_attributes }
+      let(:params) { { member: valid_attributes } }
       it_behaves_like 'NG(html)'
       it_behaves_like 'ToNG(html)', Settings.api_only_mode ? 406 : 404 # NOTE: HTMLもログイン状態になる
       it_behaves_like 'NG(json)'

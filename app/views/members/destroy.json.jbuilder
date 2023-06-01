@@ -1,5 +1,5 @@
 json.success true
-json.notice notice if notice.present?
+json.notice notice
 
 json.count @codes.count
 json.destroy_count @destroy_count

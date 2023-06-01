@@ -18,6 +18,7 @@ RSpec.describe 'Members', type: :request do
     let_it_be(:space_not)     { FactoryBot.build_stubbed(:space) }
     let_it_be(:space_public)  { FactoryBot.create(:space, :public) }
     let_it_be(:space_private) { FactoryBot.create(:space, :private) }
+    let_it_be(:member_nojoin) { FactoryBot.create(:member) }
     shared_context 'valid_condition' do |format_html|
       let_it_be(:space) { space_public }
       let_it_be(:member_destroy) { FactoryBot.create(:member, :admin, space: space) }
@@ -29,7 +30,7 @@ RSpec.describe 'Members', type: :request do
       let(:input_count)    { 1 }
       let(:destroy_count)  { 1 }
       let(:include_myself) { false }
-      let_it_be(:params) do
+      let(:params) do
         { codes: format_html ? { member_destroy.user.code => '1' } : [member_destroy.user.code] }
       end
     end
@@ -38,7 +39,7 @@ RSpec.describe 'Members', type: :request do
       let(:input_count)    { 2 }
       let(:destroy_count)  { 1 }
       let(:include_myself) { true }
-      let_it_be(:params) do
+      let(:params) do
         { codes: format_html ? { member_myself.user.code => '1', member_destroy.user.code => '1' } : [member_myself.user.code, member_destroy.user.code] }
       end
     end
@@ -47,19 +48,17 @@ RSpec.describe 'Members', type: :request do
       let(:input_count)    { 2 }
       let(:destroy_count)  { 1 }
       let(:include_myself) { false }
-      let_it_be(:params) do
-        member_nojoin = FactoryBot.create(:member)
+      let(:params) do
         { codes: format_html ? { member_nojoin.user.code => '1', member_destroy.user.code => '1' } : [member_nojoin.user.code, member_destroy.user.code] }
       end
     end
     shared_context 'set_params_myself' do |format_html|
-      let_it_be(:params) do
+      let(:params) do
         { codes: format_html ? { member_myself.user.code => '1' } : [member_myself.user.code] }
       end
     end
     shared_context 'set_params_notfound' do |format_html|
-      let_it_be(:params) do
-        member_nojoin = FactoryBot.create(:member)
+      let(:params) do
         { codes: format_html ? { member_nojoin.user.code => '1' } : [member_nojoin.user.code] }
       end
     end
