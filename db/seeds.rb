@@ -42,7 +42,7 @@ def insert_contents(bulk_insert)
     count += insert_datas.count
   end
 
-  update_sequence if count.positive?
+  update_sequence if count > 0
 
   count
 end

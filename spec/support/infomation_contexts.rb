@@ -11,17 +11,17 @@ shared_context 'お知らせ一覧作成' do |all_forever_count, all_future_coun
 
     # 対象ユーザー（現在/未来〜なし）＋本文なし
     @user_infomations = @all_infomations
-    if user_forever_count.positive?
+    if user_forever_count > 0
       @user_infomations += FactoryBot.create_list(:infomation, user_forever_count, :forever, :user, user: user, body: nil)
       FactoryBot.create(:infomation, :reserve_forever, :user, user: user, body: nil)
     end
     # 対象ユーザー（現在/未来〜未来）
-    if user_future_count.positive?
+    if user_future_count > 0
       @user_infomations += FactoryBot.create_list(:infomation, user_future_count, :user, user: user)
       FactoryBot.create(:infomation, :reserve, :user, user: user)
     end
     # 対象ユーザー（過去〜過去）
-    FactoryBot.create(:infomation, :finished, :user, user: user) if (user_forever_count + user_future_count).positive?
+    FactoryBot.create(:infomation, :finished, :user, user: user) if (user_forever_count + user_future_count) > 0
 
     # 対象外ユーザー（現在/未来〜なし）
     outside_user = FactoryBot.create(:user)
@@ -48,17 +48,17 @@ shared_context '大切なお知らせ一覧作成' do |all_forever_count, all_fu
 
     # 対象ユーザー（現在/未来〜なし）＋本文なし
     @user_important_infomations = @all_important_infomations
-    if user_forever_count.positive?
+    if user_forever_count > 0
       @user_important_infomations += FactoryBot.create_list(:infomation, user_forever_count, :important, :force_forever, :user, user: user, body: nil)
       FactoryBot.create(:infomation, :important, :force_reserve_forever, :user, user: user, body: nil)
     end
     # 対象ユーザー（現在/未来〜未来）
-    if user_future_count.positive?
+    if user_future_count > 0
       @user_important_infomations += FactoryBot.create_list(:infomation, user_future_count, :important, :user, user: user)
       FactoryBot.create(:infomation, :important, :force_reserve, :user, user: user)
     end
     # 対象ユーザー（過去〜過去）
-    FactoryBot.create(:infomation, :important, :force_finished, :user, user: user) if (user_forever_count + user_future_count).positive?
+    FactoryBot.create(:infomation, :important, :force_finished, :user, user: user) if (user_forever_count + user_future_count) > 0
 
     # 対象外ユーザー（現在/未来〜なし）
     outside_user = FactoryBot.create(:user)

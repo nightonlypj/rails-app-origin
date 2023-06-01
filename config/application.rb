@@ -9,7 +9,7 @@ Bundler.require(*Rails.groups)
 module RailsApp
   class Application < Rails::Application
     # Initialize configuration defaults for originally generated Rails version.
-    config.load_defaults 6.0
+    config.load_defaults 6.1
     config.i18n.default_locale = :ja
     config.time_zone = 'Tokyo'
     config.action_view.field_error_proc = proc { |html_tag, _instance| html_tag }

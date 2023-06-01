@@ -11,7 +11,7 @@ RSpec.describe 'Users::Auth::Unlocks', type: :request do
       subject
       expect(response_json['errors'].to_s).to error_msg.present? ? include(get_locale(error_msg)) : be_blank
       expect(response_json['errors'].class).to eq(error_class) # 方針: バリデーション(Hash)のみ、他はalertへ
-      expect(response_json['errors']&.count).to errors_count.positive? ? eq(errors_count) : be_nil
+      expect(response_json['errors']&.count).to errors_count > 0 ? eq(errors_count) : be_nil
       expect(response_json['message']).to message.present? ? eq(get_locale(message)) : be_nil # 方針: 廃止して、noticeへ
       expect(response_json['alert']).to alert.present? ? eq(get_locale(alert)) : be_nil # 方針: 追加
       expect(response_json['notice']).to notice.present? ? eq(get_locale(notice)) : be_nil # 方針: 追加
@@ -25,14 +25,14 @@ RSpec.describe 'Users::Auth::Unlocks', type: :request do
   #   ＋URLの拡張子: .json, ない
   #   ＋Acceptヘッダ: JSONが含まれる, JSONが含まれない
   describe 'POST #create' do
-    subject { post create_user_auth_unlock_path(format: subject_format), params: attributes, headers: auth_headers.merge(accept_headers) }
+    subject { post create_user_auth_unlock_path(format: subject_format), params: params, headers: auth_headers.merge(accept_headers) }
     let_it_be(:send_user_locked)   { FactoryBot.create(:user, :locked) }
     let_it_be(:send_user_unlocked) { FactoryBot.create(:user) }
     let_it_be(:not_user)           { FactoryBot.attributes_for(:user) }
     let(:valid_attributes)       { { email: send_user.email, redirect_url: FRONT_SITE_URL } }
     let(:invalid_attributes)     { { email: not_user[:email], redirect_url: FRONT_SITE_URL } }
-    let(:invalid_nil_attributes) { { email: send_user_locked.email, redirect_url: nil } }
-    let(:invalid_bad_attributes) { { email: send_user_locked.email, redirect_url: BAD_SITE_URL } }
+    let(:invalid_attributes_nil) { { email: send_user_locked.email, redirect_url: nil } }
+    let(:invalid_attributes_bad) { { email: send_user_locked.email, redirect_url: BAD_SITE_URL } }
     include_context 'Authテスト内容'
     let(:current_user) { nil }
 
@@ -41,7 +41,7 @@ RSpec.describe 'Users::Auth::Unlocks', type: :request do
       let(:subject_format) { :json }
       let(:accept_headers) { ACCEPT_INC_JSON }
       let(:url)       { "http://#{Settings.base_domain}#{user_auth_unlock_path}" }
-      let(:url_param) { "redirect_url=#{URI.encode_www_form_component(attributes[:redirect_url])}" }
+      let(:url_param) { "redirect_url=#{URI.encode_www_form_component(params[:redirect_url])}" }
       it 'メールが送信される' do
         subject
         expect(ActionMailer::Base.deliveries.count).to eq(1)
@@ -95,7 +95,7 @@ RSpec.describe 'Users::Auth::Unlocks', type: :request do
 
     # テストケース
     shared_examples_for '[未ログイン/ログイン中]パラメータなし' do
-      let(:attributes) { nil }
+      let(:params) { nil }
       it_behaves_like 'NG'
       # it_behaves_like 'ToNG', 422
       it_behaves_like 'ToNG', 400
@@ -103,7 +103,7 @@ RSpec.describe 'Users::Auth::Unlocks', type: :request do
       it_behaves_like 'ToMsg', NilClass, 0, nil, nil, 'errors.messages.validate_unlock_params', nil
     end
     shared_examples_for '[APIログイン中]パラメータなし' do
-      let(:attributes) { nil }
+      let(:params) { nil }
       it_behaves_like 'NG'
       # it_behaves_like 'ToNG', 422
       it_behaves_like 'ToNG', 401
@@ -111,16 +111,16 @@ RSpec.describe 'Users::Auth::Unlocks', type: :request do
       it_behaves_like 'ToMsg', NilClass, 0, nil, nil, 'devise.failure.already_authenticated', nil
     end
     shared_examples_for '[未ログイン/ログイン中]有効なパラメータ（ロック中）' do
-      let(:send_user)  { send_user_locked }
-      let(:attributes) { valid_attributes }
+      let(:send_user) { send_user_locked }
+      let(:params) { valid_attributes }
       it_behaves_like 'OK'
       it_behaves_like 'ToOK', nil, 'devise.unlocks.send_instructions'
       # it_behaves_like 'ToMsg', NilClass, 0, nil, 'devise_token_auth.unlocks.sended', nil, nil
       it_behaves_like 'ToMsg', NilClass, 0, nil, nil, nil, 'devise_token_auth.unlocks.sended'
     end
     shared_examples_for '[APIログイン中]有効なパラメータ（ロック中）' do
-      let(:send_user)  { send_user_locked }
-      let(:attributes) { valid_attributes }
+      let(:send_user) { send_user_locked }
+      let(:params) { valid_attributes }
       # it_behaves_like 'OK'
       it_behaves_like 'NG'
       # it_behaves_like 'ToOK'
@@ -129,8 +129,8 @@ RSpec.describe 'Users::Auth::Unlocks', type: :request do
       it_behaves_like 'ToMsg', NilClass, 0, nil, nil, 'devise.failure.already_authenticated', nil
     end
     shared_examples_for '[未ログイン/ログイン中]有効なパラメータ（未ロック）' do
-      let(:send_user)  { send_user_unlocked }
-      let(:attributes) { valid_attributes }
+      let(:send_user) { send_user_unlocked }
+      let(:params) { valid_attributes }
       # it_behaves_like 'OK'
       it_behaves_like 'NG'
       # it_behaves_like 'ToOK'
@@ -139,8 +139,8 @@ RSpec.describe 'Users::Auth::Unlocks', type: :request do
       it_behaves_like 'ToMsg', NilClass, 0, nil, nil, 'errors.messages.not_locked', nil
     end
     shared_examples_for '[APIログイン中]有効なパラメータ（未ロック）' do
-      let(:send_user)  { send_user_unlocked }
-      let(:attributes) { valid_attributes }
+      let(:send_user) { send_user_unlocked }
+      let(:params) { valid_attributes }
       # it_behaves_like 'OK'
       it_behaves_like 'NG'
       # it_behaves_like 'ToOK'
@@ -149,7 +149,7 @@ RSpec.describe 'Users::Auth::Unlocks', type: :request do
       it_behaves_like 'ToMsg', NilClass, 0, nil, nil, 'devise.failure.already_authenticated', nil
     end
     shared_examples_for '[未ログイン/ログイン中]無効なパラメータ' do
-      let(:attributes) { invalid_attributes }
+      let(:params) { invalid_attributes }
       it_behaves_like 'NG'
       # it_behaves_like 'ToNG', 404
       it_behaves_like 'ToNG', 422
@@ -157,7 +157,7 @@ RSpec.describe 'Users::Auth::Unlocks', type: :request do
       it_behaves_like 'ToMsg', Hash, 2, 'devise_token_auth.unlocks.user_not_found', nil, 'errors.messages.not_saved.one', nil
     end
     shared_examples_for '[APIログイン中]無効なパラメータ' do
-      let(:attributes) { invalid_attributes }
+      let(:params) { invalid_attributes }
       it_behaves_like 'NG'
       # it_behaves_like 'ToNG', 404
       it_behaves_like 'ToNG', 401
@@ -165,7 +165,7 @@ RSpec.describe 'Users::Auth::Unlocks', type: :request do
       it_behaves_like 'ToMsg', NilClass, 0, nil, nil, 'devise.failure.already_authenticated', nil
     end
     shared_examples_for '[未ログイン/ログイン中]URLがない' do
-      let(:attributes) { invalid_nil_attributes }
+      let(:params) { invalid_attributes_nil }
       it_behaves_like 'NG'
       # it_behaves_like 'ToNG', 401
       it_behaves_like 'ToNG', 422
@@ -173,21 +173,21 @@ RSpec.describe 'Users::Auth::Unlocks', type: :request do
       it_behaves_like 'ToMsg', NilClass, 0, nil, nil, 'devise_token_auth.unlocks.missing_redirect_url', nil
     end
     shared_examples_for '[APIログイン中]URLがない' do
-      let(:attributes) { invalid_nil_attributes }
+      let(:params) { invalid_attributes_nil }
       it_behaves_like 'NG'
       it_behaves_like 'ToNG', 401
       # it_behaves_like 'ToMsg', Array, 1, 'devise_token_auth.unlocks.missing_redirect_url', nil, nil, nil
       it_behaves_like 'ToMsg', NilClass, 0, nil, nil, 'devise.failure.already_authenticated', nil
     end
     shared_examples_for '[未ログイン/ログイン中]URLがホワイトリストにない' do
-      let(:attributes) { invalid_bad_attributes }
+      let(:params) { invalid_attributes_bad }
       it_behaves_like 'NG'
       it_behaves_like 'ToNG', 422
       # it_behaves_like 'ToMsg', Array, 1, 'devise_token_auth.unlocks.not_allowed_redirect_url', nil, nil, nil
       it_behaves_like 'ToMsg', NilClass, 0, nil, nil, 'devise_token_auth.unlocks.not_allowed_redirect_url', nil
     end
     shared_examples_for '[APIログイン中]URLがホワイトリストにない' do
-      let(:attributes) { invalid_bad_attributes }
+      let(:params) { invalid_attributes_bad }
       it_behaves_like 'NG'
       # it_behaves_like 'ToNG', 422
       it_behaves_like 'ToNG', 401

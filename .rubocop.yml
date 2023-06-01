@@ -162,3 +162,7 @@ Naming/AccessorMethodName:
 # C: Style/FormatStringToken: Prefer annotated tokens (like %<foo>s) over unannotated tokens (like %s).
 Style/FormatStringToken:
   Enabled: false
+
+# C: [Correctable] Style/NumericPredicate: Use xxx.positive?/zero? instead of xxx > 0/== 0.
+Style/NumericPredicate:
+  Enabled: false
