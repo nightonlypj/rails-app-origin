@@ -15,6 +15,29 @@ def get_subject(key)
 end
 
 # テスト内容（共通）
+shared_examples_for 'Valid' do
+  it '保存できる' do
+    expect(model).to be_valid
+  end
+end
+shared_examples_for 'InValid' do
+  it '保存できない。エラーメッセージが一致する' do
+    expect(model).to be_invalid
+    expect(model.errors.messages).to eq(messages)
+  end
+end
+
+shared_examples_for 'Value' do |value, text = value|
+  it "#{text}が返却される" do
+    is_expected.to eq(value)
+  end
+end
+shared_examples_for 'Value_i18n' do |value|
+  it "#{value}が返却される" do
+    is_expected.to eq(get_locale(value))
+  end
+end
+
 def expect_image_json(response_json_model, model)
   expect(response_json_model['upload_image']).to eq(model.image?)
 

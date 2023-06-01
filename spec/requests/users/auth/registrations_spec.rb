@@ -11,7 +11,7 @@ RSpec.describe 'Users::Auth::Registrations', type: :request do
       subject
       expect(response_json['errors'].to_s).to error_msg.present? ? include(get_locale(error_msg)) : be_blank
       expect(response_json['errors'].class).to eq(error_class) # 方針: バリデーション(Hash)のみ、他はalertへ
-      expect(response_json['errors']&.count).to errors_count.positive? ? eq(errors_count) : be_nil
+      expect(response_json['errors']&.count).to errors_count > 0 ? eq(errors_count) : be_nil
       expect(response_json['message']).to message.present? ? eq(get_locale(message)) : be_nil # 方針: 廃止して、noticeへ
       expect(response_json['alert']).to alert.present? ? eq(get_locale(alert)) : be_nil # 方針: 追加
       expect(response_json['notice']).to notice.present? ? eq(get_locale(notice)) : be_nil # 方針: 追加
@@ -25,15 +25,15 @@ RSpec.describe 'Users::Auth::Registrations', type: :request do
   #   ＋URLの拡張子: .json, ない
   #   ＋Acceptヘッダ: JSONが含まれる, JSONが含まれない
   describe 'POST #create' do
-    subject { post create_user_auth_registration_path(format: subject_format), params: attributes, headers: auth_headers.merge(accept_headers) }
+    subject { post create_user_auth_registration_path(format: subject_format), params: params, headers: auth_headers.merge(accept_headers) }
     let_it_be(:new_user)   { FactoryBot.attributes_for(:user) }
     let_it_be(:exist_user) { FactoryBot.create(:user) }
     let(:valid_attributes)       { { name: new_user[:name], email: new_user[:email], password: new_user[:password], confirm_success_url: FRONT_SITE_URL } }
     let(:invalid_attributes)     { { name: exist_user.name, email: exist_user.email, password: exist_user.password, confirm_success_url: FRONT_SITE_URL } }
-    let(:invalid_nil_attributes) { { name: new_user[:name], email: new_user[:email], password: new_user[:password], confirm_success_url: nil } }
-    let(:invalid_bad_attributes) { { name: new_user[:name], email: new_user[:email], password: new_user[:password], confirm_success_url: BAD_SITE_URL } }
+    let(:invalid_attributes_nil) { { name: new_user[:name], email: new_user[:email], password: new_user[:password], confirm_success_url: nil } }
+    let(:invalid_attributes_bad) { { name: new_user[:name], email: new_user[:email], password: new_user[:password], confirm_success_url: BAD_SITE_URL } }
     include_context 'Authテスト内容'
-    let(:current_user) { User.find_by!(email: attributes[:email]) }
+    let(:current_user) { User.find_by!(email: params[:email]) }
     let(:inside_spaces) { [] }
 
     # テスト内容
@@ -41,11 +41,11 @@ RSpec.describe 'Users::Auth::Registrations', type: :request do
       let(:subject_format) { :json }
       let(:accept_headers) { ACCEPT_INC_JSON }
       let(:url)       { "http://#{Settings.base_domain}#{user_auth_confirmation_path}" }
-      let(:url_param) { "redirect_url=#{URI.encode_www_form_component(attributes[:confirm_success_url])}" }
+      let(:url_param) { "redirect_url=#{URI.encode_www_form_component(params[:confirm_success_url])}" }
       it '作成・対象項目が設定される。メールが送信される' do
         expect do
           subject
-          expect(current_user.name).to eq(attributes[:name]) # メールアドレス、氏名
+          expect(current_user.name).to eq(params[:name]) # メールアドレス、氏名
 
           expect(ActionMailer::Base.deliveries.count).to eq(1)
           expect(ActionMailer::Base.deliveries[0].subject).to eq(get_subject('devise.mailer.confirmation_instructions.subject')) # メールアドレス確認のお願い
@@ -104,7 +104,7 @@ RSpec.describe 'Users::Auth::Registrations', type: :request do
 
     # テストケース
     shared_examples_for '[未ログイン/ログイン中]パラメータなし' do
-      let(:attributes) { nil }
+      let(:params) { nil }
       it_behaves_like 'NG'
       # it_behaves_like 'ToNG', 422, 'error', false, false
       it_behaves_like 'ToNG', 400, nil, false, false
@@ -112,7 +112,7 @@ RSpec.describe 'Users::Auth::Registrations', type: :request do
       it_behaves_like 'ToMsg', NilClass, 0, nil, nil, 'errors.messages.validate_sign_up_params', nil
     end
     shared_examples_for '[APIログイン中]パラメータなし' do
-      let(:attributes) { nil }
+      let(:params) { nil }
       it_behaves_like 'NG'
       # it_behaves_like 'ToNG', 422, 'error', false, false
       it_behaves_like 'ToNG', 401, nil, false, false
@@ -120,7 +120,7 @@ RSpec.describe 'Users::Auth::Registrations', type: :request do
       it_behaves_like 'ToMsg', NilClass, 0, nil, nil, 'devise.failure.already_authenticated', nil
     end
     shared_examples_for '[未ログイン/ログイン中]有効なパラメータ' do
-      let(:attributes) { valid_attributes }
+      let(:params) { valid_attributes }
       it_behaves_like 'OK'
       # it_behaves_like 'ToOK', 'success', nil, true
       it_behaves_like 'ToOK', nil, true, false
@@ -128,7 +128,7 @@ RSpec.describe 'Users::Auth::Registrations', type: :request do
       it_behaves_like 'ToMsg', NilClass, 0, nil, nil, nil, 'devise.registrations.signed_up_but_unconfirmed'
     end
     shared_examples_for '[APIログイン中]有効なパラメータ' do
-      let(:attributes) { valid_attributes }
+      let(:params) { valid_attributes }
       # it_behaves_like 'OK'
       it_behaves_like 'NG'
       # it_behaves_like 'ToOK', 'success', nil, true
@@ -137,7 +137,7 @@ RSpec.describe 'Users::Auth::Registrations', type: :request do
       it_behaves_like 'ToMsg', NilClass, 0, nil, nil, 'devise.failure.already_authenticated', nil
     end
     shared_examples_for '[未ログイン/ログイン中]無効なパラメータ' do
-      let(:attributes) { invalid_attributes }
+      let(:params) { invalid_attributes }
       it_behaves_like 'NG'
       # it_behaves_like 'ToNG', 422, 'error', nil, true
       it_behaves_like 'ToNG', 422, nil, false, false
@@ -145,7 +145,7 @@ RSpec.describe 'Users::Auth::Registrations', type: :request do
       it_behaves_like 'ToMsg', Hash, 2, 'activerecord.errors.models.user.attributes.email.taken', nil, 'errors.messages.not_saved.one', nil
     end
     shared_examples_for '[APIログイン中]無効なパラメータ' do
-      let(:attributes) { invalid_attributes }
+      let(:params) { invalid_attributes }
       it_behaves_like 'NG'
       # it_behaves_like 'ToNG', 422, 'error', nil, true
       it_behaves_like 'ToNG', 401, nil, false, false
@@ -153,7 +153,7 @@ RSpec.describe 'Users::Auth::Registrations', type: :request do
       it_behaves_like 'ToMsg', NilClass, 0, nil, nil, 'devise.failure.already_authenticated', nil
     end
     shared_examples_for '[未ログイン/ログイン中]URLがない' do
-      let(:attributes) { invalid_nil_attributes }
+      let(:params) { invalid_attributes_nil }
       it_behaves_like 'NG'
       # it_behaves_like 'ToNG', 422, 'error', false, true
       it_behaves_like 'ToNG', 422, nil, false, false
@@ -161,7 +161,7 @@ RSpec.describe 'Users::Auth::Registrations', type: :request do
       it_behaves_like 'ToMsg', NilClass, 0, nil, nil, 'devise_token_auth.registrations.missing_confirm_success_url', nil
     end
     shared_examples_for '[APIログイン中]URLがない' do
-      let(:attributes) { invalid_nil_attributes }
+      let(:params) { invalid_attributes_nil }
       it_behaves_like 'NG'
       # it_behaves_like 'ToNG', 422, 'error', false, true
       it_behaves_like 'ToNG', 401, nil, false, false
@@ -169,7 +169,7 @@ RSpec.describe 'Users::Auth::Registrations', type: :request do
       it_behaves_like 'ToMsg', NilClass, 0, nil, nil, 'devise.failure.already_authenticated', nil
     end
     shared_examples_for '[未ログイン/ログイン中]URLがホワイトリストにない' do
-      let(:attributes) { invalid_bad_attributes }
+      let(:params) { invalid_attributes_bad }
       it_behaves_like 'NG'
       # it_behaves_like 'ToNG', 422, 'error', false, true
       it_behaves_like 'ToNG', 422, nil, false, false
@@ -177,7 +177,7 @@ RSpec.describe 'Users::Auth::Registrations', type: :request do
       it_behaves_like 'ToMsg', NilClass, 0, nil, nil, 'devise_token_auth.registrations.redirect_url_not_allowed', nil
     end
     shared_examples_for '[APIログイン中]URLがホワイトリストにない' do
-      let(:attributes) { invalid_bad_attributes }
+      let(:params) { invalid_attributes_bad }
       it_behaves_like 'NG'
       # it_behaves_like 'ToNG', 422, 'error', false, true
       it_behaves_like 'ToNG', 401, nil, false, false
@@ -306,14 +306,14 @@ RSpec.describe 'Users::Auth::Registrations', type: :request do
   #   ＋URLの拡張子: .json, ない
   #   ＋Acceptヘッダ: JSONが含まれる, JSONが含まれない
   describe 'POST #update' do
-    subject { post update_user_auth_registration_path(format: subject_format), params: attributes, headers: auth_headers.merge(accept_headers) }
+    subject { post update_user_auth_registration_path(format: subject_format), params: params, headers: auth_headers.merge(accept_headers) }
     let_it_be(:new_user)   { FactoryBot.attributes_for(:user) }
     let_it_be(:exist_user) { FactoryBot.create(:user) }
     let(:nochange_attributes)    { { name: user.name, email: user.email, password: user.password, confirm_redirect_url: FRONT_SITE_URL } }
     let(:valid_attributes)       { { name: new_user[:name], email: new_user[:email], password: new_user[:password], confirm_redirect_url: FRONT_SITE_URL } }
     let(:invalid_attributes)     { { name: exist_user.name, email: exist_user.email, password: exist_user.password, confirm_redirect_url: FRONT_SITE_URL } }
-    let(:invalid_nil_attributes) { { name: exist_user.name, email: exist_user.email, password: exist_user.password, confirm_redirect_url: nil } }
-    let(:invalid_bad_attributes) { { name: exist_user.name, email: exist_user.email, password: exist_user.password, confirm_redirect_url: BAD_SITE_URL } }
+    let(:invalid_attributes_nil) { { name: exist_user.name, email: exist_user.email, password: exist_user.password, confirm_redirect_url: nil } }
+    let(:invalid_attributes_bad) { { name: exist_user.name, email: exist_user.email, password: exist_user.password, confirm_redirect_url: BAD_SITE_URL } }
     include_context 'Authテスト内容'
     let(:current_user) { User.find(user.id) }
 
@@ -322,11 +322,11 @@ RSpec.describe 'Users::Auth::Registrations', type: :request do
       let(:subject_format) { :json }
       let(:accept_headers) { ACCEPT_INC_JSON }
       let(:url)       { "http://#{Settings.base_domain}#{user_auth_confirmation_path}" }
-      let(:url_param) { "redirect_url=#{URI.encode_www_form_component(attributes[:confirm_redirect_url])}" }
+      let(:url_param) { "redirect_url=#{URI.encode_www_form_component(params[:confirm_redirect_url])}" }
       it '対象項目が変更される。対象のメールが送信される' do
         subject
-        expect(current_user.unconfirmed_email).to change_email ? eq(attributes[:email]) : eq(user.unconfirmed_email) # 確認待ちメールアドレス
-        expect(current_user.name).to eq(attributes[:name]) # 氏名
+        expect(current_user.unconfirmed_email).to change_email ? eq(params[:email]) : eq(user.unconfirmed_email) # 確認待ちメールアドレス
+        expect(current_user.name).to eq(params[:name]) # 氏名
         expect(current_user.image.url).to eq(user.image.url) # 画像 # NOTE: 変更されない
 
         expect(ActionMailer::Base.deliveries.count).to eq(change_email ? 3 : 1)
@@ -362,7 +362,7 @@ RSpec.describe 'Users::Auth::Registrations', type: :request do
         # expect(response_json['status']).to eq(status) # 方針: 廃止して、successに統一
         # expect(response_json['success']).to eq(success)
         # expect(response_json['data']['id'].present?).to eq(id_present) # 方針: 廃止
-        # expect(response_json['data']['name']).to eq(attributes[:name])
+        # expect(response_json['data']['name']).to eq(params[:name])
         # expect(response_json['data']['image']).not_to be_nil
         expect_success_json
         expect_exist_auth_header
@@ -396,7 +396,7 @@ RSpec.describe 'Users::Auth::Registrations', type: :request do
 
     # テストケース
     shared_examples_for '[未ログイン/ログイン中]パラメータなし' do
-      let(:attributes) { nil }
+      let(:params) { nil }
       # it_behaves_like 'NG' # NOTE: 未ログインの為、対象がない
       # it_behaves_like 'ToNG', 422, 'error', false
       it_behaves_like 'ToNG', 401, nil, false
@@ -404,7 +404,7 @@ RSpec.describe 'Users::Auth::Registrations', type: :request do
       it_behaves_like 'ToMsg', NilClass, 0, nil, nil, 'devise.failure.unauthenticated', nil
     end
     shared_examples_for '[APIログイン中/削除予約済み]パラメータなし' do
-      let(:attributes) { nil }
+      let(:params) { nil }
       it_behaves_like 'NG'
       # it_behaves_like 'ToNG', 422, 'error', false
       it_behaves_like 'ToNG', 400, nil, false
@@ -412,7 +412,7 @@ RSpec.describe 'Users::Auth::Registrations', type: :request do
       it_behaves_like 'ToMsg', NilClass, 0, nil, nil, 'errors.messages.validate_account_update_params', nil
     end
     shared_examples_for '[APIログイン中]有効なパラメータ（変更なし）' do
-      let(:attributes) { nochange_attributes.merge(password_confirmation: nochange_attributes[:password], current_password: user.password) }
+      let(:params) { nochange_attributes.merge(password_confirmation: nochange_attributes[:password], current_password: user.password) }
       it_behaves_like 'OK', false
       # it_behaves_like 'ToOK', 'success', nil, true
       it_behaves_like 'ToOK', nil, true, false
@@ -420,7 +420,7 @@ RSpec.describe 'Users::Auth::Registrations', type: :request do
       it_behaves_like 'ToMsg', NilClass, 0, nil, nil, nil, 'devise.registrations.updated'
     end
     shared_examples_for '[削除予約済み]有効なパラメータ（変更なし）' do
-      let(:attributes) { nochange_attributes.merge(password_confirmation: nochange_attributes[:password], current_password: user.password) }
+      let(:params) { nochange_attributes.merge(password_confirmation: nochange_attributes[:password], current_password: user.password) }
       # it_behaves_like 'OK', false
       it_behaves_like 'NG'
       # it_behaves_like 'ToOK', 'success', nil, true
@@ -429,7 +429,7 @@ RSpec.describe 'Users::Auth::Registrations', type: :request do
       it_behaves_like 'ToMsg', NilClass, 0, nil, nil, 'alert.user.destroy_reserved', nil
     end
     shared_examples_for '[未ログイン/ログイン中]有効なパラメータ（変更あり）' do
-      let(:attributes) { valid_attributes.merge(password_confirmation: valid_attributes[:password]) }
+      let(:params) { valid_attributes.merge(password_confirmation: valid_attributes[:password]) }
       # it_behaves_like 'NG' # NOTE: 未ログインの為、対象がない
       # it_behaves_like 'ToNG', 404, 'error', false
       it_behaves_like 'ToNG', 401, nil, false
@@ -437,7 +437,7 @@ RSpec.describe 'Users::Auth::Registrations', type: :request do
       it_behaves_like 'ToMsg', NilClass, 0, nil, nil, 'devise.failure.unauthenticated', nil
     end
     shared_examples_for '[APIログイン中]有効なパラメータ（変更あり）' do
-      let(:attributes) { valid_attributes.merge(password_confirmation: valid_attributes[:password], current_password: user.password) }
+      let(:params) { valid_attributes.merge(password_confirmation: valid_attributes[:password], current_password: user.password) }
       it_behaves_like 'OK', true
       # it_behaves_like 'ToOK', 'success', nil, true
       it_behaves_like 'ToOK', nil, true, false
@@ -445,7 +445,7 @@ RSpec.describe 'Users::Auth::Registrations', type: :request do
       it_behaves_like 'ToMsg', NilClass, 0, nil, nil, nil, 'devise.registrations.update_needs_confirmation'
     end
     shared_examples_for '[削除予約済み]有効なパラメータ（変更あり）' do
-      let(:attributes) { valid_attributes.merge(password_confirmation: valid_attributes[:password], current_password: user.password) }
+      let(:params) { valid_attributes.merge(password_confirmation: valid_attributes[:password], current_password: user.password) }
       # it_behaves_like 'OK', true
       it_behaves_like 'NG'
       # it_behaves_like 'ToOK', 'success', nil, true
@@ -454,7 +454,7 @@ RSpec.describe 'Users::Auth::Registrations', type: :request do
       it_behaves_like 'ToMsg', NilClass, 0, nil, nil, 'alert.user.destroy_reserved', nil
     end
     shared_examples_for '[未ログイン/ログイン中]無効なパラメータ' do
-      let(:attributes) { invalid_attributes.merge(password_confirmation: invalid_attributes[:password]) }
+      let(:params) { invalid_attributes.merge(password_confirmation: invalid_attributes[:password]) }
       # it_behaves_like 'NG' # NOTE: 未ログインの為、対象がない
       # it_behaves_like 'ToNG', 404, 'error', false
       it_behaves_like 'ToNG', 401, nil, false
@@ -462,7 +462,7 @@ RSpec.describe 'Users::Auth::Registrations', type: :request do
       it_behaves_like 'ToMsg', NilClass, 0, nil, nil, 'devise.failure.unauthenticated', nil
     end
     shared_examples_for '[APIログイン中]無効なパラメータ' do
-      let(:attributes) { invalid_attributes.merge(password_confirmation: invalid_attributes[:password], current_password: user.password) }
+      let(:params) { invalid_attributes.merge(password_confirmation: invalid_attributes[:password], current_password: user.password) }
       # it_behaves_like 'OK', true
       it_behaves_like 'NG'
       # it_behaves_like 'ToOK', 'success', nil, true
@@ -471,7 +471,7 @@ RSpec.describe 'Users::Auth::Registrations', type: :request do
       it_behaves_like 'ToMsg', Hash, 2, 'activerecord.errors.models.user.attributes.email.taken', nil, 'errors.messages.not_saved.one', nil
     end
     shared_examples_for '[削除予約済み]無効なパラメータ' do
-      let(:attributes) { invalid_attributes.merge(password_confirmation: invalid_attributes[:password], current_password: user.password) }
+      let(:params) { invalid_attributes.merge(password_confirmation: invalid_attributes[:password], current_password: user.password) }
       # it_behaves_like 'OK', true
       it_behaves_like 'NG'
       # it_behaves_like 'ToOK', 'success', nil, true
@@ -480,7 +480,7 @@ RSpec.describe 'Users::Auth::Registrations', type: :request do
       it_behaves_like 'ToMsg', NilClass, 0, nil, nil, 'alert.user.destroy_reserved', nil
     end
     shared_examples_for '[APIログイン中]現在のパスワードがない' do
-      let(:attributes) { valid_attributes.merge(password_confirmation: valid_attributes[:password], current_password: nil) }
+      let(:params) { valid_attributes.merge(password_confirmation: valid_attributes[:password], current_password: nil) }
       it_behaves_like 'NG'
       # it_behaves_like 'ToNG', 422, 'error', nil
       it_behaves_like 'ToNG', 422, nil, false
@@ -488,13 +488,13 @@ RSpec.describe 'Users::Auth::Registrations', type: :request do
       it_behaves_like 'ToMsg', Hash, 2, 'activerecord.errors.models.user.attributes.current_password.blank', nil, 'errors.messages.not_saved.one', nil
     end
     shared_examples_for '[削除予約済み]現在のパスワードがない' do
-      let(:attributes) { valid_attributes.merge(password_confirmation: valid_attributes[:password], current_password: nil) }
+      let(:params) { valid_attributes.merge(password_confirmation: valid_attributes[:password], current_password: nil) }
       it_behaves_like 'NG'
       it_behaves_like 'ToNG', 422, nil, false
       it_behaves_like 'ToMsg', NilClass, 0, nil, nil, 'alert.user.destroy_reserved', nil
     end
     shared_examples_for '[未ログイン/ログイン中]URLがない' do
-      let(:attributes) { invalid_nil_attributes.merge(password_confirmation: invalid_nil_attributes[:password]) }
+      let(:params) { invalid_attributes_nil.merge(password_confirmation: invalid_attributes_nil[:password]) }
       # it_behaves_like 'NG' # NOTE: 未ログインの為、対象がない
       # it_behaves_like 'ToNG', 404, 'error', false
       it_behaves_like 'ToNG', 401, nil, false
@@ -502,7 +502,7 @@ RSpec.describe 'Users::Auth::Registrations', type: :request do
       it_behaves_like 'ToMsg', NilClass, 0, nil, nil, 'devise.failure.unauthenticated', nil
     end
     shared_examples_for '[APIログイン中]URLがない' do
-      let(:attributes) { invalid_nil_attributes.merge(password_confirmation: invalid_nil_attributes[:password], current_password: user.password) }
+      let(:params) { invalid_attributes_nil.merge(password_confirmation: invalid_attributes_nil[:password], current_password: user.password) }
       # it_behaves_like 'OK', true
       it_behaves_like 'NG'
       # it_behaves_like 'ToOK', 'success', nil, true
@@ -511,7 +511,7 @@ RSpec.describe 'Users::Auth::Registrations', type: :request do
       it_behaves_like 'ToMsg', NilClass, 0, nil, nil, 'devise_token_auth.registrations.confirm_redirect_url_blank', nil
     end
     shared_examples_for '[削除予約済み]URLがない' do
-      let(:attributes) { invalid_nil_attributes.merge(password_confirmation: invalid_nil_attributes[:password], current_password: user.password) }
+      let(:params) { invalid_attributes_nil.merge(password_confirmation: invalid_attributes_nil[:password], current_password: user.password) }
       # it_behaves_like 'OK', true
       it_behaves_like 'NG'
       # it_behaves_like 'ToOK', 'success', nil, true
@@ -520,7 +520,7 @@ RSpec.describe 'Users::Auth::Registrations', type: :request do
       it_behaves_like 'ToMsg', NilClass, 0, nil, nil, 'alert.user.destroy_reserved', nil
     end
     shared_examples_for '[未ログイン/ログイン中]URLがホワイトリストにない' do
-      let(:attributes) { invalid_bad_attributes.merge(password_confirmation: invalid_bad_attributes[:password]) }
+      let(:params) { invalid_attributes_bad.merge(password_confirmation: invalid_attributes_bad[:password]) }
       # it_behaves_like 'NG' # NOTE: 未ログインの為、対象がない
       # it_behaves_like 'ToNG', 404, 'error', false
       it_behaves_like 'ToNG', 401, nil, false
@@ -528,7 +528,7 @@ RSpec.describe 'Users::Auth::Registrations', type: :request do
       it_behaves_like 'ToMsg', NilClass, 0, nil, nil, 'devise.failure.unauthenticated', nil
     end
     shared_examples_for '[APIログイン中]URLがホワイトリストにない' do
-      let(:attributes) { invalid_bad_attributes.merge(password_confirmation: invalid_bad_attributes[:password], current_password: user.password) }
+      let(:params) { invalid_attributes_bad.merge(password_confirmation: invalid_attributes_bad[:password], current_password: user.password) }
       # it_behaves_like 'OK', true
       it_behaves_like 'NG'
       # it_behaves_like 'ToOK', 'success', nil, true
@@ -537,7 +537,7 @@ RSpec.describe 'Users::Auth::Registrations', type: :request do
       it_behaves_like 'ToMsg', NilClass, 0, nil, nil, 'devise_token_auth.registrations.confirm_redirect_url_not_allowed', nil
     end
     shared_examples_for '[削除予約済み]URLがホワイトリストにない' do
-      let(:attributes) { invalid_bad_attributes.merge(password_confirmation: invalid_bad_attributes[:password], current_password: user.password) }
+      let(:params) { invalid_attributes_bad.merge(password_confirmation: invalid_attributes_bad[:password], current_password: user.password) }
       # it_behaves_like 'OK', true
       it_behaves_like 'NG'
       # it_behaves_like 'ToOK', 'success', nil, true
@@ -595,7 +595,7 @@ RSpec.describe 'Users::Auth::Registrations', type: :request do
   #   ＋URLの拡張子: .json, ない
   #   ＋Acceptヘッダ: JSONが含まれる, JSONが含まれない
   describe 'POST #image_update' do
-    subject { post update_user_auth_image_registration_path(format: subject_format), params: attributes, headers: auth_headers.merge(accept_headers) }
+    subject { post update_user_auth_image_registration_path(format: subject_format), params: params, headers: auth_headers.merge(accept_headers) }
     let(:valid_attributes)   { { image: fixture_file_upload(TEST_IMAGE_FILE, TEST_IMAGE_TYPE) } }
     let(:invalid_attributes) { nil }
     include_context 'Authテスト内容'
@@ -653,37 +653,37 @@ RSpec.describe 'Users::Auth::Registrations', type: :request do
 
     # テストケース
     shared_examples_for '[未ログイン/ログイン中]有効なパラメータ' do
-      let(:attributes) { valid_attributes }
+      let(:params) { valid_attributes }
       # it_behaves_like 'NG' # NOTE: 未ログインの為、対象がない
       it_behaves_like 'ToNG', 401
       it_behaves_like 'ToMsg', NilClass, 0, nil, nil, 'devise.failure.unauthenticated', nil
     end
     shared_examples_for '[APIログイン中]有効なパラメータ' do
-      let(:attributes) { valid_attributes }
+      let(:params) { valid_attributes }
       it_behaves_like 'OK'
       it_behaves_like 'ToOK'
       it_behaves_like 'ToMsg', NilClass, 0, nil, nil, nil, 'notice.user.image_update'
     end
     shared_examples_for '[削除予約済み]有効なパラメータ' do
-      let(:attributes) { valid_attributes }
+      let(:params) { valid_attributes }
       it_behaves_like 'NG'
       it_behaves_like 'ToNG', 422
       it_behaves_like 'ToMsg', NilClass, 0, nil, nil, 'alert.user.destroy_reserved', nil
     end
     shared_examples_for '[未ログイン/ログイン中]無効なパラメータ' do
-      let(:attributes) { invalid_attributes }
+      let(:params) { invalid_attributes }
       # it_behaves_like 'NG' # NOTE: 未ログインの為、対象がない
       it_behaves_like 'ToNG', 401
       it_behaves_like 'ToMsg', NilClass, 0, nil, nil, 'devise.failure.unauthenticated', nil
     end
     shared_examples_for '[APIログイン中]無効なパラメータ' do
-      let(:attributes) { invalid_attributes }
+      let(:params) { invalid_attributes }
       it_behaves_like 'NG'
       it_behaves_like 'ToNG', 422
       it_behaves_like 'ToMsg', Hash, 2, 'activerecord.errors.models.user.attributes.image.blank', nil, 'errors.messages.not_saved.one', nil
     end
     shared_examples_for '[削除予約済み]無効なパラメータ' do
-      let(:attributes) { invalid_attributes }
+      let(:params) { invalid_attributes }
       it_behaves_like 'NG'
       it_behaves_like 'ToNG', 422
       it_behaves_like 'ToMsg', NilClass, 0, nil, nil, 'alert.user.destroy_reserved', nil
@@ -809,10 +809,10 @@ RSpec.describe 'Users::Auth::Registrations', type: :request do
   #   ＋URLの拡張子: .json, ない
   #   ＋Acceptヘッダ: JSONが含まれる, JSONが含まれない
   describe 'POST #destroy' do
-    subject { post destroy_user_auth_registration_path(format: subject_format), params: attributes, headers: auth_headers.merge(accept_headers) }
+    subject { post destroy_user_auth_registration_path(format: subject_format), params: params, headers: auth_headers.merge(accept_headers) }
     let(:valid_attributes)       { { undo_delete_url: FRONT_SITE_URL } }
-    let(:invalid_nil_attributes) { { undo_delete_url: nil } }
-    let(:invalid_bad_attributes) { { undo_delete_url: BAD_SITE_URL } }
+    let(:invalid_attributes_nil) { { undo_delete_url: nil } }
+    let(:invalid_attributes_bad) { { undo_delete_url: BAD_SITE_URL } }
     include_context 'Authテスト内容'
     let(:current_user) { User.find(user.id) }
 
@@ -831,8 +831,8 @@ RSpec.describe 'Users::Auth::Registrations', type: :request do
                                                                Time.current + Settings.user_destroy_schedule_days.days)
         expect(ActionMailer::Base.deliveries.count).to eq(1)
         expect(ActionMailer::Base.deliveries[0].subject).to eq(get_subject('mailer.user.destroy_reserved.subject')) # アカウント削除受け付けのお知らせ
-        expect(ActionMailer::Base.deliveries[0].html_part.body).to include(attributes[:undo_delete_url])
-        expect(ActionMailer::Base.deliveries[0].text_part.body).to include(attributes[:undo_delete_url])
+        expect(ActionMailer::Base.deliveries[0].html_part.body).to include(params[:undo_delete_url])
+        expect(ActionMailer::Base.deliveries[0].text_part.body).to include(params[:undo_delete_url])
       end
     end
     shared_examples_for 'NG' do
@@ -889,7 +889,7 @@ RSpec.describe 'Users::Auth::Registrations', type: :request do
 
     # テストケース
     shared_examples_for '[未ログイン/ログイン中]パラメータなし' do
-      let(:attributes) { nil }
+      let(:params) { nil }
       # it_behaves_like 'NG' # NOTE: 未ログインの為、対象がない
       # it_behaves_like 'ToNG', 404, 'error', false
       it_behaves_like 'ToNG', 401, nil, false
@@ -897,7 +897,7 @@ RSpec.describe 'Users::Auth::Registrations', type: :request do
       it_behaves_like 'ToMsg', NilClass, 0, nil, nil, 'devise.failure.unauthenticated', nil
     end
     shared_examples_for '[未ログイン/ログイン中]有効なパラメータ' do
-      let(:attributes) { valid_attributes }
+      let(:params) { valid_attributes }
       # it_behaves_like 'NG' # NOTE: 未ログインの為、対象がない
       # it_behaves_like 'ToNG', 404, 'error', false
       it_behaves_like 'ToNG', 401, nil, false
@@ -905,7 +905,7 @@ RSpec.describe 'Users::Auth::Registrations', type: :request do
       it_behaves_like 'ToMsg', NilClass, 0, nil, nil, 'devise.failure.unauthenticated', nil
     end
     shared_examples_for '[未ログイン/ログイン中]URLがない' do
-      let(:attributes) { invalid_nil_attributes }
+      let(:params) { invalid_attributes_nil }
       # it_behaves_like 'NG' # NOTE: 未ログインの為、対象がない
       # it_behaves_like 'ToNG', 404, 'error', false
       it_behaves_like 'ToNG', 401, nil, false
@@ -913,7 +913,7 @@ RSpec.describe 'Users::Auth::Registrations', type: :request do
       it_behaves_like 'ToMsg', NilClass, 0, nil, nil, 'devise.failure.unauthenticated', nil
     end
     shared_examples_for '[未ログイン/ログイン中]URLがホワイトリストにない' do
-      let(:attributes) { invalid_bad_attributes }
+      let(:params) { invalid_attributes_bad }
       # it_behaves_like 'NG' # NOTE: 未ログインの為、対象がない
       # it_behaves_like 'ToNG', 404, 'error', false
       it_behaves_like 'ToNG', 401, nil, false
@@ -921,7 +921,7 @@ RSpec.describe 'Users::Auth::Registrations', type: :request do
       it_behaves_like 'ToMsg', NilClass, 0, nil, nil, 'devise.failure.unauthenticated', nil
     end
     shared_examples_for '[APIログイン中]パラメータなし' do
-      let(:attributes) { nil }
+      let(:params) { nil }
       # it_behaves_like 'OK'
       it_behaves_like 'NG'
       # it_behaves_like 'ToOK', 'success', nil
@@ -930,7 +930,7 @@ RSpec.describe 'Users::Auth::Registrations', type: :request do
       it_behaves_like 'ToMsg', NilClass, 0, nil, nil, 'alert.user.destroy.params_blank', nil
     end
     shared_examples_for '[APIログイン中]有効なパラメータ' do
-      let(:attributes) { valid_attributes }
+      let(:params) { valid_attributes }
       it_behaves_like 'OK'
       # it_behaves_like 'ToOK', 'success', nil
       it_behaves_like 'ToOK', nil, true
@@ -938,7 +938,7 @@ RSpec.describe 'Users::Auth::Registrations', type: :request do
       it_behaves_like 'ToMsg', NilClass, 0, nil, nil, nil, 'devise.registrations.destroy_reserved'
     end
     shared_examples_for '[APIログイン中]URLがない' do
-      let(:attributes) { invalid_nil_attributes }
+      let(:params) { invalid_attributes_nil }
       # it_behaves_like 'OK'
       it_behaves_like 'NG'
       # it_behaves_like 'ToOK', 'success', nil
@@ -947,7 +947,7 @@ RSpec.describe 'Users::Auth::Registrations', type: :request do
       it_behaves_like 'ToMsg', NilClass, 0, nil, nil, 'alert.user.destroy.undo_delete_url_blank', nil
     end
     shared_examples_for '[APIログイン中]URLがホワイトリストにない' do
-      let(:attributes) { invalid_bad_attributes }
+      let(:params) { invalid_attributes_bad }
       # it_behaves_like 'OK'
       it_behaves_like 'NG'
       # it_behaves_like 'ToOK', 'success', nil
@@ -956,7 +956,7 @@ RSpec.describe 'Users::Auth::Registrations', type: :request do
       it_behaves_like 'ToMsg', NilClass, 0, nil, nil, 'alert.user.destroy.undo_delete_url_not_allowed', nil
     end
     shared_examples_for '[削除予約済み]パラメータなし' do
-      let(:attributes) { nil }
+      let(:params) { nil }
       # it_behaves_like 'OK'
       it_behaves_like 'NG'
       # it_behaves_like 'ToOK', 'success', nil
@@ -965,7 +965,7 @@ RSpec.describe 'Users::Auth::Registrations', type: :request do
       it_behaves_like 'ToMsg', NilClass, 0, nil, nil, 'alert.user.destroy_reserved', nil
     end
     shared_examples_for '[削除予約済み]有効なパラメータ' do
-      let(:attributes) { valid_attributes }
+      let(:params) { valid_attributes }
       # it_behaves_like 'OK'
       it_behaves_like 'NG'
       # it_behaves_like 'ToOK', 'success', nil
@@ -974,7 +974,7 @@ RSpec.describe 'Users::Auth::Registrations', type: :request do
       it_behaves_like 'ToMsg', NilClass, 0, nil, nil, 'alert.user.destroy_reserved', nil
     end
     shared_examples_for '[削除予約済み]URLがない' do
-      let(:attributes) { invalid_nil_attributes }
+      let(:params) { invalid_attributes_nil }
       # it_behaves_like 'OK'
       it_behaves_like 'NG'
       # it_behaves_like 'ToOK', 'success', nil
@@ -983,7 +983,7 @@ RSpec.describe 'Users::Auth::Registrations', type: :request do
       it_behaves_like 'ToMsg', NilClass, 0, nil, nil, 'alert.user.destroy_reserved', nil
     end
     shared_examples_for '[削除予約済み]URLがホワイトリストにない' do
-      let(:attributes) { invalid_bad_attributes }
+      let(:params) { invalid_attributes_bad }
       # it_behaves_like 'OK'
       it_behaves_like 'NG'
       # it_behaves_like 'ToOK', 'success', nil

@@ -25,7 +25,7 @@ RSpec.describe :user, type: :task do
     shared_context '削除対象作成' do
       let_it_be(:users) do
         [
-          FactoryBot.create(:user, destroy_schedule_at: Time.current - 2.minute),
+          FactoryBot.create(:user, destroy_schedule_at: Time.current - 2.minutes),
           FactoryBot.create(:user, destroy_schedule_at: Time.current - 1.minute)
         ]
       end

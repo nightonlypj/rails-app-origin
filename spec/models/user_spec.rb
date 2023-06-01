@@ -1,30 +1,11 @@
 require 'rails_helper'
 
 RSpec.describe User, type: :model do
-  # テスト内容（共通）
-  shared_examples_for 'Valid' do
-    it '保存できる' do
-      expect(user).to be_valid
-    end
-  end
-  shared_examples_for 'InValid' do
-    it '保存できない。エラーメッセージが一致する' do
-      expect(user).to be_invalid
-      expect(user.errors.messages).to eq(messages)
-    end
-  end
-  shared_examples_for 'Count' do |count|
-    it "#{count}が返却され、キャッシュされる" do
-      is_expected.to eq(count)
-      expect(cache).to eq(count)
-    end
-  end
-
   # コード
   # テストパターン
   #   ない, 正常値, 重複
   describe 'validates :code' do
-    let(:user)       { FactoryBot.build_stubbed(:user, code: code) }
+    let(:model) { FactoryBot.build_stubbed(:user, code: code) }
     let(:valid_code) { Digest::MD5.hexdigest(SecureRandom.uuid) }
 
     # テストケース
@@ -47,9 +28,9 @@ RSpec.describe User, type: :model do
 
   # 氏名
   # テストパターン
-  #   ない, 最小文字数よりも少ない, 最小文字数と同じ, 最大文字数と同じ, 最大文字数よりも多い
+  #   ない, 最小文字数より少ない, 最小文字数と同じ, 最大文字数と同じ, 最大文字数より多い
   describe 'validates :name' do
-    let(:user) { FactoryBot.build_stubbed(:user, name: name) }
+    let(:model) { FactoryBot.build_stubbed(:user, name: name) }
 
     # テストケース
     context 'ない' do
@@ -57,7 +38,7 @@ RSpec.describe User, type: :model do
       let(:messages) { { name: [get_locale('activerecord.errors.models.user.attributes.name.blank')] } }
       it_behaves_like 'InValid'
     end
-    context '最小文字数よりも少ない' do
+    context '最小文字数より少ない' do
       let(:name) { 'a' * (Settings.user_name_minimum - 1) }
       let(:messages) { { name: [get_locale('activerecord.errors.models.user.attributes.name.too_short', count: Settings.user_name_minimum)] } }
       it_behaves_like 'InValid'
@@ -70,7 +51,7 @@ RSpec.describe User, type: :model do
       let(:name) { 'a' * Settings.user_name_maximum }
       it_behaves_like 'Valid'
     end
-    context '最大文字数よりも多い' do
+    context '最大文字数より多い' do
       let(:name) { 'a' * (Settings.user_name_maximum + 1) }
       let(:messages) { { name: [get_locale('activerecord.errors.models.user.attributes.name.too_long', count: Settings.user_name_maximum)] } }
       it_behaves_like 'InValid'
@@ -191,6 +172,15 @@ RSpec.describe User, type: :model do
     end
     let(:cache) { user.cache_infomation_unread_count }
 
+    # テスト内容
+    shared_examples_for 'Count' do |count|
+      it "#{count}が返却され、キャッシュされる" do
+        is_expected.to eq(count)
+        expect(cache).to eq(count)
+      end
+    end
+
+    # テストケース
     shared_examples_for '[*]0件' do
       include_context 'お知らせ一覧作成', 0, 0, 0, 0
       it_behaves_like 'Count', 0

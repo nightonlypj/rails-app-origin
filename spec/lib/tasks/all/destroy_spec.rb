@@ -1,6 +1,6 @@
 require 'rake_helper'
 
-RSpec.describe :download, type: :task do
+RSpec.describe :all, type: :task do
   # すべての削除Taskを実行
   # テストパターン
   #   ドライラン: true, false

@@ -35,7 +35,7 @@ shared_context 'パスワードリセットトークン作成' do |valid, locked
   let_it_be(:confirmation_token)   { unconfirmed ? Devise.token_generator.digest(self, :confirmation_token, SecureRandom.uuid) : nil }
   let_it_be(:confirmation_sent_at) { unconfirmed ? Time.now.utc - 1.minute : nil }
   let_it_be(:confirmed_at)         { unconfirmed ? nil : '0000-01-01 00:00:00+0000' }
-  let_it_be(:unconfirmed_email)    { change_email ? Faker::Internet.safe_email : nil }
+  let_it_be(:unconfirmed_email)    { change_email ? Faker::Internet.email : nil }
   let_it_be(:send_user) do
     FactoryBot.create(:user, reset_password_token: digest_token, reset_password_sent_at: sent_at,
                              unlock_token: unlock_token, locked_at: locked_at, failed_attempts: failed_attempts,
@@ -48,7 +48,7 @@ shared_context 'メールアドレス確認トークン作成' do |confirmed, be
   let_it_be(:confirmation_token) { Devise.token_generator.digest(self, :confirmation_token, SecureRandom.uuid) }
   let_it_be(:set_confirmed_at)   { confirmation_sent_at + (before ? -1.minute : 1.minute) }
   let_it_be(:confirmed_at)       { confirmed ? set_confirmed_at : nil }
-  let_it_be(:unconfirmed_email)  { confirmed && before ? Faker::Internet.safe_email : nil }
+  let_it_be(:unconfirmed_email)  { confirmed && before ? Faker::Internet.email : nil }
   let_it_be(:send_user) do
     FactoryBot.create(:user, confirmation_token: confirmation_token, confirmation_sent_at: confirmation_sent_at,
                              confirmed_at: confirmed_at, unconfirmed_email: unconfirmed_email)

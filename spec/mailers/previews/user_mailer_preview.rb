@@ -7,7 +7,7 @@ class UserMailerPreview < ActionMailer::Preview
   end
 
   def destroy_reserved_auth
-    undo_delete_url = Faker::Internet.url
+    undo_delete_url = Faker::Internet.url(scheme: 'https')
     destroy_reserved(undo_delete_url)
   end
 
