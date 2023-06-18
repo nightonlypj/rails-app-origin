@@ -129,3 +129,7 @@ gem 'unicorn'
 # Use Exception Notification
 gem 'exception_notification'
 gem 'slack-notifier'
+
+# Use Delayed::Job
+gem 'delayed_job_active_record'
+gem 'daemons'

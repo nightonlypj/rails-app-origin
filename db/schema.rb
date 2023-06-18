@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2023_02_17_225608) do
+ActiveRecord::Schema.define(version: 2023_06_11_212805) do
 
   create_table "admin_users", charset: "utf8mb4", comment: "管理者", force: :cascade do |t|
     t.string "name", null: false, comment: "氏名"
@@ -37,6 +37,21 @@ ActiveRecord::Schema.define(version: 2023_02_17_225608) do
     t.index ["email"], name: "index_admin_users1", unique: true
     t.index ["reset_password_token"], name: "index_admin_users2", unique: true
     t.index ["unlock_token"], name: "index_admin_users4", unique: true
+  end
+
+  create_table "delayed_jobs", charset: "utf8mb4", force: :cascade do |t|
+    t.integer "priority", default: 0, null: false
+    t.integer "attempts", default: 0, null: false
+    t.text "handler", null: false
+    t.text "last_error"
+    t.datetime "run_at"
+    t.datetime "locked_at"
+    t.datetime "failed_at"
+    t.string "locked_by"
+    t.string "queue"
+    t.datetime "created_at", precision: 6
+    t.datetime "updated_at", precision: 6
+    t.index ["priority", "run_at"], name: "delayed_jobs_priority"
   end
 
   create_table "holidays", charset: "utf8mb4", comment: "祝日", force: :cascade do |t|
