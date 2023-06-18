@@ -11,7 +11,8 @@ RSpec.describe :space, type: :task do
   #     ＋招待: ない, ある
   #   ドライラン: true, false
   describe 'space:destroy' do
-    let(:task) { Rake.application['space:destroy'] }
+    subject { Rake.application['space:destroy'].invoke(dry_run) }
+
     before_all do
       user = FactoryBot.create(:user)
       FactoryBot.create(:space, created_user: user, destroy_schedule_at: nil)
@@ -44,7 +45,7 @@ RSpec.describe :space, type: :task do
       let!(:before_invitation_count)    { Invitation.count }
       let!(:before_user_count)          { User.count }
       it '削除される（ユーザー除く）' do
-        task.invoke(dry_run)
+        subject
         expect(Space.count).to eq(before_space_count - spaces.count)
         expect(Space.exists?(id: spaces)).to eq(false)
         expect(Member.count).to eq(before_member_count - members.count)
@@ -66,7 +67,7 @@ RSpec.describe :space, type: :task do
       let!(:before_invitation_count)    { Invitation.count }
       let!(:before_user_count)          { User.count }
       it '削除されない' do
-        task.invoke(dry_run)
+        subject
         expect(Space.count).to eq(before_space_count)
         expect(Member.count).to eq(before_member_count)
         expect(Download.count).to eq(before_download_count)

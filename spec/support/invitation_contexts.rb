@@ -4,18 +4,18 @@ shared_context '招待URL一覧作成' do |active_count, expired_count, deleted_
     created_user = FactoryBot.create(:user)
     last_updated_user = FactoryBot.create(:user)
     destroy_user = FactoryBot.build_stubbed(:user)
+
+    other_member = FactoryBot.create(:member, :admin, user: user)
+    FactoryBot.create(:invitation, :active, space: other_member.space, created_user: created_user, last_updated_user: nil) # NOTE: 対象外
+
     FactoryBot.create_list(:invitation, active_count, :active, space: space, created_user_id: destroy_user.id,
                                                                last_updated_user: last_updated_user, created_at: now - 4.days, updated_at: now - 5.days) +
       FactoryBot.create_list(:invitation, expired_count, :expired, space: space, created_user: created_user,
                                                                    last_updated_user_id: destroy_user.id, created_at: now - 3.days, updated_at: now - 2.days) +
       FactoryBot.create_list(:invitation, deleted_count, :deleted, space: space, created_user: created_user,
-                                                                   created_at: now - 1.day, updated_at: now - 1.day) +
+                                                                   last_updated_user: nil, created_at: now - 1.day, updated_at: now - 1.day) +
       FactoryBot.create_list(:invitation, email_joined_count, :email_joined, space: space, created_user: created_user,
-                                                                             created_at: now, updated_at: now)
-  end
-  before_all do # NOTE: 対象外
-    member = FactoryBot.create(:member, :admin, user: user)
-    FactoryBot.create(:invitation, :active, space: member.space)
+                                                                             last_updated_user: nil, created_at: now, updated_at: now)
   end
 end
 

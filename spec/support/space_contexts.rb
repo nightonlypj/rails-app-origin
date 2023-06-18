@@ -6,7 +6,7 @@ shared_context 'スペース一覧作成' do |public_admin_count, public_none_co
     last_updated_user = FactoryBot.create(:user)
     destroy_user = FactoryBot.build_stubbed(:user)
 
-    # 公開（管理者）
+    # 公開（権限が管理者）
     @public_spaces = FactoryBot.create_list(:space, public_admin_count, :public, description: '公開（管理者）', created_user: created_user,
                                                                                  last_updated_user: last_updated_user, created_at: now - 5.days, updated_at: now - 4.days)
     @public_spaces.each do |space|
@@ -14,9 +14,9 @@ shared_context 'スペース一覧作成' do |public_admin_count, public_none_co
       @members[space.id] = 'admin'
     end
 
-    # 公開（未参加）
+    # 公開（権限がない）
     @public_nojoin_spaces = FactoryBot.create_list(:space, public_none_count, :public, description: '公開（未参加）', created_user: created_user,
-                                                                                       created_at: now - 4.days, updated_at: now - 4.days)
+                                                                                       last_updated_user: nil, created_at: now - 4.days, updated_at: now - 4.days)
 
     # 公開（削除予約済み、削除対象）
     @public_nojoin_destroy_spaces = [
@@ -24,7 +24,7 @@ shared_context 'スペース一覧作成' do |public_admin_count, public_none_co
       FactoryBot.create(:space, :public, :destroy_targeted, description: '公開（削除対象）', created_user: created_user, created_at: now - 3.days, updated_at: now - 3.days)
     ]
 
-    # 非公開（管理者）
+    # 非公開（権限が管理者）
     @private_spaces = []
     if private_admin_count > 0
       spaces = FactoryBot.create_list(:space, private_admin_count, :private, description: '非公開（管理者）', created_user_id: destroy_user.id,
@@ -36,10 +36,10 @@ shared_context 'スペース一覧作成' do |public_admin_count, public_none_co
       @private_spaces += spaces
     end
 
-    # 非公開（閲覧者）
+    # 非公開（権限が閲覧者）
     if private_reader_count > 0
       spaces = FactoryBot.create_list(:space, private_reader_count, :private, description: '非公開（閲覧者）', created_user: created_user,
-                                                                              created_at: now - 1.day, updated_at: now - 1.day)
+                                                                              last_updated_user: nil, created_at: now - 1.day, updated_at: now - 1.day)
       spaces.each do |space|
         FactoryBot.create(:member, :reader, space: space, user: user)
         @members[space.id] = 'reader'
@@ -47,9 +47,9 @@ shared_context 'スペース一覧作成' do |public_admin_count, public_none_co
       @private_spaces += spaces
     end
 
-    # 非公開（未参加）
+    # 非公開（権限がない）
     @private_nojoin_spaces = [FactoryBot.create(:space, :private, description: '非公開（未参加）', created_user: created_user,
-                                                                  created_at: now, updated_at: now)]
+                                                                  last_updated_user: nil, created_at: now, updated_at: now)]
   end
 end
 

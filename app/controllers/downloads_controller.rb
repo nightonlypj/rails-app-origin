@@ -53,7 +53,7 @@ class DownloadsController < ApplicationAuthController
       return render './failure', locals: { errors: @download.errors, alert: t('errors.messages.not_saved.other') }, status: :unprocessable_entity
     end
 
-    DownloadJob.perform_later(@download)
+    DownloadJob.perform_later(@download.id)
     return redirect_to downloads_path(target_id: @download.id) if format_html?
 
     render locals: { notice: t('notice.download.create') }, status: :created

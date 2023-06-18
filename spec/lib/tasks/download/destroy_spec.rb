@@ -11,7 +11,8 @@ RSpec.describe :download, type: :task do
   #     ＋ダウンロードファイル: ない, ある
   #   ドライラン: true, false
   describe 'download:destroy' do
-    let(:task) { Rake.application['download:destroy'] }
+    subject { Rake.application['download:destroy'].invoke(dry_run) }
+
     let_it_be(:before_date) { Time.current - Settings.download_destroy_schedule_days.days - 1.minute }
     let_it_be(:after_date)  { Time.current - Settings.download_destroy_schedule_days.days + 1.minute }
     before_all do
@@ -24,7 +25,7 @@ RSpec.describe :download, type: :task do
     end
     shared_context '削除対象作成' do
       let_it_be(:user) { FactoryBot.create(:user) }
-      let_it_be(:space) { FactoryBot.create(:space) }
+      let_it_be(:space) { FactoryBot.create(:space, created_user: user) }
       let_it_be(:downloads) do
         [
           FactoryBot.create(:download, user: user, space: space, completed_at: nil, requested_at: before_date),
@@ -42,7 +43,7 @@ RSpec.describe :download, type: :task do
       let!(:before_user_count)          { User.count }
       let!(:before_space_count)         { Space.count }
       it '削除される（ユーザー・スペース除く）' do
-        task.invoke(dry_run)
+        subject
         expect(Download.count).to eq(before_download_count - downloads.count)
         expect(Download.exists?(id: downloads)).to eq(false)
         expect(DownloadFile.count).to eq(before_download_file_count - download_files.count)
@@ -57,7 +58,7 @@ RSpec.describe :download, type: :task do
       let!(:before_user_count)          { User.count }
       let!(:before_space_count)         { Space.count }
       it '削除されない' do
-        task.invoke(dry_run)
+        subject
         expect(Download.count).to eq(before_download_count)
         expect(DownloadFile.count).to eq(before_download_file_count)
         expect(User.count).to eq(before_user_count)

@@ -28,11 +28,11 @@ class Invitation < ApplicationRecord
 
   # ステータス
   def status
-    return :email_joined if email_joined_at.present?
-    return :deleted if destroy_schedule_at.present?
-    return :expired if ended_at.present? && ended_at < Time.current
+    return :email_joined if email_joined_at.present? # 参加済み
+    return :deleted if destroy_schedule_at.present? # 削除済み
+    return :expired if ended_at.present? && ended_at < Time.current # 期限切れ
 
-    :active
+    :active # 有効
   end
 
   # ステータス（表示）

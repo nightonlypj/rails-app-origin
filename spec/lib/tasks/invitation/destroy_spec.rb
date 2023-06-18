@@ -11,7 +11,8 @@ RSpec.describe :invitation, type: :task do
   #     ＋スペース: ある
   #   ドライラン: true, false
   describe 'invitation:destroy' do
-    let(:task) { Rake.application['invitation:destroy'] }
+    subject { Rake.application['invitation:destroy'].invoke(dry_run) }
+
     let_it_be(:before_date) { Time.current - Settings.invitation_destroy_schedule_days.days - 1.minute }
     let_it_be(:after_date)  { Time.current - Settings.invitation_destroy_schedule_days.days + 1.minute }
     before_all do
@@ -70,7 +71,7 @@ RSpec.describe :invitation, type: :task do
       let!(:before_user_count)       { User.count }
       let!(:before_space_count)      { Space.count }
       it '削除される（ユーザー・スペース除く）' do
-        task.invoke(dry_run)
+        subject
         expect(Invitation.count).to eq(before_invitation_count - invitations.count)
         expect(Invitation.exists?(id: invitations)).to eq(false)
         expect(User.count).to eq(before_user_count)
@@ -82,7 +83,7 @@ RSpec.describe :invitation, type: :task do
       let!(:before_user_count)       { User.count }
       let!(:before_space_count)      { Space.count }
       it '削除されない' do
-        task.invoke(dry_run)
+        subject
         expect(Invitation.count).to eq(before_invitation_count)
         expect(User.count).to eq(before_user_count)
         expect(Space.count).to eq(before_space_count)

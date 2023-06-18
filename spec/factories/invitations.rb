@@ -30,6 +30,7 @@ FactoryBot.define do
       domains { nil }
     end
 
+    # ステータス
     trait :active do
       # ended_at { nil }
       # destroy_requested_at { nil }

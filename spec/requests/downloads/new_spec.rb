@@ -17,7 +17,7 @@ RSpec.describe 'Downloads', type: :request do
 
     shared_context 'valid_condition' do
       let(:params) { { model: 'member', space_code: space.code } }
-      include_context 'set_member_power', :admin
+      before_all { FactoryBot.create(:member, space: space, user: user) if user.present? }
     end
 
     # テスト内容
@@ -37,12 +37,12 @@ RSpec.describe 'Downloads', type: :request do
     end
 
     shared_examples_for '[ログイン中/削除予約済み][member]権限がある' do |power|
-      include_context 'set_member_power', power
+      before_all { FactoryBot.create(:member, power, space: space, user: user) }
       it_behaves_like 'ToOK(html)'
       it_behaves_like 'ToNG(json)', 406
     end
     shared_examples_for '[ログイン中/削除予約済み][member]権限がない' do |power|
-      include_context 'set_member_power', power
+      before_all { FactoryBot.create(:member, power, space: space, user: user) if power.present? }
       it_behaves_like 'ToNG(html)', 403
       it_behaves_like 'ToNG(json)', 406
     end

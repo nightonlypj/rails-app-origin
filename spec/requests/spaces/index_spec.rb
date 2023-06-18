@@ -38,6 +38,10 @@ RSpec.describe 'Spaces', type: :request do
   # テストパターン
   #   未ログイン, ログイン中, ログイン中（削除予約済み）, APIログイン中, APIログイン中（削除予約済み）
   #   スペース: 存在しない, 最大表示数と同じ, 最大表示数より多い
+  #     スペース: 公開, 非公開, 削除予約済み, 削除対象
+  #     権限: ある（管理者〜閲覧者）, ない
+  #     作成者: いる, アカウント削除済み
+  #     最終更新者: いない, いる, アカウント削除済み
   #   ＋URLの拡張子: ない, .json
   #   ＋Acceptヘッダ: HTMLが含まれる, JSONが含まれる
   describe 'GET #index' do
@@ -340,9 +344,10 @@ RSpec.describe 'Spaces', type: :request do
   #   部分一致（大文字・小文字を区別しない）, 不一致: 名称, 説明
   describe 'GET #index (.search)' do
     subject { get spaces_path(format: subject_format), params: params, headers: auth_headers.merge(accept_headers) }
-    let_it_be(:nojoin_space) { FactoryBot.create(:space, :public, name: 'space(Aaa)', description: 'description(Bbb)') }
-    let_it_be(:join_space)   { FactoryBot.create(:space, :public, name: 'space(Bbb)', description: 'description(Aaa)') }
-    before_all { FactoryBot.create(:space) } # NOTE: 対象外
+    let_it_be(:created_user) { FactoryBot.create(:user) }
+    let_it_be(:nojoin_space) { FactoryBot.create(:space, :public, name: 'space(Aaa)', description: 'description(Bbb)', created_user: created_user) }
+    let_it_be(:join_space)   { FactoryBot.create(:space, :public, name: 'space(Bbb)', description: 'description(Aaa)', created_user: created_user) }
+    before_all { FactoryBot.create(:space, created_user: created_user) } # NOTE: 対象外
 
     # テスト内容
     shared_examples_for 'ToNG[0件]' do

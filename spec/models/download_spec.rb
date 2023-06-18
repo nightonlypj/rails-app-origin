@@ -1,6 +1,8 @@
 require 'rails_helper'
 
 RSpec.describe Download, type: :model do
+  let_it_be(:user) { FactoryBot.create(:user) }
+
   # 対象
   # テストパターン
   #   ない, 正常値
@@ -195,7 +197,7 @@ RSpec.describe Download, type: :model do
   #   CSV, TSV
   describe '#col_sep' do
     subject { download.col_sep }
-    let(:download) { FactoryBot.create(:download, format: format) }
+    let(:download) { FactoryBot.create(:download, user: user, format: format) }
 
     context 'CSV' do
       let(:format) { :csv }
@@ -212,7 +214,7 @@ RSpec.describe Download, type: :model do
   #   CR+LF, LF, CR
   describe '#row_sep' do
     subject { download.row_sep }
-    let(:download) { FactoryBot.create(:download, newline_code: newline_code) }
+    let(:download) { FactoryBot.create(:download, user: user, newline_code: newline_code) }
 
     context 'CR+LF' do
       let(:newline_code) { :crlf }

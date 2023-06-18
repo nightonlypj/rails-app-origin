@@ -3,7 +3,7 @@ require 'rails_helper'
 RSpec.describe 'invitations/edit', type: :view do
   before_all do
     @space = FactoryBot.create(:space)
-    @current_member = FactoryBot.create(:member, :admin, space: @space)
+    @current_member = FactoryBot.create(:member, :admin, space: @space, user: @space.created_user)
   end
 
   # テスト内容

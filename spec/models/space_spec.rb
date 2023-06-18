@@ -1,6 +1,8 @@
 require 'rails_helper'
 
 RSpec.describe Space, type: :model do
+  let_it_be(:user) { FactoryBot.create(:user) }
+
   # コード
   # テストパターン
   #   ない, 正常値, 重複
@@ -19,7 +21,7 @@ RSpec.describe Space, type: :model do
       it_behaves_like 'Valid'
     end
     context '重複' do
-      before { FactoryBot.create(:space, code: code) }
+      before { FactoryBot.create(:space, code: code, created_user: user) }
       let(:code) { valid_code }
       let(:messages) { { code: [get_locale('activerecord.errors.models.space.attributes.code.taken')] } }
       it_behaves_like 'InValid'
@@ -109,17 +111,14 @@ RSpec.describe Space, type: :model do
     subject { space.destroy_reserved? }
     let(:space) { FactoryBot.build_stubbed(:space, destroy_schedule_at: destroy_schedule_at) }
 
+    # テストケース
     context '削除予定日時がない（予約なし）' do
       let(:destroy_schedule_at) { nil }
-      it 'false' do
-        is_expected.to eq(false)
-      end
+      it_behaves_like 'Value', false
     end
     context '削除予定日時がある（予約済み）' do
       let(:destroy_schedule_at) { Time.current }
-      it 'true' do
-        is_expected.to eq(true)
-      end
+      it_behaves_like 'Value', true
     end
   end
 
@@ -128,7 +127,7 @@ RSpec.describe Space, type: :model do
   #   削除予約なし
   describe '#set_destroy_reserve!' do
     subject { space.set_destroy_reserve! }
-    let(:space) { FactoryBot.create(:space) }
+    let(:space) { FactoryBot.create(:space, created_user: user) }
     let(:current_space) { Space.find(space.id) }
 
     let!(:start_time) { Time.current.floor }
@@ -145,7 +144,7 @@ RSpec.describe Space, type: :model do
   #   削除予約済み
   describe '#set_undo_destroy_reserve!' do
     subject { space.set_undo_destroy_reserve! }
-    let(:space) { FactoryBot.create(:space, :destroy_reserved) }
+    let(:space) { FactoryBot.create(:space, :destroy_reserved, created_user: user) }
     let(:current_space) { Space.find(space.id) }
 
     it '削除依頼日時・削除予定日時がなしに変更される' do
@@ -185,7 +184,7 @@ RSpec.describe Space, type: :model do
 
     # テストケース
     context '画像がない' do
-      let_it_be(:space) { FactoryBot.create(:space) }
+      let_it_be(:space) { FactoryBot.create(:space, created_user: user) }
       it_behaves_like 'Def', :mini, true
       it_behaves_like 'Def', :small, true
       it_behaves_like 'Def', :medium, true
@@ -195,7 +194,7 @@ RSpec.describe Space, type: :model do
     end
     context '画像がある' do
       let_it_be(:image) { fixture_file_upload(TEST_IMAGE_FILE, TEST_IMAGE_TYPE) }
-      let_it_be(:space) { FactoryBot.create(:space, image: image) }
+      let_it_be(:space) { FactoryBot.create(:space, image: image, created_user: user) }
       it_behaves_like 'OK', :mini, false
       it_behaves_like 'OK', :small, false
       it_behaves_like 'OK', :medium, false
@@ -213,11 +212,11 @@ RSpec.describe Space, type: :model do
 
     # テストケース
     context '更新日時が作成日時と同じ' do
-      let(:space) { FactoryBot.create(:space) }
+      let(:space) { FactoryBot.create(:space, created_user: user) }
       it_behaves_like 'Value', nil, 'nil'
     end
     context '更新日時が作成日時以降' do
-      let(:space) { FactoryBot.create(:space, created_at: Time.current - 1.hour, updated_at: Time.current) }
+      let(:space) { FactoryBot.create(:space, created_user: user, created_at: Time.current - 1.hour, updated_at: Time.current) }
       it '更新日時' do
         is_expected.to eq(space.updated_at)
       end

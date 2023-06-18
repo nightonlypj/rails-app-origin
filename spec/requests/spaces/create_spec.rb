@@ -8,7 +8,8 @@ RSpec.describe 'Spaces', type: :request do
   # POST /spaces/create(.json) スペース作成API(処理)
   # テストパターン
   #   未ログイン, ログイン中, ログイン中（削除予約済み）, APIログイン中, APIログイン中（削除予約済み）
-  #   パラメータなし, 有効なパラメータ（同名がない, ある）, 無効なパラメータ
+  #   パラメータなし, 有効なパラメータ, 無効なパラメータ
+  #     同名のスペース: ない, ある
   #   ＋URLの拡張子: ない, .json
   #   ＋Acceptヘッダ: HTMLが含まれる, JSONが含まれる
   describe 'POST #create' do
@@ -93,7 +94,7 @@ RSpec.describe 'Spaces', type: :request do
       it_behaves_like 'NG(json)'
       it_behaves_like 'ToNG(json)', 422, { name: [message] }
     end
-    shared_examples_for '[ログイン中]有効なパラメータ（同名がない）' do
+    shared_examples_for '[ログイン中]有効なパラメータ（同名のスペースがない）' do
       let(:params) { { space: attributes } }
       let(:attributes) { valid_attributes }
       if Settings.api_only_mode
@@ -106,7 +107,7 @@ RSpec.describe 'Spaces', type: :request do
       it_behaves_like 'NG(json)'
       it_behaves_like 'ToNG(json)', 401 # NOTE: APIは未ログイン扱い
     end
-    shared_examples_for '[APIログイン中]有効なパラメータ（同名がない）' do
+    shared_examples_for '[APIログイン中]有効なパラメータ（同名のスペースがない）' do
       let(:params) { { space: attributes } }
       let(:attributes) { valid_attributes }
       if Settings.api_only_mode
@@ -119,7 +120,7 @@ RSpec.describe 'Spaces', type: :request do
       it_behaves_like 'OK(json)'
       it_behaves_like 'ToOK(json)'
     end
-    shared_examples_for '[ログイン中]有効なパラメータ（同名がある）' do
+    shared_examples_for '[ログイン中]有効なパラメータ（同名のスペースがある）' do
       let(:params) { { space: exist_attributes } }
       message = get_locale('activerecord.errors.models.space.attributes.name.taken')
       it_behaves_like 'NG(html)'
@@ -131,7 +132,7 @@ RSpec.describe 'Spaces', type: :request do
       it_behaves_like 'NG(json)'
       it_behaves_like 'ToNG(json)', 401 # NOTE: APIは未ログイン扱い
     end
-    shared_examples_for '[APIログイン中]有効なパラメータ（同名がある）' do
+    shared_examples_for '[APIログイン中]有効なパラメータ（同名のスペースがある）' do
       let(:params) { { space: exist_attributes } }
       message = get_locale('activerecord.errors.models.space.attributes.name.taken')
       it_behaves_like 'NG(html)'
@@ -183,8 +184,8 @@ RSpec.describe 'Spaces', type: :request do
     context 'ログイン中' do
       include_context 'ログイン処理'
       it_behaves_like '[ログイン中]パラメータなし'
-      it_behaves_like '[ログイン中]有効なパラメータ（同名がない）'
-      it_behaves_like '[ログイン中]有効なパラメータ（同名がある）'
+      it_behaves_like '[ログイン中]有効なパラメータ（同名のスペースがない）'
+      it_behaves_like '[ログイン中]有効なパラメータ（同名のスペースがある）'
       it_behaves_like '[ログイン中]無効なパラメータ'
     end
     context 'ログイン中（削除予約済み）' do
@@ -202,8 +203,8 @@ RSpec.describe 'Spaces', type: :request do
     context 'APIログイン中' do
       include_context 'APIログイン処理'
       it_behaves_like '[APIログイン中]パラメータなし'
-      it_behaves_like '[APIログイン中]有効なパラメータ（同名がない）'
-      it_behaves_like '[APIログイン中]有効なパラメータ（同名がある）'
+      it_behaves_like '[APIログイン中]有効なパラメータ（同名のスペースがない）'
+      it_behaves_like '[APIログイン中]有効なパラメータ（同名のスペースがある）'
       it_behaves_like '[APIログイン中]無効なパラメータ'
     end
     context 'APIログイン中（削除予約済み）' do

@@ -14,11 +14,11 @@ RSpec.describe 'Members', type: :request do
   #   ＋Acceptヘッダ: HTMLが含まれる, JSONが含まれる
   describe 'GET #show' do
     subject { get member_path(space_code: space.code, user_code: show_user.code, format: subject_format), headers: auth_headers.merge(accept_headers) }
-
     let_it_be(:space_not)     { FactoryBot.build_stubbed(:space) }
     let_it_be(:space_public)  { FactoryBot.create(:space, :public) }
-    let_it_be(:space_private) { FactoryBot.create(:space, :private) }
+    let_it_be(:space_private) { FactoryBot.create(:space, :private, created_user: space_public.created_user) }
     let_it_be(:other_user)    { FactoryBot.create(:user) }
+
     shared_context 'valid_condition' do
       let_it_be(:space)     { space_public }
       let_it_be(:show_user) { other_user }

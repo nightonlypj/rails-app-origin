@@ -1,24 +1,18 @@
-shared_context 'メンバー一覧作成' do |admin_count, writer_count, reader_count|
+shared_context 'メンバー一覧作成' do |admin_count, reader_count|
   let_it_be(:members) do
     now = Time.current
     invitationed_user = FactoryBot.create(:user)
     last_updated_user = FactoryBot.create(:user)
     destroy_user = FactoryBot.build_stubbed(:user)
-    [FactoryBot.create(:member, power: user_power, space: space, user: user,
-                                last_updated_user: last_updated_user, created_at: now - 4.days, updated_at: now - 5.days)] +
-      FactoryBot.create_list(:member, admin_count, :admin, space: space, invitationed_user_id: destroy_user.id,
-                                                           last_updated_user_id: destroy_user.id, created_at: now - 3.days, updated_at: now - 2.days) +
-      FactoryBot.create_list(:member, writer_count, :writer, space: space, invitationed_user: invitationed_user,
-                                                             created_at: now - 1.days, updated_at: now - 1.days) +
-      FactoryBot.create_list(:member, reader_count, :reader, space: space, invitationed_user: invitationed_user,
-                                                             created_at: now, updated_at: now)
-  end
-  before_all { FactoryBot.create(:member, :admin, user: user) } # NOTE: 対象外
-end
+    FactoryBot.create(:member, :admin, user: user) # NOTE: 対象外
 
-shared_context 'set_member_power' do |power|
-  let(:user_power) { power }
-  let_it_be(:member_myself) { FactoryBot.create(:member, power, space: space, user: user) if power.present? && user.present? }
+    [FactoryBot.create(:member, power: user_power, space: space, user: user, invitationed_user: nil,
+                                last_updated_user: last_updated_user, created_at: now - 3.days, updated_at: now - 4.days)] +
+      FactoryBot.create_list(:member, admin_count, :admin, space: space, invitationed_user_id: destroy_user.id,
+                                                           last_updated_user_id: destroy_user.id, created_at: now - 2.days, updated_at: now - 1.day) +
+      FactoryBot.create_list(:member, reader_count, :reader, space: space, invitationed_user: invitationed_user,
+                                                             last_updated_user: nil, created_at: now, updated_at: now)
+  end
 end
 
 # テスト内容（共通）

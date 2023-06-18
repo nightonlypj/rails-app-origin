@@ -14,14 +14,16 @@ RSpec.describe 'Invitations', type: :request do
   #   スペース: 存在しない, 公開, 非公開
   #   権限: ある（管理者）, ない（投稿者, 閲覧者, なし）
   #   招待URL: ない, 最大表示数と同じ, 最大表示数より多い
+  #     ステータス:  有効, 期限切れ, 削除済み, 参加済み
+  #     作成者: いる, アカウント削除済み
+  #     最終更新者: いない, いる, アカウント削除済み
   #   ＋URLの拡張子: ない, .json
   #   ＋Acceptヘッダ: HTMLが含まれる, JSONが含まれる
   describe 'GET #index' do
     subject { get invitations_path(space_code: space.code, page: subject_page, format: subject_format), headers: auth_headers.merge(accept_headers) }
-
     let_it_be(:space_not)     { FactoryBot.build_stubbed(:space) }
     let_it_be(:space_public)  { FactoryBot.create(:space, :public) }
-    let_it_be(:space_private) { FactoryBot.create(:space, :private) }
+    let_it_be(:space_private) { FactoryBot.create(:space, :private, created_user: space_public.created_user) }
 
     # テスト内容
     shared_examples_for 'ToOK(html/*)' do
@@ -277,24 +279,24 @@ RSpec.describe 'Invitations', type: :request do
     end
 
     shared_examples_for '[ログイン中/削除予約済み][*]権限がある' do |power|
-      include_context 'set_member_power', power
+      before_all { FactoryBot.create(:member, power, space: space, user: user) }
       it_behaves_like '[ログイン中/削除予約済み][*][ある]招待URLがない'
       it_behaves_like '[ログイン中/削除予約済み][*][ある]招待URLが最大表示数と同じ'
       it_behaves_like '[ログイン中/削除予約済み][*][ある]招待URLが最大表示数より多い'
     end
     shared_examples_for '[APIログイン中/削除予約済み][*]権限がある' do |power|
-      include_context 'set_member_power', power
+      before_all { FactoryBot.create(:member, power, space: space, user: user) }
       it_behaves_like '[APIログイン中/削除予約済み][*][ある]招待URLがない'
       it_behaves_like '[APIログイン中/削除予約済み][*][ある]招待URLが最大表示数と同じ'
       it_behaves_like '[APIログイン中/削除予約済み][*][ある]招待URLが最大表示数より多い'
     end
     shared_examples_for '[ログイン中/削除予約済み][*]権限がない' do |power|
-      include_context 'set_member_power', power
+      before_all { FactoryBot.create(:member, power, space: space, user: user) if power.present? }
       it_behaves_like 'ToNG(html)', Settings.api_only_mode ? 406 : 403
       it_behaves_like 'ToNG(json)', 401 # NOTE: APIは未ログイン扱い
     end
     shared_examples_for '[APIログイン中/削除予約済み][*]権限がない' do |power|
-      include_context 'set_member_power', power
+      before_all { FactoryBot.create(:member, power, space: space, user: user) if power.present? }
       it_behaves_like 'ToNG(html)', Settings.api_only_mode ? 406 : 403
       it_behaves_like 'ToNG(json)', 403
     end

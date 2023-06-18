@@ -45,7 +45,7 @@ RSpec.describe 'Downloads', type: :request do
 
     # テストケース
     shared_examples_for '[ログイン中/削除予約済み][成功][ログインユーザー]権限がある' do |power|
-      include_context 'set_member_power', power
+      before_all { FactoryBot.create(:member, power, space: space, user: user) }
       if Settings.api_only_mode
         it_behaves_like 'ToNG(html)', 406
       else
@@ -54,7 +54,7 @@ RSpec.describe 'Downloads', type: :request do
       it_behaves_like 'ToNG(json)', 401 # NOTE: APIは未ログイン扱い
     end
     shared_examples_for '[APIログイン中/削除予約済み][成功][ログインユーザー]権限がある' do |power|
-      include_context 'set_member_power', power
+      before_all { FactoryBot.create(:member, power, space: space, user: user) }
       if Settings.api_only_mode
         it_behaves_like 'ToNG(html)', 406
       else
@@ -63,12 +63,12 @@ RSpec.describe 'Downloads', type: :request do
       it_behaves_like 'ToOK(json)'
     end
     shared_examples_for '[ログイン中/削除予約済み][成功][ログインユーザー]権限がない' do |power|
-      include_context 'set_member_power', power
+      before_all { FactoryBot.create(:member, power, space: space, user: user) if power.present? }
       it_behaves_like 'ToNG(html)', Settings.api_only_mode ? 406 : 403
       it_behaves_like 'ToNG(json)', 401 # NOTE: APIは未ログイン扱い
     end
     shared_examples_for '[APIログイン中/削除予約済み][成功][ログインユーザー]権限がない' do |power|
-      include_context 'set_member_power', power
+      before_all { FactoryBot.create(:member, power, space: space, user: user) if power.present? }
       it_behaves_like 'ToNG(html)', Settings.api_only_mode ? 406 : 403 # NOTE: HTMLもログイン状態になる
       it_behaves_like 'ToNG(json)', 403
     end
@@ -120,7 +120,7 @@ RSpec.describe 'Downloads', type: :request do
     end
     shared_examples_for '[ログイン中/削除予約済み]IDが存在する（状態が成功以外）' do |status|
       include_context 'user_condition', status
-      include_context 'set_member_power', :admin
+      before_all { FactoryBot.create(:member, space: space, user: user) }
       if Settings.api_only_mode
         it_behaves_like 'ToNG(html)', 406
       else
@@ -130,7 +130,7 @@ RSpec.describe 'Downloads', type: :request do
     end
     shared_examples_for '[APIログイン中/削除予約済み]IDが存在する（状態が成功以外）' do |status|
       include_context 'user_condition', status
-      include_context 'set_member_power', :admin
+      before_all { FactoryBot.create(:member, space: space, user: user) }
       if Settings.api_only_mode
         it_behaves_like 'ToNG(html)', 406
       else

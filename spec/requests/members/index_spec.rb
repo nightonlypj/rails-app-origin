@@ -51,14 +51,16 @@ RSpec.describe 'Members', type: :request do
   #   スペース: 存在しない, 公開, 非公開
   #   権限: ある（管理者〜閲覧者）, ない
   #   メンバー: いない, 最大表示数と同じ, 最大表示数より多い
+  #     権限: 管理者〜閲覧者
+  #     招待者: いない, いる, アカウント削除済み
+  #     最終更新者: いない, いる, アカウント削除済み
   #   ＋URLの拡張子: ない, .json
   #   ＋Acceptヘッダ: HTMLが含まれる, JSONが含まれる
   describe 'GET #index' do
     subject { get members_path(space_code: space.code, page: subject_page, format: subject_format), headers: auth_headers.merge(accept_headers) }
-
     let_it_be(:space_not)     { FactoryBot.build_stubbed(:space) }
     let_it_be(:space_public)  { FactoryBot.create(:space, :public) }
-    let_it_be(:space_private) { FactoryBot.create(:space, :private) }
+    let_it_be(:space_private) { FactoryBot.create(:space, :private, created_user: space_public.created_user) }
 
     # テスト内容
     shared_examples_for 'ToOK(html/*)' do
@@ -240,7 +242,7 @@ RSpec.describe 'Members', type: :request do
     shared_examples_for '[ログイン中/削除予約済み][*][ある]メンバーが最大表示数と同じ' do |power|
       let_it_be(:user_power) { power }
       count = Settings.test_members_count
-      include_context 'メンバー一覧作成', count.admin, count.writer, count.reader
+      include_context 'メンバー一覧作成', count.admin, count.reader
       if Settings.api_only_mode
         it_behaves_like 'ToNG(html)', 406
       else
@@ -254,7 +256,7 @@ RSpec.describe 'Members', type: :request do
     shared_examples_for '[APIログイン中/削除予約済み][*][ある]メンバーが最大表示数と同じ' do |power|
       let_it_be(:user_power) { power }
       count = Settings.test_members_count
-      include_context 'メンバー一覧作成', count.admin, count.writer, count.reader
+      include_context 'メンバー一覧作成', count.admin, count.reader
       if Settings.api_only_mode
         it_behaves_like 'ToNG(html)', 406
       else
@@ -270,7 +272,7 @@ RSpec.describe 'Members', type: :request do
     shared_examples_for '[ログイン中/削除予約済み][*][ある]メンバーが最大表示数より多い' do |power|
       let_it_be(:user_power) { power }
       count = Settings.test_members_count
-      include_context 'メンバー一覧作成', count.admin, count.writer, count.reader + 1
+      include_context 'メンバー一覧作成', count.admin, count.reader + 1
       if Settings.api_only_mode
         it_behaves_like 'ToNG(html)', 406
       else
@@ -287,7 +289,7 @@ RSpec.describe 'Members', type: :request do
     shared_examples_for '[APIログイン中/削除予約済み][*][ある]メンバーが最大表示数より多い' do |power|
       let_it_be(:user_power) { power }
       count = Settings.test_members_count
-      include_context 'メンバー一覧作成', count.admin, count.writer, count.reader + 1
+      include_context 'メンバー一覧作成', count.admin, count.reader + 1
       if Settings.api_only_mode
         it_behaves_like 'ToNG(html)', 406
       else
@@ -443,12 +445,12 @@ RSpec.describe 'Members', type: :request do
     end
 
     shared_examples_for '管理者' do |power|
-      include_context 'set_member_power', power
+      before_all { FactoryBot.create(:member, power, space: space, user: user) }
       it_behaves_like '[管理者]部分一致'
       it_behaves_like '[*]不一致'
     end
     shared_examples_for '管理者以外' do |power|
-      include_context 'set_member_power', power
+      before_all { FactoryBot.create(:member, power, space: space, user: user) }
       it_behaves_like '[管理者以外]部分一致'
       it_behaves_like '[*]不一致'
     end
@@ -589,10 +591,7 @@ RSpec.describe 'Members', type: :request do
   #   対象: メンバー, メールアドレス, 権限, 招待者, 招待日時, 最終更新者, 最終更新日時
   #   並び順: ASC, DESC  ※ASCは1つのみ確認
   describe 'GET #index (.order)' do
-    subject { get members_path(space_code: space.code, format: subject_format), params: params, headers: auth_headers.merge(accept_headers) }
-    let(:subject_format) { :json }
-    let(:accept_headers) { ACCEPT_INC_JSON }
-
+    subject { get members_path(space_code: space.code, format: :json), params: params, headers: auth_headers.merge(ACCEPT_INC_JSON) }
     include_context 'APIログイン処理'
     let_it_be(:space) { FactoryBot.create(:space) }
     let_it_be(:members) do

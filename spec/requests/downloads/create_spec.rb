@@ -21,16 +21,11 @@ RSpec.describe 'Downloads', type: :request do
     let_it_be(:invalid_attributes) { valid_attributes.merge(target: nil) }
     let(:current_download) { Download.last }
 
-    shared_context 'valid_condition' do
-      let(:params) { { model: 'member', space_code: space.code, output_items: nil, 'output_items_user.name': '1' } }
-      let(:attributes) { valid_attributes.merge(params) }
-      include_context 'set_member_power', :admin
-    end
-
     # テスト内容
     shared_examples_for 'OK' do
       let!(:start_time) { Time.current.floor }
-      it 'ダウンロードが作成・対象項目が設定される' do
+      before { allow(DownloadJob).to receive(:perform_later).and_return(true) }
+      it 'ダウンロードが作成・対象項目が設定される。DownloadJobが呼ばれる' do
         expect do
           subject
           expect(current_download.user).to eq(user)
@@ -51,6 +46,9 @@ RSpec.describe 'Downloads', type: :request do
           expect(current_download.output_items).to eq(output_items)
           expect(current_download.select_items).to eq(select_items)
           expect(current_download.search_params).to eq(search_params)
+
+          expect(DownloadJob).to have_received(:perform_later).with(current_download.id)
+          expect(DownloadJob).to have_received(:perform_later).exactly(1).time
         end.to change(Download, :count).by(1)
       end
     end
@@ -166,19 +164,19 @@ RSpec.describe 'Downloads', type: :request do
     end
 
     shared_examples_for '[ログイン中/削除予約済み][member]権限がある' do |power|
-      include_context 'set_member_power', power
+      before_all { FactoryBot.create(:member, power, space: space, user: user) }
       it_behaves_like '[ログイン中/削除予約済み][member][ある]パラメータなし'
       it_behaves_like '[ログイン中/削除予約済み][member][ある]有効なパラメータ'
       it_behaves_like '[ログイン中/削除予約済み][member][ある]無効なパラメータ'
     end
     shared_examples_for '[APIログイン中/削除予約済み][member]権限がある' do |power|
-      include_context 'set_member_power', power
+      before_all { FactoryBot.create(:member, power, space: space, user: user) }
       it_behaves_like '[APIログイン中/削除予約済み][member][ある]パラメータなし'
       it_behaves_like '[APIログイン中/削除予約済み][member][ある]有効なパラメータ'
       it_behaves_like '[APIログイン中/削除予約済み][member][ある]無効なパラメータ'
     end
     shared_examples_for '[ログイン中/削除予約済み][member]権限がない' do |power|
-      include_context 'set_member_power', power
+      before_all { FactoryBot.create(:member, power, space: space, user: user) if power.present? }
       let(:attributes) { valid_attributes.merge(params) }
       it_behaves_like 'NG(html)'
       it_behaves_like 'ToNG(html)', Settings.api_only_mode ? 406 : 403
@@ -186,7 +184,7 @@ RSpec.describe 'Downloads', type: :request do
       it_behaves_like 'ToNG(json)', 401 # NOTE: APIは未ログイン扱い
     end
     shared_examples_for '[APIログイン中/削除予約済み][member]権限がない' do |power|
-      include_context 'set_member_power', power
+      before_all { FactoryBot.create(:member, power, space: space, user: user) if power.present? }
       let(:attributes) { valid_attributes.merge(params) }
       it_behaves_like 'NG(html)'
       it_behaves_like 'ToNG(html)', Settings.api_only_mode ? 406 : 403 # NOTE: HTMLもログイン状態になる
@@ -306,7 +304,8 @@ RSpec.describe 'Downloads', type: :request do
 
     context '未ログイン' do
       include_context '未ログイン処理'
-      include_context 'valid_condition'
+      let(:params) { { model: 'member', space_code: space.code, output_items: nil, 'output_items_user.name': '1' } }
+      let(:attributes) { valid_attributes.merge(params) }
       it_behaves_like 'NG(html)'
       if Settings.api_only_mode
         it_behaves_like 'ToNG(html)', 406

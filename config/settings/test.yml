@@ -60,10 +60,9 @@ invitation_memo_maximum: 14 # NOTE: (6+8?)以上 = "memo(#{n})"
 
 ## メンバー
 # 一覧のデフォルト最大表示件数
-default_members_limit: 4 # NOTE: 高速化の為（下記の合計値+1と一致）
+default_members_limit: 3 # NOTE: 高速化の為（下記の合計値+1と一致）
 test_members_count:
   admin: 1
-  writer: 1
   reader: 1
 job_members_limit: 2
 # メールアドレスの最大件数

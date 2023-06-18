@@ -3,7 +3,7 @@ require 'rails_helper'
 RSpec.describe 'members/index', type: :view do
   before_all do
     @space = FactoryBot.create(:space)
-    @current_member = FactoryBot.create(:member, space: @space)
+    @current_member = FactoryBot.create(:member, space: @space, user: @space.created_user)
     @power = {}
     @members = Member.page(1).per(2)
   end

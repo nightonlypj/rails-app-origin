@@ -13,13 +13,13 @@ RSpec.describe 'Members', type: :request do
   #   ＋Acceptヘッダ: HTMLが含まれる, JSONが含まれる
   describe 'GET #result' do
     subject { get result_member_path(space_code: space.code, format: subject_format), headers: auth_headers.merge(accept_headers) }
-
     let_it_be(:space_not)     { FactoryBot.build_stubbed(:space) }
     let_it_be(:space_public)  { FactoryBot.create(:space, :public) }
-    let_it_be(:space_private) { FactoryBot.create(:space, :private) }
+    let_it_be(:space_private) { FactoryBot.create(:space, :private, created_user: space_public.created_user) }
+
     shared_context 'valid_condition' do
       let_it_be(:space) { space_public }
-      include_context 'set_member_power', :admin
+      before_all { FactoryBot.create(:member, space: space, user: user) if user.present? }
       include_context 'set_flash_data'
     end
     shared_context 'set_flash_data' do
@@ -97,13 +97,13 @@ RSpec.describe 'Members', type: :request do
     end
 
     shared_examples_for '[ログイン中][*]権限がある' do |power|
-      include_context 'set_member_power', power
+      before_all { FactoryBot.create(:member, power, space: space, user: user) }
       it_behaves_like '[ログイン中][*][ある]flashがある（3件）'
       it_behaves_like '[ログイン中][*][ある]flashがある（0件）'
       it_behaves_like '[ログイン中][*][ある]flashがない'
     end
     shared_examples_for '[ログイン中][*]権限がない' do |power|
-      include_context 'set_member_power', power
+      before_all { FactoryBot.create(:member, power, space: space, user: user) if power.present? }
       it_behaves_like 'ToNG(html)', 403
       it_behaves_like 'ToNG(json)', 406
     end

@@ -12,13 +12,13 @@ RSpec.describe 'Invitations', type: :request do
   #   ＋Acceptヘッダ: HTMLが含まれる, JSONが含まれる
   describe 'GET #new' do
     subject { get new_invitation_path(space_code: space.code, format: subject_format), headers: auth_headers.merge(accept_headers) }
-
     let_it_be(:space_not)     { FactoryBot.build_stubbed(:space) }
     let_it_be(:space_public)  { FactoryBot.create(:space, :public) }
-    let_it_be(:space_private) { FactoryBot.create(:space, :private) }
+    let_it_be(:space_private) { FactoryBot.create(:space, :private, created_user: space_public.created_user) }
+
     shared_context 'valid_condition' do
       let_it_be(:space) { space_public }
-      include_context 'set_member_power', :admin
+      before_all { FactoryBot.create(:member, space: space, user: user) if user.present? }
     end
 
     # テスト内容
@@ -39,12 +39,12 @@ RSpec.describe 'Invitations', type: :request do
     end
 
     shared_examples_for '[ログイン中][*]権限がある' do |power|
-      include_context 'set_member_power', power
+      before_all { FactoryBot.create(:member, power, space: space, user: user) }
       it_behaves_like 'ToOK(html)'
       it_behaves_like 'ToNG(json)', 406
     end
     shared_examples_for '[ログイン中][*]権限がない' do |power|
-      include_context 'set_member_power', power
+      before_all { FactoryBot.create(:member, power, space: space, user: user) if power.present? }
       it_behaves_like 'ToNG(html)', 403
       it_behaves_like 'ToNG(json)', 406
     end

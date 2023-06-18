@@ -9,20 +9,20 @@ RSpec.describe DownloadJob, type: :job do
   #   権限: ある（管理者）, ない（投稿者, 閲覧者）, なし
   #   対象/形式/文字コード/改行コード: 選択項目/CSV/Shift_JIS/CR+LF, 検索/CSV/EUC-JP/CR, 全て/TSV/UTF-8/LF
   describe '.perform' do
-    let(:download_job) { described_class.new }
-    subject { download_job.perform(download) }
+    subject { job.perform(download.id) }
+    let(:job) { described_class.new }
+
+    let_it_be(:user)  { FactoryBot.create(:user) }
+    let_it_be(:space) { FactoryBot.create(:space, created_user: user) }
+    let(:current_download)      { Download.find(download.id) }
+    let(:current_download_file) { DownloadFile.find_by(download: current_download) }
+
+    # テスト内容
     before do # NOTE: let_it_beだと他のテストでセットした値が残る為、初期化
       download.status = :waiting
       download.error_message = nil
       download.completed_at = nil
     end
-
-    let_it_be(:user)  { FactoryBot.create(:user) }
-    let_it_be(:space) { FactoryBot.create(:space) }
-    let(:current_download)      { Download.find(download.id) }
-    let(:current_download_file) { DownloadFile.find_by(download: current_download) }
-
-    # テスト内容
     shared_examples_for 'OK' do
       let!(:start_time) { Time.current.floor }
       let(:result_body) do
@@ -59,7 +59,7 @@ RSpec.describe DownloadJob, type: :job do
       it '例外が発生し、対象項目が設定される' do
         subject
       rescue StandardError => e
-        download_job.status_failure(e) # NOTE: Specだとrescue_fromが呼び出されない為
+        job.status_failure(e) # NOTE: Specだとrescue_fromが呼び出されない為
         expect(current_download.status.to_sym).to eq(:failure)
         expect(current_download.error_message).to eq(message)
         expect(current_download.completed_at).to be_between(start_time, Time.current)
@@ -117,20 +117,20 @@ RSpec.describe DownloadJob, type: :job do
                                      target: :all,
                                      format: :tsv, char_code: :utf8, newline_code: :lf)
       end
-      let(:members) { [member_myself, member2, member1] }
+      let(:members) { [member, member2, member1] }
       include_context 'set_member_body'
       it_behaves_like 'OK'
     end
 
     shared_examples_for '[member]権限がある' do |power|
-      include_context 'set_member_power', power
+      let_it_be(:member) { FactoryBot.create(:member, power, space: space, user: user) }
       let_it_be(:output_items) { I18n.t('items.member').stringify_keys.keys }
       it_behaves_like '[member][ある]選択項目/CSV/Shift_JIS/CR+LF'
       it_behaves_like '[member][ある]検索/CSV/EUC-JP/CR'
       it_behaves_like '[member][ある]全て/TSV/UTF-8/LF'
     end
     shared_examples_for '[member]権限がない' do |power|
-      include_context 'set_member_power', power
+      let_it_be(:member) { FactoryBot.create(:member, power, space: space, user: user) }
       it_behaves_like 'ToRaise', 'power not found.'
       it_behaves_like 'NG', 'power not found.'
     end

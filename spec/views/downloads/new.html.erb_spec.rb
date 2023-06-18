@@ -4,7 +4,7 @@ RSpec.describe 'downloads/new', type: :view do
   before_all do
     @model = :member
     @space = FactoryBot.create(:space)
-    @current_member = FactoryBot.create(:member, space: @space)
+    @current_member = FactoryBot.create(:member, space: @space, user: @space.created_user)
     @enable_target = ['all']
     @items = t("items.#{@model}")
 

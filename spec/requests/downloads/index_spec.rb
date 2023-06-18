@@ -14,6 +14,12 @@ RSpec.describe 'Downloads', type: :request do
   # テストパターン
   #   未ログイン, ログイン中, ログイン中（削除予約済み）, APIログイン中, APIログイン中（削除予約済み）
   #   ダウンロード結果: 存在しない, 最大表示数と同じ, 最大表示数より多い
+  #     ステータス: 処理待ち, 処理中, 成功, 失敗
+  #     モデル: メンバー
+  #     対象: 選択項目, 検索, 全て
+  #     形式: CSV, TSV
+  #     文字コード: Shift_JIS, EUC-JP, UTF-8
+  #     改行コード: CR+LF, LF, CR
   #   ＋URLの拡張子: ない, .json
   #   ＋Acceptヘッダ: HTMLが含まれる, JSONが含まれる
   describe 'GET #index' do
