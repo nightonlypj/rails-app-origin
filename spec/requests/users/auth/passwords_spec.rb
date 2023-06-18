@@ -39,6 +39,7 @@ RSpec.describe 'Users::Auth::Passwords', type: :request do
     let(:invalid_attributes)     { { email: not_user[:email], redirect_url: FRONT_SITE_URL } }
     let(:invalid_attributes_nil) { { email: send_user_unlocked.email, redirect_url: nil } }
     let(:invalid_attributes_bad) { { email: send_user_unlocked.email, redirect_url: BAD_SITE_URL } }
+
     include_context 'Authテスト内容'
     let(:current_user) { nil }
 
@@ -416,7 +417,9 @@ RSpec.describe 'Users::Auth::Passwords', type: :request do
   # テストパターン
   #   未ログイン, ログイン中, APIログイン中
   #   トークン: 期限内（未ロック, ロック中, メール未確認, メールアドレス変更中）, 期限切れ, 存在しない, ない, 空
-  #   パラメータなし, 有効なパラメータ, 無効なパラメータ（なし, 確認なし）
+  #   パラメータなし, 有効なパラメータ, 無効なパラメータ
+  #     パスワード: ない, ある
+  #     パスワード確認: ない, ある
   #   ＋URLの拡張子: .json, ない
   #   ＋Acceptヘッダ: JSONが含まれる, JSONが含まれない
   describe 'POST #update' do
@@ -425,6 +428,7 @@ RSpec.describe 'Users::Auth::Passwords', type: :request do
     let(:valid_attributes)           { { reset_password_token: reset_password_token, password: new_password, password_confirmation: new_password } }
     let(:invalid_attributes)         { { reset_password_token: reset_password_token, password: nil, password_confirmation: nil } }
     let(:invalid_attributes_confirm) { { reset_password_token: reset_password_token, password: new_password, password_confirmation: nil } }
+
     include_context 'Authテスト内容'
     let(:current_user) { User.find(send_user.id) }
 
@@ -587,7 +591,7 @@ RSpec.describe 'Users::Auth::Passwords', type: :request do
       # it_behaves_like 'ToMsg', NilClass, 0, nil, 'devise_token_auth.passwords.successfully_updated', nil, nil
       it_behaves_like 'ToMsg', NilClass, 0, nil, nil, 'devise.failure.already_authenticated', nil
     end
-    shared_examples_for '[未ログイン/ログイン中][期限内]無効なパラメータ（なし）' do
+    shared_examples_for '[未ログイン/ログイン中][期限内]無効なパラメータ（パスワードがない）' do
       let(:params) { invalid_attributes }
       it_behaves_like 'NG'
       it_behaves_like 'ToNG', 422, false, false, false
@@ -595,7 +599,7 @@ RSpec.describe 'Users::Auth::Passwords', type: :request do
       error_msg = 'activerecord.errors.models.user.attributes.password.blank'
       it_behaves_like 'ToMsg', Hash, 2, error_msg, nil, 'errors.messages.not_saved.one', nil
     end
-    shared_examples_for '[APIログイン中][期限内/期限切れ]無効なパラメータ（なし）' do
+    shared_examples_for '[APIログイン中][期限内/期限切れ]無効なパラメータ（パスワードがない）' do
       let(:params) { invalid_attributes }
       it_behaves_like 'NG'
       # it_behaves_like 'ToNG', 422, false, false, false
@@ -603,14 +607,14 @@ RSpec.describe 'Users::Auth::Passwords', type: :request do
       # it_behaves_like 'ToMsg', Array, 1, 'devise_token_auth.passwords.missing_passwords', nil, nil, nil
       it_behaves_like 'ToMsg', NilClass, 0, nil, nil, 'devise.failure.already_authenticated', nil
     end
-    shared_examples_for '[未ログイン/ログイン中][期限切れ]無効なパラメータ（なし）' do
+    shared_examples_for '[未ログイン/ログイン中][期限切れ]無効なパラメータ（パスワードがない）' do
       let(:params) { invalid_attributes }
       it_behaves_like 'NG'
       it_behaves_like 'ToNG', 422, false, false, false
       # it_behaves_like 'ToMsg', Array, 1, 'devise_token_auth.passwords.missing_passwords', nil, nil, nil
       it_behaves_like 'ToMsg', NilClass, 0, nil, nil, 'activerecord.errors.models.user.attributes.reset_password_token.invalid', nil
     end
-    shared_examples_for '[未ログイン/ログイン中][存在しない/ない/空]無効なパラメータ（なし）' do
+    shared_examples_for '[未ログイン/ログイン中][存在しない/ない/空]無効なパラメータ（パスワードがない）' do
       let(:params) { invalid_attributes }
       # it_behaves_like 'NG' # NOTE: トークンが存在しない為、送信日時がない
       # it_behaves_like 'ToNG', 401, false, false, false
@@ -618,7 +622,7 @@ RSpec.describe 'Users::Auth::Passwords', type: :request do
       # it_behaves_like 'ToMsg', Array, 1, 'Unauthorized', nil, nil, nil
       it_behaves_like 'ToMsg', NilClass, 0, nil, nil, 'activerecord.errors.models.user.attributes.reset_password_token.invalid', nil
     end
-    shared_examples_for '[APIログイン中][存在しない/空]無効なパラメータ（なし）' do
+    shared_examples_for '[APIログイン中][存在しない/空]無効なパラメータ（パスワードがない）' do
       let(:params) { invalid_attributes }
       # it_behaves_like 'NG' # NOTE: トークンが存在しない為、送信日時がない
       # it_behaves_like 'ToNG', 401, false, false, false
@@ -626,7 +630,7 @@ RSpec.describe 'Users::Auth::Passwords', type: :request do
       # it_behaves_like 'ToMsg', Array, 1, 'Unauthorized', nil, nil, nil
       it_behaves_like 'ToMsg', NilClass, 0, nil, nil, 'devise.failure.already_authenticated', nil
     end
-    shared_examples_for '[APIログイン中][ない]無効なパラメータ（なし）' do
+    shared_examples_for '[APIログイン中][ない]無効なパラメータ（パスワードがない）' do
       let(:params) { invalid_attributes }
       # it_behaves_like 'NG' # NOTE: トークンが存在しない為、送信日時がない
       # it_behaves_like 'ToNG', 422, true, true, false
@@ -634,7 +638,7 @@ RSpec.describe 'Users::Auth::Passwords', type: :request do
       # it_behaves_like 'ToMsg', Array, 1, 'devise_token_auth.passwords.missing_passwords', nil, nil, nil
       it_behaves_like 'ToMsg', NilClass, 0, nil, nil, 'devise.failure.already_authenticated', nil
     end
-    shared_examples_for '[未ログイン/ログイン中][期限内]無効なパラメータ（確認なし）' do
+    shared_examples_for '[未ログイン/ログイン中][期限内]無効なパラメータ（パスワード確認がない）' do
       let(:params) { invalid_attributes_confirm }
       it_behaves_like 'NG'
       it_behaves_like 'ToNG', 422, false, false, false
@@ -642,7 +646,7 @@ RSpec.describe 'Users::Auth::Passwords', type: :request do
       error_msg = 'activerecord.errors.models.user.attributes.password_confirmation.confirmation'
       it_behaves_like 'ToMsg', Hash, 2, error_msg, nil, 'errors.messages.not_saved.one', nil
     end
-    shared_examples_for '[APIログイン中][期限内/期限切れ]無効なパラメータ（確認なし）' do
+    shared_examples_for '[APIログイン中][期限内/期限切れ]無効なパラメータ（パスワード確認がない）' do
       let(:params) { invalid_attributes_confirm }
       it_behaves_like 'NG'
       # it_behaves_like 'ToNG', 422, false, false, false
@@ -650,14 +654,14 @@ RSpec.describe 'Users::Auth::Passwords', type: :request do
       # it_behaves_like 'ToMsg', Array, 1, 'devise_token_auth.passwords.missing_passwords', nil, nil, nil
       it_behaves_like 'ToMsg', NilClass, 0, nil, nil, 'devise.failure.already_authenticated', nil
     end
-    shared_examples_for '[未ログイン/ログイン中][期限切れ]無効なパラメータ（確認なし）' do
+    shared_examples_for '[未ログイン/ログイン中][期限切れ]無効なパラメータ（パスワード確認がない）' do
       let(:params) { invalid_attributes_confirm }
       it_behaves_like 'NG'
       it_behaves_like 'ToNG', 422, false, false, false
       # it_behaves_like 'ToMsg', Array, 1, 'devise_token_auth.passwords.missing_passwords', nil, nil, nil
       it_behaves_like 'ToMsg', NilClass, 0, nil, nil, 'activerecord.errors.models.user.attributes.reset_password_token.invalid', nil
     end
-    shared_examples_for '[未ログイン/ログイン中][存在しない/ない/空]無効なパラメータ（確認なし）' do
+    shared_examples_for '[未ログイン/ログイン中][存在しない/ない/空]無効なパラメータ（パスワード確認がない）' do
       let(:params) { invalid_attributes_confirm }
       # it_behaves_like 'NG' # NOTE: トークンが存在しない為、送信日時がない
       # it_behaves_like 'ToNG', 401, false, false, false
@@ -665,7 +669,7 @@ RSpec.describe 'Users::Auth::Passwords', type: :request do
       # it_behaves_like 'ToMsg', Array, 1, 'Unauthorized', nil, nil, nil
       it_behaves_like 'ToMsg', NilClass, 0, nil, nil, 'activerecord.errors.models.user.attributes.reset_password_token.invalid', nil
     end
-    shared_examples_for '[APIログイン中][存在しない/空]無効なパラメータ（確認なし）' do
+    shared_examples_for '[APIログイン中][存在しない/空]無効なパラメータ（パスワード確認がない）' do
       let(:params) { invalid_attributes_confirm }
       # it_behaves_like 'NG' # NOTE: トークンが存在しない為、送信日時がない
       # it_behaves_like 'ToNG', 401, false, false, false
@@ -673,7 +677,7 @@ RSpec.describe 'Users::Auth::Passwords', type: :request do
       # it_behaves_like 'ToMsg', Array, 1, 'Unauthorized', nil, nil, nil
       it_behaves_like 'ToMsg', NilClass, 0, nil, nil, 'devise.failure.already_authenticated', nil
     end
-    shared_examples_for '[APIログイン中][ない]無効なパラメータ（確認なし）' do
+    shared_examples_for '[APIログイン中][ない]無効なパラメータ（パスワード確認がない）' do
       let(:params) { invalid_attributes_confirm }
       # it_behaves_like 'NG' # NOTE: トークンが存在しない為、送信日時がない
       # it_behaves_like 'ToNG', 422, true, true, false
@@ -686,113 +690,113 @@ RSpec.describe 'Users::Auth::Passwords', type: :request do
       include_context 'パスワードリセットトークン作成', true
       it_behaves_like '[未ログイン/ログイン中][期限内/期限切れ]パラメータなし'
       it_behaves_like '[未ログイン/ログイン中][期限内]有効なパラメータ'
-      it_behaves_like '[未ログイン/ログイン中][期限内]無効なパラメータ（なし）'
-      it_behaves_like '[未ログイン/ログイン中][期限内]無効なパラメータ（確認なし）'
+      it_behaves_like '[未ログイン/ログイン中][期限内]無効なパラメータ（パスワードがない）'
+      it_behaves_like '[未ログイン/ログイン中][期限内]無効なパラメータ（パスワード確認がない）'
     end
     shared_examples_for '[APIログイン中]トークンが期限内（未ロック）' do
       include_context 'パスワードリセットトークン作成', true
       it_behaves_like '[APIログイン中][期限内/期限切れ]パラメータなし'
       it_behaves_like '[APIログイン中][期限内/期限切れ]有効なパラメータ'
-      it_behaves_like '[APIログイン中][期限内/期限切れ]無効なパラメータ（なし）'
-      it_behaves_like '[APIログイン中][期限内/期限切れ]無効なパラメータ（確認なし）'
+      it_behaves_like '[APIログイン中][期限内/期限切れ]無効なパラメータ（パスワードがない）'
+      it_behaves_like '[APIログイン中][期限内/期限切れ]無効なパラメータ（パスワード確認がない）'
     end
     shared_examples_for '[未ログイン/ログイン中]トークンが期限内（ロック中）' do
       include_context 'パスワードリセットトークン作成', true, true
       it_behaves_like '[未ログイン/ログイン中][期限内/期限切れ]パラメータなし'
       it_behaves_like '[未ログイン/ログイン中][期限内]有効なパラメータ'
-      it_behaves_like '[未ログイン/ログイン中][期限内]無効なパラメータ（なし）'
-      it_behaves_like '[未ログイン/ログイン中][期限内]無効なパラメータ（確認なし）'
+      it_behaves_like '[未ログイン/ログイン中][期限内]無効なパラメータ（パスワードがない）'
+      it_behaves_like '[未ログイン/ログイン中][期限内]無効なパラメータ（パスワード確認がない）'
     end
     shared_examples_for '[APIログイン中]トークンが期限内（ロック中）' do
       include_context 'パスワードリセットトークン作成', true, true
       it_behaves_like '[APIログイン中][期限内/期限切れ]パラメータなし'
       it_behaves_like '[APIログイン中][期限内/期限切れ]有効なパラメータ'
-      it_behaves_like '[APIログイン中][期限内/期限切れ]無効なパラメータ（なし）'
-      it_behaves_like '[APIログイン中][期限内/期限切れ]無効なパラメータ（確認なし）'
+      it_behaves_like '[APIログイン中][期限内/期限切れ]無効なパラメータ（パスワードがない）'
+      it_behaves_like '[APIログイン中][期限内/期限切れ]無効なパラメータ（パスワード確認がない）'
     end
     shared_examples_for '[未ログイン/ログイン中]トークンが期限内（メール未確認）' do
       include_context 'パスワードリセットトークン作成', true, false, true
       it_behaves_like '[未ログイン/ログイン中][期限内/期限切れ]パラメータなし'
       it_behaves_like '[未ログイン/ログイン中][期限内（メール未確認）]有効なパラメータ'
-      it_behaves_like '[未ログイン/ログイン中][期限内]無効なパラメータ（なし）'
-      it_behaves_like '[未ログイン/ログイン中][期限内]無効なパラメータ（確認なし）'
+      it_behaves_like '[未ログイン/ログイン中][期限内]無効なパラメータ（パスワードがない）'
+      it_behaves_like '[未ログイン/ログイン中][期限内]無効なパラメータ（パスワード確認がない）'
     end
     shared_examples_for '[APIログイン中]トークンが期限内（メール未確認）' do
       include_context 'パスワードリセットトークン作成', true, false, true
       it_behaves_like '[APIログイン中][期限内/期限切れ]パラメータなし'
       it_behaves_like '[APIログイン中][期限内/期限切れ]有効なパラメータ'
-      it_behaves_like '[APIログイン中][期限内/期限切れ]無効なパラメータ（なし）'
-      it_behaves_like '[APIログイン中][期限内/期限切れ]無効なパラメータ（確認なし）'
+      it_behaves_like '[APIログイン中][期限内/期限切れ]無効なパラメータ（パスワードがない）'
+      it_behaves_like '[APIログイン中][期限内/期限切れ]無効なパラメータ（パスワード確認がない）'
     end
     shared_examples_for '[未ログイン/ログイン中]トークンが期限内（メールアドレス変更中）' do
       include_context 'パスワードリセットトークン作成', true, false, true, true
       it_behaves_like '[未ログイン/ログイン中][期限内/期限切れ]パラメータなし'
       it_behaves_like '[未ログイン/ログイン中][期限内（メールアドレス変更中）]有効なパラメータ'
-      it_behaves_like '[未ログイン/ログイン中][期限内]無効なパラメータ（なし）'
-      it_behaves_like '[未ログイン/ログイン中][期限内]無効なパラメータ（確認なし）'
+      it_behaves_like '[未ログイン/ログイン中][期限内]無効なパラメータ（パスワードがない）'
+      it_behaves_like '[未ログイン/ログイン中][期限内]無効なパラメータ（パスワード確認がない）'
     end
     shared_examples_for '[APIログイン中]トークンが期限内（メールアドレス変更中）' do
       include_context 'パスワードリセットトークン作成', true, false, true, true
       it_behaves_like '[APIログイン中][期限内/期限切れ]パラメータなし'
       it_behaves_like '[APIログイン中][期限内/期限切れ]有効なパラメータ'
-      it_behaves_like '[APIログイン中][期限内/期限切れ]無効なパラメータ（なし）'
-      it_behaves_like '[APIログイン中][期限内/期限切れ]無効なパラメータ（確認なし）'
+      it_behaves_like '[APIログイン中][期限内/期限切れ]無効なパラメータ（パスワードがない）'
+      it_behaves_like '[APIログイン中][期限内/期限切れ]無効なパラメータ（パスワード確認がない）'
     end
     shared_examples_for '[未ログイン/ログイン中]トークンが期限切れ' do
       include_context 'パスワードリセットトークン作成', false
       it_behaves_like '[未ログイン/ログイン中][期限内/期限切れ]パラメータなし'
       it_behaves_like '[未ログイン/ログイン中][期限切れ]有効なパラメータ'
-      it_behaves_like '[未ログイン/ログイン中][期限切れ]無効なパラメータ（なし）'
-      it_behaves_like '[未ログイン/ログイン中][期限切れ]無効なパラメータ（確認なし）'
+      it_behaves_like '[未ログイン/ログイン中][期限切れ]無効なパラメータ（パスワードがない）'
+      it_behaves_like '[未ログイン/ログイン中][期限切れ]無効なパラメータ（パスワード確認がない）'
     end
     shared_examples_for '[APIログイン中]トークンが期限切れ' do
       include_context 'パスワードリセットトークン作成', false
       it_behaves_like '[APIログイン中][期限内/期限切れ]パラメータなし'
       it_behaves_like '[APIログイン中][期限内/期限切れ]有効なパラメータ'
-      it_behaves_like '[APIログイン中][期限内/期限切れ]無効なパラメータ（なし）'
-      it_behaves_like '[APIログイン中][期限内/期限切れ]無効なパラメータ（確認なし）'
+      it_behaves_like '[APIログイン中][期限内/期限切れ]無効なパラメータ（パスワードがない）'
+      it_behaves_like '[APIログイン中][期限内/期限切れ]無効なパラメータ（パスワード確認がない）'
     end
     shared_examples_for '[未ログイン/ログイン中]トークンが存在しない' do
       let(:reset_password_token) { NOT_TOKEN }
       it_behaves_like '[未ログイン/ログイン中][存在しない/ない/空]パラメータなし'
       it_behaves_like '[未ログイン/ログイン中][存在しない/ない/空]有効なパラメータ'
-      it_behaves_like '[未ログイン/ログイン中][存在しない/ない/空]無効なパラメータ（なし）'
-      it_behaves_like '[未ログイン/ログイン中][存在しない/ない/空]無効なパラメータ（確認なし）'
+      it_behaves_like '[未ログイン/ログイン中][存在しない/ない/空]無効なパラメータ（パスワードがない）'
+      it_behaves_like '[未ログイン/ログイン中][存在しない/ない/空]無効なパラメータ（パスワード確認がない）'
     end
     shared_examples_for '[APIログイン中]トークンが存在しない' do
       let(:reset_password_token) { NOT_TOKEN }
       it_behaves_like '[APIログイン中][存在しない/ない/空]パラメータなし'
       it_behaves_like '[APIログイン中][存在しない/空]有効なパラメータ'
-      it_behaves_like '[APIログイン中][存在しない/空]無効なパラメータ（なし）'
-      it_behaves_like '[APIログイン中][存在しない/空]無効なパラメータ（確認なし）'
+      it_behaves_like '[APIログイン中][存在しない/空]無効なパラメータ（パスワードがない）'
+      it_behaves_like '[APIログイン中][存在しない/空]無効なパラメータ（パスワード確認がない）'
     end
     shared_examples_for '[未ログイン/ログイン中]トークンがない' do
       let(:reset_password_token) { nil }
       it_behaves_like '[未ログイン/ログイン中][存在しない/ない/空]パラメータなし'
       it_behaves_like '[未ログイン/ログイン中][存在しない/ない/空]有効なパラメータ'
-      it_behaves_like '[未ログイン/ログイン中][存在しない/ない/空]無効なパラメータ（なし）'
-      it_behaves_like '[未ログイン/ログイン中][存在しない/ない/空]無効なパラメータ（確認なし）'
+      it_behaves_like '[未ログイン/ログイン中][存在しない/ない/空]無効なパラメータ（パスワードがない）'
+      it_behaves_like '[未ログイン/ログイン中][存在しない/ない/空]無効なパラメータ（パスワード確認がない）'
     end
     shared_examples_for '[APIログイン中]トークンがない' do
       let(:reset_password_token) { nil }
       it_behaves_like '[APIログイン中][存在しない/ない/空]パラメータなし'
       it_behaves_like '[APIログイン中][ない]有効なパラメータ'
-      it_behaves_like '[APIログイン中][ない]無効なパラメータ（なし）'
-      it_behaves_like '[APIログイン中][ない]無効なパラメータ（確認なし）'
+      it_behaves_like '[APIログイン中][ない]無効なパラメータ（パスワードがない）'
+      it_behaves_like '[APIログイン中][ない]無効なパラメータ（パスワード確認がない）'
     end
     shared_examples_for '[未ログイン/ログイン中]トークンが空' do
       let(:reset_password_token) { '' }
       it_behaves_like '[未ログイン/ログイン中][存在しない/ない/空]パラメータなし'
       it_behaves_like '[未ログイン/ログイン中][存在しない/ない/空]有効なパラメータ'
-      it_behaves_like '[未ログイン/ログイン中][存在しない/ない/空]無効なパラメータ（なし）'
-      it_behaves_like '[未ログイン/ログイン中][存在しない/ない/空]無効なパラメータ（確認なし）'
+      it_behaves_like '[未ログイン/ログイン中][存在しない/ない/空]無効なパラメータ（パスワードがない）'
+      it_behaves_like '[未ログイン/ログイン中][存在しない/ない/空]無効なパラメータ（パスワード確認がない）'
     end
     shared_examples_for '[APIログイン中]トークンが空' do
       let(:reset_password_token) { '' }
       it_behaves_like '[APIログイン中][存在しない/ない/空]パラメータなし'
       it_behaves_like '[APIログイン中][存在しない/空]有効なパラメータ'
-      it_behaves_like '[APIログイン中][存在しない/空]無効なパラメータ（なし）'
-      it_behaves_like '[APIログイン中][存在しない/空]無効なパラメータ（確認なし）'
+      it_behaves_like '[APIログイン中][存在しない/空]無効なパラメータ（パスワードがない）'
+      it_behaves_like '[APIログイン中][存在しない/空]無効なパラメータ（パスワード確認がない）'
     end
 
     shared_examples_for '[未ログイン/ログイン中]' do

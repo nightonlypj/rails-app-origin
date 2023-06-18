@@ -1,6 +1,14 @@
 require 'rails_helper'
 
 RSpec.describe User, type: :model do
+  # テスト内容（共通）
+  shared_examples_for 'Count' do |count|
+    it "#{count}が返却され、キャッシュされる" do
+      is_expected.to eq(count)
+      expect(cache).to eq(count)
+    end
+  end
+
   # コード
   # テストパターン
   #   ない, 正常値, 重複
@@ -65,17 +73,14 @@ RSpec.describe User, type: :model do
     subject { user.destroy_reserved? }
     let(:user) { FactoryBot.build_stubbed(:user, destroy_schedule_at: destroy_schedule_at) }
 
+    # テストケース
     context '削除予定日時がない（予約なし）' do
       let(:destroy_schedule_at) { nil }
-      it 'false' do
-        is_expected.to eq(false)
-      end
+      it_behaves_like 'Value', false
     end
     context '削除予定日時がある（予約済み）' do
       let(:destroy_schedule_at) { Time.current }
-      it 'true' do
-        is_expected.to eq(true)
-      end
+      it_behaves_like 'Value', true
     end
   end
 
@@ -171,14 +176,6 @@ RSpec.describe User, type: :model do
       user.infomation_unread_count
     end
     let(:cache) { user.cache_infomation_unread_count }
-
-    # テスト内容
-    shared_examples_for 'Count' do |count|
-      it "#{count}が返却され、キャッシュされる" do
-        is_expected.to eq(count)
-        expect(cache).to eq(count)
-      end
-    end
 
     # テストケース
     shared_examples_for '[*]0件' do

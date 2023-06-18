@@ -22,6 +22,7 @@ RSpec.describe 'Users::Auth::TokenValidations', type: :request do
   #   ＋Acceptヘッダ: JSONが含まれる, JSONが含まれない
   describe 'GET #validate_token' do
     subject { get user_auth_validate_token_path(format: subject_format), headers: auth_headers.merge(accept_headers) }
+
     include_context 'Authテスト内容'
     let(:current_user) { user }
 

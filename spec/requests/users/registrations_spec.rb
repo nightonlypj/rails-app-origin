@@ -41,15 +41,16 @@ RSpec.describe 'Users::Registrations', type: :request do
     let_it_be(:exist_user) { FactoryBot.create(:user) }
     let(:valid_attributes)   { { name: new_user[:name], email: new_user[:email], password: new_user[:password] } }
     let(:invalid_attributes) { { name: exist_user.name, email: exist_user.email, password: exist_user.password } }
-    let(:current_user) { User.find_by!(email: attributes[:email]) }
+    let(:current_user) { User.last }
 
     # テスト内容
     shared_examples_for 'OK' do
       let(:url) { "http://#{Settings.base_domain}#{user_confirmation_path}" }
-      it '作成・対象項目が設定される。メールが送信される' do
+      it 'ユーザーが作成・対象項目が設定される。メールが送信される' do
         expect do
           subject
-          expect(current_user.name).to eq(attributes[:name]) # メールアドレス、氏名
+          expect(current_user.email).to eq(attributes[:email])
+          expect(current_user.name).to eq(attributes[:name])
 
           expect(ActionMailer::Base.deliveries.count).to eq(1)
           expect(ActionMailer::Base.deliveries[0].subject).to eq(get_subject('devise.mailer.confirmation_instructions.subject')) # メールアドレス確認のお願い

@@ -10,8 +10,8 @@ ACCEPT_INC_HTML = { 'accept' => 'text/html,application/xhtml+xml,application/xml
 ACCEPT_INC_JSON = { 'accept' => 'application/json,text/plain,*/*' }.freeze
 
 # メールタイトルを返却
-def get_subject(key)
-  I18n.t(key, app_name: I18n.t('app_name'), env_name: Settings.env_name || '')
+def get_subject(key, args = {})
+  I18n.t(key, app_name: I18n.t('app_name'), env_name: Settings.env_name || '', **args)
 end
 
 # テスト内容（共通）

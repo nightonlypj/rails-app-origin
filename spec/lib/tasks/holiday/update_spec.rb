@@ -6,7 +6,8 @@ RSpec.describe :holiday, type: :task do
   # テストパターン
   #   追加あり, 変更なし, 名称変更あり
   describe 'holiday:update' do
-    let(:task) { Rake.application['holiday:update'] }
+    subject { Rake.application['holiday:update'].invoke(dry_run) }
+
     let_it_be(:year) { Time.current.year }
     let_it_be(:holidays) do
       [
@@ -25,7 +26,7 @@ RSpec.describe :holiday, type: :task do
     end
     shared_examples_for 'OK' do
       it '追加または変更される' do
-        task.invoke(dry_run)
+        subject
         expect(Holiday.count).to eq(expect_holidays.count)
         current_holidays.each_with_index do |holiday, index|
           expect(holiday.date).to eq(expect_holidays[index][:date])
@@ -35,7 +36,7 @@ RSpec.describe :holiday, type: :task do
     end
     shared_examples_for 'NG' do
       it '追加・変更されない' do
-        task.invoke(dry_run)
+        subject
         expect(Holiday.count).to eq(holidays.count)
         expect(current_holidays).to eq(holidays)
       end
