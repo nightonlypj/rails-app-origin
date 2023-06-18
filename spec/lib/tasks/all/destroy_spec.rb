@@ -5,12 +5,12 @@ RSpec.describe :all, type: :task do
   # テストパターン
   #   ドライラン: true, false
   describe 'all:destroy' do
-    let(:task) { Rake.application['all:destroy'] }
+    subject { Rake.application['all:destroy'].invoke(dry_run) }
 
     # テスト内容
     shared_examples_for 'OK' do
       it '正常終了' do
-        task.invoke(dry_run)
+        subject
       end
     end
 

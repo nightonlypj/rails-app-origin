@@ -1,15 +1,15 @@
 shared_context 'お知らせ一覧作成' do |all_forever_count, all_future_count, user_forever_count, user_future_count|
   before_all do
-    # 全員（現在/未来〜なし）＋概要なし
+    # 全員（現在/未来〜なし）＋概要がない
     @all_infomations = FactoryBot.create_list(:infomation, all_forever_count, :forever, summary: nil)
     FactoryBot.create(:infomation, :reserve_forever, summary: nil)
-    # 全員（現在/未来〜未来）＋概要・本文なし
+    # 全員（現在/未来〜未来）＋概要・本文がない
     @all_infomations += FactoryBot.create_list(:infomation, all_future_count, summary: nil, body: nil)
     FactoryBot.create(:infomation, :reserve, summary: nil, body: nil)
     # 全員（過去〜過去）
     FactoryBot.create(:infomation, :finished)
 
-    # 対象ユーザー（現在/未来〜なし）＋本文なし
+    # 対象ユーザー（現在/未来〜なし）＋本文がない
     @user_infomations = @all_infomations
     if user_forever_count > 0
       @user_infomations += FactoryBot.create_list(:infomation, user_forever_count, :forever, :user, user: user, body: nil)
@@ -24,14 +24,14 @@ shared_context 'お知らせ一覧作成' do |all_forever_count, all_future_coun
     FactoryBot.create(:infomation, :finished, :user, user: user) if (user_forever_count + user_future_count) > 0
 
     # 対象外ユーザー（現在/未来〜なし）
-    outside_user = FactoryBot.create(:user)
-    FactoryBot.create(:infomation, :forever, :user, user: outside_user)
-    FactoryBot.create(:infomation, :reserve_forever, :user, user: outside_user)
+    other_user = FactoryBot.create(:user)
+    FactoryBot.create(:infomation, :forever, :user, user: other_user)
+    FactoryBot.create(:infomation, :reserve_forever, :user, user: other_user)
     # 対象外ユーザー（現在/未来〜未来）
-    FactoryBot.create(:infomation, :user, user: outside_user)
-    FactoryBot.create(:infomation, :reserve, :user, user: outside_user)
+    FactoryBot.create(:infomation, :user, user: other_user)
+    FactoryBot.create(:infomation, :reserve, :user, user: other_user)
     # 対象外ユーザー（過去〜過去）
-    FactoryBot.create(:infomation, :finished, :user, user: outside_user)
+    FactoryBot.create(:infomation, :finished, :user, user: other_user)
   end
 end
 
@@ -61,14 +61,14 @@ shared_context '大切なお知らせ一覧作成' do |all_forever_count, all_fu
     FactoryBot.create(:infomation, :important, :force_finished, :user, user: user) if (user_forever_count + user_future_count) > 0
 
     # 対象外ユーザー（現在/未来〜なし）
-    outside_user = FactoryBot.create(:user)
-    FactoryBot.create(:infomation, :important, :force_forever, :user, user: outside_user)
-    FactoryBot.create(:infomation, :important, :force_reserve_forever, :user, user: outside_user)
+    other_user = FactoryBot.create(:user)
+    FactoryBot.create(:infomation, :important, :force_forever, :user, user: other_user)
+    FactoryBot.create(:infomation, :important, :force_reserve_forever, :user, user: other_user)
     # 対象外ユーザー（現在/未来〜未来）
-    FactoryBot.create(:infomation, :important, :user, user: outside_user)
-    FactoryBot.create(:infomation, :important, :force_reserve, :user, user: outside_user)
+    FactoryBot.create(:infomation, :important, :user, user: other_user)
+    FactoryBot.create(:infomation, :important, :force_reserve, :user, user: other_user)
     # 対象外ユーザー（過去〜過去）
-    FactoryBot.create(:infomation, :important, :force_finished, :user, user: outside_user)
+    FactoryBot.create(:infomation, :important, :force_finished, :user, user: other_user)
   end
 end
 

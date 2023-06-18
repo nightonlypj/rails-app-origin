@@ -11,7 +11,8 @@ RSpec.describe :user, type: :task do
   #     ＋ダウンロード: ない, ある（ファイル: ない, ある）
   #   ドライラン: true, false
   describe 'user:destroy' do
-    let(:task) { Rake.application['user:destroy'] }
+    subject { Rake.application['user:destroy'].invoke(dry_run) }
+
     before_all do
       FactoryBot.create(:user, destroy_schedule_at: nil)
       user = FactoryBot.create(:user, destroy_schedule_at: Time.current + 1.minute)
@@ -46,7 +47,7 @@ RSpec.describe :user, type: :task do
       let!(:before_download_file_count) { DownloadFile.count }
       let!(:before_space_count)         { Space.count }
       it '削除される（スペース除く）' do
-        task.invoke(dry_run)
+        subject
         expect(User.count).to eq(before_user_count - users.count)
         expect(User.exists?(id: users)).to eq(false)
         expect(Infomation.count).to eq(before_infomation_count - infomations.count)
@@ -69,7 +70,7 @@ RSpec.describe :user, type: :task do
       let!(:before_download_file_count) { DownloadFile.count }
       let!(:before_space_count)         { Space.count }
       it '削除されない' do
-        task.invoke(dry_run)
+        subject
         expect(User.count).to eq(before_user_count)
         expect(Infomation.count).to eq(before_infomation_count)
 

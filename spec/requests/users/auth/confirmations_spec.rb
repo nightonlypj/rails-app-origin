@@ -35,6 +35,7 @@ RSpec.describe 'Users::Auth::Confirmations', type: :request do
     let(:invalid_attributes)     { { email: not_user[:email], redirect_url: FRONT_SITE_URL } }
     let(:invalid_attributes_nil) { { email: send_user_unconfirmed.email, redirect_url: nil } }
     let(:invalid_attributes_bad) { { email: send_user_unconfirmed.email, redirect_url: BAD_SITE_URL } }
+
     include_context 'Authテスト内容'
     let(:current_user) { nil }
 

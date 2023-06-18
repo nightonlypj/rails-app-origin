@@ -37,6 +37,7 @@ RSpec.describe 'Users::Auth::Sessions', type: :request do
     let(:invalid_attributes_pass) { { email: send_user.email, password: "n#{send_user.password}", unlock_redirect_url: FRONT_SITE_URL } }
     let(:invalid_attributes_nil)  { { email: send_user.email, password: send_user.password, unlock_redirect_url: nil } }
     let(:invalid_attributes_bad)  { { email: send_user.email, password: send_user.password, unlock_redirect_url: BAD_SITE_URL } }
+
     include_context 'Authテスト内容'
     let(:current_user) { User.find(send_user.id) }
     let(:inside_spaces) { [] } # TODO: send_userの参加スペースをセット
@@ -325,6 +326,7 @@ RSpec.describe 'Users::Auth::Sessions', type: :request do
   #   ＋Acceptヘッダ: JSONが含まれる, JSONが含まれない
   describe 'POST #destroy' do
     subject { post destroy_user_auth_session_path(format: subject_format), headers: auth_headers.merge(accept_headers) }
+
     include_context 'Authテスト内容'
     let(:current_user) { user }
 

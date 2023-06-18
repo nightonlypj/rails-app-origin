@@ -223,7 +223,7 @@ RSpec.describe ApplicationHelper, type: :helper do
       let(:enabled)  { false }
       let(:key)      { nil }
       let(:subkey)   { nil }
-      it_behaves_like 'Value', ''
+      it_behaves_like 'Value', '', '空'
     end
     context 'enabledがtrue' do
       let(:enabled) { true }
@@ -269,7 +269,7 @@ RSpec.describe ApplicationHelper, type: :helper do
     # テストケース
     context 'enabledがfalse' do
       let(:enabled) { false }
-      it_behaves_like 'Value', ''
+      it_behaves_like 'Value', '', '空'
     end
     context 'enabledがtrue' do
       let(:enabled) { true }
@@ -349,17 +349,17 @@ RSpec.describe ApplicationHelper, type: :helper do
     context 'lengthが0' do
       let(:length) { 0 }
       let(:text)   { 'a' }
-      it_behaves_like 'Value', nil
+      it_behaves_like 'Value', nil, 'nil'
     end
     context 'lengthが1' do
       let(:length) { 1 }
       context 'nil' do
         let(:text) { nil }
-        it_behaves_like 'Value', nil
+        it_behaves_like 'Value', nil, 'nil'
       end
       context '空' do
         let(:text) { '' }
-        it_behaves_like 'Value', ''
+        it_behaves_like 'Value', '', '空'
       end
       context 'lengthと同じ文字数' do
         let(:text) { 'a' }

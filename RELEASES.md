@@ -2,6 +2,8 @@
 
 ## 1.6.0 (Sprint 11)
 
+- Delayed::Jobを導入したい
+  - https://dev.azure.com/nightonly/rails-app-origin/_workitems/edit/544/
 - 祝日データを持ちたい
   - https://dev.azure.com/nightonly/rails-app-origin/_workitems/edit/516/
 - 設定でHTMLを返さないようにできるようにしたい（APIのみモード）

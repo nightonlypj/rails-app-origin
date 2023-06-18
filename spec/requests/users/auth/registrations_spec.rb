@@ -32,8 +32,9 @@ RSpec.describe 'Users::Auth::Registrations', type: :request do
     let(:invalid_attributes)     { { name: exist_user.name, email: exist_user.email, password: exist_user.password, confirm_success_url: FRONT_SITE_URL } }
     let(:invalid_attributes_nil) { { name: new_user[:name], email: new_user[:email], password: new_user[:password], confirm_success_url: nil } }
     let(:invalid_attributes_bad) { { name: new_user[:name], email: new_user[:email], password: new_user[:password], confirm_success_url: BAD_SITE_URL } }
+
     include_context 'Authテスト内容'
-    let(:current_user) { User.find_by!(email: params[:email]) }
+    let(:current_user) { User.last }
     let(:inside_spaces) { [] }
 
     # テスト内容
@@ -42,10 +43,11 @@ RSpec.describe 'Users::Auth::Registrations', type: :request do
       let(:accept_headers) { ACCEPT_INC_JSON }
       let(:url)       { "http://#{Settings.base_domain}#{user_auth_confirmation_path}" }
       let(:url_param) { "redirect_url=#{URI.encode_www_form_component(params[:confirm_success_url])}" }
-      it '作成・対象項目が設定される。メールが送信される' do
+      it 'ユーザーが作成・対象項目が設定される。メールが送信される' do
         expect do
           subject
-          expect(current_user.name).to eq(params[:name]) # メールアドレス、氏名
+          expect(current_user.email).to eq(params[:email])
+          expect(current_user.name).to eq(params[:name])
 
           expect(ActionMailer::Base.deliveries.count).to eq(1)
           expect(ActionMailer::Base.deliveries[0].subject).to eq(get_subject('devise.mailer.confirmation_instructions.subject')) # メールアドレス確認のお願い
@@ -218,6 +220,7 @@ RSpec.describe 'Users::Auth::Registrations', type: :request do
   #   ＋Acceptヘッダ: JSONが含まれる, JSONが含まれない
   describe 'GET #show' do
     subject { get show_user_auth_registration_path(format: subject_format), headers: auth_headers.merge(accept_headers) }
+
     include_context 'Authテスト内容'
     let(:current_user) { user }
 
@@ -314,6 +317,7 @@ RSpec.describe 'Users::Auth::Registrations', type: :request do
     let(:invalid_attributes)     { { name: exist_user.name, email: exist_user.email, password: exist_user.password, confirm_redirect_url: FRONT_SITE_URL } }
     let(:invalid_attributes_nil) { { name: exist_user.name, email: exist_user.email, password: exist_user.password, confirm_redirect_url: nil } }
     let(:invalid_attributes_bad) { { name: exist_user.name, email: exist_user.email, password: exist_user.password, confirm_redirect_url: BAD_SITE_URL } }
+
     include_context 'Authテスト内容'
     let(:current_user) { User.find(user.id) }
 
@@ -598,6 +602,7 @@ RSpec.describe 'Users::Auth::Registrations', type: :request do
     subject { post update_user_auth_image_registration_path(format: subject_format), params: params, headers: auth_headers.merge(accept_headers) }
     let(:valid_attributes)   { { image: fixture_file_upload(TEST_IMAGE_FILE, TEST_IMAGE_TYPE) } }
     let(:invalid_attributes) { nil }
+
     include_context 'Authテスト内容'
     let(:current_user) { User.find(user.id) }
 
@@ -720,6 +725,7 @@ RSpec.describe 'Users::Auth::Registrations', type: :request do
   #   ＋Acceptヘッダ: JSONが含まれる, JSONが含まれない
   describe 'POST #image_destroy' do
     subject { post delete_user_auth_image_registration_path(format: subject_format), headers: auth_headers.merge(accept_headers) }
+
     include_context 'Authテスト内容'
     let(:current_user) { User.find(user.id) }
 
@@ -813,6 +819,7 @@ RSpec.describe 'Users::Auth::Registrations', type: :request do
     let(:valid_attributes)       { { undo_delete_url: FRONT_SITE_URL } }
     let(:invalid_attributes_nil) { { undo_delete_url: nil } }
     let(:invalid_attributes_bad) { { undo_delete_url: BAD_SITE_URL } }
+
     include_context 'Authテスト内容'
     let(:current_user) { User.find(user.id) }
 
@@ -1032,6 +1039,7 @@ RSpec.describe 'Users::Auth::Registrations', type: :request do
   #   ＋Acceptヘッダ: JSONが含まれる, JSONが含まれない
   describe 'POST #undo_destroy' do
     subject { post undo_destroy_user_auth_registration_path(format: subject_format), headers: auth_headers.merge(accept_headers) }
+
     include_context 'Authテスト内容'
     let(:current_user) { User.find(user.id) }
 

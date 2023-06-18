@@ -9,30 +9,18 @@ RSpec.describe Infomation, type: :model do
     subject { infomation.display_target?(user) }
     let_it_be(:other_user) { FactoryBot.create(:user) }
 
-    # テスト内容
-    shared_examples_for 'OK' do
-      it 'true' do
-        is_expected.to eq(true)
-      end
-    end
-    shared_examples_for 'NG' do
-      it 'false' do
-        is_expected.to eq(false)
-      end
-    end
-
     # テストケース
     shared_examples_for '[*]対象が全員' do
       let_it_be(:infomation) { FactoryBot.create(:infomation, :all) }
-      it_behaves_like 'OK'
+      it_behaves_like 'Value', true
     end
     shared_examples_for '[ログイン中/削除予約済み]対象が自分' do
       let_it_be(:infomation) { FactoryBot.create(:infomation, :user, user: user) }
-      it_behaves_like 'OK'
+      it_behaves_like 'Value', true
     end
     shared_examples_for '[*]対象が他人' do
       let_it_be(:infomation) { FactoryBot.create(:infomation, :user, user: other_user) }
-      it_behaves_like 'NG'
+      it_behaves_like 'Value', false
     end
 
     shared_examples_for '[ログイン中/削除予約済み]' do

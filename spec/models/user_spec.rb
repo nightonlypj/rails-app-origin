@@ -73,17 +73,14 @@ RSpec.describe User, type: :model do
     subject { user.destroy_reserved? }
     let(:user) { FactoryBot.build_stubbed(:user, destroy_schedule_at: destroy_schedule_at) }
 
+    # テストケース
     context '削除予定日時がない（予約なし）' do
       let(:destroy_schedule_at) { nil }
-      it 'false' do
-        is_expected.to eq(false)
-      end
+      it_behaves_like 'Value', false
     end
     context '削除予定日時がある（予約済み）' do
       let(:destroy_schedule_at) { Time.current }
-      it 'true' do
-        is_expected.to eq(true)
-      end
+      it_behaves_like 'Value', true
     end
   end
 
