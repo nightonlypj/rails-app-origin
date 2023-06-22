@@ -52,6 +52,7 @@ set :unicorn_rack_env, 'production'
 after 'deploy:symlink:linked_dirs', 'deploy:symlink:robots_txt'
 after 'deploy:migrate', 'deploy:seed'
 after 'deploy:publishing', 'unicorn:restart'
+after 'unicorn:restart', 'delayed_job:restart'
 
 namespace :deploy do
   namespace :symlink do
@@ -71,6 +72,36 @@ namespace :deploy do
       within release_path do
         execute :rake, 'db:seed'
       end
+    end
+  end
+end
+
+namespace :delayed_job do
+  desc 'Runs bin/delayed_job status'
+  task :status do
+    execute_delayed_job('status')
+  end
+
+  desc 'Runs bin/delayed_job start'
+  task :start do
+    execute_delayed_job('start')
+  end
+
+  desc 'Runs bin/delayed_job stop'
+  task :stop do
+    execute_delayed_job('stop')
+  end
+
+  desc 'Runs bin/delayed_job restart'
+  task :restart do
+    execute_delayed_job('restart')
+  end
+end
+
+def execute_delayed_job(arg)
+  on roles(:job) do
+    within release_path do
+      execute :ruby, 'bin/delayed_job', arg
     end
   end
 end
