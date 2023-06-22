@@ -12,8 +12,8 @@ RSpec.describe 'Holidays', type: :request do
   #   ＋Acceptヘッダ: JSONが含まれる, JSONが含まれない
   describe 'GET #index' do
     subject { get holidays_path(format: subject_format), params: params, headers: auth_headers.merge(accept_headers) }
-    let_it_be(:start_date) { Time.current.to_date.beginning_of_year }
-    let_it_be(:end_date)   { Time.current.to_date.end_of_year }
+    let_it_be(:start_date) { Time.zone.today.beginning_of_year }
+    let_it_be(:end_date)   { Time.zone.today.end_of_year }
 
     before_all { FactoryBot.create(:holiday, date: start_date - 1.day) }
     let_it_be(:holidays) do
