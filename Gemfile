@@ -1,33 +1,33 @@
 source 'https://rubygems.org'
 git_source(:github) { |repo| "https://github.com/#{repo}.git" }
 
-ruby '3.0.0'
+ruby '3.1.4'
 
 # Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
 gem 'rails', '~> 6.1.4'
 # Use sqlite3 as the database for Active Record
-gem 'sqlite3', '~> 1.4'
+# gem 'sqlite3', '>= 1.4'
 # Use mysql as the database for Active Record
 gem 'mysql2', '>= 0.4.4'
 # Use postgresql as the database for Active Record
-# gem 'pg', '~> 1.1'
+# gem 'pg', '>= 1.1'
 # Use Puma as the app server
-gem 'puma', '~> 4.1'
+gem 'puma', '>= 4.1'
 # Use SCSS for stylesheets
 gem 'sass-rails', '>= 6'
 # Transpile app-like JavaScript. Read more: https://github.com/rails/webpacker
-gem 'webpacker', '~> 5.0'
+gem 'webpacker', '>= 5.0'
 # Turbolinks makes navigating your web application faster. Read more: https://github.com/turbolinks/turbolinks
-gem 'turbolinks', '~> 5'
+gem 'turbolinks', '>= 5'
 # Build JSON APIs with ease. Read more: https://github.com/rails/jbuilder
-gem 'jbuilder', '~> 2.7'
+gem 'jbuilder', '>= 2.7'
 # Use Redis adapter to run Action Cable in production
-# gem 'redis', '~> 4.0'
+# gem 'redis', '>= 4.0'
 # Use Active Model has_secure_password
-# gem 'bcrypt', '~> 3.1.7'
+# gem 'bcrypt', '>= 3.1.7'
 
 # Use Active Storage variant
-# gem 'image_processing', '~> 1.2'
+# gem 'image_processing', '>= 1.2'
 
 # Reduces boot times through caching; required in config/boot.rb
 gem 'bootsnap', '>= 1.4.2', require: false
@@ -51,10 +51,10 @@ gem 'rexml' # NOTE: rails aborted! LoadError: cannot load such file -- rexml/doc
 group :development do
   # Access an interactive console on exception pages or by calling 'console' anywhere in the code.
   gem 'web-console', '>= 3.3.0'
-  # gem 'listen', '>= 3.0.5', '< 3.2' # NOTE: LoadError: Could not load the 'listen' gem. Add `gem 'listen'` to the development group of your Gemfile
+  # gem 'listen', '>= 3.0.5' # NOTE: LoadError: Could not load the 'listen' gem. Add `gem 'listen'` to the development group of your Gemfile
   # Spring speeds up development by keeping your application running in the background. Read more: https://github.com/rails/spring
   gem 'spring'
-  gem 'spring-watcher-listen', '~> 2.0.0'
+  gem 'spring-watcher-listen', '>= 2.0.0'
   # Use YARD
   gem 'guard-yard'
   gem 'redcarpet'
@@ -66,14 +66,14 @@ group :development do
   # Use Bullet
   gem 'bullet'
   # Use Capistrano
-  gem 'capistrano', '~> 3.0'
+  gem 'capistrano', '>= 3.0'
   gem 'capistrano-rvm'
   gem 'capistrano-rails'
   gem 'capistrano-bundler'
   gem 'capistrano-yarn'
   gem 'capistrano3-unicorn'
 end
-gem 'listen', '>= 3.0.5', '< 3.2'
+gem 'listen', '>= 3.0.5'
 gem 'letter_opener_web'
 
 group :test do
@@ -94,7 +94,7 @@ end
 gem 'tzinfo-data', platforms: [:mingw, :mswin, :x64_mingw, :jruby]
 
 # Use Devise
-gem 'devise', '< 4.8.0'
+gem 'devise'
 gem 'devise-i18n'
 gem 'email_validator'
 
@@ -133,3 +133,10 @@ gem 'slack-notifier'
 # Use Delayed::Job
 gem 'delayed_job_active_record'
 gem 'daemons'
+
+# NOTE: [ruby 3.0.0 -> 3.1.4] rails s -> Psych::BadAlias: Unknown alias: male_first_name
+gem 'psych', '~> 3.1'
+
+# NOTE: [ruby 3.0.0 -> 3.1.4] rspec -> LoadError: cannot load such file -- matrix, net/smtp
+gem 'matrix'
+gem 'net-smtp'
