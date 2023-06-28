@@ -120,7 +120,7 @@ RSpec.describe 'Users::Confirmations', type: :request do
   #   トークン: 期限内, 期限切れ, 存在しない, ない
   #   確認日時: ない（未確認）, 確認送信日時より前（未確認）, 確認送信日時より後（確認済み）
   describe 'GET #show' do
-    subject { get user_confirmation_path(confirmation_token: confirmation_token) }
+    subject { get user_confirmation_path(confirmation_token:) }
     let(:current_user) { User.find(send_user.id) }
 
     # テスト内容

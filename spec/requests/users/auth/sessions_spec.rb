@@ -22,7 +22,7 @@ RSpec.describe 'Users::Auth::Sessions', type: :request do
   #   ＋URLの拡張子: .json, ない
   #   ＋Acceptヘッダ: JSONが含まれる, JSONが含まれない
   describe 'POST #create' do
-    subject { post create_user_auth_session_path(format: subject_format), params: params, headers: auth_headers.merge(accept_headers) }
+    subject { post create_user_auth_session_path(format: subject_format), params:, headers: auth_headers.merge(accept_headers) }
     let_it_be(:send_user_unlocked)         { FactoryBot.create(:user) }
     let_it_be(:send_user_locked)           { FactoryBot.create(:user, :locked) }
     let_it_be(:send_user_unconfirmed)      { FactoryBot.create(:user, :unconfirmed) }

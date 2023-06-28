@@ -101,7 +101,7 @@ RSpec.describe 'AdminUsers::Unlocks', type: :request do
   #   トークン: 存在する, 存在しない, ない
   #   ロック日時: ない（未ロック）, 期限内（ロック中）, 期限切れ（未ロック）
   describe 'GET #show' do
-    subject { get admin_user_unlock_path(unlock_token: unlock_token) }
+    subject { get admin_user_unlock_path(unlock_token:) }
     let(:current_admin_user) { AdminUser.find(send_admin_user.id) }
 
     # テスト内容

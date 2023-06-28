@@ -5,7 +5,7 @@ RSpec.describe Infomation, type: :model do
   # テストパターン
   #   ない, 正常値
   describe 'validates :label' do
-    let(:model) { FactoryBot.build_stubbed(:infomation, label: label) }
+    let(:model) { FactoryBot.build_stubbed(:infomation, label:) }
 
     # テストケース
     context 'ない' do
@@ -23,7 +23,7 @@ RSpec.describe Infomation, type: :model do
   # テストパターン
   #   ない, ある
   describe 'validates :title' do
-    let(:model) { FactoryBot.build_stubbed(:infomation, title: title) }
+    let(:model) { FactoryBot.build_stubbed(:infomation, title:) }
 
     # テストケース
     context 'ない' do
@@ -41,7 +41,7 @@ RSpec.describe Infomation, type: :model do
   # テストパターン
   #   ない, 正常値,
   describe 'validates :started_at' do
-    let(:model) { FactoryBot.build_stubbed(:infomation, started_at: started_at) }
+    let(:model) { FactoryBot.build_stubbed(:infomation, started_at:) }
 
     # テストケース
     context 'ない' do
@@ -59,7 +59,7 @@ RSpec.describe Infomation, type: :model do
   # テストパターン
   #   ない, 正常値
   describe 'validates :target' do
-    let(:model) { FactoryBot.build_stubbed(:infomation, target: target) }
+    let(:model) { FactoryBot.build_stubbed(:infomation, target:) }
 
     # テストケース
     context 'ない' do
@@ -78,7 +78,7 @@ RSpec.describe Infomation, type: :model do
   #   対象: 全員, 対象ユーザーのみ
   #   ユーザー: いない, いる
   describe 'validates :user' do
-    let(:model) { FactoryBot.build_stubbed(:infomation, target: target, user: user) }
+    let(:model) { FactoryBot.build_stubbed(:infomation, target:, user:) }
     let_it_be(:valid_user) { FactoryBot.create(:user) }
 
     # テストケース
@@ -121,7 +121,7 @@ RSpec.describe Infomation, type: :model do
       it_behaves_like 'Value', true
     end
     shared_examples_for '[ログイン中/削除予約済み]対象が自分' do
-      let_it_be(:infomation) { FactoryBot.create(:infomation, :user, user: user) }
+      let_it_be(:infomation) { FactoryBot.create(:infomation, :user, user:) }
       it_behaves_like 'Value', true
     end
     shared_examples_for '[*]対象が他人' do

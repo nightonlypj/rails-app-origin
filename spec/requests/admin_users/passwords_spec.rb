@@ -109,7 +109,7 @@ RSpec.describe 'AdminUsers::Passwords', type: :request do
   #   未ログイン, ログイン中
   #   トークン: 期限内（未ロック, ロック中）, 期限切れ, 存在しない, ない
   describe 'GET #edit' do
-    subject { get edit_admin_user_password_path(reset_password_token: reset_password_token) }
+    subject { get edit_admin_user_password_path(reset_password_token:) }
 
     # テストケース
     shared_examples_for '[未ログイン]トークンが期限内（未ロック）' do
@@ -178,8 +178,8 @@ RSpec.describe 'AdminUsers::Passwords', type: :request do
   describe 'PUT #update' do
     subject { put update_admin_user_password_path, params: { admin_user: attributes } }
     let(:new_password) { Faker::Internet.password(min_length: 8) }
-    let(:valid_attributes)   { { reset_password_token: reset_password_token, password: new_password, password_confirmation: new_password } }
-    let(:invalid_attributes) { { reset_password_token: reset_password_token, password: nil, password_confirmation: nil } }
+    let(:valid_attributes)   { { reset_password_token:, password: new_password, password_confirmation: new_password } }
+    let(:invalid_attributes) { { reset_password_token:, password: nil, password_confirmation: nil } }
     let(:current_admin_user) { AdminUser.find(send_admin_user.id) }
 
     # テスト内容

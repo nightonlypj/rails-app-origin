@@ -32,8 +32,8 @@ RSpec.describe DeviseMailer, type: :mailer do
       end
     end
     shared_examples_for 'Body(API)' do
-      let(:url) { user_auth_confirmation_url(config: client_config, confirmation_token: token, redirect_url: redirect_url) }
-      let(:encode_url) { "#{user_auth_confirmation_url}?#{URI.encode_www_form(config: client_config, confirmation_token: token, redirect_url: redirect_url)}" }
+      let(:url) { user_auth_confirmation_url(config: client_config, confirmation_token: token, redirect_url:) }
+      let(:encode_url) { "#{user_auth_confirmation_url}?#{URI.encode_www_form(config: client_config, confirmation_token: token, redirect_url:)}" }
       it 'メールアドレス確認のURL（リダイレクトURLあり）が含まれる' do
         expect(mail.html_part.body).to include("\"#{encode_url}\"".gsub(/&/, '&amp;'))
         expect(mail.text_part.body).to include(url)
@@ -73,9 +73,9 @@ RSpec.describe DeviseMailer, type: :mailer do
       end
     end
     shared_examples_for 'Body(API)' do
-      let(:url) { edit_user_auth_password_url(config: client_config, redirect_url: redirect_url, reset_password_token: token) }
+      let(:url) { edit_user_auth_password_url(config: client_config, redirect_url:, reset_password_token: token) }
       let(:encode_url) do
-        "#{edit_user_auth_password_url}?#{URI.encode_www_form(config: client_config, redirect_url: redirect_url, reset_password_token: token)}"
+        "#{edit_user_auth_password_url}?#{URI.encode_www_form(config: client_config, redirect_url:, reset_password_token: token)}"
       end
       it 'パスワード再設定のURL（リダイレクトURLあり）が含まれる' do
         expect(mail.html_part.body).to include("\"#{encode_url}\"".gsub(/&/, '&amp;'))
@@ -116,8 +116,8 @@ RSpec.describe DeviseMailer, type: :mailer do
       end
     end
     shared_examples_for 'Body(API)' do
-      let(:url)        { user_auth_unlock_url(config: client_config, redirect_url: redirect_url, unlock_token: token) }
-      let(:encode_url) { "#{user_auth_unlock_url}?#{URI.encode_www_form(config: client_config, redirect_url: redirect_url, unlock_token: token)}" }
+      let(:url)        { user_auth_unlock_url(config: client_config, redirect_url:, unlock_token: token) }
+      let(:encode_url) { "#{user_auth_unlock_url}?#{URI.encode_www_form(config: client_config, redirect_url:, unlock_token: token)}" }
       it 'アカウントロック解除のURL（リダイレクトURLあり）が含まれる' do
         expect(mail.html_part.body).to include("\"#{encode_url}\"".gsub(/&/, '&amp;'))
         expect(mail.text_part.body).to include(url)

@@ -73,7 +73,7 @@ class Users::Auth::PasswordsController < DeviseTokenAuth::PasswordsController
   def render_edit_error
     # raise ActionController::RoutingError, 'Not Found'
     alert = t("activerecord.errors.models.user.attributes.reset_password_token.#{resource_params[:reset_password_token].blank? ? 'blank' : 'invalid'}")
-    redirect_header_options = { reset_password: false, alert: alert }
+    redirect_header_options = { reset_password: false, alert: }
     redirect_to DeviseTokenAuth::Url.generate(@redirect_url, redirect_header_options)
   end
 
@@ -98,7 +98,7 @@ class Users::Auth::PasswordsController < DeviseTokenAuth::PasswordsController
       errors = { password_confirmation: t('activerecord.errors.models.user.attributes.password_confirmation.confirmation') }
       errors[:full_messages] = ["#{t('activerecord.attributes.user.password_confirmation')} #{errors[:password_confirmation]}"]
     end
-    render './failure', locals: { errors: errors, alert: t('errors.messages.not_saved.one') }, status: :unprocessable_entity
+    render './failure', locals: { errors:, alert: t('errors.messages.not_saved.one') }, status: :unprocessable_entity
   end
 
   def render_update_success
@@ -109,7 +109,7 @@ class Users::Auth::PasswordsController < DeviseTokenAuth::PasswordsController
     @resource.update!(locked_at: nil, failed_attempts: 0) if @resource.locked_at.present?
 
     alert = @resource.unconfirmed_email.present? ? t('devise.failure.unconfirmed') : nil
-    render './users/auth/success', locals: { alert: alert, notice: t('devise_token_auth.passwords.successfully_updated') }
+    render './users/auth/success', locals: { alert:, notice: t('devise_token_auth.passwords.successfully_updated') }
   end
 
   def render_update_error
@@ -129,7 +129,7 @@ class Users::Auth::PasswordsController < DeviseTokenAuth::PasswordsController
       # render_error(404, I18n.t('devise_token_auth.passwords.user_not_found', email: @email))
       errors = { email: t('devise_token_auth.passwords.user_not_found') }
       errors[:full_messages] = ["#{t('activerecord.attributes.user.email')} #{errors[:email]}"]
-      render './failure', locals: { errors: errors, alert: t('errors.messages.not_saved.one') }, status: :unprocessable_entity
+      render './failure', locals: { errors:, alert: t('errors.messages.not_saved.one') }, status: :unprocessable_entity
     end
   end
 

@@ -26,7 +26,7 @@ RSpec.describe 'Users::Auth::Confirmations', type: :request do
   #   ＋URLの拡張子: .json, ない
   #   ＋Acceptヘッダ: JSONが含まれる, JSONが含まれない
   describe 'POST #create' do
-    subject { post create_user_auth_confirmation_path(format: subject_format), params: params, headers: auth_headers.merge(accept_headers) }
+    subject { post create_user_auth_confirmation_path(format: subject_format), params:, headers: auth_headers.merge(accept_headers) }
     let_it_be(:send_user_unconfirmed)   { FactoryBot.create(:user, :unconfirmed) }
     let_it_be(:send_user_confirmed)     { FactoryBot.create(:user) }
     let_it_be(:send_user_email_changed) { FactoryBot.create(:user, :email_changed) }
@@ -191,7 +191,7 @@ RSpec.describe 'Users::Auth::Confirmations', type: :request do
   #   ＋リダイレクトURL: ある, ない, ホワイトリストにない
   describe 'GET #show' do
     subject do
-      get user_auth_confirmation_path(format: subject_format, confirmation_token: confirmation_token, redirect_url: @redirect_url),
+      get user_auth_confirmation_path(format: subject_format, confirmation_token:, redirect_url: @redirect_url),
           headers: auth_headers.merge(accept_headers)
     end
     let(:current_user) { User.find(send_user.id) }

@@ -20,7 +20,7 @@ RSpec.describe :holiday, type: :task do
     # テスト内容
     before do
       WebMock.stub_request(:get, HOLIDAY_CSV_URL).to_return(
-        body: body,
+        body:,
         status: 200
       )
     end

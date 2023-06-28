@@ -40,7 +40,7 @@ class Users::Auth::RegistrationsController < DeviseTokenAuth::RegistrationsContr
     if @resource.present? && @resource.email != params[:email] && User.find_by(email: params[:email]).present?
       errors = { email: t('activerecord.errors.models.user.attributes.email.taken') }
       errors[:full_messages] = ["#{t('activerecord.attributes.user.email')} #{errors[:email]}"]
-      return render './failure', locals: { errors: errors, alert: t('errors.messages.not_saved.one') }, status: :unprocessable_entity
+      return render './failure', locals: { errors:, alert: t('errors.messages.not_saved.one') }, status: :unprocessable_entity
     end
 
     params[:password_confirmation] = '' if params[:password_confirmation].nil? # NOTE: nilだとチェックされずに保存される為
@@ -55,7 +55,7 @@ class Users::Auth::RegistrationsController < DeviseTokenAuth::RegistrationsContr
     if params[:image].blank? || params[:image].class != ActionDispatch::Http::UploadedFile
       errors = { image: t('activerecord.errors.models.user.attributes.image.blank') }
       errors[:full_messages] = ["#{t('activerecord.attributes.user.image')} #{errors[:image]}"]
-      return render './failure', locals: { errors: errors, alert: t('errors.messages.not_saved.one') }, status: :unprocessable_entity
+      return render './failure', locals: { errors:, alert: t('errors.messages.not_saved.one') }, status: :unprocessable_entity
     end
 
     @user = User.find(@resource.id)
