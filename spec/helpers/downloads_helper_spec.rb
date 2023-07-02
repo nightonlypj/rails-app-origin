@@ -10,51 +10,44 @@ RSpec.describe DownloadsHelper, type: :helper do
     let_it_be(:old_download) { FactoryBot.create(:download) }
     let(:download) { FactoryBot.create(:download, status, user: old_download.user) }
 
-    # テスト内容
-    shared_examples_for 'value' do |value|
-      it 'value' do
-        is_expected.to eq(value)
-      end
-    end
-
     # テストケース
     context 'パラメータのIDが一致する' do
       let(:target_id) { download.id }
       context 'ステータスが成功' do
         let(:status)    { :success }
-        it_behaves_like 'value', ' row_active'
+        it_behaves_like 'Value', ' row_active'
       end
       context 'ステータスがダウンロード済み' do
         let(:status) { :downloaded }
-        it_behaves_like 'value', ' row_inactive'
+        it_behaves_like 'Value', ' row_inactive'
       end
     end
     context 'パラメータのIDが一致しない' do
       let(:target_id) { old_download.id }
       let(:status)    { :success }
-      it_behaves_like 'value', nil
+      it_behaves_like 'Value', nil, 'nil'
     end
     context 'パラメータのIDがない' do
       let(:target_id) { nil }
       context 'ステータスが処理待ち' do
         let(:status) { :waiting }
-        it_behaves_like 'value', nil
+        it_behaves_like 'Value', nil, 'nil'
       end
       context 'ステータスが処理中' do
         let(:status) { :processing }
-        it_behaves_like 'value', nil
+        it_behaves_like 'Value', nil, 'nil'
       end
       context 'ステータスが成功' do
         let(:status) { :success }
-        it_behaves_like 'value', ' row_active'
+        it_behaves_like 'Value', ' row_active'
       end
       context 'ステータスが失敗' do
         let(:status) { :failure }
-        it_behaves_like 'value', ' row_inactive'
+        it_behaves_like 'Value', ' row_inactive'
       end
       context 'ステータスがダウンロード済み' do
         let(:status) { :downloaded }
-        it_behaves_like 'value', ' row_inactive'
+        it_behaves_like 'Value', ' row_inactive'
       end
     end
   end

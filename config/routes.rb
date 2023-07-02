@@ -3,6 +3,7 @@ Rails.application.routes.draw do
   draw :members
   draw :invitations
   draw :spaces
+  draw :holidays
   draw :infomations
   draw :admin
   draw :users

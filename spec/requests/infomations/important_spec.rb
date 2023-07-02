@@ -21,6 +21,7 @@ RSpec.describe 'Infomations', type: :request do
       it 'HTTPステータスが200。対象項目が一致する' do
         is_expected.to eq(200)
         expect(response_json['success']).to eq(true)
+        expect(response_json.count).to eq(2)
       end
     end
 
@@ -33,15 +34,10 @@ RSpec.describe 'Infomations', type: :request do
         (1..infomations.count).each do |no|
           data = response_json_infomations[no - 1]
           infomation = infomations[infomations.count - no]
-          expect(data['id']).to eq(infomation.id) # ID
-          expect(data['label']).to eq(infomation.label) # ラベル
-          expect(data['label_i18n']).to eq(infomation.label_i18n)
-          expect(data['title']).to eq(infomation.title) # タイトル
-          expect(data['summary']).to eq(infomation.summary) # 概要
-          expect(data['body_present']).to eq(infomation.body.present?) # 本文
-          expect(data['started_at']).to eq(I18n.l(infomation.started_at, format: :json)) # 掲載開始日
-          expect(data['ended_at']).to eq(I18n.l(infomation.ended_at, format: :json, default: nil)) # 掲載終了日
-          expect(data['target']).to eq(infomation.target) # 対象
+          count = expect_infomation_json(data, infomation, { id: true, body: false })
+          expect(data['force_started_at']).to eq(I18n.l(infomation.force_started_at, format: :json, default: nil))
+          expect(data['force_ended_at']).to eq(I18n.l(infomation.force_ended_at, format: :json, default: nil))
+          expect(data.count).to eq(count + 2)
         end
       end
     end

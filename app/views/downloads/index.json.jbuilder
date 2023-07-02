@@ -12,7 +12,7 @@ json.download do
 end
 json.downloads do
   json.array! @downloads do |download|
-    json.partial! 'download', download: download
+    json.partial! 'download', download:
   end
 end
 

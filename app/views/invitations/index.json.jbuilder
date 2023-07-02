@@ -16,6 +16,6 @@ json.invitation do
 end
 json.invitations do
   json.array! @invitations do |invitation|
-    json.partial! 'invitation', invitation: invitation
+    json.partial! 'invitation', invitation:
   end
 end

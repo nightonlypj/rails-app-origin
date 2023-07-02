@@ -5,6 +5,7 @@ RSpec.describe 'Downloads', type: :request do
   let(:response_json_download)  { response_json['download'] }
   let(:response_json_downloads) { response_json['downloads'] }
   let(:response_json_target)    { response_json['target'] }
+  let(:default_params) { { id: nil, target_id: nil } }
 
   # GET /downloads ダウンロード結果一覧
   # GET /downloads(.json) ダウンロード結果一覧API
@@ -13,6 +14,12 @@ RSpec.describe 'Downloads', type: :request do
   # テストパターン
   #   未ログイン, ログイン中, ログイン中（削除予約済み）, APIログイン中, APIログイン中（削除予約済み）
   #   ダウンロード結果: 存在しない, 最大表示数と同じ, 最大表示数より多い
+  #     ステータス: 処理待ち, 処理中, 成功, 失敗
+  #     モデル: メンバー
+  #     対象: 選択項目, 検索, 全て
+  #     形式: CSV, TSV
+  #     文字コード: Shift_JIS, EUC-JP, UTF-8
+  #     改行コード: CR+LF, LF, CR
   #   ＋URLの拡張子: ない, .json
   #   ＋Acceptヘッダ: HTMLが含まれる, JSONが含まれる
   describe 'GET #index' do
@@ -31,14 +38,16 @@ RSpec.describe 'Downloads', type: :request do
       it 'HTTPステータスが200。対象項目が一致する' do
         is_expected.to eq(200)
         expect(response_json['success']).to eq(true)
-        expect(response_json['search_params']).to eq({ id: nil, target_id: nil }.stringify_keys)
+        expect(response_json['search_params']).to eq(default_params.stringify_keys)
 
         expect(response_json_download['total_count']).to eq(downloads.count)
         expect(response_json_download['current_page']).to eq(subject_page)
-        expect(response_json_download['total_pages']).to eq((downloads.count - 1).div(Settings['default_downloads_limit']) + 1)
-        expect(response_json_download['limit_value']).to eq(Settings['default_downloads_limit'])
+        expect(response_json_download['total_pages']).to eq((downloads.count - 1).div(Settings.default_downloads_limit) + 1)
+        expect(response_json_download['limit_value']).to eq(Settings.default_downloads_limit)
+        expect(response_json_download.count).to eq(4)
 
         expect(response_json['undownloaded_count']).to eq(user.undownloaded_count)
+        expect(response_json.count).to eq(5)
       end
     end
 
@@ -76,8 +85,8 @@ RSpec.describe 'Downloads', type: :request do
       let(:subject_format) { nil }
       let(:accept_headers) { ACCEPT_INC_HTML }
       let(:subject_page) { page }
-      let(:start_no)     { (Settings['default_downloads_limit'] * (page - 1)) + 1 }
-      let(:end_no)       { [downloads.count, Settings['default_downloads_limit'] * page].min }
+      let(:start_no)     { (Settings.default_downloads_limit * (page - 1)) + 1 }
+      let(:end_no)       { [downloads.count, Settings.default_downloads_limit * page].min }
       it '対象項目が含まれる' do
         subject
         (start_no..end_no).each do |no|
@@ -112,13 +121,15 @@ RSpec.describe 'Downloads', type: :request do
       let(:subject_format) { :json }
       let(:accept_headers) { ACCEPT_INC_JSON }
       let(:subject_page) { page }
-      let(:start_no)     { (Settings['default_downloads_limit'] * (page - 1)) + 1 }
-      let(:end_no)       { [downloads.count, Settings['default_downloads_limit'] * page].min }
+      let(:start_no)     { (Settings.default_downloads_limit * (page - 1)) + 1 }
+      let(:end_no)       { [downloads.count, Settings.default_downloads_limit * page].min }
       it '件数・対象項目が一致する' do
         subject
         expect(response_json_downloads.count).to eq(end_no - start_no + 1)
         (start_no..end_no).each do |no|
-          expect_download_json(response_json_downloads[no - start_no], downloads[downloads.count - no])
+          data = response_json_downloads[no - start_no]
+          count = expect_download_json(data, downloads[downloads.count - no])
+          expect(data.count).to eq(count)
         end
       end
     end
@@ -144,63 +155,87 @@ RSpec.describe 'Downloads', type: :request do
     # テストケース
     shared_examples_for '[ログイン中/削除予約済み]ダウンロード結果が存在しない' do
       include_context 'ダウンロード結果一覧作成', 0, 0, 0, 0, 0
-      it_behaves_like 'ToOK(html)', 1
-      it_behaves_like 'ページネーション非表示', 1, 2
-      it_behaves_like 'リスト表示（0件）'
-      it_behaves_like 'リダイレクト', 2, 1
+      if Settings.api_only_mode
+        it_behaves_like 'ToNG(html)', 406
+      else
+        it_behaves_like 'ToOK(html)', 1
+        it_behaves_like 'ページネーション非表示', 1, 2
+        it_behaves_like 'リスト表示（0件）'
+        it_behaves_like 'リダイレクト', 2, 1
+      end
       it_behaves_like 'ToNG(json)', 401 # NOTE: APIは未ログイン扱い
     end
     shared_examples_for '[APIログイン中/削除予約済み]ダウンロード結果が存在しない' do
       include_context 'ダウンロード結果一覧作成', 0, 0, 0, 0, 0
-      it_behaves_like 'ToOK(html)', 1 # NOTE: HTMLもログイン状態になる
-      it_behaves_like 'ページネーション非表示', 1, 2
-      it_behaves_like 'リスト表示（0件）'
-      it_behaves_like 'リダイレクト', 2, 1
+      if Settings.api_only_mode
+        it_behaves_like 'ToNG(html)', 406
+      else
+        it_behaves_like 'ToOK(html)', 1 # NOTE: HTMLもログイン状態になる
+        it_behaves_like 'ページネーション非表示', 1, 2
+        it_behaves_like 'リスト表示（0件）'
+        it_behaves_like 'リダイレクト', 2, 1
+      end
       it_behaves_like 'ToOK(json)', 1
       it_behaves_like 'リダイレクト(json)', 2
     end
     shared_examples_for '[ログイン中/削除予約済み]ダウンロード結果が最大表示数と同じ' do
-      count = Settings['test_downloads']
-      include_context 'ダウンロード結果一覧作成', count['waiting_count'], count['processing_count'], count['success_count'], count['failure_count'], count['downloaded_count']
-      it_behaves_like 'ToOK(html)', 1
-      it_behaves_like 'ページネーション非表示', 1, 2
-      it_behaves_like 'リスト表示', 1
-      it_behaves_like 'リダイレクト', 2, 1
+      count = Settings.test_downloads_count
+      include_context 'ダウンロード結果一覧作成', count.waiting, count.processing, count.success, count.failure, count.downloaded
+      if Settings.api_only_mode
+        it_behaves_like 'ToNG(html)', 406
+      else
+        it_behaves_like 'ToOK(html)', 1
+        it_behaves_like 'ページネーション非表示', 1, 2
+        it_behaves_like 'リスト表示', 1
+        it_behaves_like 'リダイレクト', 2, 1
+      end
       it_behaves_like 'ToNG(json)', 401 # NOTE: APIは未ログイン扱い
     end
     shared_examples_for '[APIログイン中/削除予約済み]ダウンロード結果が最大表示数と同じ' do
-      count = Settings['test_downloads']
-      include_context 'ダウンロード結果一覧作成', count['waiting_count'], count['processing_count'], count['success_count'], count['failure_count'], count['downloaded_count']
-      it_behaves_like 'ToOK(html)', 1
-      it_behaves_like 'ページネーション非表示', 1, 2
-      it_behaves_like 'リスト表示', 1
-      it_behaves_like 'リダイレクト', 2, 1
+      count = Settings.test_downloads_count
+      include_context 'ダウンロード結果一覧作成', count.waiting, count.processing, count.success, count.failure, count.downloaded
+      if Settings.api_only_mode
+        it_behaves_like 'ToNG(html)', 406
+      else
+        it_behaves_like 'ToOK(html)', 1
+        it_behaves_like 'ページネーション非表示', 1, 2
+        it_behaves_like 'リスト表示', 1
+        it_behaves_like 'リダイレクト', 2, 1
+      end
       it_behaves_like 'ToOK(json)', 1
       it_behaves_like 'リスト表示(json)', 1
       it_behaves_like 'リダイレクト(json)', 2
     end
     shared_examples_for '[ログイン中/削除予約済み]ダウンロード結果が最大表示数より多い' do
-      count = Settings['test_downloads']
-      include_context 'ダウンロード結果一覧作成', count['waiting_count'], count['processing_count'], count['success_count'], count['failure_count'], count['downloaded_count'] + 1
-      it_behaves_like 'ToOK(html)', 1
-      it_behaves_like 'ToOK(html)', 2
-      it_behaves_like 'ページネーション表示', 1, 2
-      it_behaves_like 'ページネーション表示', 2, 1
-      it_behaves_like 'リスト表示', 1
-      it_behaves_like 'リスト表示', 2
-      it_behaves_like 'リダイレクト', 3, 2
+      count = Settings.test_downloads_count
+      include_context 'ダウンロード結果一覧作成', count.waiting, count.processing, count.success, count.failure, count.downloaded + 1
+      if Settings.api_only_mode
+        it_behaves_like 'ToNG(html)', 406
+      else
+        it_behaves_like 'ToOK(html)', 1
+        it_behaves_like 'ToOK(html)', 2
+        it_behaves_like 'ページネーション表示', 1, 2
+        it_behaves_like 'ページネーション表示', 2, 1
+        it_behaves_like 'リスト表示', 1
+        it_behaves_like 'リスト表示', 2
+        it_behaves_like 'リダイレクト', 3, 2
+      end
       it_behaves_like 'ToNG(json)', 401 # NOTE: APIは未ログイン扱い
     end
     shared_examples_for '[APIログイン中/削除予約済み]ダウンロード結果が最大表示数より多い' do
-      count = Settings['test_downloads']
-      include_context 'ダウンロード結果一覧作成', count['waiting_count'], count['processing_count'], count['success_count'], count['failure_count'], count['downloaded_count'] + 1
-      it_behaves_like 'ToOK(html)', 1
-      it_behaves_like 'ToOK(html)', 2
-      it_behaves_like 'ページネーション表示', 1, 2
-      it_behaves_like 'ページネーション表示', 2, 1
-      it_behaves_like 'リスト表示', 1
-      it_behaves_like 'リスト表示', 2
-      it_behaves_like 'リダイレクト', 3, 2
+      count = Settings.test_downloads_count
+      include_context 'ダウンロード結果一覧作成', count.waiting, count.processing, count.success, count.failure, count.downloaded + 1
+      if Settings.api_only_mode
+        it_behaves_like 'ToNG(html)', 406
+      else
+        it_behaves_like 'ToOK(html)', 1
+        it_behaves_like 'ToOK(html)', 2
+        it_behaves_like 'ページネーション表示', 1, 2
+        it_behaves_like 'ページネーション表示', 2, 1
+        it_behaves_like 'リスト表示', 1
+        it_behaves_like 'リスト表示', 2
+        it_behaves_like 'リダイレクト', 3, 2
+      end
       it_behaves_like 'ToOK(json)', 1
       it_behaves_like 'ToOK(json)', 2
       it_behaves_like 'リスト表示(json)', 1
@@ -221,7 +256,11 @@ RSpec.describe 'Downloads', type: :request do
 
     context '未ログイン' do
       include_context '未ログイン処理'
-      it_behaves_like 'ToLogin(html)'
+      if Settings.api_only_mode
+        it_behaves_like 'ToNG(html)', 406
+      else
+        it_behaves_like 'ToLogin(html)'
+      end
       it_behaves_like 'ToNG(json)', 401
     end
     context 'ログイン中' do
@@ -248,7 +287,7 @@ RSpec.describe 'Downloads', type: :request do
   # テストパターン
   #   ID: 存在する, 存在しない
   describe 'GET #index (.search)' do
-    subject { get downloads_path(format: subject_format), params: params, headers: auth_headers.merge(accept_headers) }
+    subject { get downloads_path(format: subject_format), params:, headers: auth_headers.merge(accept_headers) }
 
     # テスト内容
     shared_examples_for 'ToOK[依頼日時]' do
@@ -258,10 +297,10 @@ RSpec.describe 'Downloads', type: :request do
           # JSON
           expect(response_json_downloads.count).to eq(downloads.count)
           downloads.each_with_index do |download, index|
-            expect(response_json_downloads[index]['requested_at']).to eq(I18n.l(download.requested_at, format: :json))
+            expect(response_json_downloads[downloads.count - index - 1]['requested_at']).to eq(I18n.l(download.requested_at, format: :json))
           end
 
-          expect(response_json['search_params']).to eq(params.stringify_keys)
+          expect(response_json['search_params']).to eq(default_params.merge(params).stringify_keys)
         else
           # HTML
           downloads.each do |download|
@@ -285,7 +324,7 @@ RSpec.describe 'Downloads', type: :request do
 
     # テストケース
     shared_examples_for 'IDが存在する' do
-      let_it_be(:download) { FactoryBot.create(:download, :create_space, user: user) }
+      let_it_be(:download) { FactoryBot.create(:download, :create_space, user:) }
       let(:params) { { id: download.id, target_id: nil } }
       let(:downloads) { [download] }
       it_behaves_like 'ToOK[依頼日時]'
@@ -302,6 +341,8 @@ RSpec.describe 'Downloads', type: :request do
     end
 
     context 'ログイン中（URLの拡張子がない/AcceptヘッダにHTMLが含まれる）' do
+      next if Settings.api_only_mode
+
       include_context 'ログイン処理'
       let(:subject_format) { nil }
       let(:accept_headers) { ACCEPT_INC_HTML }
@@ -317,7 +358,7 @@ RSpec.describe 'Downloads', type: :request do
 
   # 前提条件
   #   ログイン中（URLの拡張子がない/AcceptヘッダにHTMLが含まれる）, APIログイン中（URLの拡張子が.json/AcceptヘッダにJSONが含まれる）
-  #   対象IDあり, 検索条件なし, 依頼日時/対象のみ確認
+  #   対象IDあり, 依頼日時/対象のみ確認
   # テストパターン
   #   対象ID: 一覧に存在する, 一覧に存在しない, 存在しない
   #   ステータス: 処理待ち, 処理中, 成功, 失敗, ダウンロード済み
@@ -331,7 +372,7 @@ RSpec.describe 'Downloads', type: :request do
         is_expected.to eq(200)
         if subject_format == :json
           # JSON
-          expect(response_json['search_params']).to eq({ id: nil, target_id: download.id }.stringify_keys)
+          expect(response_json['search_params']).to eq(default_params.merge(target_id: download.id).stringify_keys)
 
           if status.present?
             expect(response_json_target['status']).to eq(status.to_s)
@@ -351,56 +392,58 @@ RSpec.describe 'Downloads', type: :request do
     end
 
     # テストケース
-    shared_examples_for '対象IDが一覧に存在する(notice)' do |status|
-      before_all { FactoryBot.create_list(:download, Settings['default_downloads_limit'], user: user, space: space) }
-      let_it_be(:download) { FactoryBot.create(:download, status, user: user, space: space) }
+    shared_examples_for '一覧に存在する(notice)' do |status|
+      before_all { FactoryBot.create_list(:download, Settings.default_downloads_limit, user:, space:) }
+      let_it_be(:download) { FactoryBot.create(:download, status, user:, space:) }
       it_behaves_like 'OK', status, nil, "notice.download.status.#{status}"
     end
-    shared_examples_for '対象IDが一覧に存在しない(notice)' do |status|
-      let_it_be(:download) { FactoryBot.create(:download, status, user: user, space: space) }
-      before_all { FactoryBot.create_list(:download, Settings['default_downloads_limit'], user: user, space: space) }
+    shared_examples_for '一覧に存在しない(notice)' do |status|
+      let_it_be(:download) { FactoryBot.create(:download, status, user:, space:) }
+      before_all { FactoryBot.create_list(:download, Settings.default_downloads_limit, user:, space:) }
       it_behaves_like 'OK', status, nil, "notice.download.status.#{status}"
     end
-    shared_examples_for '対象IDが一覧に存在する(alert)' do |status|
-      before_all { FactoryBot.create_list(:download, Settings['default_downloads_limit'], user: user, space: space) }
-      let_it_be(:download) { FactoryBot.create(:download, status, user: user, space: space) }
+    shared_examples_for '一覧に存在する(alert)' do |status|
+      before_all { FactoryBot.create_list(:download, Settings.default_downloads_limit, user:, space:) }
+      let_it_be(:download) { FactoryBot.create(:download, status, user:, space:) }
       it_behaves_like 'OK', status, "alert.download.status.#{status}", nil
     end
-    shared_examples_for '対象IDが一覧に存在しない(alert)' do |status|
-      let_it_be(:download) { FactoryBot.create(:download, status, user: user, space: space) }
-      before_all { FactoryBot.create_list(:download, Settings['default_downloads_limit'], user: user, space: space) }
+    shared_examples_for '一覧に存在しない(alert)' do |status|
+      let_it_be(:download) { FactoryBot.create(:download, status, user:, space:) }
+      before_all { FactoryBot.create_list(:download, Settings.default_downloads_limit, user:, space:) }
       it_behaves_like 'OK', status, "alert.download.status.#{status}", nil
     end
-    shared_examples_for '対象IDが一覧に存在する(nil)' do |status|
-      before_all { FactoryBot.create_list(:download, Settings['default_downloads_limit'], user: user, space: space) }
-      let_it_be(:download) { FactoryBot.create(:download, status, user: user, space: space) }
+    shared_examples_for '一覧に存在する(nil)' do |status|
+      before_all { FactoryBot.create_list(:download, Settings.default_downloads_limit, user:, space:) }
+      let_it_be(:download) { FactoryBot.create(:download, status, user:, space:) }
       it_behaves_like 'OK', :success, nil, nil
     end
-    shared_examples_for '対象IDが一覧に存在しない(nil)' do |status|
-      let_it_be(:download) { FactoryBot.create(:download, status, user: user, space: space) }
-      before_all { FactoryBot.create_list(:download, Settings['default_downloads_limit'], user: user, space: space) }
+    shared_examples_for '一覧に存在しない(nil)' do |status|
+      let_it_be(:download) { FactoryBot.create(:download, status, user:, space:) }
+      before_all { FactoryBot.create_list(:download, Settings.default_downloads_limit, user:, space:) }
       it_behaves_like 'OK', :success, nil, nil
     end
-    shared_examples_for '対象IDが存在しない' do
+    shared_examples_for '存在しない' do
       let_it_be(:download) { FactoryBot.build_stubbed(:download) }
       it_behaves_like 'OK', nil, nil, nil
     end
 
     shared_examples_for '対象ID' do
-      it_behaves_like '対象IDが一覧に存在する(notice)', :waiting
-      it_behaves_like '対象IDが一覧に存在する(notice)', :processing
-      it_behaves_like '対象IDが一覧に存在する(notice)', :success
-      it_behaves_like '対象IDが一覧に存在する(alert)', :failure
-      it_behaves_like '対象IDが一覧に存在する(nil)', :downloaded
-      it_behaves_like '対象IDが一覧に存在しない(notice)', :waiting
-      it_behaves_like '対象IDが一覧に存在しない(notice)', :processing
-      it_behaves_like '対象IDが一覧に存在しない(notice)', :success
-      it_behaves_like '対象IDが一覧に存在しない(alert)', :failure
-      it_behaves_like '対象IDが一覧に存在しない(nil)', :downloaded
-      it_behaves_like '対象IDが存在しない'
+      it_behaves_like '一覧に存在する(notice)', :waiting
+      it_behaves_like '一覧に存在する(notice)', :processing
+      it_behaves_like '一覧に存在する(notice)', :success
+      it_behaves_like '一覧に存在する(alert)', :failure
+      it_behaves_like '一覧に存在する(nil)', :downloaded
+      it_behaves_like '一覧に存在しない(notice)', :waiting
+      it_behaves_like '一覧に存在しない(notice)', :processing
+      it_behaves_like '一覧に存在しない(notice)', :success
+      it_behaves_like '一覧に存在しない(alert)', :failure
+      it_behaves_like '一覧に存在しない(nil)', :downloaded
+      it_behaves_like '存在しない'
     end
 
     context 'ログイン中（URLの拡張子がない/AcceptヘッダにHTMLが含まれる）' do
+      next if Settings.api_only_mode
+
       include_context 'ログイン処理'
       let(:subject_format) { nil }
       let(:accept_headers) { ACCEPT_INC_HTML }

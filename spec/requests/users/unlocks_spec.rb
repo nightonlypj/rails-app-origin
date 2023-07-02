@@ -8,6 +8,11 @@ RSpec.describe 'Users::Unlocks', type: :request do
     subject { get new_user_unlock_path }
 
     # テストケース
+    if Settings.api_only_mode
+      it_behaves_like 'ToNG(html)', 404
+      next
+    end
+
     context '未ログイン' do
       it_behaves_like 'ToOK[status]'
     end
@@ -31,7 +36,7 @@ RSpec.describe 'Users::Unlocks', type: :request do
 
     # テスト内容
     shared_examples_for 'OK' do
-      let(:url) { "http://#{Settings['base_domain']}#{user_unlock_path}" }
+      let(:url) { "http://#{Settings.base_domain}#{user_unlock_path}" }
       it 'メールが送信される' do
         subject
         expect(ActionMailer::Base.deliveries.count).to eq(1)
@@ -47,6 +52,14 @@ RSpec.describe 'Users::Unlocks', type: :request do
     end
 
     # テストケース
+    if Settings.api_only_mode
+      let(:send_user)  { send_user_locked }
+      let(:attributes) { valid_attributes }
+      it_behaves_like 'NG'
+      it_behaves_like 'ToNG(html)', 404
+      next
+    end
+
     shared_examples_for '[未ログイン]有効なパラメータ（ロック中）' do
       let(:send_user)  { send_user_locked }
       let(:attributes) { valid_attributes }
@@ -101,7 +114,7 @@ RSpec.describe 'Users::Unlocks', type: :request do
   #   トークン: 存在する, 存在しない, ない
   #   ロック日時: ない（未ロック）, 期限内（ロック中）, 期限切れ（未ロック）
   describe 'GET #show' do
-    subject { get user_unlock_path(unlock_token: unlock_token) }
+    subject { get user_unlock_path(unlock_token:) }
     let(:current_user) { User.find(send_user.id) }
 
     # テスト内容
@@ -121,6 +134,13 @@ RSpec.describe 'Users::Unlocks', type: :request do
     end
 
     # テストケース
+    if Settings.api_only_mode
+      include_context 'アカウントロック解除トークン作成', true
+      it_behaves_like 'NG'
+      it_behaves_like 'ToNG(html)', 404
+      next
+    end
+
     shared_examples_for '[未ログイン][存在する]ロック日時がない（未ロック）' do
       include_context 'アカウントロック解除トークン作成', false
       it_behaves_like 'NG'

@@ -5,7 +5,7 @@ class CreateDownloads < ActiveRecord::Migration[6.1]
       t.integer    :status,       null: false, default: 0, comment: 'ステータス'
       t.datetime   :requested_at, null: false, comment: '依頼日時'
       t.datetime   :completed_at,              comment: '完了日時'
-      t.string     :error_message,             comment: 'エラーメッセージ'
+      t.text       :error_message,             comment: 'エラーメッセージ'
       t.datetime   :last_downloaded_at,        comment: '最終ダウンロード日時'
 
       t.integer    :model, null: false, comment: 'モデル'

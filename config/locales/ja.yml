@@ -1,9 +1,11 @@
 ja:
   app_name: 'RailsAppOrigin'
+  sub_title: ': ベースアプリケーション'
   my_name: 'My name'
   my_url: 'https://example.com'
   activerecord:
     models:
+      holiday: '祝日'
       infomation: 'お知らせ'
       space: 'スペース'
       invitation: '招待'
@@ -11,6 +13,10 @@ ja:
       download: 'ダウンロード'
       download_file: 'ダウンロードファイル'
     attributes:
+      holiday:
+        id: 'ID'
+        date: '日付'
+        name: '名称'
       infomation:
         id: 'ID'
         label: 'ラベル'
@@ -88,12 +94,32 @@ ja:
         created_at: '作成日時'
         updated_at: '更新日時'
       download_file:
+        id: 'ID'
         download: 'ダウンロード'
         body: '内容'
         created_at: '作成日時'
         updated_at: '更新日時'
     errors:
       models:
+        holiday:
+          attributes:
+            date:
+              blank: '入力してください。'
+              taken: '同じ日付が存在します。'
+            name:
+              blank: '入力してください。'
+        infomation:
+          attributes:
+            label:
+              blank: '選択してください。'
+            title:
+              blank: '入力してください。'
+            started_at:
+              blank: '入力してください。'
+            target:
+              blank: '選択してください。'
+            user:
+              blank: '選択してください。'
         space:
           attributes:
             code:
@@ -174,6 +200,7 @@ ja:
         not: ''
         maintenance: 'メンテナンス'
         hindrance: '障害'
+        update: 'アップデート'
         other: 'その他'
       target:
         all: '全員'
@@ -256,16 +283,16 @@ ja:
       image_destroy: '画像を削除しました。'
     space:
       create: 'スペースを作成しました。'
-      update: 'スペース設定を変更しました。'
+      update: 'スペースの設定を変更しました。'
       destroy: 'スペースの削除を受け付けました。'
       undo_destroy: 'スペース削除の取り消しが完了しました。'
     invitation:
       create: '招待URLを作成しました。'
-      update: '招待URL設定を変更しました。'
+      update: '招待URLの設定を変更しました。'
       copy_success: 'クリップボードにコピーしました。'
     member:
       create: 'メンバー招待の処理が完了しました。結果を確認してください。'
-      update: 'メンバー情報を変更しました。'
+      update: 'メンバーの情報を変更しました。'
       destroy: '%{destroy_count}名のメンバーを解除しました。'
       destroy_include_notfound: '%{count}名中%{destroy_count}名のメンバーを解除しました。'
       destroy_include_myself: '%{count}名中%{destroy_count}名のメンバーを解除しました。（自分は解除できません。他の管理者に依頼してください。）'

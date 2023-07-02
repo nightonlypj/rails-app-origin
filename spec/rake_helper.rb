@@ -19,7 +19,9 @@ RSpec.configure do |config|
     if store_dir.start_with?('/tmp/')
       FileUtils.rm_rf(store_dir, secure: true)
     else
+      # :nocov:
       p "[Skip]rm -rf #{store_dir}"
+      # :nocov:
     end
   end
 end

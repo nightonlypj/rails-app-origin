@@ -13,16 +13,18 @@ RSpec.describe 'Members', type: :request do
   #   ＋Acceptヘッダ: HTMLが含まれる, JSONが含まれる
   describe 'GET #edit' do
     subject { get edit_member_path(space_code: space.code, user_code: show_user.code, format: subject_format), headers: auth_headers.merge(accept_headers) }
-
     let_it_be(:space_not)     { FactoryBot.build_stubbed(:space) }
     let_it_be(:space_public)  { FactoryBot.create(:space, :public) }
-    let_it_be(:space_private) { FactoryBot.create(:space, :private) }
+    let_it_be(:space_private) { FactoryBot.create(:space, :private, created_user: space_public.created_user) }
     let_it_be(:other_user)    { FactoryBot.create(:user) }
+
     shared_context 'valid_condition' do
       let_it_be(:space)     { space_public }
       let_it_be(:show_user) { other_user }
-      before_all { FactoryBot.create(:member, space: space, user: show_user) }
-      include_context 'set_member_power', :admin
+      before_all do
+        FactoryBot.create(:member, space:, user: show_user)
+        FactoryBot.create(:member, space:, user:) if user.present?
+      end
     end
 
     # テスト内容
@@ -34,9 +36,17 @@ RSpec.describe 'Members', type: :request do
     end
 
     # テストケース
+    if Settings.api_only_mode
+      include_context 'APIログイン処理'
+      include_context 'valid_condition'
+      it_behaves_like 'ToNG(html)', 406
+      it_behaves_like 'ToNG(json)', 406
+      next
+    end
+
     shared_examples_for '[ログイン中][*][ある]対象メンバーがいる（他人）' do
       let_it_be(:show_user) { other_user }
-      before_all { FactoryBot.create(:member, space: space, user: show_user) }
+      before_all { FactoryBot.create(:member, space:, user: show_user) }
       it_behaves_like 'ToOK(html)'
       it_behaves_like 'ToNG(json)', 406
     end
@@ -53,14 +63,14 @@ RSpec.describe 'Members', type: :request do
 
     shared_examples_for '[ログイン中][*]権限がある' do |power|
       let_it_be(:show_user) { other_user }
-      include_context 'set_member_power', power
+      before_all { FactoryBot.create(:member, power, space:, user:) }
       it_behaves_like '[ログイン中][*][ある]対象メンバーがいる（他人）'
       it_behaves_like '[ログイン中][*][ある]対象メンバーがいる（自分）'
       it_behaves_like '[ログイン中][*][ある]対象メンバーがいない'
     end
     shared_examples_for '[ログイン中][*]権限がない' do |power|
       let_it_be(:show_user) { other_user }
-      include_context 'set_member_power', power
+      before_all { FactoryBot.create(:member, power, space:, user:) if power.present? }
       it_behaves_like 'ToNG(html)', 403
       it_behaves_like 'ToNG(json)', 406
     end

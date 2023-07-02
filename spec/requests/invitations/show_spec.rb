@@ -2,6 +2,7 @@ require 'rails_helper'
 
 RSpec.describe 'Invitations', type: :request do
   let(:response_json) { JSON.parse(response.body) }
+  let(:response_json_invitation) { response_json['invitation'] }
 
   # GET /invitations/:space_code/detail/:code(.json) 招待URL詳細API
   # テストパターン
@@ -11,15 +12,15 @@ RSpec.describe 'Invitations', type: :request do
   #   招待コード: 存在する（有効, 期限切れ, 削除済み, 参加済み）, 存在しない
   #   ＋URLの拡張子: ない, .json
   #   ＋Acceptヘッダ: HTMLが含まれる, JSONが含まれる
-  describe 'GET #index' do
+  describe 'GET #show' do
     subject { get invitation_path(space_code: space.code, code: invitation.code, format: subject_format), headers: auth_headers.merge(accept_headers) }
-
     let_it_be(:space_not)     { FactoryBot.build_stubbed(:space) }
     let_it_be(:space_public)  { FactoryBot.create(:space, :public) }
-    let_it_be(:space_private) { FactoryBot.create(:space, :private) }
+    let_it_be(:space_private) { FactoryBot.create(:space, :private, created_user: space_public.created_user) }
+
     shared_context 'valid_condition' do
       let_it_be(:space) { space_public }
-      let_it_be(:invitation) { FactoryBot.create(:invitation, :active, space: space) }
+      let_it_be(:invitation) { FactoryBot.create(:invitation, :active, space:, created_user: space.created_user) }
     end
 
     # テスト内容
@@ -29,15 +30,19 @@ RSpec.describe 'Invitations', type: :request do
       it 'HTTPステータスが200。対象項目が一致する' do
         is_expected.to eq(200)
         expect(response_json['success']).to eq(true)
-        expect(response_json['alert']).to be_nil
-        expect(response_json['notice']).to be_nil
-        expect_invitation_json(response_json['invitation'], invitation)
+
+        count = expect_invitation_json(response_json_invitation, invitation)
+        ## 招待削除の猶予期間
+        expect(response_json_invitation['destroy_schedule_days']).to eq(Settings.invitation_destroy_schedule_days)
+        expect(response_json_invitation.count).to eq(count + 1)
+
+        expect(response_json.count).to eq(2)
       end
     end
 
     # テストケース
     shared_examples_for '[APIログイン中/削除予約済み][*][ある]招待コードが存在する' do |status|
-      let_it_be(:invitation) { FactoryBot.create(:invitation, status, space: space) }
+      let_it_be(:invitation) { FactoryBot.create(:invitation, status, space:, created_user: space.created_user) }
       it_behaves_like 'ToNG(html)', 406
       it_behaves_like 'ToOK(json)'
     end
@@ -48,7 +53,7 @@ RSpec.describe 'Invitations', type: :request do
     end
 
     shared_examples_for '[APIログイン中/削除予約済み][*]権限がある' do |power|
-      before_all { FactoryBot.create(:member, power, space: space, user: user) }
+      before_all { FactoryBot.create(:member, power, space:, user:) }
       it_behaves_like '[APIログイン中/削除予約済み][*][ある]招待コードが存在する', :active
       it_behaves_like '[APIログイン中/削除予約済み][*][ある]招待コードが存在する', :expired
       it_behaves_like '[APIログイン中/削除予約済み][*][ある]招待コードが存在する', :deleted
@@ -56,8 +61,8 @@ RSpec.describe 'Invitations', type: :request do
       it_behaves_like '[APIログイン中/削除予約済み][*][ある]招待コードが存在しない'
     end
     shared_examples_for '[APIログイン中/削除予約済み][*]権限がない' do |power|
-      before_all { FactoryBot.create(:member, power, space: space, user: user) if power.present? }
-      let_it_be(:invitation) { FactoryBot.create(:invitation, :active, space: space) }
+      before_all { FactoryBot.create(:member, power, space:, user:) if power.present? }
+      let_it_be(:invitation) { FactoryBot.create(:invitation, :active, space:, created_user: space.created_user) }
       it_behaves_like 'ToNG(html)', 406
       it_behaves_like 'ToNG(json)', 403
     end

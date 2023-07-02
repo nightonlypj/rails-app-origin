@@ -10,9 +10,9 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2022_12_22_110420) do
+ActiveRecord::Schema.define(version: 2023_06_11_212805) do
 
-  create_table "admin_users", charset: "utf8", collation: "utf8_bin", comment: "管理者", force: :cascade do |t|
+  create_table "admin_users", charset: "utf8mb4", collation: "utf8mb4_general_ci", comment: "管理者", force: :cascade do |t|
     t.string "name", null: false, comment: "氏名"
     t.string "email", default: "", null: false, comment: "メールアドレス"
     t.string "encrypted_password", default: "", null: false, comment: "暗号化されたパスワード"
@@ -39,7 +39,22 @@ ActiveRecord::Schema.define(version: 2022_12_22_110420) do
     t.index ["unlock_token"], name: "index_admin_users4", unique: true
   end
 
-  create_table "download_files", charset: "utf8", collation: "utf8_bin", comment: "ダウンロードファイル", force: :cascade do |t|
+  create_table "delayed_jobs", charset: "utf8mb4", collation: "utf8mb4_general_ci", force: :cascade do |t|
+    t.integer "priority", default: 0, null: false
+    t.integer "attempts", default: 0, null: false
+    t.text "handler", null: false
+    t.text "last_error"
+    t.datetime "run_at"
+    t.datetime "locked_at"
+    t.datetime "failed_at"
+    t.string "locked_by"
+    t.string "queue"
+    t.datetime "created_at", precision: 6
+    t.datetime "updated_at", precision: 6
+    t.index ["priority", "run_at"], name: "delayed_jobs_priority"
+  end
+
+  create_table "download_files", charset: "utf8mb4", collation: "utf8mb4_general_ci", comment: "ダウンロードファイル", force: :cascade do |t|
     t.bigint "download_id", null: false, comment: "ダウンロードID"
     t.binary "body", size: :long, comment: "内容"
     t.datetime "created_at", precision: 6, null: false
@@ -47,12 +62,12 @@ ActiveRecord::Schema.define(version: 2022_12_22_110420) do
     t.index ["download_id"], name: "index_download_files_on_download_id"
   end
 
-  create_table "downloads", charset: "utf8", collation: "utf8_bin", comment: "ダウンロード", force: :cascade do |t|
+  create_table "downloads", charset: "utf8mb4", collation: "utf8mb4_general_ci", comment: "ダウンロード", force: :cascade do |t|
     t.bigint "user_id", null: false, comment: "ユーザーID"
     t.integer "status", default: 0, null: false, comment: "ステータス"
     t.datetime "requested_at", null: false, comment: "依頼日時"
     t.datetime "completed_at", comment: "完了日時"
-    t.string "error_message", comment: "エラーメッセージ"
+    t.text "error_message", comment: "エラーメッセージ"
     t.datetime "last_downloaded_at", comment: "最終ダウンロード日時"
     t.integer "model", null: false, comment: "モデル"
     t.bigint "space_id", comment: "スペースID"
@@ -71,7 +86,15 @@ ActiveRecord::Schema.define(version: 2022_12_22_110420) do
     t.index ["user_id"], name: "index_downloads_on_user_id"
   end
 
-  create_table "infomations", charset: "utf8", collation: "utf8_bin", comment: "お知らせ", force: :cascade do |t|
+  create_table "holidays", charset: "utf8mb4", collation: "utf8mb4_general_ci", comment: "祝日", force: :cascade do |t|
+    t.date "date", null: false, comment: "日付"
+    t.string "name", null: false, comment: "名称"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["date"], name: "index_holidays1", unique: true
+  end
+
+  create_table "infomations", charset: "utf8mb4", collation: "utf8mb4_general_ci", comment: "お知らせ", force: :cascade do |t|
     t.string "title", null: false, comment: "タイトル"
     t.string "summary", comment: "概要"
     t.text "body", comment: "本文"
@@ -91,7 +114,7 @@ ActiveRecord::Schema.define(version: 2022_12_22_110420) do
     t.index ["user_id"], name: "index_infomations_on_user_id"
   end
 
-  create_table "invitations", charset: "utf8", collation: "utf8_bin", comment: "招待", force: :cascade do |t|
+  create_table "invitations", charset: "utf8mb4", collation: "utf8mb4_general_ci", comment: "招待", force: :cascade do |t|
     t.string "code", null: false, comment: "コード"
     t.bigint "space_id", null: false, comment: "スペースID"
     t.string "email", comment: "メールアドレス"
@@ -117,7 +140,7 @@ ActiveRecord::Schema.define(version: 2022_12_22_110420) do
     t.index ["space_id"], name: "index_invitations_on_space_id"
   end
 
-  create_table "members", charset: "utf8", collation: "utf8_bin", comment: "メンバー", force: :cascade do |t|
+  create_table "members", charset: "utf8mb4", collation: "utf8mb4_general_ci", comment: "メンバー", force: :cascade do |t|
     t.bigint "space_id", null: false, comment: "スペースID"
     t.bigint "user_id", null: false, comment: "ユーザーID"
     t.integer "power", null: false, comment: "権限"
@@ -139,7 +162,7 @@ ActiveRecord::Schema.define(version: 2022_12_22_110420) do
     t.index ["user_id"], name: "index_members_on_user_id"
   end
 
-  create_table "spaces", charset: "utf8", collation: "utf8_bin", comment: "スペース", force: :cascade do |t|
+  create_table "spaces", charset: "utf8mb4", collation: "utf8mb4_general_ci", comment: "スペース", force: :cascade do |t|
     t.string "code", null: false, comment: "コード"
     t.string "image", comment: "画像"
     t.string "name", null: false, comment: "名称"
@@ -159,7 +182,7 @@ ActiveRecord::Schema.define(version: 2022_12_22_110420) do
     t.index ["name", "id"], name: "index_spaces4"
   end
 
-  create_table "users", charset: "utf8", collation: "utf8_bin", comment: "ユーザー", force: :cascade do |t|
+  create_table "users", charset: "utf8mb4", collation: "utf8mb4_general_ci", comment: "ユーザー", force: :cascade do |t|
     t.string "code", null: false, comment: "コード"
     t.string "image", comment: "画像"
     t.string "name", null: false, comment: "氏名"
@@ -198,7 +221,7 @@ ActiveRecord::Schema.define(version: 2022_12_22_110420) do
     t.index ["unlock_token"], name: "index_users4", unique: true
   end
 
-  create_table "versions", charset: "utf8", collation: "utf8_bin", force: :cascade do |t|
+  create_table "versions", charset: "utf8mb4", collation: "utf8mb4_general_ci", force: :cascade do |t|
     t.string "item_type", null: false
     t.bigint "item_id", null: false
     t.string "event", null: false

@@ -1,25 +1,27 @@
 # Ruby on Railsベースアプリケーション（Space）
 
 運営元とユーザー同士が作成したスペース上で情報共有する（BtoC向け）  
-(Ruby 3.0.0, Rails 6.1.4.1)
+(Ruby 3.1.4, Rails 6.1.4.1)
 
 ## コマンドメモ
 
 | local | Docker |
 | - | - |
-| | docker-compose exec web bash<br>( bash-5.1# ) |
-| bundle install | docker-compose run web bundle install |
-| yarn install | docker-compose run web yarn install |
-| rails db:migrate | docker-compose run web rails db:migrate |
-| rails db:seed | docker-compose run web rails db:seed |
+| | docker compose exec app bash<br>( :/workdir# ) |
+| bundle install | docker compose run app bundle install |
+| yarn install | docker compose run app yarn install |
+| rails db:migrate | docker compose run app rails db:migrate |
+| rails db:seed | docker compose run app rails db:seed |
 | rails s | 不要 |
-| rails c | docker-compose run web rails c |
-| rails db | docker-compose run web rails db |
-| rspec<br>open coverage/index.html | docker-compose run web rspec<br>open coverage/index.html |
-| rubocop | docker-compose run web rubocop |
-| brakeman | docker-compose run web brakeman |
-| yard<br>open doc/index.html | docker-compose run web yard<br>open doc/index.html |
-| erd<br>open db/erd.pdf | docker-compose run web erd<br>open db/erd.pdf |
+| bin/webpack-dev-server | 不要 |
+| rails jobs:work<br>または bin/delayed_job start| 不要 |
+| rails c | docker compose run app rails c |
+| rails db | docker compose run app rails db |
+| rspec<br>open coverage/index.html | docker compose run app rspec<br>open coverage/index.html |
+| rubocop | docker compose run app rubocop |
+| brakeman | docker compose run app brakeman |
+| yard<br>open doc/index.html | docker compose run app yard<br>open doc/index.html |
+| erd<br>open db/erd.pdf | docker compose run app erd<br>open db/erd.pdf |
 | cd schemaspy<br>make schemaspy<br>( open analysis/index.html ) | cd schemaspy<br>make docker-schemaspy<br>( open analysis/index.html ) |
 
 ## 環境構築手順（Dockerの場合）
@@ -31,23 +33,28 @@ https://hub.docker.com/editions/community/docker-ce-desktop-mac/
 
 ### コンテナ作成＆起動
 
+config/database.yml
+```
+  host: 127.0.0.1
+↓
+  host: db
+```
+
 ```
 $ cd rails-app-origin
 
-$ docker-compose build
-$ docker-compose up
-（DBのみ起動 $ docker-compose up db）
-または $ docker-compose up --build
+$ docker compose build
+$ docker compose up
+または $ docker compose up --build
 ```
 ※終了は、Ctrl+C
 
 ```
 $ cp -a config/settings/development.yml,local config/settings/development.yml
 
-$ docker-compose run web rails db:migrate
-$ docker-compose run web rails db:seed
-
-$ rails s
+$ docker compose run app rails db:create
+$ docker compose run app rails db:migrate
+$ docker compose run app rails db:seed
 ```
 
 - http://localhost:3000
@@ -60,14 +67,7 @@ $ rails s
 DBの設定以外は、下記「環境構築手順（Macの場合）」参照
 
 ```
-$ docker-compose up db
-```
-
-config/database.yml
-```
-  host: db
-↓
-  host: 127.0.0.1
+$ docker compose up db
 ```
 
 ## 環境構築手順（Macの場合）
@@ -98,7 +98,7 @@ $ brew doctor
 Your system is ready to brew.
 
 $ brew -v
-Homebrew 3.2.13
+Homebrew 4.0.23
 ※バージョンは異なっても良い
 ```
 
@@ -106,9 +106,10 @@ Homebrew 3.2.13
 
 ```
 $ brew install imagemagick
+（$ brew upgrade imagemagick）
 
 $ magick -version
-Version: ImageMagick 7.1.0-8 Q16-HDRI arm 2021-09-18 https://imagemagick.org
+Version: ImageMagick 7.1.1-11 Q16-HDRI aarch64 21206 https://imagemagick.org
 ※バージョンは異なっても良い
 ```
 
@@ -116,9 +117,10 @@ Version: ImageMagick 7.1.0-8 Q16-HDRI arm 2021-09-18 https://imagemagick.org
 
 ```
 $ brew install graphviz
+（$ brew upgrade graphviz）
 
 $ dot -V
-dot - graphviz version 2.49.1 (20210923.0004)
+dot - graphviz version 8.0.5 (20230430.1635)
 ※バージョンは異なっても良い
 ```
 
@@ -141,12 +143,11 @@ rvm 1.29.12 (latest) by Michal Papis, Piotr Kuczynski, Wayne E. Seguin [https://
 ```
 $ rvm list known
 （$ rvm list）
-[ruby-]3[.0.0]
-$ rvm install 3.0
-（$ rvm --default use 3.0）
+$ rvm install 3.1.4
+（$ rvm --default use 3.1.4）
 
 $ ruby -v
-ruby 3.0.0p0 (2020-12-25 revision 95aff21468) [arm64-darwin20]
+ruby 3.1.4p223 (2023-03-30 revision 957bb7cb81) [arm64-darwin22]
 ```
 
 ### Node.jsインストール
@@ -178,18 +179,21 @@ $ nvm --version
 ```
 ```
 $ nvm ls-remote | grep 'Latest LTS'
-       v14.17.6   (Latest LTS: Fermium)
-$ nvm install v14.17.6
+       v16.19.0   (Latest LTS: Gallium)
+$ nvm install v16.19.0
 ※バージョンは異なっても良いが、本番の環境に合わせるのがベスト
+（$ nvm ls）
+（$ nvm use v16.19.0）
 
 $ node -v
-v14.17.6
+v16.19.0
 ```
 
 ### yarnインストール
 
 ```
 $ brew install yarn
+（$ brew upgrade yarn）
 
 ※zshの場合(Catalina以降)
 % vi ~/.zshrc
@@ -205,7 +209,7 @@ export PATH="/opt/homebrew/opt/icu4c/bin:/opt/homebrew/opt/icu4c/sbin:$PATH"
 $ source ~/.bash_profile
 
 $ yarn -v
-1.22.10
+1.22.19
 ※バージョンは異なっても良い
 ```
 
@@ -214,8 +218,10 @@ $ yarn -v
 ```
 ※MariaDBを使う場合
 $ brew install mariadb
+（$ brew upgrade mariadb）
 ※MySQLを使う場合
 $ brew install mysql
+（$ brew upgrade mysql）
 
 ※MariaDBを使う場合
 $ brew services start mariadb
@@ -233,7 +239,7 @@ $ mysql
 
 $ mysql_secure_installation
 ※MariaDBを使う場合
-[Enter current password for root (enter for none): xyz789
+Enter current password for root (enter for none): xyz789
 Switch to unix_socket authentication [Y/n] n
 Change the root password? [Y/n] n
 ※MySQLを使う場合
@@ -259,7 +265,7 @@ password = xyz789
 
 $ mysql
 ※MariaDBの場合
-Server version: 10.5.9-MariaDB Homebrew
+Server version: 11.0.2-MariaDB Homebrew
 ※MySQLの場合
 Server version: 8.0.23 Homebrew
 ※バージョンは異なっても良いが、本番と同じが理想
@@ -294,13 +300,17 @@ $ bundle install
 Bundle complete!
 
 $ yarn install
+（$ yarn upgrade）
 Done
 
+$ rails db:create
 $ rails db:migrate
 ※「Mysql2::Error: Specified key was too long; max key length is 767 bytes」の場合は「rails db:migrate:reset」で回避
 
 $ rails db:seed
 $ rails s
+（$ bin/webpack-dev-server）
+（$ rails jobs:work または bin/delayed_job start）
 ```
 
 - http://localhost:3000
@@ -312,9 +322,10 @@ $ rails s
 
 ```
 $ brew install nginx
+（$ brew upgrade nginx）
 
 $ nginx -v
-nginx version: nginx/1.19.6
+nginx version: nginx/1.25.1
 ※バージョンは異なっても良い
 ```
 ```
@@ -411,6 +422,8 @@ $ cp -a config/settings/development.yml,dev config/settings/development.yml
 overwrite config/settings/development.yml? (y/n [n]) y
 
 $ rails s
+（$ bin/webpack-dev-server）
+（$ rails jobs:work または bin/delayed_job start）
 ```
 
 - http://localhost

@@ -15,7 +15,7 @@
   </h5>
   <div class="card-text mb-3">
     <p>
-      スペースは<%= Settings['space_destroy_schedule_days'] %>日後に削除されます。それまでは取り消し可能です。<br>
+      スペースは<%= Settings.space_destroy_schedule_days %>日後に削除されます。それまでは取り消し可能です。<br>
       削除されるまではアクセスできますが、一部機能が制限されます。
     </p>
     <%= button_to '削除', destroy_space_path(@space.code), data: { confirm: '本当に削除しますか？' }, method: :post, class: 'btn btn-danger' %>

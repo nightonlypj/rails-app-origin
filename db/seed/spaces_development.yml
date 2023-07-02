@@ -2,7 +2,7 @@
 - id: 1
   code: 'code0001'
   name: '非公開スペース(管理者/管理者)<b>１２３４５６７８９０１２３４５６７８９０１２３４５６７８９０１２３４５６７８９０１２３４５６７８９０１２３４５６７８９０１２３４５６７８９０１２３４５６７８９０１２３４５６７８９０１２３４５６７８９０１２３４５</b>'
-  description: "非公開スペース(管理者/管理者)\n2行目\n<b>１２３４５６７８９０１２３４５６７８９０１２３４５６７８９０１２３４５６７８９０１２３４５６７８９０１２３４５６７８９０１２３４５６７８９０１２３４５６７８９０１２３４５６７８９０１２３４５６７８９０１２３４５</b>\nhttps://example.com"
+  description: "## 非公開スペース(管理者/管理者)の説明\n<b>１２３４５６７８９０１２３４５６７８９０１２３４５６７８９０１２３４５６７８９０１２３４５６７８９０１２３４５６７８９０１２３４５６７８９０１２３４５６７８９０１２３４５６７８９０１２３４５６７８９０１２３４５</b>\n\nhttps://example.com"
   private: true
   created_user_id: 0 # NOTE: アカウント削除済みの想定
   last_updated_user_id: 0
@@ -21,7 +21,7 @@
 - id: 3
   code: 'code0003'
   name: '非公開スペース(投稿者/管理者)'
-  description: "非公開スペース(投稿者/管理者)\n2行目"
+  description: null
   private: true
   created_user_id: 1
   last_updated_user_id: 2
@@ -30,7 +30,7 @@
 - id: 4
   code: 'code0004'
   name: '公開スペース(投稿者/管理者)'
-  description: "公開スペース(投稿者/管理者)\n2行目"
+  description: null
   private: false
   created_user_id: 1
   last_updated_user_id: 2

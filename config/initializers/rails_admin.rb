@@ -3,6 +3,7 @@ require 'nested_form/engine'
 require 'nested_form/builder_mixin'
 
 RailsAdmin.config do |config|
+  config.asset_source = :webpacker
   ### Popular gems integration
 
   ## == Devise ==

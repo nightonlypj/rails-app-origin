@@ -23,6 +23,6 @@ json.member do
 end
 json.members do
   json.array! @members do |member|
-    json.partial! 'member', member: member, current_member: @current_member
+    json.partial! 'member', member:, current_member: @current_member
   end
 end

@@ -1,7 +1,7 @@
 require 'rake_helper'
 
 RSpec.describe :invitation, type: :task do
-  # 招待削除（削除予定日時または終了日時か参加日時から#{Settings['invitation_destroy_schedule_days']}日後以降）
+  # 招待削除（削除予定日時または終了日時か参加日時から#{Settings.invitation_destroy_schedule_days}日後以降）
   # テストパターン
   #   削除対象: ない, ある
   #     削除予定日時: ない, 過去, 未来
@@ -11,9 +11,10 @@ RSpec.describe :invitation, type: :task do
   #     ＋スペース: ある
   #   ドライラン: true, false
   describe 'invitation:destroy' do
-    let(:task) { Rake.application['invitation:destroy'] }
-    let_it_be(:before_date) { Time.current - Settings['invitation_destroy_schedule_days'].days - 1.minute }
-    let_it_be(:after_date)  { Time.current - Settings['invitation_destroy_schedule_days'].days + 1.minute }
+    subject { Rake.application['invitation:destroy'].invoke(dry_run) }
+
+    let_it_be(:before_date) { Time.current - Settings.invitation_destroy_schedule_days.days - 1.minute }
+    let_it_be(:after_date)  { Time.current - Settings.invitation_destroy_schedule_days.days + 1.minute }
     before_all do
       user = FactoryBot.create(:user)
       space = FactoryBot.create(:space, created_user: user)
@@ -23,16 +24,16 @@ RSpec.describe :invitation, type: :task do
         [nil, before_date, after_date].each do |email_joined_at|
           next if ended_at == before_date || email_joined_at == before_date # NOTE: 終了日時か参加日時が、現在日時＋設定日数以前だったら削除対象
 
-          FactoryBot.create(:invitation, space: space, created_user: user,
-                                         destroy_schedule_at: destroy_schedule_at, ended_at: ended_at, email_joined_at: email_joined_at)
+          FactoryBot.create(:invitation, space:, created_user: user,
+                                         destroy_schedule_at:, ended_at:, email_joined_at:)
         end
       end
 
       destroy_schedule_at = Time.current + 1.minute # 削除予定日時が未来 -> 全て削除対象外
       [nil, before_date, after_date].each do |ended_at|
         [nil, before_date, after_date].each do |email_joined_at|
-          FactoryBot.create(:invitation, space: space, created_user: user,
-                                         destroy_schedule_at: destroy_schedule_at, ended_at: ended_at, email_joined_at: email_joined_at)
+          FactoryBot.create(:invitation, space:, created_user: user,
+                                         destroy_schedule_at:, ended_at:, email_joined_at:)
         end
       end
     end
@@ -47,16 +48,16 @@ RSpec.describe :invitation, type: :task do
           [nil, before_date, after_date].each do |email_joined_at|
             next unless ended_at == before_date || email_joined_at == before_date # NOTE: 終了日時か参加日時が、現在日時＋設定日数以前だったら削除対象
 
-            result.push(FactoryBot.create(:invitation, space: space, created_user: user,
-                                                       destroy_schedule_at: destroy_schedule_at, ended_at: ended_at, email_joined_at: email_joined_at))
+            result.push(FactoryBot.create(:invitation, space:, created_user: user,
+                                                       destroy_schedule_at:, ended_at:, email_joined_at:))
           end
         end
 
         destroy_schedule_at = Time.current - 1.minute # 削除予定日時が過去 -> 全て削除対象
         [nil, before_date, after_date].each do |ended_at|
           [nil, before_date, after_date].each do |email_joined_at|
-            result.push(FactoryBot.create(:invitation, space: space, created_user: user,
-                                                       destroy_schedule_at: destroy_schedule_at, ended_at: ended_at, email_joined_at: email_joined_at))
+            result.push(FactoryBot.create(:invitation, space:, created_user: user,
+                                                       destroy_schedule_at:, ended_at:, email_joined_at:))
           end
         end
 
@@ -70,7 +71,7 @@ RSpec.describe :invitation, type: :task do
       let!(:before_user_count)       { User.count }
       let!(:before_space_count)      { Space.count }
       it '削除される（ユーザー・スペース除く）' do
-        task.invoke(dry_run)
+        subject
         expect(Invitation.count).to eq(before_invitation_count - invitations.count)
         expect(Invitation.exists?(id: invitations)).to eq(false)
         expect(User.count).to eq(before_user_count)
@@ -82,7 +83,7 @@ RSpec.describe :invitation, type: :task do
       let!(:before_user_count)       { User.count }
       let!(:before_space_count)      { Space.count }
       it '削除されない' do
-        task.invoke(dry_run)
+        subject
         expect(Invitation.count).to eq(before_invitation_count)
         expect(User.count).to eq(before_user_count)
         expect(Space.count).to eq(before_space_count)

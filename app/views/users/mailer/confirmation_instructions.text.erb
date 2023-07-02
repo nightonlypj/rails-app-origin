@@ -4,7 +4,7 @@
 
 下記のURLをクリックして、メールアドレスの確認をしてください。
 アカウント登録やメールアドレスの変更を行なっていない場合は、このメールを無視してください。
-※このURLの有効期限は<%= Settings['confirm_within_hours'] %>時間です。
+※このURLの有効期限は<%= Settings.confirm_within_hours %>時間です。
 <% if message['redirect-url'].to_s.present? %>
 <%= user_auth_confirmation_url(config: message['client-config'].to_s, confirmation_token: @token, redirect_url: message['redirect-url'].to_s) %>
 <% else %>

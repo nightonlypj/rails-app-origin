@@ -49,23 +49,35 @@ RSpec.describe 'Top', type: :request do
     end
 
     shared_examples_for '[ログイン中/削除予約済み]' do
-      include_context 'お知らせ一覧作成', 1, 1, 1, 1
-      it_behaves_like '[*]大切なお知らせがない'
-      it_behaves_like '[ログイン中/削除予約済み]大切なお知らせがある'
+      if Settings.api_only_mode
+        it_behaves_like 'ToNG(html)', 404
+      else
+        include_context 'お知らせ一覧作成', 1, 1, 1, 1
+        it_behaves_like '[*]大切なお知らせがない'
+        it_behaves_like '[ログイン中/削除予約済み]大切なお知らせがある'
+      end
       it_behaves_like 'ToNG(json)', 406
     end
     shared_examples_for '[APIログイン中/削除予約済み]' do
-      include_context 'お知らせ一覧作成', 1, 1, 1, 1
-      it_behaves_like '[*]大切なお知らせがない'
-      it_behaves_like '[未ログイン]大切なお知らせがある' # NOTE: APIは未ログイン扱い
+      if Settings.api_only_mode
+        it_behaves_like 'ToNG(html)', 404
+      else
+        include_context 'お知らせ一覧作成', 1, 1, 1, 1
+        it_behaves_like '[*]大切なお知らせがない'
+        it_behaves_like '[未ログイン]大切なお知らせがある' # NOTE: APIは未ログイン扱い
+      end
       it_behaves_like 'ToNG(json)', 406
     end
 
     context '未ログイン' do
       include_context '未ログイン処理'
-      include_context 'お知らせ一覧作成', 1, 1, 0, 0
-      it_behaves_like '[*]大切なお知らせがない'
-      it_behaves_like '[未ログイン]大切なお知らせがある'
+      if Settings.api_only_mode
+        it_behaves_like 'ToNG(html)', 404
+      else
+        include_context 'お知らせ一覧作成', 1, 1, 0, 0
+        it_behaves_like '[*]大切なお知らせがない'
+        it_behaves_like '[未ログイン]大切なお知らせがある'
+      end
       it_behaves_like 'ToNG(json)', 406
     end
     context 'ログイン中' do

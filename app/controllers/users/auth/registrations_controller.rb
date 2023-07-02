@@ -4,15 +4,15 @@ class Users::Auth::RegistrationsController < DeviseTokenAuth::RegistrationsContr
   include Users::RegistrationsConcern
   include DeviseTokenAuth::Concerns::SetUserByToken
   skip_before_action :verify_authenticity_token
+  before_action :response_api_for_user_destroy_reserved, only: %i[update image_update image_destroy destroy]
+  before_action :response_api_for_not_user_destroy_reserved, only: :undo_destroy
+  before_action :set_invitation, only: %i[invitation create]
+  before_action :configure_sign_up_params, only: :create
+  before_action :configure_account_update_params, only: :update
   prepend_before_action :response_unauthenticated, only: %i[show update image_update image_destroy destroy undo_destroy], unless: :user_signed_in?
   prepend_before_action :response_already_authenticated, only: %i[invitation create], if: :user_signed_in?
   prepend_before_action :response_not_acceptable_for_not_api
   prepend_before_action :update_request_uid_header
-  before_action :response_api_for_user_destroy_reserved, only: %i[update image_update image_destroy destroy]
-  before_action :response_api_for_not_user_destroy_reserved, only: %i[undo_destroy]
-  before_action :set_invitation, only: %i[invitation create]
-  before_action :configure_sign_up_params, only: %i[create]
-  before_action :configure_account_update_params, only: %i[update]
   skip_after_action :update_auth_header, only: %i[update image_update]
 
   # GET /users/auth/invitation(.json) 招待情報取得API
@@ -50,7 +50,7 @@ class Users::Auth::RegistrationsController < DeviseTokenAuth::RegistrationsContr
     if @resource.present? && @resource.email != params[:email] && User.find_by(email: params[:email]).present?
       errors = { email: t('activerecord.errors.models.user.attributes.email.taken') }
       errors[:full_messages] = ["#{t('activerecord.attributes.user.email')} #{errors[:email]}"]
-      return render './failure', locals: { errors: errors, alert: t('errors.messages.not_saved.one') }, status: :unprocessable_entity
+      return render './failure', locals: { errors:, alert: t('errors.messages.not_saved.one') }, status: :unprocessable_entity
     end
 
     params[:password_confirmation] = '' if params[:password_confirmation].nil? # NOTE: nilだとチェックされずに保存される為
@@ -65,7 +65,7 @@ class Users::Auth::RegistrationsController < DeviseTokenAuth::RegistrationsContr
     if params[:image].blank? || params[:image].class != ActionDispatch::Http::UploadedFile
       errors = { image: t('activerecord.errors.models.user.attributes.image.blank') }
       errors[:full_messages] = ["#{t('activerecord.attributes.user.image')} #{errors[:image]}"]
-      return render './failure', locals: { errors: errors, alert: t('errors.messages.not_saved.one') }, status: :unprocessable_entity
+      return render './failure', locals: { errors:, alert: t('errors.messages.not_saved.one') }, status: :unprocessable_entity
     end
 
     @user = User.find(@resource.id)
@@ -97,7 +97,7 @@ class Users::Auth::RegistrationsController < DeviseTokenAuth::RegistrationsContr
 
     if @resource
       # @resource.destroy
-      @resource.set_destroy_reserve
+      @resource.set_destroy_reserve!
       UserMailer.with(user: @resource, undo_delete_url: params[:undo_delete_url]).destroy_reserved.deliver_now
 
       yield @resource if block_given?
@@ -109,7 +109,7 @@ class Users::Auth::RegistrationsController < DeviseTokenAuth::RegistrationsContr
 
   # POST /users/auth/undo_delete(.json) アカウント削除取り消しAPI(処理)
   def undo_destroy
-    @resource.set_undo_destroy_reserve
+    @resource.set_undo_destroy_reserve!
     UserMailer.with(user: @resource).undo_destroy_reserved.deliver_now
 
     render './users/auth/success', locals: { notice: t('devise.registrations.undo_destroy_reserved') }

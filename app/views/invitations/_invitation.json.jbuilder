@@ -22,12 +22,12 @@ if invitation.created_user_id.present?
     json.deleted invitation.created_user.blank?
   end
 end
+json.created_at l(invitation.created_at, format: :json)
+
 if invitation.last_updated_user_id.present?
   json.last_updated_user do
     json.partial! './users/auth/user', user: invitation.last_updated_user, use_email: true if invitation.last_updated_user.present?
     json.deleted invitation.last_updated_user.blank?
   end
 end
-
-json.created_at l(invitation.created_at, format: :json)
 json.last_updated_at l(invitation.last_updated_at, format: :json, default: nil)

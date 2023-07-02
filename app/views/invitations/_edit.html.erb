@@ -107,7 +107,7 @@
           <%= form.label :delete, '削除して使用できないようにする', class: 'form-check-label', for: "invitation_delete" %>
         </div>
         <div class="my-1">
-          （<%= Settings['invitation_destroy_schedule_days'] %>日後に完全に削除されます。それまでは取り消し可能です）<br>
+          （<%= Settings.invitation_destroy_schedule_days %>日後に完全に削除されます。それまでは取り消し可能です）<br>
         </div>
 <% else %>
         <div class="form-check">

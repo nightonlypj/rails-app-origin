@@ -3,11 +3,11 @@
 class Users::Auth::UnlocksController < DeviseTokenAuth::UnlocksController
   include DeviseTokenAuth::Concerns::SetUserByToken
   skip_before_action :verify_authenticity_token
-  prepend_before_action :response_already_authenticated, only: %i[create], if: :user_signed_in?
-  prepend_before_action :response_not_acceptable_for_not_api, only: %i[create]
-  prepend_before_action :response_not_acceptable_for_not_html, only: %i[show]
-  prepend_before_action :update_request_uid_header
   before_action :validate_redirect_url_param, only: %i[create show] # NOTE: 追加
+  prepend_before_action :response_already_authenticated, only: :create, if: :user_signed_in?
+  prepend_before_action :response_not_acceptable_for_not_api, only: :create
+  prepend_before_action :response_not_acceptable_for_not_html, only: :show
+  prepend_before_action :update_request_uid_header
 
   # POST /users/auth/unlock(.json) アカウントロック解除API[メール再送](処理)
   def create
@@ -52,8 +52,8 @@ class Users::Auth::UnlocksController < DeviseTokenAuth::UnlocksController
       @resource.save!
       yield @resource if block_given?
 
-      return redirect_to Settings['unlock_success_url_not'] if @redirect_url.blank?
-      return redirect_to Settings['unlock_success_url_bad'] if blacklisted_redirect_url?(@redirect_url)
+      return redirect_to Settings.unlock_success_url_not if @redirect_url.blank?
+      return redirect_to Settings.unlock_success_url_bad if blacklisted_redirect_url?(@redirect_url)
 
       # redirect_header_options = { unlock: true }
       redirect_header_options = { unlock: true, notice: t('devise.unlocks.unlocked') }
@@ -68,7 +68,7 @@ class Users::Auth::UnlocksController < DeviseTokenAuth::UnlocksController
   private
 
   def validate_redirect_url_param
-    @redirect_url = params.fetch(:redirect_url, Settings['default_unlock_success_url'])
+    @redirect_url = params.fetch(:redirect_url, Settings.default_unlock_success_url)
     # return render_create_error_missing_redirect_url unless @redirect_url
     # return render_error_not_allowed_redirect_url if blacklisted_redirect_url?(@redirect_url)
   end
@@ -93,28 +93,30 @@ class Users::Auth::UnlocksController < DeviseTokenAuth::UnlocksController
 
   def render_create_error(errors)
     # render json: { success: false, errors: errors }, status: 400
-    render './failure', locals: { errors: errors }, status: :unprocessable_entity
+    render './failure', locals: { errors: }, status: :unprocessable_entity
   end
 
   def render_show_error
     # raise ActionController::RoutingError, 'Not Found'
-    return redirect_to Settings['unlock_error_url_not'] if @redirect_url.blank?
-    return redirect_to Settings['unlock_error_url_bad'] if blacklisted_redirect_url?(@redirect_url)
+    return redirect_to Settings.unlock_error_url_not if @redirect_url.blank?
+    return redirect_to Settings.unlock_error_url_bad if blacklisted_redirect_url?(@redirect_url)
 
     alert = t("activerecord.errors.models.user.attributes.unlock_token.#{params[:unlock_token].blank? ? 'blank' : 'invalid'}")
-    redirect_header_options = { unlock: false, alert: alert }
+    redirect_header_options = { unlock: false, alert: }
     redirect_to DeviseTokenAuth::Url.generate(@redirect_url, redirect_header_options)
   end
 
   def render_not_found_error
     if Devise.paranoid
+      # :nocov:
       # render_error(404, I18n.t('devise_token_auth.unlocks.sended_paranoid'))
       render './failure', locals: { alert: t('devise_token_auth.unlocks.sended_paranoid') }, status: :unprocessable_entity
+      # :nocov:
     else
       # render_error(404, I18n.t('devise_token_auth.unlocks.user_not_found', email: @email))
       errors = { email: t('devise_token_auth.unlocks.user_not_found') }
       errors[:full_messages] = ["#{t('activerecord.attributes.user.email')} #{errors[:email]}"]
-      render './failure', locals: { errors: errors, alert: t('errors.messages.not_saved.one') }, status: :unprocessable_entity
+      render './failure', locals: { errors:, alert: t('errors.messages.not_saved.one') }, status: :unprocessable_entity
     end
   end
 end

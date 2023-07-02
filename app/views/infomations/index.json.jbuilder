@@ -7,7 +7,6 @@ json.infomation do
 end
 json.infomations do
   json.array! @infomations do |infomation|
-    json.id infomation.id
-    json.partial! 'infomation', infomation: infomation, use_body: false
+    json.partial! 'infomation', infomation:, use_id: true, use_body: false
   end
 end

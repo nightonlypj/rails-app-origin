@@ -1,5 +1,5 @@
 namespace :download do
-  desc "ダウンロード削除（完了日時か依頼日時の#{Settings['download_destroy_schedule_days']}日後以降）"
+  desc "ダウンロード削除（完了日時か依頼日時の#{Settings.download_destroy_schedule_days}日後以降）"
   task(:destroy, [:dry_run] => :environment) do |task, args|
     args.with_defaults(dry_run: 'true')
     dry_run = (args.dry_run != 'false')
@@ -15,7 +15,7 @@ namespace :download do
       count = downloads.count
       logger.info("count: #{count}")
 
-      schedule_date = Time.current - Settings['download_destroy_schedule_days'].days
+      schedule_date = Time.current - Settings.download_destroy_schedule_days.days
       downloads.find_each.with_index(1) do |download, index|
         logger.info("[#{index}/#{count}] id: #{download.id}, completed_at: #{download.completed_at}, requested_at: #{download.requested_at}")
 

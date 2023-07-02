@@ -10,14 +10,14 @@ class Space < ApplicationRecord
   has_many :invitations, dependent: :destroy
 
   validates :code, presence: true
-  validates :code, uniqueness: { case_sensitive: true }
+  validates :code, uniqueness: { case_sensitive: true }, allow_blank: true
   validates :name, presence: true
-  validates :name, length: { in: Settings['space_name_minimum']..Settings['space_name_maximum'] }, if: proc { errors[:name].blank? }
-  validates :description, length: { maximum: Settings['space_description_maximum'] }, if: proc { |space| space.description.present? }
+  validates :name, length: { in: Settings.space_name_minimum..Settings.space_name_maximum }, allow_blank: true
+  validates :description, length: { maximum: Settings.space_description_maximum }, allow_blank: true
   validates :private, inclusion: { in: [true, false] } # NOTE: presenceだとfalseもエラーになる為
 
   scope :by_target, lambda { |current_user, checked|
-    return where(id: []) if (!checked[:public] && !checked[:private]) || (!checked[:join] && !checked[:nojoin]) || (!checked[:active] && !checked[:destroy])
+    return none if (!checked[:public] && !checked[:private]) || (!checked[:join] && !checked[:nojoin]) || (!checked[:active] && !checked[:destroy])
 
     if checked[:public] && checked[:private] && current_user.present?
       space = where(private: false).left_joins(:members).or(where(members: { user: current_user }))
@@ -45,12 +45,12 @@ class Space < ApplicationRecord
   scope :search, lambda { |text|
     return if text&.strip.blank?
 
+    sql = "name #{search_like} ? OR description #{search_like} ?"
+
     space = all
-    collate = connection_db_config.configuration_hash[:adapter] == 'mysql2' ? ' COLLATE utf8_unicode_ci' : ''
-    like = connection_db_config.configuration_hash[:adapter] == 'postgresql' ? 'ILIKE' : 'LIKE'
     text.split(/[[:blank:]]+/).each do |word|
       value = "%#{word}%"
-      space = space.where("name#{collate} #{like} ? OR description#{collate} #{like} ?", value, value)
+      space = space.where(sql, value, value)
     end
 
     space
@@ -65,12 +65,12 @@ class Space < ApplicationRecord
   end
 
   # 削除予約
-  def set_destroy_reserve
-    update!(destroy_requested_at: Time.current, destroy_schedule_at: Time.current + Settings['space_destroy_schedule_days'].days)
+  def set_destroy_reserve!
+    update!(destroy_requested_at: Time.current, destroy_schedule_at: Time.current + Settings.space_destroy_schedule_days.days)
   end
 
   # 削除予約取り消し
-  def set_undo_destroy_reserve
+  def set_undo_destroy_reserve!
     update!(destroy_requested_at: nil, destroy_schedule_at: nil)
   end
 

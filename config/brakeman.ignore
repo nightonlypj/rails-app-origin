@@ -1,26 +1,190 @@
 {
   "ignored_warnings": [
     {
+      "warning_type": "Cross-Site Scripting",
+      "warning_code": 2,
+      "fingerprint": "2b555d6a2b1cf9dfac0d8bee9b4ec7df6d04a01251ab92009f588737b48e89f3",
+      "check_name": "CrossSiteScripting",
+      "message": "Unescaped model attribute",
+      "file": "app/views/infomations/show.html.erb",
+      "line": 17,
+      "link": "https://brakemanscanner.org/docs/warning_types/cross_site_scripting",
+      "code": "Infomation.find_by(:id => params[:id]).body",
+      "render_path": [
+        {
+          "type": "controller",
+          "class": "InfomationsController",
+          "method": "show",
+          "line": 28,
+          "file": "app/controllers/infomations_controller.rb",
+          "rendered": {
+            "name": "infomations/show",
+            "file": "app/views/infomations/show.html.erb"
+          }
+        }
+      ],
+      "location": {
+        "type": "template",
+        "template": "infomations/show"
+      },
+      "user_input": null,
+      "confidence": "Medium",
+      "cwe_id": [
+        79
+      ],
+      "note": ""
+    },
+    {
+      "warning_type": "SQL Injection",
+      "warning_code": 0,
+      "fingerprint": "45254d441c9daeb7be4c0398b640e57e175bb1cfea6b4d5b8bcb47450ec46502",
+      "check_name": "SQL",
+      "message": "Possible SQL injection",
+      "file": "app/models/space.rb",
+      "line": 53,
+      "link": "https://brakemanscanner.org/docs/warning_types/sql_injection/",
+      "code": "all.where(\"name #{search_like} ? OR description #{search_like} ?\", \"%#{word}%\", \"%#{word}%\")",
+      "render_path": null,
+      "location": {
+        "type": "method",
+        "class": "Space",
+        "method": "search"
+      },
+      "user_input": "search_like",
+      "confidence": "Weak",
+      "cwe_id": [
+        89
+      ],
+      "note": ""
+    },
+    {
+      "warning_type": "Cross-Site Scripting",
+      "warning_code": 2,
+      "fingerprint": "62d8190c43c7e2633e1ba3a79b035d98eacde08a6518c52ec510ea06e3311d9f",
+      "check_name": "CrossSiteScripting",
+      "message": "Unescaped model attribute",
+      "file": "app/views/infomations/show.html.erb",
+      "line": 19,
+      "link": "https://brakemanscanner.org/docs/warning_types/cross_site_scripting",
+      "code": "Infomation.find_by(:id => params[:id]).summary",
+      "render_path": [
+        {
+          "type": "controller",
+          "class": "InfomationsController",
+          "method": "show",
+          "line": 28,
+          "file": "app/controllers/infomations_controller.rb",
+          "rendered": {
+            "name": "infomations/show",
+            "file": "app/views/infomations/show.html.erb"
+          }
+        }
+      ],
+      "location": {
+        "type": "template",
+        "template": "infomations/show"
+      },
+      "user_input": null,
+      "confidence": "Medium",
+      "cwe_id": [
+        79
+      ],
+      "note": ""
+    },
+    {
       "warning_type": "Redirect",
       "warning_code": 18,
-      "fingerprint": "e48199614121dcd187f8078015873667c10fd56379c49897b28cd8c94cee0c44",
+      "fingerprint": "67f5de8abced3398b8678ef6bf37a4fc45277ede775bee10f0799a65b0fb52fc",
       "check_name": "Redirect",
       "message": "Possible unprotected redirect",
       "file": "app/controllers/users/auth/unlocks_controller.rb",
-      "line": 61,
+      "line": 62,
       "link": "https://brakemanscanner.org/docs/warning_types/redirect/",
-      "code": "redirect_to(DeviseTokenAuth::Url.generate(params.fetch(:redirect_url, Settings[\"default_unlock_success_url\"]), :unlock => true, :notice => t(\"devise.unlocks.unlocked\")))",
+      "code": "redirect_to(DeviseTokenAuth::Url.generate(params.fetch(:redirect_url, Settings.default_unlock_success_url), :unlock => true, :notice => t(\"devise.unlocks.unlocked\")))",
       "render_path": null,
       "location": {
         "type": "method",
         "class": "Users::Auth::UnlocksController",
         "method": "show"
       },
-      "user_input": "params.fetch(:redirect_url, Settings[\"default_unlock_success_url\"])",
+      "user_input": "params.fetch(:redirect_url, Settings.default_unlock_success_url)",
       "confidence": "Weak",
+      "cwe_id": [
+        601
+      ],
+      "note": ""
+    },
+    {
+      "warning_type": "SQL Injection",
+      "warning_code": 0,
+      "fingerprint": "c9d7b6edb320872d4d73c28cadc9508009f9b945cd6fb1e502ae89f83e2d3a56",
+      "check_name": "SQL",
+      "message": "Possible SQL injection",
+      "file": "app/models/member.rb",
+      "line": 21,
+      "link": "https://brakemanscanner.org/docs/warning_types/sql_injection/",
+      "code": "all.joins(:user).where((\"users.name #{search_like} ?\" + \" OR users.email #{search_like} ?\"), \"%#{word}%\", \"%#{word}%\")",
+      "render_path": null,
+      "location": {
+        "type": "method",
+        "class": "Member",
+        "method": "search"
+      },
+      "user_input": "search_like",
+      "confidence": "Weak",
+      "cwe_id": [
+        89
+      ],
+      "note": ""
+    },
+    {
+      "warning_type": "SQL Injection",
+      "warning_code": 0,
+      "fingerprint": "e4f6de719322262f12b36a2f0b2c63682a4e2ee6ce35ea4e34d52ebc544b2467",
+      "check_name": "SQL",
+      "message": "Possible SQL injection",
+      "file": "app/models/member.rb",
+      "line": 23,
+      "link": "https://brakemanscanner.org/docs/warning_types/sql_injection/",
+      "code": "all.joins(:user).where((\"users.name #{search_like} ?\" + \" OR users.email #{search_like} ?\"), \"%#{word}%\", \"%#{word}%\").where((\"users.name #{search_like} ?\" + \" OR users.email #{search_like} ?\"), \"%#{word}%\")",
+      "render_path": null,
+      "location": {
+        "type": "method",
+        "class": "Member",
+        "method": "search"
+      },
+      "user_input": "search_like",
+      "confidence": "Weak",
+      "cwe_id": [
+        89
+      ],
+      "note": ""
+    },
+    {
+      "warning_type": "Dangerous Eval",
+      "warning_code": 13,
+      "fingerprint": "e8e447c1d82e2dcd30b0fa10a88514e3c92129e65a1f5f6146a3d79717a83d41",
+      "check_name": "Evaluation",
+      "message": "User input in eval",
+      "file": "app/jobs/download_job.rb",
+      "line": 16,
+      "link": "https://brakemanscanner.org/docs/warning_types/dangerous_eval/",
+      "code": "eval(Download.find(download_id).output_items)",
+      "render_path": null,
+      "location": {
+        "type": "method",
+        "class": "DownloadJob",
+        "method": "perform"
+      },
+      "user_input": "Download.find(download_id).output_items",
+      "confidence": "High",
+      "cwe_id": [
+        913,
+        95
+      ],
       "note": ""
     }
   ],
-  "updated": "2021-09-26 17:22:58 +0900",
-  "brakeman_version": "5.0.4"
+  "updated": "2023-07-02 11:20:17 +0900",
+  "brakeman_version": "6.0.0"
 }

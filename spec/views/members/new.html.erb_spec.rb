@@ -3,7 +3,7 @@ require 'rails_helper'
 RSpec.describe 'members/new', type: :view do
   before_all do
     @space = FactoryBot.create(:space)
-    @current_member = FactoryBot.create(:member, space: @space)
+    @current_member = FactoryBot.create(:member, space: @space, user: @space.created_user)
     @member = Member.new
   end
 

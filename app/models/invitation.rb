@@ -6,14 +6,14 @@ class Invitation < ApplicationRecord
   belongs_to :last_updated_user, class_name: 'User', optional: true
 
   validates :code, presence: true
-  validates :code, uniqueness: { case_sensitive: true }
+  validates :code, uniqueness: { case_sensitive: true }, allow_blank: true
   validates :power, presence: true
-  validates :memo, length: { maximum: Settings['invitation_memo_maximum'] }, if: proc { |invitation| invitation.memo.present? }
+  validates :memo, length: { maximum: Settings.invitation_memo_maximum }, allow_blank: true
   validate :validate_ended_date
   validate :validate_ended_time
 
   scope :destroy_target, lambda {
-    schedule_date = Time.current - Settings['invitation_destroy_schedule_days'].days
+    schedule_date = Time.current - Settings.invitation_destroy_schedule_days.days
     where(destroy_schedule_at: ..Time.current)
       .or(where(destroy_schedule_at: nil, ended_at: ..schedule_date))
       .or(where(destroy_schedule_at: nil, email_joined_at: ..schedule_date))
@@ -21,18 +21,18 @@ class Invitation < ApplicationRecord
 
   # 権限
   enum power: {
-    admin: 1, # 管理者
+    admin: 1,  # 管理者
     writer: 2, # 投稿者
-    reader: 3 # 閲覧者
+    reader: 3  # 閲覧者
   }, _prefix: true
 
   # ステータス
   def status
-    return :email_joined if email_joined_at.present?
-    return :deleted if destroy_schedule_at.present?
-    return :expired if ended_at.present? && ended_at < Time.current
+    return :email_joined if email_joined_at.present? # 参加済み
+    return :deleted if destroy_schedule_at.present? # 削除済み
+    return :expired if ended_at.present? && ended_at < Time.current # 期限切れ
 
-    :active
+    :active # 有効
   end
 
   # ステータス（表示）

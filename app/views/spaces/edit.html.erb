@@ -1,4 +1,4 @@
-<% content_for(:html_title) { 'スペース設定変更' } %>
+<% content_for(:html_title) { 'スペース設定' } %>
 
 <%= render './users/shared/error_messages', resource: @space %>
 
@@ -7,7 +7,7 @@
     <%= link_to 'スペース', space_path(@space.code), class: 'nav-link' %>
   </li>
   <li class="nav-item">
-    <a data-mdb-toggle="tab" class="nav-link active">スペース設定変更</a>
+    <a data-mdb-toggle="tab" class="nav-link active">スペース設定</a>
   </li>
 </ul>
 

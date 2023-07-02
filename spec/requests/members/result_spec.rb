@@ -13,13 +13,13 @@ RSpec.describe 'Members', type: :request do
   #   ＋Acceptヘッダ: HTMLが含まれる, JSONが含まれる
   describe 'GET #result' do
     subject { get result_member_path(space_code: space.code, format: subject_format), headers: auth_headers.merge(accept_headers) }
-
     let_it_be(:space_not)     { FactoryBot.build_stubbed(:space) }
     let_it_be(:space_public)  { FactoryBot.create(:space, :public) }
-    let_it_be(:space_private) { FactoryBot.create(:space, :private) }
+    let_it_be(:space_private) { FactoryBot.create(:space, :private, created_user: space_public.created_user) }
+
     shared_context 'valid_condition' do
       let_it_be(:space) { space_public }
-      include_context 'set_member_power', :admin
+      before_all { FactoryBot.create(:member, space:, user:) if user.present? }
       include_context 'set_flash_data'
     end
     shared_context 'set_flash_data' do
@@ -38,7 +38,7 @@ RSpec.describe 'Members', type: :request do
       let(:power) { :admin }
       before do
         allow_any_instance_of(MembersController).to receive(:flash).and_return(
-          { emails: emails, exist_user_mails: exist_user_mails, create_user_mails: create_user_mails, power: power }
+          { emails:, exist_user_mails:, create_user_mails:, power: }
         )
       end
       it 'HTTPステータスが200。対象項目が含まれる' do
@@ -53,18 +53,18 @@ RSpec.describe 'Members', type: :request do
         emails.each do |email|
           expect(response.body).to include(email)
         end
-        if create_user_mails.count.positive?
+        if create_user_mails.count > 0
           expect(response.body).to include('招待しました。')
           expect(response.body).to include(Member.powers_i18n[:admin])
         else
           expect(response.body).not_to include('招待しました。')
         end
-        if exist_user_mails.count.positive?
+        if exist_user_mails.count > 0
           expect(response.body).to include('既に参加しています。')
         else
           expect(response.body).not_to include('既に参加しています。')
         end
-        if (emails.count - create_user_mails.count - exist_user_mails.count).positive?
+        if (emails.count - create_user_mails.count - exist_user_mails.count) > 0
           expect(response.body).to include('アカウントが存在しません。登録後に招待してください。')
         else
           expect(response.body).not_to include('アカウントが存在しません。登録後に招待してください。')
@@ -73,6 +73,14 @@ RSpec.describe 'Members', type: :request do
     end
 
     # テストケース
+    if Settings.api_only_mode
+      include_context 'APIログイン処理'
+      include_context 'valid_condition'
+      it_behaves_like 'ToNG(html)', 406
+      it_behaves_like 'ToNG(json)', 406
+      next
+    end
+
     shared_examples_for '[ログイン中][*][ある]flashがある（3件）' do
       include_context 'set_flash_data'
       it_behaves_like 'ToOK(html)'
@@ -89,13 +97,13 @@ RSpec.describe 'Members', type: :request do
     end
 
     shared_examples_for '[ログイン中][*]権限がある' do |power|
-      include_context 'set_member_power', power
+      before_all { FactoryBot.create(:member, power, space:, user:) }
       it_behaves_like '[ログイン中][*][ある]flashがある（3件）'
       it_behaves_like '[ログイン中][*][ある]flashがある（0件）'
       it_behaves_like '[ログイン中][*][ある]flashがない'
     end
     shared_examples_for '[ログイン中][*]権限がない' do |power|
-      include_context 'set_member_power', power
+      before_all { FactoryBot.create(:member, power, space:, user:) if power.present? }
       it_behaves_like 'ToNG(html)', 403
       it_behaves_like 'ToNG(json)', 406
     end

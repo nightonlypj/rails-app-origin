@@ -1,14 +1,17 @@
 debug: false
-env_name: ''
+env_name: null
 base_domain: 'localhost.test'
 base_image_url: 'http://localhost.test'
 redirect_whitelist: ['http://front.localhost.test/*']
-default_confirm_success_url: ''
-default_password_reset_url: ''
-default_unlock_success_url: ''
+default_confirm_success_url: null
+default_password_reset_url: null
+default_unlock_success_url: null
 mailer_from:
   name: '%{app_name}'
   email: 'noreply@localhost.test'
+exception_notifier:
+  email_enabled: false
+  slack_enabled: false
 
 ## ユーザー
 # ユーザー名の最小・最大文字数
@@ -18,20 +21,20 @@ user_name_maximum: 12 # NOTE: (7+5?)以上
 ## お知らせ
 # 一覧のデフォルト最大表示件数
 default_infomations_limit: 4 # NOTE: 高速化の為（下記の合計値と一致）
-test_infomations:
-  all_forever_count: 1
-  all_future_count: 1
-  user_forever_count: 1
-  user_future_count: 1
+test_infomations_count:
+  all_forever: 1
+  all_future: 1
+  user_forever: 1
+  user_future: 1
 
 ## スペース
 # 一覧のデフォルト最大表示件数
 default_spaces_limit: 4 # NOTE: 高速化の為（下記の合計値と一致）
-test_spaces:
-  public_admin_count: 1
-  public_none_count: 1
-  private_admin_count: 1
-  private_reader_count: 1
+test_spaces_count:
+  public_admin: 1
+  public_none: 1
+  private_admin: 1
+  private_reader: 1
 # コードの文字数
 # space_code_length: 8
 # 名称の最小・最大文字数
@@ -43,11 +46,11 @@ space_description_maximum: 22 # NOTE: (13+8?)以上 = "description(#{n})"
 ## 招待URL
 # 一覧のデフォルト最大表示件数
 default_invitations_limit: 4 # NOTE: 高速化の為（下記の合計値と一致）
-test_invitations:
-  active_count: 1
-  expired_count: 1
-  deleted_count: 1
-  email_joined_count: 1
+test_invitations_count:
+  active: 1
+  expired: 1
+  deleted: 1
+  email_joined: 1
 # ドメインの最大件数
 invitation_domains_max_count: 2 # NOTE: 2以上
 # ドメインの最大文字数
@@ -57,21 +60,20 @@ invitation_memo_maximum: 14 # NOTE: (6+8?)以上 = "memo(#{n})"
 
 ## メンバー
 # 一覧のデフォルト最大表示件数
-default_members_limit: 4 # NOTE: 高速化の為（下記の合計値+1と一致）
-test_members:
-  admin_count: 1
-  writer_count: 1
-  reader_count: 1
+default_members_limit: 3 # NOTE: 高速化の為（下記の合計値+1と一致）
+test_members_count:
+  admin: 1
+  reader: 1
 job_members_limit: 2
 # メールアドレスの最大件数
 member_emails_max_count: 3 # NOTE: テストパターンに合わせる
 
 ## ダウンロード
 # 一覧のデフォルト最大表示件数
-default_downloads_limit: 5
-test_downloads:
-  waiting_count: 1
-  processing_count: 1
-  success_count: 1
-  failure_count: 1
-  downloaded_count: 1
+default_downloads_limit: 5 # NOTE: 高速化の為（下記の合計値と一致）
+test_downloads_count:
+  waiting: 1
+  processing: 1
+  success: 1
+  failure: 1
+  downloaded: 1

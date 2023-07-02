@@ -1,51 +1,13 @@
 require 'rails_helper'
 
 RSpec.describe Invitation, type: :model do
-  # テスト内容（共通）
-  shared_examples_for 'Valid' do
-    it '保存できる' do
-      expect(invitation).to be_valid
-    end
-  end
-  shared_examples_for 'InValid' do
-    it '保存できない。エラーメッセージが一致する' do
-      expect(invitation).to be_invalid
-      expect(invitation.errors.messages).to eq(messages)
-    end
-  end
-
-  shared_examples_for 'Valid(12:00)' do
-    it '保存できる' do
-      travel_to Time.current.beginning_of_day + 12.hours do
-        expect(invitation).to be_valid
-      end
-    end
-  end
-  shared_examples_for 'InValid(12:00)' do
-    it '保存できない。エラーメッセージが一致する' do
-      travel_to Time.current.beginning_of_day + 12.hours do
-        expect(invitation).to be_invalid
-        expect(invitation.errors.messages).to eq(messages)
-      end
-    end
-  end
-
-  shared_examples_for 'Value' do |value|
-    it "#{value}が返却される" do
-      is_expected.to eq(value)
-    end
-  end
-  shared_examples_for 'Value_i18n' do |value|
-    it "#{value}が返却される" do
-      is_expected.to eq(get_locale(value))
-    end
-  end
+  let_it_be(:space) { FactoryBot.create(:space) }
 
   # コード
   # テストパターン
   #   ない, 正常値, 重複
   describe 'validates :code' do
-    let(:invitation) { FactoryBot.build_stubbed(:invitation, code: code) }
+    let(:model) { FactoryBot.build_stubbed(:invitation, code:) }
     let(:valid_code) { Digest::MD5.hexdigest(SecureRandom.uuid) }
 
     # テストケース
@@ -61,7 +23,7 @@ RSpec.describe Invitation, type: :model do
     context '重複' do
       let(:code) { valid_code }
       let(:messages) { { code: [get_locale('activerecord.errors.models.invitation.attributes.code.taken')] } }
-      before { FactoryBot.create(:invitation, code: code) }
+      before { FactoryBot.create(:invitation, code:) }
       it_behaves_like 'InValid'
     end
   end
@@ -70,7 +32,7 @@ RSpec.describe Invitation, type: :model do
   # テストパターン
   #   ない, 正常値
   describe 'validates :power' do
-    let(:invitation) { FactoryBot.build_stubbed(:invitation, power: power) }
+    let(:model) { FactoryBot.build_stubbed(:invitation, power:) }
 
     # テストケース
     context 'ない' do
@@ -86,9 +48,9 @@ RSpec.describe Invitation, type: :model do
 
   # メモ
   # テストパターン
-  #   ない, 最大文字数と同じ, 最大文字数よりも多い
+  #   ない, 最大文字数と同じ, 最大文字数より多い
   describe 'validates :memo' do
-    let(:invitation) { FactoryBot.build_stubbed(:invitation, memo: memo) }
+    let(:model) { FactoryBot.build_stubbed(:invitation, memo:) }
 
     # テストケース
     context 'ない' do
@@ -96,12 +58,12 @@ RSpec.describe Invitation, type: :model do
       it_behaves_like 'Valid'
     end
     context '最大文字数と同じ' do
-      let(:memo) { 'a' * Settings['invitation_memo_maximum'] }
+      let(:memo) { 'a' * Settings.invitation_memo_maximum }
       it_behaves_like 'Valid'
     end
-    context '最大文字数よりも多い' do
-      let(:memo) { 'a' * (Settings['invitation_memo_maximum'] + 1) }
-      let(:messages) { { memo: [get_locale('activerecord.errors.models.invitation.attributes.memo.too_long', count: Settings['invitation_memo_maximum'])] } }
+    context '最大文字数より多い' do
+      let(:memo) { 'a' * (Settings.invitation_memo_maximum + 1) }
+      let(:messages) { { memo: [get_locale('activerecord.errors.models.invitation.attributes.memo.too_long', count: Settings.invitation_memo_maximum)] } }
       it_behaves_like 'InValid'
     end
   end
@@ -111,11 +73,11 @@ RSpec.describe Invitation, type: :model do
   #   時間あり, タイムゾーンなし
   # テストパターン
   #   終了日時: ない
-  #     ない, YYYY/MM/DD, YYYY-MM-DD, YYYYMMDD, YYYY-MM, 存在しない日付（1/0, 2/30）, 過去日
+  #     ない, YYYY-MM-DD, YYYY/MM/DD, YYYYMMDD, 存在しない日付（1/0, 2/30）, 過去日
   #   終了日時: 過去, 未来
   #     変更なし, 過去に変更, 未来に変更
   describe 'validates :ended_date' do
-    let(:invitation) { FactoryBot.build_stubbed(:invitation, ended_at: ended_at, ended_date: ended_date, ended_time: '23:59') }
+    let(:model) { FactoryBot.build_stubbed(:invitation, ended_at:, ended_date:, ended_time: '23:59') }
 
     # テストケース
     shared_examples_for '終了日時がない' do
@@ -123,30 +85,25 @@ RSpec.describe Invitation, type: :model do
         let(:ended_date) { nil }
         it_behaves_like 'Valid'
       end
-      context 'YYYY/MM/DD' do
-        let(:ended_date) { (Time.current + 1.day).strftime('%Y/%m/%d') }
-        it_behaves_like 'Valid'
-      end
       context 'YYYY-MM-DD' do
         let(:ended_date) { (Time.current + 1.day).strftime('%Y-%m-%d') }
+        it_behaves_like 'Valid'
+      end
+      context 'YYYY/MM/DD' do
+        let(:ended_date) { (Time.current + 1.day).strftime('%Y/%m/%d') }
         it_behaves_like 'Valid'
       end
       context 'YYYYMMDD' do
         let(:ended_date) { (Time.current + 1.day).strftime('%Y%m%d') }
         it_behaves_like 'Valid'
       end
-      context 'YYYY-MM' do
-        let(:ended_date) { (Time.current + 1.day).strftime('%Y-%m') }
-        let(:messages) { { ended_date: [get_locale('activerecord.errors.models.invitation.attributes.ended_date.invalid')] } }
-        it_behaves_like 'InValid'
-      end
       context '存在しない日付（1/0）' do
-        let(:ended_date) { '9999-01-00' }
+        let(:ended_date) { "#{Time.current.year}-01-00" }
         let(:messages) { { ended_date: [get_locale('activerecord.errors.models.invitation.attributes.ended_date.invalid')] } }
         it_behaves_like 'InValid'
       end
       context '存在しない日付（2/30）' do
-        let(:ended_date) { '9999-02-30' }
+        let(:ended_date) { "#{Time.current.year}-02-30" }
         let(:messages) { { ended_date: [get_locale('activerecord.errors.models.invitation.attributes.ended_date.notfound')] } }
         it_behaves_like 'InValid'
       end
@@ -195,7 +152,24 @@ RSpec.describe Invitation, type: :model do
   #   終了日時: 過去, 未来
   #     変更なし, 過去に変更, 未来に変更
   describe 'validates :ended_time' do
-    let(:invitation) { FactoryBot.build_stubbed(:invitation, ended_at: ended_at, ended_date: ended_date, ended_time: ended_time) }
+    let(:model) { FactoryBot.build_stubbed(:invitation, ended_at:, ended_date:, ended_time:) }
+
+    # テスト内容
+    shared_examples_for 'Valid(12:00)' do
+      it '保存できる' do
+        travel_to(Time.current.beginning_of_day + 12.hours) do
+          expect(model).to be_valid
+        end
+      end
+    end
+    shared_examples_for 'InValid(12:00)' do
+      it '保存できない。エラーメッセージが一致する' do
+        travel_to(Time.current.beginning_of_day + 12.hours) do
+          expect(model).to be_invalid
+          expect(model.errors.messages).to eq(messages)
+        end
+      end
+    end
 
     # テストケース
     shared_examples_for '終了日時がない' do
@@ -268,13 +242,13 @@ RSpec.describe Invitation, type: :model do
   # テストパターン
   #   +09:00, +00:00 -00:30, 存在しない値（+24:00）
   describe 'validates :ended_zone' do
-    let(:invitation) { FactoryBot.build_stubbed(:invitation, ended_date: '9999-12-31', ended_time: '23:59', ended_zone: ended_zone) }
+    let(:model) { FactoryBot.build_stubbed(:invitation, ended_date: '9999-12-31', ended_time: '23:59', ended_zone:) }
 
     # テスト内容
     shared_examples_for 'OK' do |new_ended_at|
       it '保存でき、終了日時が一致する' do
-        expect(invitation).to be_valid
-        expect(invitation.new_ended_at).to eq(new_ended_at)
+        expect(model).to be_valid
+        expect(model.new_ended_at).to eq(new_ended_at)
       end
     end
 
@@ -305,7 +279,7 @@ RSpec.describe Invitation, type: :model do
   #   終了日時: 過去, 未来, ない
   describe '#status' do
     subject { invitation.status }
-    let(:invitation) { FactoryBot.create(:invitation, ended_at: ended_at, destroy_schedule_at: destroy_schedule_at, email_joined_at: email_joined_at) }
+    let(:invitation) { FactoryBot.create(:invitation, ended_at:, destroy_schedule_at:, email_joined_at:, space:, created_user: space.created_user) }
 
     # テストケース
     context '参加日時がある' do
@@ -343,7 +317,7 @@ RSpec.describe Invitation, type: :model do
   #   ステータス: active, expired, deleted, email_joined
   describe '#status_i18n' do
     subject { invitation.status_i18n }
-    let(:invitation) { FactoryBot.create(:invitation, ended_at: ended_at, destroy_schedule_at: destroy_schedule_at, email_joined_at: email_joined_at) }
+    let(:invitation) { FactoryBot.create(:invitation, ended_at:, destroy_schedule_at:, email_joined_at:, space:, created_user: space.created_user) }
 
     # テストケース
     context 'ステータスがactive' do
@@ -377,19 +351,30 @@ RSpec.describe Invitation, type: :model do
   #   ドメイン: ない, 1件, 2件
   describe '#domains_array' do
     subject { invitation.domains_array }
-    let(:invitation) { FactoryBot.create(:invitation, domains: domains) }
+    let(:invitation) { FactoryBot.create(:invitation, domains:, space:, created_user: space.created_user) }
 
+    # テスト内容
+    shared_examples_for 'Value' do |text|
+      it "#{text}が返却される" do
+        is_expected.to eq(value)
+      end
+    end
+
+    # テストケース
     context 'ドメインがない' do
       let(:domains) { nil }
-      it_behaves_like 'Value', []
+      let(:value) { [] }
+      it_behaves_like 'Value', '配列（空）'
     end
     context 'ドメインが1件' do
       let(:domains) { '["example.com"]' }
-      it_behaves_like 'Value', ['example.com']
+      let(:value) { ['example.com'] }
+      it_behaves_like 'Value', '配列（1件）'
     end
     context 'ドメインが2件' do
       let(:domains) { '["a.example.com", "b.example.com"]' }
-      it_behaves_like 'Value', ['a.example.com', 'b.example.com']
+      let(:value) { ['a.example.com', 'b.example.com'] }
+      it_behaves_like 'Value', '配列（2件）'
     end
   end
 
@@ -401,13 +386,13 @@ RSpec.describe Invitation, type: :model do
 
     # テストケース
     context '更新日時が作成日時と同じ' do
-      let(:invitation) { FactoryBot.create(:invitation) }
-      it 'なし' do
-        is_expected.to eq(nil)
-      end
+      let(:invitation) { FactoryBot.create(:invitation, space:, created_user: space.created_user) }
+      it_behaves_like 'Value', nil, 'nil'
     end
     context '更新日時が作成日時以降' do
-      let(:invitation) { FactoryBot.create(:invitation, created_at: Time.current - 1.hour, updated_at: Time.current) }
+      let(:invitation) do
+        FactoryBot.create(:invitation, created_at: Time.current - 1.hour, updated_at: Time.current, space:, created_user: space.created_user)
+      end
       it '更新日時' do
         is_expected.to eq(invitation.updated_at)
       end
