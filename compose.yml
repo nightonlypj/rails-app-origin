@@ -29,7 +29,7 @@ services:
       interval: 5s # <- 30s
       timeout: 10s # <- 30s
       retries: 10 # <- 3
-  web:
+  app:
     build: .
     command: bash -c "rm -f tmp/pids/server.pid && bundle exec rails s -p 3000 -b '0.0.0.0'"
     volumes:

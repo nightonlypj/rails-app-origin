@@ -1,27 +1,27 @@
 # Ruby on Railsベースアプリケーション
 
 運営元が情報提供して1つのサービスを作る（BtoC向け）  
-(Ruby 3.0.0, Rails 6.1.4.1)
+(Ruby 3.1.4, Rails 6.1.4.1)
 
 ## コマンドメモ
 
 | local | Docker |
 | - | - |
-| | docker compose exec web bash<br>( bash-5.1# ) |
-| bundle install | docker compose run web bundle install |
-| yarn install | docker compose run web yarn install |
-| rails db:migrate | docker compose run web rails db:migrate |
-| rails db:seed | docker compose run web rails db:seed |
+| | docker compose exec app bash<br>( :/workdir# ) |
+| bundle install | docker compose run app bundle install |
+| yarn install | docker compose run app yarn install |
+| rails db:migrate | docker compose run app rails db:migrate |
+| rails db:seed | docker compose run app rails db:seed |
 | rails s | 不要 |
 | bin/webpack-dev-server | 不要 |
 | rails jobs:work<br>または bin/delayed_job start| 不要 |
-| rails c | docker compose run web rails c |
-| rails db | docker compose run web rails db |
-| rspec<br>open coverage/index.html | docker compose run web rspec<br>open coverage/index.html |
-| rubocop | docker compose run web rubocop |
-| brakeman | docker compose run web brakeman |
-| yard<br>open doc/index.html | docker compose run web yard<br>open doc/index.html |
-| erd<br>open db/erd.pdf | docker compose run web erd<br>open db/erd.pdf |
+| rails c | docker compose run app rails c |
+| rails db | docker compose run app rails db |
+| rspec<br>open coverage/index.html | docker compose run app rspec<br>open coverage/index.html |
+| rubocop | docker compose run app rubocop |
+| brakeman | docker compose run app brakeman |
+| yard<br>open doc/index.html | docker compose run app yard<br>open doc/index.html |
+| erd<br>open db/erd.pdf | docker compose run app erd<br>open db/erd.pdf |
 | cd schemaspy<br>make schemaspy<br>( open analysis/index.html ) | cd schemaspy<br>make docker-schemaspy<br>( open analysis/index.html ) |
 
 ## 環境構築手順（Dockerの場合）
@@ -52,9 +52,9 @@ $ docker compose up
 ```
 $ cp -a config/settings/development.yml,local config/settings/development.yml
 
-$ docker compose run web rails db:create
-$ docker compose run web rails db:migrate
-$ docker compose run web rails db:seed
+$ docker compose run app rails db:create
+$ docker compose run app rails db:migrate
+$ docker compose run app rails db:seed
 ```
 
 - http://localhost:3000

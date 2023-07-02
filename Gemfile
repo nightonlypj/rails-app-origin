@@ -6,7 +6,7 @@ ruby '3.1.4'
 # Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
 gem 'rails', '~> 6.1.4'
 # Use sqlite3 as the database for Active Record
-# gem 'sqlite3', '>= 1.4'
+# gem 'sqlite3', '~> 1.4.2' # NOTE: Docker -> cannot load such file -- sqlite3/sqlite3_native (LoadError)
 # Use mysql as the database for Active Record
 gem 'mysql2', '>= 0.4.4'
 # Use postgresql as the database for Active Record
