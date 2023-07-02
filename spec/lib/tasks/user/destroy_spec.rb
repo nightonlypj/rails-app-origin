@@ -16,7 +16,7 @@ RSpec.describe :user, type: :task do
     before_all do
       FactoryBot.create(:user, destroy_schedule_at: nil)
       user = FactoryBot.create(:user, destroy_schedule_at: Time.current + 1.minute)
-      FactoryBot.create(:infomation, :user, user: user)
+      FactoryBot.create(:infomation, :user, user:)
 
       space = FactoryBot.create(:space, created_user: user)
       FactoryBot.create(:member, space: space, user: user)

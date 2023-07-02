@@ -1,6 +1,12 @@
 class Infomation < ApplicationRecord
   belongs_to :user, optional: true
 
+  validates :label, presence: true
+  validates :title, presence: true
+  validates :started_at, presence: true
+  validates :target, presence: true
+  validates :user, presence: true, if: proc { |infomation| infomation.target_user? }
+
   scope :by_target, lambda { |current_user|
     where('target = ? OR (target = ? AND user_id = ?)', targets[:all], targets[:user], current_user&.id)
       .where('started_at <= ? AND (ended_at IS NULL OR ended_at >= ?)', Time.current, Time.current)

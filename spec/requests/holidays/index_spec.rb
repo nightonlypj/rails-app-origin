@@ -11,9 +11,9 @@ RSpec.describe 'Holidays', type: :request do
   #   ＋URLの拡張子: .json, ない
   #   ＋Acceptヘッダ: JSONが含まれる, JSONが含まれない
   describe 'GET #index' do
-    subject { get holidays_path(format: subject_format), params: params, headers: auth_headers.merge(accept_headers) }
-    let_it_be(:start_date) { Time.current.to_date.beginning_of_year }
-    let_it_be(:end_date)   { Time.current.to_date.end_of_year }
+    subject { get holidays_path(format: subject_format), params:, headers: auth_headers.merge(accept_headers) }
+    let_it_be(:start_date) { Time.zone.today.beginning_of_year }
+    let_it_be(:end_date)   { Time.zone.today.end_of_year }
 
     before_all { FactoryBot.create(:holiday, date: start_date - 1.day) }
     let_it_be(:holidays) do
@@ -52,7 +52,7 @@ RSpec.describe 'Holidays', type: :request do
       it_behaves_like 'ToOK(json)'
     end
     shared_examples_for '有効なパラメータ' do
-      let(:params) { { start_date: start_date, end_date: end_date } }
+      let(:params) { { start_date:, end_date: } }
       it_behaves_like 'ToNG(html)', 406
       it_behaves_like 'ToOK(json)'
     end

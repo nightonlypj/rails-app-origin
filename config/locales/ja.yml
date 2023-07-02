@@ -101,6 +101,25 @@ ja:
         updated_at: '更新日時'
     errors:
       models:
+        holiday:
+          attributes:
+            date:
+              blank: '入力してください。'
+              taken: '同じ日付が存在します。'
+            name:
+              blank: '入力してください。'
+        infomation:
+          attributes:
+            label:
+              blank: '選択してください。'
+            title:
+              blank: '入力してください。'
+            started_at:
+              blank: '入力してください。'
+            target:
+              blank: '選択してください。'
+            user:
+              blank: '選択してください。'
         space:
           attributes:
             code:

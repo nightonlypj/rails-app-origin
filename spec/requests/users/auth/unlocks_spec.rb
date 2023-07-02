@@ -25,7 +25,7 @@ RSpec.describe 'Users::Auth::Unlocks', type: :request do
   #   ＋URLの拡張子: .json, ない
   #   ＋Acceptヘッダ: JSONが含まれる, JSONが含まれない
   describe 'POST #create' do
-    subject { post create_user_auth_unlock_path(format: subject_format), params: params, headers: auth_headers.merge(accept_headers) }
+    subject { post create_user_auth_unlock_path(format: subject_format), params:, headers: auth_headers.merge(accept_headers) }
     let_it_be(:send_user_locked)   { FactoryBot.create(:user, :locked) }
     let_it_be(:send_user_unlocked) { FactoryBot.create(:user) }
     let_it_be(:not_user)           { FactoryBot.attributes_for(:user) }
@@ -234,7 +234,7 @@ RSpec.describe 'Users::Auth::Unlocks', type: :request do
   #   ＋リダイレクトURL: ある, ない, ホワイトリストにない
   describe 'GET #show' do
     subject do
-      get user_auth_unlock_path(format: subject_format, unlock_token: unlock_token, redirect_url: @redirect_url), headers: auth_headers.merge(accept_headers)
+      get user_auth_unlock_path(format: subject_format, unlock_token:, redirect_url: @redirect_url), headers: auth_headers.merge(accept_headers)
     end
     let(:current_user) { User.find(send_user.id) }
 

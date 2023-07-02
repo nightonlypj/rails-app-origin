@@ -25,7 +25,7 @@ RSpec.describe 'Users::Auth::Registrations', type: :request do
   #   ＋URLの拡張子: .json, ない
   #   ＋Acceptヘッダ: JSONが含まれる, JSONが含まれない
   describe 'POST #create' do
-    subject { post create_user_auth_registration_path(format: subject_format), params: params, headers: auth_headers.merge(accept_headers) }
+    subject { post create_user_auth_registration_path(format: subject_format), params:, headers: auth_headers.merge(accept_headers) }
     let_it_be(:new_user)   { FactoryBot.attributes_for(:user) }
     let_it_be(:exist_user) { FactoryBot.create(:user) }
     let(:valid_attributes)       { { name: new_user[:name], email: new_user[:email], password: new_user[:password], confirm_success_url: FRONT_SITE_URL } }
@@ -309,7 +309,7 @@ RSpec.describe 'Users::Auth::Registrations', type: :request do
   #   ＋URLの拡張子: .json, ない
   #   ＋Acceptヘッダ: JSONが含まれる, JSONが含まれない
   describe 'POST #update' do
-    subject { post update_user_auth_registration_path(format: subject_format), params: params, headers: auth_headers.merge(accept_headers) }
+    subject { post update_user_auth_registration_path(format: subject_format), params:, headers: auth_headers.merge(accept_headers) }
     let_it_be(:new_user)   { FactoryBot.attributes_for(:user) }
     let_it_be(:exist_user) { FactoryBot.create(:user) }
     let(:nochange_attributes)    { { name: user.name, email: user.email, password: user.password, confirm_redirect_url: FRONT_SITE_URL } }
@@ -599,7 +599,7 @@ RSpec.describe 'Users::Auth::Registrations', type: :request do
   #   ＋URLの拡張子: .json, ない
   #   ＋Acceptヘッダ: JSONが含まれる, JSONが含まれない
   describe 'POST #image_update' do
-    subject { post update_user_auth_image_registration_path(format: subject_format), params: params, headers: auth_headers.merge(accept_headers) }
+    subject { post update_user_auth_image_registration_path(format: subject_format), params:, headers: auth_headers.merge(accept_headers) }
     let(:valid_attributes)   { { image: fixture_file_upload(TEST_IMAGE_FILE, TEST_IMAGE_TYPE) } }
     let(:invalid_attributes) { nil }
 
@@ -815,7 +815,7 @@ RSpec.describe 'Users::Auth::Registrations', type: :request do
   #   ＋URLの拡張子: .json, ない
   #   ＋Acceptヘッダ: JSONが含まれる, JSONが含まれない
   describe 'POST #destroy' do
-    subject { post destroy_user_auth_registration_path(format: subject_format), params: params, headers: auth_headers.merge(accept_headers) }
+    subject { post destroy_user_auth_registration_path(format: subject_format), params:, headers: auth_headers.merge(accept_headers) }
     let(:valid_attributes)       { { undo_delete_url: FRONT_SITE_URL } }
     let(:invalid_attributes_nil) { { undo_delete_url: nil } }
     let(:invalid_attributes_bad) { { undo_delete_url: BAD_SITE_URL } }

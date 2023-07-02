@@ -93,7 +93,7 @@ class Users::Auth::UnlocksController < DeviseTokenAuth::UnlocksController
 
   def render_create_error(errors)
     # render json: { success: false, errors: errors }, status: 400
-    render './failure', locals: { errors: errors }, status: :unprocessable_entity
+    render './failure', locals: { errors: }, status: :unprocessable_entity
   end
 
   def render_show_error
@@ -102,7 +102,7 @@ class Users::Auth::UnlocksController < DeviseTokenAuth::UnlocksController
     return redirect_to Settings.unlock_error_url_bad if blacklisted_redirect_url?(@redirect_url)
 
     alert = t("activerecord.errors.models.user.attributes.unlock_token.#{params[:unlock_token].blank? ? 'blank' : 'invalid'}")
-    redirect_header_options = { unlock: false, alert: alert }
+    redirect_header_options = { unlock: false, alert: }
     redirect_to DeviseTokenAuth::Url.generate(@redirect_url, redirect_header_options)
   end
 
@@ -116,7 +116,7 @@ class Users::Auth::UnlocksController < DeviseTokenAuth::UnlocksController
       # render_error(404, I18n.t('devise_token_auth.unlocks.user_not_found', email: @email))
       errors = { email: t('devise_token_auth.unlocks.user_not_found') }
       errors[:full_messages] = ["#{t('activerecord.attributes.user.email')} #{errors[:email]}"]
-      render './failure', locals: { errors: errors, alert: t('errors.messages.not_saved.one') }, status: :unprocessable_entity
+      render './failure', locals: { errors:, alert: t('errors.messages.not_saved.one') }, status: :unprocessable_entity
     end
   end
 end

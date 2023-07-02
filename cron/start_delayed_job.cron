@@ -1,0 +1,37 @@
+#!/bin/sh
+
+BATCH_NAME='start_delayed_job'
+LOG_FILE="log/$BATCH_NAME.log"
+cd ~/app/current
+
+error_msg=''
+write_log () {
+	echo -e "`date +"%Y/%m/%d %H:%M:%S"` ($$) [$1] $2" >> $LOG_FILE
+	[ $1 = 'ERROR' -o $1 = 'WARNING' ] && error_msg="$error_msg[$1] $2\n"
+}
+
+send_error_mail () {
+	[ -z "$error_msg" ] && return
+	echo -e "$error_msg" | mail -s "[WARNING]$BATCH_NAME report for `hostname`" -r crond warning
+	write_log 'INFO' 'Send error mail'
+}
+
+start_delayed_job () {
+	bin/delayed_job status > /dev/null 2>&1
+	if [ $? -eq 0 ]; then
+		write_log 'INFO' "Running"
+		return
+	fi
+
+	bin/delayed_job start > /dev/null 2>&1
+	if [ $? -ne 0 ]; then
+		write_log 'ERROR' "Start failure: `pwd`/bin/delayed_job"
+	else
+		write_log 'WARNING' "Start success: `pwd`/bin/delayed_job"
+	fi
+}
+
+write_log 'INFO' '=== START ==='
+start_delayed_job
+send_error_mail
+write_log 'INFO' '=== END ==='

@@ -22,7 +22,7 @@ end
 
 shared_context 'ユーザー作成' do |trait, use_image|
   let_it_be(:image) { use_image ? fixture_file_upload(TEST_IMAGE_FILE, TEST_IMAGE_TYPE) : nil }
-  let_it_be(:user)  { FactoryBot.create(:user, trait, image: image) }
+  let_it_be(:user)  { FactoryBot.create(:user, trait, image:) }
 end
 
 shared_context 'パスワードリセットトークン作成' do |valid, locked = false, unconfirmed = false, change_email = false|
@@ -38,9 +38,9 @@ shared_context 'パスワードリセットトークン作成' do |valid, locked
   let_it_be(:unconfirmed_email)    { change_email ? Faker::Internet.email : nil }
   let_it_be(:send_user) do
     FactoryBot.create(:user, reset_password_token: digest_token, reset_password_sent_at: sent_at,
-                             unlock_token: unlock_token, locked_at: locked_at, failed_attempts: failed_attempts,
-                             confirmation_token: confirmation_token, confirmation_sent_at: confirmation_sent_at, confirmed_at: confirmed_at,
-                             unconfirmed_email: unconfirmed_email)
+                             unlock_token:, locked_at:, failed_attempts:,
+                             confirmation_token:, confirmation_sent_at:, confirmed_at:,
+                             unconfirmed_email:)
   end
 end
 
@@ -50,8 +50,8 @@ shared_context 'メールアドレス確認トークン作成' do |confirmed, be
   let_it_be(:confirmed_at)       { confirmed ? set_confirmed_at : nil }
   let_it_be(:unconfirmed_email)  { confirmed && before ? Faker::Internet.email : nil }
   let_it_be(:send_user) do
-    FactoryBot.create(:user, confirmation_token: confirmation_token, confirmation_sent_at: confirmation_sent_at,
-                             confirmed_at: confirmed_at, unconfirmed_email: unconfirmed_email)
+    FactoryBot.create(:user, confirmation_token:, confirmation_sent_at:,
+                             confirmed_at:, unconfirmed_email:)
   end
 end
 
@@ -61,7 +61,7 @@ shared_context 'アカウントロック解除トークン作成' do |locked, ex
   let_it_be(:locked_time)     { Time.now.utc - 1.minute - (expired ? Devise.unlock_in : 0) }
   let_it_be(:locked_at)       { locked ? locked_time : nil }
   let_it_be(:failed_attempts) { locked ? Devise.maximum_attempts : 0 }
-  let_it_be(:send_user)       { FactoryBot.create(:user, unlock_token: digest_token, locked_at: locked_at, failed_attempts: failed_attempts) }
+  let_it_be(:send_user)       { FactoryBot.create(:user, unlock_token: digest_token, locked_at:, failed_attempts:) }
 end
 
 # テスト内容（共通）

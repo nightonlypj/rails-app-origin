@@ -21,7 +21,7 @@ namespace :user do
         next if dry_run
 
         user.destroy!
-        UserMailer.with(user: user).destroy_completed.deliver_now if Settings.sendmail_destroy_completed
+        UserMailer.with(user:).destroy_completed.deliver_now if Settings.sendmail_destroy_completed
       end
     end
 

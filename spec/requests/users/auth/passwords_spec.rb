@@ -30,7 +30,7 @@ RSpec.describe 'Users::Auth::Passwords', type: :request do
   #   ＋URLの拡張子: .json, ない
   #   ＋Acceptヘッダ: JSONが含まれる, JSONが含まれない
   describe 'POST #create' do
-    subject { post create_user_auth_password_path(format: subject_format), params: params, headers: auth_headers.merge(accept_headers) }
+    subject { post create_user_auth_password_path(format: subject_format), params:, headers: auth_headers.merge(accept_headers) }
     let_it_be(:send_user_unlocked)    { FactoryBot.create(:user) }
     let_it_be(:send_user_locked)      { FactoryBot.create(:user, :locked) }
     let_it_be(:send_user_unconfirmed) { FactoryBot.create(:user, :unconfirmed) }
@@ -256,7 +256,7 @@ RSpec.describe 'Users::Auth::Passwords', type: :request do
   #   ＋リダイレクトURL: ある, ない, ホワイトリストにない
   describe 'GET #edit' do
     subject do
-      get edit_user_auth_password_path(format: subject_format, reset_password_token: reset_password_token, redirect_url: redirect_url),
+      get edit_user_auth_password_path(format: subject_format, reset_password_token:, redirect_url:),
           headers: auth_headers.merge(accept_headers)
     end
 
@@ -423,11 +423,11 @@ RSpec.describe 'Users::Auth::Passwords', type: :request do
   #   ＋URLの拡張子: .json, ない
   #   ＋Acceptヘッダ: JSONが含まれる, JSONが含まれない
   describe 'POST #update' do
-    subject { post update_user_auth_password_path(format: subject_format), params: params, headers: auth_headers.merge(accept_headers) }
+    subject { post update_user_auth_password_path(format: subject_format), params:, headers: auth_headers.merge(accept_headers) }
     let(:new_password) { Faker::Internet.password(min_length: 8) }
-    let(:valid_attributes)           { { reset_password_token: reset_password_token, password: new_password, password_confirmation: new_password } }
-    let(:invalid_attributes)         { { reset_password_token: reset_password_token, password: nil, password_confirmation: nil } }
-    let(:invalid_attributes_confirm) { { reset_password_token: reset_password_token, password: new_password, password_confirmation: nil } }
+    let(:valid_attributes)           { { reset_password_token:, password: new_password, password_confirmation: new_password } }
+    let(:invalid_attributes)         { { reset_password_token:, password: nil, password_confirmation: nil } }
+    let(:invalid_attributes_confirm) { { reset_password_token:, password: new_password, password_confirmation: nil } }
 
     include_context 'Authテスト内容'
     let(:current_user) { User.find(send_user.id) }

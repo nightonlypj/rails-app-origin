@@ -18,7 +18,7 @@ RSpec.describe 'Infomations', type: :request do
     let_it_be(:other_user) { FactoryBot.create(:user) }
 
     shared_context 'お知らせ作成' do
-      let_it_be(:infomation) { FactoryBot.create(:infomation, started_at: started_at, ended_at: ended_at, target: target, user_id: user_id) }
+      let_it_be(:infomation) { FactoryBot.create(:infomation, started_at:, ended_at:, target:, user_id:) }
     end
 
     # テスト内容

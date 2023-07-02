@@ -5,7 +5,7 @@ RSpec.describe AdminUser, type: :model do
   # テストパターン
   #   ない, 最小文字数より少ない, 最小文字数と同じ, 最大文字数と同じ, 最大文字数より多い
   describe 'validates :name' do
-    let(:model) { FactoryBot.build_stubbed(:admin_user, name: name) }
+    let(:model) { FactoryBot.build_stubbed(:admin_user, name:) }
 
     # テストケース
     context 'ない' do
