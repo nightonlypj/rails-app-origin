@@ -5,7 +5,7 @@ RSpec.describe Member, type: :model do
   # テストパターン
   #   ない, 正常値
   describe 'validates :power' do
-    let(:model) { FactoryBot.build_stubbed(:member, power: power) }
+    let(:model) { FactoryBot.build_stubbed(:member, power:) }
 
     # テストケース
     context 'ない' do
@@ -39,29 +39,29 @@ RSpec.describe Member, type: :model do
     # テストケース
     context '更新日時が作成日時と同じ' do
       context '招待日時がない' do
-        let(:member) { FactoryBot.create(:member, space: space, user: user, invitationed_at: nil, created_at: now, updated_at: now) }
+        let(:member) { FactoryBot.create(:member, space:, user:, invitationed_at: nil, created_at: now, updated_at: now) }
         it_behaves_like 'Value', nil, 'nil'
       end
       context '招待日時が更新日時と同じ' do
-        let(:member) { FactoryBot.create(:member, space: space, user: user, invitationed_at: now, created_at: now, updated_at: now) }
+        let(:member) { FactoryBot.create(:member, space:, user:, invitationed_at: now, created_at: now, updated_at: now) }
         it_behaves_like 'Value', nil, 'nil'
       end
       context '招待日時が更新日時以前' do
-        let(:member) { FactoryBot.create(:member, space: space, user: user, invitationed_at: now - 1.hour, created_at: now, updated_at: now) }
+        let(:member) { FactoryBot.create(:member, space:, user:, invitationed_at: now - 1.hour, created_at: now, updated_at: now) }
         it_behaves_like 'updated_at'
       end
     end
     context '更新日時が作成日時以降' do
       context '招待日時がない' do
-        let(:member) { FactoryBot.create(:member, space: space, user: user, invitationed_at: nil, created_at: now - 1.hour, updated_at: now) }
+        let(:member) { FactoryBot.create(:member, space:, user:, invitationed_at: nil, created_at: now - 1.hour, updated_at: now) }
         it_behaves_like 'updated_at'
       end
       context '招待日時が更新日時と同じ' do
-        let(:member) { FactoryBot.create(:member, space: space, user: user, invitationed_at: now, created_at: now - 1.hour, updated_at: now) }
+        let(:member) { FactoryBot.create(:member, space:, user:, invitationed_at: now, created_at: now - 1.hour, updated_at: now) }
         it_behaves_like 'updated_at'
       end
       context '招待日時が更新日時以前' do
-        let(:member) { FactoryBot.create(:member, space: space, user: user, invitationed_at: now - 1.hour, created_at: now - 1.hour, updated_at: now) }
+        let(:member) { FactoryBot.create(:member, space:, user:, invitationed_at: now - 1.hour, created_at: now - 1.hour, updated_at: now) }
         it_behaves_like 'updated_at'
       end
     end

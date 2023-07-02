@@ -408,10 +408,10 @@ RSpec.describe 'Members', type: :request do
   #   権限: 管理者〜閲覧者
   #   部分一致（大文字・小文字を区別しない）, 不一致: 氏名, メールアドレス（管理者のみ表示）
   describe 'GET #index (.search)' do
-    subject { get members_path(space_code: space.code, format: subject_format), params: params, headers: auth_headers.merge(accept_headers) }
+    subject { get members_path(space_code: space.code, format: subject_format), params:, headers: auth_headers.merge(accept_headers) }
     let_it_be(:space)             { FactoryBot.create(:space) }
-    let_it_be(:member_all)        { FactoryBot.create(:member, space: space, user: FactoryBot.create(:user, name: '氏名(Aaa)')) }
-    let_it_be(:member_admin_only) { FactoryBot.create(:member, space: space, user: FactoryBot.create(:user, email: '_Aaa@example.com')) }
+    let_it_be(:member_all)        { FactoryBot.create(:member, space:, user: FactoryBot.create(:user, name: '氏名(Aaa)')) }
+    let_it_be(:member_admin_only) { FactoryBot.create(:member, space:, user: FactoryBot.create(:user, email: '_Aaa@example.com')) }
     before_all { FactoryBot.create(:member, user: FactoryBot.create(:user, name: '氏名(Aaa)')) } # NOTE: 対象外
 
     # テスト内容
@@ -445,12 +445,12 @@ RSpec.describe 'Members', type: :request do
     end
 
     shared_examples_for '管理者' do |power|
-      before_all { FactoryBot.create(:member, power, space: space, user: user) }
+      before_all { FactoryBot.create(:member, power, space:, user:) }
       it_behaves_like '[管理者]部分一致'
       it_behaves_like '[*]不一致'
     end
     shared_examples_for '管理者以外' do |power|
-      before_all { FactoryBot.create(:member, power, space: space, user: user) }
+      before_all { FactoryBot.create(:member, power, space:, user:) }
       it_behaves_like '[管理者以外]部分一致'
       it_behaves_like '[*]不一致'
     end
@@ -482,17 +482,17 @@ RSpec.describe 'Members', type: :request do
   # テストパターン
   #   管理者, 投稿者, 閲覧者 の組み合わせ
   describe 'GET #index (.power)' do
-    subject { get members_path(space_code: space.code, format: subject_format), params: params, headers: auth_headers.merge(accept_headers) }
+    subject { get members_path(space_code: space.code, format: subject_format), params:, headers: auth_headers.merge(accept_headers) }
     let_it_be(:space)         { FactoryBot.create(:space) }
-    let_it_be(:member_reader) { FactoryBot.create(:member, :reader, space: space) }
-    let_it_be(:member_writer) { FactoryBot.create(:member, :writer, space: space) }
+    let_it_be(:member_reader) { FactoryBot.create(:member, :reader, space:) }
+    let_it_be(:member_writer) { FactoryBot.create(:member, :writer, space:) }
 
     # テストケース
     context 'ログイン中（URLの拡張子がない/AcceptヘッダにHTMLが含まれる）' do
       next if Settings.api_only_mode
 
       include_context 'ログイン処理'
-      let_it_be(:member_admin) { FactoryBot.create(:member, :admin, space: space, user: user) }
+      let_it_be(:member_admin) { FactoryBot.create(:member, :admin, space:, user:) }
       let(:subject_format) { nil }
       let(:accept_headers) { ACCEPT_INC_HTML }
       context '■管理者, ■投稿者, ■閲覧者' do
@@ -538,7 +538,7 @@ RSpec.describe 'Members', type: :request do
     end
     context 'APIログイン中（URLの拡張子が.json/AcceptヘッダにJSONが含まれる）' do
       include_context 'APIログイン処理'
-      let_it_be(:member_admin) { FactoryBot.create(:member, :admin, space: space, user: user) }
+      let_it_be(:member_admin) { FactoryBot.create(:member, :admin, space:, user:) }
       let(:subject_format) { :json }
       let(:accept_headers) { ACCEPT_INC_JSON }
       context '■管理者, ■投稿者, ■閲覧者' do
@@ -591,13 +591,13 @@ RSpec.describe 'Members', type: :request do
   #   対象: メンバー, メールアドレス, 権限, 招待者, 招待日時, 最終更新者, 最終更新日時
   #   並び順: ASC, DESC  ※ASCは1つのみ確認
   describe 'GET #index (.order)' do
-    subject { get members_path(space_code: space.code, format: :json), params: params, headers: auth_headers.merge(ACCEPT_INC_JSON) }
+    subject { get members_path(space_code: space.code, format: :json), params:, headers: auth_headers.merge(ACCEPT_INC_JSON) }
     include_context 'APIログイン処理'
     let_it_be(:space) { FactoryBot.create(:space) }
     let_it_be(:members) do
       [
-        FactoryBot.create(:member, :writer, space: space),
-        FactoryBot.create(:member, :admin, space: space, user: user)
+        FactoryBot.create(:member, :writer, space:),
+        FactoryBot.create(:member, :admin, space:, user:)
       ]
     end
 

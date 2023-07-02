@@ -19,9 +19,9 @@ RSpec.describe :user, type: :task do
       FactoryBot.create(:infomation, :user, user:)
 
       space = FactoryBot.create(:space, created_user: user)
-      FactoryBot.create(:member, space: space, user: user)
-      download = FactoryBot.create(:download, user: user, space: space)
-      FactoryBot.create(:download_file, download: download)
+      FactoryBot.create(:member, space:, user:)
+      download = FactoryBot.create(:download, user:, space:)
+      FactoryBot.create(:download_file, download:)
     end
     shared_context '削除対象作成' do
       let_it_be(:users) do
@@ -33,8 +33,8 @@ RSpec.describe :user, type: :task do
       let_it_be(:infomations) { FactoryBot.create_list(:infomation, 1, :user, user: users[1]) }
 
       let_it_be(:space) { FactoryBot.create(:space, created_user: users[0]) }
-      let_it_be(:members) { FactoryBot.create_list(:member, 1, space: space, user: users[1]) }
-      let_it_be(:downloads) { FactoryBot.create_list(:download, 2, user: users[1], space: space) }
+      let_it_be(:members) { FactoryBot.create_list(:member, 1, space:, user: users[1]) }
+      let_it_be(:downloads) { FactoryBot.create_list(:download, 2, user: users[1], space:) }
       let_it_be(:download_files) { FactoryBot.create_list(:download_file, 1, download: downloads[0]) }
     end
 

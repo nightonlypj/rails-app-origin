@@ -164,19 +164,19 @@ RSpec.describe 'Downloads', type: :request do
     end
 
     shared_examples_for '[ログイン中/削除予約済み][member]権限がある' do |power|
-      before_all { FactoryBot.create(:member, power, space: space, user: user) }
+      before_all { FactoryBot.create(:member, power, space:, user:) }
       it_behaves_like '[ログイン中/削除予約済み][member][ある]パラメータなし'
       it_behaves_like '[ログイン中/削除予約済み][member][ある]有効なパラメータ'
       it_behaves_like '[ログイン中/削除予約済み][member][ある]無効なパラメータ'
     end
     shared_examples_for '[APIログイン中/削除予約済み][member]権限がある' do |power|
-      before_all { FactoryBot.create(:member, power, space: space, user: user) }
+      before_all { FactoryBot.create(:member, power, space:, user:) }
       it_behaves_like '[APIログイン中/削除予約済み][member][ある]パラメータなし'
       it_behaves_like '[APIログイン中/削除予約済み][member][ある]有効なパラメータ'
       it_behaves_like '[APIログイン中/削除予約済み][member][ある]無効なパラメータ'
     end
     shared_examples_for '[ログイン中/削除予約済み][member]権限がない' do |power|
-      before_all { FactoryBot.create(:member, power, space: space, user: user) if power.present? }
+      before_all { FactoryBot.create(:member, power, space:, user:) if power.present? }
       let(:attributes) { valid_attributes.merge(params) }
       it_behaves_like 'NG(html)'
       it_behaves_like 'ToNG(html)', Settings.api_only_mode ? 406 : 403
@@ -184,7 +184,7 @@ RSpec.describe 'Downloads', type: :request do
       it_behaves_like 'ToNG(json)', 401 # NOTE: APIは未ログイン扱い
     end
     shared_examples_for '[APIログイン中/削除予約済み][member]権限がない' do |power|
-      before_all { FactoryBot.create(:member, power, space: space, user: user) if power.present? }
+      before_all { FactoryBot.create(:member, power, space:, user:) if power.present? }
       let(:attributes) { valid_attributes.merge(params) }
       it_behaves_like 'NG(html)'
       it_behaves_like 'ToNG(html)', Settings.api_only_mode ? 406 : 403 # NOTE: HTMLもログイン状態になる

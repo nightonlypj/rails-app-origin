@@ -16,7 +16,7 @@ spaces = current_user.spaces.active
 members = Member.where(space_id: spaces.ids, user: current_user).index_by(&:space_id)
 json.spaces do
   json.array! spaces do |space|
-    json.partial! './spaces/space', space: space
+    json.partial!('./spaces/space', space:)
 
     json.current_member do
       member = members[space.id]

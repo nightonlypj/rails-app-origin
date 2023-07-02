@@ -22,8 +22,8 @@ RSpec.describe 'Members', type: :request do
       let_it_be(:space)     { space_public }
       let_it_be(:show_user) { other_user }
       before_all do
-        FactoryBot.create(:member, space: space, user: show_user)
-        FactoryBot.create(:member, space: space, user: user) if user.present?
+        FactoryBot.create(:member, space:, user: show_user)
+        FactoryBot.create(:member, space:, user:) if user.present?
       end
     end
 
@@ -46,7 +46,7 @@ RSpec.describe 'Members', type: :request do
 
     shared_examples_for '[ログイン中][*][ある]対象メンバーがいる（他人）' do
       let_it_be(:show_user) { other_user }
-      before_all { FactoryBot.create(:member, space: space, user: show_user) }
+      before_all { FactoryBot.create(:member, space:, user: show_user) }
       it_behaves_like 'ToOK(html)'
       it_behaves_like 'ToNG(json)', 406
     end
@@ -63,14 +63,14 @@ RSpec.describe 'Members', type: :request do
 
     shared_examples_for '[ログイン中][*]権限がある' do |power|
       let_it_be(:show_user) { other_user }
-      before_all { FactoryBot.create(:member, power, space: space, user: user) }
+      before_all { FactoryBot.create(:member, power, space:, user:) }
       it_behaves_like '[ログイン中][*][ある]対象メンバーがいる（他人）'
       it_behaves_like '[ログイン中][*][ある]対象メンバーがいる（自分）'
       it_behaves_like '[ログイン中][*][ある]対象メンバーがいない'
     end
     shared_examples_for '[ログイン中][*]権限がない' do |power|
       let_it_be(:show_user) { other_user }
-      before_all { FactoryBot.create(:member, power, space: space, user: user) if power.present? }
+      before_all { FactoryBot.create(:member, power, space:, user:) if power.present? }
       it_behaves_like 'ToNG(html)', 403
       it_behaves_like 'ToNG(json)', 406
     end

@@ -22,7 +22,7 @@ RSpec.describe 'Members', type: :request do
     shared_context 'valid_condition' do
       let_it_be(:space)     { space_public }
       let_it_be(:show_user) { other_user }
-      let_it_be(:member)    { FactoryBot.create(:member, space: space, user: show_user) }
+      let_it_be(:member)    { FactoryBot.create(:member, space:, user: show_user) }
     end
 
     # テスト内容
@@ -42,7 +42,7 @@ RSpec.describe 'Members', type: :request do
 
     # テストケース
     shared_examples_for '[APIログイン中/削除予約済み][*][ある]対象メンバーがいる' do
-      let_it_be(:member) { FactoryBot.create(:member, space: space, user: show_user) }
+      let_it_be(:member) { FactoryBot.create(:member, space:, user: show_user) }
       it_behaves_like 'ToNG(html)', 406
       it_behaves_like 'ToOK(json)'
     end
@@ -53,14 +53,14 @@ RSpec.describe 'Members', type: :request do
 
     shared_examples_for '[APIログイン中/削除予約済み][*]権限がある' do |power|
       let(:user_power) { power }
-      before_all { FactoryBot.create(:member, power, space: space, user: user) }
+      before_all { FactoryBot.create(:member, power, space:, user:) }
       let_it_be(:show_user) { other_user }
       it_behaves_like '[APIログイン中/削除予約済み][*][ある]対象メンバーがいる', power
       it_behaves_like '[APIログイン中/削除予約済み][*][ある]対象メンバーがいない', power
     end
     shared_examples_for '[APIログイン中/削除予約済み][*]権限がない' do
       let_it_be(:show_user) { other_user }
-      let_it_be(:member)    { FactoryBot.create(:member, space: space, user: show_user) }
+      let_it_be(:member)    { FactoryBot.create(:member, space:, user: show_user) }
       it_behaves_like 'ToNG(html)', 406
       it_behaves_like 'ToNG(json)', 403
     end

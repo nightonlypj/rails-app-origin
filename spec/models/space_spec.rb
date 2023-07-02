@@ -7,7 +7,7 @@ RSpec.describe Space, type: :model do
   # テストパターン
   #   ない, 正常値, 重複
   describe 'validates :code' do
-    let(:model) { FactoryBot.build_stubbed(:space, code: code) }
+    let(:model) { FactoryBot.build_stubbed(:space, code:) }
     let(:valid_code) { Digest::MD5.hexdigest(SecureRandom.uuid) }
 
     # テストケース
@@ -21,7 +21,7 @@ RSpec.describe Space, type: :model do
       it_behaves_like 'Valid'
     end
     context '重複' do
-      before { FactoryBot.create(:space, code: code, created_user: user) }
+      before { FactoryBot.create(:space, code:, created_user: user) }
       let(:code) { valid_code }
       let(:messages) { { code: [get_locale('activerecord.errors.models.space.attributes.code.taken')] } }
       it_behaves_like 'InValid'
@@ -32,7 +32,7 @@ RSpec.describe Space, type: :model do
   # テストパターン
   #   ない, 最小文字数より少ない, 最小文字数と同じ, 最大文字数と同じ, 最大文字数より多い
   describe 'validates :name' do
-    let(:model) { FactoryBot.build_stubbed(:space, name: name) }
+    let(:model) { FactoryBot.build_stubbed(:space, name:) }
 
     # テストケース
     context 'ない' do
@@ -64,7 +64,7 @@ RSpec.describe Space, type: :model do
   # テストパターン
   #   ない, 最大文字数と同じ, 最大文字数より多い
   describe 'validates :description' do
-    let(:model) { FactoryBot.build_stubbed(:space, description: description) }
+    let(:model) { FactoryBot.build_stubbed(:space, description:) }
 
     # テストケース
     context 'ない' do
@@ -86,7 +86,7 @@ RSpec.describe Space, type: :model do
   # テストパターン
   #   ない, true, false
   describe 'validates :private' do
-    let(:model) { FactoryBot.build_stubbed(:space, private: private) }
+    let(:model) { FactoryBot.build_stubbed(:space, private:) }
 
     # テストケース
     context 'ない' do
@@ -109,7 +109,7 @@ RSpec.describe Space, type: :model do
   #   削除予定日時: ない（予約なし）, ある（予約済み）
   describe '#destroy_reserved?' do
     subject { space.destroy_reserved? }
-    let(:space) { FactoryBot.build_stubbed(:space, destroy_schedule_at: destroy_schedule_at) }
+    let(:space) { FactoryBot.build_stubbed(:space, destroy_schedule_at:) }
 
     # テストケース
     context '削除予定日時がない（予約なし）' do
@@ -194,7 +194,7 @@ RSpec.describe Space, type: :model do
     end
     context '画像がある' do
       let_it_be(:image) { fixture_file_upload(TEST_IMAGE_FILE, TEST_IMAGE_TYPE) }
-      let_it_be(:space) { FactoryBot.create(:space, image: image, created_user: user) }
+      let_it_be(:space) { FactoryBot.create(:space, image:, created_user: user) }
       it_behaves_like 'OK', :mini, false
       it_behaves_like 'OK', :small, false
       it_behaves_like 'OK', :medium, false

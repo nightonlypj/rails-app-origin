@@ -15,7 +15,7 @@ class Download < ApplicationRecord
   validates :search_params, text_hash: true, allow_blank: true
   validate :validate_output_items
 
-  scope :search, ->(id) { where(id: id) if id.present? }
+  scope :search, ->(id) { where(id:) if id.present? }
   scope :destroy_target, lambda {
     schedule_date = Time.current - Settings.download_destroy_schedule_days.days
     where(completed_at: ..schedule_date)

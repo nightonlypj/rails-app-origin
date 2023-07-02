@@ -19,8 +19,8 @@ RSpec.describe 'Invitations', type: :request do
     let_it_be(:space_private) { FactoryBot.create(:space, :private, created_user: space_public.created_user) }
     shared_context 'valid_condition' do
       let_it_be(:space) { space_public }
-      before_all { FactoryBot.create(:member, space: space, user: user) if user.present? }
-      let_it_be(:invitation) { FactoryBot.create(:invitation, :active, space: space, created_user: space.created_user) }
+      before_all { FactoryBot.create(:member, space:, user:) if user.present? }
+      let_it_be(:invitation) { FactoryBot.create(:invitation, :active, space:, created_user: space.created_user) }
     end
 
     # テスト内容
@@ -41,12 +41,12 @@ RSpec.describe 'Invitations', type: :request do
     end
 
     shared_examples_for '[ログイン中/削除予約済み][*][ある]招待コードが存在する' do |status|
-      let_it_be(:invitation) { FactoryBot.create(:invitation, status, space: space, created_user: space.created_user) }
+      let_it_be(:invitation) { FactoryBot.create(:invitation, status, space:, created_user: space.created_user) }
       it_behaves_like 'ToOK(html)'
       it_behaves_like 'ToNG(json)', 406
     end
     shared_examples_for '[ログイン中/削除予約済み][*][ある]招待コードが参加済み' do
-      let_it_be(:invitation) { FactoryBot.create(:invitation, :email_joined, space: space, created_user: space.created_user) }
+      let_it_be(:invitation) { FactoryBot.create(:invitation, :email_joined, space:, created_user: space.created_user) }
       it_behaves_like 'ToInvitations(html)', 'alert.invitation.email_joined'
       it_behaves_like 'ToNG(json)', 406
     end
@@ -57,7 +57,7 @@ RSpec.describe 'Invitations', type: :request do
     end
 
     shared_examples_for '[ログイン中][*]権限がある' do |power|
-      before_all { FactoryBot.create(:member, power, space: space, user: user) }
+      before_all { FactoryBot.create(:member, power, space:, user:) }
       it_behaves_like '[ログイン中/削除予約済み][*][ある]招待コードが存在する', :active
       it_behaves_like '[ログイン中/削除予約済み][*][ある]招待コードが存在する', :expired
       it_behaves_like '[ログイン中/削除予約済み][*][ある]招待コードが存在する', :deleted
@@ -65,8 +65,8 @@ RSpec.describe 'Invitations', type: :request do
       it_behaves_like '[ログイン中/削除予約済み][*][ある]招待コードが存在しない'
     end
     shared_examples_for '[ログイン中][*]権限がない' do |power|
-      before_all { FactoryBot.create(:member, power, space: space, user: user) if power.present? }
-      let_it_be(:invitation) { FactoryBot.create(:invitation, :active, space: space, created_user: space.created_user) }
+      before_all { FactoryBot.create(:member, power, space:, user:) if power.present? }
+      let_it_be(:invitation) { FactoryBot.create(:invitation, :active, space:, created_user: space.created_user) }
       it_behaves_like 'ToNG(html)', 403
       it_behaves_like 'ToNG(json)', 406
     end

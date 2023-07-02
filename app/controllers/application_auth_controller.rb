@@ -48,7 +48,7 @@ class ApplicationAuthController < ApplicationController
 
   # スペースとユーザーのメンバー情報をセット（privateのみ認証必須）
   def set_space_current_member_auth_private(code = params[:space_code])
-    @space = Space.find_by(code: code)
+    @space = Space.find_by(code:)
     return response_not_found if @space.blank?
     return authenticate_user! if @space.private && !user_signed_in?
 

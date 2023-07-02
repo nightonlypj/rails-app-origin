@@ -13,7 +13,7 @@ RSpec.describe 'Spaces', type: :request do
   #   ＋URLの拡張子: ない, .json
   #   ＋Acceptヘッダ: HTMLが含まれる, JSONが含まれる
   describe 'POST #create' do
-    subject { post create_space_path(format: subject_format), params: params, headers: auth_headers.merge(accept_headers) }
+    subject { post create_space_path(format: subject_format), params:, headers: auth_headers.merge(accept_headers) }
     let_it_be(:valid_attributes)   { FactoryBot.attributes_for(:space).reject { |key| key == :code } }
     let_it_be(:exist_attributes)   { valid_attributes.merge(name: FactoryBot.create(:space, :public).name) }
     let_it_be(:invalid_attributes) { valid_attributes.merge(name: nil) }

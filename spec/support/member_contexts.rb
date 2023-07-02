@@ -4,13 +4,13 @@ shared_context 'メンバー一覧作成' do |admin_count, reader_count|
     invitationed_user = FactoryBot.create(:user)
     last_updated_user = FactoryBot.create(:user)
     destroy_user = FactoryBot.build_stubbed(:user)
-    FactoryBot.create(:member, :admin, user: user) # NOTE: 対象外
+    FactoryBot.create(:member, :admin, user:) # NOTE: 対象外
 
-    [FactoryBot.create(:member, power: user_power, space: space, user: user, invitationed_user: nil,
-                                last_updated_user: last_updated_user, created_at: now - 3.days, updated_at: now - 4.days)] +
-      FactoryBot.create_list(:member, admin_count, :admin, space: space, invitationed_user_id: destroy_user.id,
+    [FactoryBot.create(:member, power: user_power, space:, user:, invitationed_user: nil,
+                                last_updated_user:, created_at: now - 3.days, updated_at: now - 4.days)] +
+      FactoryBot.create_list(:member, admin_count, :admin, space:, invitationed_user_id: destroy_user.id,
                                                            last_updated_user_id: destroy_user.id, created_at: now - 2.days, updated_at: now - 1.day) +
-      FactoryBot.create_list(:member, reader_count, :reader, space: space, invitationed_user: invitationed_user,
+      FactoryBot.create_list(:member, reader_count, :reader, space:, invitationed_user:,
                                                              last_updated_user: nil, created_at: now, updated_at: now)
   end
 end

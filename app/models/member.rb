@@ -30,7 +30,7 @@ class Member < ApplicationRecord
     return none if power.count == 0
     return if power.count >= Member.powers.count
 
-    where(power: power)
+    where(power:)
   }
 
   # 権限

@@ -93,7 +93,7 @@ class MembersController < ApplicationAuthController
     @members.destroy_all
     return redirect_to members_path(@space.code), notice: notice if format_html?
 
-    render locals: { notice: notice }
+    render locals: { notice: }
   end
 
   private

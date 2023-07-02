@@ -11,8 +11,8 @@ RSpec.describe SpacesController, type: :routing do
 
     it 'routes to #show' do
       expect(get: '/spaces/1').not_to be_routable
-      expect(get: "/-/#{code}").to route_to('spaces#show', code: code)
-      expect(get: "/-/#{code}.json").to route_to('spaces#show', code: code, format: 'json')
+      expect(get: "/-/#{code}").to route_to('spaces#show', code:)
+      expect(get: "/-/#{code}.json").to route_to('spaces#show', code:, format: 'json')
     end
 
     it 'routes to #new' do
@@ -28,33 +28,33 @@ RSpec.describe SpacesController, type: :routing do
 
     it 'routes to #edit' do
       expect(get: '/spaces/1/edit').not_to be_routable
-      expect(get: "/spaces/update/#{code}").to route_to('spaces#edit', code: code)
+      expect(get: "/spaces/update/#{code}").to route_to('spaces#edit', code:)
     end
 
     it 'routes to #update' do
       expect(put: '/spaces/1').not_to be_routable
       expect(patch: '/spaces/1').not_to be_routable
-      expect(post: "/spaces/update/#{code}").to route_to('spaces#update', code: code)
-      expect(post: "/spaces/update/#{code}.json").to route_to('spaces#update', code: code, format: 'json')
+      expect(post: "/spaces/update/#{code}").to route_to('spaces#update', code:)
+      expect(post: "/spaces/update/#{code}.json").to route_to('spaces#update', code:, format: 'json')
     end
 
     it 'routes to #delete' do
-      expect(get: "/spaces/delete/#{code}").to route_to('spaces#delete', code: code)
+      expect(get: "/spaces/delete/#{code}").to route_to('spaces#delete', code:)
     end
 
     it 'routes to #destroy' do
       expect(delete: '/spaces/1').not_to be_routable
-      expect(post: "/spaces/delete/#{code}").to route_to('spaces#destroy', code: code)
-      expect(post: "/spaces/delete/#{code}.json").to route_to('spaces#destroy', code: code, format: 'json')
+      expect(post: "/spaces/delete/#{code}").to route_to('spaces#destroy', code:)
+      expect(post: "/spaces/delete/#{code}.json").to route_to('spaces#destroy', code:, format: 'json')
     end
 
     it 'routes to #undo_delete' do
-      expect(get: "/spaces/undo_delete/#{code}").to route_to('spaces#undo_delete', code: code)
+      expect(get: "/spaces/undo_delete/#{code}").to route_to('spaces#undo_delete', code:)
     end
 
     it 'routes to #undo_destroy' do
-      expect(post: "/spaces/undo_delete/#{code}").to route_to('spaces#undo_destroy', code: code)
-      expect(post: "/spaces/undo_delete/#{code}.json").to route_to('spaces#undo_destroy', code: code, format: 'json')
+      expect(post: "/spaces/undo_delete/#{code}").to route_to('spaces#undo_destroy', code:)
+      expect(post: "/spaces/undo_delete/#{code}.json").to route_to('spaces#undo_destroy', code:, format: 'json')
     end
   end
 end

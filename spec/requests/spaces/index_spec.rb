@@ -343,11 +343,11 @@ RSpec.describe 'Spaces', type: :request do
   # テストパターン
   #   部分一致（大文字・小文字を区別しない）, 不一致: 名称, 説明
   describe 'GET #index (.search)' do
-    subject { get spaces_path(format: subject_format), params: params, headers: auth_headers.merge(accept_headers) }
+    subject { get spaces_path(format: subject_format), params:, headers: auth_headers.merge(accept_headers) }
     let_it_be(:created_user) { FactoryBot.create(:user) }
-    let_it_be(:nojoin_space) { FactoryBot.create(:space, :public, name: 'space(Aaa)', description: 'description(Bbb)', created_user: created_user) }
-    let_it_be(:join_space)   { FactoryBot.create(:space, :public, name: 'space(Bbb)', description: 'description(Aaa)', created_user: created_user) }
-    before_all { FactoryBot.create(:space, created_user: created_user) } # NOTE: 対象外
+    let_it_be(:nojoin_space) { FactoryBot.create(:space, :public, name: 'space(Aaa)', description: 'description(Bbb)', created_user:) }
+    let_it_be(:join_space)   { FactoryBot.create(:space, :public, name: 'space(Bbb)', description: 'description(Aaa)', created_user:) }
+    before_all { FactoryBot.create(:space, created_user:) } # NOTE: 対象外
 
     # テスト内容
     shared_examples_for 'ToNG[0件]' do
@@ -378,7 +378,7 @@ RSpec.describe 'Spaces', type: :request do
       next if Settings.api_only_mode
 
       include_context 'ログイン処理'
-      before_all { FactoryBot.create(:member, :admin, space: join_space, user: user) }
+      before_all { FactoryBot.create(:member, :admin, space: join_space, user:) }
       let(:subject_format) { nil }
       let(:accept_headers) { ACCEPT_INC_HTML }
       it_behaves_like '部分一致'
@@ -386,7 +386,7 @@ RSpec.describe 'Spaces', type: :request do
     end
     context 'APIログイン中（URLの拡張子が.json/AcceptヘッダにJSONが含まれる）' do
       include_context 'APIログイン処理'
-      before_all { FactoryBot.create(:member, :admin, space: join_space, user: user) }
+      before_all { FactoryBot.create(:member, :admin, space: join_space, user:) }
       let(:subject_format) { :json }
       let(:accept_headers) { ACCEPT_INC_JSON }
       it_behaves_like '部分一致'
@@ -400,7 +400,7 @@ RSpec.describe 'Spaces', type: :request do
   # テストパターン
   #   公開・非公開、参加・未参加、有効・削除予定: 全て1, 1と0, 0と1, 0と0
   describe 'GET #index (.by_target)' do
-    subject { get spaces_path(format: subject_format), params: params, headers: auth_headers.merge(accept_headers) }
+    subject { get spaces_path(format: subject_format), params:, headers: auth_headers.merge(accept_headers) }
 
     # テストケース
     shared_examples_for '全て1' do

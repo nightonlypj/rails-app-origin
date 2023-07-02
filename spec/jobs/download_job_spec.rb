@@ -67,8 +67,8 @@ RSpec.describe DownloadJob, type: :job do
     end
 
     # テストケース
-    let_it_be(:member1) { FactoryBot.create(:member, space: space, user: FactoryBot.create(:user, name: '氏名(Aaa)'), invitationed_user: user) }
-    let_it_be(:member2) { FactoryBot.create(:member, space: space, user: FactoryBot.create(:user, email: '_Aaa@example.com'), last_updated_user: user) }
+    let_it_be(:member1) { FactoryBot.create(:member, space:, user: FactoryBot.create(:user, name: '氏名(Aaa)'), invitationed_user: user) }
+    let_it_be(:member2) { FactoryBot.create(:member, space:, user: FactoryBot.create(:user, email: '_Aaa@example.com'), last_updated_user: user) }
     before_all { FactoryBot.create(:member, user: FactoryBot.create(:user, name: '氏名(Aaa)')) } # NOTE: 対象外
     shared_context 'set_member_body' do
       let(:body_data) do
@@ -93,7 +93,7 @@ RSpec.describe DownloadJob, type: :job do
 
     shared_examples_for '[member][ある]選択項目/CSV/Shift_JIS/CR+LF' do
       let_it_be(:download) do
-        FactoryBot.create(:download, user: user, model: 'member', space: space, output_items: output_items,
+        FactoryBot.create(:download, user:, model: 'member', space:, output_items:,
                                      target: :select, select_items: [member1.user.code, member2.user.code],
                                      format: :csv, char_code: :sjis, newline_code: :crlf)
       end
@@ -103,7 +103,7 @@ RSpec.describe DownloadJob, type: :job do
     end
     shared_examples_for '[member][ある]検索/CSV/EUC-JP/CR' do
       let_it_be(:download) do
-        FactoryBot.create(:download, user: user, model: 'member', space: space, output_items: output_items,
+        FactoryBot.create(:download, user:, model: 'member', space:, output_items:,
                                      target: :search, search_params: { 'text' => 'aaa' },
                                      format: :csv, char_code: :eucjp, newline_code: :cr)
       end
@@ -113,7 +113,7 @@ RSpec.describe DownloadJob, type: :job do
     end
     shared_examples_for '[member][ある]全て/TSV/UTF-8/LF' do
       let_it_be(:download) do
-        FactoryBot.create(:download, user: user, model: 'member', space: space, output_items: output_items,
+        FactoryBot.create(:download, user:, model: 'member', space:, output_items:,
                                      target: :all,
                                      format: :tsv, char_code: :utf8, newline_code: :lf)
       end
@@ -123,14 +123,14 @@ RSpec.describe DownloadJob, type: :job do
     end
 
     shared_examples_for '[member]権限がある' do |power|
-      let_it_be(:member) { FactoryBot.create(:member, power, space: space, user: user) }
+      let_it_be(:member) { FactoryBot.create(:member, power, space:, user:) }
       let_it_be(:output_items) { I18n.t('items.member').stringify_keys.keys }
       it_behaves_like '[member][ある]選択項目/CSV/Shift_JIS/CR+LF'
       it_behaves_like '[member][ある]検索/CSV/EUC-JP/CR'
       it_behaves_like '[member][ある]全て/TSV/UTF-8/LF'
     end
     shared_examples_for '[member]権限がない' do |power|
-      let_it_be(:member) { FactoryBot.create(:member, power, space: space, user: user) }
+      let_it_be(:member) { FactoryBot.create(:member, power, space:, user:) }
       it_behaves_like 'ToRaise', 'power not found.'
       it_behaves_like 'NG', 'power not found.'
     end
@@ -141,19 +141,19 @@ RSpec.describe DownloadJob, type: :job do
 
     context '出力項目がある' do
       context 'modelがmember（spaceが存在する）' do
-        let_it_be(:download) { FactoryBot.create(:download, user: user, model: 'member', space: space) }
+        let_it_be(:download) { FactoryBot.create(:download, user:, model: 'member', space:) }
         it_behaves_like '[member]権限がある', :admin
         it_behaves_like '[member]権限がない', :writer
         it_behaves_like '[member]権限がない', :reader
         it_behaves_like '[member]権限がなし'
       end
       context 'modelがmember（spaceが存在しない）' do
-        let_it_be(:download) { FactoryBot.create(:download, user: user, model: 'member', space_id: 0) }
+        let_it_be(:download) { FactoryBot.create(:download, user:, model: 'member', space_id: 0) }
         it_behaves_like 'ToRaise', 'space not found.'
         it_behaves_like 'NG', 'space not found.'
       end
       context 'modelがmember（spaceがない）' do
-        let_it_be(:download) { FactoryBot.create(:download, user: user, model: 'member', space: nil) }
+        let_it_be(:download) { FactoryBot.create(:download, user:, model: 'member', space: nil) }
         it_behaves_like 'ToRaise', 'space not found.'
         it_behaves_like 'NG', 'space not found.'
       end
@@ -169,9 +169,9 @@ RSpec.describe DownloadJob, type: :job do
       end
     end
     context '出力項目がない' do
-      let_it_be(:download) { FactoryBot.create(:download, :skip_validate, user: user, model: 'member', space: space, output_items: '[]') }
-      it_behaves_like 'ToRaise', 'translation missing: ja.activerecord.errors.messages.record_invalid'
-      it_behaves_like 'NG', 'translation missing: ja.activerecord.errors.messages.record_invalid'
+      let_it_be(:download) { FactoryBot.create(:download, :skip_validate, user:, model: 'member', space:, output_items: '[]') }
+      it_behaves_like 'ToRaise', 'Translation missing: ja.activerecord.errors.messages.record_invalid'
+      it_behaves_like 'NG', 'Translation missing: ja.activerecord.errors.messages.record_invalid'
     end
   end
 end

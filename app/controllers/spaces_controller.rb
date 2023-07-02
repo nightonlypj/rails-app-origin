@@ -144,7 +144,7 @@ class SpacesController < ApplicationAuthController
 
   def validate_params_create
     code = create_unique_code(Space, 'code', "SpacesController.create #{params}", Settings.space_code_length)
-    @space = Space.new(space_params(:create).merge(code: code, created_user: current_user))
+    @space = Space.new(space_params(:create).merge(code:, created_user: current_user))
     @space.valid?
     validate_name_uniqueness if @space.errors[:name].blank?
     return unless @space.errors.any?

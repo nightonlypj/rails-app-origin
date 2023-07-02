@@ -9,7 +9,7 @@ RSpec.describe 'downloads/new', type: :view do
     @items = t("items.#{@model}")
 
     output_items = @items.stringify_keys.keys
-    @download = Download.new(output_items: output_items)
+    @download = Download.new(output_items:)
   end
 
   it '対象の送信先と項目が含まれる' do

@@ -17,7 +17,7 @@ json.space do
 end
 json.spaces do
   json.array! @spaces do |space|
-    json.partial! 'space', space: space
+    json.partial!('space', space:)
 
     if @members[space.id].present?
       json.current_member do

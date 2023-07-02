@@ -7,7 +7,7 @@ RSpec.describe Invitation, type: :model do
   # テストパターン
   #   ない, 正常値, 重複
   describe 'validates :code' do
-    let(:model) { FactoryBot.build_stubbed(:invitation, code: code) }
+    let(:model) { FactoryBot.build_stubbed(:invitation, code:) }
     let(:valid_code) { Digest::MD5.hexdigest(SecureRandom.uuid) }
 
     # テストケース
@@ -23,7 +23,7 @@ RSpec.describe Invitation, type: :model do
     context '重複' do
       let(:code) { valid_code }
       let(:messages) { { code: [get_locale('activerecord.errors.models.invitation.attributes.code.taken')] } }
-      before { FactoryBot.create(:invitation, code: code) }
+      before { FactoryBot.create(:invitation, code:) }
       it_behaves_like 'InValid'
     end
   end
@@ -32,7 +32,7 @@ RSpec.describe Invitation, type: :model do
   # テストパターン
   #   ない, 正常値
   describe 'validates :power' do
-    let(:model) { FactoryBot.build_stubbed(:invitation, power: power) }
+    let(:model) { FactoryBot.build_stubbed(:invitation, power:) }
 
     # テストケース
     context 'ない' do
@@ -50,7 +50,7 @@ RSpec.describe Invitation, type: :model do
   # テストパターン
   #   ない, 最大文字数と同じ, 最大文字数より多い
   describe 'validates :memo' do
-    let(:model) { FactoryBot.build_stubbed(:invitation, memo: memo) }
+    let(:model) { FactoryBot.build_stubbed(:invitation, memo:) }
 
     # テストケース
     context 'ない' do
@@ -77,7 +77,7 @@ RSpec.describe Invitation, type: :model do
   #   終了日時: 過去, 未来
   #     変更なし, 過去に変更, 未来に変更
   describe 'validates :ended_date' do
-    let(:model) { FactoryBot.build_stubbed(:invitation, ended_at: ended_at, ended_date: ended_date, ended_time: '23:59') }
+    let(:model) { FactoryBot.build_stubbed(:invitation, ended_at:, ended_date:, ended_time: '23:59') }
 
     # テストケース
     shared_examples_for '終了日時がない' do
@@ -152,7 +152,7 @@ RSpec.describe Invitation, type: :model do
   #   終了日時: 過去, 未来
   #     変更なし, 過去に変更, 未来に変更
   describe 'validates :ended_time' do
-    let(:model) { FactoryBot.build_stubbed(:invitation, ended_at: ended_at, ended_date: ended_date, ended_time: ended_time) }
+    let(:model) { FactoryBot.build_stubbed(:invitation, ended_at:, ended_date:, ended_time:) }
 
     # テスト内容
     shared_examples_for 'Valid(12:00)' do
@@ -242,7 +242,7 @@ RSpec.describe Invitation, type: :model do
   # テストパターン
   #   +09:00, +00:00 -00:30, 存在しない値（+24:00）
   describe 'validates :ended_zone' do
-    let(:model) { FactoryBot.build_stubbed(:invitation, ended_date: '9999-12-31', ended_time: '23:59', ended_zone: ended_zone) }
+    let(:model) { FactoryBot.build_stubbed(:invitation, ended_date: '9999-12-31', ended_time: '23:59', ended_zone:) }
 
     # テスト内容
     shared_examples_for 'OK' do |new_ended_at|
@@ -279,10 +279,7 @@ RSpec.describe Invitation, type: :model do
   #   終了日時: 過去, 未来, ない
   describe '#status' do
     subject { invitation.status }
-    let(:invitation) do
-      FactoryBot.create(:invitation, ended_at: ended_at, destroy_schedule_at: destroy_schedule_at, email_joined_at: email_joined_at,
-                                     space: space, created_user: space.created_user)
-    end
+    let(:invitation) { FactoryBot.create(:invitation, ended_at:, destroy_schedule_at:, email_joined_at:, space:, created_user: space.created_user) }
 
     # テストケース
     context '参加日時がある' do
@@ -320,10 +317,7 @@ RSpec.describe Invitation, type: :model do
   #   ステータス: active, expired, deleted, email_joined
   describe '#status_i18n' do
     subject { invitation.status_i18n }
-    let(:invitation) do
-      FactoryBot.create(:invitation, ended_at: ended_at, destroy_schedule_at: destroy_schedule_at, email_joined_at: email_joined_at,
-                                     space: space, created_user: space.created_user)
-    end
+    let(:invitation) { FactoryBot.create(:invitation, ended_at:, destroy_schedule_at:, email_joined_at:, space:, created_user: space.created_user) }
 
     # テストケース
     context 'ステータスがactive' do
@@ -357,7 +351,7 @@ RSpec.describe Invitation, type: :model do
   #   ドメイン: ない, 1件, 2件
   describe '#domains_array' do
     subject { invitation.domains_array }
-    let(:invitation) { FactoryBot.create(:invitation, domains: domains, space: space, created_user: space.created_user) }
+    let(:invitation) { FactoryBot.create(:invitation, domains:, space:, created_user: space.created_user) }
 
     # テスト内容
     shared_examples_for 'Value' do |text|
@@ -392,12 +386,12 @@ RSpec.describe Invitation, type: :model do
 
     # テストケース
     context '更新日時が作成日時と同じ' do
-      let(:invitation) { FactoryBot.create(:invitation, space: space, created_user: space.created_user) }
+      let(:invitation) { FactoryBot.create(:invitation, space:, created_user: space.created_user) }
       it_behaves_like 'Value', nil, 'nil'
     end
     context '更新日時が作成日時以降' do
       let(:invitation) do
-        FactoryBot.create(:invitation, created_at: Time.current - 1.hour, updated_at: Time.current, space: space, created_user: space.created_user)
+        FactoryBot.create(:invitation, created_at: Time.current - 1.hour, updated_at: Time.current, space:, created_user: space.created_user)
       end
       it '更新日時' do
         is_expected.to eq(invitation.updated_at)

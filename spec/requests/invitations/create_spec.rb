@@ -15,7 +15,7 @@ RSpec.describe 'Invitations', type: :request do
   #   ＋URLの拡張子: ない, .json
   #   ＋Acceptヘッダ: HTMLが含まれる, JSONが含まれる
   describe 'POST #create' do
-    subject { post create_invitation_path(space_code: space.code, format: subject_format), params: params, headers: auth_headers.merge(accept_headers) }
+    subject { post create_invitation_path(space_code: space.code, format: subject_format), params:, headers: auth_headers.merge(accept_headers) }
     let_it_be(:valid_attributes)     { FactoryBot.attributes_for(:invitation, :create).reject { |key| key == :code } }
     let_it_be(:valid_attributes_max) { FactoryBot.attributes_for(:invitation, :create_max).reject { |key| key == :code } }
     let_it_be(:invalid_attributes)        { valid_attributes.merge(domains: nil) }
@@ -29,7 +29,7 @@ RSpec.describe 'Invitations', type: :request do
     shared_context 'valid_condition' do
       let(:params) { { invitation: valid_attributes } }
       let_it_be(:space) { space_public }
-      before_all { FactoryBot.create(:member, space: space, user: user) if user.present? }
+      before_all { FactoryBot.create(:member, space:, user:) if user.present? }
     end
 
     # テスト内容
@@ -231,7 +231,7 @@ RSpec.describe 'Invitations', type: :request do
     end
 
     shared_examples_for '[ログイン中][*]権限がある' do |power|
-      before_all { FactoryBot.create(:member, power, space: space, user: user) }
+      before_all { FactoryBot.create(:member, power, space:, user:) }
       it_behaves_like '[ログイン中][*][ある]パラメータなし'
       it_behaves_like '[ログイン中][*][ある]有効なパラメータ（ドメインが1件）'
       it_behaves_like '[ログイン中][*][ある]有効なパラメータ（ドメインが最大数と同じ）'
@@ -240,7 +240,7 @@ RSpec.describe 'Invitations', type: :request do
       it_behaves_like '[ログイン中][*][ある]無効なパラメータ（ドメインに不正な形式が含まれる）'
     end
     shared_examples_for '[APIログイン中][*]権限がある' do |power|
-      before_all { FactoryBot.create(:member, power, space: space, user: user) }
+      before_all { FactoryBot.create(:member, power, space:, user:) }
       it_behaves_like '[APIログイン中][*][ある]パラメータなし'
       it_behaves_like '[APIログイン中][*][ある]有効なパラメータ（ドメインが1件）'
       it_behaves_like '[APIログイン中][*][ある]有効なパラメータ（ドメインが最大数と同じ）'
@@ -249,7 +249,7 @@ RSpec.describe 'Invitations', type: :request do
       it_behaves_like '[APIログイン中][*][ある]無効なパラメータ（ドメインに不正な形式が含まれる）'
     end
     shared_examples_for '[ログイン中][*]権限がない' do |power|
-      before_all { FactoryBot.create(:member, power, space: space, user: user) if power.present? }
+      before_all { FactoryBot.create(:member, power, space:, user:) if power.present? }
       let(:params) { { invitation: valid_attributes } }
       it_behaves_like 'NG(html)'
       it_behaves_like 'ToNG(html)', Settings.api_only_mode ? 406 : 403
@@ -257,7 +257,7 @@ RSpec.describe 'Invitations', type: :request do
       it_behaves_like 'ToNG(json)', 401 # NOTE: APIは未ログイン扱い
     end
     shared_examples_for '[APIログイン中][*]権限がない' do |power|
-      before_all { FactoryBot.create(:member, power, space: space, user: user) if power.present? }
+      before_all { FactoryBot.create(:member, power, space:, user:) if power.present? }
       let(:params) { { invitation: valid_attributes } }
       it_behaves_like 'NG(html)'
       it_behaves_like 'ToNG(html)', Settings.api_only_mode ? 406 : 403 # NOTE: HTMLもログイン状態になる

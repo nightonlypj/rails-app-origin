@@ -88,7 +88,7 @@ class InvitationsController < ApplicationAuthController
 
   def validate_params_create
     code = create_unique_code(Invitation, 'code', "InvitationsController.create #{params}")
-    @invitation = Invitation.new(invitation_params(:create).merge(space: @space, code: code, created_user: current_user))
+    @invitation = Invitation.new(invitation_params(:create).merge(space: @space, code:, created_user: current_user))
     @invitation.valid?
     validate_domains
     return unless @invitation.errors.any?
@@ -114,7 +114,7 @@ class InvitationsController < ApplicationAuthController
       @invitation.errors.add(:domains, :blank)
     elsif @domains.count > Settings.invitation_domains_max_count
       count = Settings.invitation_domains_max_count.to_s(:delimited)
-      @invitation.errors.add(:domains, t('activerecord.errors.models.invitation.attributes.domains.max_count', count: count))
+      @invitation.errors.add(:domains, t('activerecord.errors.models.invitation.attributes.domains.max_count', count:))
     elsif invalid_domain.present?
       @invitation.errors.add(:domains, t('activerecord.errors.models.invitation.attributes.domains.invalid', domain: invalid_domain))
     end

@@ -30,7 +30,7 @@ module Users::RegistrationsConcern
     invitation_ids = []
     space_ids = []
     now = Time.current
-    member = Member.new(user: user, created_at: now, updated_at: now)
+    member = Member.new(user:, created_at: now, updated_at: now)
 
     if @invitation.present?
       if @invitation.email.present?

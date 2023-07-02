@@ -15,7 +15,7 @@ RSpec.describe 'Members', type: :request do
   #   ＋URLの拡張子: ない, .json
   #   ＋Acceptヘッダ: HTMLが含まれる, JSONが含まれる
   describe 'POST #update' do
-    subject { post update_member_path(space_code: space.code, user_code: show_user.code, format: subject_format), params: params, headers: auth_headers.merge(accept_headers) }
+    subject { post update_member_path(space_code: space.code, user_code: show_user.code, format: subject_format), params:, headers: auth_headers.merge(accept_headers) }
     let_it_be(:space_not)     { FactoryBot.build_stubbed(:space) }
     let_it_be(:space_public)  { FactoryBot.create(:space, :public) }
     let_it_be(:space_private) { FactoryBot.create(:space, :private, created_user: space_public.created_user) }
@@ -27,10 +27,10 @@ RSpec.describe 'Members', type: :request do
     shared_context 'valid_condition' do
       let(:params) { { member: valid_attributes } }
       let_it_be(:space) { space_public }
-      let_it_be(:member_myself) { FactoryBot.create(:member, space: space, user: user) if user.present? }
+      let_it_be(:member_myself) { FactoryBot.create(:member, space:, user:) if user.present? }
       let(:user_power) { :admin }
       let_it_be(:show_user) { other_user }
-      let_it_be(:member)    { FactoryBot.create(:member, space: space, user: show_user) }
+      let_it_be(:member)    { FactoryBot.create(:member, space:, user: show_user) }
     end
 
     # テスト内容
@@ -147,14 +147,14 @@ RSpec.describe 'Members', type: :request do
 
     shared_examples_for '[ログイン中][*][ある]対象メンバーがいる（他人）' do
       let_it_be(:show_user) { other_user }
-      let_it_be(:member)    { FactoryBot.create(:member, space: space, user: show_user) }
+      let_it_be(:member)    { FactoryBot.create(:member, space:, user: show_user) }
       it_behaves_like '[ログイン中][*][ある][他人]パラメータなし'
       it_behaves_like '[ログイン中][*][ある][他人]有効なパラメータ'
       it_behaves_like '[ログイン中][*][ある][他人]無効なパラメータ'
     end
     shared_examples_for '[APIログイン中][*][ある]対象メンバーがいる（他人）' do
       let_it_be(:show_user) { other_user }
-      let_it_be(:member)    { FactoryBot.create(:member, space: space, user: show_user) }
+      let_it_be(:member)    { FactoryBot.create(:member, space:, user: show_user) }
       it_behaves_like '[APIログイン中][*][ある][他人]パラメータなし'
       it_behaves_like '[APIログイン中][*][ある][他人]有効なパラメータ'
       it_behaves_like '[APIログイン中][*][ある][他人]無効なパラメータ'
@@ -197,24 +197,24 @@ RSpec.describe 'Members', type: :request do
     end
 
     shared_examples_for '[ログイン中][*]権限がある' do |power|
-      let_it_be(:member_myself) { FactoryBot.create(:member, power, space: space, user: user) }
+      let_it_be(:member_myself) { FactoryBot.create(:member, power, space:, user:) }
       let(:user_power) { power }
       it_behaves_like '[ログイン中][*][ある]対象メンバーがいる（他人）'
       it_behaves_like '[ログイン中][*][ある]対象メンバーがいる（自分）'
       it_behaves_like '[ログイン中][*][ある]対象メンバーがいない'
     end
     shared_examples_for '[APIログイン中][*]権限がある' do |power|
-      let_it_be(:member_myself) { FactoryBot.create(:member, power, space: space, user: user) }
+      let_it_be(:member_myself) { FactoryBot.create(:member, power, space:, user:) }
       let(:user_power) { power }
       it_behaves_like '[APIログイン中][*][ある]対象メンバーがいる（他人）'
       it_behaves_like '[APIログイン中][*][ある]対象メンバーがいる（自分）'
       it_behaves_like '[APIログイン中][*][ある]対象メンバーがいない'
     end
     shared_examples_for '[ログイン中][*]権限がない' do |power|
-      let_it_be(:member_myself) { FactoryBot.create(:member, power, space: space, user: user) if power.present? }
+      let_it_be(:member_myself) { FactoryBot.create(:member, power, space:, user:) if power.present? }
       let(:user_power) { power }
       let_it_be(:show_user) { other_user }
-      let_it_be(:member)    { FactoryBot.create(:member, space: space, user: show_user) }
+      let_it_be(:member)    { FactoryBot.create(:member, space:, user: show_user) }
       let(:params) { { member: valid_attributes } }
       it_behaves_like 'NG(html)'
       it_behaves_like 'ToNG(html)', Settings.api_only_mode ? 406 : 403
@@ -222,10 +222,10 @@ RSpec.describe 'Members', type: :request do
       it_behaves_like 'ToNG(json)', 401 # NOTE: APIは未ログイン扱い
     end
     shared_examples_for '[APIログイン中][*]権限がない' do |power|
-      let_it_be(:member_myself) { FactoryBot.create(:member, power, space: space, user: user) if power.present? }
+      let_it_be(:member_myself) { FactoryBot.create(:member, power, space:, user:) if power.present? }
       let(:user_power) { power }
       let_it_be(:show_user) { other_user }
-      let_it_be(:member)    { FactoryBot.create(:member, space: space, user: show_user) }
+      let_it_be(:member)    { FactoryBot.create(:member, space:, user: show_user) }
       let(:params) { { member: valid_attributes } }
       it_behaves_like 'NG(html)'
       it_behaves_like 'ToNG(html)', Settings.api_only_mode ? 406 : 403 # NOTE: HTMLもログイン状態になる

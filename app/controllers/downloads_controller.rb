@@ -40,7 +40,7 @@ class DownloadsController < ApplicationAuthController
     output_items = @items.stringify_keys.keys
 
     @download = Download.new(model: @model, space: @space, search_params: params[:search_params], select_items: params[:select_items],
-                             target: @enable_target[0], format: :csv, char_code: :sjis, newline_code: :crlf, output_items: output_items)
+                             target: @enable_target[0], format: :csv, char_code: :sjis, newline_code: :crlf, output_items:)
   end
 
   # POST /downloads/create ダウンロード依頼(処理)

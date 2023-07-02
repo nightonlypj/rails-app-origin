@@ -17,7 +17,7 @@ RSpec.describe 'Invitations', type: :request do
   #   ＋URLの拡張子: ない, .json
   #   ＋Acceptヘッダ: HTMLが含まれる, JSONが含まれる
   describe 'POST #update' do
-    subject { post update_invitation_path(space_code: space.code, code: invitation.code, format: subject_format), params: params, headers: auth_headers.merge(accept_headers) }
+    subject { post update_invitation_path(space_code: space.code, code: invitation.code, format: subject_format), params:, headers: auth_headers.merge(accept_headers) }
     let_it_be(:space_not)     { FactoryBot.build_stubbed(:space) }
     let_it_be(:space_public)  { FactoryBot.create(:space, :public) }
     let_it_be(:space_private) { FactoryBot.create(:space, :private, created_user: space_public.created_user) }
@@ -28,8 +28,8 @@ RSpec.describe 'Invitations', type: :request do
     shared_context 'valid_condition' do
       let(:params) { { invitation: valid_attributes } }
       let_it_be(:space) { space_public }
-      before_all { FactoryBot.create(:member, space: space, user: user) if user.present? }
-      let_it_be(:invitation) { FactoryBot.create(:invitation, :active, space: space, created_user: space.created_user) }
+      before_all { FactoryBot.create(:member, space:, user:) if user.present? }
+      let_it_be(:invitation) { FactoryBot.create(:invitation, :active, space:, created_user: space.created_user) }
     end
 
     # テスト内容
@@ -156,7 +156,7 @@ RSpec.describe 'Invitations', type: :request do
     end
 
     shared_examples_for '[ログイン中][*][ある]招待コードが存在する' do |status|
-      let_it_be(:invitation) { FactoryBot.create(:invitation, status, space: space, created_user: space.created_user) }
+      let_it_be(:invitation) { FactoryBot.create(:invitation, status, space:, created_user: space.created_user) }
       it_behaves_like '[ログイン中][*][ある][存在する]パラメータなし'
       it_behaves_like '[ログイン中][*][ある][存在する]有効なパラメータ', {}
       it_behaves_like '[ログイン中][*][ある][存在する]有効なパラメータ', { delete: true } # TODO: APIとまとめる
@@ -165,7 +165,7 @@ RSpec.describe 'Invitations', type: :request do
       it_behaves_like '[ログイン中][*][ある][存在する]無効なパラメータ'
     end
     shared_examples_for '[APIログイン中][*][ある]招待コードが存在する' do |status|
-      let_it_be(:invitation) { FactoryBot.create(:invitation, status, space: space, created_user: space.created_user) }
+      let_it_be(:invitation) { FactoryBot.create(:invitation, status, space:, created_user: space.created_user) }
       it_behaves_like '[APIログイン中][*][ある][存在する]パラメータなし'
       it_behaves_like '[APIログイン中][*][ある][存在する]有効なパラメータ', {}
       it_behaves_like '[APIログイン中][*][ある][存在する]有効なパラメータ', { delete: true }
@@ -174,7 +174,7 @@ RSpec.describe 'Invitations', type: :request do
       it_behaves_like '[APIログイン中][*][ある][存在する]無効なパラメータ'
     end
     shared_examples_for '[ログイン中][*][ある]招待コードが参加済み' do
-      let_it_be(:invitation) { FactoryBot.create(:invitation, :email_joined, space: space, created_user: space.created_user) }
+      let_it_be(:invitation) { FactoryBot.create(:invitation, :email_joined, space:, created_user: space.created_user) }
       let(:params) { { invitation: valid_attributes } }
       it_behaves_like 'NG(html)'
       if Settings.api_only_mode
@@ -186,7 +186,7 @@ RSpec.describe 'Invitations', type: :request do
       it_behaves_like 'ToNG(json)', 401 # NOTE: APIは未ログイン扱い
     end
     shared_examples_for '[APIログイン中][*][ある]招待コードが参加済み' do
-      let_it_be(:invitation) { FactoryBot.create(:invitation, :email_joined, space: space, created_user: space.created_user) }
+      let_it_be(:invitation) { FactoryBot.create(:invitation, :email_joined, space:, created_user: space.created_user) }
       let(:params) { { invitation: valid_attributes } }
       it_behaves_like 'NG(html)'
       if Settings.api_only_mode
@@ -215,7 +215,7 @@ RSpec.describe 'Invitations', type: :request do
     end
 
     shared_examples_for '[ログイン中][*]権限がある' do |power|
-      before_all { FactoryBot.create(:member, power, space: space, user: user) }
+      before_all { FactoryBot.create(:member, power, space:, user:) }
       it_behaves_like '[ログイン中][*][ある]招待コードが存在する', :active
       it_behaves_like '[ログイン中][*][ある]招待コードが存在する', :expired
       it_behaves_like '[ログイン中][*][ある]招待コードが存在する', :deleted
@@ -223,7 +223,7 @@ RSpec.describe 'Invitations', type: :request do
       it_behaves_like '[ログイン中][*][ある]招待コードが存在しない'
     end
     shared_examples_for '[APIログイン中][*]権限がある' do |power|
-      before_all { FactoryBot.create(:member, power, space: space, user: user) }
+      before_all { FactoryBot.create(:member, power, space:, user:) }
       it_behaves_like '[APIログイン中][*][ある]招待コードが存在する', :active
       it_behaves_like '[APIログイン中][*][ある]招待コードが存在する', :expired
       it_behaves_like '[APIログイン中][*][ある]招待コードが存在する', :deleted
@@ -231,8 +231,8 @@ RSpec.describe 'Invitations', type: :request do
       it_behaves_like '[APIログイン中][*][ある]招待コードが存在しない'
     end
     shared_examples_for '[ログイン中][*]権限がない' do |power|
-      before_all { FactoryBot.create(:member, power, space: space, user: user) if power.present? }
-      let_it_be(:invitation) { FactoryBot.create(:invitation, :active, space: space, created_user: space.created_user) }
+      before_all { FactoryBot.create(:member, power, space:, user:) if power.present? }
+      let_it_be(:invitation) { FactoryBot.create(:invitation, :active, space:, created_user: space.created_user) }
       let(:params) { { invitation: valid_attributes } }
       it_behaves_like 'NG(html)'
       it_behaves_like 'ToNG(html)', Settings.api_only_mode ? 406 : 403
@@ -240,8 +240,8 @@ RSpec.describe 'Invitations', type: :request do
       it_behaves_like 'ToNG(json)', 401 # NOTE: APIは未ログイン扱い
     end
     shared_examples_for '[APIログイン中][*]権限がない' do |power|
-      before_all { FactoryBot.create(:member, power, space: space, user: user) if power.present? }
-      let_it_be(:invitation) { FactoryBot.create(:invitation, :active, space: space, created_user: space.created_user) }
+      before_all { FactoryBot.create(:member, power, space:, user:) if power.present? }
+      let_it_be(:invitation) { FactoryBot.create(:invitation, :active, space:, created_user: space.created_user) }
       let(:params) { { invitation: valid_attributes } }
       it_behaves_like 'NG(html)'
       it_behaves_like 'ToNG(html)', Settings.api_only_mode ? 406 : 403 # NOTE: HTMLもログイン状態になる

@@ -1,18 +1,14 @@
 shared_context 'ダウンロード結果一覧作成' do |waiting_count, processing_count, success_count, failure_count, downloaded_count|
   let_it_be(:space) { FactoryBot.create(:space) }
   let_it_be(:downloads) do
-    FactoryBot.create(:download, :success, model: :member, space: space) # NOTE: 対象外
+    FactoryBot.create(:download, :success, model: :member, space:) # NOTE: 対象外
 
-    FactoryBot.create_list(:download, waiting_count, :waiting, model: :member, space: space, user: user, target: :select,
-                                                               select_items: '["code000000000000000000001", "code000000000000000000002"]') +
-      FactoryBot.create_list(:download, processing_count, :processing, model: :member, space: space, user: user, target: :search,
-                                                                       search_params: '{"text"=>"aaa"}') +
-      FactoryBot.create_list(:download, success_count, :success, model: :member, space: space, user: user,
-                                                                 format: :csv, char_code: :sjis, newline_code: :crlf) +
-      FactoryBot.create_list(:download, failure_count, :failure, model: :member, space: space, user: user,
-                                                                 format: :tsv, char_code: :eucjp, newline_code: :lf) +
-      FactoryBot.create_list(:download, downloaded_count, :downloaded, model: :member, space: space, user: user, target: :all,
-                                                                       char_code: :utf8, newline_code: :cr)
+    select_items = '["code000000000000000000001", "code000000000000000000002"]'
+    FactoryBot.create_list(:download, waiting_count, :waiting, model: :member, space:, user:, target: :select, select_items:) +
+      FactoryBot.create_list(:download, processing_count, :processing, model: :member, space:, user:, target: :search, search_params: '{"text"=>"aaa"}') +
+      FactoryBot.create_list(:download, success_count, :success, model: :member, space:, user:, format: :csv, char_code: :sjis, newline_code: :crlf) +
+      FactoryBot.create_list(:download, failure_count, :failure, model: :member, space:, user:, format: :tsv, char_code: :eucjp, newline_code: :lf) +
+      FactoryBot.create_list(:download, downloaded_count, :downloaded, model: :member, space:, user:, target: :all, char_code: :utf8, newline_code: :cr)
   end
 end
 

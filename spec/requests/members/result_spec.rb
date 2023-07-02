@@ -19,7 +19,7 @@ RSpec.describe 'Members', type: :request do
 
     shared_context 'valid_condition' do
       let_it_be(:space) { space_public }
-      before_all { FactoryBot.create(:member, space: space, user: user) if user.present? }
+      before_all { FactoryBot.create(:member, space:, user:) if user.present? }
       include_context 'set_flash_data'
     end
     shared_context 'set_flash_data' do
@@ -38,7 +38,7 @@ RSpec.describe 'Members', type: :request do
       let(:power) { :admin }
       before do
         allow_any_instance_of(MembersController).to receive(:flash).and_return(
-          { emails: emails, exist_user_mails: exist_user_mails, create_user_mails: create_user_mails, power: power }
+          { emails:, exist_user_mails:, create_user_mails:, power: }
         )
       end
       it 'HTTPステータスが200。対象項目が含まれる' do
@@ -97,13 +97,13 @@ RSpec.describe 'Members', type: :request do
     end
 
     shared_examples_for '[ログイン中][*]権限がある' do |power|
-      before_all { FactoryBot.create(:member, power, space: space, user: user) }
+      before_all { FactoryBot.create(:member, power, space:, user:) }
       it_behaves_like '[ログイン中][*][ある]flashがある（3件）'
       it_behaves_like '[ログイン中][*][ある]flashがある（0件）'
       it_behaves_like '[ログイン中][*][ある]flashがない'
     end
     shared_examples_for '[ログイン中][*]権限がない' do |power|
-      before_all { FactoryBot.create(:member, power, space: space, user: user) if power.present? }
+      before_all { FactoryBot.create(:member, power, space:, user:) if power.present? }
       it_behaves_like 'ToNG(html)', 403
       it_behaves_like 'ToNG(json)', 406
     end

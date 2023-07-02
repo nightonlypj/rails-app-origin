@@ -17,10 +17,10 @@ RSpec.describe :space, type: :task do
       user = FactoryBot.create(:user)
       FactoryBot.create(:space, created_user: user, destroy_schedule_at: nil)
       space = FactoryBot.create(:space, created_user: user, destroy_schedule_at: Time.current + 1.minute)
-      FactoryBot.create(:member, space: space, user: user)
-      download = FactoryBot.create(:download, user: user, space: space)
-      FactoryBot.create(:download_file, download: download)
-      FactoryBot.create(:invitation, space: space, created_user: user)
+      FactoryBot.create(:member, space:, user:)
+      download = FactoryBot.create(:download, user:, space:)
+      FactoryBot.create(:download_file, download:)
+      FactoryBot.create(:invitation, space:, created_user: user)
     end
     shared_context '削除対象作成' do
       let_it_be(:user) { FactoryBot.create(:user) }
@@ -30,8 +30,8 @@ RSpec.describe :space, type: :task do
           FactoryBot.create(:space, created_user: user, destroy_schedule_at: Time.current - 1.minute)
         ]
       end
-      let_it_be(:members) { FactoryBot.create_list(:member, 1, space: spaces[1], user: user) }
-      let_it_be(:downloads) { FactoryBot.create_list(:download, 2, user: user, space: spaces[1]) }
+      let_it_be(:members) { FactoryBot.create_list(:member, 1, space: spaces[1], user:) }
+      let_it_be(:downloads) { FactoryBot.create_list(:download, 2, user:, space: spaces[1]) }
       let_it_be(:download_files) { FactoryBot.create_list(:download_file, 1, download: downloads[0]) }
       let_it_be(:invitations) { FactoryBot.create_list(:invitation, 1, space: spaces[1], created_user: user) }
     end

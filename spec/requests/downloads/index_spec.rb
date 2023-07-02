@@ -287,7 +287,7 @@ RSpec.describe 'Downloads', type: :request do
   # テストパターン
   #   ID: 存在する, 存在しない
   describe 'GET #index (.search)' do
-    subject { get downloads_path(format: subject_format), params: params, headers: auth_headers.merge(accept_headers) }
+    subject { get downloads_path(format: subject_format), params:, headers: auth_headers.merge(accept_headers) }
 
     # テスト内容
     shared_examples_for 'ToOK[依頼日時]' do
@@ -324,7 +324,7 @@ RSpec.describe 'Downloads', type: :request do
 
     # テストケース
     shared_examples_for 'IDが存在する' do
-      let_it_be(:download) { FactoryBot.create(:download, :create_space, user: user) }
+      let_it_be(:download) { FactoryBot.create(:download, :create_space, user:) }
       let(:params) { { id: download.id, target_id: nil } }
       let(:downloads) { [download] }
       it_behaves_like 'ToOK[依頼日時]'
@@ -393,33 +393,33 @@ RSpec.describe 'Downloads', type: :request do
 
     # テストケース
     shared_examples_for '一覧に存在する(notice)' do |status|
-      before_all { FactoryBot.create_list(:download, Settings.default_downloads_limit, user: user, space: space) }
-      let_it_be(:download) { FactoryBot.create(:download, status, user: user, space: space) }
+      before_all { FactoryBot.create_list(:download, Settings.default_downloads_limit, user:, space:) }
+      let_it_be(:download) { FactoryBot.create(:download, status, user:, space:) }
       it_behaves_like 'OK', status, nil, "notice.download.status.#{status}"
     end
     shared_examples_for '一覧に存在しない(notice)' do |status|
-      let_it_be(:download) { FactoryBot.create(:download, status, user: user, space: space) }
-      before_all { FactoryBot.create_list(:download, Settings.default_downloads_limit, user: user, space: space) }
+      let_it_be(:download) { FactoryBot.create(:download, status, user:, space:) }
+      before_all { FactoryBot.create_list(:download, Settings.default_downloads_limit, user:, space:) }
       it_behaves_like 'OK', status, nil, "notice.download.status.#{status}"
     end
     shared_examples_for '一覧に存在する(alert)' do |status|
-      before_all { FactoryBot.create_list(:download, Settings.default_downloads_limit, user: user, space: space) }
-      let_it_be(:download) { FactoryBot.create(:download, status, user: user, space: space) }
+      before_all { FactoryBot.create_list(:download, Settings.default_downloads_limit, user:, space:) }
+      let_it_be(:download) { FactoryBot.create(:download, status, user:, space:) }
       it_behaves_like 'OK', status, "alert.download.status.#{status}", nil
     end
     shared_examples_for '一覧に存在しない(alert)' do |status|
-      let_it_be(:download) { FactoryBot.create(:download, status, user: user, space: space) }
-      before_all { FactoryBot.create_list(:download, Settings.default_downloads_limit, user: user, space: space) }
+      let_it_be(:download) { FactoryBot.create(:download, status, user:, space:) }
+      before_all { FactoryBot.create_list(:download, Settings.default_downloads_limit, user:, space:) }
       it_behaves_like 'OK', status, "alert.download.status.#{status}", nil
     end
     shared_examples_for '一覧に存在する(nil)' do |status|
-      before_all { FactoryBot.create_list(:download, Settings.default_downloads_limit, user: user, space: space) }
-      let_it_be(:download) { FactoryBot.create(:download, status, user: user, space: space) }
+      before_all { FactoryBot.create_list(:download, Settings.default_downloads_limit, user:, space:) }
+      let_it_be(:download) { FactoryBot.create(:download, status, user:, space:) }
       it_behaves_like 'OK', :success, nil, nil
     end
     shared_examples_for '一覧に存在しない(nil)' do |status|
-      let_it_be(:download) { FactoryBot.create(:download, status, user: user, space: space) }
-      before_all { FactoryBot.create_list(:download, Settings.default_downloads_limit, user: user, space: space) }
+      let_it_be(:download) { FactoryBot.create(:download, status, user:, space:) }
+      before_all { FactoryBot.create_list(:download, Settings.default_downloads_limit, user:, space:) }
       it_behaves_like 'OK', :success, nil, nil
     end
     shared_examples_for '存在しない' do

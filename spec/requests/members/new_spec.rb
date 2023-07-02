@@ -18,7 +18,7 @@ RSpec.describe 'Members', type: :request do
 
     shared_context 'valid_condition' do
       let_it_be(:space) { space_public }
-      before_all { FactoryBot.create(:member, space: space, user: user) if user.present? }
+      before_all { FactoryBot.create(:member, space:, user:) if user.present? }
     end
 
     # テスト内容
@@ -39,12 +39,12 @@ RSpec.describe 'Members', type: :request do
     end
 
     shared_examples_for '[ログイン中][*]権限がある' do |power|
-      before_all { FactoryBot.create(:member, power, space: space, user: user) }
+      before_all { FactoryBot.create(:member, power, space:, user:) }
       it_behaves_like 'ToOK(html)'
       it_behaves_like 'ToNG(json)', 406
     end
     shared_examples_for '[ログイン中][*]権限がない' do |power|
-      before_all { FactoryBot.create(:member, power, space: space, user: user) if power.present? }
+      before_all { FactoryBot.create(:member, power, space:, user:) if power.present? }
       it_behaves_like 'ToNG(html)', 403
       it_behaves_like 'ToNG(json)', 406
     end

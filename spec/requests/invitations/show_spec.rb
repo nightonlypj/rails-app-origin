@@ -20,7 +20,7 @@ RSpec.describe 'Invitations', type: :request do
 
     shared_context 'valid_condition' do
       let_it_be(:space) { space_public }
-      let_it_be(:invitation) { FactoryBot.create(:invitation, :active, space: space, created_user: space.created_user) }
+      let_it_be(:invitation) { FactoryBot.create(:invitation, :active, space:, created_user: space.created_user) }
     end
 
     # テスト内容
@@ -42,7 +42,7 @@ RSpec.describe 'Invitations', type: :request do
 
     # テストケース
     shared_examples_for '[APIログイン中/削除予約済み][*][ある]招待コードが存在する' do |status|
-      let_it_be(:invitation) { FactoryBot.create(:invitation, status, space: space, created_user: space.created_user) }
+      let_it_be(:invitation) { FactoryBot.create(:invitation, status, space:, created_user: space.created_user) }
       it_behaves_like 'ToNG(html)', 406
       it_behaves_like 'ToOK(json)'
     end
@@ -53,7 +53,7 @@ RSpec.describe 'Invitations', type: :request do
     end
 
     shared_examples_for '[APIログイン中/削除予約済み][*]権限がある' do |power|
-      before_all { FactoryBot.create(:member, power, space: space, user: user) }
+      before_all { FactoryBot.create(:member, power, space:, user:) }
       it_behaves_like '[APIログイン中/削除予約済み][*][ある]招待コードが存在する', :active
       it_behaves_like '[APIログイン中/削除予約済み][*][ある]招待コードが存在する', :expired
       it_behaves_like '[APIログイン中/削除予約済み][*][ある]招待コードが存在する', :deleted
@@ -61,8 +61,8 @@ RSpec.describe 'Invitations', type: :request do
       it_behaves_like '[APIログイン中/削除予約済み][*][ある]招待コードが存在しない'
     end
     shared_examples_for '[APIログイン中/削除予約済み][*]権限がない' do |power|
-      before_all { FactoryBot.create(:member, power, space: space, user: user) if power.present? }
-      let_it_be(:invitation) { FactoryBot.create(:invitation, :active, space: space, created_user: space.created_user) }
+      before_all { FactoryBot.create(:member, power, space:, user:) if power.present? }
+      let_it_be(:invitation) { FactoryBot.create(:invitation, :active, space:, created_user: space.created_user) }
       it_behaves_like 'ToNG(html)', 406
       it_behaves_like 'ToNG(json)', 403
     end
