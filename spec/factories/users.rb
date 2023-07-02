@@ -2,7 +2,7 @@ FactoryBot.define do
   factory :user do
     code               { Digest::MD5.hexdigest(SecureRandom.uuid).to_i(16).to_s(36).rjust(25, '0') }
     sequence(:name)    { |n| "user(#{n})" }
-    email              { Faker::Internet.safe_email(name: "#{name}#{Faker::Number.hexadecimal(digits: 3)}") }
+    email              { Faker::Internet.email(name: "#{name}#{Faker::Number.hexadecimal(digits: 3)}") }
     password           { Faker::Internet.password(min_length: 8) }
     confirmed_at       { '0000-01-01 00:00:00+0000' }
     sign_in_count      { 1 }
@@ -44,26 +44,26 @@ FactoryBot.define do
     trait :email_changed do
       confirmation_token   { Devise.token_generator.digest(self, :confirmation_token, email) }
       confirmation_sent_at { Time.now.utc - 1.minute }
-      unconfirmed_email    { Faker::Internet.safe_email }
+      unconfirmed_email    { Faker::Internet.email }
     end
 
     # メールアドレス変更期限切れ
     trait :expired_email_change do
       confirmation_token   { Devise.token_generator.digest(self, :confirmation_token, email) }
       confirmation_sent_at { Time.now.utc - User.confirm_within - 1.minute }
-      unconfirmed_email    { Faker::Internet.safe_email }
+      unconfirmed_email    { Faker::Internet.email }
     end
 
     # 削除予約済み
     trait :destroy_reserved do
       destroy_requested_at { Time.current - 1.minute }
-      destroy_schedule_at  { destroy_requested_at + Settings['user_destroy_schedule_days'].days }
+      destroy_schedule_at  { destroy_requested_at + Settings.user_destroy_schedule_days.days }
     end
 
     # 削除対象
     trait :destroy_targeted do
-      destroy_requested_at { Time.current - 1.minute - Settings['user_destroy_schedule_days'].days }
-      destroy_schedule_at  { destroy_requested_at + Settings['user_destroy_schedule_days'].days }
+      destroy_requested_at { Time.current - 1.minute - Settings.user_destroy_schedule_days.days }
+      destroy_schedule_at  { destroy_requested_at + Settings.user_destroy_schedule_days.days }
     end
   end
 

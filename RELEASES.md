@@ -1,5 +1,20 @@
 # リリースノート
 
+## 1.6.0 (Sprint 11)
+
+- Ruby3.1にバージョンアップしたい
+  - https://dev.azure.com/nightonly/rails-app-origin/_workitems/edit/548/
+- Delayed::Jobを導入したい
+  - https://dev.azure.com/nightonly/rails-app-origin/_workitems/edit/544/
+- 祝日データを持ちたい
+  - https://dev.azure.com/nightonly/rails-app-origin/_workitems/edit/516/
+- 設定でHTMLを返さないようにできるようにしたい（APIのみモード）
+  - https://dev.azure.com/nightonly/rails-app-origin/_workitems/edit/511/
+- Capistranoでデプロイできるようにしたい
+  - https://dev.azure.com/nightonly/rails-app-origin/_workitems/edit/308/
+- エラー時にメール/Slack送信して気付けるようにしたい
+  - https://dev.azure.com/nightonly/rails-app-origin/_workitems/edit/189/
+
 ## 1.5.0 (Sprint 10)
 
 - 左メニューを表示したい

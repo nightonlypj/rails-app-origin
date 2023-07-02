@@ -1,6 +1,8 @@
 require 'rails_helper'
 
 RSpec.describe 'users/sessions/delete', type: :view do
+  next if Settings.api_only_mode
+
   include_context 'ログイン処理'
   before_all { @resource = user }
 

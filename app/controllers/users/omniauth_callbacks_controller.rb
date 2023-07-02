@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
 class Users::OmniauthCallbacksController < Devise::OmniauthCallbacksController
+  prepend_before_action :response_not_found_for_api_mode_not_api
+
   # You should configure your model like this:
   # devise :omniauthable, omniauth_providers: [:twitter]
 

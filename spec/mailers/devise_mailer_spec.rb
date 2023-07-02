@@ -6,8 +6,8 @@ RSpec.describe DeviseMailer, type: :mailer do
   # テスト内容（共通）
   shared_examples_for 'Header' do
     it 'タイトル・送信者のメールアドレスが設定と、宛先がユーザーのメールアドレスと一致する' do
-      expect(mail.subject).to eq(get_subject(subject))
-      expect(mail.from).to eq([Settings['mailer_from']['email']])
+      expect(mail.subject).to eq(get_subject(mail_subject))
+      expect(mail.from).to eq([Settings.mailer_from.email])
       expect(mail.to).to eq([user.email])
     end
   end
@@ -18,10 +18,10 @@ RSpec.describe DeviseMailer, type: :mailer do
   # テストパターン
   #   リダイレクトURL: ない, ある
   describe '#confirmation_instructions' do
+    let(:mail) { DeviseMailer.confirmation_instructions(user, token, { 'client-config': client_config, 'redirect-url': redirect_url }) }
+    let(:mail_subject) { 'devise.mailer.confirmation_instructions.subject' }
     let_it_be(:user) { FactoryBot.build_stubbed(:user, :unconfirmed) }
-    let(:token)   { Devise.token_generator.digest(self, :confirmation_token, SecureRandom.uuid) }
-    let(:mail)    { DeviseMailer.confirmation_instructions(user, token, { 'client-config': client_config, 'redirect-url': redirect_url }) }
-    let(:subject) { 'devise.mailer.confirmation_instructions.subject' }
+    let(:token) { Devise.token_generator.digest(self, :confirmation_token, SecureRandom.uuid) }
 
     # テスト内容
     shared_examples_for 'Body' do
@@ -32,8 +32,8 @@ RSpec.describe DeviseMailer, type: :mailer do
       end
     end
     shared_examples_for 'Body(API)' do
-      let(:url)        { user_auth_confirmation_url(config: client_config, confirmation_token: token, redirect_url: redirect_url) }
-      let(:encode_url) { "#{user_auth_confirmation_url}?#{URI.encode_www_form(config: client_config, confirmation_token: token, redirect_url: redirect_url)}" }
+      let(:url) { user_auth_confirmation_url(config: client_config, confirmation_token: token, redirect_url:) }
+      let(:encode_url) { "#{user_auth_confirmation_url}?#{URI.encode_www_form(config: client_config, confirmation_token: token, redirect_url:)}" }
       it 'メールアドレス確認のURL（リダイレクトURLあり）が含まれる' do
         expect(mail.html_part.body).to include("\"#{encode_url}\"".gsub(/&/, '&amp;'))
         expect(mail.text_part.body).to include(url)
@@ -59,10 +59,10 @@ RSpec.describe DeviseMailer, type: :mailer do
   # テストパターン
   #   リダイレクトURL: ない, ある
   describe '#reset_password_instructions' do
+    let(:mail) { DeviseMailer.reset_password_instructions(user, token, { 'client-config': client_config, 'redirect-url': redirect_url }) }
+    let(:mail_subject) { 'devise.mailer.reset_password_instructions.subject' }
     let_it_be(:user) { FactoryBot.build_stubbed(:user) }
-    let(:token)   { Devise.token_generator.digest(self, :reset_password_token, SecureRandom.uuid) }
-    let(:mail)    { DeviseMailer.reset_password_instructions(user, token, { 'client-config': client_config, 'redirect-url': redirect_url }) }
-    let(:subject) { 'devise.mailer.reset_password_instructions.subject' }
+    let(:token) { Devise.token_generator.digest(self, :reset_password_token, SecureRandom.uuid) }
 
     # テスト内容
     shared_examples_for 'Body' do
@@ -73,9 +73,9 @@ RSpec.describe DeviseMailer, type: :mailer do
       end
     end
     shared_examples_for 'Body(API)' do
-      let(:url) { edit_user_auth_password_url(config: client_config, redirect_url: redirect_url, reset_password_token: token) }
+      let(:url) { edit_user_auth_password_url(config: client_config, redirect_url:, reset_password_token: token) }
       let(:encode_url) do
-        "#{edit_user_auth_password_url}?#{URI.encode_www_form(config: client_config, redirect_url: redirect_url, reset_password_token: token)}"
+        "#{edit_user_auth_password_url}?#{URI.encode_www_form(config: client_config, redirect_url:, reset_password_token: token)}"
       end
       it 'パスワード再設定のURL（リダイレクトURLあり）が含まれる' do
         expect(mail.html_part.body).to include("\"#{encode_url}\"".gsub(/&/, '&amp;'))
@@ -102,10 +102,10 @@ RSpec.describe DeviseMailer, type: :mailer do
   # テストパターン
   #   リダイレクトURL: ない, ある
   describe '#unlock_instructions' do
+    let(:mail) { DeviseMailer.unlock_instructions(user, token, { 'client-config': client_config, 'redirect-url': redirect_url }) }
+    let(:mail_subject) { 'devise.mailer.unlock_instructions.subject' }
     let_it_be(:user) { FactoryBot.build_stubbed(:user, :locked) }
-    let(:token)   { Devise.token_generator.digest(self, :unlock_token, SecureRandom.uuid) }
-    let(:mail)    { DeviseMailer.unlock_instructions(user, token, { 'client-config': client_config, 'redirect-url': redirect_url }) }
-    let(:subject) { 'devise.mailer.unlock_instructions.subject' }
+    let(:token) { Devise.token_generator.digest(self, :unlock_token, SecureRandom.uuid) }
 
     # テスト内容
     shared_examples_for 'Body' do
@@ -116,8 +116,8 @@ RSpec.describe DeviseMailer, type: :mailer do
       end
     end
     shared_examples_for 'Body(API)' do
-      let(:url)        { user_auth_unlock_url(config: client_config, redirect_url: redirect_url, unlock_token: token) }
-      let(:encode_url) { "#{user_auth_unlock_url}?#{URI.encode_www_form(config: client_config, redirect_url: redirect_url, unlock_token: token)}" }
+      let(:url)        { user_auth_unlock_url(config: client_config, redirect_url:, unlock_token: token) }
+      let(:encode_url) { "#{user_auth_unlock_url}?#{URI.encode_www_form(config: client_config, redirect_url:, unlock_token: token)}" }
       it 'アカウントロック解除のURL（リダイレクトURLあり）が含まれる' do
         expect(mail.html_part.body).to include("\"#{encode_url}\"".gsub(/&/, '&amp;'))
         expect(mail.text_part.body).to include(url)
@@ -141,9 +141,9 @@ RSpec.describe DeviseMailer, type: :mailer do
   # 前提条件
   #   メールアドレス変更中
   describe '#email_changed' do
+    let(:mail) { DeviseMailer.email_changed(user) }
+    let(:mail_subject) { 'devise.mailer.email_changed.subject' }
     let_it_be(:user) { FactoryBot.build_stubbed(:user, :email_changed) }
-    let(:mail)    { DeviseMailer.email_changed(user) }
-    let(:subject) { 'devise.mailer.email_changed.subject' }
 
     it_behaves_like 'Header'
     it '確認待ちメールアドレスが含まれる' do
@@ -154,9 +154,9 @@ RSpec.describe DeviseMailer, type: :mailer do
 
   # パスワード変更完了のお知らせ
   describe '#password_change' do
+    let(:mail) { DeviseMailer.password_change(user) }
+    let(:mail_subject) { 'devise.mailer.password_change.subject' }
     let_it_be(:user) { FactoryBot.build_stubbed(:user) }
-    let(:mail)    { DeviseMailer.password_change(user) }
-    let(:subject) { 'devise.mailer.password_change.subject' }
 
     it_behaves_like 'Header'
   end

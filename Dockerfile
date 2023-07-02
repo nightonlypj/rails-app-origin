@@ -1,12 +1,15 @@
 # https://hub.docker.com/_/ruby
-FROM ruby:3.0.0-alpine
-RUN apk update && apk add --no-cache --update build-base tzdata bash yarn python2 imagemagick graphviz ttf-freefont
-RUN apk add --no-cache --update sqlite-dev
+FROM ruby:3.1.4-alpine
+RUN apk update && apk add --no-cache --update build-base tzdata bash yarn python3 imagemagick graphviz ttf-freefont gcompat
+# RUN apk add --no-cache --update sqlite-libs sqlite-dev
 RUN apk add --no-cache --update mysql-dev mysql-client
-RUN apk add --no-cache --update postgresql-dev postgresql-client
+# RUN apk add --no-cache --update postgresql-dev postgresql-client
 
 WORKDIR /workdir
 ENV LANG="ja_JP.UTF-8"
+
+# NOTE: Error: error:0308010C:digital envelope routines::unsupported
+ENV NODE_OPTIONS='--openssl-legacy-provider'
 
 COPY Gemfile Gemfile.lock ./
 RUN bundle install --no-cache

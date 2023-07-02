@@ -33,7 +33,7 @@
   target: all
   user_id: null
 - id: 14
-  label: other
+  label: update
   title: '全員へのお知らせ（掲載中、本文なし）'
   summary: '全員へのお知らせの要約<br>2行目'
   body: null
@@ -44,6 +44,17 @@
   target: all
   user_id: null
 - id: 15
+  label: other
+  title: '全員へのお知らせ（掲載中、要約・本文なし）'
+  summary: null
+  body: null
+  started_at: '2000-01-01 00:00:00+0900'
+  ended_at: null
+  force_started_at: '2000-01-01 00:00:00+0900'
+  force_ended_at: null
+  target: all
+  user_id: null
+- id: 16
   label: not
   title: '全員へのお知らせ（掲載中、要約・本文なし）'
   summary: null

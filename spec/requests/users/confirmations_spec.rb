@@ -17,6 +17,11 @@ RSpec.describe 'Users::Confirmations', type: :request do
     subject { get new_user_confirmation_path }
 
     # テストケース
+    if Settings.api_only_mode
+      it_behaves_like 'ToNG(html)', 404
+      next
+    end
+
     context '未ログイン' do
       it_behaves_like 'ToOK[status]'
     end
@@ -45,7 +50,7 @@ RSpec.describe 'Users::Confirmations', type: :request do
 
     # テスト内容
     shared_examples_for 'OK' do
-      let(:url) { "http://#{Settings['base_domain']}#{user_confirmation_path}" }
+      let(:url) { "http://#{Settings.base_domain}#{user_confirmation_path}" }
       it 'メールが送信される' do
         subject
         expect(ActionMailer::Base.deliveries.count).to eq(1)
@@ -61,6 +66,14 @@ RSpec.describe 'Users::Confirmations', type: :request do
     end
 
     # テストケース
+    if Settings.api_only_mode
+      let(:send_user)  { send_user_unconfirmed }
+      let(:attributes) { valid_attributes }
+      it_behaves_like 'NG'
+      it_behaves_like 'ToNG(html)', 404
+      next
+    end
+
     shared_examples_for '[*]有効なパラメータ（メール未確認）' do # NOTE: ログイン中も出来ても良さそう
       let(:send_user)  { send_user_unconfirmed }
       let(:attributes) { valid_attributes }
@@ -107,7 +120,7 @@ RSpec.describe 'Users::Confirmations', type: :request do
   #   トークン: 期限内, 期限切れ, 存在しない, ない
   #   確認日時: ない（未確認）, 確認送信日時より前（未確認）, 確認送信日時より後（確認済み）
   describe 'GET #show' do
-    subject { get user_confirmation_path(confirmation_token: confirmation_token) }
+    subject { get user_confirmation_path(confirmation_token:) }
     let(:current_user) { User.find(send_user.id) }
 
     # テスト内容
@@ -126,6 +139,14 @@ RSpec.describe 'Users::Confirmations', type: :request do
     end
 
     # テストケース
+    if Settings.api_only_mode
+      let_it_be(:confirmation_sent_at) { Time.now.utc }
+      include_context 'メールアドレス確認トークン作成', false, nil
+      it_behaves_like 'NG'
+      it_behaves_like 'ToNG(html)', 404
+      next
+    end
+
     shared_examples_for '[未ログイン][期限内]確認日時がない（未確認）' do
       include_context 'メールアドレス確認トークン作成', false, nil
       it_behaves_like 'OK'

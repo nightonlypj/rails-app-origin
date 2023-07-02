@@ -3,6 +3,7 @@ ja:
     formats:
       default: '%Y/%m/%d'
       long: '%Y/%m/%d'
+      json: '%F'
   time:
     formats:
       default: '%Y/%m/%d %H:%M'

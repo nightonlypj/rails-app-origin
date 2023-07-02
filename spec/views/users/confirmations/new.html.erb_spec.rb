@@ -1,6 +1,8 @@
 require 'rails_helper'
 
 RSpec.describe 'users/confirmations/new', type: :view do
+  next if Settings.api_only_mode
+
   before_all { @resource = User.new }
 
   # テスト内容

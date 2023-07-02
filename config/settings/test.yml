@@ -1,14 +1,17 @@
 debug: false
-env_name: ''
+env_name: null
 base_domain: 'localhost.test'
 base_image_url: 'http://localhost.test'
 redirect_whitelist: ['http://front.localhost.test/*']
-default_confirm_success_url: ''
-default_password_reset_url: ''
-default_unlock_success_url: ''
+default_confirm_success_url: null
+default_password_reset_url: null
+default_unlock_success_url: null
 mailer_from:
   name: '%{app_name}'
   email: 'noreply@localhost.test'
+exception_notifier:
+  email_enabled: false
+  slack_enabled: false
 
 ## ユーザー
 # ユーザー名の最小・最大文字数
@@ -18,8 +21,8 @@ user_name_maximum: 12 # NOTE: (7+5?)以上
 ## お知らせ
 # 一覧のデフォルト最大表示件数
 default_infomations_limit: 4 # NOTE: 高速化の為（下記の合計値と一致）
-test_infomations:
-  all_forever_count: 1
-  all_future_count: 1
-  user_forever_count: 1
-  user_future_count: 1
+test_infomations_count:
+  all_forever: 1
+  all_future: 1
+  user_forever: 1
+  user_future: 1

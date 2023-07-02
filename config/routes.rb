@@ -1,4 +1,5 @@
 Rails.application.routes.draw do
+  draw :holidays
   draw :infomations
   draw :admin
   draw :users

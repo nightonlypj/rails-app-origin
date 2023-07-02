@@ -13,9 +13,9 @@ class User < ApplicationRecord
   has_many :infomations, dependent: :destroy
 
   validates :code, presence: true
-  validates :code, uniqueness: { case_sensitive: true }
+  validates :code, uniqueness: { case_sensitive: true }, allow_blank: true
   validates :name, presence: true
-  validates :name, length: { in: Settings['user_name_minimum']..Settings['user_name_maximum'] }, if: proc { |user| user.name.present? }
+  validates :name, length: { in: Settings.user_name_minimum..Settings.user_name_maximum }, allow_blank: true
 
   scope :destroy_target, -> { where(destroy_schedule_at: ..Time.current) }
 
@@ -25,12 +25,12 @@ class User < ApplicationRecord
   end
 
   # 削除予約
-  def set_destroy_reserve
-    update!(destroy_requested_at: Time.current, destroy_schedule_at: Time.current + Settings['user_destroy_schedule_days'].days)
+  def set_destroy_reserve!
+    update!(destroy_requested_at: Time.current, destroy_schedule_at: Time.current + Settings.user_destroy_schedule_days.days)
   end
 
   # 削除予約取り消し
-  def set_undo_destroy_reserve
+  def set_undo_destroy_reserve!
     update!(destroy_requested_at: nil, destroy_schedule_at: nil)
   end
 

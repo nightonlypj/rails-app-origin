@@ -24,10 +24,10 @@ default-sqlite3: &default-sqlite3
 default: &default
 #default-mysql: &default-mysql
   adapter: mysql2
-  encoding: utf8
-  collation: utf8_bin
-  # encoding: utf8mb4 # NOTE: MySQL 5.7.7以降でないとmigrateに失敗する
-  # collation: utf8mb4_bin
+  # encoding: utf8
+  # collation: utf8_general_ci
+  encoding: utf8mb4 # NOTE: MySQL 5.7.7以降でないとmigrateに失敗する
+  collation: utf8mb4_general_ci
   pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
   # username: rails_app
   # password: abc123

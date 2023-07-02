@@ -2,11 +2,12 @@
 
 class Users::RegistrationsController < Devise::RegistrationsController
   include Users::RegistrationsConcern
-  prepend_before_action :authenticate_scope!, only: %i[edit update image_update image_destroy delete destroy undo_delete undo_destroy]
   before_action :redirect_for_user_destroy_reserved, only: %i[edit update image_update image_destroy delete destroy]
   before_action :redirect_for_not_user_destroy_reserved, only: %i[undo_delete undo_destroy]
-  before_action :configure_sign_up_params, only: %i[create]
-  before_action :configure_account_update_params, only: %i[update]
+  before_action :configure_sign_up_params, only: :create
+  before_action :configure_account_update_params, only: :update
+  prepend_before_action :authenticate_scope!, only: %i[edit update image_update image_destroy delete destroy undo_delete undo_destroy]
+  prepend_before_action :response_not_found_for_api_mode_not_api
 
   # GET /users/sign_up アカウント登録
   # def new
@@ -68,7 +69,7 @@ class Users::RegistrationsController < Devise::RegistrationsController
   # POST /users/delete アカウント削除(処理)
   def destroy
     # resource.destroy
-    resource.set_destroy_reserve
+    resource.set_destroy_reserve!
     UserMailer.with(user: resource).destroy_reserved.deliver_now
 
     Devise.sign_out_all_scopes ? sign_out : sign_out(resource_name)
@@ -82,7 +83,7 @@ class Users::RegistrationsController < Devise::RegistrationsController
 
   # POST /users/undo_delete アカウント削除取り消し(処理)
   def undo_destroy
-    resource.set_undo_destroy_reserve
+    resource.set_undo_destroy_reserve!
     UserMailer.with(user: resource).undo_destroy_reserved.deliver_now
 
     set_flash_message! :notice, :undo_destroy_reserved

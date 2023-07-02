@@ -2,5 +2,5 @@
 
 ログイン失敗が繰り返された為、アカウントがロックされました。
 アカウントロックを解除するには、下記のURLをクリックしてください。
-※ロックは<%= Settings['unlock_in_hours'] %>時間後に自動で解除されます。
+※ロックは<%= Settings.unlock_in_hours %>時間後に自動で解除されます。
 <%= unlock_url(@resource, unlock_token: @token) %>

@@ -1,3 +1,6 @@
+# APIのみモード  NOTE: Railsのフロントを使用しない場合はtrue
+api_only_mode: false
+
 # Devise Token Auth
 confirmation_success_url_not: '/auth/confirmation_success.html?not'
 confirmation_success_url_bad: '/auth/confirmation_success.html?bad'

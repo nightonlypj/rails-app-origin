@@ -14,7 +14,7 @@ class ImageUploader < CarrierWave::Uploader::Base
   end
 
   def cache_dir
-    "/tmp/#{Settings['base_domain']}"
+    "/tmp/#{Settings.base_domain}"
   end
 
   # Provide a default URL as a default if there hasn't been a file uploaded:

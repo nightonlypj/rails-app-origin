@@ -11,7 +11,7 @@ RSpec.describe 'Users::Auth::Confirmations', type: :request do
       subject
       expect(response_json['errors'].to_s).to error_msg.present? ? include(get_locale(error_msg)) : be_blank
       expect(response_json['errors'].class).to eq(error_class) # 方針: バリデーション(Hash)のみ、他はalertへ
-      expect(response_json['errors']&.count).to errors_count.positive? ? eq(errors_count) : be_nil
+      expect(response_json['errors']&.count).to errors_count > 0 ? eq(errors_count) : be_nil
       expect(response_json['message']).to message.present? ? eq(get_locale(message)) : be_nil # 方針: 廃止して、noticeへ
 
       expect(response_json['alert']).to alert.present? ? eq(get_locale(alert)) : be_nil # 方針: 追加
@@ -26,15 +26,16 @@ RSpec.describe 'Users::Auth::Confirmations', type: :request do
   #   ＋URLの拡張子: .json, ない
   #   ＋Acceptヘッダ: JSONが含まれる, JSONが含まれない
   describe 'POST #create' do
-    subject { post create_user_auth_confirmation_path(format: subject_format), params: attributes, headers: auth_headers.merge(accept_headers) }
+    subject { post create_user_auth_confirmation_path(format: subject_format), params:, headers: auth_headers.merge(accept_headers) }
     let_it_be(:send_user_unconfirmed)   { FactoryBot.create(:user, :unconfirmed) }
     let_it_be(:send_user_confirmed)     { FactoryBot.create(:user) }
     let_it_be(:send_user_email_changed) { FactoryBot.create(:user, :email_changed) }
     let_it_be(:not_user)                { FactoryBot.attributes_for(:user) }
     let(:valid_attributes)       { { email: send_user.email, redirect_url: FRONT_SITE_URL } }
     let(:invalid_attributes)     { { email: not_user[:email], redirect_url: FRONT_SITE_URL } }
-    let(:invalid_nil_attributes) { { email: send_user_unconfirmed.email, redirect_url: nil } }
-    let(:invalid_bad_attributes) { { email: send_user_unconfirmed.email, redirect_url: BAD_SITE_URL } }
+    let(:invalid_attributes_nil) { { email: send_user_unconfirmed.email, redirect_url: nil } }
+    let(:invalid_attributes_bad) { { email: send_user_unconfirmed.email, redirect_url: BAD_SITE_URL } }
+
     include_context 'Authテスト内容'
     let(:current_user) { nil }
 
@@ -42,8 +43,8 @@ RSpec.describe 'Users::Auth::Confirmations', type: :request do
     shared_examples_for 'OK' do
       let(:subject_format) { :json }
       let(:accept_headers) { ACCEPT_INC_JSON }
-      let(:url)       { "http://#{Settings['base_domain']}#{user_auth_confirmation_path}" }
-      let(:url_param) { "redirect_url=#{URI.encode_www_form_component(attributes[:redirect_url])}" }
+      let(:url)       { "http://#{Settings.base_domain}#{user_auth_confirmation_path}" }
+      let(:url_param) { "redirect_url=#{URI.encode_www_form_component(params[:redirect_url])}" }
       it 'メールが送信される' do
         subject
         expect(ActionMailer::Base.deliveries.count).to eq(1)
@@ -96,7 +97,7 @@ RSpec.describe 'Users::Auth::Confirmations', type: :request do
 
     # テストケース
     shared_examples_for '[*]パラメータなし' do
-      let(:attributes) { nil }
+      let(:params) { nil }
       it_behaves_like 'NG'
       # it_behaves_like 'ToNG', 401
       it_behaves_like 'ToNG', 400
@@ -104,16 +105,16 @@ RSpec.describe 'Users::Auth::Confirmations', type: :request do
       it_behaves_like 'ToMsg', NilClass, 0, nil, nil, 'errors.messages.validate_confirmation_params', nil
     end
     shared_examples_for '[*]有効なパラメータ（メール未確認）' do # NOTE: ログイン中も出来ても良さそう
-      let(:send_user)  { send_user_unconfirmed }
-      let(:attributes) { valid_attributes }
+      let(:send_user) { send_user_unconfirmed }
+      let(:params) { valid_attributes }
       it_behaves_like 'OK'
       it_behaves_like 'ToOK'
       # it_behaves_like 'ToMsg', NilClass, 0, nil, 'devise_token_auth.confirmations.sended', nil, nil
       it_behaves_like 'ToMsg', NilClass, 0, nil, nil, nil, 'devise_token_auth.confirmations.sended'
     end
     shared_examples_for '[*]有効なパラメータ（メール確認済み）' do
-      let(:send_user)  { send_user_confirmed }
-      let(:attributes) { valid_attributes }
+      let(:send_user) { send_user_confirmed }
+      let(:params) { valid_attributes }
       # it_behaves_like 'OK'
       it_behaves_like 'NG'
       # it_behaves_like 'ToOK'
@@ -122,15 +123,15 @@ RSpec.describe 'Users::Auth::Confirmations', type: :request do
       it_behaves_like 'ToMsg', NilClass, 0, nil, nil, 'errors.messages.already_confirmed', nil
     end
     shared_examples_for '[*]有効なパラメータ（メールアドレス変更中）' do # NOTE: ログイン中でも再送したい
-      let(:send_user)  { send_user_email_changed }
-      let(:attributes) { valid_attributes }
+      let(:send_user) { send_user_email_changed }
+      let(:params) { valid_attributes }
       it_behaves_like 'OK'
       it_behaves_like 'ToOK'
       # it_behaves_like 'ToMsg', NilClass, 0, nil, 'devise_token_auth.confirmations.sended', nil, nil
       it_behaves_like 'ToMsg', NilClass, 0, nil, nil, nil, 'devise_token_auth.confirmations.sended'
     end
     shared_examples_for '[*]無効なパラメータ' do
-      let(:attributes) { invalid_attributes }
+      let(:params) { invalid_attributes }
       it_behaves_like 'NG'
       # it_behaves_like 'ToNG', 404
       it_behaves_like 'ToNG', 422
@@ -138,7 +139,7 @@ RSpec.describe 'Users::Auth::Confirmations', type: :request do
       it_behaves_like 'ToMsg', Hash, 2, 'devise_token_auth.confirmations.user_not_found', nil, 'errors.messages.not_saved.one', nil
     end
     shared_examples_for '[*]URLがない' do
-      let(:attributes) { invalid_nil_attributes }
+      let(:params) { invalid_attributes_nil }
       # it_behaves_like 'OK'
       it_behaves_like 'NG'
       # it_behaves_like 'ToOK'
@@ -147,7 +148,7 @@ RSpec.describe 'Users::Auth::Confirmations', type: :request do
       it_behaves_like 'ToMsg', NilClass, 0, nil, nil, 'devise_token_auth.confirmations.missing_confirm_success_url', nil
     end
     shared_examples_for '[*]URLがホワイトリストにない' do
-      let(:attributes) { invalid_bad_attributes }
+      let(:params) { invalid_attributes_bad }
       # it_behaves_like 'OK'
       it_behaves_like 'NG'
       # it_behaves_like 'ToOK'
@@ -190,7 +191,7 @@ RSpec.describe 'Users::Auth::Confirmations', type: :request do
   #   ＋リダイレクトURL: ある, ない, ホワイトリストにない
   describe 'GET #show' do
     subject do
-      get user_auth_confirmation_path(format: subject_format, confirmation_token: confirmation_token, redirect_url: @redirect_url),
+      get user_auth_confirmation_path(format: subject_format, confirmation_token:, redirect_url: @redirect_url),
           headers: auth_headers.merge(accept_headers)
     end
     let(:current_user) { User.find(send_user.id) }
@@ -249,12 +250,12 @@ RSpec.describe 'Users::Auth::Confirmations', type: :request do
       it '[リダイレクトURLがない]成功ページにリダイレクトする' do
         @redirect_url = nil
         # is_expected.to redirect_to(/^#{not_redirect_url}\?.*account_confirmation_success=true.*$/) # NOTE: ログイン中はaccess-token等も入る
-        is_expected.to redirect_to(Settings['confirmation_success_url_not'])
+        is_expected.to redirect_to(Settings.confirmation_success_url_not)
       end
       it '[リダイレクトURLがホワイトリストにない]成功ページにリダイレクトする' do
         @redirect_url = BAD_SITE_URL
         # is_expected.to redirect_to(/^#{@redirect_url}\?.*account_confirmation_success=true.*$/) # NOTE: ログイン中はaccess-token等も入る
-        is_expected.to redirect_to(Settings['confirmation_success_url_bad'])
+        is_expected.to redirect_to(Settings.confirmation_success_url_bad)
       end
     end
     shared_examples_for 'ToNG(html/*)' do
@@ -268,12 +269,12 @@ RSpec.describe 'Users::Auth::Confirmations', type: :request do
       it '[リダイレクトURLがない]エラーページにリダイレクトする' do
         @redirect_url = nil
         # is_expected.to redirect_to(/^#{not_redirect_url}\?.*account_confirmation_success=true.*$/) # NOTE: ログイン中はaccess-token等も入る
-        is_expected.to redirect_to(Settings['confirmation_error_url_not'])
+        is_expected.to redirect_to(Settings.confirmation_error_url_not)
       end
       it '[リダイレクトURLがホワイトリストにない]エラーページにリダイレクトする' do
         @redirect_url = BAD_SITE_URL
         # is_expected.to redirect_to(/^#{BAD_SITE_URL}\?.*account_confirmation_success=true.*$/) # NOTE: ログイン中はaccess-token等も入る
-        is_expected.to redirect_to(Settings['confirmation_error_url_bad'])
+        is_expected.to redirect_to(Settings.confirmation_error_url_bad)
       end
     end
     shared_examples_for 'ToNG(json/json)' do |code|

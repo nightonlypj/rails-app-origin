@@ -7,7 +7,7 @@ class UserDeviseMailerPreview < ActionMailer::Preview
   end
 
   def confirmation_instructions_auth
-    redirect_url = Faker::Internet.url
+    redirect_url = Faker::Internet.url(scheme: 'https')
     confirmation_instructions(redirect_url)
   end
 
@@ -18,7 +18,7 @@ class UserDeviseMailerPreview < ActionMailer::Preview
   end
 
   def reset_password_instructions_auth
-    redirect_url = Faker::Internet.url
+    redirect_url = Faker::Internet.url(scheme: 'https')
     reset_password_instructions(redirect_url)
   end
 
@@ -29,7 +29,7 @@ class UserDeviseMailerPreview < ActionMailer::Preview
   end
 
   def unlock_instructions_auth
-    redirect_url = Faker::Internet.url
+    redirect_url = Faker::Internet.url(scheme: 'https')
     unlock_instructions(redirect_url)
   end
 

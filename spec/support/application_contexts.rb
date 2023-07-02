@@ -10,19 +10,44 @@ ACCEPT_INC_HTML = { 'accept' => 'text/html,application/xhtml+xml,application/xml
 ACCEPT_INC_JSON = { 'accept' => 'application/json,text/plain,*/*' }.freeze
 
 # メールタイトルを返却
-def get_subject(key)
-  I18n.t(key, app_name: I18n.t('app_name'), env_name: Settings['env_name'])
+def get_subject(key, args = {})
+  I18n.t(key, app_name: I18n.t('app_name'), env_name: Settings.env_name || '', **args)
 end
 
 # テスト内容（共通）
+shared_examples_for 'Valid' do
+  it '保存できる' do
+    expect(model).to be_valid
+  end
+end
+shared_examples_for 'InValid' do
+  it '保存できない。エラーメッセージが一致する' do
+    expect(model).to be_invalid
+    expect(model.errors.messages).to eq(messages)
+  end
+end
+
+shared_examples_for 'Value' do |value, text = value|
+  it "#{text}が返却される" do
+    is_expected.to eq(value)
+  end
+end
+shared_examples_for 'Value_i18n' do |value|
+  it "#{value}が返却される" do
+    is_expected.to eq(get_locale(value))
+  end
+end
+
 def expect_image_json(response_json_model, model)
   expect(response_json_model['upload_image']).to eq(model.image?)
+
   data = response_json_model['image_url']
-  expect(data['mini']).to eq("#{Settings['base_image_url']}#{model.image_url(:mini)}")
-  expect(data['small']).to eq("#{Settings['base_image_url']}#{model.image_url(:small)}")
-  expect(data['medium']).to eq("#{Settings['base_image_url']}#{model.image_url(:medium)}")
-  expect(data['large']).to eq("#{Settings['base_image_url']}#{model.image_url(:large)}")
-  expect(data['xlarge']).to eq("#{Settings['base_image_url']}#{model.image_url(:xlarge)}")
+  expect(data['mini']).to eq("#{Settings.base_image_url}#{model.image_url(:mini)}")
+  expect(data['small']).to eq("#{Settings.base_image_url}#{model.image_url(:small)}")
+  expect(data['medium']).to eq("#{Settings.base_image_url}#{model.image_url(:medium)}")
+  expect(data['large']).to eq("#{Settings.base_image_url}#{model.image_url(:large)}")
+  expect(data['xlarge']).to eq("#{Settings.base_image_url}#{model.image_url(:xlarge)}")
+  expect(data.count).to eq(5)
 end
 
 def get_locale(key, **replace)
@@ -50,12 +75,14 @@ shared_examples_for 'ToError' do |error_msg|
   end
 end
 
+# :nocov:
 shared_examples_for 'OK' do
   raise '各Specに作成してください。'
 end
 shared_examples_for 'NG' do
   raise '各Specに作成してください。'
 end
+# :nocov:
 shared_examples_for 'OK(html)' do
   let(:subject_format) { nil }
   let(:accept_headers) { ACCEPT_INC_HTML }
@@ -77,12 +104,14 @@ shared_examples_for 'NG(json)' do
   it_behaves_like 'NG'
 end
 
+# :nocov:
 shared_examples_for 'ToOK(html/*)' do
   raise '各Specに作成してください。'
 end
 shared_examples_for 'ToOK(json/json)' do
   raise '各Specに作成してください。'
 end
+# :nocov:
 shared_examples_for 'ToOK(html/html)' do
   let(:subject_format) { nil }
   let(:accept_headers) { ACCEPT_INC_HTML }
@@ -148,7 +177,9 @@ shared_examples_for 'ToNG(json/json)' do |code, errors, alert = nil, notice = ni
     when 422
       'errors.messages.not_saved.other'
     else
+      # :nocov:
       raise "code not found.(#{code})"
+      # :nocov:
     end
   end
   it "HTTPステータスが#{code}。対象項目が一致する" do

@@ -12,7 +12,7 @@ shared_context 'パスワードリセットトークン作成（管理者）' do
   let_it_be(:failed_attempts)      { locked ? Devise.maximum_attempts : 0 }
   let_it_be(:send_admin_user) do
     FactoryBot.create(:admin_user, reset_password_token: digest_token, reset_password_sent_at: sent_at,
-                                   unlock_token: unlock_token, locked_at: locked_at, failed_attempts: failed_attempts)
+                                   unlock_token:, locked_at:, failed_attempts:)
   end
 end
 
@@ -22,7 +22,7 @@ shared_context 'アカウントロック解除トークン作成（管理者）'
   let_it_be(:locked_time)     { Time.now.utc - 1.minute - (expired ? Devise.unlock_in : 0) }
   let_it_be(:locked_at)       { locked ? locked_time : nil }
   let_it_be(:failed_attempts) { locked ? Devise.maximum_attempts : 0 }
-  let_it_be(:send_admin_user) { FactoryBot.create(:admin_user, unlock_token: digest_token, locked_at: locked_at, failed_attempts: failed_attempts) }
+  let_it_be(:send_admin_user) { FactoryBot.create(:admin_user, unlock_token: digest_token, locked_at:, failed_attempts:) }
 end
 
 # テスト内容（共通）

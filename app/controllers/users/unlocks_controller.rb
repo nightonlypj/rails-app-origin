@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
 class Users::UnlocksController < Devise::UnlocksController
+  prepend_before_action :response_not_found_for_api_mode_not_api
+
   # GET /users/unlock/resend アカウントロック解除[メール再送]
   # def new
   #   super
