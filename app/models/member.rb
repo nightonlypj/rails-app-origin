@@ -32,6 +32,17 @@ class Member < ApplicationRecord
 
     where(power:)
   }
+  scope :by_target, lambda { |checked|
+    return none if !checked[:active] && !checked[:destroy]
+
+    if checked[:active] && !checked[:destroy]
+      joins(:user).merge(User.active)
+    elsif !checked[:active] && checked[:destroy]
+      joins(:user).merge(User.destroy_reserved)
+    else
+      all
+    end
+  }
 
   # 権限
   enum power: {

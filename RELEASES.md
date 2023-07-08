@@ -1,5 +1,12 @@
 # リリースノート
 
+## 1.6.0 (Sprint 12)
+
+### spaceブランチ
+
+- メンバー一覧の検索条件に有効と削除予約を追加したい
+  - https://dev.azure.com/nightonly/rails-app-origin/_workitems/edit/556/
+
 ## 1.6.0 (Sprint 11)
 
 - Ruby3.1にバージョンアップしたい

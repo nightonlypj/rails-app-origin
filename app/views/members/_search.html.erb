@@ -24,15 +24,27 @@
   </div>
   <div id="searchCollapse" class="collapse<%= ' show' if @option %>">
     <div class="row">
-      <div class="col-auto d-flex mt-2">
+      <div class="col-auto d-flex pe-0 mt-2">
         <div>権限:</div>
-<% Member.powers.each do |key, value| %>
-        <div class="form-check ms-2">
+      </div>
+<% Member.powers.each_with_index do |(key, value), index| %>
+      <div class="col-auto d-flex<%= ' pe-0' if index + 1 != Member.powers.count %> mt-2">
+        <div class="form-check">
           <%= form.check_box "power[#{key}]", checked: @power[value], class: 'form-check-input click_to_search_btn_enabled' %>
           <%= form.label "power[#{key}]", Member.powers_i18n[key], class: 'form-check-label', for: "power[#{key}]" %>
         </div>
+      </div>
 <% end %>
-
+      <div class="col-auto d-flex pe-0 mt-2">
+        <div>状態:</div>
+        <div class="form-check ms-2">
+          <%= form.check_box :active, checked: @checked[:active], class: 'form-check-input click_to_search_btn_enabled' %>
+          <%= form.label :active, '有効', class: 'form-check-label', for: 'active' %>
+        </div>
+        <div class="form-check ms-2">
+          <%= form.check_box :destroy, checked: @checked[:destroy], class: 'form-check-input click_to_search_btn_enabled' %>
+          <%= form.label :destroy, '削除予定', class: 'form-check-label', for: 'destroy' %>
+        </div>
       </div>
     </div>
   </div>

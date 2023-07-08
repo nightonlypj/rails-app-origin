@@ -6,7 +6,7 @@ RSpec.describe 'Members', type: :request do
   let(:response_json_member)  { response_json['member'] }
   let(:response_json_members) { response_json['members'] }
   let(:response_json_space_current_member) { response_json_space['current_member'] }
-  let(:default_params) { { text: nil, power: Member.powers.keys.join(','), sort: 'invitationed_at', desc: 1 } }
+  let(:default_params) { { text: nil, power: Member.powers.keys.join(','), active: 1, destroy: 1, sort: 'invitationed_at', desc: 1 } }
 
   # テスト内容（共通）
   shared_examples_for 'ToOK[氏名]' do
@@ -480,7 +480,7 @@ RSpec.describe 'Members', type: :request do
   #   ログイン中（URLの拡張子がない/AcceptヘッダにHTMLが含まれる）, APIログイン中（URLの拡張子が.json/AcceptヘッダにJSONが含まれる）
   #   権限あり, 検索テキスト、並び順指定なし, 氏名のみ確認
   # テストパターン
-  #   管理者, 投稿者, 閲覧者 の組み合わせ
+  #   権限: 管理者, 投稿者, 閲覧者 の組み合わせ
   describe 'GET #index (.power)' do
     subject { get members_path(space_code: space.code, format: subject_format), params:, headers: auth_headers.merge(accept_headers) }
     let_it_be(:space)         { FactoryBot.create(:space) }
@@ -581,6 +581,53 @@ RSpec.describe 'Members', type: :request do
         let(:members) { [] }
         it_behaves_like 'ToOK[氏名]'
       end
+    end
+  end
+
+  # 前提条件
+  #   ログイン中（URLの拡張子がない/AcceptヘッダにHTMLが含まれる）, APIログイン中（URLの拡張子が.json/AcceptヘッダにJSONが含まれる）
+  #   権限あり, 検索テキスト、並び順指定なし, 氏名のみ確認
+  # テストパターン
+  #   状態: 有効, 削除予定 の組み合わせ
+  describe 'GET #index (.by_target)' do
+    subject { get members_path(space_code: space.code, format: subject_format), params:, headers: auth_headers.merge(accept_headers) }
+    let_it_be(:space)          { FactoryBot.create(:space) }
+    let_it_be(:member_destroy) { FactoryBot.create(:member, space:, user: FactoryBot.create(:user, :destroy_reserved)) }
+
+    # テストケース
+    shared_examples_for '状態' do
+      context '■有効, ■削除予定' do
+        let(:params) { { active: 1, destroy: 1 } }
+        let(:members) { [member_destroy, member_active] }
+        it_behaves_like 'ToOK[氏名]'
+      end
+      context '■有効, □削除予定' do
+        let(:params) { { active: 1, destroy: 0 } }
+        let(:members) { [member_active] }
+        it_behaves_like 'ToOK[氏名]'
+      end
+      context '□有効, □削除予定' do
+        let(:params) { { active: 0, destroy: 0 } }
+        let(:members) { [] }
+        it_behaves_like 'ToOK[氏名]'
+      end
+    end
+
+    context 'ログイン中（URLの拡張子がない/AcceptヘッダにHTMLが含まれる）' do
+      next if Settings.api_only_mode
+
+      include_context 'ログイン処理'
+      let_it_be(:member_active) { FactoryBot.create(:member, space:, user:) }
+      let(:subject_format) { nil }
+      let(:accept_headers) { ACCEPT_INC_HTML }
+      it_behaves_like '状態'
+    end
+    context 'APIログイン中（URLの拡張子が.json/AcceptヘッダにJSONが含まれる）' do
+      include_context 'APIログイン処理'
+      let_it_be(:member_active) { FactoryBot.create(:member, space:, user:) }
+      let(:subject_format) { :json }
+      let(:accept_headers) { ACCEPT_INC_JSON }
+      it_behaves_like '状態'
     end
   end
 
