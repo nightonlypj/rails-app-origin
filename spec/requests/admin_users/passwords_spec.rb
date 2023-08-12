@@ -180,9 +180,9 @@ RSpec.describe 'AdminUsers::Passwords', type: :request do
     let(:new_password) { Faker::Internet.password(min_length: 8) }
     let(:valid_attributes)   { { reset_password_token:, password: new_password, password_confirmation: new_password } }
     let(:invalid_attributes) { { reset_password_token:, password: nil, password_confirmation: nil } }
-    let(:current_admin_user) { AdminUser.find(send_admin_user.id) }
 
     # テスト内容
+    let(:current_admin_user) { AdminUser.find(send_admin_user.id) }
     shared_examples_for 'OK' do
       it 'パスワードリセット送信日時がなしに変更される。メールが送信される' do
         subject

@@ -77,7 +77,7 @@ def expect_user_json(response_json_user, user, use = { email: false })
   else
     expect(response_json_user['email']).to be_nil
   end
-  ## 削除予約
+
   expect(response_json_user['destroy_requested_at']).to eq(I18n.l(user.destroy_requested_at, format: :json, default: nil))
   expect(response_json_user['destroy_schedule_at']).to eq(I18n.l(user.destroy_schedule_at, format: :json, default: nil))
 
