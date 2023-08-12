@@ -1,5 +1,5 @@
 shared_context 'ダウンロード結果一覧作成' do |waiting_count, processing_count, success_count, failure_count, downloaded_count|
-  let_it_be(:space) { FactoryBot.create(:space) }
+  let_it_be(:space) { FactoryBot.create(:space, created_user: user) }
   let_it_be(:downloads) do
     FactoryBot.create(:download, :success, model: :member, space:) # NOTE: 対象外
 

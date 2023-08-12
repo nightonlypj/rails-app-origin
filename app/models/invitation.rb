@@ -12,6 +12,37 @@ class Invitation < ApplicationRecord
   validate :validate_ended_date
   validate :validate_ended_time
 
+  # ドメイン
+  def validate_domains
+    result = []
+    invalid_domain = nil
+    max_count = Settings.invitation_domains_max_count
+    domains&.split(/\R/)&.each do |domain|
+      domain.strip!
+      if domain.present? && !result.include?(domain)
+        result.push(domain)
+        break if result.count > max_count
+
+        invalid_domain = domain if invalid_domain.blank? && !Devise.email_regexp.match?("test@#{domain}")
+      end
+    end
+
+    if result.blank?
+      errors.add(:domains, :blank)
+      return
+    end
+    if result.count > max_count
+      errors.add(:domains, :max_count, count: max_count.to_s(:delimited))
+      return
+    end
+    if invalid_domain.present?
+      errors.add(:domains, :invalid, domain: invalid_domain)
+      return
+    end
+
+    result
+  end
+
   scope :destroy_target, lambda {
     schedule_date = Time.current - Settings.invitation_destroy_schedule_days.days
     where(destroy_schedule_at: ..Time.current)

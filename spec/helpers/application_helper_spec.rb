@@ -112,7 +112,7 @@ RSpec.describe ApplicationHelper, type: :helper do
 
   # スペース削除予約メッセージを表示するかを返却
   # テストパターン
-  #   削除予約: ある, ない
+  #   削除予約: ない, ある
   #   トップページ, スペース一覧, スペーストップ, スペース削除取り消し, メンバー一覧
   describe 'space_destroy_reserved_message?' do
     subject { helper.space_destroy_reserved_message? }
@@ -133,19 +133,24 @@ RSpec.describe ApplicationHelper, type: :helper do
       let(:action_name)     { 'index' }
       it_behaves_like 'Value', false
     end
-    shared_examples_for '[ある]スペーストップ' do
-      let(:controller_name) { 'spaces' }
-      let(:action_name)     { 'show' }
-      it_behaves_like 'Value', true
-    end
     shared_examples_for '[ない]スペーストップ' do
       let(:controller_name) { 'spaces' }
       let(:action_name)     { 'show' }
       it_behaves_like 'Value', false
     end
+    shared_examples_for '[ある]スペーストップ' do
+      let(:controller_name) { 'spaces' }
+      let(:action_name)     { 'show' }
+      it_behaves_like 'Value', true
+    end
     shared_examples_for '[*]スペース削除取り消し' do
       let(:controller_name) { 'spaces' }
       let(:action_name)     { 'undo_delete' }
+      it_behaves_like 'Value', false
+    end
+    shared_examples_for '[ない]メンバー一覧' do
+      let(:controller_name) { 'members' }
+      let(:action_name)     { 'show' }
       it_behaves_like 'Value', false
     end
     shared_examples_for '[ある]メンバー一覧' do
@@ -153,20 +158,7 @@ RSpec.describe ApplicationHelper, type: :helper do
       let(:action_name)     { 'show' }
       it_behaves_like 'Value', true
     end
-    shared_examples_for '[ない]メンバー一覧' do
-      let(:controller_name) { 'members' }
-      let(:action_name)     { 'show' }
-      it_behaves_like 'Value', false
-    end
 
-    context '削除予約がある' do
-      let_it_be(:space) { FactoryBot.create(:space, :destroy_reserved) }
-      it_behaves_like '[*]トップページ'
-      it_behaves_like '[*]スペース一覧'
-      it_behaves_like '[ある]スペーストップ'
-      it_behaves_like '[*]スペース削除取り消し'
-      it_behaves_like '[ある]メンバー一覧'
-    end
     context '削除予約がない' do
       let_it_be(:space) { FactoryBot.create(:space) }
       it_behaves_like '[*]トップページ'
@@ -174,6 +166,14 @@ RSpec.describe ApplicationHelper, type: :helper do
       it_behaves_like '[ない]スペーストップ'
       it_behaves_like '[*]スペース削除取り消し'
       it_behaves_like '[ない]メンバー一覧'
+    end
+    context '削除予約がある' do
+      let_it_be(:space) { FactoryBot.create(:space, :destroy_reserved) }
+      it_behaves_like '[*]トップページ'
+      it_behaves_like '[*]スペース一覧'
+      it_behaves_like '[ある]スペーストップ'
+      it_behaves_like '[*]スペース削除取り消し'
+      it_behaves_like '[ある]メンバー一覧'
     end
   end
 

@@ -12,8 +12,7 @@ RSpec.describe 'Downloads', type: :request do
   #   ＋Acceptヘッダ: HTMLが含まれる, JSONが含まれる
   describe 'GET #new' do
     subject { get new_download_path(format: subject_format), params:, headers: auth_headers.merge(accept_headers) }
-    let_it_be(:space)     { FactoryBot.create(:space) }
-    let_it_be(:space_not) { FactoryBot.build_stubbed(:space) }
+    let_it_be(:space) { FactoryBot.create(:space) }
 
     shared_context 'valid_condition' do
       let(:params) { { model: 'member', space_code: space.code } }
@@ -55,7 +54,7 @@ RSpec.describe 'Downloads', type: :request do
       it_behaves_like '[ログイン中/削除予約済み][member]権限がない', nil
     end
     shared_examples_for '[ログイン中/削除予約済み]modelがmember（spaceが存在しない）' do
-      let(:params) { { model: 'member', space_code: space_not.code } }
+      let(:params) { { model: 'member', space_code: FactoryBot.build_stubbed(:space).code } }
       it_behaves_like 'ToNG(html)', 404
       it_behaves_like 'ToNG(json)', 406
     end

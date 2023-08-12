@@ -138,6 +138,11 @@ class ApplicationController < ActionController::Base
     render './failure', locals: { alert: t('alert.user.not_destroy_reserved') }, status: :unprocessable_entity unless current_user&.destroy_reserved?
   end
 
+  # スペースが削除予約済みの場合、JSONでメッセージを返却
+  def response_api_for_space_destroy_reserved
+    render './failure', locals: { alert: t('alert.space.destroy_reserved') }, status: :unprocessable_entity if @space.destroy_reserved?
+  end
+
   # ユニークコードを作成して返却
   def create_unique_code(model, key, logger_message, length = nil)
     try_count = 1

@@ -1,7 +1,8 @@
 require 'rails_helper'
 
 RSpec.describe Invitation, type: :model do
-  let_it_be(:space) { FactoryBot.create(:space) }
+  let_it_be(:created_user) { FactoryBot.create(:user) }
+  let_it_be(:space) { FactoryBot.create(:space, created_user:) }
 
   # コード
   # テストパターン
@@ -272,6 +273,64 @@ RSpec.describe Invitation, type: :model do
     end
   end
 
+  # ドメイン
+  # テストパターン
+  #   ない, 1件, 前後スペース・タブ・空行含む・重複, 最大数と同じ, 最大数より多い, 不正な形式が含まれる
+  describe '#validate_domains' do
+    subject { model.validate_domains }
+    let(:model) { FactoryBot.build(:invitation, domains:) }
+    let_it_be(:valid_domain) { Faker::Internet.domain_name }
+    let_it_be(:valid_domains) do
+      result = []
+      (1..Settings.invitation_domains_max_count).each do |index|
+        result.push("#{index}.#{valid_domain}")
+      end
+
+      result
+    end
+    let_it_be(:invalid_domain) { 'aaa' }
+
+    # テストケース
+    context 'ない' do
+      let(:domains) { nil }
+      let(:value) { nil }
+      let(:messages) { { domains: [get_locale('activerecord.errors.models.invitation.attributes.domains.blank')] } }
+      it_behaves_like 'ValueErrors'
+    end
+    context '1件' do
+      let(:domains) { valid_domain }
+      let(:value) { [valid_domain] }
+      let(:messages) { {} }
+      it_behaves_like 'ValueErrors'
+    end
+    context '前後スペース・タブ・空行含む・重複' do
+      let(:domains) { "\t #{valid_domain}\t \n\n#{valid_domain}" }
+      let(:value) { [valid_domain] }
+      let(:messages) { {} }
+      it_behaves_like 'ValueErrors'
+    end
+    context '最大数と同じ' do
+      let(:domains) { valid_domains.join("\n") }
+      let(:value) { valid_domains }
+      let(:messages) { {} }
+      it_behaves_like 'ValueErrors'
+    end
+    context '最大数より多い' do
+      let(:domains) { "#{valid_domains.join("\n")}\r\n#{valid_domain}" }
+      let(:value) { nil }
+      let(:messages) do
+        { domains: [get_locale('activerecord.errors.models.invitation.attributes.domains.max_count', count: Settings.invitation_domains_max_count)] }
+      end
+      it_behaves_like 'ValueErrors'
+    end
+    context '不正な形式が含まれる' do
+      let(:domains) { "#{valid_domain}\n#{invalid_domain}" }
+      let(:value) { nil }
+      let(:messages) { { domains: [get_locale('activerecord.errors.models.invitation.attributes.domains.invalid', domain: invalid_domain)] } }
+      it_behaves_like 'ValueErrors'
+    end
+  end
+
   # ステータス
   # テストパターン
   #   参加日時: ある, ない
@@ -279,7 +338,7 @@ RSpec.describe Invitation, type: :model do
   #   終了日時: 過去, 未来, ない
   describe '#status' do
     subject { invitation.status }
-    let(:invitation) { FactoryBot.create(:invitation, ended_at:, destroy_schedule_at:, email_joined_at:, space:, created_user: space.created_user) }
+    let(:invitation) { FactoryBot.create(:invitation, ended_at:, destroy_schedule_at:, email_joined_at:, space:, created_user:) }
 
     # テストケース
     context '参加日時がある' do
@@ -317,7 +376,7 @@ RSpec.describe Invitation, type: :model do
   #   ステータス: active, expired, deleted, email_joined
   describe '#status_i18n' do
     subject { invitation.status_i18n }
-    let(:invitation) { FactoryBot.create(:invitation, ended_at:, destroy_schedule_at:, email_joined_at:, space:, created_user: space.created_user) }
+    let(:invitation) { FactoryBot.create(:invitation, ended_at:, destroy_schedule_at:, email_joined_at:, space:, created_user:) }
 
     # テストケース
     context 'ステータスがactive' do
@@ -351,7 +410,7 @@ RSpec.describe Invitation, type: :model do
   #   ドメイン: ない, 1件, 2件
   describe '#domains_array' do
     subject { invitation.domains_array }
-    let(:invitation) { FactoryBot.create(:invitation, domains:, space:, created_user: space.created_user) }
+    let(:invitation) { FactoryBot.create(:invitation, domains:, space:, created_user:) }
 
     # テスト内容
     shared_examples_for 'Value' do |text|
@@ -386,12 +445,12 @@ RSpec.describe Invitation, type: :model do
 
     # テストケース
     context '更新日時が作成日時と同じ' do
-      let(:invitation) { FactoryBot.create(:invitation, space:, created_user: space.created_user) }
+      let(:invitation) { FactoryBot.create(:invitation, space:, created_user:) }
       it_behaves_like 'Value', nil, 'nil'
     end
     context '更新日時が作成日時以降' do
       let(:invitation) do
-        FactoryBot.create(:invitation, created_at: Time.current - 1.hour, updated_at: Time.current, space:, created_user: space.created_user)
+        FactoryBot.create(:invitation, created_at: Time.current - 1.hour, updated_at: Time.current, space:, created_user:)
       end
       it '更新日時' do
         is_expected.to eq(invitation.updated_at)

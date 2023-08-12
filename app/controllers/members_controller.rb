@@ -3,9 +3,9 @@ class MembersController < ApplicationAuthController
   before_action :response_not_acceptable_for_not_api, only: :show
   before_action :response_not_acceptable_for_not_html, only: %i[new result edit]
   before_action :authenticate_user!
+  before_action :response_api_for_user_destroy_reserved, only: %i[create update destroy], unless: :format_html?
   before_action :set_space_current_member
   before_action :redirect_members_for_user_destroy_reserved, only: %i[new create result edit update destroy], if: :format_html?
-  before_action :response_api_for_user_destroy_reserved, only: %i[create update destroy], unless: :format_html?
   before_action :check_power_admin, only: %i[new create result edit update destroy]
   before_action :set_member, only: %i[show edit update]
   before_action :check_current_member, only: %i[edit update]
@@ -117,34 +117,11 @@ class MembersController < ApplicationAuthController
     @member = Member.new(member_params(:create).merge(space: @space, user: current_user, invitationed_user: current_user, invitationed_at: now,
                                                       created_at: now, updated_at: now))
     @member.valid?
-    validate_emails
+    @emails = @member.validate_emails
     return unless @member.errors.any?
     return render :new, status: :unprocessable_entity if format_html?
 
     render './failure', locals: { errors: @member.errors, alert: t('errors.messages.not_saved.other') }, status: :unprocessable_entity
-  end
-
-  def validate_emails
-    @emails = []
-    invalid_email = nil
-    @member.emails&.split(/\R/)&.each do |email|
-      email.strip!
-      if email.present? && !@emails.include?(email)
-        @emails.push(email)
-        break if @emails.count > Settings.member_emails_max_count
-
-        invalid_email = email if invalid_email.blank? && !Devise.email_regexp.match?(email)
-      end
-    end
-
-    if @emails.blank?
-      @member.errors.add(:emails, :blank)
-    elsif @emails.count > Settings.member_emails_max_count
-      error = t('activerecord.errors.models.member.attributes.emails.max_count', count: Settings.member_emails_max_count)
-      @member.errors.add(:emails, error)
-    elsif invalid_email.present?
-      @member.errors.add(:emails, t('activerecord.errors.models.member.attributes.emails.invalid', email: invalid_email))
-    end
   end
 
   def set_params_destroy

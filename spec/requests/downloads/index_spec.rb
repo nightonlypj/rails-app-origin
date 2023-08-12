@@ -324,7 +324,8 @@ RSpec.describe 'Downloads', type: :request do
 
     # テストケース
     shared_examples_for 'IDが存在する' do
-      let_it_be(:download) { FactoryBot.create(:download, :create_space, user:) }
+      let_it_be(:space) { FactoryBot.create(:space, created_user: user) }
+      let_it_be(:download) { FactoryBot.create(:download, space:, user:) }
       let(:params) { { id: download.id, target_id: nil } }
       let(:downloads) { [download] }
       it_behaves_like 'ToOK[依頼日時]'

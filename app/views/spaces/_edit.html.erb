@@ -32,7 +32,7 @@
     </div>
     <div class="col-md-10">
       <div class="<%= input_size_class_name(@space, :name) %>">
-        <%= form.text_field :name, placeholder: '名称を追加', autocomplete: 'off', class: "form-control#{validate_class_name(validate_enabled, @space, :name)}" %>
+        <%= form.text_field :name, placeholder: 'スペース名を入力', autocomplete: 'off', class: "form-control#{validate_class_name(validate_enabled, @space, :name)}" %>
         <%= render './users/shared/field_error_messages', messages:  @space.errors[:name] %>
       </div>
     </div>
@@ -44,7 +44,7 @@
     </div>
     <div class="col-md-10">
       <div class="<%= input_size_class_name(@space, :description) %>">
-        <%= form.text_area :description, placeholder: '説明を追加', rows: 5, class: "form-control#{validate_class_name(validate_enabled, @space, :description)}" %>
+        <%= form.text_area :description, placeholder: 'スペースの説明を入力', rows: 5, class: "form-control#{validate_class_name(validate_enabled, @space, :description)}" %>
         <%= render './users/shared/field_error_messages', messages: @space.errors[:description] %>
       </div>
     </div>

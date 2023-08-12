@@ -175,9 +175,9 @@ RSpec.describe User, type: :model do
       user.cache_infomation_unread_count = nil
       user.infomation_unread_count
     end
-    let(:cache) { user.cache_infomation_unread_count }
 
     # テストケース
+    let(:cache) { user.cache_infomation_unread_count }
     shared_examples_for '[*]0件' do
       include_context 'お知らせ一覧作成', 0, 0, 0, 0
       it_behaves_like 'Count', 0
@@ -238,14 +238,14 @@ RSpec.describe User, type: :model do
       current_user.cache_undownloaded_count = nil
       current_user.undownloaded_count
     end
-    let(:cache) { current_user.cache_undownloaded_count }
-
     let_it_be(:current_user) { FactoryBot.create(:user) }
     before_all do
       FactoryBot.create(:download, :success) # 他人
       FactoryBot.create(:download, :downloaded, user: current_user) # ダウンロード済み
     end
 
+    # テストケース
+    let(:cache) { current_user.cache_undownloaded_count }
     context '0件' do
       it_behaves_like 'Count', 0
     end

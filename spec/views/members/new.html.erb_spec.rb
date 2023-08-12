@@ -2,8 +2,9 @@ require 'rails_helper'
 
 RSpec.describe 'members/new', type: :view do
   before_all do
-    @space = FactoryBot.create(:space)
-    @current_member = FactoryBot.create(:member, space: @space, user: @space.created_user)
+    user = FactoryBot.create(:user)
+    @space = FactoryBot.create(:space, created_user: user)
+    @current_member = FactoryBot.create(:member, space: @space, user:)
     @member = Member.new
   end
 

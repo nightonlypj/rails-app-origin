@@ -12,20 +12,18 @@ RSpec.describe :download, type: :task do
   #   ドライラン: true, false
   describe 'download:destroy' do
     subject { Rake.application['download:destroy'].invoke(dry_run) }
-
+    let_it_be(:user)  { FactoryBot.create(:user) }
+    let_it_be(:space) { FactoryBot.create(:space, created_user: user) }
     let_it_be(:before_date) { Time.current - Settings.download_destroy_schedule_days.days - 1.minute }
     let_it_be(:after_date)  { Time.current - Settings.download_destroy_schedule_days.days + 1.minute }
     before_all do
-      user = FactoryBot.create(:user)
-      space = FactoryBot.create(:space, created_user: user)
       FactoryBot.create(:download, user:, space:, completed_at: nil, requested_at: after_date)
       FactoryBot.create(:download, user:, space:, completed_at: after_date, requested_at: before_date)
       download = FactoryBot.create(:download, user:, space:, completed_at: after_date, requested_at: after_date)
       FactoryBot.create_list(:download_file, 1, download:)
     end
+
     shared_context '削除対象作成' do
-      let_it_be(:user) { FactoryBot.create(:user) }
-      let_it_be(:space) { FactoryBot.create(:space, created_user: user) }
       let_it_be(:downloads) do
         [
           FactoryBot.create(:download, user:, space:, completed_at: nil, requested_at: before_date),

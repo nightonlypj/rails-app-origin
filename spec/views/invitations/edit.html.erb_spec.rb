@@ -1,9 +1,10 @@
 require 'rails_helper'
 
 RSpec.describe 'invitations/edit', type: :view do
+  let_it_be(:user) { FactoryBot.create(:user) }
   before_all do
-    @space = FactoryBot.create(:space)
-    @current_member = FactoryBot.create(:member, :admin, space: @space, user: @space.created_user)
+    @space = FactoryBot.create(:space, created_user: user)
+    @current_member = FactoryBot.create(:member, :admin, space: @space, user:)
   end
 
   # テスト内容
@@ -23,15 +24,15 @@ RSpec.describe 'invitations/edit', type: :view do
 
   # テストケース
   context '有効' do
-    before_all { @invitation = FactoryBot.create(:invitation, :active, space: @space, created_user: @current_member.user) }
+    before_all { @invitation = FactoryBot.create(:invitation, :active, space: @space, created_user: user) }
     it_behaves_like '表示', 1, 0
   end
   context '期限切れ' do
-    before_all { @invitation = FactoryBot.create(:invitation, :expired, :domains, space: @space, created_user: @current_member.user) }
+    before_all { @invitation = FactoryBot.create(:invitation, :expired, :domains, space: @space, created_user: user) }
     it_behaves_like '表示', 0, 0
   end
   context '削除済み' do
-    before_all { @invitation = FactoryBot.create(:invitation, :deleted, :email, space: @space, created_user: @current_member.user) }
+    before_all { @invitation = FactoryBot.create(:invitation, :deleted, :email, space: @space, created_user: user) }
     it_behaves_like '表示', 0, 1
   end
 end

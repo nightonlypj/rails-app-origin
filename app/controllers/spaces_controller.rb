@@ -2,9 +2,9 @@ class SpacesController < ApplicationAuthController
   before_action :response_not_acceptable_for_not_html, only: %i[new edit delete undo_delete]
   before_action :authenticate_user!, only: %i[new create edit update delete destroy undo_delete undo_destroy]
   before_action :redirect_spaces_for_user_destroy_reserved, only: %i[new create], if: :format_html?
+  before_action :response_api_for_user_destroy_reserved, only: %i[create update destroy undo_destroy], unless: :format_html?
   before_action :set_space_current_member_auth_private_code, only: %i[show edit update delete destroy undo_delete undo_destroy]
   before_action :redirect_space_for_user_destroy_reserved, only: %i[edit update delete destroy undo_delete undo_destroy], if: :format_html?
-  before_action :response_api_for_user_destroy_reserved, only: %i[create update destroy undo_destroy], unless: :format_html?
   before_action :redirect_space_for_space_destroy_reserved, only: %i[edit update delete destroy], if: :format_html?
   before_action :response_api_for_space_destroy_reserved, only: %i[update destroy], unless: :format_html?
   before_action :redirect_space_for_not_space_destroy_reserved, only: %i[undo_delete undo_destroy], if: :format_html?
@@ -113,10 +113,6 @@ class SpacesController < ApplicationAuthController
     redirect_to space_path(@space.code), alert: t('alert.space.destroy_reserved') if @space.destroy_reserved?
   end
 
-  def response_api_for_space_destroy_reserved
-    render './failure', locals: { alert: t('alert.space.destroy_reserved') }, status: :unprocessable_entity if @space.destroy_reserved?
-  end
-
   def redirect_space_for_not_space_destroy_reserved
     redirect_to space_path(@space.code), alert: t('alert.space.not_destroy_reserved') unless @space.destroy_reserved?
   end
@@ -146,7 +142,7 @@ class SpacesController < ApplicationAuthController
     code = create_unique_code(Space, 'code', "SpacesController.create #{params}", Settings.space_code_length)
     @space = Space.new(space_params(:create).merge(code:, created_user: current_user))
     @space.valid?
-    validate_name_uniqueness if @space.errors[:name].blank?
+    @space.validate_name_uniqueness(current_user) if @space.errors[:name].blank?
     return unless @space.errors.any?
     return render :new, status: :unprocessable_entity if format_html?
 
@@ -156,17 +152,11 @@ class SpacesController < ApplicationAuthController
   def validate_params_update
     @space.assign_attributes(space_params(:update).merge(last_updated_user: current_user))
     @space.valid?
-    validate_name_uniqueness if @space.errors[:name].blank? && @space.name_changed?
+    @space.validate_name_uniqueness(current_user) if @space.errors[:name].blank? && @space.name_changed?
     return unless @space.errors.any?
     return render :edit, status: :unprocessable_entity if format_html?
 
     render './failure', locals: { errors: @space.errors, alert: t('errors.messages.not_saved.other') }, status: :unprocessable_entity
-  end
-
-  def validate_name_uniqueness
-    key = 'activerecord.errors.models.space.attributes.name.taken'
-    checked = { public: true, private: true, join: true, nojoin: true, active: true, destroy: false } # NOTE: 検索オプションと同じ
-    @space.errors.add(:name, t(key)) if Space.by_target(current_user, checked).where(name: @space.name).exists?
   end
 
   # Only allow a list of trusted parameters through.

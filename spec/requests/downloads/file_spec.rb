@@ -16,15 +16,14 @@ RSpec.describe 'Downloads', type: :request do
   #   ＋Acceptヘッダ: HTMLが含まれる, JSONが含まれる
   describe 'GET #file' do
     subject { get file_download_path(id: download.id, format: subject_format), headers: auth_headers.merge(accept_headers) }
-    let_it_be(:space)      { FactoryBot.create(:space) }
-    let_it_be(:other_user) { FactoryBot.create(:user) }
+    let_it_be(:space) { FactoryBot.create(:space) }
 
     shared_context 'user_condition' do |status = :success|
       let_it_be(:download)      { FactoryBot.create(:download, status, user:, space:) }
       let_it_be(:download_file) { FactoryBot.create(:download_file, download:) }
     end
     shared_context 'other_user_condition' do |status = :success|
-      let_it_be(:download)      { FactoryBot.create(:download, status, user: other_user, space:) }
+      let_it_be(:download)      { FactoryBot.create(:download, status, user: FactoryBot.create(:user), space:) }
       let_it_be(:download_file) { FactoryBot.create(:download_file, download:) }
     end
 

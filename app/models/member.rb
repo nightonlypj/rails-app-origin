@@ -8,6 +8,37 @@ class Member < ApplicationRecord
 
   validates :power, presence: true
 
+  # メールアドレス
+  def validate_emails
+    result = []
+    invalid_email = nil
+    max_count = Settings.member_emails_max_count
+    emails&.split(/\R/)&.each do |email|
+      email.strip!
+      if email.present? && !result.include?(email)
+        result.push(email)
+        break if result.count > max_count
+
+        invalid_email = email if invalid_email.blank? && !Devise.email_regexp.match?(email)
+      end
+    end
+
+    if result.blank?
+      errors.add(:emails, :blank)
+      return
+    end
+    if result.count > max_count
+      errors.add(:emails, :max_count, count: max_count.to_s(:delimited))
+      return
+    end
+    if invalid_email.present?
+      errors.add(:emails, :invalid, email: invalid_email)
+      return
+    end
+
+    result
+  end
+
   scope :search, lambda { |text, current_member|
     return if text&.strip.blank?
 
@@ -45,6 +76,7 @@ class Member < ApplicationRecord
   }
 
   # 権限
+  POWER_WRITER_UP = %i[admin writer].freeze
   enum power: {
     admin: 1,  # 管理者
     writer: 2, # 投稿者

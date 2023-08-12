@@ -15,13 +15,12 @@ RSpec.describe 'Downloads', type: :request do
   #   ＋Acceptヘッダ: HTMLが含まれる, JSONが含まれる
   describe 'POST #create' do
     subject { post create_download_path(format: subject_format), params: { download: attributes }, headers: auth_headers.merge(accept_headers) }
-    let_it_be(:space)     { FactoryBot.create(:space) }
-    let_it_be(:space_not) { FactoryBot.build_stubbed(:space) }
+    let_it_be(:space) { FactoryBot.create(:space) }
     let_it_be(:valid_attributes)   { FactoryBot.attributes_for(:download).reject { |key| key == :requested_at } }
     let_it_be(:invalid_attributes) { valid_attributes.merge(target: nil) }
-    let(:current_download) { Download.last }
 
     # テスト内容
+    let(:current_download) { Download.last }
     shared_examples_for 'OK' do
       let!(:start_time) { Time.current.floor }
       before { allow(DownloadJob).to receive(:perform_later).and_return(true) }
@@ -225,13 +224,13 @@ RSpec.describe 'Downloads', type: :request do
       it_behaves_like '[APIログイン中/削除予約済み][member]権限がない', nil
     end
     shared_examples_for '[ログイン中/削除予約済み]modelがmember（spaceが存在しない）' do
-      let(:params) { { model: 'member', space_code: space_not.code, output_items: nil, 'output_items_user.name': '1' } }
+      let(:params) { { model: 'member', space_code: FactoryBot.build_stubbed(:space).code, output_items: nil, 'output_items_user.name': '1' } }
       let(:attributes) { valid_attributes.merge(params) }
       it_behaves_like 'ToNG(html)', Settings.api_only_mode ? 406 : 404
       it_behaves_like 'ToNG(json)', 401 # NOTE: APIは未ログイン扱い
     end
     shared_examples_for '[APIログイン中/削除予約済み]modelがmember（spaceが存在しない）' do
-      let(:params) { { model: 'member', space_code: space_not.code, output_items: nil, 'output_items_user.name': '1' } }
+      let(:params) { { model: 'member', space_code: FactoryBot.build_stubbed(:space).code, output_items: nil, 'output_items_user.name': '1' } }
       let(:attributes) { valid_attributes.merge(params) }
       it_behaves_like 'NG(html)'
       it_behaves_like 'ToNG(html)', Settings.api_only_mode ? 406 : 404 # NOTE: HTMLもログイン状態になる
