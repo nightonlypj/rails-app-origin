@@ -532,7 +532,7 @@ DEPENDENCIES
   psych (~> 3.1)
   puma (>= 4.1)
   rack-cors
-  rails (~> 6.1.4)
+  rails (~> 6.1)
   rails-erd
   rails_admin
   rails_admin-i18n

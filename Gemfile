@@ -4,7 +4,7 @@ git_source(:github) { |repo| "https://github.com/#{repo}.git" }
 ruby '3.1.4'
 
 # Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
-gem 'rails', '~> 6.1.4'
+gem 'rails', '~> 6.1'
 # Use sqlite3 as the database for Active Record
 # gem 'sqlite3', '~> 1.4.2' # NOTE: Docker -> cannot load such file -- sqlite3/sqlite3_native (LoadError)
 # Use mysql as the database for Active Record

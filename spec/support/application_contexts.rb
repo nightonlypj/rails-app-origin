@@ -26,6 +26,18 @@ shared_examples_for 'InValid' do
     expect(model.errors.messages).to eq(messages)
   end
 end
+shared_examples_for 'Errors' do
+  it 'エラーメッセージが一致する' do
+    subject
+    expect(model.errors.messages).to eq(messages)
+  end
+end
+shared_examples_for 'ValueErrors' do
+  it 'レスポンス・エラーメッセージが一致する' do
+    is_expected.to eq(value)
+    expect(model.errors.messages).to eq(messages)
+  end
+end
 
 shared_examples_for 'Value' do |value, text = value|
   it "#{text}が返却される" do

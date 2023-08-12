@@ -40,10 +40,10 @@ RSpec.describe 'Users::Auth::Passwords', type: :request do
     let(:invalid_attributes_nil) { { email: send_user_unlocked.email, redirect_url: nil } }
     let(:invalid_attributes_bad) { { email: send_user_unlocked.email, redirect_url: BAD_SITE_URL } }
 
-    include_context 'Authテスト内容'
-    let(:current_user) { nil }
-
     # テスト内容
+    let(:current_user) { nil }
+    include_context 'Authテスト内容'
+
     shared_examples_for 'OK' do
       let(:subject_format) { :json }
       let(:accept_headers) { ACCEPT_INC_JSON }
@@ -429,11 +429,11 @@ RSpec.describe 'Users::Auth::Passwords', type: :request do
     let(:invalid_attributes)         { { reset_password_token:, password: nil, password_confirmation: nil } }
     let(:invalid_attributes_confirm) { { reset_password_token:, password: new_password, password_confirmation: nil } }
 
-    include_context 'Authテスト内容'
+    # テスト内容
     let(:current_user) { User.find(send_user.id) }
     let(:inside_spaces) { [] } # TODO: send_userの参加スペースをセット
+    include_context 'Authテスト内容'
 
-    # テスト内容
     shared_examples_for 'OK' do |change_confirmed = false|
       let(:subject_format) { :json }
       let(:accept_headers) { ACCEPT_INC_JSON }

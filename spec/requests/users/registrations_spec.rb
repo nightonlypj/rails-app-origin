@@ -41,9 +41,9 @@ RSpec.describe 'Users::Registrations', type: :request do
     let_it_be(:exist_user) { FactoryBot.create(:user) }
     let(:valid_attributes)   { { name: new_user[:name], email: new_user[:email], password: new_user[:password] } }
     let(:invalid_attributes) { { name: exist_user.name, email: exist_user.email, password: exist_user.password } }
-    let(:current_user) { User.last }
 
     # テスト内容
+    let(:current_user) { User.last }
     shared_examples_for 'OK' do
       let(:url) { "http://#{Settings.base_domain}#{user_confirmation_path}" }
       it 'ユーザーが作成・対象項目が設定される。メールが送信される' do
@@ -146,9 +146,9 @@ RSpec.describe 'Users::Registrations', type: :request do
     let(:nochange_attributes) { { name: user.name, email: user.email, password: user.password } }
     let(:valid_attributes)    { { name: new_user[:name], email: new_user[:email], password: new_user[:password] } }
     let(:invalid_attributes)  { { name: exist_user.name, email: exist_user.email, password: exist_user.password } }
-    let(:current_user) { User.find(user.id) }
 
     # テスト内容
+    let(:current_user) { User.find(user.id) }
     shared_examples_for 'OK' do |change_email|
       let(:url) { "http://#{Settings.base_domain}#{user_confirmation_path}" }
       it '対象項目が変更される。メールが送信される' do
@@ -278,9 +278,9 @@ RSpec.describe 'Users::Registrations', type: :request do
     subject { post update_user_image_registration_path, params: { user: attributes } }
     let(:valid_attributes)   { { image: fixture_file_upload(TEST_IMAGE_FILE, TEST_IMAGE_TYPE) } }
     let(:invalid_attributes) { nil }
-    let(:current_user) { User.find(user.id) }
 
     # テスト内容
+    let(:current_user) { User.find(user.id) }
     shared_examples_for 'OK' do
       it '画像が変更される' do
         subject
@@ -355,9 +355,9 @@ RSpec.describe 'Users::Registrations', type: :request do
   #   未ログイン, ログイン中, ログイン中（削除予約済み）
   describe 'POST #image_destroy' do
     subject { post delete_user_image_registration_path }
-    let(:current_user) { User.find(user.id) }
 
     # テスト内容
+    let(:current_user) { User.find(user.id) }
     shared_examples_for 'OK' do
       it '画像が削除される' do
         subject
@@ -426,9 +426,9 @@ RSpec.describe 'Users::Registrations', type: :request do
   #   未ログイン, ログイン中, ログイン中（削除予約済み）
   describe 'POST #destroy' do
     subject { post destroy_user_registration_path }
-    let(:current_user) { User.find(user.id) }
 
     # テスト内容
+    let(:current_user) { User.find(user.id) }
     shared_examples_for 'OK' do
       let!(:start_time) { Time.current.floor }
       let(:url) { "http://#{Settings.base_domain}#{delete_undo_user_registration_path}" }
@@ -510,9 +510,9 @@ RSpec.describe 'Users::Registrations', type: :request do
   #   未ログイン, ログイン中, ログイン中（削除予約済み）
   describe 'POST #undo_destroy' do
     subject { post undo_destroy_user_registration_path }
-    let(:current_user) { User.find(user.id) }
 
     # テスト内容
+    let(:current_user) { User.find(user.id) }
     shared_examples_for 'OK' do
       it '削除依頼日時・削除予定日時がなしに変更される。メールが送信される' do
         subject

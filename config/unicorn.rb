@@ -24,6 +24,7 @@ end
 worker_processes Integer(ENV['WORKER_PROCESSES'] || DEFAULT_WORKER_PROCESSES)
 timeout Integer(ENV['TIMEOUT'] || DEFAULT_TIMEOUT)
 preload_app true
+working_directory File.expand_path('../../current', __dir__) # NOTE: Capistranoで反映されない場合がある為
 
 listen ENV['LISTEN'] || DEFAULT_LISTEN, backlog: Integer(ENV['LISTEN_BACKLOG'] || DEFAULT_LISTEN_BACKLOG)
 pid pid_path

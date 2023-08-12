@@ -10,6 +10,5 @@ end
 json.name user.name
 json.email user.email if use_email
 
-## 削除予約
 json.destroy_requested_at l(user.destroy_requested_at, format: :json, default: nil)
 json.destroy_schedule_at l(user.destroy_schedule_at, format: :json, default: nil)

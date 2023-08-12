@@ -33,11 +33,11 @@ RSpec.describe 'Users::Auth::Registrations', type: :request do
     let(:invalid_attributes_nil) { { name: new_user[:name], email: new_user[:email], password: new_user[:password], confirm_success_url: nil } }
     let(:invalid_attributes_bad) { { name: new_user[:name], email: new_user[:email], password: new_user[:password], confirm_success_url: BAD_SITE_URL } }
 
-    include_context 'Authテスト内容'
+    # テスト内容
     let(:current_user) { User.last }
     let(:inside_spaces) { [] }
+    include_context 'Authテスト内容'
 
-    # テスト内容
     shared_examples_for 'OK' do
       let(:subject_format) { :json }
       let(:accept_headers) { ACCEPT_INC_JSON }
@@ -221,10 +221,10 @@ RSpec.describe 'Users::Auth::Registrations', type: :request do
   describe 'GET #show' do
     subject { get show_user_auth_registration_path(format: subject_format), headers: auth_headers.merge(accept_headers) }
 
-    include_context 'Authテスト内容'
-    let(:current_user) { user }
-
     # テスト内容
+    let(:current_user) { user }
+    include_context 'Authテスト内容'
+
     shared_examples_for 'ToOK(json/json)' do
       let(:subject_format) { :json }
       let(:accept_headers) { ACCEPT_INC_JSON }
@@ -318,10 +318,10 @@ RSpec.describe 'Users::Auth::Registrations', type: :request do
     let(:invalid_attributes_nil) { { name: exist_user.name, email: exist_user.email, password: exist_user.password, confirm_redirect_url: nil } }
     let(:invalid_attributes_bad) { { name: exist_user.name, email: exist_user.email, password: exist_user.password, confirm_redirect_url: BAD_SITE_URL } }
 
-    include_context 'Authテスト内容'
-    let(:current_user) { User.find(user.id) }
-
     # テスト内容
+    let(:current_user) { User.find(user.id) }
+    include_context 'Authテスト内容'
+
     shared_examples_for 'OK' do |change_email|
       let(:subject_format) { :json }
       let(:accept_headers) { ACCEPT_INC_JSON }
@@ -603,10 +603,10 @@ RSpec.describe 'Users::Auth::Registrations', type: :request do
     let(:valid_attributes)   { { image: fixture_file_upload(TEST_IMAGE_FILE, TEST_IMAGE_TYPE) } }
     let(:invalid_attributes) { nil }
 
-    include_context 'Authテスト内容'
-    let(:current_user) { User.find(user.id) }
-
     # テスト内容
+    let(:current_user) { User.find(user.id) }
+    include_context 'Authテスト内容'
+
     shared_examples_for 'OK' do
       let(:subject_format) { :json }
       let(:accept_headers) { ACCEPT_INC_JSON }
@@ -726,10 +726,10 @@ RSpec.describe 'Users::Auth::Registrations', type: :request do
   describe 'POST #image_destroy' do
     subject { post delete_user_auth_image_registration_path(format: subject_format), headers: auth_headers.merge(accept_headers) }
 
-    include_context 'Authテスト内容'
-    let(:current_user) { User.find(user.id) }
-
     # テスト内容
+    let(:current_user) { User.find(user.id) }
+    include_context 'Authテスト内容'
+
     shared_examples_for 'OK' do
       let(:subject_format) { :json }
       let(:accept_headers) { ACCEPT_INC_JSON }
@@ -820,10 +820,10 @@ RSpec.describe 'Users::Auth::Registrations', type: :request do
     let(:invalid_attributes_nil) { { undo_delete_url: nil } }
     let(:invalid_attributes_bad) { { undo_delete_url: BAD_SITE_URL } }
 
-    include_context 'Authテスト内容'
-    let(:current_user) { User.find(user.id) }
-
     # テスト内容
+    let(:current_user) { User.find(user.id) }
+    include_context 'Authテスト内容'
+
     shared_examples_for 'OK' do
       let(:subject_format) { :json }
       let(:accept_headers) { ACCEPT_INC_JSON }
@@ -1040,10 +1040,10 @@ RSpec.describe 'Users::Auth::Registrations', type: :request do
   describe 'POST #undo_destroy' do
     subject { post undo_destroy_user_auth_registration_path(format: subject_format), headers: auth_headers.merge(accept_headers) }
 
-    include_context 'Authテスト内容'
-    let(:current_user) { User.find(user.id) }
-
     # テスト内容
+    let(:current_user) { User.find(user.id) }
+    include_context 'Authテスト内容'
+
     shared_examples_for 'OK' do
       let(:subject_format) { :json }
       let(:accept_headers) { ACCEPT_INC_JSON }

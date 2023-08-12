@@ -90,8 +90,8 @@ RSpec.describe User, type: :model do
   describe '#set_destroy_reserve!' do
     subject { user.set_destroy_reserve! }
     let(:user) { FactoryBot.create(:user) }
-    let(:current_user) { User.find(user.id) }
 
+    let(:current_user) { User.find(user.id) }
     let!(:start_time) { Time.current.floor }
     let!(:start_time_schedule) { Time.current.floor + Settings.user_destroy_schedule_days.days }
     it '削除依頼日時が現在日時、削除予定日時が現在日時＋設定日数に変更され、保存される' do
@@ -107,8 +107,8 @@ RSpec.describe User, type: :model do
   describe '#set_undo_destroy_reserve!' do
     subject { user.set_undo_destroy_reserve! }
     let(:user) { FactoryBot.create(:user, :destroy_reserved) }
-    let(:current_user) { User.find(user.id) }
 
+    let(:current_user) { User.find(user.id) }
     it '削除依頼日時・削除予定日時がなしに変更される' do
       is_expected.to eq(true)
       expect(user.destroy_requested_at).to be_nil

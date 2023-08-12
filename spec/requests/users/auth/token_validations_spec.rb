@@ -23,10 +23,10 @@ RSpec.describe 'Users::Auth::TokenValidations', type: :request do
   describe 'GET #validate_token' do
     subject { get user_auth_validate_token_path(format: subject_format), headers: auth_headers.merge(accept_headers) }
 
-    include_context 'Authテスト内容'
-    let(:current_user) { user }
-
     # テスト内容
+    let(:current_user) { user }
+    include_context 'Authテスト内容'
+
     shared_examples_for 'ToOK(json/json)' do # |id_present|
       let(:subject_format) { :json }
       let(:accept_headers) { ACCEPT_INC_JSON }
