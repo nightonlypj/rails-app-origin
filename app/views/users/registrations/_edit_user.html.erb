@@ -1,18 +1,18 @@
 <% validate_enabled = action_name == 'update' && resource.errors.any? %>
 <% validate_password_enabled = validate_enabled && (params[:user][:password].present? || params[:user][:password_confirmation].present?) %>
 <%= form_with(model: resource, url: update_user_registration_path, html: { method: :put, novalidate: true, autocomplete: 'off' }, local: true) do |form| %>
+<% if user_valid_confirmation_token? %>
+  <div class="note note-warning mb-3">
+    <span class="fw-bolder"><%= resource.unconfirmed_email %></span> のメールを確認してください。<br>
+    誤っている場合や再送する場合は入力し直してください。
+  </div>
+<% end %>
+
   <div class="form-outline<%= input_size_class_name(resource, :name) %>">
     <%= form.text_field :name, autocomplete: 'off', class: "form-control#{validate_class_name(validate_enabled, resource, :name)}" %>
     <%= form.label :name, class: 'form-label', for: 'user_name' %>
     <%= render './users/shared/field_error_messages', messages: resource.errors[:name] %>
   </div>
-
-<% if user_valid_confirmation_token? %>
-  <div class="note note-info mb-3">
-    確認待ち: <%= resource.unconfirmed_email %><br>
-    <small>※メールを確認してください。メールが届いていない場合は[メールアドレス確認]をしてください。</small>
-  </div>
-<% end %>
 
   <div class="form-outline<%= input_size_class_name(resource, :email) %>">
     <%= form.email_field :email, autocomplete: 'off', class: "form-control#{validate_class_name(validate_enabled, resource, :email)}" %>

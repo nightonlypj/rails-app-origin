@@ -18,7 +18,7 @@ namespace :tool do
         elsif %i[integer float decimal timestamp boolean].include?(model.columns_hash[column].type)
           data = content[column]
         else
-          data = format('"%s"', content[column].to_s.gsub(/"/, '\"').gsub(/\r/, '\\r').gsub(/\n/, '\\n'))
+          data = format('"%s"', content[column].to_s.gsub('"', '\"').gsub('\r', '\\r').gsub('\n', '\\n'))
         end
         body += (index == 0 ? '- ' : '  ') + "#{column}: #{data}\n"
       end

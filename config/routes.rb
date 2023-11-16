@@ -4,5 +4,7 @@ Rails.application.routes.draw do
   draw :admin
   draw :users
   root 'top#index'
+  # :nocov:
   mount LetterOpenerWeb::Engine => '/letter_opener' if Rails.env.development?
+  # :nocov:
 end

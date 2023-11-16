@@ -32,13 +32,18 @@ class ApplicationController < ActionController::Base
     response.headers['uid'] = user.present? ? (user.id + (36**2)).to_s(36) : nil
   end
 
-  # URLの拡張子がないかを返却
+  # URLの拡張子がHTMLか、acceptヘッダに含まれるかを返却
   def format_html?
     request.format.html?
   end
 
+  # URLの拡張子がJSONか、acceptヘッダに含まれるかを返却
+  def format_json?
+    request.format.json?
+  end
+
   # acceptヘッダにJSONが含まれる（ワイルドカード不可）かを返却
-  def accept_header_api?
+  def accept_header_json?
     !(%r{,application/json[,;]} =~ ",#{request.headers[:ACCEPT]},").nil?
   end
 
@@ -54,14 +59,14 @@ class ApplicationController < ActionController::Base
     head :not_found if Settings.api_only_mode && format_html?
   end
 
-  # APIリクエストに不整合がある場合、HTTPステータス406を返却（明示的にAPIのみ対応にする場合に使用）
-  def response_not_acceptable_for_not_api
-    head :not_acceptable if format_html? || !accept_header_api?
-  end
-
   # HTMLリクエストに不整合がある場合、HTTPステータス406を返却（明示的にHTMLのみ対応にする場合に使用）
   def response_not_acceptable_for_not_html
     head :not_acceptable if !format_html? || !accept_header_html?
+  end
+
+  # APIリクエストに不整合がある場合、HTTPステータス406を返却（明示的にAPIのみ対応にする場合に使用）
+  def response_not_acceptable_for_not_api
+    head :not_acceptable if !format_json? || !accept_header_json?
   end
 
   # 認証エラーを返却
@@ -119,8 +124,8 @@ class ApplicationController < ActionController::Base
   end
 
   # ユーザーが削除予約済みの場合、リダイレクトしてメッセージを表示
-  def redirect_for_user_destroy_reserved
-    redirect_to root_path, alert: t('alert.user.destroy_reserved') if current_user.destroy_reserved?
+  def redirect_for_user_destroy_reserved(path = root_path)
+    redirect_to path, alert: t('alert.user.destroy_reserved') if current_user.destroy_reserved?
   end
 
   # ユーザーが削除予約済みの場合、JSONでメッセージを返却

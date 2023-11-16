@@ -5,8 +5,10 @@ RSpec.describe 'Users::Registrations', type: :request do
   shared_examples_for 'ToEdit' do |alert, notice|
     it 'ユーザー情報変更にリダイレクトする' do
       is_expected.to redirect_to(edit_user_registration_path)
+      # :nocov:
       expect(flash[:alert]).to alert.present? ? eq(get_locale(alert)) : be_nil
       expect(flash[:notice]).to notice.present? ? eq(get_locale(notice)) : be_nil
+      # :nocov:
     end
   end
 

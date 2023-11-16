@@ -1,7 +1,7 @@
 require 'rails_helper'
 
 RSpec.describe 'Infomations', type: :request do
-  let(:response_json) { response.body.present? ? JSON.parse(response.body) : {} }
+  let(:response_json) { JSON.parse(response.body) }
   let(:response_json_infomation) { response_json['infomation'] }
 
   # GET /infomations/:id お知らせ詳細
@@ -25,7 +25,7 @@ RSpec.describe 'Infomations', type: :request do
       it 'HTTPステータスが200。対象項目が含まれる' do
         is_expected.to eq(200)
         # タイトル
-        expect(response.body).to include(infomation.label_i18n) if infomation.label_i18n.present?
+        expect(response.body).to include(infomation.label_i18n)
         expect(response.body).to include(infomation.title)
         expect(response.body).to include(I18n.l(infomation.started_at.to_date))
         # 本文, サマリー
