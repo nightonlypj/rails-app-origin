@@ -9,11 +9,9 @@ RSpec.describe 'Users::Auth::Sessions', type: :request do
     let(:accept_headers) { ACCEPT_INC_JSON }
     it '対象のメッセージと一致する' do
       subject
-      # :nocov:
       expect(response_json['errors'].to_s).to error_msg.present? ? include(get_locale(error_msg)) : be_blank # 方針: 廃止して、alertへ
       expect(response_json['alert']).to alert.present? ? eq(get_locale(alert)) : be_nil # 方針: 追加
       expect(response_json['notice']).to notice.present? ? eq(get_locale(notice)) : be_nil # 方針: 追加
-      # :nocov:
     end
   end
 

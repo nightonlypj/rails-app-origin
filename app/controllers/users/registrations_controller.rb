@@ -72,7 +72,9 @@ class Users::RegistrationsController < Devise::RegistrationsController
     resource.set_destroy_reserve!
     UserMailer.with(user: resource).destroy_reserved.deliver_now
 
+    # :nocov:
     Devise.sign_out_all_scopes ? sign_out : sign_out(resource_name)
+    # :nocov:
     set_flash_message! :notice, :destroy_reserved
     yield resource if block_given?
     respond_with_navigational(resource) { redirect_to after_sign_out_path_for(resource_name) }

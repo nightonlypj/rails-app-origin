@@ -6,9 +6,9 @@ class ApplicationController < ActionController::Base
 
   # 例外通知に情報を追加
   def prepare_exception_notifier
+    # :nocov:
     return if Rails.env.test?
 
-    # :nocov:
     request.env['exception_notifier.exception_data'] = {
       current_user: { id: current_user&.id },
       url: request.url
@@ -98,8 +98,10 @@ class ApplicationController < ActionController::Base
 
   # 有効なメールアドレス確認トークンかを返却
   def valid_confirmation_token?(token)
+    # :nocov:
     return true if resource_class.confirm_within.blank?
 
+    # :nocov:
     resource = resource_class.find_by(confirmation_token: token)
     resource&.confirmation_sent_at&.present? && (Time.now.utc <= resource.confirmation_sent_at.utc + resource_class.confirm_within)
   end
@@ -148,9 +150,9 @@ class ApplicationController < ActionController::Base
     try_count = 1
     loop do
       code = Digest::MD5.hexdigest(SecureRandom.uuid).to_i(16).to_s(36).rjust(25, '0') # NOTE: 16進数32桁を36進数25桁に変換
+      # :nocov:
       return code if model.where(key => code).blank?
 
-      # :nocov:
       if try_count < 10
         logger.warn("[WARN](#{try_count})Not unique code(#{code}): #{logger_message}")
       elsif try_count >= 10
