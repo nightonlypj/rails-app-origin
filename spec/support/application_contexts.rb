@@ -8,6 +8,7 @@ BAD_SITE_URL   = 'http://badsite.com/'.freeze
 
 ACCEPT_INC_HTML = { 'accept' => 'text/html,application/xhtml+xml,application/xml,*/*' }.freeze
 ACCEPT_INC_JSON = { 'accept' => 'application/json,text/plain,*/*' }.freeze
+ACCEPT_INC_CSV  = { 'accept' => 'text/csv,application/json,text/plain,*/*' }.freeze
 
 # メールタイトルを返却
 def get_subject(key, args = {})
@@ -144,6 +145,11 @@ shared_examples_for 'ToOK(json)' do |page = nil|
   it_behaves_like 'ToNG(json/html)', 406
   it_behaves_like 'ToOK(json/json)'
 end
+shared_examples_for 'ToOK(csv)' do
+  it_behaves_like 'ToNG(json/html)', 406, :csv
+  it_behaves_like 'ToOK(csv/*)', :json
+  it_behaves_like 'ToOK(csv/*)', :csv
+end
 
 shared_examples_for 'ToNG(html/html)' do |code, errors = nil|
   let(:subject_format) { nil }
@@ -164,16 +170,16 @@ shared_examples_for 'ToNG(html/json)' do |code|
     is_expected.to eq(code)
   end
 end
-shared_examples_for 'ToNG(json/html)' do |code|
-  let(:subject_format) { :json }
+shared_examples_for 'ToNG(json/html)' do |code, format = :json|
+  let(:subject_format) { format }
   let(:accept_headers) { ACCEPT_INC_HTML }
   it "HTTPステータスが#{code}" do
     is_expected.to eq(code)
   end
 end
-shared_examples_for 'ToNG(json/json)' do |code, errors, alert = nil, notice = nil|
-  let(:subject_format) { :json }
-  let(:accept_headers) { ACCEPT_INC_JSON }
+shared_examples_for 'ToNG(json/json)' do |code, errors, alert = nil, notice = nil, format = :json, headers = ACCEPT_INC_JSON|
+  let(:subject_format) { format }
+  let(:accept_headers) { headers }
   let(:alert_key) do
     return alert if alert.present?
 
@@ -213,6 +219,13 @@ shared_examples_for 'ToNG(json)' do |code, errors = nil, alert = nil, notice = n
   let(:subject_page) { 1 }
   it_behaves_like 'ToNG(json/html)', 406
   it_behaves_like 'ToNG(json/json)', code, errors, alert, notice
+end
+shared_examples_for 'ToNG(csv)' do |code, errors = nil, alert = nil, notice = nil|
+  let(:subject_page) { 1 }
+  it_behaves_like 'ToNG(json/html)', 406, :json
+  it_behaves_like 'ToNG(json/html)', 406, :csv
+  it_behaves_like 'ToNG(json/json)', 406, nil, nil, nil, :csv, ACCEPT_INC_JSON
+  it_behaves_like 'ToNG(json/json)', code, errors, alert, notice, :csv, ACCEPT_INC_CSV
 end
 
 shared_examples_for 'ToLogin(html/*)' do

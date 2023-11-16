@@ -15,14 +15,14 @@ class ApplicationAuthController < ApplicationController
 
   # リクエストに不整合がある場合、HTTPステータス406を返却
   def response_not_acceptable_for_diff_format_accept
-    head :not_acceptable if (format_html? && !accept_header_html?) || (format_json? && !accept_header_json?)
+    head :not_acceptable if (format_html? && !accept_header_html?) || (format_json? && !accept_header_json?) || (format_csv? && !accept_header_csv?)
   end
 
   # 権限エラー(403)を返却
   def response_forbidden
     return head :forbidden if format_html?
 
-    render './failure', locals: { alert: t('alert.user.forbidden') }, status: :forbidden
+    render './failure', locals: { alert: t('alert.user.forbidden') }, status: :forbidden, formats: :json
   end
 
   # 存在しない(404)を返却

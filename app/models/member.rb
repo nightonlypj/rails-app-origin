@@ -13,14 +13,14 @@ class Member < ApplicationRecord
     result = []
     invalid_email = nil
     max_count = Settings.member_emails_max_count
-    emails&.split(/\R/)&.each do |email|
+    (emails || '').split(/\R/).each do |email|
       email.strip!
-      if email.present? && !result.include?(email)
-        result.push(email)
-        break if result.count > max_count
+      next unless email.present? && !result.include?(email)
 
-        invalid_email = email if invalid_email.blank? && !Devise.email_regexp.match?(email)
-      end
+      result.push(email)
+      break if result.count > max_count
+
+      invalid_email = email if invalid_email.blank? && !Devise.email_regexp.match?(email)
     end
 
     if result.blank?

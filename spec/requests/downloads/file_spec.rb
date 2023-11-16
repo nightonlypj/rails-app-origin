@@ -1,10 +1,9 @@
 require 'rails_helper'
 
 RSpec.describe 'Downloads', type: :request do
-  let(:response_json) { JSON.parse(response.body) }
+  let(:response_json) { response.body.present? ? JSON.parse(response.body) : {} }
 
-  # GET /downloads/file/:id ダウンロード
-  # GET /downloads/file/:id(.json) ダウンロードAPI
+  # GET /downloads/file/:id(.csv) ダウンロードファイル取得
   # 前提条件
   #   モデルがメンバー(model=member)
   # テストパターン
@@ -12,8 +11,8 @@ RSpec.describe 'Downloads', type: :request do
   #   ID: 存在する（状態: 成功, 成功以外（処理待ち, 処理中, 成功, 失敗））, 存在しない
   #   依頼ユーザー: ログインユーザー, その他ユーザー
   #   権限: ある（管理者）, ない（投稿者, 閲覧者, なし）
-  #   ＋URLの拡張子: ない, .json
-  #   ＋Acceptヘッダ: HTMLが含まれる, JSONが含まれる
+  #   ＋URLの拡張子: ない, .json, .csv
+  #   ＋Acceptヘッダ: HTMLが含まれる, JSONが含まれる, CSVが含まれる
   describe 'GET #file' do
     subject { get file_download_path(id: download.id, format: subject_format), headers: auth_headers.merge(accept_headers) }
     let_it_be(:space) { FactoryBot.create(:space) }
@@ -41,6 +40,11 @@ RSpec.describe 'Downloads', type: :request do
       let(:accept_headers) { ACCEPT_INC_JSON }
       it_behaves_like 'ToOK(html/*)'
     end
+    shared_examples_for 'ToOK(csv/*)' do |format|
+      let(:subject_format) { format }
+      let(:accept_headers) { ACCEPT_INC_CSV }
+      it_behaves_like 'ToOK(html/*)'
+    end
 
     # テストケース
     shared_examples_for '[ログイン中/削除予約済み][成功][ログインユーザー]権限がある' do |power|
@@ -51,6 +55,7 @@ RSpec.describe 'Downloads', type: :request do
         it_behaves_like 'ToOK(html)'
       end
       it_behaves_like 'ToNG(json)', 401 # NOTE: APIは未ログイン扱い
+      it_behaves_like 'ToNG(csv)', 401
     end
     shared_examples_for '[APIログイン中/削除予約済み][成功][ログインユーザー]権限がある' do |power|
       before_all { FactoryBot.create(:member, power, space:, user:) }
@@ -60,24 +65,29 @@ RSpec.describe 'Downloads', type: :request do
         it_behaves_like 'ToOK(html)' # NOTE: HTMLもログイン状態になる
       end
       it_behaves_like 'ToOK(json)'
+      it_behaves_like 'ToOK(csv)'
     end
     shared_examples_for '[ログイン中/削除予約済み][成功][ログインユーザー]権限がない' do |power|
       before_all { FactoryBot.create(:member, power, space:, user:) if power.present? }
       it_behaves_like 'ToNG(html)', Settings.api_only_mode ? 406 : 403
       it_behaves_like 'ToNG(json)', 401 # NOTE: APIは未ログイン扱い
+      it_behaves_like 'ToNG(csv)', 401
     end
     shared_examples_for '[APIログイン中/削除予約済み][成功][ログインユーザー]権限がない' do |power|
       before_all { FactoryBot.create(:member, power, space:, user:) if power.present? }
       it_behaves_like 'ToNG(html)', Settings.api_only_mode ? 406 : 403 # NOTE: HTMLもログイン状態になる
       it_behaves_like 'ToNG(json)', 403
+      it_behaves_like 'ToNG(csv)', 403
     end
     shared_examples_for '[ログイン中/削除予約済み][成功][その他ユーザー]権限がない' do
       it_behaves_like 'ToNG(html)', Settings.api_only_mode ? 406 : 404
       it_behaves_like 'ToNG(json)', 401 # NOTE: APIは未ログイン扱い
+      it_behaves_like 'ToNG(csv)', 401
     end
     shared_examples_for '[APIログイン中/削除予約済み][成功][その他ユーザー]権限がない' do
       it_behaves_like 'ToNG(html)', Settings.api_only_mode ? 406 : 404
       it_behaves_like 'ToNG(json)', 404, nil, 'alert.download.notfound'
+      it_behaves_like 'ToNG(csv)', 404, nil, 'alert.download.notfound'
     end
 
     shared_examples_for '[ログイン中/削除予約済み][成功]依頼ユーザーがログインユーザー' do |status|
@@ -126,6 +136,7 @@ RSpec.describe 'Downloads', type: :request do
         it_behaves_like 'ToOK(html)'
       end
       it_behaves_like 'ToNG(json)', 401 # NOTE: APIは未ログイン扱い
+      it_behaves_like 'ToNG(csv)', 401
     end
     shared_examples_for '[APIログイン中/削除予約済み]IDが存在する（状態が成功以外）' do |status|
       include_context 'user_condition', status
@@ -136,16 +147,19 @@ RSpec.describe 'Downloads', type: :request do
         it_behaves_like 'ToOK(html)' # NOTE: HTMLもログイン状態になる
       end
       it_behaves_like 'ToOK(json)'
+      it_behaves_like 'ToOK(csv)'
     end
     shared_examples_for '[ログイン中/削除予約済み]IDが存在しない' do
       let_it_be(:download) { FactoryBot.build_stubbed(:download) }
       it_behaves_like 'ToNG(html)', Settings.api_only_mode ? 406 : 404
       it_behaves_like 'ToNG(json)', 401 # NOTE: APIは未ログイン扱い
+      it_behaves_like 'ToNG(csv)', 401
     end
     shared_examples_for '[APIログイン中/削除予約済み]IDが存在しない' do
       let_it_be(:download) { FactoryBot.build_stubbed(:download) }
       it_behaves_like 'ToNG(html)', Settings.api_only_mode ? 406 : 404
       it_behaves_like 'ToNG(json)', 404, nil, 'alert.download.notfound'
+      it_behaves_like 'ToNG(csv)', 404, nil, 'alert.download.notfound'
     end
 
     shared_examples_for '[ログイン中/削除予約済み]' do
@@ -172,6 +186,7 @@ RSpec.describe 'Downloads', type: :request do
         it_behaves_like 'ToLogin(html)'
       end
       it_behaves_like 'ToNG(json)', 401
+      it_behaves_like 'ToNG(csv)', 401
     end
     context 'ログイン中' do
       include_context 'ログイン処理'

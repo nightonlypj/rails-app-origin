@@ -17,14 +17,14 @@ class Invitation < ApplicationRecord
     result = []
     invalid_domain = nil
     max_count = Settings.invitation_domains_max_count
-    domains&.split(/\R/)&.each do |domain|
+    (domains || '').split(/\R/).each do |domain|
       domain.strip!
-      if domain.present? && !result.include?(domain)
-        result.push(domain)
-        break if result.count > max_count
+      next unless domain.present? && !result.include?(domain)
 
-        invalid_domain = domain if invalid_domain.blank? && !Devise.email_regexp.match?("test@#{domain}")
-      end
+      result.push(domain)
+      break if result.count > max_count
+
+      invalid_domain = domain if invalid_domain.blank? && !Devise.email_regexp.match?("test@#{domain}")
     end
 
     if result.blank?

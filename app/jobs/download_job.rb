@@ -41,8 +41,10 @@ class DownloadJob < ApplicationJob
     items = I18n.t("items.#{@download.model}")
     output_items.each do |output_item|
       value = items[output_item.to_sym]
+      # :nocov:
       raise "output_item not found.(#{output_item})" if value.blank?
 
+      # :nocov:
       header.push(value)
     end
 

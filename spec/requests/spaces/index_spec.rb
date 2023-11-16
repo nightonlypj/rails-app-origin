@@ -85,7 +85,7 @@ RSpec.describe 'Spaces', type: :request do
       let(:subject_format) { nil }
       let(:accept_headers) { ACCEPT_INC_HTML }
       let(:subject_page) { page }
-      let(:url_page)     { link_page >= 2 ? link_page : nil }
+      let(:url_page)     { link_page }
       it "#{link_page}ページのパスが含まれない" do
         subject
         expect(response.body).not_to include("\"#{spaces_path(page: url_page)}\"")

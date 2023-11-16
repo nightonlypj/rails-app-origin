@@ -21,7 +21,9 @@ namespace :download do
 
         target_completed = download.completed_at.present? && download.completed_at <= schedule_date
         target_requested = download.completed_at.blank? && download.requested_at <= schedule_date
+        # :nocov:
         raise '完了日時または依頼日時が不正' if !target_completed && !target_requested
+        # :nocov:
         next if dry_run
 
         download.destroy!

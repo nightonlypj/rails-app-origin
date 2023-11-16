@@ -7,7 +7,7 @@ class DownloadsController < ApplicationAuthController
   # GET /downloads ダウンロード結果一覧
   # GET /downloads(.json) ダウンロード結果一覧API
   def index
-    @id = params[:id].present? ? params[:id].to_i : nil
+    @id = (params[:id].to_s =~ /^[0-9]+$/).present? ? params[:id].to_i : nil
     @downloads = Download.where(user: current_user).search(@id).order(id: :desc)
                          .page(params[:page]).per(Settings.default_downloads_limit)
 
@@ -18,8 +18,7 @@ class DownloadsController < ApplicationAuthController
     set_flash_index
   end
 
-  # GET /downloads/file/:id ダウンロード
-  # GET /downloads/file/:id(.json) ダウンロードAPI
+  # GET /downloads/file/:id(.csv) ダウンロードファイル取得
   def file
     @download = Download.find_by(id: params[:id])
     return response_not_found('alert.download.notfound') if @download.blank? || @download.user != current_user

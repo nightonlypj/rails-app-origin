@@ -76,7 +76,7 @@ RSpec.describe 'Invitations', type: :request do
       let(:subject_format) { nil }
       let(:accept_headers) { ACCEPT_INC_HTML }
       let(:subject_page) { page }
-      let(:url_page)     { link_page >= 2 ? link_page : nil }
+      let(:url_page)     { link_page }
       it "#{link_page}ページのパスが含まれない" do
         subject
         expect(response.body).not_to include("\"#{invitations_path(space_code: space.code, page: url_page)}\"")

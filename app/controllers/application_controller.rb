@@ -42,9 +42,19 @@ class ApplicationController < ActionController::Base
     request.format.json?
   end
 
+  # URLの拡張子がCSVか、acceptヘッダに含まれるかを返却
+  def format_csv?
+    request.format.csv?
+  end
+
   # acceptヘッダにJSONが含まれる（ワイルドカード不可）かを返却
   def accept_header_json?
     !(%r{,application/json[,;]} =~ ",#{request.headers[:ACCEPT]},").nil?
+  end
+
+  # acceptヘッダにCSVが含まれる（ワイルドカード不可）かを返却
+  def accept_header_csv?
+    !(%r{,text/csv[,;]} =~ ",#{request.headers[:ACCEPT]},").nil?
   end
 
   # acceptヘッダが空か、HTMLが含まれる（ワイルドカード可）かを返却
