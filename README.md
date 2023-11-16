@@ -179,14 +179,14 @@ $ nvm --version
 ```
 ```
 $ nvm ls-remote | grep 'Latest LTS'
-       v16.19.0   (Latest LTS: Gallium)
-$ nvm install v16.19.0
+       v16.20.2   (Latest LTS: Gallium)
+$ nvm install v16.20.2
 ※バージョンは異なっても良いが、本番の環境に合わせるのがベスト
 （$ nvm ls）
-（$ nvm use v16.19.0）
-
+（$ nvm use v16.20.2）
+（nvm alias default v16.20.2）
 $ node -v
-v16.19.0
+v16.20.2
 ```
 
 ### yarnインストール

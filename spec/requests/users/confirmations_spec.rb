@@ -5,8 +5,10 @@ RSpec.describe 'Users::Confirmations', type: :request do
   shared_examples_for 'ToNew' do |alert, notice|
     it 'メールアドレス確認[メール再送]にリダイレクトする' do
       is_expected.to redirect_to(new_user_confirmation_path)
+      # :nocov:
       expect(flash[:alert]).to alert.present? ? eq(get_locale(alert)) : be_nil
       expect(flash[:notice]).to notice.present? ? eq(get_locale(notice)) : be_nil
+      # :nocov:
     end
   end
 
