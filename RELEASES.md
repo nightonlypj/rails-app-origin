@@ -1,5 +1,10 @@
 # リリースノート
 
+## 1.8.0 (Sprint 13)
+
+- Ruby3.2.2/Rails7.0とGem/Packageをバージョンアップしたい
+  - https://dev.azure.com/nightonly/rails-app-origin/_workitems/edit/557/
+
 ## 1.6.0 (Sprint 11)
 
 - Ruby3.1にバージョンアップしたい
