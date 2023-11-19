@@ -20,7 +20,7 @@ class Users::Auth::UnlocksController < DeviseTokenAuth::UnlocksController
 
     # NOTE: 未ロックの場合はエラーにする
     if @resource.present? && !@resource.access_locked?
-      return render './failure', locals: { alert: t('errors.messages.not_locked') }, status: :unprocessable_entity
+      return render '/failure', locals: { alert: t('errors.messages.not_locked') }, status: :unprocessable_entity
     end
 
     if @resource
@@ -52,14 +52,14 @@ class Users::Auth::UnlocksController < DeviseTokenAuth::UnlocksController
       @resource.save!
       yield @resource if block_given?
 
-      return redirect_to Settings.unlock_success_url_not if @redirect_url.blank?
-      return redirect_to Settings.unlock_success_url_bad if blacklisted_redirect_url?(@redirect_url)
+      return redirect_to Settings.unlock_success_url_not, allow_other_host: true if @redirect_url.blank?
+      return redirect_to Settings.unlock_success_url_bad, allow_other_host: true if blacklisted_redirect_url?(@redirect_url)
 
       # redirect_header_options = { unlock: true }
       redirect_header_options = { unlock: true, notice: t('devise.unlocks.unlocked') }
       # redirect_headers = build_redirect_headers(token.token, token.client, redirect_header_options)
       # redirect_to(@resource.build_auth_url(after_unlock_path_for(@resource), redirect_headers))
-      redirect_to DeviseTokenAuth::Url.generate(@redirect_url, redirect_header_options)
+      redirect_to DeviseTokenAuth::Url.generate(@redirect_url, redirect_header_options), allow_other_host: true
     else
       render_show_error
     end
@@ -74,49 +74,49 @@ class Users::Auth::UnlocksController < DeviseTokenAuth::UnlocksController
   end
 
   def render_create_error_missing_redirect_url
-    render './failure', locals: { alert: t('devise_token_auth.unlocks.missing_redirect_url') }, status: :unprocessable_entity
+    render '/failure', locals: { alert: t('devise_token_auth.unlocks.missing_redirect_url') }, status: :unprocessable_entity
   end
 
   def render_error_not_allowed_redirect_url
-    render './failure', locals: { alert: t('devise_token_auth.unlocks.not_allowed_redirect_url') }, status: :unprocessable_entity
+    render '/failure', locals: { alert: t('devise_token_auth.unlocks.not_allowed_redirect_url') }, status: :unprocessable_entity
   end
 
   def render_create_error_missing_email
     # render_error(401, I18n.t('devise_token_auth.unlocks.missing_email'))
-    render './failure', locals: { alert: t('errors.messages.validate_unlock_params') }, status: :bad_request
+    render '/failure', locals: { alert: t('errors.messages.validate_unlock_params') }, status: :bad_request
   end
 
   def render_create_success
     # render json: { success: true, message: success_message('unlocks', @email) }
-    render './users/auth/success', locals: { current_user: nil, notice: success_message('unlocks', @email) }
+    render '/users/auth/success', locals: { current_user: nil, notice: success_message('unlocks', @email) }
   end
 
   def render_create_error(errors)
     # render json: { success: false, errors: errors }, status: 400
-    render './failure', locals: { errors: }, status: :unprocessable_entity
+    render '/failure', locals: { errors: }, status: :unprocessable_entity
   end
 
   def render_show_error
     # raise ActionController::RoutingError, 'Not Found'
-    return redirect_to Settings.unlock_error_url_not if @redirect_url.blank?
-    return redirect_to Settings.unlock_error_url_bad if blacklisted_redirect_url?(@redirect_url)
+    return redirect_to Settings.unlock_error_url_not, allow_other_host: true if @redirect_url.blank?
+    return redirect_to Settings.unlock_error_url_bad, allow_other_host: true if blacklisted_redirect_url?(@redirect_url)
 
     alert = t("activerecord.errors.models.user.attributes.unlock_token.#{params[:unlock_token].blank? ? 'blank' : 'invalid'}")
     redirect_header_options = { unlock: false, alert: }
-    redirect_to DeviseTokenAuth::Url.generate(@redirect_url, redirect_header_options)
+    redirect_to DeviseTokenAuth::Url.generate(@redirect_url, redirect_header_options), allow_other_host: true
   end
 
   def render_not_found_error
     if Devise.paranoid
       # :nocov:
       # render_error(404, I18n.t('devise_token_auth.unlocks.sended_paranoid'))
-      render './failure', locals: { alert: t('devise_token_auth.unlocks.sended_paranoid') }, status: :unprocessable_entity
+      render '/failure', locals: { alert: t('devise_token_auth.unlocks.sended_paranoid') }, status: :unprocessable_entity
       # :nocov:
     else
       # render_error(404, I18n.t('devise_token_auth.unlocks.user_not_found', email: @email))
       errors = { email: t('devise_token_auth.unlocks.user_not_found') }
       errors[:full_messages] = ["#{t('activerecord.attributes.user.email')} #{errors[:email]}"]
-      render './failure', locals: { errors:, alert: t('errors.messages.not_saved.one') }, status: :unprocessable_entity
+      render '/failure', locals: { errors:, alert: t('errors.messages.not_saved.one') }, status: :unprocessable_entity
     end
   end
 end

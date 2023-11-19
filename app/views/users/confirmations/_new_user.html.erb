@@ -3,7 +3,7 @@
   <div class="form-outline<%= input_size_class_name(resource, :email) %>">
     <%= form.email_field :email, autocomplete: 'off', class: "form-control#{validate_class_name(validate_enabled, resource, :email)}" %>
     <%= form.label :email, class: 'form-label', for: 'user_email' %>
-    <%= render './users/shared/field_error_messages', messages: resource.errors[:email] %>
+    <%= render '/users/shared/field_error_messages', messages: resource.errors[:email] %>
   </div>
 
   <%= form.submit '送信', class: 'btn btn-primary' %>

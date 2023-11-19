@@ -48,11 +48,11 @@ module ApplicationHelper
 
   # ページの最初の番号を返却
   def first_page_number(models)
-    ((models.limit_value * (models.current_page - 1)) + 1).to_s(:delimited)
+    ((models.limit_value * (models.current_page - 1)) + 1).to_formatted_s(:delimited)
   end
 
   # ページの最後の番号を返却
   def last_page_number(models)
-    [models.current_page * models.limit_value, models.total_count].min.to_s(:delimited)
+    [models.current_page * models.limit_value, models.total_count].min.to_formatted_s(:delimited)
   end
 end

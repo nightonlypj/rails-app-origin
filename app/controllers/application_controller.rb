@@ -71,12 +71,12 @@ class ApplicationController < ActionController::Base
 
   # 認証エラーを返却
   def response_unauthenticated
-    render './failure', locals: { alert: t('devise.failure.unauthenticated') }, status: :unauthorized
+    render '/failure', locals: { alert: t('devise.failure.unauthenticated') }, status: :unauthorized
   end
 
   # 認証済みエラーを返却
   def response_already_authenticated
-    render './failure', locals: { alert: t('devise.failure.already_authenticated') }, status: :unauthorized
+    render '/failure', locals: { alert: t('devise.failure.already_authenticated') }, status: :unauthorized
   end
 
   # パスワードリセットトークンのユーザーを返却
@@ -132,7 +132,7 @@ class ApplicationController < ActionController::Base
 
   # ユーザーが削除予約済みの場合、JSONでメッセージを返却
   def response_api_for_user_destroy_reserved
-    render './failure', locals: { alert: t('alert.user.destroy_reserved') }, status: :unprocessable_entity if current_user&.destroy_reserved?
+    render '/failure', locals: { alert: t('alert.user.destroy_reserved') }, status: :unprocessable_entity if current_user&.destroy_reserved?
   end
 
   # ユーザーが削除予約済みでない場合、リダイレクトしてメッセージを表示
@@ -142,7 +142,7 @@ class ApplicationController < ActionController::Base
 
   # ユーザーが削除予約済みでない場合、JSONでメッセージを返却
   def response_api_for_not_user_destroy_reserved
-    render './failure', locals: { alert: t('alert.user.not_destroy_reserved') }, status: :unprocessable_entity unless current_user&.destroy_reserved?
+    render '/failure', locals: { alert: t('alert.user.not_destroy_reserved') }, status: :unprocessable_entity unless current_user&.destroy_reserved?
   end
 
   # ユニークコードを作成して返却

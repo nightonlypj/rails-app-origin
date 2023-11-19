@@ -163,7 +163,7 @@
       <div class="d-flex justify-content-center p-3">
         <span class="d-none d-sm-block">Copyright&nbsp;</span><span class="text-truncate">&copy; <%= link_to t('my_name'), t('my_url'), target: :_blank, rel: %i[noopener noreferrer] %> All Rights Reserved.</span>
       </div>
-      <%= render './layouts/development' if Rails.env.development? %>
+      <%= render '/layouts/development' if Rails.env.development? %>
     </footer>
   </body>
   <script type="text/javascript" src="<%= config.asset_host %>/js/mdb.min.js?v3.1.0"></script>
