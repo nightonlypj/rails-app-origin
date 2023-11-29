@@ -62,8 +62,8 @@ def expect_image_json(response_json_model, model)
   expect(data.count).to eq(5)
 end
 
-def get_locale(key, **replace)
-  result = I18n.t(key, **replace)
+def get_locale(key, **)
+  result = I18n.t(key, **)
   # :nocov:
   raise if /translation missing:/.match(result)
 

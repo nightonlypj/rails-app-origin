@@ -9,11 +9,9 @@
 | - | - |
 | | docker compose exec app bash<br>( :/workdir# ) |
 | bundle install | docker compose run app bundle install |
-| yarn install | docker compose run app yarn install |
 | rails db:migrate | docker compose run app rails db:migrate |
 | rails db:seed | docker compose run app rails db:seed |
 | rails s | 不要 |
-| bin/webpack-dev-server | 不要 |
 | rails jobs:work<br>または bin/delayed_job start| 不要 |
 | rails c | docker compose run app rails c |
 | rails db | docker compose run app rails db |
@@ -160,82 +158,6 @@ $ rvm list
 =* ruby-3.2.2 [ arm64 ]
 ```
 
-### Node.jsインストール
-
-```
-$ brew install nvm
-（$ brew upgrade nvm）
-$ mkdir ~/.nvm
-
-※zshの場合(Catalina以降)
-% vi ~/.zshrc
-※bashの場合
-$ vi ~/.bash_profile
----- ここから ----
-### START ###
-export NVM_DIR="$HOME/.nvm"
-[ -s "/opt/homebrew/opt/nvm/nvm.sh" ] && . "/opt/homebrew/opt/nvm/nvm.sh"  # This loads nvm
-[ -s "/opt/homebrew/opt/nvm/etc/bash_completion.d/nvm" ] && . "/opt/homebrew/opt/nvm/etc/bash_completion.d/nvm"  # This loads nvm bash_completion
-### END ###
----- ここまで ----
-
-※zshの場合(Catalina以降)
-% source ~/.zshrc
-※bashの場合
-$ source ~/.bash_profile
-
-$ nvm --version
-0.39.5
-※バージョンは異なっても良い
-```
-```
-$ nvm ls-remote | grep 'Latest LTS'
-       v16.20.2   (Latest LTS: Gallium)
-       v18.18.2   (Latest LTS: Hydrogen)
-        v20.9.0   (Latest LTS: Iron)
-
-$ nvm install v16.20.2
-（$ nvm use v16.20.2）
-（$ nvm alias default v16.20.2）
-※バージョンは異なっても良いが、本番の環境に合わせるのがベスト
-
-※bin/webpack-dev-serverでエラーになる
-v18.18.2 -> Error: error:0308010C:digital envelope routines::unsupported
-v20.9.0 -> Error: spawn node-gyp ENOENT
-
-$ node -v
-v16.20.2
-
-$ nvm ls
-->     v16.20.2
-         system
-default -> v16.20.2
-```
-
-### yarnインストール
-
-```
-$ brew install yarn
-（$ brew upgrade yarn）
-
-※zshの場合(Catalina以降)
-% vi ~/.zshrc
-※bashの場合
-$ vi ~/.bash_profile
----- ここから ----
-export PATH="/opt/homebrew/opt/icu4c/bin:/opt/homebrew/opt/icu4c/sbin:$PATH"
----- ここまで ----
-
-※zshの場合(Catalina以降)
-% source ~/.zshrc
-※bashの場合
-$ source ~/.bash_profile
-
-$ yarn -v
-1.22.21
-※バージョンは異なっても良い
-```
-
 ### MariaDB or MySQLインストール
 
 ```
@@ -321,10 +243,6 @@ $ cp -a config/settings/development.yml,local config/settings/development.yml
 $ bundle install
 （$ bundle update）
 Bundle complete!
-
-$ yarn install
-（$ yarn upgrade）
-Done
 
 $ rails db:create
 $ rails db:migrate

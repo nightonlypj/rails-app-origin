@@ -1,6 +1,6 @@
 <% validate_enabled = action_name == 'update' && resource.errors.any? %>
 <% validate_password_enabled = validate_enabled && (params[:user][:password].present? || params[:user][:password_confirmation].present?) %>
-<%= form_with(model: resource, url: update_user_registration_path, html: { method: :put, novalidate: true, autocomplete: 'off' }, local: true) do |form| %>
+<%= form_with(model: resource, url: update_user_registration_path, html: { method: :put, novalidate: true, autocomplete: 'off' }, data: { turbo: false }) do |form| %>
 <% if user_valid_confirmation_token? %>
   <div class="note note-warning mb-3">
     <span class="fw-bolder"><%= resource.unconfirmed_email %></span> のメールを確認してください。<br>

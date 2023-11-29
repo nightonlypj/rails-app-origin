@@ -1,5 +1,5 @@
 <% validate_enabled = resource.errors.any? %>
-<%= form_with(model: resource, url: update_admin_user_password_path(reset_password_token: params[:reset_password_token]), html: { method: :put, novalidate: true, autocomplete: 'off' }, local: true) do |form| %>
+<%= form_with(model: resource, url: update_admin_user_password_path(reset_password_token: params[:reset_password_token]), html: { method: :put, novalidate: true, autocomplete: 'off' }, data: { turbo: false }) do |form| %>
   <%= form.hidden_field :reset_password_token %>
 
   <div class="form-outline<%= input_size_class_name(resource, :password) %>">
