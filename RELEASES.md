@@ -1,6 +1,11 @@
 # リリースノート
 
-## 1.6.0 (Sprint 12)
+## 1.8.0 (Sprint 13)
+
+- Ruby3.2.2/Rails7.0（WebpackerからSprocketsに移行）とGemをバージョンアップしたい
+  - https://dev.azure.com/nightonly/rails-app-origin/_workitems/edit/557/
+
+## 1.7.0 (Sprint 12)
 
 ### spaceブランチ
 

@@ -6,9 +6,9 @@ class ApplicationController < ActionController::Base
 
   # 例外通知に情報を追加
   def prepare_exception_notifier
+    # :nocov:
     return if Rails.env.test?
 
-    # :nocov:
     request.env['exception_notifier.exception_data'] = {
       current_user: { id: current_user&.id },
       url: request.url
@@ -81,12 +81,12 @@ class ApplicationController < ActionController::Base
 
   # 認証エラーを返却
   def response_unauthenticated
-    render './failure', locals: { alert: t('devise.failure.unauthenticated') }, status: :unauthorized
+    render '/failure', locals: { alert: t('devise.failure.unauthenticated') }, status: :unauthorized
   end
 
   # 認証済みエラーを返却
   def response_already_authenticated
-    render './failure', locals: { alert: t('devise.failure.already_authenticated') }, status: :unauthorized
+    render '/failure', locals: { alert: t('devise.failure.already_authenticated') }, status: :unauthorized
   end
 
   # パスワードリセットトークンのユーザーを返却
@@ -108,8 +108,10 @@ class ApplicationController < ActionController::Base
 
   # 有効なメールアドレス確認トークンかを返却
   def valid_confirmation_token?(token)
+    # :nocov:
     return true if resource_class.confirm_within.blank?
 
+    # :nocov:
     resource = resource_class.find_by(confirmation_token: token)
     resource&.confirmation_sent_at&.present? && (Time.now.utc <= resource.confirmation_sent_at.utc + resource_class.confirm_within)
   end
@@ -140,7 +142,7 @@ class ApplicationController < ActionController::Base
 
   # ユーザーが削除予約済みの場合、JSONでメッセージを返却
   def response_api_for_user_destroy_reserved
-    render './failure', locals: { alert: t('alert.user.destroy_reserved') }, status: :unprocessable_entity if current_user&.destroy_reserved?
+    render '/failure', locals: { alert: t('alert.user.destroy_reserved') }, status: :unprocessable_entity if current_user&.destroy_reserved?
   end
 
   # ユーザーが削除予約済みでない場合、リダイレクトしてメッセージを表示
@@ -150,7 +152,7 @@ class ApplicationController < ActionController::Base
 
   # ユーザーが削除予約済みでない場合、JSONでメッセージを返却
   def response_api_for_not_user_destroy_reserved
-    render './failure', locals: { alert: t('alert.user.not_destroy_reserved') }, status: :unprocessable_entity unless current_user&.destroy_reserved?
+    render '/failure', locals: { alert: t('alert.user.not_destroy_reserved') }, status: :unprocessable_entity unless current_user&.destroy_reserved?
   end
 
   # スペースが削除予約済みの場合、JSONでメッセージを返却
@@ -163,10 +165,10 @@ class ApplicationController < ActionController::Base
     try_count = 1
     loop do
       code = Digest::MD5.hexdigest(SecureRandom.uuid).to_i(16).to_s(36).rjust(25, '0') # NOTE: 16進数32桁を36進数25桁に変換
+      # :nocov:
       code = code[0, length] if length.present?
       return code if model.where(key => code).blank?
 
-      # :nocov:
       if try_count < 10
         logger.warn("[WARN](#{try_count})Not unique code(#{code}): #{logger_message}")
       elsif try_count >= 10

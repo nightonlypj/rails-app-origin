@@ -1,5 +1,5 @@
 # https://hub.docker.com/_/ruby
-FROM ruby:3.1.4-alpine
+FROM ruby:3.2.2-alpine
 RUN apk update && apk add --no-cache --update build-base tzdata bash yarn python3 imagemagick graphviz ttf-freefont gcompat
 # RUN apk add --no-cache --update sqlite-libs sqlite-dev
 RUN apk add --no-cache --update mysql-dev mysql-client

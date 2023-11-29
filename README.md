@@ -1,7 +1,7 @@
 # Ruby on Railsベースアプリケーション（Space）
 
 運営元とユーザー同士が作成したスペース上で情報共有する（BtoC向け）  
-(Ruby 3.1.4, Rails 6.1)
+(Ruby 3.2.2, Rails 7.0)
 
 ## コマンドメモ
 
@@ -9,11 +9,9 @@
 | - | - |
 | | docker compose exec app bash<br>( :/workdir# ) |
 | bundle install | docker compose run app bundle install |
-| yarn install | docker compose run app yarn install |
 | rails db:migrate | docker compose run app rails db:migrate |
 | rails db:seed | docker compose run app rails db:seed |
 | rails s | 不要 |
-| bin/webpack-dev-server | 不要 |
 | rails jobs:work<br>または bin/delayed_job start| 不要 |
 | rails c | docker compose run app rails c |
 | rails db | docker compose run app rails db |
@@ -98,7 +96,7 @@ $ brew doctor
 Your system is ready to brew.
 
 $ brew -v
-Homebrew 4.0.23
+Homebrew 4.1.20
 ※バージョンは異なっても良い
 ```
 
@@ -109,7 +107,7 @@ $ brew install imagemagick
 （$ brew upgrade imagemagick）
 
 $ magick -version
-Version: ImageMagick 7.1.1-11 Q16-HDRI aarch64 21206 https://imagemagick.org
+Version: ImageMagick 7.1.1-21 Q16-HDRI aarch64 21667 https://imagemagick.org
 ※バージョンは異なっても良い
 ```
 
@@ -120,7 +118,7 @@ $ brew install graphviz
 （$ brew upgrade graphviz）
 
 $ dot -V
-dot - graphviz version 8.0.5 (20230430.1635)
+dot - graphviz version 9.0.0 (20230911.1827)
 ※バージョンは異なっても良い
 ```
 
@@ -140,77 +138,24 @@ $ rvm -v
 rvm 1.29.12 (latest) by Michal Papis, Piotr Kuczynski, Wayne E. Seguin [https://rvm.io]
 ※バージョンは異なっても良い
 ```
+
+https://github.com/rbenv/homebrew-tap/issues/9#issuecomment-1683015411
 ```
-$ rvm list known
-（$ rvm list）
-$ rvm install 3.1.4
-（$ rvm --default use 3.1.4）
+$ brew install openssl@3
+
+※ターミナルを開き直して、
+$ openssl version
+OpenSSL 3.1.4 24 Oct 2023 (Library: OpenSSL 3.1.4 24 Oct 2023)
+
+$ rvm install 3.2.2 --with-openssl-dir=$(brew --prefix openssl@3)
+（$ rvm --default use 3.2.2）
 
 $ ruby -v
-ruby 3.1.4p223 (2023-03-30 revision 957bb7cb81) [arm64-darwin22]
-```
+ruby 3.2.2 (2023-03-30 revision e51014f9c0) [arm64-darwin22]
 
-### Node.jsインストール
-
-```
-$ brew install nvm
-$ mkdir ~/.nvm
-
-※zshの場合(Catalina以降)
-% vi ~/.zshrc
-※bashの場合
-$ vi ~/.bash_profile
----- ここから ----
-### START ###
-export NVM_DIR="$HOME/.nvm"
-[ -s "/opt/homebrew/opt/nvm/nvm.sh" ] && . "/opt/homebrew/opt/nvm/nvm.sh"  # This loads nvm
-[ -s "/opt/homebrew/opt/nvm/etc/bash_completion.d/nvm" ] && . "/opt/homebrew/opt/nvm/etc/bash_completion.d/nvm"  # This loads nvm bash_completion
-### END ###
----- ここまで ----
-
-※zshの場合(Catalina以降)
-% source ~/.zshrc
-※bashの場合
-$ source ~/.bash_profile
-
-$ nvm --version
-0.37.2
-※バージョンは異なっても良い
-```
-```
-$ nvm ls-remote | grep 'Latest LTS'
-       v16.20.2   (Latest LTS: Gallium)
-$ nvm install v16.20.2
-※バージョンは異なっても良いが、本番の環境に合わせるのがベスト
-（$ nvm ls）
-（$ nvm use v16.20.2）
-（nvm alias default v16.20.2）
-$ node -v
-v16.20.2
-```
-
-### yarnインストール
-
-```
-$ brew install yarn
-（$ brew upgrade yarn）
-
-※zshの場合(Catalina以降)
-% vi ~/.zshrc
-※bashの場合
-$ vi ~/.bash_profile
----- ここから ----
-export PATH="/opt/homebrew/opt/icu4c/bin:/opt/homebrew/opt/icu4c/sbin:$PATH"
----- ここまで ----
-
-※zshの場合(Catalina以降)
-% source ~/.zshrc
-※bashの場合
-$ source ~/.bash_profile
-
-$ yarn -v
-1.22.19
-※バージョンは異なっても良い
+$ rvm list
+   ruby-3.1.4 [ arm64 ]
+=* ruby-3.2.2 [ arm64 ]
 ```
 
 ### MariaDB or MySQLインストール
@@ -265,7 +210,7 @@ password = xyz789
 
 $ mysql
 ※MariaDBの場合
-Server version: 11.0.2-MariaDB Homebrew
+Server version: 11.1.3-MariaDB Homebrew
 ※MySQLの場合
 Server version: 8.0.23 Homebrew
 ※バージョンは異なっても良いが、本番と同じが理想
@@ -298,10 +243,6 @@ $ cp -a config/settings/development.yml,local config/settings/development.yml
 $ bundle install
 （$ bundle update）
 Bundle complete!
-
-$ yarn install
-（$ yarn upgrade）
-Done
 
 $ rails db:create
 $ rails db:migrate

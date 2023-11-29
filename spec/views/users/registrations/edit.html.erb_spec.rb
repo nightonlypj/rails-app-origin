@@ -20,7 +20,7 @@ RSpec.describe 'users/registrations/edit', type: :view do
         assert_select 'input[name=?]', 'commit'
       end
       assert_select 'form[action=?][method=?]', delete_user_image_registration_path, 'post' do # 画像削除
-        assert_select 'input[type=?]', 'submit'
+        assert_select 'button[type=?]', 'submit'
       end
     end
   end

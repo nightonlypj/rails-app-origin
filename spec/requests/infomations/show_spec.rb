@@ -11,6 +11,7 @@ RSpec.describe 'Infomations', type: :request do
   #   対象: 全員, 自分, 他人
   #   開始日時: 過去, 未来
   #   終了日時: 過去, 未来, ない
+  #   本文: ある, ない
   #   ＋URLの拡張子: ない, .json
   #   ＋Acceptヘッダ: HTMLが含まれる, JSONが含まれる
   describe 'GET #show' do
@@ -18,6 +19,9 @@ RSpec.describe 'Infomations', type: :request do
 
     shared_context 'お知らせ作成' do
       let_it_be(:infomation) { FactoryBot.create(:infomation, started_at:, ended_at:, target:, user_id:) }
+    end
+    shared_context 'お知らせ作成（本文がない）' do
+      let_it_be(:infomation) { FactoryBot.create(:infomation, started_at:, ended_at:, target:, user_id:, body: nil) }
     end
 
     # テスト内容
@@ -79,13 +83,24 @@ RSpec.describe 'Infomations', type: :request do
     end
     shared_examples_for '[*][全員][過去]終了日時が未来' do
       let_it_be(:ended_at) { Time.current + 1.day }
-      include_context 'お知らせ作成'
-      if Settings.api_only_mode
-        it_behaves_like 'ToNG(html)', 406
-      else
-        it_behaves_like 'ToOK(html)'
+      context '本文がある' do
+        include_context 'お知らせ作成'
+        if Settings.api_only_mode
+          it_behaves_like 'ToNG(html)', 406
+        else
+          it_behaves_like 'ToOK(html)'
+        end
+        it_behaves_like 'ToOK(json)'
       end
-      it_behaves_like 'ToOK(json)'
+      context '本文がない' do
+        include_context 'お知らせ作成（本文がない）'
+        if Settings.api_only_mode
+          it_behaves_like 'ToNG(html)', 406
+        else
+          it_behaves_like 'ToOK(html)'
+        end
+        it_behaves_like 'ToOK(json)'
+      end
     end
     shared_examples_for '[ログイン中/削除予約済み][自分][過去]終了日時が未来' do
       let_it_be(:ended_at) { Time.current + 1.day }

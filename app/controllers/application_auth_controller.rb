@@ -29,7 +29,7 @@ class ApplicationAuthController < ApplicationController
   def response_not_found(alert = 'alert.page.notfound')
     return head :not_found if format_html?
 
-    render './failure', locals: { alert: t(alert) }, status: :not_found, formats: :json
+    render '/failure', locals: { alert: t(alert) }, status: :not_found, formats: :json
   end
 
   # URLの拡張子がない場合のみ、Device認証を有効にする（APIでCSRFトークン検証をしない為）

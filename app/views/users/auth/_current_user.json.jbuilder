@@ -1,4 +1,4 @@
-json.partial!('./users/auth/user', user: current_user, use_email:)
+json.partial!('/users/auth/user', user: current_user, use_email:)
 json.provider current_user.provider
 
 return unless use_add_info
