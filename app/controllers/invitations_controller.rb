@@ -83,7 +83,7 @@ class InvitationsController < ApplicationAuthController
     return if @invitation.email_joined_at.blank?
     return redirect_to invitations_path(@space.code), alert: t('alert.invitation.email_joined') if format_html?
 
-    render './failure', locals: { alert: t('alert.invitation.email_joined') }, status: :unprocessable_entity
+    render '/failure', locals: { alert: t('alert.invitation.email_joined') }, status: :unprocessable_entity
   end
 
   def validate_params_create
@@ -94,7 +94,7 @@ class InvitationsController < ApplicationAuthController
     return unless @invitation.errors.any?
     return render :new, status: :unprocessable_entity if format_html?
 
-    render './failure', locals: { errors: @invitation.errors, alert: t('errors.messages.not_saved.other') }, status: :unprocessable_entity
+    render '/failure', locals: { errors: @invitation.errors, alert: t('errors.messages.not_saved.other') }, status: :unprocessable_entity
   end
 
   def validate_params_update
@@ -102,7 +102,7 @@ class InvitationsController < ApplicationAuthController
     return if @invitation.valid?
     return render :edit, status: :unprocessable_entity if format_html?
 
-    render './failure', locals: { errors: @invitation.errors, alert: t('errors.messages.not_saved.other') }, status: :unprocessable_entity
+    render '/failure', locals: { errors: @invitation.errors, alert: t('errors.messages.not_saved.other') }, status: :unprocessable_entity
   end
 
   # Only allow a list of trusted parameters through.

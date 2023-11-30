@@ -1,7 +1,10 @@
+import jquery from 'jquery'
+window.$ = jquery
+
 const debug = $("meta[name='debug']").attr('content') === 'true'
 let checked = 0
 
-$(document).on('turbolinks:load', function(){
+$(document).on('turbo:load', function(){
     // 検索オプション -> 追加項目開閉
     $('#option_btn').on('click', function() {
         const expanded = $('#option_btn').attr('aria-expanded') === 'true'

@@ -6,7 +6,7 @@
       <div class="col">
         <%= image_tag @space.image_url(:medium), class: 'rounded-circle', width: '48px', height: '48px' %>
         <%= @space.name %>
-        <%= render './spaces/icon', space: @space, current_member: @current_member %>
+        <%= render '/spaces/icon', space: @space, current_member: @current_member %>
       </div>
 <% if @current_member.present? %>
       <div class="col-auto text-end ps-0">

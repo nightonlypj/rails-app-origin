@@ -77,7 +77,7 @@
         </td>
         <%# 作成者 %>
         <td class="<%= 'text-center ' if invitation.created_user.blank? %>px-1 py-2">
-          <%= render './users/avatar', user: invitation.created_user, present: invitation.created_user_id.present? %>
+          <%= render '/users/avatar', user: invitation.created_user, present: invitation.created_user_id.present? %>
         </td>
         <%# 作成日時 %>
         <td class="text-center ps-1 pe-2 py-2">
@@ -85,7 +85,7 @@
         </td>
         <%# 更新者 %>
         <td class="<%= 'text-center ' if invitation.last_updated_user.blank? && invitation.last_updated_user_id.present? %>px-1 py-2">
-          <%= render './users/avatar', user: invitation.last_updated_user, present: invitation.last_updated_user_id.present? %>
+          <%= render '/users/avatar', user: invitation.last_updated_user, present: invitation.last_updated_user_id.present? %>
         </td>
         <%# 更新日時 %>
         <td class="text-center ps-1 pe-2 py-2">

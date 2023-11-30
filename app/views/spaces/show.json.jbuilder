@@ -20,7 +20,7 @@ json.space do
   if @current_member&.power_admin?
     if @space.created_user_id.present?
       json.created_user do
-        json.partial! './users/auth/user', user: @space.created_user, use_email: true if @space.created_user.present?
+        json.partial! '/users/auth/user', user: @space.created_user, use_email: true if @space.created_user.present?
         json.deleted @space.created_user.blank?
       end
     end
@@ -28,7 +28,7 @@ json.space do
 
     if @space.last_updated_user_id.present?
       json.last_updated_user do
-        json.partial! './users/auth/user', user: @space.last_updated_user, use_email: true if @space.last_updated_user.present?
+        json.partial! '/users/auth/user', user: @space.last_updated_user, use_email: true if @space.last_updated_user.present?
         json.deleted @space.last_updated_user.blank?
       end
     end

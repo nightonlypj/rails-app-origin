@@ -28,7 +28,7 @@ class Member < ApplicationRecord
       return
     end
     if result.count > max_count
-      errors.add(:emails, :max_count, count: max_count.to_s(:delimited))
+      errors.add(:emails, :max_count, count: max_count.to_formatted_s(:delimited))
       return
     end
     if invalid_email.present?

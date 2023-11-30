@@ -70,7 +70,7 @@ class MembersController < ApplicationAuthController
     unless @member.update(member_params(:update).merge(last_updated_user: current_user))
       return render :edit, status: :unprocessable_entity if format_html?
 
-      return render './failure', locals: { errors: @member.errors, alert: t('errors.messages.not_saved.other') }, status: :unprocessable_entity
+      return render '/failure', locals: { errors: @member.errors, alert: t('errors.messages.not_saved.other') }, status: :unprocessable_entity
     end
     return redirect_to members_path(@space.code, active: @member.user.code), notice: t('notice.member.update') if format_html?
 
@@ -88,7 +88,7 @@ class MembersController < ApplicationAuthController
       key = 'destroy'
     end
     @destroy_count = @members.count
-    notice = t("notice.member.#{key}", count: @codes.count.to_s(:delimited), destroy_count: @destroy_count.to_s(:delimited))
+    notice = t("notice.member.#{key}", count: @codes.count.to_formatted_s(:delimited), destroy_count: @destroy_count.to_formatted_s(:delimited))
 
     @members.destroy_all
     return redirect_to members_path(@space.code), notice: notice if format_html?
@@ -121,7 +121,7 @@ class MembersController < ApplicationAuthController
     return unless @member.errors.any?
     return render :new, status: :unprocessable_entity if format_html?
 
-    render './failure', locals: { errors: @member.errors, alert: t('errors.messages.not_saved.other') }, status: :unprocessable_entity
+    render '/failure', locals: { errors: @member.errors, alert: t('errors.messages.not_saved.other') }, status: :unprocessable_entity
   end
 
   def set_params_destroy
@@ -147,7 +147,7 @@ class MembersController < ApplicationAuthController
     return if alert.blank?
     return redirect_to members_path, alert: t(alert) if format_html?
 
-    render './failure', locals: { alert: t(alert) }, status: :unprocessable_entity
+    render '/failure', locals: { alert: t(alert) }, status: :unprocessable_entity
   end
 
   # Only allow a list of trusted parameters through.

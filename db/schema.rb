@@ -56,18 +56,18 @@ ActiveRecord::Schema[7.0].define(version: 2023_11_19_025521) do
   create_table "download_files", charset: "utf8mb4", collation: "utf8mb4_general_ci", comment: "ダウンロードファイル", force: :cascade do |t|
     t.bigint "download_id", null: false, comment: "ダウンロードID"
     t.binary "body", size: :long, comment: "内容"
-    t.datetime "created_at", precision: 6, null: false
-    t.datetime "updated_at", precision: 6, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
     t.index ["download_id"], name: "index_download_files_on_download_id"
   end
 
   create_table "downloads", charset: "utf8mb4", collation: "utf8mb4_general_ci", comment: "ダウンロード", force: :cascade do |t|
     t.bigint "user_id", null: false, comment: "ユーザーID"
     t.integer "status", default: 0, null: false, comment: "ステータス"
-    t.datetime "requested_at", null: false, comment: "依頼日時"
-    t.datetime "completed_at", comment: "完了日時"
+    t.datetime "requested_at", precision: nil, null: false, comment: "依頼日時"
+    t.datetime "completed_at", precision: nil, comment: "完了日時"
     t.text "error_message", comment: "エラーメッセージ"
-    t.datetime "last_downloaded_at", comment: "最終ダウンロード日時"
+    t.datetime "last_downloaded_at", precision: nil, comment: "最終ダウンロード日時"
     t.integer "model", null: false, comment: "モデル"
     t.bigint "space_id", comment: "スペースID"
     t.integer "target", null: false, comment: "対象"
@@ -77,8 +77,8 @@ ActiveRecord::Schema[7.0].define(version: 2023_11_19_025521) do
     t.text "output_items", comment: "出力項目"
     t.text "select_items", comment: "選択項目"
     t.text "search_params", comment: "検索パラメータ"
-    t.datetime "created_at", precision: 6, null: false
-    t.datetime "updated_at", precision: 6, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
     t.index ["completed_at"], name: "index_downloads2"
     t.index ["space_id"], name: "index_downloads_on_space_id"
     t.index ["user_id", "requested_at"], name: "index_downloads1"
@@ -120,14 +120,14 @@ ActiveRecord::Schema[7.0].define(version: 2023_11_19_025521) do
     t.text "domains", comment: "ドメイン"
     t.integer "power", null: false, comment: "権限"
     t.string "memo", comment: "メモ"
-    t.datetime "ended_at", comment: "終了日時"
-    t.datetime "destroy_requested_at", comment: "削除依頼日時"
-    t.datetime "destroy_schedule_at", comment: "削除予定日時"
-    t.datetime "email_joined_at", comment: "参加日時"
+    t.datetime "ended_at", precision: nil, comment: "終了日時"
+    t.datetime "destroy_requested_at", precision: nil, comment: "削除依頼日時"
+    t.datetime "destroy_schedule_at", precision: nil, comment: "削除予定日時"
+    t.datetime "email_joined_at", precision: nil, comment: "参加日時"
     t.bigint "created_user_id", null: false, comment: "作成者ID"
     t.bigint "last_updated_user_id", comment: "最終更新者ID"
-    t.datetime "created_at", precision: 6, null: false
-    t.datetime "updated_at", precision: 6, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
     t.index ["code"], name: "index_invitations1", unique: true
     t.index ["created_at", "id"], name: "index_invitations6"
     t.index ["created_user_id"], name: "index_invitations_on_created_user_id"
@@ -145,9 +145,9 @@ ActiveRecord::Schema[7.0].define(version: 2023_11_19_025521) do
     t.integer "power", null: false, comment: "権限"
     t.bigint "invitationed_user_id", comment: "招待者ID"
     t.bigint "last_updated_user_id", comment: "最終更新者ID"
-    t.datetime "invitationed_at", comment: "招待日時"
-    t.datetime "created_at", precision: 6, null: false
-    t.datetime "updated_at", precision: 6, null: false
+    t.datetime "invitationed_at", precision: nil, comment: "招待日時"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
     t.index ["created_at", "id"], name: "index_members6"
     t.index ["invitationed_at", "id"], name: "index_members5"
     t.index ["invitationed_user_id", "id"], name: "index_members3"
@@ -167,12 +167,12 @@ ActiveRecord::Schema[7.0].define(version: 2023_11_19_025521) do
     t.string "name", null: false, comment: "名称"
     t.text "description", comment: "説明"
     t.boolean "private", default: true, null: false, comment: "非公開"
-    t.datetime "destroy_requested_at", comment: "削除依頼日時"
-    t.datetime "destroy_schedule_at", comment: "削除予定日時"
+    t.datetime "destroy_requested_at", precision: nil, comment: "削除依頼日時"
+    t.datetime "destroy_schedule_at", precision: nil, comment: "削除予定日時"
     t.bigint "created_user_id", null: false, comment: "作成者ID"
     t.bigint "last_updated_user_id", comment: "最終更新者ID"
-    t.datetime "created_at", precision: 6, null: false
-    t.datetime "updated_at", precision: 6, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
     t.index ["code"], name: "index_spaces1", unique: true
     t.index ["created_at", "id"], name: "index_spaces3"
     t.index ["created_user_id"], name: "index_spaces_on_created_user_id"

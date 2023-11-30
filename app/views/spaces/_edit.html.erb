@@ -1,5 +1,5 @@
 <% validate_enabled = @space.errors.any? %>
-<%= form_with(model: @space, url: update_space_path(@space.code), html: { method: :post, novalidate: true, autocomplete: 'on' }, local: true) do |form| %>
+<%= form_with(model: @space, url: update_space_path(@space.code), html: { method: :post, novalidate: true, autocomplete: 'on' }, data: { turbo: false }) do |form| %>
   <div class="row">
     <div class="col-md-2 text-md-end mt-1">
       <%= form.label :created_at, '作成', class: "form-label" %>
@@ -7,7 +7,7 @@
     <div class="col-md-10">
       <%= l(@space.created_at) %>
       <span class="ms-2">
-        <%= render './users/avatar', user: @space.created_user, present: @space.created_user_id.present? %>
+        <%= render '/users/avatar', user: @space.created_user, present: @space.created_user_id.present? %>
       </span>
     </div>
   </div>
@@ -20,7 +20,7 @@
     <div class="col-md-10 mb-2">
       <%= l(@space.last_updated_at, default: 'N/A') %>
       <span class="ms-2">
-        <%= render './users/avatar', user: @space.last_updated_user, present: @space.last_updated_user_id.present? %>
+        <%= render '/users/avatar', user: @space.last_updated_user, present: @space.last_updated_user_id.present? %>
       </span>
     </div>
   </div>
@@ -33,7 +33,7 @@
     <div class="col-md-10">
       <div class="<%= input_size_class_name(@space, :name) %>">
         <%= form.text_field :name, placeholder: 'スペース名を入力', autocomplete: 'off', class: "form-control#{validate_class_name(validate_enabled, @space, :name)}" %>
-        <%= render './users/shared/field_error_messages', messages:  @space.errors[:name] %>
+        <%= render '/users/shared/field_error_messages', messages:  @space.errors[:name] %>
       </div>
     </div>
   </div>
@@ -45,7 +45,7 @@
     <div class="col-md-10">
       <div class="<%= input_size_class_name(@space, :description) %>">
         <%= form.text_area :description, placeholder: 'スペースの説明を入力', rows: 5, class: "form-control#{validate_class_name(validate_enabled, @space, :description)}" %>
-        <%= render './users/shared/field_error_messages', messages: @space.errors[:description] %>
+        <%= render '/users/shared/field_error_messages', messages: @space.errors[:description] %>
       </div>
     </div>
   </div>
@@ -65,7 +65,7 @@
           <%= form.radio_button :private, true, class: "form-check-input#{validate_class_name(validate_enabled, @space, :private)}" %>
           <%= form.label true, 'メンバーのみ表示できる（非公開）', class: 'form-check-label', for: "space_private_true" %>
         </div>
-        <%= render './users/shared/field_error_messages', messages: @space.errors[:private] %>
+        <%= render '/users/shared/field_error_messages', messages: @space.errors[:private] %>
       </div>
     </div>
   </div>
@@ -87,7 +87,7 @@
       </div>
       <div class="<%= input_size_class_name(@space, :image) %>">
         <%= form.file_field :image, class: "form-control#{validate_class_name(validate_enabled, @space, :image)}" %>
-        <%= render './users/shared/field_error_messages', messages: @space.errors[:image] %>
+        <%= render '/users/shared/field_error_messages', messages: @space.errors[:image] %>
       </div>
     </div>
   </div>

@@ -1,4 +1,4 @@
-<%= form_with(url: members_path(@space.code), html: { method: :get, novalidate: true, autocomplete: 'on' }, local: true) do |form| %>
+<%= form_with(url: members_path(@space.code), html: { method: :get, novalidate: true, autocomplete: 'on' }, data: { turbo: false }) do |form| %>
   <div class="d-flex align-items-center">
     <div class="form-outline" style="width: 57%; max-width: 400px">
       <%= form.text_field :text, value: @text, placeholder: "ユーザー名#{'やメールアドレス' if @current_member.power_admin?}を入力", autocomplete: 'on', class: 'form-control input_to_search_btn_enabled' %>

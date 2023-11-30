@@ -15,6 +15,7 @@
     <%= javascript_importmap_tags %>
     <%= javascript_import_module_tag 'controllers/left_menu' %>
     <%= javascript_import_module_tag 'controllers/search' if enable_javascript_search? %>
+    <%= javascript_import_module_tag "controllers/#{controller_name}" if %w[invitations members downloads].include?(controller_name) %>
   </head>
   <body>
     <header style="margin-bottom: 70px">

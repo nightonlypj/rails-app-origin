@@ -12,9 +12,9 @@ module Users::RegistrationsConcern
 
     @invitation = Invitation.find_by(code: @code)
     return if @invitation.present? && @invitation.status == :active
-    return render './error', locals: { alert: t('alert.invitation.notfound') }, status: :not_found if format_html?
+    return render '/error', locals: { alert: t('alert.invitation.notfound') }, status: :not_found if format_html?
 
-    render './failure', locals: { alert: t('alert.invitation.notfound') }, status: :not_found
+    render '/failure', locals: { alert: t('alert.invitation.notfound') }, status: :not_found
   end
 
   def get_email(target_params)

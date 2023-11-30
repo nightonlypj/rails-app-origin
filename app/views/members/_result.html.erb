@@ -1,11 +1,11 @@
 <div class="mb-2">
-  <%= flash[:emails].count.to_s(:delimited) %>名中
+  <%= flash[:emails].count.to_formatted_s(:delimited) %>名中
   <i class="fas fa-check-circle text-success"></i>
-  招待: <%= flash[:create_user_mails].count.to_s(:delimited) %>名
+  招待: <%= flash[:create_user_mails].count.to_formatted_s(:delimited) %>名
   <i class="fas fa-info-circle text-info"></i>
-  参加中: <%= flash[:exist_user_mails].count.to_s(:delimited) %>名
+  参加中: <%= flash[:exist_user_mails].count.to_formatted_s(:delimited) %>名
   <i class="fas fa-exclamation-triangle text-danger"></i>
-  未登録: <%= (flash[:emails].count - flash[:create_user_mails].count - flash[:exist_user_mails].count).to_s(:delimited) %>名
+  未登録: <%= (flash[:emails].count - flash[:create_user_mails].count - flash[:exist_user_mails].count).to_formatted_s(:delimited) %>名
 </div>
 
 <div class="table-responsive">

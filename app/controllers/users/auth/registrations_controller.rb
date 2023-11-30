@@ -17,9 +17,9 @@ class Users::Auth::RegistrationsController < DeviseTokenAuth::RegistrationsContr
 
   # GET /users/auth/invitation(.json) 招待情報取得API
   def invitation
-    return render './failure', locals: { alert: t('alert.invitation.notfound') }, status: :not_found if @invitation.blank?
+    return render '/failure', locals: { alert: t('alert.invitation.notfound') }, status: :not_found if @invitation.blank?
 
-    render './users/auth/invitation'
+    render '/users/auth/invitation'
   end
 
   # POST /users/auth/sign_up(.json) アカウント登録API(処理)

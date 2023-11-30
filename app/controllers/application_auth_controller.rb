@@ -22,7 +22,7 @@ class ApplicationAuthController < ApplicationController
   def response_forbidden
     return head :forbidden if format_html?
 
-    render './failure', locals: { alert: t('alert.user.forbidden') }, status: :forbidden, formats: :json
+    render '/failure', locals: { alert: t('alert.user.forbidden') }, status: :forbidden, formats: :json
   end
 
   # 存在しない(404)を返却

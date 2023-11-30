@@ -49,7 +49,7 @@ class DownloadsController < ApplicationAuthController
     unless @download.save
       return render :new, status: :unprocessable_entity if format_html?
 
-      return render './failure', locals: { errors: @download.errors, alert: t('errors.messages.not_saved.other') }, status: :unprocessable_entity
+      return render '/failure', locals: { errors: @download.errors, alert: t('errors.messages.not_saved.other') }, status: :unprocessable_entity
     end
 
     DownloadJob.perform_later(@download.id)
@@ -124,7 +124,7 @@ class DownloadsController < ApplicationAuthController
   def response_param_error(key, error)
     return head :not_found if format_html?
 
-    render './failure', locals: { errors: { key => [t("errors.messages.param.#{error}")] }, alert: t('errors.messages.not_saved.one') }, status: :not_found
+    render '/failure', locals: { errors: { key => [t("errors.messages.param.#{error}")] }, alert: t('errors.messages.not_saved.one') }, status: :not_found
   end
 
   # Only allow a list of trusted parameters through.

@@ -1,5 +1,5 @@
 <div class="table-responsive">
-<%= form_with(url: @current_member.power_admin? ? destroy_member_path(@space.code) : '/', html: { method: :post, novalidate: true, autocomplete: 'off' }, local: true) do |form| %>
+<%= form_with(url: @current_member.power_admin? ? destroy_member_path(@space.code) : '/', html: { method: :post, novalidate: true, autocomplete: 'off' }, data: { turbo: false }) do |form| %>
   <table class="table table-sm table-hover table_members">
     <thead class="table-light">
       <tr>
@@ -59,7 +59,7 @@
 <% else %>
         <td scope="row" class="ps-2 pe-1 py-2">
 <% end %>
-          <%= render './users/avatar', user: member.user, present: true %>
+          <%= render '/users/avatar', user: member.user, present: true %>
         </td>
 <% if @current_member.power_admin? %>
         <%# メールアドレス %>
@@ -81,7 +81,7 @@
 <% if @current_member.power_admin? %>
         <%# 招待者 %>
         <td class="<%= 'text-center ' if member.invitationed_user.blank? && member.invitationed_user_id.present? %>px-1 py-2">
-          <%= render './users/avatar', user: member.invitationed_user, present: member.invitationed_user_id.present? %>
+          <%= render '/users/avatar', user: member.invitationed_user, present: member.invitationed_user_id.present? %>
         </td>
 <% end %>
         <%# 招待日時 %>
@@ -91,7 +91,7 @@
 <% if @current_member.power_admin? %>
         <%# 更新者 %>
         <td class="<%= 'text-center ' if member.last_updated_user.blank? && member.last_updated_user_id.present? %>px-1 py-2">
-          <%= render './users/avatar', user: member.last_updated_user, present: member.last_updated_user_id.present? %>
+          <%= render '/users/avatar', user: member.last_updated_user, present: member.last_updated_user_id.present? %>
         </td>
         <%# 更新日時 %>
         <td class="text-center ps-1 pe-2 py-2">
