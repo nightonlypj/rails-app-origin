@@ -1,7 +1,7 @@
 services:
   db:
     platform: linux/x86_64 # Tips: mysql -> ERROR: no matching manifest for linux/arm64/v8 in the manifest list entries
-    image: mysql:8.0.33 # https://hub.docker.com/_/mysql
+    image: mysql:8.2.0 # https://hub.docker.com/_/mysql
     command: --default-authentication-plugin=mysql_native_password
     volumes:
       - ./tmp/mysql:/var/lib/mysql:delegated
@@ -15,7 +15,7 @@ services:
       timeout: 10s # <- 30s
       retries: 10 # <- 3
   pg:
-    image: postgres:15.3-alpine # https://hub.docker.com/_/postgres
+    image: postgres:16.1-alpine # https://hub.docker.com/_/postgres
     volumes:
       - ./tmp/postgresql:/var/lib/postgresql/data:delegated
     environment:
@@ -40,18 +40,6 @@ services:
     depends_on:
       - db
       - pg
-    environment:
-      WEBPACKER_DEV_SERVER_HOST: webpack
-  webpack:
-    build: .
-    command: bin/webpack-dev-server --host 0.0.0.0 --port 3035
-    volumes:
-      - .:/workdir
-      - /workdir/node_modules
-    ports:
-      - 3035:3035
-    environment:
-      WEBPACKER_DEV_SERVER_HOST: 0.0.0.0
   job:
     build: .
     command: bundle exec rails jobs:work

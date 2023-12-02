@@ -3,11 +3,13 @@ Rails.application.routes.draw do
   #
   # Defines the root path route ("/")
   # root "articles#index"
+
   draw :holidays
   draw :infomations
   draw :admin
   draw :users
   root 'top#index'
+
   # :nocov:
   mount LetterOpenerWeb::Engine => '/letter_opener' if Rails.env.development?
   # :nocov:
