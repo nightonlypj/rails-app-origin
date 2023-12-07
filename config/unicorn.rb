@@ -1,37 +1,50 @@
-unless defined?(DEFAULT_WORKER_PROCESSES)
-  DEFAULT_WORKER_PROCESSES = 2
-  DEFAULT_TIMEOUT = 60
-  DEFAULT_LISTEN = File.expand_path('../tmp/sockets/unicorn.sock', __dir__).freeze
-  DEFAULT_LISTEN_BACKLOG = 1024
-  DEFAULT_PID_PATH = File.expand_path('../tmp/pids/unicorn.pid', __dir__).freeze
-  DEFAULT_STDERR_PATH = File.expand_path('../log/unicorn_stderr.log', __dir__).freeze
-  DEFAULT_STDOUT_PATH = File.expand_path('../log/unicorn_stdout.log', __dir__).freeze
-end
-p "RAILS_ENV: #{ENV['RAILS_ENV'] || 'development(default)'}"
-p "WORKER_PROCESSES: #{ENV['WORKER_PROCESSES'] || "#{DEFAULT_WORKER_PROCESSES}(default)"}"
-p "TIMEOUT: #{ENV['TIMEOUT'] || "#{DEFAULT_TIMEOUT}(default)"}"
-p "LISTEN: #{ENV['LISTEN'] || "#{DEFAULT_LISTEN}(default)"}"
-p "LISTEN_BACKLOG: #{ENV['LISTEN_BACKLOG'] || "#{DEFAULT_LISTEN_BACKLOG}(default)"}"
-pid_path = ENV['PID_PATH'] || DEFAULT_PID_PATH
-p "PID_PATH: #{ENV['PID_PATH'] || "#{DEFAULT_PID_PATH}(default)"}[#{File.exist?(pid_path) ? File.read(pid_path).to_i : 'Not found'}]"
+unicorn_env = {
+  worker_processes: ENV['WORKER_PROCESSES'] == '' ? nil : ENV['WORKER_PROCESSES'],
+  timeout: ENV['TIMEOUT'] == '' ? nil : ENV['TIMEOUT'],
+  working_directory: ENV['WORKING_DIRECTORY'] == '' ? nil : ENV['WORKING_DIRECTORY'],
+  listen: ENV['LISTEN'] == '' ? nil : ENV['LISTEN'],
+  listen_backlog: ENV['LISTEN_BACKLOG'] == '' ? nil : ENV['LISTEN_BACKLOG'],
+  pid_path: ENV['PID_PATH'] == '' ? nil : ENV['PID_PATH'],
+  stderr_path: ENV['STDERR_PATH'] == '' ? nil : ENV['STDERR_PATH'],
+  stdout_path: ENV['STDOUT_PATH'] == '' ? nil : ENV['STDOUT_PATH']
+}
+unicorn_using = {
+  worker_processes: (unicorn_env[:worker_processes] || 2).to_i,
+  timeout: (unicorn_env[:timeout] || 60).to_i,
+  working_directory: File.expand_path(unicorn_env[:working_directory] || '../', __dir__),
+  listen: unicorn_env[:listen].to_i > 0 ? unicorn_env[:listen] : File.expand_path(unicorn_env[:listen] || '../tmp/sockets/unicorn.sock', __dir__),
+  listen_backlog: (unicorn_env[:listen_backlog] || 1024).to_i,
+  pid_path: File.expand_path(unicorn_env[:pid_path] || '../tmp/pids/unicorn.pid', __dir__),
+  stderr_path: File.expand_path(unicorn_env[:stderr_path] || '../log/unicorn_stderr.log', __dir__),
+  stdout_path: File.expand_path(unicorn_env[:stdout_path] || '../log/unicorn_stdout.log', __dir__)
+}
+
+p "WORKER_PROCESSES: #{unicorn_using[:worker_processes]}#{'(default)' if unicorn_env[:worker_processes].nil?}"
+worker_processes unicorn_using[:worker_processes]
+
+p "TIMEOUT: #{unicorn_using[:timeout]}#{'(default)' if unicorn_env[:timeout].nil?}"
+timeout unicorn_using[:timeout]
+preload_app true
+
+p "WORKING_DIRECTORY: #{unicorn_using[:working_directory]}#{'(default)' if unicorn_env[:working_directory].nil?}"
+working_directory unicorn_using[:working_directory]
+
+p "LISTEN: #{unicorn_using[:listen]}#{'(default)' if unicorn_env[:listen].nil?}"
+p "LISTEN_BACKLOG: #{unicorn_using[:listen_backlog]}#{'(default)' if unicorn_env[:listen_backlog].nil?}"
+listen unicorn_using[:listen], backlog: unicorn_using[:listen_backlog]
+
+pid_info = File.exist?(unicorn_using[:pid_path]) ? File.read(unicorn_using[:pid_path]).to_i : 'Not found'
+p "PID_PATH: #{unicorn_using[:pid_path]}#{'(default)' if unicorn_env[:pid_path].nil?}[#{pid_info}]"
+pid unicorn_using[:pid_path]
+
 if ENV['RAILS_LOG_TO_STDOUT'].nil?
-  p "STDERR_PATH: #{ENV['STDERR_PATH'] || "#{DEFAULT_STDERR_PATH}(default)"}"
-  p "STDOUT_PATH: #{ENV['STDOUT_PATH'] || "#{DEFAULT_STDOUT_PATH}(default)"}"
+  p "STDERR_PATH: #{unicorn_using[:stderr_path]}#{'(default)' if unicorn_env[:stderr_path].nil?}"
+  stderr_path unicorn_using[:stderr_path]
+
+  p "STDOUT_PATH: #{unicorn_using[:stdout_path]}#{'(default)' if unicorn_env[:stdout_path].nil?}"
+  stdout_path unicorn_using[:stdout_path]
 else
   p "RAILS_LOG_TO_STDOUT: #{ENV['RAILS_LOG_TO_STDOUT']}"
-end
-
-worker_processes Integer(ENV['WORKER_PROCESSES'] || DEFAULT_WORKER_PROCESSES)
-timeout Integer(ENV['TIMEOUT'] || DEFAULT_TIMEOUT)
-preload_app true
-working_directory File.expand_path('../../current', __dir__) # NOTE: Capistranoで反映されない場合がある為
-
-listen ENV['LISTEN'] || DEFAULT_LISTEN, backlog: Integer(ENV['LISTEN_BACKLOG'] || DEFAULT_LISTEN_BACKLOG)
-pid pid_path
-
-if ENV['RAILS_LOG_TO_STDOUT'].nil?
-  stderr_path ENV['STDERR_PATH'] || DEFAULT_STDERR_PATH
-  stdout_path ENV['STDOUT_PATH'] || DEFAULT_STDOUT_PATH
 end
 
 before_fork do |server, worker|

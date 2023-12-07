@@ -27,6 +27,13 @@ RailsAdmin.config do |config|
   ## To disable Gravatar integration in Navigation Bar set to false
   # config.show_gravatar = true
 
+  ## == Delayed::Job ==
+  config.included_models = RailsAdmin::Config.models_pool << 'Delayed::Job'
+  config.model Delayed::Job do
+    label 'delayed_jobs'
+    navigation_label '管理'
+  end
+
   config.actions do
     dashboard                     # mandatory
     index                         # mandatory

@@ -16,11 +16,12 @@ RUN bundle config set --local without 'test development'
 RUN bundle install --no-cache
 
 COPY . ./
-RUN mkdir -p tmp/{pids,sockets}
+RUN mkdir -p tmp/pids
+RUN mkdir -p tmp/sockets
 
-# Tips: 存在チェック
+# NOTE: 存在チェック
 COPY public/robots.txt ./public/
 
 # Configure the main process to run when running the image
-# Tips: assets:precompileは起動時に実施。SECRET_KEY_BASEが必要な為
-CMD bash -c "bundle exec rails assets:precompile && rm -f tmp/pids/unicorn.pid && bundle exec unicorn -c config/unicorn.rb"
+# NOTE: assets:precompileは起動時に実施。SECRET_KEY_BASEが必要な為
+CMD bash -c "bundle exec rails db:migrate db:seed assets:precompile && bundle exec unicorn -c config/unicorn.rb"
