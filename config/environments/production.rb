@@ -4,6 +4,7 @@ Rails.application.configure do
   # Settings specified here will take precedence over those in config/application.rb.
   ### START ###
   config.hosts << Settings.base_domain
+  config.host_authorization = { exclude: ->(request) { request.path == '/_check' } } # NOTE: [ActionDispatch::HostAuthorization::DefaultResponseApp] Blocked hosts
   ### END ###
 
   # Code is not reloaded between requests.

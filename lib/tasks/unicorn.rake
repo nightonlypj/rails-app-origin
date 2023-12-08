@@ -4,13 +4,13 @@ DEFAULT_PID_PATH = File.expand_path('../../tmp/pids/unicorn.pid', __dir__).freez
 namespace :unicorn do
   desc 'Unicorn起動(bundle exec unicorn)'
   task(:start) do
-    pid_path = ENV['PID_PATH'] || DEFAULT_PID_PATH
+    pid_path = ENV['PID_PATH'].presence || DEFAULT_PID_PATH
     if File.exist?(pid_path)
       p "Found: #{pid_path}"
       exit 1
     end
 
-    rails_env = ENV['RAILS_ENV'] || 'development'
+    rails_env = ENV['RAILS_ENV'].presence || 'development'
     sh "bundle exec unicorn -c config/unicorn.rb -D -E #{rails_env}"
   end
 
@@ -31,7 +31,7 @@ namespace :unicorn do
 
   desc 'Unicornプロセスの親子関係を確認(pstree)'
   task(:pstree) do
-    pid_path = ENV['PID_PATH'] || DEFAULT_PID_PATH
+    pid_path = ENV['PID_PATH'].presence || DEFAULT_PID_PATH
     unless File.exist?(pid_path)
       p "Not found: #{pid_path}"
       exit 1
@@ -42,7 +42,7 @@ namespace :unicorn do
 
   # killシグナルを送る
   def process_kill(signal)
-    pid_path = ENV['PID_PATH'] || DEFAULT_PID_PATH
+    pid_path = ENV['PID_PATH'].presence || DEFAULT_PID_PATH
     unless File.exist?(pid_path)
       p "Not found: #{pid_path}"
       exit 1

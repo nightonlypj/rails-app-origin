@@ -3,6 +3,8 @@
 .yardoc
 .yarn-integrity
 config/master.key
+coverage/
+cron/
 db/*.sqlite3
 db/*.sqlite3-journal
 db/*.sqlite3-*

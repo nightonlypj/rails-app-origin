@@ -22,6 +22,16 @@
 | erd<br>open db/erd.pdf | docker compose run app erd<br>open db/erd.pdf |
 | cd schemaspy<br>make schemaspy<br>( open analysis/index.html ) | cd schemaspy<br>make docker-schemaspy<br>( open analysis/index.html ) |
 
+### Capistrano
+
+```
+cap -T
+cap production deploy
+cap production deploy --trace --dry-run
+cap production unicorn:stop
+cap production unicorn:start
+```
+
 ## 環境構築手順（Dockerの場合）
 
 ### Dockerインストール

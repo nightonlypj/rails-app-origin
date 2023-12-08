@@ -8,14 +8,8 @@ RUN apk add --no-cache --update mysql-dev mysql-client
 WORKDIR /workdir
 ENV LANG="ja_JP.UTF-8"
 
-# NOTE: Error: error:0308010C:digital envelope routines::unsupported
-ENV NODE_OPTIONS='--openssl-legacy-provider'
-
 COPY Gemfile Gemfile.lock ./
 RUN bundle install --no-cache
-
-COPY package.json yarn.lock ./
-RUN yarn install && yarn cache clean
 
 # Add a script to be executed every time the container starts.
 COPY entrypoint.sh /usr/bin/
