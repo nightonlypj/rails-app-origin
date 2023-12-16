@@ -15,7 +15,7 @@ RSpec.describe 'Invitations', type: :request do
   #   ＋Acceptヘッダ: HTMLが含まれる, JSONが含まれる
   describe 'POST #create' do
     subject { post create_invitation_path(space_code: space.code, format: subject_format), params:, headers: auth_headers.merge(accept_headers) }
-    let_it_be(:valid_attributes)   { FactoryBot.attributes_for(:invitation, domains: Faker::Internet.domain_name).reject { |key| key == :code } }
+    let_it_be(:valid_attributes)   { FactoryBot.attributes_for(:invitation, domains: Faker::Internet.domain_name).except(:code) }
     let_it_be(:invalid_attributes) { valid_attributes.merge(domains: nil) }
     let_it_be(:created_user) { FactoryBot.create(:user) }
 

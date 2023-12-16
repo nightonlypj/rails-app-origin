@@ -16,7 +16,7 @@ RSpec.describe 'Downloads', type: :request do
   describe 'POST #create' do
     subject { post create_download_path(format: subject_format), params: { download: attributes }, headers: auth_headers.merge(accept_headers) }
     let_it_be(:space) { FactoryBot.create(:space) }
-    let_it_be(:valid_attributes)   { FactoryBot.attributes_for(:download).reject { |key| key == :requested_at } }
+    let_it_be(:valid_attributes)   { FactoryBot.attributes_for(:download).except(:requested_at) }
     let_it_be(:invalid_attributes) { valid_attributes.merge(target: nil) }
 
     # テスト内容

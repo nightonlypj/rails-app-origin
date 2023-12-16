@@ -18,7 +18,7 @@ RSpec.describe 'Spaces', type: :request do
   describe 'POST #update' do
     subject { post update_space_path(code: space.code, format: subject_format), params:, headers: auth_headers.merge(accept_headers) }
     let_it_be(:created_user) { FactoryBot.create(:user) }
-    let_it_be(:valid_attributes)   { FactoryBot.attributes_for(:space).reject { |key| key == :code } }
+    let_it_be(:valid_attributes)   { FactoryBot.attributes_for(:space).except(:code) }
     let_it_be(:exist_attributes)   { valid_attributes.merge(name: FactoryBot.create(:space, :public, created_user:).name) }
     let_it_be(:invalid_attributes) { valid_attributes.merge(name: nil) }
 
