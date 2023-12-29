@@ -1,12 +1,12 @@
 unicorn_env = {
-  worker_processes: ENV['WORKER_PROCESSES'] == '' ? nil : ENV['WORKER_PROCESSES'],
-  timeout: ENV['TIMEOUT'] == '' ? nil : ENV['TIMEOUT'],
-  working_directory: ENV['WORKING_DIRECTORY'] == '' ? nil : ENV['WORKING_DIRECTORY'],
-  listen: ENV['LISTEN'] == '' ? nil : ENV['LISTEN'],
-  listen_backlog: ENV['LISTEN_BACKLOG'] == '' ? nil : ENV['LISTEN_BACKLOG'],
-  pid_path: ENV['PID_PATH'] == '' ? nil : ENV['PID_PATH'],
-  stderr_path: ENV['STDERR_PATH'] == '' ? nil : ENV['STDERR_PATH'],
-  stdout_path: ENV['STDOUT_PATH'] == '' ? nil : ENV['STDOUT_PATH']
+  worker_processes: ENV['UNICORN_WORKER_PROCESSES'] == '' ? nil : ENV['UNICORN_WORKER_PROCESSES'],
+  timeout: ENV['UNICORN_TIMEOUT'] == '' ? nil : ENV['UNICORN_TIMEOUT'],
+  working_directory: ENV['UNICORN_WORKING_DIRECTORY'] == '' ? nil : ENV['UNICORN_WORKING_DIRECTORY'],
+  listen: ENV['UNICORN_LISTEN'] == '' ? nil : ENV['UNICORN_LISTEN'],
+  listen_backlog: ENV['UNICORN_LISTEN_BACKLOG'] == '' ? nil : ENV['UNICORN_LISTEN_BACKLOG'],
+  pid_path: ENV['UNICORN_PID_PATH'] == '' ? nil : ENV['UNICORN_PID_PATH'],
+  stderr_path: ENV['UNICORN_STDERR_PATH'] == '' ? nil : ENV['UNICORN_STDERR_PATH'],
+  stdout_path: ENV['UNICORN_STDOUT_PATH'] == '' ? nil : ENV['UNICORN_STDOUT_PATH']
 }
 unicorn_using = {
   worker_processes: (unicorn_env[:worker_processes] || 2).to_i,
