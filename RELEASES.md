@@ -2,6 +2,8 @@
 
 ## 1.8.0 (Sprint 13)
 
+- ECS(Fargate)でアプリを動かしたい
+  - https://dev.azure.com/nightonly/rails-app-origin/_workitems/edit/459/
 - Ruby3.2.2/Rails7.0（WebpackerからSprocketsに移行）とGemをバージョンアップしたい
   - https://dev.azure.com/nightonly/rails-app-origin/_workitems/edit/557/
 

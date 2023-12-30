@@ -32,6 +32,28 @@ cap production unicorn:stop
 cap production unicorn:start
 ```
 
+### ECR -> ECS(Fargate)
+
+ALB -> Unicorn(rails-app-origin_app)
+ALB -> Nginx(rails-app-origin_web) -> ALB -> Unicorn(rails-app-origin_app)
+ALB -> Nginx+Unicorn(rails-app-origin_webapp)
+
+https://ap-northeast-1.console.aws.amazon.com/ecr/public-registry/repositories?region=ap-northeast-1
+```
+docker build --platform=linux/amd64 -f ecs/app/Dockerfile -t rails-app-origin_app .
+docker build --platform=linux/amd64 -f ecs/web/Dockerfile -t rails-app-origin_web .
+docker build --platform=linux/amd64 -f ecs/webapp/Dockerfile -t rails-app-origin_webapp .
+
+docker tag rails-app-origin_app:latest public.ecr.aws/h7c3l0m6/rails-app-origin_app:latest
+docker tag rails-app-origin_web:latest public.ecr.aws/h7c3l0m6/rails-app-origin_web:latest
+docker tag rails-app-origin_webapp:latest public.ecr.aws/h7c3l0m6/rails-app-origin_webapp:latest
+
+aws ecr-public get-login-password --region us-east-1 | docker login --username AWS --password-stdin public.ecr.aws/h7c3l0m6
+docker push public.ecr.aws/h7c3l0m6/rails-app-origin_app:latest
+docker push public.ecr.aws/h7c3l0m6/rails-app-origin_web:latest
+docker push public.ecr.aws/h7c3l0m6/rails-app-origin_webapp:latest
+```
+
 ## 環境構築手順（Dockerの場合）
 
 ### Dockerインストール
@@ -242,6 +264,55 @@ $ rm -fr /opt/homebrew/var/mysql
 $ rm -fr /opt/homebrew/etc/my.cnf.d
 $ rm -f /opt/homebrew/etc/my.cnf*
 $ rm -f ~/.my.cnf
+```
+
+### PostgreSQLインストール
+
+```
+$ brew search postgresql
+postgresql@10     postgresql@11     postgresql@12     postgresql@13     postgresql@14     postgresql@15     postgresql@16     qt-postgresql     postgrest
+
+$ brew install postgresql@16
+（$ brew upgrade postgresql@16）
+
+※zshの場合(Catalina以降)
+% vi ~/.zshrc
+※bashの場合
+$ vi ~/.bash_profile
+---- ここから ----
+### START ###
+export PATH="/opt/homebrew/opt/postgresql@16/bin:$PATH"
+export LDFLAGS="-L/opt/homebrew/opt/postgresql@16/lib"
+export CPPFLAGS="-I/opt/homebrew/opt/postgresql@16/include"
+export PKG_CONFIG_PATH="/opt/homebrew/opt/postgresql@16/lib/pkgconfig"
+### END ###
+---- ここまで ----
+
+※zshの場合(Catalina以降)
+% source ~/.zshrc
+※bashの場合
+$ source ~/.bash_profile
+
+$ psql --version
+psql (PostgreSQL) 16.1 (Homebrew)
+※バージョンは異なっても良いが、本番と同じが理想
+
+$ brew services start postgresql@16
+```
+
+```
+% psql -l
+% psql postgres
+psql (16.1 (Homebrew))
+
+# \q
+```
+
+#### Tips: アンインストール
+
+```
+$ brew services stop postgresql@14
+$ brew uninstall postgresql@14
 ```
 
 ### 起動まで

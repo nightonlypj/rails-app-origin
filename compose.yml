@@ -40,6 +40,28 @@ services:
     depends_on:
       - db
       - pg
+  web:
+    image: nginx:1.25.3-alpine # https://hub.docker.com/_/nginx
+    volumes:
+      - ./ecs/web/nginx/nginx.conf.template:/etc/nginx/nginx.conf.template
+      - ./ecs/web/nginx/conf.d/default.conf.template:/etc/nginx/conf.d/default.conf.template
+      - ./public:/usr/share/nginx/html
+    command: >
+      /bin/sh -c "
+        envsubst '$$NGINX_WORKER_PROCESSES $$NGINX_WORKER_RLIMIT_NOFILE $$NGINX_WORKER_CONNECTIONS $$NGINX_SET_REAL_IP_FROM $$NGINX_REAL_IP_HEADER' < /etc/nginx/nginx.conf.template > /etc/nginx/nginx.conf &&
+        envsubst '$$NGINX_PROXY_PASS' < /etc/nginx/conf.d/default.conf.template > /etc/nginx/conf.d/default.conf &&
+        nginx -g 'daemon off;'"
+    environment:
+      NGINX_WORKER_PROCESSES: "auto" # 最大値: vCPUの数 or auto = 16と仮定して
+      NGINX_WORKER_RLIMIT_NOFILE: 32768 # 最大値: 524288(cat /proc/sys/fs/file-max) / WORKER_PROCESSES
+      NGINX_WORKER_CONNECTIONS: 8192 # 最大値: WORKER_RLIMIT_NOFILE / 4
+      NGINX_SET_REAL_IP_FROM: "172.31.0.0/16" # <- ELB
+      NGINX_REAL_IP_HEADER: "X-Forwarded-For" # <- ELB
+      NGINX_PROXY_PASS: "http://app:3000"
+    ports:
+      - 80:80
+    depends_on:
+      - app
   job:
     build: .
     command: bundle exec rails jobs:work

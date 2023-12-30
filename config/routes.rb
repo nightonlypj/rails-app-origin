@@ -13,6 +13,7 @@ Rails.application.routes.draw do
   draw :admin
   draw :users
   root 'top#index'
+  get 'health_check', to: 'health_check#index', as: 'health_check'
 
   # :nocov:
   mount LetterOpenerWeb::Engine => '/letter_opener' if Rails.env.development?

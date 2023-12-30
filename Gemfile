@@ -16,7 +16,7 @@ gem 'sprockets-rails'
 gem 'mysql2', '~> 0.5'
 
 # Use postgresql as the database for Active Record
-# gem 'pg', '~> 1.1'
+gem 'pg', '~> 1.1'
 
 # Use the Puma web server [https://github.com/puma/puma]
 gem 'puma', '~> 5.0'
@@ -95,7 +95,6 @@ group :development do
   gem 'capistrano-rvm'
   gem 'capistrano-rails'
   gem 'capistrano-bundler'
-  gem 'capistrano-yarn'
   gem 'capistrano3-unicorn'
 end
 
