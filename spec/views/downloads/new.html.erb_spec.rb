@@ -3,8 +3,9 @@ require 'rails_helper'
 RSpec.describe 'downloads/new', type: :view do
   before_all do
     @model = :member
-    @space = FactoryBot.create(:space)
-    @current_member = FactoryBot.create(:member, space: @space, user: @space.created_user)
+    user = FactoryBot.create(:user)
+    @space = FactoryBot.create(:space, created_user: user)
+    @current_member = FactoryBot.create(:member, space: @space, user:)
     @enable_target = ['all']
     @items = t("items.#{@model}")
 

@@ -18,21 +18,19 @@ RSpec.describe 'Invitations', type: :request do
   #   ＋Acceptヘッダ: HTMLが含まれる, JSONが含まれる
   describe 'POST #update' do
     subject { post update_invitation_path(space_code: space.code, code: invitation.code, format: subject_format), params:, headers: auth_headers.merge(accept_headers) }
-    let_it_be(:space_not)     { FactoryBot.build_stubbed(:space) }
-    let_it_be(:space_public)  { FactoryBot.create(:space, :public) }
-    let_it_be(:space_private) { FactoryBot.create(:space, :private, created_user: space_public.created_user) }
     let_it_be(:valid_attributes)   { { memo: 'メモ', ended_date: '9999-12-31', ended_time: '23:59', ended_zone: '+09:00' } }
     let_it_be(:invalid_attributes) { valid_attributes.merge(ended_time: nil) }
-    let(:current_invitation) { Invitation.find(invitation.id) }
+    let_it_be(:created_user) { FactoryBot.create(:user) }
 
     shared_context 'valid_condition' do
-      let(:params) { { invitation: valid_attributes } }
-      let_it_be(:space) { space_public }
+      let_it_be(:space) { FactoryBot.create(:space, :public, created_user:) }
       before_all { FactoryBot.create(:member, space:, user:) if user.present? }
-      let_it_be(:invitation) { FactoryBot.create(:invitation, :active, space:, created_user: space.created_user) }
+      let_it_be(:invitation) { FactoryBot.create(:invitation, :active, space:, created_user:) }
+      let(:params) { { invitation: valid_attributes } }
     end
 
     # テスト内容
+    let(:current_invitation) { Invitation.find(invitation.id) }
     shared_examples_for 'OK' do
       let!(:start_time) { Time.current.floor }
       let(:schedule_days) { Settings.invitation_destroy_schedule_days.days }
@@ -156,7 +154,7 @@ RSpec.describe 'Invitations', type: :request do
     end
 
     shared_examples_for '[ログイン中][*][ある]招待コードが存在する' do |status|
-      let_it_be(:invitation) { FactoryBot.create(:invitation, status, space:, created_user: space.created_user) }
+      let_it_be(:invitation) { FactoryBot.create(:invitation, status, space:, created_user:) }
       it_behaves_like '[ログイン中][*][ある][存在する]パラメータなし'
       it_behaves_like '[ログイン中][*][ある][存在する]有効なパラメータ', {}
       it_behaves_like '[ログイン中][*][ある][存在する]有効なパラメータ', { delete: true } # TODO: APIとまとめる
@@ -165,7 +163,7 @@ RSpec.describe 'Invitations', type: :request do
       it_behaves_like '[ログイン中][*][ある][存在する]無効なパラメータ'
     end
     shared_examples_for '[APIログイン中][*][ある]招待コードが存在する' do |status|
-      let_it_be(:invitation) { FactoryBot.create(:invitation, status, space:, created_user: space.created_user) }
+      let_it_be(:invitation) { FactoryBot.create(:invitation, status, space:, created_user:) }
       it_behaves_like '[APIログイン中][*][ある][存在する]パラメータなし'
       it_behaves_like '[APIログイン中][*][ある][存在する]有効なパラメータ', {}
       it_behaves_like '[APIログイン中][*][ある][存在する]有効なパラメータ', { delete: true }
@@ -174,7 +172,7 @@ RSpec.describe 'Invitations', type: :request do
       it_behaves_like '[APIログイン中][*][ある][存在する]無効なパラメータ'
     end
     shared_examples_for '[ログイン中][*][ある]招待コードが参加済み' do
-      let_it_be(:invitation) { FactoryBot.create(:invitation, :email_joined, space:, created_user: space.created_user) }
+      let_it_be(:invitation) { FactoryBot.create(:invitation, :email_joined, space:, created_user:) }
       let(:params) { { invitation: valid_attributes } }
       it_behaves_like 'NG(html)'
       if Settings.api_only_mode
@@ -186,7 +184,7 @@ RSpec.describe 'Invitations', type: :request do
       it_behaves_like 'ToNG(json)', 401 # NOTE: APIは未ログイン扱い
     end
     shared_examples_for '[APIログイン中][*][ある]招待コードが参加済み' do
-      let_it_be(:invitation) { FactoryBot.create(:invitation, :email_joined, space:, created_user: space.created_user) }
+      let_it_be(:invitation) { FactoryBot.create(:invitation, :email_joined, space:, created_user:) }
       let(:params) { { invitation: valid_attributes } }
       it_behaves_like 'NG(html)'
       if Settings.api_only_mode
@@ -232,7 +230,7 @@ RSpec.describe 'Invitations', type: :request do
     end
     shared_examples_for '[ログイン中][*]権限がない' do |power|
       before_all { FactoryBot.create(:member, power, space:, user:) if power.present? }
-      let_it_be(:invitation) { FactoryBot.create(:invitation, :active, space:, created_user: space.created_user) }
+      let_it_be(:invitation) { FactoryBot.create(:invitation, :active, space:, created_user:) }
       let(:params) { { invitation: valid_attributes } }
       it_behaves_like 'NG(html)'
       it_behaves_like 'ToNG(html)', Settings.api_only_mode ? 406 : 403
@@ -241,7 +239,7 @@ RSpec.describe 'Invitations', type: :request do
     end
     shared_examples_for '[APIログイン中][*]権限がない' do |power|
       before_all { FactoryBot.create(:member, power, space:, user:) if power.present? }
-      let_it_be(:invitation) { FactoryBot.create(:invitation, :active, space:, created_user: space.created_user) }
+      let_it_be(:invitation) { FactoryBot.create(:invitation, :active, space:, created_user:) }
       let(:params) { { invitation: valid_attributes } }
       it_behaves_like 'NG(html)'
       it_behaves_like 'ToNG(html)', Settings.api_only_mode ? 406 : 403 # NOTE: HTMLもログイン状態になる
@@ -263,7 +261,7 @@ RSpec.describe 'Invitations', type: :request do
     end
 
     shared_examples_for '[ログイン中]スペースが存在しない' do
-      let_it_be(:space) { space_not }
+      let_it_be(:space) { FactoryBot.build_stubbed(:space) }
       let_it_be(:invitation) { FactoryBot.build_stubbed(:invitation, :active) }
       let(:params) { { invitation: valid_attributes } }
       # it_behaves_like 'NG(html)' # NOTE: 存在しない為
@@ -272,7 +270,7 @@ RSpec.describe 'Invitations', type: :request do
       it_behaves_like 'ToNG(json)', 401 # NOTE: APIは未ログイン扱い
     end
     shared_examples_for '[APIログイン中]スペースが存在しない' do
-      let_it_be(:space) { space_not }
+      let_it_be(:space) { FactoryBot.build_stubbed(:space) }
       let_it_be(:invitation) { FactoryBot.build_stubbed(:invitation, :active) }
       let(:params) { { invitation: valid_attributes } }
       # it_behaves_like 'NG(html)' # NOTE: 存在しない為
@@ -281,19 +279,19 @@ RSpec.describe 'Invitations', type: :request do
       it_behaves_like 'ToNG(json)', 404
     end
     shared_examples_for '[ログイン中]スペースが公開' do
-      let_it_be(:space) { space_public }
+      let_it_be(:space) { FactoryBot.create(:space, :public, created_user:) }
       it_behaves_like '[ログイン中][*]'
     end
     shared_examples_for '[APIログイン中]スペースが公開' do
-      let_it_be(:space) { space_public }
+      let_it_be(:space) { FactoryBot.create(:space, :public, created_user:) }
       it_behaves_like '[APIログイン中][*]'
     end
     shared_examples_for '[ログイン中]スペースが非公開' do
-      let_it_be(:space) { space_private }
+      let_it_be(:space) { FactoryBot.create(:space, :private, created_user:) }
       it_behaves_like '[ログイン中][*]'
     end
     shared_examples_for '[APIログイン中]スペースが非公開' do
-      let_it_be(:space) { space_private }
+      let_it_be(:space) { FactoryBot.create(:space, :private, created_user:) }
       it_behaves_like '[APIログイン中][*]'
     end
 

@@ -22,8 +22,10 @@ ExceptionNotification.configure do |config|
   #   sender_address: %{"Notifier" <notifier@example.com>},
   #   exception_recipients: %w{exceptions@example.com}
   # }
+  # :nocov:
   config.add_notifier :email, Settings.exception_notifier.email_config.to_hash if Settings.exception_notifier.email_enabled
   config.add_notifier :slack, Settings.exception_notifier.slack_config.to_hash if Settings.exception_notifier.slack_enabled
+  # :nocov:
 
   # Campfire notifier sends notifications to your Campfire room. Requires 'tinder' gem.
   # config.add_notifier :campfire, {

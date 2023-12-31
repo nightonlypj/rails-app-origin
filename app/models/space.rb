@@ -16,6 +16,12 @@ class Space < ApplicationRecord
   validates :description, length: { maximum: Settings.space_description_maximum }, allow_blank: true
   validates :private, inclusion: { in: [true, false] } # NOTE: presenceだとfalseもエラーになる為
 
+  # 名称（ユニーク）
+  def validate_name_uniqueness(current_user)
+    checked = { public: true, private: true, join: true, nojoin: true, active: true, destroy: false } # NOTE: 検索オプションと同じ
+    errors.add(:name, :taken) if Space.by_target(current_user, checked).where(name:).exists?
+  end
+
   scope :by_target, lambda { |current_user, checked|
     return none if (!checked[:public] && !checked[:private]) || (!checked[:join] && !checked[:nojoin]) || (!checked[:active] && !checked[:destroy])
 

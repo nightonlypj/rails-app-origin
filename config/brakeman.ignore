@@ -41,7 +41,7 @@
       "check_name": "SQL",
       "message": "Possible SQL injection",
       "file": "app/models/space.rb",
-      "line": 53,
+      "line": 59,
       "link": "https://brakemanscanner.org/docs/warning_types/sql_injection/",
       "code": "all.where(\"name #{search_like} ? OR description #{search_like} ?\", \"%#{word}%\", \"%#{word}%\")",
       "render_path": null,
@@ -94,13 +94,13 @@
     {
       "warning_type": "Redirect",
       "warning_code": 18,
-      "fingerprint": "67f5de8abced3398b8678ef6bf37a4fc45277ede775bee10f0799a65b0fb52fc",
+      "fingerprint": "c5ac9ac238813034d9850a6f338cf6fa62749e027bf77edaec9a21e8de4c871d",
       "check_name": "Redirect",
       "message": "Possible unprotected redirect",
       "file": "app/controllers/users/auth/unlocks_controller.rb",
       "line": 62,
       "link": "https://brakemanscanner.org/docs/warning_types/redirect/",
-      "code": "redirect_to(DeviseTokenAuth::Url.generate(params.fetch(:redirect_url, Settings.default_unlock_success_url), :unlock => true, :notice => t(\"devise.unlocks.unlocked\")))",
+      "code": "redirect_to(DeviseTokenAuth::Url.generate(params.fetch(:redirect_url, Settings.default_unlock_success_url), :unlock => true, :notice => t(\"devise.unlocks.unlocked\")), :allow_other_host => true)",
       "render_path": null,
       "location": {
         "type": "method",
@@ -121,7 +121,7 @@
       "check_name": "SQL",
       "message": "Possible SQL injection",
       "file": "app/models/member.rb",
-      "line": 21,
+      "line": 52,
       "link": "https://brakemanscanner.org/docs/warning_types/sql_injection/",
       "code": "all.joins(:user).where((\"users.name #{search_like} ?\" + \" OR users.email #{search_like} ?\"), \"%#{word}%\", \"%#{word}%\")",
       "render_path": null,
@@ -144,7 +144,7 @@
       "check_name": "SQL",
       "message": "Possible SQL injection",
       "file": "app/models/member.rb",
-      "line": 23,
+      "line": 54,
       "link": "https://brakemanscanner.org/docs/warning_types/sql_injection/",
       "code": "all.joins(:user).where((\"users.name #{search_like} ?\" + \" OR users.email #{search_like} ?\"), \"%#{word}%\", \"%#{word}%\").where((\"users.name #{search_like} ?\" + \" OR users.email #{search_like} ?\"), \"%#{word}%\")",
       "render_path": null,
@@ -185,6 +185,6 @@
       "note": ""
     }
   ],
-  "updated": "2023-07-02 11:20:17 +0900",
-  "brakeman_version": "6.0.0"
+  "updated": "2023-12-30 11:19:32 +0900",
+  "brakeman_version": "6.0.1"
 }

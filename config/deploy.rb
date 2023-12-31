@@ -1,5 +1,5 @@
 # config valid for current version and patch releases of Capistrano
-lock '~> 3.17.1'
+lock '~> 3.18.0'
 
 # set :application, 'my_app_name'
 # set :repo_url, 'git@example.com:me/my_repo.git'
@@ -51,9 +51,8 @@ set :unicorn_rack_env, 'production'
 
 after 'deploy:symlink:linked_dirs', 'deploy:symlink:robots_txt'
 after 'deploy:migrate', 'deploy:seed'
-after 'deploy:publishing', 'unicorn:stop' # NOTE: restartだと変更が反映されない場合がある為
-after 'unicorn:stop', 'unicorn:start'
-after 'unicorn:start', 'delayed_job:restart'
+after 'deploy:publishing', 'unicorn:restart'
+after 'unicorn:restart', 'delayed_job:restart'
 
 namespace :deploy do
   namespace :symlink do

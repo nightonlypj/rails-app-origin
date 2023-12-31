@@ -21,6 +21,8 @@ class User < ApplicationRecord
   validates :name, presence: true
   validates :name, length: { in: Settings.user_name_minimum..Settings.user_name_maximum }, allow_blank: true
 
+  scope :active, -> { where(destroy_schedule_at: nil) }
+  scope :destroy_reserved, -> { where.not(destroy_schedule_at: nil) }
   scope :destroy_target, -> { where(destroy_schedule_at: ..Time.current) }
 
   # 削除予約済みか返却

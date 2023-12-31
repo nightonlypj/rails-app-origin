@@ -1,7 +1,8 @@
 require 'rails_helper'
 
 RSpec.describe 'Users::Auth::Registrations', type: :request do
-  let_it_be(:space) { FactoryBot.create(:space) }
+  let_it_be(:created_user) { FactoryBot.create(:user) }
+  let_it_be(:space) { FactoryBot.create(:space, created_user:) }
   let(:response_json) { JSON.parse(response.body) }
   let(:response_json_invitation) { response_json['invitation'] }
 
@@ -38,12 +39,12 @@ RSpec.describe 'Users::Auth::Registrations', type: :request do
 
     # テストケース
     shared_examples_for '[未ログイン/ログイン中][有効]対象がメールアドレス' do
-      let_it_be(:invitation) { FactoryBot.create(:invitation, :active, :email, space:, created_user: space.created_user) }
+      let_it_be(:invitation) { FactoryBot.create(:invitation, :active, :email, space:, created_user:) }
       it_behaves_like 'ToNG(html)', 406
       it_behaves_like 'ToOK(json)'
     end
     shared_examples_for '[未ログイン/ログイン中][有効]対象がドメイン' do
-      let_it_be(:invitation) { FactoryBot.create(:invitation, :active, :domains, space:, created_user: space.created_user) }
+      let_it_be(:invitation) { FactoryBot.create(:invitation, :active, :domains, space:, created_user:) }
       it_behaves_like 'ToNG(html)', 406
       it_behaves_like 'ToOK(json)'
     end
@@ -53,7 +54,7 @@ RSpec.describe 'Users::Auth::Registrations', type: :request do
       it_behaves_like '[未ログイン/ログイン中][有効]対象がドメイン'
     end
     shared_examples_for '[未ログイン/ログイン中]招待コードが無効' do |status|
-      let_it_be(:invitation) { FactoryBot.create(:invitation, status, :email, space:, created_user: space.created_user) if status.present? }
+      let_it_be(:invitation) { FactoryBot.create(:invitation, status, :email, space:, created_user:) if status.present? }
       it_behaves_like 'ToNG(html)', 406
       it_behaves_like 'ToNG(json)', 404, nil, 'alert.invitation.notfound'
     end
@@ -82,7 +83,7 @@ RSpec.describe 'Users::Auth::Registrations', type: :request do
     end
     context 'APIログイン中' do
       include_context 'APIログイン処理'
-      let_it_be(:invitation) { FactoryBot.create(:invitation, :active, :email, space:, created_user: space.created_user) }
+      let_it_be(:invitation) { FactoryBot.create(:invitation, :active, :email, space:, created_user:) }
       it_behaves_like 'ToNG(html)', 406
       it_behaves_like 'ToNG(json)', 401, nil, 'devise.failure.already_authenticated'
     end
@@ -103,7 +104,7 @@ RSpec.describe 'Users::Auth::Registrations', type: :request do
     let_it_be(:valid_attributes_email_diff)  { { name: new_user[:name], email: 'test@diff.example.com', password: new_user[:password], confirm_success_url: FRONT_SITE_URL } }
     let_it_be(:valid_attributes_domain)      { { name: new_user[:name], email_local: 'test', email_domain: 'example.com', password: new_user[:password], confirm_success_url: FRONT_SITE_URL } }
     let_it_be(:valid_attributes_domain_diff) { { name: new_user[:name], email_local: 'test', email_domain: 'diff.example.com', password: new_user[:password], confirm_success_url: FRONT_SITE_URL } }
-    before_all { FactoryBot.create(:invitation, :active, :email, created_user: space.created_user) } # NOTE: 対象外
+    before_all { FactoryBot.create(:invitation, :active, :email, created_user:) } # NOTE: 対象外
 
     include_context '未ログイン処理'
     include_context 'Authテスト内容'
@@ -202,14 +203,14 @@ RSpec.describe 'Users::Auth::Registrations', type: :request do
     end
 
     shared_examples_for '[有効][*]対象がメールアドレス' do
-      let_it_be(:invitation) { FactoryBot.create(:invitation, :active, email: new_user[:email], domains: nil, space:, created_user: space.created_user) }
+      let_it_be(:invitation) { FactoryBot.create(:invitation, :active, email: new_user[:email], domains: nil, space:, created_user:) }
       it_behaves_like '[有効][*][メールアドレス]パラメータのメールアドレスが招待と一致'
       it_behaves_like '[有効][*][メールアドレス]パラメータのメールアドレスが招待と不一致'
     end
     shared_examples_for '[有効][*]対象がドメイン' do
       let_it_be(:invitation) do
         domains = ['example.org', valid_attributes_domain[:email_domain]].to_s
-        FactoryBot.create(:invitation, :active, email: nil, domains:, space:, created_user: space.created_user)
+        FactoryBot.create(:invitation, :active, email: nil, domains:, space:, created_user:)
       end
       it_behaves_like '[有効][*][ドメイン]パラメータのドメインが招待に含まれる'
       it_behaves_like '[有効][*][ドメイン]パラメータのドメインが招待に含まれない'
@@ -221,13 +222,13 @@ RSpec.describe 'Users::Auth::Registrations', type: :request do
       it_behaves_like '[有効][*]対象がドメイン'
     end
     shared_examples_for '[有効]他のスペースでの招待あり' do
-      let_it_be(:other_invitation) { FactoryBot.create(:invitation, :active, email: new_user[:email], domains: nil, created_user: space.created_user) }
+      let_it_be(:other_invitation) { FactoryBot.create(:invitation, :active, email: new_user[:email], domains: nil, created_user:) }
       it_behaves_like '[有効][*]対象がメールアドレス'
       it_behaves_like '[有効][*]対象がドメイン'
     end
     shared_examples_for '[無効]' do |status|
       let(:attributes) { valid_attributes_email }
-      let_it_be(:invitation) { FactoryBot.create(:invitation, status, email: new_user[:email], domains: nil, space:, created_user: space.created_user) }
+      let_it_be(:invitation) { FactoryBot.create(:invitation, status, email: new_user[:email], domains: nil, space:, created_user:) }
       it_behaves_like 'NG'
       it_behaves_like 'ToNG(json/json)', 404, nil, 'alert.invitation.notfound'
     end

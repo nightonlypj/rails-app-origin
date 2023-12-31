@@ -34,10 +34,10 @@ RSpec.describe 'Users::Auth::Unlocks', type: :request do
     let(:invalid_attributes_nil) { { email: send_user_locked.email, redirect_url: nil } }
     let(:invalid_attributes_bad) { { email: send_user_locked.email, redirect_url: BAD_SITE_URL } }
 
-    include_context 'Authテスト内容'
-    let(:current_user) { nil }
-
     # テスト内容
+    let(:current_user) { nil }
+    include_context 'Authテスト内容'
+
     shared_examples_for 'OK' do
       let(:subject_format) { :json }
       let(:accept_headers) { ACCEPT_INC_JSON }
@@ -236,9 +236,9 @@ RSpec.describe 'Users::Auth::Unlocks', type: :request do
     subject do
       get user_auth_unlock_path(format: subject_format, unlock_token:, redirect_url: @redirect_url), headers: auth_headers.merge(accept_headers)
     end
-    let(:current_user) { User.find(send_user.id) }
 
     # テスト内容
+    let(:current_user) { User.find(send_user.id) }
     shared_examples_for 'OK' do
       let(:subject_format) { nil }
       let(:accept_headers) { ACCEPT_INC_HTML }

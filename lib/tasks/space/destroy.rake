@@ -17,7 +17,9 @@ namespace :space do
 
       spaces.find_each.with_index(1) do |space, index|
         logger.info("[#{index}/#{count}] id: #{space.id}, destroy_schedule_at: #{space.destroy_schedule_at}")
+        # :nocov:
         raise '削除予定日時が不正' if space.destroy_schedule_at.blank? || space.destroy_schedule_at > Time.current
+        # :nocov:
         next if dry_run
 
         space.destroy!

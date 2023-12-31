@@ -1,10 +1,6 @@
 <schemaMeta xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://schemaspy.org/xsd/6/schemameta.xsd" >
     <tables>
-        <table name="users" comments="ユーザー" />
-        <table name="admin_users" comments="管理者" />
-        <table name="holidays" comments="祝日" />
-        <table name="infomations" comments="お知らせ" />
-        <table name="spaces" comments="スペース">
+        <table name="spaces">
             <column name="created_user_id">
                 <foreignKey table="users" column="id" />
             </column>
@@ -12,7 +8,7 @@
                 <foreignKey table="users" column="id" />
             </column>
         </table>
-        <table name="members" comments="メンバー">
+        <table name="members">
             <column name="invitationed_user_id">
                 <foreignKey table="users" column="id" />
             </column>
@@ -20,13 +16,12 @@
                 <foreignKey table="users" column="id" />
             </column>
         </table>
-        <table name="downloads" comments="ダウンロード">
+        <table name="downloads">
             <column name="space_id">
                 <foreignKey table="spaces" column="id" />
             </column>
         </table>
-        <table name="download_files" comments="ダウンロードファイル" />
-        <table name="invitations" comments="招待">
+        <table name="invitations">
             <column name="created_user_id">
                 <foreignKey table="users" column="id" />
             </column>

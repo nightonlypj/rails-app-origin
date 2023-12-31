@@ -1,5 +1,5 @@
 <% validate_enabled = @invitation.errors.any? %>
-<%= form_with(model: @invitation, url: create_invitation_path(@space.code), html: { method: :post, novalidate: true, autocomplete: 'on' }, local: true) do |form| %>
+<%= form_with(model: @invitation, url: create_invitation_path(@space.code), html: { method: :post, novalidate: true, autocomplete: 'on' }, data: { turbo: false }) do |form| %>
   <div class="row">
     <div class="col-md-2 text-md-end mt-1">
       <%= form.label :domains, 'メール', class: "form-label" %> <span style="color: red">*</span>
@@ -8,7 +8,7 @@
       <div class="form-outline<%= input_size_class_name(@invitation, :domains) %>">
         <%= form.text_area :domains, rows: 3, placeholder: 'example.com', class: "form-control#{validate_class_name(validate_enabled, @invitation, :domains)}" %>
         <%= form.label :domains, '許可ドメイン', class: 'form-label', for: 'invitation_domains' %>
-        <%= render './users/shared/field_error_messages', messages:  @invitation.errors[:domains] %>
+        <%= render '/users/shared/field_error_messages', messages:  @invitation.errors[:domains] %>
       </div>
     </div>
   </div>
@@ -25,7 +25,7 @@
           <%= form.label key, Invitation.powers_i18n[key], class: 'form-check-label', for: "invitation_power_#{key}" %>
         </div>
 <% end %>
-        <%= render './users/shared/field_error_messages', messages: @invitation.errors[:power] %>
+        <%= render '/users/shared/field_error_messages', messages: @invitation.errors[:power] %>
       </div>
     </div>
   </div>
@@ -37,11 +37,11 @@
     <div class="col-md-10 d-flex">
       <div class="<%= input_size_class_name_vertical(validate_enabled, @invitation, :ended_date) %>">
         <%= form.text_field :ended_date, placeholder: 'YYYY/MM/DD', size: '12', autocomplete: 'off', class: " form-control#{validate_class_name(validate_enabled, @invitation, :ended_date)}" %>
-        <%= render './users/shared/field_error_messages', messages:  @invitation.errors[:ended_date] %>
+        <%= render '/users/shared/field_error_messages', messages:  @invitation.errors[:ended_date] %>
       </div>
       <div class="<%= input_size_class_name_vertical(validate_enabled, @invitation, :ended_time) %>">
         <%= form.text_field :ended_time, placeholder: 'HH:MM', size: '6', autocomplete: 'off', class: " form-control#{validate_class_name(validate_enabled, @invitation, :ended_time)}" %>
-        <%= render './users/shared/field_error_messages', messages:  @invitation.errors[:ended_time] %>
+        <%= render '/users/shared/field_error_messages', messages:  @invitation.errors[:ended_time] %>
       </div>
       <div class="ms-2 mt-1">
         <%= Time.current.strftime('%z')[0..2] %>:<%= Time.current.strftime('%z')[3..] %>(<%= Time.current.zone %>)
@@ -56,7 +56,7 @@
     <div class="col-md-10">
       <div class="<%= input_size_class_name(@invitation, :memo) %>">
         <%= form.text_field :memo, autocomplete: 'off', class: " form-control#{validate_class_name(validate_enabled, @invitation, :memo)}" %>
-        <%= render './users/shared/field_error_messages', messages:  @invitation.errors[:memo] %>
+        <%= render '/users/shared/field_error_messages', messages:  @invitation.errors[:memo] %>
       </div>
     </div>
   </div>

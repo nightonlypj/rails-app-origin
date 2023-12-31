@@ -1,6 +1,6 @@
 json.success true
 json.space do
-  json.partial! './spaces/space', space: @space
+  json.partial! '/spaces/space', space: @space
 
   json.current_member do
     json.power @current_member.power

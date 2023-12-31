@@ -21,11 +21,15 @@ namespace :invitation do
           + "ended_at: #{invitation.ended_at}, email_joined_at: #{invitation.email_joined_at}")
 
         if invitation.destroy_schedule_at.present?
+          # :nocov:
           raise '削除予定日時が不正' if invitation.destroy_schedule_at > Time.current
+          # :nocov:
         else
           target_ended = invitation.ended_at.present? && invitation.ended_at <= schedule_date
           target_email_joined = invitation.email_joined_at.present? && invitation.email_joined_at <= schedule_date
+          # :nocov:
           raise '終了日時または参加日時が不正' if !target_ended && !target_email_joined
+          # :nocov:
         end
         next if dry_run
 

@@ -111,6 +111,13 @@
   uid: 'user16@example.com'
   password: 'changepassword'
   confirmed_at: '0000-01-01 00:00:00+0000'
+- id: 17
+  code: 'code000000000000000000017'
+  name: 'user17の氏名'
+  email: 'user17@example.com'
+  uid: 'user17@example.com'
+  password: 'changepassword'
+  confirmed_at: '0000-01-01 00:00:00+0000'
 
 - id: 71 # http://localhost:3000/users/auth/unlock?config=default&redirect_url=http%3A%2F%2Flocalhost%3A5000%2Fusers%2Fsign_in&unlock_token=token000000000000071
   code: 'code000000000000000000071'

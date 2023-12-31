@@ -14,13 +14,13 @@
 
 <div class="card card-body mb-2">
   <h5 class="card-title mb-3">
-    <%= render './spaces/title', space: @space, current_member: @current_member %>
+    <%= render '/spaces/title', space: @space, current_member: @current_member %>
   </h5>
   <div class="card-text">
     <div class="row">
       <div class="col-md-5 d-flex align-items-center">
 <% if @invitations.present? %>
-        <%= "#{@invitations.total_count.to_s(:delimited)}件" %><%= "中 #{first_page_number(@invitations)}-#{last_page_number(@invitations)}件を表示" if @invitations.total_count > @invitations.limit_value %>
+        <%= "#{@invitations.total_count.to_formatted_s(:delimited)}件" %><%= "中 #{first_page_number(@invitations)}-#{last_page_number(@invitations)}件を表示" if @invitations.total_count > @invitations.limit_value %>
 <% end %>
       </div>
       <div class="col-md-7">

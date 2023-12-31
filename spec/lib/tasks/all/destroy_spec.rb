@@ -1,7 +1,7 @@
 require 'rake_helper'
 
 RSpec.describe :all, type: :task do
-  # すべての削除Taskを実行
+  # 全ての削除Taskを実行
   # テストパターン
   #   ドライラン: true, false
   describe 'all:destroy' do

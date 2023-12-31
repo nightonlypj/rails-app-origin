@@ -1,5 +1,19 @@
 # リリースノート
 
+## 1.8.0 (Sprint 13)
+
+- ECS(Fargate)でアプリを動かしたい
+  - https://dev.azure.com/nightonly/rails-app-origin/_workitems/edit/459/
+- Ruby3.2.2/Rails7.0（WebpackerからSprocketsに移行）とGemをバージョンアップしたい
+  - https://dev.azure.com/nightonly/rails-app-origin/_workitems/edit/557/
+
+## 1.7.0 (Sprint 12)
+
+### spaceブランチ
+
+- メンバー一覧の検索条件に有効と削除予約を追加したい
+  - https://dev.azure.com/nightonly/rails-app-origin/_workitems/edit/556/
+
 ## 1.6.0 (Sprint 11)
 
 - Ruby3.1にバージョンアップしたい

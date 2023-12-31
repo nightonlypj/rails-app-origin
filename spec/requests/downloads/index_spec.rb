@@ -65,7 +65,7 @@ RSpec.describe 'Downloads', type: :request do
       let(:subject_format) { nil }
       let(:accept_headers) { ACCEPT_INC_HTML }
       let(:subject_page) { page }
-      let(:url_page)     { link_page >= 2 ? link_page : nil }
+      let(:url_page)     { link_page }
       it "#{link_page}ページのパスが含まれない" do
         subject
         expect(response.body).not_to include("\"#{downloads_path(page: url_page)}\"")
@@ -324,7 +324,8 @@ RSpec.describe 'Downloads', type: :request do
 
     # テストケース
     shared_examples_for 'IDが存在する' do
-      let_it_be(:download) { FactoryBot.create(:download, :create_space, user:) }
+      let_it_be(:space) { FactoryBot.create(:space, created_user: user) }
+      let_it_be(:download) { FactoryBot.create(:download, space:, user:) }
       let(:params) { { id: download.id, target_id: nil } }
       let(:downloads) { [download] }
       it_behaves_like 'ToOK[依頼日時]'

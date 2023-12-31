@@ -14,13 +14,11 @@ RSpec.describe 'Invitations', type: :request do
   #   ＋Acceptヘッダ: HTMLが含まれる, JSONが含まれる
   describe 'GET #show' do
     subject { get invitation_path(space_code: space.code, code: invitation.code, format: subject_format), headers: auth_headers.merge(accept_headers) }
-    let_it_be(:space_not)     { FactoryBot.build_stubbed(:space) }
-    let_it_be(:space_public)  { FactoryBot.create(:space, :public) }
-    let_it_be(:space_private) { FactoryBot.create(:space, :private, created_user: space_public.created_user) }
+    let_it_be(:created_user) { FactoryBot.create(:user) }
 
     shared_context 'valid_condition' do
-      let_it_be(:space) { space_public }
-      let_it_be(:invitation) { FactoryBot.create(:invitation, :active, space:, created_user: space.created_user) }
+      let_it_be(:space) { FactoryBot.create(:space, :public, created_user:) }
+      let_it_be(:invitation) { FactoryBot.create(:invitation, :active, space:, created_user:) }
     end
 
     # テスト内容
@@ -42,7 +40,7 @@ RSpec.describe 'Invitations', type: :request do
 
     # テストケース
     shared_examples_for '[APIログイン中/削除予約済み][*][ある]招待コードが存在する' do |status|
-      let_it_be(:invitation) { FactoryBot.create(:invitation, status, space:, created_user: space.created_user) }
+      let_it_be(:invitation) { FactoryBot.create(:invitation, status, space:, created_user:) }
       it_behaves_like 'ToNG(html)', 406
       it_behaves_like 'ToOK(json)'
     end
@@ -62,26 +60,26 @@ RSpec.describe 'Invitations', type: :request do
     end
     shared_examples_for '[APIログイン中/削除予約済み][*]権限がない' do |power|
       before_all { FactoryBot.create(:member, power, space:, user:) if power.present? }
-      let_it_be(:invitation) { FactoryBot.create(:invitation, :active, space:, created_user: space.created_user) }
+      let_it_be(:invitation) { FactoryBot.create(:invitation, :active, space:, created_user:) }
       it_behaves_like 'ToNG(html)', 406
       it_behaves_like 'ToNG(json)', 403
     end
 
     shared_examples_for '[APIログイン中/削除予約済み]スペースが存在しない' do
-      let_it_be(:space) { space_not }
+      let_it_be(:space) { FactoryBot.build_stubbed(:space) }
       let_it_be(:invitation) { FactoryBot.build_stubbed(:invitation) }
       it_behaves_like 'ToNG(html)', 406
       it_behaves_like 'ToNG(json)', 404
     end
     shared_examples_for '[APIログイン中/削除予約済み]スペースが公開' do
-      let_it_be(:space) { space_public }
+      let_it_be(:space) { FactoryBot.create(:space, :public, created_user:) }
       it_behaves_like '[APIログイン中/削除予約済み][*]権限がある', :admin
       it_behaves_like '[APIログイン中/削除予約済み][*]権限がない', :writer
       it_behaves_like '[APIログイン中/削除予約済み][*]権限がない', :reader
       it_behaves_like '[APIログイン中/削除予約済み][*]権限がない', nil
     end
     shared_examples_for '[APIログイン中/削除予約済み]スペースが非公開' do
-      let_it_be(:space) { space_private }
+      let_it_be(:space) { FactoryBot.create(:space, :private, created_user:) }
       it_behaves_like '[APIログイン中/削除予約済み][*]権限がある', :admin
       it_behaves_like '[APIログイン中/削除予約済み][*]権限がない', :writer
       it_behaves_like '[APIログイン中/削除予約済み][*]権限がない', :reader

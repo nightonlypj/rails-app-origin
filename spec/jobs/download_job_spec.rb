@@ -14,10 +14,10 @@ RSpec.describe DownloadJob, type: :job do
 
     let_it_be(:user)  { FactoryBot.create(:user) }
     let_it_be(:space) { FactoryBot.create(:space, created_user: user) }
-    let(:current_download)      { Download.find(download.id) }
-    let(:current_download_file) { DownloadFile.find_by(download: current_download) }
 
     # テスト内容
+    let(:current_download)      { Download.find(download.id) }
+    let(:current_download_file) { DownloadFile.find_by(download: current_download) }
     before do # NOTE: let_it_beだと他のテストでセットした値が残る為、初期化
       download.status = :waiting
       download.error_message = nil

@@ -90,8 +90,8 @@ RSpec.describe User, type: :model do
   describe '#set_destroy_reserve!' do
     subject { user.set_destroy_reserve! }
     let(:user) { FactoryBot.create(:user) }
-    let(:current_user) { User.find(user.id) }
 
+    let(:current_user) { User.find(user.id) }
     let!(:start_time) { Time.current.floor }
     let!(:start_time_schedule) { Time.current.floor + Settings.user_destroy_schedule_days.days }
     it '削除依頼日時が現在日時、削除予定日時が現在日時＋設定日数に変更され、保存される' do
@@ -107,8 +107,8 @@ RSpec.describe User, type: :model do
   describe '#set_undo_destroy_reserve!' do
     subject { user.set_undo_destroy_reserve! }
     let(:user) { FactoryBot.create(:user, :destroy_reserved) }
-    let(:current_user) { User.find(user.id) }
 
+    let(:current_user) { User.find(user.id) }
     it '削除依頼日時・削除予定日時がなしに変更される' do
       is_expected.to eq(true)
       expect(user.destroy_requested_at).to be_nil
@@ -175,9 +175,9 @@ RSpec.describe User, type: :model do
       user.cache_infomation_unread_count = nil
       user.infomation_unread_count
     end
-    let(:cache) { user.cache_infomation_unread_count }
 
     # テストケース
+    let(:cache) { user.cache_infomation_unread_count }
     shared_examples_for '[*]0件' do
       include_context 'お知らせ一覧作成', 0, 0, 0, 0
       it_behaves_like 'Count', 0
@@ -238,14 +238,14 @@ RSpec.describe User, type: :model do
       current_user.cache_undownloaded_count = nil
       current_user.undownloaded_count
     end
-    let(:cache) { current_user.cache_undownloaded_count }
-
     let_it_be(:current_user) { FactoryBot.create(:user) }
     before_all do
       FactoryBot.create(:download, :success) # 他人
       FactoryBot.create(:download, :downloaded, user: current_user) # ダウンロード済み
     end
 
+    # テストケース
+    let(:cache) { current_user.cache_undownloaded_count }
     context '0件' do
       it_behaves_like 'Count', 0
     end

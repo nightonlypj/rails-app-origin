@@ -6,7 +6,8 @@ RSpec.describe 'Members', type: :request do
   let(:response_json_member)  { response_json['member'] }
   let(:response_json_members) { response_json['members'] }
   let(:response_json_space_current_member) { response_json_space['current_member'] }
-  let(:default_params) { { text: nil, power: Member.powers.keys.join(','), sort: 'invitationed_at', desc: 1 } }
+  let(:default_params) { { text: nil, power: Member.powers.keys.join(','), active: 1, destroy: 1, sort: 'invitationed_at', desc: 1 } }
+  let_it_be(:created_user) { FactoryBot.create(:user) }
 
   # テスト内容（共通）
   shared_examples_for 'ToOK[氏名]' do
@@ -58,9 +59,6 @@ RSpec.describe 'Members', type: :request do
   #   ＋Acceptヘッダ: HTMLが含まれる, JSONが含まれる
   describe 'GET #index' do
     subject { get members_path(space_code: space.code, page: subject_page, format: subject_format), headers: auth_headers.merge(accept_headers) }
-    let_it_be(:space_not)     { FactoryBot.build_stubbed(:space) }
-    let_it_be(:space_public)  { FactoryBot.create(:space, :public) }
-    let_it_be(:space_private) { FactoryBot.create(:space, :private, created_user: space_public.created_user) }
 
     # テスト内容
     shared_examples_for 'ToOK(html/*)' do
@@ -69,7 +67,7 @@ RSpec.describe 'Members', type: :request do
         expect_space_html(response, space, user_power)
 
         new_url = "href=\"#{new_member_path(space.code)}\""
-        download_url = "href=\"#{create_download_path(model: :member, space_code: space.code, search_params: { page: subject_page }).gsub(/&/, '&amp;')}\""
+        download_url = "href=\"#{create_download_path(model: :member, space_code: space.code, search_params: { page: subject_page }).gsub('&', '&amp;')}\""
         destroy_url = "action=\"#{destroy_member_path(space.code)}\""
         if user_power == :admin
           expect(response.body).to include(new_url)
@@ -96,7 +94,6 @@ RSpec.describe 'Members', type: :request do
         expect(response_json_space['description']).to eq(space.description)
         expect(response_json_space['private']).to eq(space.private)
 
-        ## 削除予約
         expect(response_json_space['destroy_requested_at']).to eq(I18n.l(space.destroy_requested_at, format: :json, default: nil))
         expect(response_json_space['destroy_schedule_at']).to eq(I18n.l(space.destroy_schedule_at, format: :json, default: nil))
 
@@ -129,7 +126,7 @@ RSpec.describe 'Members', type: :request do
       let(:subject_format) { nil }
       let(:accept_headers) { ACCEPT_INC_HTML }
       let(:subject_page) { page }
-      let(:url_page)     { link_page >= 2 ? link_page : nil }
+      let(:url_page)     { link_page }
       it "#{link_page}ページのパスが含まれない" do
         subject
         expect(response.body).not_to include("\"#{members_path(space_code: space.code, page: url_page)}\"")
@@ -328,35 +325,35 @@ RSpec.describe 'Members', type: :request do
     end
 
     shared_examples_for '[ログイン中/削除予約済み]スペースが存在しない' do
-      let_it_be(:space) { space_not }
+      let_it_be(:space) { FactoryBot.build_stubbed(:space) }
       it_behaves_like 'ToNG(html)', Settings.api_only_mode ? 406 : 404
       it_behaves_like 'ToNG(json)', 401 # NOTE: APIは未ログイン扱い
     end
     shared_examples_for '[APIログイン中/削除予約済み]スペースが存在しない' do
-      let_it_be(:space) { space_not }
+      let_it_be(:space) { FactoryBot.build_stubbed(:space) }
       it_behaves_like 'ToNG(html)', Settings.api_only_mode ? 406 : 404
       it_behaves_like 'ToNG(json)', 404
     end
     shared_examples_for '[ログイン中/削除予約済み]スペースが公開' do
-      let_it_be(:space) { space_public }
+      let_it_be(:space) { FactoryBot.create(:space, :public, created_user:) }
       it_behaves_like '[ログイン中/削除予約済み][*]権限がある', :admin
       it_behaves_like '[ログイン中/削除予約済み][*]権限がある', :reader
       it_behaves_like '[ログイン中/削除予約済み][*]権限がない'
     end
     shared_examples_for '[APIログイン中/削除予約済み]スペースが公開' do
-      let_it_be(:space) { space_public }
+      let_it_be(:space) { FactoryBot.create(:space, :public, created_user:) }
       it_behaves_like '[APIログイン中/削除予約済み][*]権限がある', :admin
       it_behaves_like '[APIログイン中/削除予約済み][*]権限がある', :reader
       it_behaves_like '[APIログイン中/削除予約済み][*]権限がない'
     end
     shared_examples_for '[ログイン中/削除予約済み]スペースが非公開' do
-      let_it_be(:space) { space_private }
+      let_it_be(:space) { FactoryBot.create(:space, :private, created_user:) }
       it_behaves_like '[ログイン中/削除予約済み][*]権限がある', :admin
       it_behaves_like '[ログイン中/削除予約済み][*]権限がある', :reader
       it_behaves_like '[ログイン中/削除予約済み][*]権限がない'
     end
     shared_examples_for '[APIログイン中/削除予約済み]スペースが非公開' do
-      let_it_be(:space) { space_private }
+      let_it_be(:space) { FactoryBot.create(:space, :private, created_user:) }
       it_behaves_like '[APIログイン中/削除予約済み][*]権限がある', :admin
       it_behaves_like '[APIログイン中/削除予約済み][*]権限がある', :reader
       it_behaves_like '[APIログイン中/削除予約済み][*]権限がない'
@@ -375,7 +372,7 @@ RSpec.describe 'Members', type: :request do
 
     context '未ログイン' do
       include_context '未ログイン処理'
-      let_it_be(:space) { space_public }
+      let_it_be(:space) { FactoryBot.create(:space, :public, created_user:) }
       if Settings.api_only_mode
         it_behaves_like 'ToNG(html)', 406
       else
@@ -409,7 +406,7 @@ RSpec.describe 'Members', type: :request do
   #   部分一致（大文字・小文字を区別しない）, 不一致: 氏名, メールアドレス（管理者のみ表示）
   describe 'GET #index (.search)' do
     subject { get members_path(space_code: space.code, format: subject_format), params:, headers: auth_headers.merge(accept_headers) }
-    let_it_be(:space)             { FactoryBot.create(:space) }
+    let_it_be(:space)             { FactoryBot.create(:space, created_user:) }
     let_it_be(:member_all)        { FactoryBot.create(:member, space:, user: FactoryBot.create(:user, name: '氏名(Aaa)')) }
     let_it_be(:member_admin_only) { FactoryBot.create(:member, space:, user: FactoryBot.create(:user, email: '_Aaa@example.com')) }
     before_all { FactoryBot.create(:member, user: FactoryBot.create(:user, name: '氏名(Aaa)')) } # NOTE: 対象外
@@ -480,10 +477,10 @@ RSpec.describe 'Members', type: :request do
   #   ログイン中（URLの拡張子がない/AcceptヘッダにHTMLが含まれる）, APIログイン中（URLの拡張子が.json/AcceptヘッダにJSONが含まれる）
   #   権限あり, 検索テキスト、並び順指定なし, 氏名のみ確認
   # テストパターン
-  #   管理者, 投稿者, 閲覧者 の組み合わせ
+  #   権限: 管理者, 投稿者, 閲覧者 の組み合わせ
   describe 'GET #index (.power)' do
     subject { get members_path(space_code: space.code, format: subject_format), params:, headers: auth_headers.merge(accept_headers) }
-    let_it_be(:space)         { FactoryBot.create(:space) }
+    let_it_be(:space)         { FactoryBot.create(:space, created_user:) }
     let_it_be(:member_reader) { FactoryBot.create(:member, :reader, space:) }
     let_it_be(:member_writer) { FactoryBot.create(:member, :writer, space:) }
 
@@ -585,6 +582,58 @@ RSpec.describe 'Members', type: :request do
   end
 
   # 前提条件
+  #   ログイン中（URLの拡張子がない/AcceptヘッダにHTMLが含まれる）, APIログイン中（URLの拡張子が.json/AcceptヘッダにJSONが含まれる）
+  #   権限あり, 検索テキスト、並び順指定なし, 氏名のみ確認
+  # テストパターン
+  #   状態: 有効, 削除予定 の組み合わせ
+  describe 'GET #index (.by_target)' do
+    subject { get members_path(space_code: space.code, format: subject_format), params:, headers: auth_headers.merge(accept_headers) }
+    let_it_be(:space) { FactoryBot.create(:space, created_user:) }
+    let_it_be(:member_destroy_reserved) { FactoryBot.create(:member, space:, user: FactoryBot.create(:user, :destroy_reserved)) }
+
+    # テストケース
+    shared_examples_for '状態' do
+      context '■有効, ■削除予定' do
+        let(:params) { { active: 1, destroy: 1 } }
+        let(:members) { [member_destroy_reserved, member_active] }
+        it_behaves_like 'ToOK[氏名]'
+      end
+      context '■有効, □削除予定' do
+        let(:params) { { active: 1, destroy: 0 } }
+        let(:members) { [member_active] }
+        it_behaves_like 'ToOK[氏名]'
+      end
+      context '□有効, ■削除予定' do
+        let(:params) { { active: 0, destroy: 1 } }
+        let(:members) { [member_destroy_reserved] }
+        it_behaves_like 'ToOK[氏名]'
+      end
+      context '□有効, □削除予定' do
+        let(:params) { { active: 0, destroy: 0 } }
+        let(:members) { [] }
+        it_behaves_like 'ToOK[氏名]'
+      end
+    end
+
+    context 'ログイン中（URLの拡張子がない/AcceptヘッダにHTMLが含まれる）' do
+      next if Settings.api_only_mode
+
+      include_context 'ログイン処理'
+      let_it_be(:member_active) { FactoryBot.create(:member, space:, user:) }
+      let(:subject_format) { nil }
+      let(:accept_headers) { ACCEPT_INC_HTML }
+      it_behaves_like '状態'
+    end
+    context 'APIログイン中（URLの拡張子が.json/AcceptヘッダにJSONが含まれる）' do
+      include_context 'APIログイン処理'
+      let_it_be(:member_active) { FactoryBot.create(:member, space:, user:) }
+      let(:subject_format) { :json }
+      let(:accept_headers) { ACCEPT_INC_JSON }
+      it_behaves_like '状態'
+    end
+  end
+
+  # 前提条件
   #   APIログイン中（URLの拡張子が.json/AcceptヘッダにJSONが含まれる）
   #   権限あり, 検索テキスト、権限指定なし, 件数のみ確認
   # テストパターン
@@ -593,7 +642,7 @@ RSpec.describe 'Members', type: :request do
   describe 'GET #index (.order)' do
     subject { get members_path(space_code: space.code, format: :json), params:, headers: auth_headers.merge(ACCEPT_INC_JSON) }
     include_context 'APIログイン処理'
-    let_it_be(:space) { FactoryBot.create(:space) }
+    let_it_be(:space) { FactoryBot.create(:space, created_user:) }
     let_it_be(:members) do
       [
         FactoryBot.create(:member, :writer, space:),

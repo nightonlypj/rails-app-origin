@@ -19,6 +19,64 @@ RSpec.describe Member, type: :model do
     end
   end
 
+  # メールアドレス
+  # テストパターン
+  #   ない, 1件, 前後スペース・タブ・空行含む・重複, 最大数と同じ, 最大数より多い, 不正な形式が含まれる
+  describe '#validate_emails' do
+    subject { model.validate_emails }
+    let(:model) { FactoryBot.build(:member, emails:) }
+    let_it_be(:valid_email) { Faker::Internet.email(name: 'name') }
+    let_it_be(:valid_emails) do
+      result = []
+      (1..Settings.member_emails_max_count).each do |index|
+        result.push(Faker::Internet.email(name: "name#{index}"))
+      end
+
+      result
+    end
+    let_it_be(:invalid_email) { 'aaa' }
+
+    # テストケース
+    context 'ない' do
+      let(:emails) { nil }
+      let(:value) { nil }
+      let(:messages) { { emails: [get_locale('activerecord.errors.models.member.attributes.emails.blank')] } }
+      it_behaves_like 'ValueErrors'
+    end
+    context '1件' do
+      let(:emails) { valid_email }
+      let(:value) { [valid_email] }
+      let(:messages) { {} }
+      it_behaves_like 'ValueErrors'
+    end
+    context '前後スペース・タブ・空行含む・重複' do
+      let(:emails) { "\t #{valid_email}\t \n\n#{valid_email}" }
+      let(:value) { [valid_email] }
+      let(:messages) { {} }
+      it_behaves_like 'ValueErrors'
+    end
+    context '最大数と同じ' do
+      let(:emails) { valid_emails.join("\n") }
+      let(:value) { valid_emails }
+      let(:messages) { {} }
+      it_behaves_like 'ValueErrors'
+    end
+    context '最大数より多い' do
+      let(:emails) { "#{valid_emails.join("\n")}\r\n#{valid_email}" }
+      let(:value) { nil }
+      let(:messages) do
+        { emails: [get_locale('activerecord.errors.models.member.attributes.emails.max_count', count: Settings.member_emails_max_count)] }
+      end
+      it_behaves_like 'ValueErrors'
+    end
+    context '不正な形式が含まれる' do
+      let(:emails) { "#{valid_email}\n#{invalid_email}" }
+      let(:value) { nil }
+      let(:messages) { { emails: [get_locale('activerecord.errors.models.member.attributes.emails.invalid', email: invalid_email)] } }
+      it_behaves_like 'ValueErrors'
+    end
+  end
+
   # 最終更新日時
   # テストパターン
   #   更新日時: 作成日時と同じ, 作成日時以降

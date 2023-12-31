@@ -1,7 +1,7 @@
 services:
   db:
     platform: linux/x86_64 # Tips: mysql -> ERROR: no matching manifest for linux/arm64/v8 in the manifest list entries
-    image: mysql:8.0.33 # https://hub.docker.com/_/mysql
+    image: mysql:8.2.0 # https://hub.docker.com/_/mysql
     command: --default-authentication-plugin=mysql_native_password
     volumes:
       - ./tmp/mysql:/var/lib/mysql:delegated
@@ -15,7 +15,7 @@ services:
       timeout: 10s # <- 30s
       retries: 10 # <- 3
   pg:
-    image: postgres:15.3-alpine # https://hub.docker.com/_/postgres
+    image: postgres:16.1-alpine # https://hub.docker.com/_/postgres
     volumes:
       - ./tmp/postgresql:/var/lib/postgresql/data:delegated
     environment:
@@ -40,18 +40,28 @@ services:
     depends_on:
       - db
       - pg
-    environment:
-      WEBPACKER_DEV_SERVER_HOST: webpack
-  webpack:
-    build: .
-    command: bin/webpack-dev-server --host 0.0.0.0 --port 3035
+  web:
+    image: nginx:1.25.3-alpine # https://hub.docker.com/_/nginx
     volumes:
-      - .:/workdir
-      - /workdir/node_modules
-    ports:
-      - 3035:3035
+      - ./ecs/web/nginx/nginx.conf.template:/etc/nginx/nginx.conf.template
+      - ./ecs/web/nginx/conf.d/default.conf.template:/etc/nginx/conf.d/default.conf.template
+      - ./public:/usr/share/nginx/html
+    command: >
+      /bin/sh -c "
+        envsubst '$$NGINX_WORKER_PROCESSES $$NGINX_WORKER_RLIMIT_NOFILE $$NGINX_WORKER_CONNECTIONS $$NGINX_SET_REAL_IP_FROM $$NGINX_REAL_IP_HEADER' < /etc/nginx/nginx.conf.template > /etc/nginx/nginx.conf &&
+        envsubst '$$NGINX_PROXY_PASS' < /etc/nginx/conf.d/default.conf.template > /etc/nginx/conf.d/default.conf &&
+        nginx -g 'daemon off;'"
     environment:
-      WEBPACKER_DEV_SERVER_HOST: 0.0.0.0
+      NGINX_WORKER_PROCESSES: "auto" # 最大値: vCPUの数 or auto = 16と仮定して
+      NGINX_WORKER_RLIMIT_NOFILE: 32768 # 最大値: 524288(cat /proc/sys/fs/file-max) / WORKER_PROCESSES
+      NGINX_WORKER_CONNECTIONS: 8192 # 最大値: WORKER_RLIMIT_NOFILE / 4
+      NGINX_SET_REAL_IP_FROM: "172.31.0.0/16" # <- ELB
+      NGINX_REAL_IP_HEADER: "X-Forwarded-For" # <- ELB
+      NGINX_PROXY_PASS: "http://app:3000"
+    ports:
+      - 80:80
+    depends_on:
+      - app
   job:
     build: .
     command: bundle exec rails jobs:work

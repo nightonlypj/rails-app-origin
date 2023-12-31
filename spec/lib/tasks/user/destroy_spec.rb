@@ -12,7 +12,6 @@ RSpec.describe :user, type: :task do
   #   ドライラン: true, false
   describe 'user:destroy' do
     subject { Rake.application['user:destroy'].invoke(dry_run) }
-
     before_all do
       FactoryBot.create(:user, destroy_schedule_at: nil)
       user = FactoryBot.create(:user, destroy_schedule_at: Time.current + 1.minute)
@@ -23,6 +22,7 @@ RSpec.describe :user, type: :task do
       download = FactoryBot.create(:download, user:, space:)
       FactoryBot.create(:download_file, download:)
     end
+
     shared_context '削除対象作成' do
       let_it_be(:users) do
         [

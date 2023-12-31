@@ -71,7 +71,6 @@ def expect_space_basic_json(response_json_space, space)
   expect(response_json_space['description']).to eq(space.description)
   expect(response_json_space['private']).to eq(space.private)
 
-  ## 削除予約
   expect(response_json_space['destroy_requested_at']).to eq(I18n.l(space.destroy_requested_at, format: :json, default: nil))
   expect(response_json_space['destroy_schedule_at']).to eq(I18n.l(space.destroy_schedule_at, format: :json, default: nil))
 

@@ -1,8 +1,9 @@
 .bundle
 .byebug_history
 .yardoc
-.yarn-integrity
 config/master.key
+coverage/
+cron/
 db/*.sqlite3
 db/*.sqlite3-journal
 db/*.sqlite3-*
@@ -18,5 +19,3 @@ public/uploads/
 schemaspy/
 storage/
 tmp/
-yarn-error.log
-yarn-debug.log*

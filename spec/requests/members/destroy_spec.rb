@@ -15,14 +15,12 @@ RSpec.describe 'Members', type: :request do
   #   ＋Acceptヘッダ: HTMLが含まれる, JSONが含まれる
   describe 'POST #destroy' do
     subject { post destroy_member_path(space_code: space.code, format: subject_format), params:, headers: auth_headers.merge(accept_headers) }
-    let_it_be(:space_not)     { FactoryBot.build_stubbed(:space) }
-    let_it_be(:space_public)  { FactoryBot.create(:space, :public) }
-    let_it_be(:space_private) { FactoryBot.create(:space, :private, created_user: space_public.created_user) }
-    let_it_be(:member_nojoin) { FactoryBot.create(:member) }
+    let_it_be(:created_user)  { FactoryBot.create(:user) }
     let_it_be(:destroy_user)  { FactoryBot.create(:user) }
+    let_it_be(:member_nojoin) { FactoryBot.create(:member) }
 
     shared_context 'valid_condition' do |format_html|
-      let_it_be(:space) { space_public }
+      let_it_be(:space) { FactoryBot.create(:space, :public, created_user:) }
       let_it_be(:member_destroy) { FactoryBot.create(:member, :admin, space:, user: destroy_user) }
       let_it_be(:member_myself) { FactoryBot.create(:member, space:, user:) if user.present? }
       include_context 'set_params1', format_html
@@ -298,7 +296,7 @@ RSpec.describe 'Members', type: :request do
     end
 
     shared_examples_for '[ログイン中]スペースが存在しない' do
-      let_it_be(:space) { space_not }
+      let_it_be(:space) { FactoryBot.build_stubbed(:space) }
       let(:params) { { codes: {} } }
       it_behaves_like 'NG(html)'
       it_behaves_like 'ToNG(html)', Settings.api_only_mode ? 406 : 404
@@ -306,7 +304,7 @@ RSpec.describe 'Members', type: :request do
       it_behaves_like 'ToNG(json)', 401 # NOTE: APIは未ログイン扱い
     end
     shared_examples_for '[APIログイン中]スペースが存在しない' do
-      let_it_be(:space) { space_not }
+      let_it_be(:space) { FactoryBot.build_stubbed(:space) }
       let(:params) { { codes: [] } }
       it_behaves_like 'NG(html)'
       it_behaves_like 'ToNG(html)', Settings.api_only_mode ? 406 : 404 # NOTE: HTMLもログイン状態になる
@@ -314,7 +312,7 @@ RSpec.describe 'Members', type: :request do
       it_behaves_like 'ToNG(json)', 404
     end
     shared_examples_for '[ログイン中]スペースが公開' do
-      let_it_be(:space) { space_public }
+      let_it_be(:space) { FactoryBot.create(:space, :public, created_user:) }
       let_it_be(:member_destroy) { FactoryBot.create(:member, :admin, space:, user: destroy_user) }
       it_behaves_like '[ログイン中][*]権限がある', :admin
       it_behaves_like '[ログイン中][*]権限がない', :writer
@@ -322,7 +320,7 @@ RSpec.describe 'Members', type: :request do
       it_behaves_like '[ログイン中][*]権限がない', nil
     end
     shared_examples_for '[APIログイン中]スペースが公開' do
-      let_it_be(:space) { space_public }
+      let_it_be(:space) { FactoryBot.create(:space, :public, created_user:) }
       let_it_be(:member_destroy) { FactoryBot.create(:member, :admin, space:, user: destroy_user) }
       it_behaves_like '[APIログイン中][*]権限がある', :admin
       it_behaves_like '[APIログイン中][*]権限がない', :writer
@@ -330,7 +328,7 @@ RSpec.describe 'Members', type: :request do
       it_behaves_like '[APIログイン中][*]権限がない', nil
     end
     shared_examples_for '[ログイン中]スペースが非公開' do
-      let_it_be(:space) { space_private }
+      let_it_be(:space) { FactoryBot.create(:space, :private, created_user:) }
       let_it_be(:member_destroy) { FactoryBot.create(:member, :admin, space:, user: destroy_user) }
       it_behaves_like '[ログイン中][*]権限がある', :admin
       it_behaves_like '[ログイン中][*]権限がない', :writer
@@ -338,7 +336,7 @@ RSpec.describe 'Members', type: :request do
       it_behaves_like '[ログイン中][*]権限がない', nil
     end
     shared_examples_for '[APIログイン中]スペースが非公開' do
-      let_it_be(:space) { space_private }
+      let_it_be(:space) { FactoryBot.create(:space, :private, created_user:) }
       let_it_be(:member_destroy) { FactoryBot.create(:member, :admin, space:, user: destroy_user) }
       it_behaves_like '[APIログイン中][*]権限がある', :admin
       it_behaves_like '[APIログイン中][*]権限がない', :writer

@@ -250,9 +250,9 @@ RSpec.describe 'Users::Passwords', type: :request do
     let(:new_password) { Faker::Internet.password(min_length: 8) }
     let(:valid_attributes)   { { reset_password_token:, password: new_password, password_confirmation: new_password } }
     let(:invalid_attributes) { { reset_password_token:, password: nil, password_confirmation: nil } }
-    let(:current_user) { User.find(send_user.id) }
 
     # テスト内容
+    let(:current_user) { User.find(send_user.id) }
     shared_examples_for 'OK' do |change_confirmed = false|
       let!(:start_time) { Time.current.floor }
       it "パスワードリセット送信日時がなし#{'・メールアドレス確認日時が現在日時' if change_confirmed}に変更される。メールが送信される" do

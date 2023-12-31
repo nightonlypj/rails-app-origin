@@ -1,0 +1,68 @@
+user  nginx;
+### START ###
+# worker_processes  auto;
+worker_processes     ${NGINX_WORKER_PROCESSES};
+worker_rlimit_nofile ${NGINX_WORKER_RLIMIT_NOFILE};
+
+# error_log  /var/log/nginx/error.log notice;
+error_log  /dev/stderr;
+### END ###
+pid        /var/run/nginx.pid;
+
+events {
+### START ###
+#    worker_connections  1024;
+    worker_connections ${NGINX_WORKER_CONNECTIONS};
+    accept_mutex_delay 100ms;
+    multi_accept on;
+### END ###
+}
+
+http {
+### START ###
+    server_tokens off;
+    add_header X-Frame-Options SAMEORIGIN;
+    add_header X-XSS-Protection "1; mode=block";
+    add_header X-Content-Type-Options nosniff;
+    client_max_body_size 64m;
+### END ###
+
+    include       /etc/nginx/mime.types;
+    default_type  application/octet-stream;
+
+### START ###
+    set_real_ip_from   ${NGINX_SET_REAL_IP_FROM};
+    real_ip_header     ${NGINX_REAL_IP_HEADER};
+#    log_format  main  '$remote_addr - $remote_user [$time_local] "$request" '
+#                      '$status $body_bytes_sent "$http_referer" '
+#                      '"$http_user_agent" "$http_x_forwarded_for"';
+    log_format  addhost  '$remote_addr - $remote_user [$time_local] "$request" '
+                         '$status $body_bytes_sent "$http_referer" '
+                         '"$http_user_agent" $request_time "$host"';
+
+#    access_log  /var/log/nginx/access.log  main;
+    access_log  /dev/stdout  addhost;
+### END ###
+
+    sendfile        on;
+    #tcp_nopush     on;
+### START ###
+    tcp_nopush      on;
+    tcp_nodelay     on;
+### END ###
+
+### START ###
+#    keepalive_timeout  65;
+    keepalive_timeout   120;
+    open_file_cache     max=100 inactive=20s;
+    types_hash_max_size 2048;
+### END ###
+
+    #gzip  on;
+### START ###
+    gzip on;
+    gzip_types text/plain text/css text/javascript application/javascript application/x-javascript application/json text/xml application/xml application/xml+rss;
+### END ###
+
+    include /etc/nginx/conf.d/*.conf;
+}

@@ -121,9 +121,9 @@ RSpec.describe 'Users::Confirmations', type: :request do
   #   確認日時: ない（未確認）, 確認送信日時より前（未確認）, 確認送信日時より後（確認済み）
   describe 'GET #show' do
     subject { get user_confirmation_path(confirmation_token:) }
-    let(:current_user) { User.find(send_user.id) }
 
     # テスト内容
+    let(:current_user) { User.find(send_user.id) }
     shared_examples_for 'OK' do
       let!(:start_time) { Time.now.utc.floor }
       it '確認日時が現在日時に変更される' do

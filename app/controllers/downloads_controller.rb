@@ -7,7 +7,7 @@ class DownloadsController < ApplicationAuthController
   # GET /downloads ダウンロード結果一覧
   # GET /downloads(.json) ダウンロード結果一覧API
   def index
-    @id = params[:id].present? ? params[:id].to_i : nil
+    @id = (params[:id].to_s =~ /^[0-9]+$/).present? ? params[:id].to_i : nil
     @downloads = Download.where(user: current_user).search(@id).order(id: :desc)
                          .page(params[:page]).per(Settings.default_downloads_limit)
 
@@ -18,8 +18,7 @@ class DownloadsController < ApplicationAuthController
     set_flash_index
   end
 
-  # GET /downloads/file/:id ダウンロード
-  # GET /downloads/file/:id(.json) ダウンロードAPI
+  # GET /downloads/file/:id(.csv) ダウンロードファイル取得
   def file
     @download = Download.find_by(id: params[:id])
     return response_not_found('alert.download.notfound') if @download.blank? || @download.user != current_user
@@ -50,7 +49,7 @@ class DownloadsController < ApplicationAuthController
     unless @download.save
       return render :new, status: :unprocessable_entity if format_html?
 
-      return render './failure', locals: { errors: @download.errors, alert: t('errors.messages.not_saved.other') }, status: :unprocessable_entity
+      return render '/failure', locals: { errors: @download.errors, alert: t('errors.messages.not_saved.other') }, status: :unprocessable_entity
     end
 
     DownloadJob.perform_later(@download.id)
@@ -125,7 +124,7 @@ class DownloadsController < ApplicationAuthController
   def response_param_error(key, error)
     return head :not_found if format_html?
 
-    render './failure', locals: { errors: { key => [t("errors.messages.param.#{error}")] }, alert: t('errors.messages.not_saved.one') }, status: :not_found
+    render '/failure', locals: { errors: { key => [t("errors.messages.param.#{error}")] }, alert: t('errors.messages.not_saved.one') }, status: :not_found
   end
 
   # Only allow a list of trusted parameters through.

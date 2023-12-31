@@ -47,6 +47,10 @@ module MembersConcern
         @power[value] = true
         @powers.push(key)
       end
+      @checked = {
+        active: true,
+        destroy: true
+      }
     else
       @text = search_params[:text]&.slice(..(255 - 1))
       @option = search_params[:option] == '1' # NOTE: HTMLで使用
@@ -57,6 +61,10 @@ module MembersConcern
           @powers.push(key)
         end
       end
+      @checked = {
+        active: search_params[:active] != '0',
+        destroy: search_params[:destroy] != '0'
+      }
     end
 
     @sort = SORT_COLUMN.include?(search_params[:sort]) ? search_params[:sort] : 'invitationed_at'
@@ -75,7 +83,7 @@ module MembersConcern
   end
 
   def members_search
-    Member.where(space: @space).search(@text, @current_member).by_power(@powers).eager_load(:user, :invitationed_user, :last_updated_user)
+    Member.where(space: @space).search(@text, @current_member).by_power(@powers).by_target(@checked).eager_load(:user, :invitationed_user, :last_updated_user)
           .order(SORT_COLUMN[@sort] + (@desc ? ' DESC' : ''), id: :desc)
   end
 

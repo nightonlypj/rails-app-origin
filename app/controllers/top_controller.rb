@@ -15,7 +15,7 @@ class TopController < ApplicationController
 
   def render_development_for_api_mode
     # :nocov:
-    render './layouts/_development', layout: 'none' if Settings.api_only_mode
+    render '/layouts/_development', layout: 'none' if Settings.api_only_mode
     # :nocov:
   end
 

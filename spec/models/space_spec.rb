@@ -1,7 +1,7 @@
 require 'rails_helper'
 
 RSpec.describe Space, type: :model do
-  let_it_be(:user) { FactoryBot.create(:user) }
+  let_it_be(:created_user) { FactoryBot.create(:user) }
 
   # コード
   # テストパターン
@@ -21,7 +21,7 @@ RSpec.describe Space, type: :model do
       it_behaves_like 'Valid'
     end
     context '重複' do
-      before { FactoryBot.create(:space, code:, created_user: user) }
+      before { FactoryBot.create(:space, code:, created_user:) }
       let(:code) { valid_code }
       let(:messages) { { code: [get_locale('activerecord.errors.models.space.attributes.code.taken')] } }
       it_behaves_like 'InValid'
@@ -104,6 +104,61 @@ RSpec.describe Space, type: :model do
     end
   end
 
+  # 名称（ユニーク）
+  # テストパターン
+  #   同名のスペース: 存在しない, 存在する
+  #     スペース: 公開, 公開（削除予約済み）, 非公開, 非公開（削除予約済み）
+  #     参加, 未参加
+  describe '#validate_name_uniqueness' do
+    subject { model.validate_name_uniqueness(current_user) }
+    let_it_be(:name) { 'space' }
+    let(:model) { FactoryBot.build(:space, name:) }
+    let_it_be(:current_user) { FactoryBot.create(:user) }
+
+    # テスト内容
+    shared_examples_for 'OK' do
+      let(:messages) { {} }
+      it_behaves_like 'Errors'
+    end
+    shared_examples_for 'NG' do
+      let(:messages) { { name: [get_locale('activerecord.errors.models.space.attributes.name.taken')] } }
+      it_behaves_like 'Errors'
+    end
+
+    # テストケース
+    shared_examples_for '参加・未参加' do |join_result, nojoin_result|
+      context '参加' do
+        before_all { FactoryBot.create(:member, :admin, space:, user: current_user) }
+        it_behaves_like join_result
+      end
+      context '未参加' do
+        it_behaves_like nojoin_result
+      end
+    end
+
+    context '同名のスペースが存在しない' do
+      it_behaves_like 'OK'
+    end
+    context '同名のスペースが存在する' do
+      context 'スペースが公開' do
+        let_it_be(:space) { FactoryBot.create(:space, :public, name:, created_user:) }
+        it_behaves_like '参加・未参加', 'NG', 'NG'
+      end
+      context 'スペースが公開（削除予約済み）' do
+        let_it_be(:space) { FactoryBot.create(:space, :public, :destroy_reserved, name:, created_user:) }
+        it_behaves_like '参加・未参加', 'OK', 'OK'
+      end
+      context 'スペースが非公開' do
+        let_it_be(:space) { FactoryBot.create(:space, :private, name:, created_user:) }
+        it_behaves_like '参加・未参加', 'NG', 'OK'
+      end
+      context 'スペースが非公開（削除予約済み）' do
+        let_it_be(:space) { FactoryBot.create(:space, :private, :destroy_reserved, name:, created_user:) }
+        it_behaves_like '参加・未参加', 'OK', 'OK'
+      end
+    end
+  end
+
   # 削除予約済みか返却
   # テストパターン
   #   削除予定日時: ない（予約なし）, ある（予約済み）
@@ -127,7 +182,7 @@ RSpec.describe Space, type: :model do
   #   削除予約なし
   describe '#set_destroy_reserve!' do
     subject { space.set_destroy_reserve! }
-    let(:space) { FactoryBot.create(:space, created_user: user) }
+    let(:space) { FactoryBot.create(:space, created_user:) }
     let(:current_space) { Space.find(space.id) }
 
     let!(:start_time) { Time.current.floor }
@@ -144,7 +199,7 @@ RSpec.describe Space, type: :model do
   #   削除予約済み
   describe '#set_undo_destroy_reserve!' do
     subject { space.set_undo_destroy_reserve! }
-    let(:space) { FactoryBot.create(:space, :destroy_reserved, created_user: user) }
+    let(:space) { FactoryBot.create(:space, :destroy_reserved, created_user:) }
     let(:current_space) { Space.find(space.id) }
 
     it '削除依頼日時・削除予定日時がなしに変更される' do
@@ -184,7 +239,7 @@ RSpec.describe Space, type: :model do
 
     # テストケース
     context '画像がない' do
-      let_it_be(:space) { FactoryBot.create(:space, created_user: user) }
+      let_it_be(:space) { FactoryBot.create(:space, created_user:) }
       it_behaves_like 'Def', :mini, true
       it_behaves_like 'Def', :small, true
       it_behaves_like 'Def', :medium, true
@@ -194,7 +249,7 @@ RSpec.describe Space, type: :model do
     end
     context '画像がある' do
       let_it_be(:image) { fixture_file_upload(TEST_IMAGE_FILE, TEST_IMAGE_TYPE) }
-      let_it_be(:space) { FactoryBot.create(:space, image:, created_user: user) }
+      let_it_be(:space) { FactoryBot.create(:space, image:, created_user:) }
       it_behaves_like 'OK', :mini, false
       it_behaves_like 'OK', :small, false
       it_behaves_like 'OK', :medium, false
@@ -212,11 +267,11 @@ RSpec.describe Space, type: :model do
 
     # テストケース
     context '更新日時が作成日時と同じ' do
-      let(:space) { FactoryBot.create(:space, created_user: user) }
+      let(:space) { FactoryBot.create(:space, created_user:) }
       it_behaves_like 'Value', nil, 'nil'
     end
     context '更新日時が作成日時以降' do
-      let(:space) { FactoryBot.create(:space, created_user: user, created_at: Time.current - 1.hour, updated_at: Time.current) }
+      let(:space) { FactoryBot.create(:space, created_user:, created_at: Time.current - 1.hour, updated_at: Time.current) }
       it '更新日時' do
         is_expected.to eq(space.updated_at)
       end

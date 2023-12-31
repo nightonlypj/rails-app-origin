@@ -1,7 +1,7 @@
 require 'rails_helper'
 
 RSpec.describe 'Spaces', type: :request do
-  let(:response_json) { response.body.present? ? JSON.parse(response.body) : {} }
+  let(:response_json) { JSON.parse(response.body) }
   let(:response_json_space) { response_json['space'] }
 
   # GET /s/:code スペーストップ

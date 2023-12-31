@@ -2,9 +2,9 @@ class InvitationsController < ApplicationAuthController
   before_action :response_not_acceptable_for_not_api, only: :show
   before_action :response_not_acceptable_for_not_html, only: %i[new edit]
   before_action :authenticate_user!
+  before_action :response_api_for_user_destroy_reserved, only: %i[create update], unless: :format_html?
   before_action :set_space_current_member
   before_action :redirect_invitations_for_user_destroy_reserved, only: %i[new create edit update], if: :format_html?
-  before_action :response_api_for_user_destroy_reserved, only: %i[create update], unless: :format_html?
   before_action :check_power_admin
   before_action :set_invitation, only: %i[show edit update]
   before_action :check_email_joined, only: %i[edit update]
@@ -83,41 +83,18 @@ class InvitationsController < ApplicationAuthController
     return if @invitation.email_joined_at.blank?
     return redirect_to invitations_path(@space.code), alert: t('alert.invitation.email_joined') if format_html?
 
-    render './failure', locals: { alert: t('alert.invitation.email_joined') }, status: :unprocessable_entity
+    render '/failure', locals: { alert: t('alert.invitation.email_joined') }, status: :unprocessable_entity
   end
 
   def validate_params_create
     code = create_unique_code(Invitation, 'code', "InvitationsController.create #{params}")
     @invitation = Invitation.new(invitation_params(:create).merge(space: @space, code:, created_user: current_user))
     @invitation.valid?
-    validate_domains
+    @domains = @invitation.validate_domains
     return unless @invitation.errors.any?
     return render :new, status: :unprocessable_entity if format_html?
 
-    render './failure', locals: { errors: @invitation.errors, alert: t('errors.messages.not_saved.other') }, status: :unprocessable_entity
-  end
-
-  def validate_domains
-    @domains = []
-    invalid_domain = nil
-    @invitation.domains&.split(/\R/)&.each do |domain|
-      domain.strip!
-      if domain.present? && !@domains.include?(domain)
-        @domains.push(domain)
-        break if @domains.count > Settings.invitation_domains_max_count
-
-        invalid_domain = domain if invalid_domain.blank? && !Devise.email_regexp.match?("test@#{domain}")
-      end
-    end
-
-    if @domains.blank?
-      @invitation.errors.add(:domains, :blank)
-    elsif @domains.count > Settings.invitation_domains_max_count
-      count = Settings.invitation_domains_max_count.to_s(:delimited)
-      @invitation.errors.add(:domains, t('activerecord.errors.models.invitation.attributes.domains.max_count', count:))
-    elsif invalid_domain.present?
-      @invitation.errors.add(:domains, t('activerecord.errors.models.invitation.attributes.domains.invalid', domain: invalid_domain))
-    end
+    render '/failure', locals: { errors: @invitation.errors, alert: t('errors.messages.not_saved.other') }, status: :unprocessable_entity
   end
 
   def validate_params_update
@@ -125,7 +102,7 @@ class InvitationsController < ApplicationAuthController
     return if @invitation.valid?
     return render :edit, status: :unprocessable_entity if format_html?
 
-    render './failure', locals: { errors: @invitation.errors, alert: t('errors.messages.not_saved.other') }, status: :unprocessable_entity
+    render '/failure', locals: { errors: @invitation.errors, alert: t('errors.messages.not_saved.other') }, status: :unprocessable_entity
   end
 
   # Only allow a list of trusted parameters through.

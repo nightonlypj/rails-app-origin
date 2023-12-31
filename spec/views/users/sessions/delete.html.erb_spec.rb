@@ -10,7 +10,7 @@ RSpec.describe 'users/sessions/delete', type: :view do
     it '対象の送信先と項目が含まれる' do
       render
       assert_select 'form[action=?][method=?]', destroy_user_session_path, 'post' do
-        assert_select 'input[type=?]', 'submit'
+        assert_select 'button[type=?]', 'submit'
       end
     end
 

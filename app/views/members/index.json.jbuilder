@@ -2,12 +2,14 @@ json.success true
 json.search_params do
   json.text @text
   json.power @powers.join(',')
+  json.active @checked[:active] ? 1 : 0
+  json.destroy @checked[:destroy] ? 1 : 0
   json.sort @sort
   json.desc @desc ? 1 : 0
 end
 
 json.space do
-  json.partial! './spaces/space', space: @space
+  json.partial! '/spaces/space', space: @space
 
   json.current_member do
     json.power @current_member.power

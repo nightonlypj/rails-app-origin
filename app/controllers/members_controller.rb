@@ -3,9 +3,9 @@ class MembersController < ApplicationAuthController
   before_action :response_not_acceptable_for_not_api, only: :show
   before_action :response_not_acceptable_for_not_html, only: %i[new result edit]
   before_action :authenticate_user!
+  before_action :response_api_for_user_destroy_reserved, only: %i[create update destroy], unless: :format_html?
   before_action :set_space_current_member
   before_action :redirect_members_for_user_destroy_reserved, only: %i[new create result edit update destroy], if: :format_html?
-  before_action :response_api_for_user_destroy_reserved, only: %i[create update destroy], unless: :format_html?
   before_action :check_power_admin, only: %i[new create result edit update destroy]
   before_action :set_member, only: %i[show edit update]
   before_action :check_current_member, only: %i[edit update]
@@ -70,7 +70,7 @@ class MembersController < ApplicationAuthController
     unless @member.update(member_params(:update).merge(last_updated_user: current_user))
       return render :edit, status: :unprocessable_entity if format_html?
 
-      return render './failure', locals: { errors: @member.errors, alert: t('errors.messages.not_saved.other') }, status: :unprocessable_entity
+      return render '/failure', locals: { errors: @member.errors, alert: t('errors.messages.not_saved.other') }, status: :unprocessable_entity
     end
     return redirect_to members_path(@space.code, active: @member.user.code), notice: t('notice.member.update') if format_html?
 
@@ -88,7 +88,7 @@ class MembersController < ApplicationAuthController
       key = 'destroy'
     end
     @destroy_count = @members.count
-    notice = t("notice.member.#{key}", count: @codes.count.to_s(:delimited), destroy_count: @destroy_count.to_s(:delimited))
+    notice = t("notice.member.#{key}", count: @codes.count.to_formatted_s(:delimited), destroy_count: @destroy_count.to_formatted_s(:delimited))
 
     @members.destroy_all
     return redirect_to members_path(@space.code), notice: notice if format_html?
@@ -117,34 +117,11 @@ class MembersController < ApplicationAuthController
     @member = Member.new(member_params(:create).merge(space: @space, user: current_user, invitationed_user: current_user, invitationed_at: now,
                                                       created_at: now, updated_at: now))
     @member.valid?
-    validate_emails
+    @emails = @member.validate_emails
     return unless @member.errors.any?
     return render :new, status: :unprocessable_entity if format_html?
 
-    render './failure', locals: { errors: @member.errors, alert: t('errors.messages.not_saved.other') }, status: :unprocessable_entity
-  end
-
-  def validate_emails
-    @emails = []
-    invalid_email = nil
-    @member.emails&.split(/\R/)&.each do |email|
-      email.strip!
-      if email.present? && !@emails.include?(email)
-        @emails.push(email)
-        break if @emails.count > Settings.member_emails_max_count
-
-        invalid_email = email if invalid_email.blank? && !Devise.email_regexp.match?(email)
-      end
-    end
-
-    if @emails.blank?
-      @member.errors.add(:emails, :blank)
-    elsif @emails.count > Settings.member_emails_max_count
-      error = t('activerecord.errors.models.member.attributes.emails.max_count', count: Settings.member_emails_max_count)
-      @member.errors.add(:emails, error)
-    elsif invalid_email.present?
-      @member.errors.add(:emails, t('activerecord.errors.models.member.attributes.emails.invalid', email: invalid_email))
-    end
+    render '/failure', locals: { errors: @member.errors, alert: t('errors.messages.not_saved.other') }, status: :unprocessable_entity
   end
 
   def set_params_destroy
@@ -170,7 +147,7 @@ class MembersController < ApplicationAuthController
     return if alert.blank?
     return redirect_to members_path, alert: t(alert) if format_html?
 
-    render './failure', locals: { alert: t(alert) }, status: :unprocessable_entity
+    render '/failure', locals: { alert: t(alert) }, status: :unprocessable_entity
   end
 
   # Only allow a list of trusted parameters through.
