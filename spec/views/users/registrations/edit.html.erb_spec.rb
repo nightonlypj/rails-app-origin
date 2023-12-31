@@ -20,7 +20,7 @@ RSpec.describe 'users/registrations/edit', type: :view do
         assert_select 'input[name=?]', 'commit'
       end
       assert_select 'form[action=?][method=?]', delete_user_image_registration_path, 'post' do # 画像削除
-        assert_select 'input[type=?]', 'submit'
+        assert_select 'button[type=?]', 'submit'
       end
     end
   end
@@ -30,16 +30,12 @@ RSpec.describe 'users/registrations/edit', type: :view do
       render
       expect(rendered).to include("href=\"#{delete_user_registration_path}\"") # アカウント削除
     end
-    it '対象のパスが含まれない' do
-      render
-      expect(rendered).not_to include("href=\"#{new_user_confirmation_path}\"") # メールアドレス確認
-    end
   end
   shared_examples_for 'メールアドレス変更中表示' do
     it '対象のパスが含まれる' do
       render
+      expect(rendered).to include(@resource.unconfirmed_email) # 確認待ちメールアドレス
       expect(rendered).to include("href=\"#{delete_user_registration_path}\"") # アカウント削除
-      expect(rendered).to include("href=\"#{new_user_confirmation_path}\"") # メールアドレス確認
     end
   end
 

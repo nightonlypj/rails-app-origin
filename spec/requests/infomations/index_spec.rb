@@ -55,7 +55,7 @@ RSpec.describe 'Infomations', type: :request do
       let(:subject_format) { nil }
       let(:accept_headers) { ACCEPT_INC_HTML }
       let(:subject_page) { page }
-      let(:url_page)     { link_page >= 2 ? link_page : nil }
+      let(:url_page)     { link_page }
       it "#{link_page}ページのパスが含まれない" do
         subject
         expect(response.body).not_to include("\"#{infomations_path(page: url_page)}\"")
@@ -82,7 +82,7 @@ RSpec.describe 'Infomations', type: :request do
         (start_no..end_no).each do |no|
           infomation = @user_infomations[@user_infomations.count - no]
           # タイトル
-          expect(response.body).to include(infomation.label_i18n) if infomation.label_i18n.present?
+          expect(response.body).to include(infomation.label_i18n)
 
           url = "href=\"#{infomation_path(infomation)}\""
           if infomation.body.present?

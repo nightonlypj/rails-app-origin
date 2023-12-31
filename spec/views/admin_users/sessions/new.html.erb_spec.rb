@@ -9,7 +9,9 @@ RSpec.describe 'admin_users/sessions/new', type: :view do
       assert_select 'form[action=?][method=?]', create_admin_user_session_path, 'post' do
         assert_select 'input[name=?]', 'admin_user[email]'
         assert_select 'input[name=?]', 'admin_user[password]'
+        # :nocov:
         assert_select 'input[name=?]', 'admin_user[remember_me]' if Devise.mappings[:admin_user].rememberable?
+        # :nocov:
         assert_select 'input[name=?]', 'commit'
       end
     end

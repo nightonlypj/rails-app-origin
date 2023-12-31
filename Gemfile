@@ -1,44 +1,67 @@
 source 'https://rubygems.org'
 git_source(:github) { |repo| "https://github.com/#{repo}.git" }
 
-ruby '3.1.4'
+ruby '3.2.2'
 
-# Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
-gem 'rails', '~> 6.1.4'
+# Bundle edge Rails instead: gem 'rails', github: 'rails/rails', branch: 'main'
+gem 'rails', '~> 7.0'
+
+# The original asset pipeline for Rails [https://github.com/rails/sprockets-rails]
+gem 'sprockets-rails'
+
 # Use sqlite3 as the database for Active Record
-# gem 'sqlite3', '~> 1.4.2' # NOTE: Docker -> cannot load such file -- sqlite3/sqlite3_native (LoadError)
-# Use mysql as the database for Active Record
-gem 'mysql2', '>= 0.4.4'
-# Use postgresql as the database for Active Record
-# gem 'pg', '>= 1.1'
-# Use Puma as the app server
-gem 'puma', '>= 4.1'
-# Use SCSS for stylesheets
-gem 'sass-rails', '>= 6'
-# Transpile app-like JavaScript. Read more: https://github.com/rails/webpacker
-gem 'webpacker', '>= 5.0'
-# Turbolinks makes navigating your web application faster. Read more: https://github.com/turbolinks/turbolinks
-gem 'turbolinks', '>= 5'
-# Build JSON APIs with ease. Read more: https://github.com/rails/jbuilder
-gem 'jbuilder', '>= 2.7'
-# Use Redis adapter to run Action Cable in production
-# gem 'redis', '>= 4.0'
-# Use Active Model has_secure_password
-# gem 'bcrypt', '>= 3.1.7'
+# gem 'sqlite3', '~> 1.4'
 
-# Use Active Storage variant
-# gem 'image_processing', '>= 1.2'
+# Use mysql as the database for Active Record
+gem 'mysql2', '~> 0.5'
+
+# Use postgresql as the database for Active Record
+gem 'pg', '~> 1.1'
+
+# Use the Puma web server [https://github.com/puma/puma]
+gem 'puma', '~> 5.0'
+
+# Use JavaScript with ESM import maps [https://github.com/rails/importmap-rails]
+gem 'importmap-rails'
+
+# Hotwire's SPA-like page accelerator [https://turbo.hotwired.dev]
+gem 'turbo-rails'
+
+# Hotwire's modest JavaScript framework [https://stimulus.hotwired.dev]
+gem 'stimulus-rails'
+
+# Build JSON APIs with ease [https://github.com/rails/jbuilder]
+gem 'jbuilder'
+
+# Use Redis adapter to run Action Cable in production
+# gem 'redis', '~> 4.0'
+
+# Use Kredis to get higher-level data types in Redis [https://github.com/rails/kredis]
+# gem 'kredis'
+
+# Use Active Model has_secure_password [https://guides.rubyonrails.org/active_model_basics.html#securepassword]
+# gem 'bcrypt', '~> 3.1.7'
+
+# Windows does not include zoneinfo files, so bundle the tzinfo-data gem
+gem 'tzinfo-data', platforms: %i[mingw mswin x64_mingw jruby]
 
 # Reduces boot times through caching; required in config/boot.rb
-gem 'bootsnap', '>= 1.4.2', require: false
+gem 'bootsnap', require: false
+
+# Use Sass to process CSS
+gem 'sassc-rails'
+
+# Use Active Storage variants [https://guides.rubyonrails.org/active_storage_overview.html#transforming-images]
+# gem 'image_processing', '~> 1.2'
 
 group :development, :test do
-  # Call 'byebug' anywhere in the code to stop execution and get a debugger console
-  gem 'byebug', platforms: [:mri, :mingw, :x64_mingw]
+  # See https://guides.rubyonrails.org/debugging_rails_applications.html#debugging-with-the-debug-gem
+  gem 'debug', platforms: %i[mri mingw x64_mingw]
+
   # Use RSpec
-  gem 'rspec-rails', '>= 4.0.0' # NOTE: https://qiita.com/amatsukix/items/578f85cf4565ca2a797c
-  gem 'spring-commands-rspec'
-  gem 'factory_bot_rails'
+  gem 'rspec-rails'
+  # gem 'spring-commands-rspec'
+  gem 'factory_bot_rails', '< 6.3.0' # NOTE: rails s/rspec -> undefined method `config' for nil:NilClass
   # Use RuboCop
   gem 'rubocop'
   gem 'rubocop-rails'
@@ -46,52 +69,47 @@ group :development, :test do
   gem 'brakeman'
 end
 gem 'faker' # NOTE: テスト以外でも使えるように
-gem 'rexml' # NOTE: rails aborted! LoadError: cannot load such file -- rexml/document
 
 group :development do
-  # Access an interactive console on exception pages or by calling 'console' anywhere in the code.
-  gem 'web-console', '>= 3.3.0'
-  # gem 'listen', '>= 3.0.5' # NOTE: LoadError: Could not load the 'listen' gem. Add `gem 'listen'` to the development group of your Gemfile
-  # Spring speeds up development by keeping your application running in the background. Read more: https://github.com/rails/spring
-  gem 'spring'
-  gem 'spring-watcher-listen', '>= 2.0.0'
+  # Use console on exceptions pages [https://github.com/rails/web-console]
+  gem 'web-console'
+
+  # Add speed badges [https://github.com/MiniProfiler/rack-mini-profiler]
+  # gem 'rack-mini-profiler'
+
+  # Speed up commands on slow machines / big apps [https://github.com/rails/spring]
+  # gem 'spring'
+
   # Use YARD
   gem 'guard-yard'
   gem 'redcarpet'
   gem 'yard'
   # Use LetterOpenerWeb
-  # gem 'letter_opener_web' # NOTE: NameError: uninitialized constant LetterOpenerWeb
+  gem 'letter_opener_web'
   # Use Rails ERD
   gem 'rails-erd'
   # Use Bullet
   gem 'bullet'
   # Use Capistrano
-  gem 'capistrano', '>= 3.0'
+  gem 'capistrano'
   gem 'capistrano-rvm'
   gem 'capistrano-rails'
   gem 'capistrano-bundler'
-  gem 'capistrano-yarn'
   gem 'capistrano3-unicorn'
 end
-gem 'listen', '>= 3.0.5'
-gem 'letter_opener_web'
 
 group :test do
-  # Adds support for Capybara system testing and selenium driver
-  gem 'capybara', '>= 2.15'
+  # Use system testing [https://guides.rubyonrails.org/testing.html#system-testing]
+  gem 'capybara'
   gem 'selenium-webdriver'
-  # Easy installation and use of web drivers to run system tests with browsers
-  gem 'webdrivers'
+
   # Use SimpleCov
   gem 'simplecov'
   # Use Ruby Tests Profiling Toolbox
   gem 'test-prof'
   # Use WebMock
-  gem "webmock"
+  gem 'webmock'
 end
-
-# Windows does not include zoneinfo files, so bundle the tzinfo-data gem
-gem 'tzinfo-data', platforms: [:mingw, :mswin, :x64_mingw, :jruby]
 
 # Use Devise
 gem 'devise'
@@ -133,10 +151,3 @@ gem 'slack-notifier'
 # Use Delayed::Job
 gem 'delayed_job_active_record'
 gem 'daemons'
-
-# NOTE: [ruby 3.0.0 -> 3.1.4] rails s -> Psych::BadAlias: Unknown alias: male_first_name
-gem 'psych', '~> 3.1'
-
-# NOTE: [ruby 3.0.0 -> 3.1.4] rspec -> LoadError: cannot load such file -- matrix, net/smtp
-gem 'matrix'
-gem 'net-smtp'

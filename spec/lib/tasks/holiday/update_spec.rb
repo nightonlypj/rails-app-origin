@@ -1,5 +1,4 @@
 require 'rake_helper'
-require 'webmock/rspec'
 
 RSpec.describe :holiday, type: :task do
   # 祝日データ更新（前年の2月に元データが更新される） → tool:create_yamlでseed更新
@@ -7,7 +6,6 @@ RSpec.describe :holiday, type: :task do
   #   追加あり, 変更なし, 名称変更あり
   describe 'holiday:update' do
     subject { Rake.application['holiday:update'].invoke(dry_run) }
-
     let_it_be(:year) { Time.current.year }
     let_it_be(:holidays) do
       [
@@ -15,7 +13,6 @@ RSpec.describe :holiday, type: :task do
         FactoryBot.create(:holiday, date: Date.new(year, 5, 5), name: 'こどもの日')
       ]
     end
-    let(:current_holidays) { Holiday.all.order(:id) }
 
     # テスト内容
     before do
@@ -24,6 +21,7 @@ RSpec.describe :holiday, type: :task do
         status: 200
       )
     end
+    let(:current_holidays) { Holiday.all.order(:id) }
     shared_examples_for 'OK' do
       it '追加または変更される' do
         subject

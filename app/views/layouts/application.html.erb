@@ -1,20 +1,19 @@
 <!DOCTYPE html>
 <html lang="ja">
   <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
-    <meta http-equiv="x-ua-compatible" content="ie=edge" />
     <title><%= content_for?(:html_title) ? yield(:html_title) + ' - ' : '' %><%= "#{t('app_name')}#{Settings.env_name}" %></title>
+    <meta name="viewport" content="width=device-width,initial-scale=1">
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.4/css/all.css" />
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" />
     <link rel="stylesheet" href="<%= config.asset_host %>/css/mdb.min.css?v3.1.0" />
-    <%= stylesheet_link_tag 'application', media: 'all', 'data-turbolinks-track': 'reload' %>
+    <%= stylesheet_link_tag 'application', media: 'all', 'data-turbo-track': 'reload' %>
 <% if Settings.debug %>
     <meta name="debug" content="true">
 <% end %>
-    <%= javascript_pack_tag 'application', 'data-turbolinks-track': 'reload' %>
+    <%= javascript_importmap_tags %>
+    <%= javascript_import_module_tag 'controllers/left_menu' %>
   </head>
   <body>
     <header style="margin-bottom: 70px">
@@ -163,7 +162,7 @@
       <div class="d-flex justify-content-center p-3">
         <span class="d-none d-sm-block">Copyright&nbsp;</span><span class="text-truncate">&copy; <%= link_to t('my_name'), t('my_url'), target: :_blank, rel: %i[noopener noreferrer] %> All Rights Reserved.</span>
       </div>
-      <%= render './layouts/development' if Rails.env.development? %>
+      <%= render '/layouts/development' if Rails.env.development? %>
     </footer>
   </body>
   <script type="text/javascript" src="<%= config.asset_host %>/js/mdb.min.js?v3.1.0"></script>

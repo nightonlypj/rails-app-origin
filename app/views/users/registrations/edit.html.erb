@@ -1,6 +1,6 @@
 <% content_for(:html_title) { 'ユーザー情報変更' } %>
 
-<%= render './users/shared/error_messages', resource: resource %>
+<%= render '/users/shared/error_messages', resource: resource %>
 
 <div class="card card-body mb-2" style="max-width: 850px">
   <div class="row">
@@ -21,9 +21,6 @@
       <div class="card-footer pb-0 px-0">
         <nav>
           <ul class="mt-2 mb-0">
-<% if user_valid_confirmation_token? %>
-            <li><%= link_to 'メールアドレス確認', new_user_confirmation_path %></li>
-<% end %>
             <li><%= link_to 'アカウント削除', delete_user_registration_path %></li>
           </ul>
         </nav>

@@ -3,7 +3,7 @@ require 'nested_form/engine'
 require 'nested_form/builder_mixin'
 
 RailsAdmin.config do |config|
-  config.asset_source = :webpacker
+  config.asset_source = :sprockets
   ### Popular gems integration
 
   ## == Devise ==
@@ -26,6 +26,13 @@ RailsAdmin.config do |config|
   ## == Gravatar integration ==
   ## To disable Gravatar integration in Navigation Bar set to false
   # config.show_gravatar = true
+
+  ## == Delayed::Job ==
+  config.included_models = RailsAdmin::Config.models_pool << 'Delayed::Job'
+  config.model Delayed::Job do
+    label 'delayed_jobs'
+    navigation_label '管理'
+  end
 
   config.actions do
     dashboard                     # mandatory

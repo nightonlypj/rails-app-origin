@@ -38,10 +38,10 @@ RSpec.describe 'Users::Auth::Sessions', type: :request do
     let(:invalid_attributes_nil)  { { email: send_user.email, password: send_user.password, unlock_redirect_url: nil } }
     let(:invalid_attributes_bad)  { { email: send_user.email, password: send_user.password, unlock_redirect_url: BAD_SITE_URL } }
 
-    include_context 'Authテスト内容'
-    let(:current_user) { User.find(send_user.id) }
-
     # テスト内容
+    let(:current_user) { User.find(send_user.id) }
+    include_context 'Authテスト内容'
+
     shared_examples_for 'ToOK(json/json)' do # |success, id_present|
       let(:subject_format) { :json }
       let(:accept_headers) { ACCEPT_INC_JSON }
@@ -326,10 +326,10 @@ RSpec.describe 'Users::Auth::Sessions', type: :request do
   describe 'POST #destroy' do
     subject { post destroy_user_auth_session_path(format: subject_format), headers: auth_headers.merge(accept_headers) }
 
-    include_context 'Authテスト内容'
-    let(:current_user) { user }
-
     # テスト内容
+    let(:current_user) { user }
+    include_context 'Authテスト内容'
+
     shared_examples_for 'ToOK(json/json)' do
       let(:subject_format) { :json }
       let(:accept_headers) { ACCEPT_INC_JSON }

@@ -16,7 +16,34 @@
 require 'simplecov'
 
 RSpec.configure do |config|
-  SimpleCov.start
+  SimpleCov.start do
+    enable_coverage :branch
+    primary_coverage :branch
+    add_group 'Controller' do |source_file|
+      source_file.filename =~ %r{^#{SimpleCov.root}/app/controllers/}
+    end
+    add_group 'Helper' do |source_file|
+      source_file.filename =~ %r{^#{SimpleCov.root}/app/helpers/}
+    end
+    add_group 'Model' do |source_file|
+      source_file.filename =~ %r{^#{SimpleCov.root}/app/models/}
+    end
+    add_group 'Channel' do |source_file|
+      source_file.filename =~ %r{^#{SimpleCov.root}/app/channels/}
+    end
+    add_group 'Job' do |source_file|
+      source_file.filename =~ %r{^#{SimpleCov.root}/app/jobs/}
+    end
+    add_group 'Task' do |source_file|
+      source_file.filename =~ %r{^#{SimpleCov.root}/lib/tasks/}
+    end
+    add_group 'Mailer' do |source_file|
+      source_file.filename =~ %r{^#{SimpleCov.root}/app/mailers/}
+    end
+    add_group 'Spec' do |source_file|
+      source_file.filename =~ %r{^#{SimpleCov.root}/spec/}
+    end
+  end
 
   # rspec-expectations config goes here. You can use an alternate
   # assertion/expectation library such as wrong or the stdlib/minitest

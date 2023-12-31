@@ -19,7 +19,7 @@ RSpec.describe 'Top', type: :request do
         (1..@user_important_infomations.count).each do |no|
           infomation = @user_important_infomations[@user_important_infomations.count - no]
 
-          expect(response.body).to include(infomation.label_i18n) if infomation.label_i18n.present?
+          expect(response.body).to include(infomation.label_i18n)
           expect(response.body).to include(infomation.title)
 
           url = "href=\"#{infomation_path(infomation)}\""

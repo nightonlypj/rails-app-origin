@@ -115,9 +115,9 @@ RSpec.describe 'Users::Unlocks', type: :request do
   #   ロック日時: ない（未ロック）, 期限内（ロック中）, 期限切れ（未ロック）
   describe 'GET #show' do
     subject { get user_unlock_path(unlock_token:) }
-    let(:current_user) { User.find(send_user.id) }
 
     # テスト内容
+    let(:current_user) { User.find(send_user.id) }
     shared_examples_for 'OK' do
       it 'アカウントロック日時がなしに回数が0に変更される' do
         subject

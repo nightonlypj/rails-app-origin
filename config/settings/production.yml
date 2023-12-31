@@ -1,22 +1,22 @@
 debug: false
 env_name: <%= ENV['ENV_NAME'] %> # null/空 or 【STG環境】 or 【テスト環境】
 base_domain: <%= ENV['BASE_DOMAIN'] %> # example.com
-base_image_url: <%= ENV['BASE_IMAGE_URL'] || "https://#{ENV['BASE_DOMAIN']}" %> # https://example.com
-redirect_whitelist: <%= eval(ENV['REDIRECT_WHITELIST'] || '[]') %> # ['https://front.example.com/*']
+base_image_url: <%= ENV['BASE_IMAGE_URL'].presence || "https://#{ENV['BASE_DOMAIN']}" %> # https://example.com
+redirect_whitelist: <%= eval(ENV['REDIRECT_WHITELIST'].presence || '[]') %> # ['https://front.example.com/*']
 default_confirm_success_url: <%= ENV['DEFAULT_CONFIRM_SUCCESS_URL'] %> # null
 default_password_reset_url: <%= ENV['DEFAULT_PASSWORD_RESET_URL'] %> # null
 default_unlock_success_url: <%= ENV['DEFAULT_UNLOCK_SUCCESS_URL'] %> # null
 mailer_from:
-  name: <%= ENV['MAILER_FROM_NAME'] || "'%{app_name}'" %>
-  email: <%= ENV['MAILER_FROM_EMAIL'] || "noreply@#{ENV['BASE_DOMAIN']}" %> # noreply@example.com
+  name: <%= ENV['MAILER_FROM_NAME'].presence || "'%{app_name}'" %>
+  email: <%= ENV['MAILER_FROM_EMAIL'].presence || "noreply@#{ENV['BASE_DOMAIN']}" %> # noreply@example.com
 exception_notifier:
-  email_enabled: <%= ENV['EXCEPTION_NOTIFIER_EMAIL'] == '1' || false %> # 1
+  email_enabled: <%= ENV['EXCEPTION_NOTIFIER_EMAIL'] == '1'.presence || false %> # 1
   email_config:
-    email_prefix: <%= ENV['EXCEPTION_NOTIFIER_EMAIL_PREFIX'] || "[WARNING]#{ENV['ENV_NAME']}" %>
-    sender_address: <%= ENV['EXCEPTION_NOTIFIER_EMAIL_SENDER'] || "noreply@#{ENV['BASE_DOMAIN']}" %> # noreply@example.com
-    exception_recipients: <%= eval(ENV['EXCEPTION_NOTIFIER_EMAIL_RECIPIENTS'] || '[]') %> # ['warning@example.com']
-  slack_enabled: <%= ENV['EXCEPTION_NOTIFIER_SLACK'] == '1' || false %> # 1
+    email_prefix: <%= ENV['EXCEPTION_NOTIFIER_EMAIL_PREFIX'].presence || "[WARNING]#{ENV['ENV_NAME']}" %>
+    sender_address: <%= ENV['EXCEPTION_NOTIFIER_EMAIL_SENDER'].presence || "noreply@#{ENV['BASE_DOMAIN']}" %> # noreply@example.com
+    exception_recipients: <%= eval(ENV['EXCEPTION_NOTIFIER_EMAIL_RECIPIENTS'].presence || '[]') %> # ['warning@example.com']
+  slack_enabled: <%= ENV['EXCEPTION_NOTIFIER_SLACK'] == '1'.presence || false %> # 1
   slack_config:
     webhook_url: <%= ENV['EXCEPTION_NOTIFIER_SLACK_WEBHOOK_URL'] %> # https://hooks.slack.com/services/xxxxxxxx
     additional_parameters:
-      color: <%= ENV['EXCEPTION_NOTIFIER_SLACK_COLOR'] || 'warning' %>
+      color: <%= ENV['EXCEPTION_NOTIFIER_SLACK_COLOR'].presence || 'warning' %>
