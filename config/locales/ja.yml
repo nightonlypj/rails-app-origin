@@ -1,6 +1,11 @@
 ja:
   app_name: 'RailsAppOrigin'
   sub_title: ': ベースアプリケーション'
+  env_name:
+    development: '【開発環境】'
+    test: '【テスト環境】'
+    staging: '【STG環境】'
+    production: ''
   my_name: 'My name'
   my_url: 'https://example.com'
   activerecord:

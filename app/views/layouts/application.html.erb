@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="ja">
   <head>
-    <title><%= content_for?(:html_title) ? yield(:html_title) + ' - ' : '' %><%= "#{t('app_name')}#{Settings.env_name}" %></title>
+    <title><%= content_for?(:html_title) ? yield(:html_title) + ' - ' : '' %><%= "#{t('app_name')}#{t("env_name.#{Settings.server_env}")}" %></title>
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
@@ -14,6 +14,9 @@
 <% end %>
     <%= javascript_importmap_tags %>
     <%= javascript_import_module_tag 'controllers/left_menu' %>
+<% if Settings.locales.keys.count >= 2 %>
+    <%= javascript_import_module_tag 'controllers/switch_locale' %>
+<% end %>
   </head>
   <body>
     <header style="margin-bottom: 70px">
@@ -27,7 +30,7 @@
             </div>
             <a href="<%= root_path %>" class="navbar-brand">
               <%= image_tag "/logo.png", id: 'app_logo', width: '40px', height: '40px' %>
-              <span id="app_name" class="text-truncate" style="max-width: 125px"><%= "#{t('app_name')}#{t('sub_title')}#{Settings.env_name}" %></span>
+              <span id="app_name" class="text-truncate" style="max-width: 125px"><%= "#{t('app_name')}#{t('sub_title')}#{t("env_name.#{Settings.server_env}")}" %></span>
             </a>
           </div>
           <nav id="nav_right" class="nav align-items-center">
@@ -70,6 +73,11 @@
 <% end %>
               </i>
             </a>
+<% end %>
+<% if Settings.locales.keys.count >= 2 %>
+            <div class="p-2">
+              <%= select_tag 'switch_locale', options_for_select(Settings.locales.map { |code, name| [name, code] }, I18n.locale) %>
+            </div>
 <% end %>
           </nav>
         </div>

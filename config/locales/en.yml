@@ -1,0 +1,91 @@
+en:
+  app_name: 'RailsAppOrigin'
+  sub_title: ': base application'
+  env_name:
+    development: ' [Development]'
+    test: ' [Test]'
+    staging: ' [Staging]'
+    production: ''
+  my_name: 'My name'
+  my_url: 'https://example.com'
+  activerecord:
+    models:
+      holiday: 'Holiday'
+      infomation: 'Infomation'
+    attributes:
+      holiday:
+        id: 'ID'
+        date: 'Date'
+        name: 'Name'
+      infomation:
+        id: 'ID'
+        label: 'Label'
+        title: 'Title'
+        summary: 'Summary'
+        body: 'Body'
+        started_at: 'Start datetime'
+        ended_at: 'End datetime'
+        force_started_at: 'Forced display start datetime'
+        force_ended_at: 'Forced display start datetime'
+        target: 'Target'
+        user: 'User'
+        created_at: 'Created datetime'
+        updated_at: 'Updated datetime'
+    errors:
+      models:
+        holiday:
+          attributes:
+            date:
+              blank: 'Please enter.'
+              taken: 'Same date exists.'
+            name:
+              blank: 'Please enter.'
+        infomation:
+          attributes:
+            label:
+              blank: 'Please select.'
+            title:
+              blank: 'Please enter.'
+            started_at:
+              blank: 'Please enter.'
+            target:
+              blank: 'Please select.'
+            user:
+              blank: 'Please select.'
+  enums:
+    infomation:
+      label:
+        not: ''
+        maintenance: 'Maintenance'
+        hindrance: 'Hindrance'
+        update: 'Update'
+        other: 'Other'
+      target:
+        all: 'Everyone'
+        user: 'Target users only'
+  notice:
+    user:
+      image_update: 'The image has been changed.'
+      image_destroy: 'The image has been deleted.'
+  alert:
+    page:
+      notfound: 'Page Not Found.'
+    user:
+      destroy_reserved: 'This operation is not possible because your account is scheduled to be deleted.'
+      not_destroy_reserved: 'It has already been canceled or the account has not been deleted.'
+      destroy:
+        params_blank: 'No parameters specified.'
+        undo_delete_url_blank: 'No undo_delete_url specified.'
+        undo_delete_url_not_allowed: 'No undo_delete_url specified.'
+  errors:
+    messages:
+      infomation:
+        ended: 'The publication period has ended.'
+  mailer:
+    user:
+      destroy_reserved:
+        subject: '%{env_name}[%{app_name}] Notice of acceptance of account deletion'
+      undo_destroy_reserved:
+        subject: '%{env_name}[%{app_name}] Notice of completion of account deletion cancellation'
+      destroy_completed:
+        subject: '%{env_name}[%{app_name}] Notice of completion of account deletion'

@@ -53,8 +53,8 @@ services:
         nginx -g 'daemon off;'"
     environment:
       NGINX_WORKER_PROCESSES: "auto" # 最大値: vCPUの数 or auto = 16と仮定して
-      NGINX_WORKER_RLIMIT_NOFILE: 32768 # 最大値: 524288(cat /proc/sys/fs/file-max) / WORKER_PROCESSES
-      NGINX_WORKER_CONNECTIONS: 8192 # 最大値: WORKER_RLIMIT_NOFILE / 4
+      NGINX_WORKER_RLIMIT_NOFILE: 32768 # 最大値: 524288(cat /proc/sys/fs/file-max) / NGINX_WORKER_PROCESSES
+      NGINX_WORKER_CONNECTIONS: 8192 # 最大値: NGINX_WORKER_RLIMIT_NOFILE / 4
       NGINX_SET_REAL_IP_FROM: "172.31.0.0/16" # <- ELB
       NGINX_REAL_IP_HEADER: "X-Forwarded-For" # <- ELB
       NGINX_PROXY_PASS: "http://app:3000"

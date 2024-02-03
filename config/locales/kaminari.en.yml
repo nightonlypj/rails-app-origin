@@ -1,0 +1,18 @@
+# https://github.com/tigrish/kaminari-i18n/blob/master/config/locales/en.yml
+en:
+  helpers:
+    page_entries_info:
+      more_pages:
+        display_entries: '%{first}-%{last} of %{total} in total' # Displaying %{entry_name} <b>%{first}&nbsp;-&nbsp;%{last}</b> of <b>%{total}</b> in total
+      one_page:
+        display_entries:
+          one:   '%{count} item'  # Displaying <b>%{count}</b> %{entry_name}
+          other: '%{count} items' # Displaying <b>all %{count}</b> %{entry_name}
+          zero: ''                # No %{entry_name} found
+  views:
+    pagination:
+      first: '&laquo;'      # &laquo; First
+      last: '&raquo;'       # Last &raquo;
+      next: '&rsaquo;'      # Next &rsaquo;
+      previous: '&lsaquo;'  # &lsaquo; Prev
+      truncate: '&hellip;'

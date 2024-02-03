@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="ja">
   <head>
-    <title><%= content_for?(:html_title) ? yield(:html_title) + ' - ' : '' %><%= "#{t('app_name')} Admin#{Settings.env_name}" %></title>
+    <title><%= content_for?(:html_title) ? yield(:html_title) + ' - ' : '' %><%= "#{t('app_name')} Admin#{t("env_name.#{Settings.server_env}")}" %></title>
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
@@ -10,6 +10,9 @@
     <link rel="stylesheet" href="<%= config.asset_host %>/css/mdb.min.css?v3.1.0" />
     <%= stylesheet_link_tag 'application', media: 'all', 'data-turbo-track': 'reload' %>
     <%= javascript_importmap_tags %>
+<% if Settings.locales.keys.count >= 2 %>
+    <%= javascript_import_module_tag 'controllers/switch_locale' %>
+<% end %>
   </head>
   <body>
     <header style="margin-bottom: 52px">
@@ -17,7 +20,7 @@
         <div class="container-fluid">
           <a href="<%= new_admin_user_session_path %>" class="navbar-brand">
             <%= t('app_name') %> Admin
-            <span class="d-none d-sm-block"><%= Settings.env_name %></span>
+            <span class="d-none d-sm-block"><%= t("env_name.#{Settings.server_env}") %></span>
           </a>
           <nav class="nav align-items-center">
 <% unless admin_user_signed_in? %>
@@ -33,6 +36,11 @@
               <i class="fas fa-sign-out-alt fa-lg"></i>
               <span class="d-none d-md-block m-1">ログアウト</span>
             </a>
+<% end %>
+<% if Settings.locales.keys.count >= 2 %>
+            <div class="p-2">
+              <%= select_tag 'switch_locale', options_for_select(Settings.locales.map { |code, name| [name, code] }, I18n.locale) %>
+            </div>
 <% end %>
           </nav>
         </div>

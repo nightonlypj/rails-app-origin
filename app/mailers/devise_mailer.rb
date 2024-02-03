@@ -33,7 +33,7 @@ class DeviseMailer < Devise::Mailer
   # メール送信
   def send_mail(mail)
     mail.from = "\"#{Settings.mailer_from.name.gsub('%{app_name}', t('app_name'))}\" <#{Settings.mailer_from.email}>"
-    mail.subject = mail.subject.gsub('%{app_name}', t('app_name')).gsub('%{env_name}', Settings.env_name || '')
+    mail.subject = mail.subject.gsub('%{app_name}', t('app_name')).gsub('%{env_name}', t("env_name.#{Settings.server_env}"))
     mail
   end
 end

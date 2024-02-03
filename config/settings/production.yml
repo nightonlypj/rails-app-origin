@@ -1,5 +1,5 @@
 debug: false
-env_name: <%= ENV['ENV_NAME'] %> # null/空 or 【STG環境】 or 【テスト環境】
+server_env: <%= ENV['SERVER_ENV'].presence || 'production' %> # production or staging
 base_domain: <%= ENV['BASE_DOMAIN'] %> # example.com
 base_image_url: <%= ENV['BASE_IMAGE_URL'].presence || "https://#{ENV['BASE_DOMAIN']}" %> # https://example.com
 redirect_whitelist: <%= eval(ENV['REDIRECT_WHITELIST'].presence || '[]') %> # ['https://front.example.com/*']
@@ -12,7 +12,7 @@ mailer_from:
 exception_notifier:
   email_enabled: <%= ENV['EXCEPTION_NOTIFIER_EMAIL'] == '1'.presence || false %> # 1
   email_config:
-    email_prefix: <%= ENV['EXCEPTION_NOTIFIER_EMAIL_PREFIX'].presence || "[WARNING]#{ENV['ENV_NAME']}" %>
+    email_prefix: <%= ENV['EXCEPTION_NOTIFIER_EMAIL_PREFIX'].presence || "[WARNING][#{ENV['SERVER_ENV']}]" %>
     sender_address: <%= ENV['EXCEPTION_NOTIFIER_EMAIL_SENDER'].presence || "noreply@#{ENV['BASE_DOMAIN']}" %> # noreply@example.com
     exception_recipients: <%= eval(ENV['EXCEPTION_NOTIFIER_EMAIL_RECIPIENTS'].presence || '[]') %> # ['warning@example.com']
   slack_enabled: <%= ENV['EXCEPTION_NOTIFIER_SLACK'] == '1'.presence || false %> # 1

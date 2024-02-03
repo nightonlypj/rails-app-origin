@@ -1,5 +1,10 @@
 # リリースノート
 
+## 1.9.0 (Sprint 14)
+
+- 多言語に対応したい
+  - https://dev.azure.com/nightonly/nuxt-app-origin/_workitems/edit/562/
+
 ## 1.8.0 (Sprint 13)
 
 - ECS(Fargate)でアプリを動かしたい

@@ -1,5 +1,5 @@
 debug: true
-env_name: '【開発環境】'
+server_env: 'development'
 base_domain: 'localhost:3000'
 base_image_url: 'http://localhost:3000'
 redirect_whitelist: ['http://localhost:5000/*']
@@ -12,7 +12,7 @@ mailer_from:
 exception_notifier:
   email_enabled: true
   email_config:
-    email_prefix: '[WARNING]【開発環境】'
+    email_prefix: '[WARNING][development]'
     sender_address: 'noreply@localhost'
     exception_recipients: ['warning']
   slack_enabled: false

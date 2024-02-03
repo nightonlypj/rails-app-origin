@@ -5,7 +5,7 @@ const debug = $("meta[name='debug']").attr('content') === 'true'
 let leftMenuDisplay = null
 
 $(document).on('turbo:load', function(){
-    if (debug) console.log('== turbo:load', leftMenuDisplay)
+    if (debug) console.log('== turbo:load(left_menu.js)', leftMenuDisplay)
 
     updateDisplay(leftMenuDisplay == null || leftMenuDisplay)
 

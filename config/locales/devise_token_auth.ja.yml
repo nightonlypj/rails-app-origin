@@ -1,3 +1,4 @@
+# https://github.com/lynndylanhurley/devise_token_auth/blob/master/config/locales/ja.yml
 ja:
   devise_token_auth:
     sessions:
