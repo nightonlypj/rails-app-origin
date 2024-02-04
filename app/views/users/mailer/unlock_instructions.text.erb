@@ -1,10 +1,13 @@
-<%= @resource.name %> 様
+<%= t('メール宛先', name: @resource.name) %>
+<%= t('メール挨拶文', app_name: t('app_name')) %>
 
-<%= t('app_name') %> をご利用頂きありがとうございます。
-
-ログイン失敗が繰り返された為、アカウントがロックされました。
-アカウントロックを解除するには、下記のURLをクリックしてください。
-※ロックは<%= Settings.unlock_in_hours %>時間後に自動で解除されます。
+<%= t('ログイン失敗が繰り返された為、アカウントがロックされました。') %>
+<%= t('アカウントロックを解除するには、下記のURLをクリックしてください。') %>
+<% if Settings.unlock_in_hours == 1 %>
+<%= t('※ロックは1時間後に自動で解除されます。') %>
+<% else %>
+<%= t('※ロックは%{hours}時間後に自動で解除されます。', hours: Settings.unlock_in_hours) %>
+<% end %>
 <% if message['redirect-url'].to_s.present? %>
 <%= user_auth_unlock_url(config: message['client-config'].to_s, redirect_url: message['redirect-url'].to_s, unlock_token: @token) %>
 <% else %>

@@ -1,12 +1,12 @@
-<%= @user.name %> 様
-<%= t('app_name') %> をご利用頂きありがとうございます。
+<%= t('メール宛先', name: @user.name) %>
+<%= t('メール挨拶文', app_name: t('app_name')) %>
 
-アカウント削除を受け付けました。またのご利用をお待ちしております。
+<%= t('アカウント削除を受け付けました。またのご利用をお待ちしております。') %>
 
-このアカウントは<%= l(@user.destroy_schedule_at.to_date) %>以降に削除されます。それまでは取り消し可能です。
-削除されるまではログインできますが、一部機能が制限されます。
+<%= t('アカウント削除取り消しメッセージ', destroy_schedule_at: l(@user.destroy_schedule_at.to_date)) %>
+<%= t('アカウント削除補足') %>
 
-アカウント削除取り消し
+<%= t('アカウント削除取り消し') %>
 <% if @undo_delete_url.present? %>
 <%= @undo_delete_url %>
 <% else %>

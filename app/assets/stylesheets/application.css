@@ -32,3 +32,8 @@
     /* border-color: #1266f1; */
     border-color: transparent;
 }
+
+.btn {
+    text-transform: none !important; /* NOTE: 大文字表示になる為 */
+    font-weight: 400;
+}

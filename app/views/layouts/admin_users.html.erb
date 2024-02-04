@@ -26,7 +26,7 @@
 <% unless admin_user_signed_in? %>
             <a href="<%= new_admin_user_session_path %>" class="nav-link d-flex align-items-center link-dark">
               <i class="fas fa-sign-in-alt fa-lg"></i>
-              <span class="d-none d-md-block m-1">ログイン</span>
+              <span class="d-none d-md-block m-1"><%= t('ログイン') %></span>
             </a>
 <% else %>
             <div class="text-truncate d-none d-lg-block" style="max-width: 400px">
@@ -34,7 +34,7 @@
             </div>
             <a href="<%= destroy_admin_user_session_path %>" class="nav-link d-flex align-items-center link-dark">
               <i class="fas fa-sign-out-alt fa-lg"></i>
-              <span class="d-none d-md-block m-1">ログアウト</span>
+              <span class="d-none d-md-block m-1"><%= t('ログアウト') %></span>
             </a>
 <% end %>
 <% if Settings.locales.keys.count >= 2 %>
