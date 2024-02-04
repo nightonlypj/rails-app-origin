@@ -1,12 +1,14 @@
 class Infomation < ApplicationRecord
   belongs_to :user, optional: true
 
+  validates :locale, inclusion: { in: Settings.locales.keys.map(&:to_s) + [nil] }
   validates :label, presence: true
   validates :title, presence: true
   validates :started_at, presence: true
   validates :target, presence: true
   validates :user, presence: true, if: proc { |infomation| infomation.target_user? }
 
+  scope :by_locale, ->(locale) { where(locale: [nil, locale]) }
   scope :by_target, lambda { |current_user|
     where('target = ? OR (target = ? AND user_id = ?)', targets[:all], targets[:user], current_user&.id)
       .where('started_at <= ? AND (ended_at IS NULL OR ended_at >= ?)', Time.current, Time.current)

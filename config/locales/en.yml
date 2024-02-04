@@ -19,6 +19,7 @@ en:
         name: 'Name'
       infomation:
         id: 'ID'
+        locale: 'locale'
         label: 'Label'
         title: 'Title'
         summary: 'Summary'
@@ -42,6 +43,8 @@ en:
               blank: 'Please enter.'
         infomation:
           attributes:
+            locale:
+              inclusion: 'Please select.'
             label:
               blank: 'Please select.'
             title:

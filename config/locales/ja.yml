@@ -19,6 +19,7 @@ ja:
         name: '名称'
       infomation:
         id: 'ID'
+        locale: '地域'
         label: 'ラベル'
         title: 'タイトル'
         summary: '概要'
@@ -42,6 +43,8 @@ ja:
               blank: '入力してください。'
         infomation:
           attributes:
+            locale:
+              inclusion: '選択してください。'
             label:
               blank: '選択してください。'
             title:
