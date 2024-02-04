@@ -213,6 +213,7 @@ GEM
       guard (>= 1.1.0)
       yard (>= 0.7.0)
     hashdiff (1.0.1)
+    http_accept_language (2.1.1)
     i18n (1.14.1)
       concurrent-ruby (~> 1.0)
     image_processing (1.12.2)
@@ -349,6 +350,9 @@ GEM
     rails-html-sanitizer (1.6.0)
       loofah (~> 2.21)
       nokogiri (~> 1.14)
+    rails-i18n (7.0.8)
+      i18n (>= 0.7, < 2)
+      railties (>= 6.0.0, < 8)
     rails_admin (3.1.2)
       activemodel-serializers-xml (>= 1.0)
       kaminari (>= 0.14, < 2.0)
@@ -521,6 +525,7 @@ DEPENDENCIES
   factory_bot_rails (< 6.3.0)
   faker
   guard-yard
+  http_accept_language
   importmap-rails
   jbuilder
   kaminari
@@ -534,6 +539,7 @@ DEPENDENCIES
   rack-cors
   rails (~> 7.0)
   rails-erd
+  rails-i18n
   rails_admin
   rails_admin-i18n
   redcarpet

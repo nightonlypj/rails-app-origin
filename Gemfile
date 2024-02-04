@@ -111,6 +111,10 @@ group :test do
   gem 'webmock'
 end
 
+# Use i18n
+gem 'rails-i18n'
+gem 'http_accept_language'
+
 # Use Devise
 gem 'devise'
 gem 'devise-i18n'

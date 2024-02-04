@@ -12,7 +12,9 @@ Rails.application.routes.draw do
   draw :infomations
   draw :admin
   draw :users
-  root 'top#index'
+  scope '(:locale)', locale: /#{I18n.available_locales.map(&:to_s).join('|')}/ do
+    root 'top#index'
+  end
   get 'health_check', to: 'health_check#index', as: 'health_check'
 
   # :nocov:

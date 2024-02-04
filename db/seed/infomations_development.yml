@@ -1,5 +1,6 @@
 # NOTE: id = target & user_id + 連番
 - id: 11
+  locale: 'ja'
   label: not
   title: '全員へのお知らせ（掲載終了）'
   summary: '全員へのお知らせの要約<br>2行目'
@@ -11,57 +12,86 @@
   target: all
   user_id: null
 - id: 12
+  locale: null
   label: maintenance
-  title: '全員へのお知らせ（掲載中）'
-  summary: '全員へのお知らせの要約<br>2行目'
-  body: '全員へのお知らせの本文<br>2行目'
-  started_at: '2000-01-01 00:00:00+0900'
+  title: 'Notice to all (currently posted) [all locale]'
+  summary: 'Summary of announcements for everyone<br>2nd line'
+  body: 'Body of notification to all<br>2nd line'
+  started_at: '2000-01-02 00:00:00+0900'
   ended_at: null
-  force_started_at: '2000-01-01 00:00:00+0900'
+  force_started_at: '2000-01-02 00:00:00+0900'
   force_ended_at: '9999-12-31 23:59:59+0900'
   target: all
   user_id: null
 - id: 13
+  locale: 'ja'
   label: hindrance
   title: '全員へのお知らせ（掲載中、要約なし）'
   summary: null
   body: '全員へのお知らせの本文<br>2行目'
-  started_at: '2000-01-01 00:00:00+0900'
+  started_at: '2000-01-03 00:00:00+0900'
   ended_at: null
-  force_started_at: '2000-01-01 00:00:00+0900'
+  force_started_at: '2000-01-03 00:00:00+0900'
+  force_ended_at: null
+  target: all
+  user_id: null
+- id: 131
+  locale: 'en'
+  label: hindrance
+  title: 'Notice to all (currently posted, no summary) [en]'
+  summary: null
+  body: 'Body of notification to all<br>2nd line'
+  started_at: '2000-01-03 00:00:00+0900'
+  ended_at: null
+  force_started_at: '2000-01-03 00:00:00+0900'
   force_ended_at: null
   target: all
   user_id: null
 - id: 14
+  locale: 'ja'
   label: update
   title: '全員へのお知らせ（掲載中、本文なし）'
   summary: '全員へのお知らせの要約<br>2行目'
   body: null
-  started_at: '2000-01-01 00:00:00+0900'
+  started_at: '2000-01-04 00:00:00+0900'
   ended_at: null
-  force_started_at: '2000-01-01 00:00:00+0900'
+  force_started_at: '2000-01-04 00:00:00+0900'
+  force_ended_at: null
+  target: all
+  user_id: null
+- id: 141
+  locale: 'en'
+  label: update
+  title: 'Notice to all (currently posted, no text) [en]'
+  summary: 'Summary of announcements for everyone<br>2nd line'
+  body: null
+  started_at: '2000-01-04 00:00:00+0900'
+  ended_at: null
+  force_started_at: '2000-01-04 00:00:00+0900'
   force_ended_at: null
   target: all
   user_id: null
 - id: 15
+  locale: 'ja'
   label: other
   title: '全員へのお知らせ（掲載中、要約・本文なし）'
   summary: null
   body: null
-  started_at: '2000-01-01 00:00:00+0900'
+  started_at: '2000-01-05 00:00:00+0900'
   ended_at: null
-  force_started_at: '2000-01-01 00:00:00+0900'
+  force_started_at: '2000-01-05 00:00:00+0900'
   force_ended_at: null
   target: all
   user_id: null
 - id: 16
+  locale: 'ja'
   label: not
   title: '全員へのお知らせ（掲載中、要約・本文なし）'
   summary: null
   body: null
-  started_at: '2000-01-01 00:00:00+0900'
+  started_at: '2000-01-06 00:00:00+0900'
   ended_at: null
-  force_started_at: '2000-01-01 00:00:00+0900'
+  force_started_at: '2000-01-06 00:00:00+0900'
   force_ended_at: null
   target: all
   user_id: null

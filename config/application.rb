@@ -11,8 +11,9 @@ module RailsApp
     # Initialize configuration defaults for originally generated Rails version.
     config.load_defaults 7.0
     ### START ###
-    config.i18n.fallbacks = true
-    config.i18n.default_locale = :ja
+    config.i18n.default_locale = Settings.default_locale
+    config.i18n.available_locales = Settings.locales.keys
+    config.i18n.enforce_available_locales = true
     config.time_zone = 'Tokyo'
     config.action_view.field_error_proc = proc { |html_tag, _instance| html_tag }
     config.active_job.queue_adapter = :delayed_job

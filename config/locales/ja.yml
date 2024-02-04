@@ -1,6 +1,11 @@
 ja:
   app_name: 'RailsAppOrigin'
   sub_title: ': ベースアプリケーション'
+  env_name:
+    development: '【開発環境】'
+    test: '【テスト環境】'
+    staging: '【STG環境】'
+    production: ''
   my_name: 'My name'
   my_url: 'https://example.com'
   activerecord:
@@ -19,6 +24,7 @@ ja:
         name: '名称'
       infomation:
         id: 'ID'
+        locale: '地域'
         label: 'ラベル'
         title: 'タイトル'
         summary: '概要'
@@ -110,6 +116,8 @@ ja:
               blank: '入力してください。'
         infomation:
           attributes:
+            locale:
+              inclusion: '選択してください。'
             label:
               blank: '選択してください。'
             title:

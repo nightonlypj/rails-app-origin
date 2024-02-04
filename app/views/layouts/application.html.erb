@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="ja">
   <head>
-    <title><%= content_for?(:html_title) ? yield(:html_title) + ' - ' : '' %><%= "#{t('app_name')}#{Settings.env_name}" %></title>
+    <title><%= content_for?(:html_title) ? yield(:html_title) + ' - ' : '' %><%= "#{t('app_name')}#{t("env_name.#{Settings.server_env}")}" %></title>
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
@@ -14,6 +14,9 @@
 <% end %>
     <%= javascript_importmap_tags %>
     <%= javascript_import_module_tag 'controllers/left_menu' %>
+<% if Settings.locales.keys.count >= 2 %>
+    <%= javascript_import_module_tag 'controllers/switch_locale' %>
+<% end %>
     <%= javascript_import_module_tag 'controllers/search' if enable_javascript_search? %>
     <%= javascript_import_module_tag "controllers/#{controller_name}" if %w[invitations members downloads].include?(controller_name) %>
   </head>
@@ -29,18 +32,18 @@
             </div>
             <a href="<%= root_path %>" class="navbar-brand">
               <%= image_tag "/logo.png", id: 'app_logo', width: '40px', height: '40px' %>
-              <span id="app_name" class="text-truncate" style="max-width: 125px"><%= "#{t('app_name')}#{t('sub_title')}#{Settings.env_name}" %></span>
+              <span id="app_name" class="text-truncate" style="max-width: 125px"><%= "#{t('app_name')}#{t('sub_title')}#{t("env_name.#{Settings.server_env}")}" %></span>
             </a>
           </div>
           <nav id="nav_right" class="nav align-items-center">
 <% unless user_signed_in? %>
             <a href="<%= new_user_session_path %>" class="btn btn-link btn-rounded d-flex align-items-center link-dark p-2" style="font-size: 1rem">
               <i class="fas fa-sign-in-alt fa-lg"></i>
-              <span class="d-none d-md-block m-1">ログイン</span>
+              <span class="d-none d-md-block m-1"><%= t('ログイン') %></span>
             </a>
             <a href="<%= new_user_registration_path %>" class="btn btn-link btn-rounded d-flex align-items-center link-dark p-2" style="font-size: 1rem">
               <i class="fas fa-user-plus fa-lg"></i>
-              <span class="d-none d-md-block m-1">アカウント登録</span>
+              <span class="d-none d-md-block m-1"><%= t('アカウント登録') %></span>
             </a>
 <% else %>
             <ul class="navbar-nav">
@@ -53,13 +56,13 @@
                   <li>
                     <a href="<%= edit_user_registration_path %>" class="dropdown-item">
                       <i class="fas fa-user-edit"></i>
-                      <span class="m-2">ユーザー情報変更</span>
+                      <span class="m-2"><%= t('ユーザー情報') %></span>
                     </a>
                   </li>
                   <li>
                     <a href="<%= delete_user_session_path %>" class="dropdown-item">
                       <i class="fas fa-sign-out-alt"></i>
-                      <span class="m-2">ログアウト</span>
+                      <span class="m-2"><%= t('ログアウト') %></span>
                     </a>
                   </li>
                 </ul>
@@ -73,6 +76,11 @@
               </i>
             </a>
 <% end %>
+<% if Settings.locales.keys.count >= 2 %>
+            <div class="p-2">
+              <%= select_tag 'switch_locale', options_for_select(Settings.locales.map { |code, name| [name, code] }, I18n.locale) %>
+            </div>
+<% end %>
           </nav>
         </div>
       </nav>
@@ -83,11 +91,11 @@
 <% unless user_signed_in? %>
         <a href="<%= new_user_session_path %>" class="btn btn-link d-flex align-items-center link-dark" style="font-size: 1rem">
           <i class="fas fa-sign-in-alt fa-lg"></i>
-          <span class="mx-2 my-1">ログイン</span>
+          <span class="mx-2 my-1"><%= t('ログイン') %></span>
         </a>
         <a href="<%= new_user_registration_path %>" class="btn btn-link d-flex align-items-center link-dark" style="font-size: 1rem">
           <i class="fas fa-user-plus fa-lg"></i>
-          <span class="mx-2 my-1">アカウント登録</span>
+          <span class="mx-2 my-1"><%= t('アカウント登録') %></span>
         </a>
 <% else %>
         <div id="userAccordionFlush" class="accordion accordion-flush">
@@ -113,11 +121,11 @@
               <div class="accordion-body py-1">
                 <a href="<%= edit_user_registration_path %>" class="btn btn-link d-flex align-items-center link-dark px-3" style="font-size: 1rem">
                   <i class="fas fa-user-edit"></i>
-                  <span class="mx-2 my-1">ユーザー情報変更</span>
+                  <span class="mx-2 my-1"><%= t('ユーザー情報') %></span>
                 </a>
                 <a href="<%= delete_user_session_path %>" class="btn btn-link d-flex align-items-center link-dark px-3" style="font-size: 1rem">
                   <i class="fas fa-sign-out-alt"></i>
-                  <span class="mx-2 my-1">ログアウト</span>
+                  <span class="mx-2 my-1"><%= t('ログアウト') %></span>
                 </a>
               </div>
             </div>
@@ -131,7 +139,7 @@
             <span class="badge rounded-pill badge-notification bg-danger" style="top: -10px; left: -5px"><%= current_user.infomation_unread_count %></span>
 <% end %>
           </i>
-          <span class="mx-2 my-1">お知らせ</span>
+          <span class="mx-2 my-1"><%= t('お知らせ') %></span>
         </a>
 <% if user_signed_in? %>
         <a href="<%= downloads_path %>" class="btn btn-link d-flex align-items-center link-dark" style="font-size: 1rem">
@@ -164,8 +172,8 @@
 <% if user_destroy_reserved_message? %>
           <aside>
             <p class="note note-warning mb-2">
-              このアカウントは<%= l(current_user.destroy_schedule_at.to_date) %>以降に削除されます。
-              <%= link_to '取り消しはこちら', delete_undo_user_registration_path %>
+              <%= t('アカウント削除情報', date: l(current_user.destroy_schedule_at.to_date)) %>
+              <%= link_to t('取り消しはこちら'), delete_undo_user_registration_path %>
             </p>
           </aside>
 <% end %>

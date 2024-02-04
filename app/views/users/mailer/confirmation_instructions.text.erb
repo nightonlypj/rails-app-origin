@@ -1,10 +1,13 @@
-<%= @resource.name %> 様
+<%= t('メール宛先', name: @resource.name) %>
+<%= t('メール挨拶文', app_name: t('app_name')) %>
 
-<%= t('app_name') %> をご利用頂きありがとうございます。
-
-下記のURLをクリックして、メールアドレスの確認をしてください。
-アカウント登録やメールアドレスの変更を行なっていない場合は、このメールを無視してください。
-※このURLの有効期限は<%= Settings.confirm_within_hours %>時間です。
+<%= t('下記のURLをクリックして、メールアドレスの確認をしてください。') %>
+<%= t('アカウント登録やメールアドレスの変更を行なっていない場合は、このメールを無視してください。') %>
+<% if Settings.confirm_within_hours == 1 %>
+<%= t('※このURLの有効期限は1時間です。') %><br>
+<% else %>
+<%= t('※このURLの有効期限は%{hours}時間です。', hours: Settings.confirm_within_hours) %><br>
+<% end %>
 <% if message['redirect-url'].to_s.present? %>
 <%= user_auth_confirmation_url(config: message['client-config'].to_s, confirmation_token: @token, redirect_url: message['redirect-url'].to_s) %>
 <% else %>

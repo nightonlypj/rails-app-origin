@@ -1,10 +1,10 @@
-<% validate_enabled = resource.errors.any? %>
+<% validate_enabled = resource.errors.any? && !(resource.errors.count == 1 && resource.errors[:unlock_token].present?) %>
 <%= form_with(model: resource, url: create_admin_user_unlock_path, html: { method: :post, novalidate: true, autocomplete: 'off' }, data: { turbo: false }) do |form| %>
   <div class="form-outline<%= input_size_class_name(resource, :email) %>">
     <%= form.email_field :email, autocomplete: 'off', class: "form-control#{validate_class_name(validate_enabled, resource, :email)}" %>
-    <%= form.label :email, class: 'form-label', for: 'admin_user_email' %>
+    <%= form.label :email, t('メールアドレス'), class: 'form-label', for: 'admin_user_email' %>
     <%= render '/admin_users/shared/field_error_messages', messages: resource.errors[:email] %>
   </div>
 
-  <%= form.submit '送信', class: 'btn btn-primary' %>
+  <%= form.submit t('送信'), class: 'btn btn-primary' %>
 <% end %>
