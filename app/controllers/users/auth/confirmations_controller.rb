@@ -2,6 +2,7 @@
 
 class Users::Auth::ConfirmationsController < DeviseTokenAuth::ConfirmationsController
   include DeviseTokenAuth::Concerns::SetUserByToken
+  include Devise::ConfirmationsConcern
   skip_before_action :verify_authenticity_token
   prepend_before_action :response_not_acceptable_for_not_api, only: :create
   prepend_before_action :response_not_acceptable_for_not_html, only: :show

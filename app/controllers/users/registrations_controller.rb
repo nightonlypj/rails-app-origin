@@ -2,6 +2,7 @@
 
 class Users::RegistrationsController < Devise::RegistrationsController
   include Users::RegistrationsConcern
+  include Utils::CreateUniqueCodeConcern
   before_action :redirect_for_user_destroy_reserved, only: %i[edit update image_update image_destroy delete destroy]
   before_action :redirect_for_not_user_destroy_reserved, only: %i[undo_delete undo_destroy]
   before_action :configure_sign_up_params, only: :create
