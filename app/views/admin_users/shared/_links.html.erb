@@ -1,15 +1,13 @@
 <% unless admin_user_signed_in? %>
-<nav>
-  <ul class="mt-2 mb-0">
+<nav class="mt-2 mb-0">
 <% if action != 'sign_in' %>
-    <li><%= link_to t('ログイン'), new_admin_user_session_path %></li>
+  <%= link_to t('ログイン'), new_admin_user_session_path %><br>
 <% end %>
 <% if devise_mapping.recoverable? && action != 'password' %>
-    <li><%= link_to t('パスワード再設定'), new_admin_user_password_path %></li>
+  <%= link_to t('パスワード再設定'), new_admin_user_password_path %><br>
 <% end %>
 <% if devise_mapping.lockable? && resource_class.unlock_strategy_enabled?(:email) && action != 'unlocks' %>
-    <li><%= link_to t('アカウントロック解除'), new_admin_user_unlock_path %></li>
+  <%= link_to t('アカウントロック解除'), new_admin_user_unlock_path %><br>
 <% end %>
-  </ul>
 </nav>
 <% end %>

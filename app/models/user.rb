@@ -63,7 +63,7 @@ class User < ApplicationRecord
   def infomation_unread_count
     return @cache_infomation_unread_count if @cache_infomation_unread_count.present?
 
-    @cache_infomation_unread_count = Infomation.by_target(self).by_unread(infomation_check_last_started_at).count
+    @cache_infomation_unread_count = Infomation.by_locale(I18n.locale).by_target(self).by_unread(infomation_check_last_started_at).count
     @cache_infomation_unread_count
   end
 

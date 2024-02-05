@@ -35,5 +35,9 @@
 
 .btn {
     text-transform: none !important; /* NOTE: 大文字表示になる為 */
-    font-weight: 400;
+    font-weight: 400; /* NOTE: 500から変更 */
+}
+.nav-tabs .nav-link {
+    text-transform: none !important; /* NOTE: 大文字表示になる為 */
+    font-size: 14px; /* NOTE: 12pxから変更 */
 }
