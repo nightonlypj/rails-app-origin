@@ -1,8 +1,8 @@
 <% validate_enabled = @invitation.errors.any? %>
-<%= form_with(model: @invitation, url: update_invitation_path(@space.code, @invitation.code), html: { method: :post, novalidate: true, autocomplete: 'on' }, data: { turbo: false }) do |form| %>
+<%= form_with(model: @invitation, url: update_invitation_path(space_code: @space.code, code: @invitation.code), html: { method: :post, novalidate: true, autocomplete: 'on' }, data: { turbo: false }) do |form| %>
   <div class="row">
     <div class="col-md-2 text-md-end mt-1">
-      <%= form.label :created_at, '作成', class: "form-label" %>
+      <%= form.label :created_at, t('作成情報'), class: "form-label" %>
     </div>
     <div class="col-md-10">
       <%= l(@invitation.created_at) %>
@@ -15,7 +15,7 @@
 <% if @invitation.last_updated_at.present? || @invitation.last_updated_user.present? %>
   <div class="row">
     <div class="col-md-2 text-md-end mt-1">
-      <%= form.label :last_updated_at, '更新', class: "form-label" %>
+      <%= form.label :last_updated_at, t('更新情報'), class: "form-label" %>
     </div>
     <div class="col-md-10 mb-2">
       <%= l(@invitation.last_updated_at, default: 'N/A') %>
@@ -30,7 +30,7 @@
 
   <div class="row mt-1">
     <div class="col-md-2 text-md-end">
-      <%= form.label :code, '招待URL', class: "form-label" %>
+      <%= form.label :code, t('招待URL'), class: "form-label" %>
     </div>
     <div class="col-md-10">
       <<%= @invitation.status == :active ? 'u' : 's' %>>
@@ -41,7 +41,7 @@
 
   <div class="row mt-1">
     <div class="col-md-2 text-md-end">
-      <%= form.label :email, 'メールアドレス', class: "form-label" %>
+      <%= form.label :email, t('メールアドレス'), class: "form-label" %>
     </div>
     <div class="col-md-10">
 <% if @invitation.email.present? %>
@@ -56,7 +56,7 @@
 
   <div class="row mt-1">
     <div class="col-md-2 text-md-end">
-      <%= form.label :power, class: "form-label" %>
+      <%= form.label :power, t('権限'), class: "form-label" %>
     </div>
     <div class="col-md-10">
       <i class="fas <%= power_class_name(@invitation.power) %> text-body"></i>
@@ -66,7 +66,7 @@
 
   <div class="row mt-1">
     <div class="col-md-2 text-md-end mt-1">
-      <%= form.label :ended_at, '期限', class: "form-label" %>
+      <%= form.label :ended_at, t('期限'), class: "form-label" %>
     </div>
     <div class="col-md-10 d-flex">
       <div class="<%= input_size_class_name_vertical(validate_enabled, @invitation, :ended_date) %>">
@@ -85,7 +85,7 @@
 
   <div class="row">
     <div class="col-md-2 text-md-end mt-1">
-      <%= form.label :memo, 'メモ', class: "form-label" %>
+      <%= form.label :memo, t('メモ'), class: "form-label" %>
     </div>
     <div class="col-md-10">
       <div class="<%= input_size_class_name(@invitation, :memo) %>">
@@ -98,24 +98,25 @@
 <% if @invitation.status != :expired %>
   <div class="row">
     <div class="col-md-2 text-md-end">
-      <%= form.label :memo, '削除', class: "form-label" %>
+      <%= form.label :delete, t('削除'), class: "form-label" %>
     </div>
     <div class="col-md-10">
 <% if @invitation.destroy_schedule_at.blank? %>
         <div class="form-check">
           <%= form.check_box :delete, class: "form-check-input", checked: @invitation.delete == '1' %>
-          <%= form.label :delete, '削除して使用できないようにする', class: 'form-check-label', for: "invitation_delete" %>
+          <%= form.label :delete, t('削除して使用できないようにする'), class: 'form-check-label', for: "invitation_delete" %>
         </div>
         <div class="my-1">
-          （<%= Settings.invitation_destroy_schedule_days %>日後に完全に削除されます。それまでは取り消し可能です）<br>
+          <%= t('招待URL削除メッセージ', days: Settings.invitation_destroy_schedule_days) %><br>
         </div>
 <% else %>
         <div class="form-check">
           <%= form.check_box :undo_delete, class: "form-check-input", checked: @invitation.undo_delete == '1' %>
-          <%= form.label :undo_delete, '削除を取り消して使用できるようにする', class: 'form-check-label', for: "invitation_undo_delete" %>
+          <%= form.label :undo_delete, t('削除を取り消して使用できるようにする'), class: 'form-check-label', for: "invitation_undo_delete" %>
         </div>
         <div class="my-1">
-          削除予定: <%= l(@invitation.destroy_schedule_at&.to_date, default: 'N/A') %>（<%= l(@invitation.destroy_requested_at, default: 'N/A') %>に削除を受け付けています）<br>
+          <%= t('削除予定') %>: <%= l(@invitation.destroy_schedule_at&.to_date, default: 'N/A') %>
+          <%= t('招待URL削除取り消しメッセージ', destroy_requested_at: l(@invitation.destroy_requested_at, default: 'N/A')) %><br>
         </div>
 <% end %>
     </div>
@@ -125,7 +126,7 @@
   <div class="row mt-2">
     <div class="col-md-2"></div>
     <div class="col-md-10">
-      <%= form.submit '変更', type: 'button', onclick: 'submit()', class: 'btn btn-primary' %>
+      <%= form.submit t('変更'), type: 'button', onclick: 'submit()', class: 'btn btn-primary' %>
     </div>
   </div>
 <% end %>

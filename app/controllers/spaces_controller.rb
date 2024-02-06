@@ -1,4 +1,5 @@
 class SpacesController < ApplicationAuthController
+  include Utils::CreateUniqueCodeConcern
   before_action :response_not_acceptable_for_not_html, only: %i[new edit delete undo_delete]
   before_action :authenticate_user!, only: %i[new create edit update delete destroy undo_delete undo_destroy]
   before_action :redirect_spaces_for_user_destroy_reserved, only: %i[new create], if: :format_html?
@@ -48,7 +49,7 @@ class SpacesController < ApplicationAuthController
       @space.save!
       @current_member = Member.create!(space: @space, user: current_user, power: :admin)
     end
-    return redirect_to space_path(@space.code), notice: t('notice.space.create') if format_html?
+    return redirect_to space_path(code: @space.code), notice: t('notice.space.create') if format_html?
 
     set_member_count
     render :show, locals: { notice: t('notice.space.create') }, status: :created
@@ -62,7 +63,7 @@ class SpacesController < ApplicationAuthController
   def update
     @space.remove_image! if @space.image_delete
     @space.save!
-    return redirect_to space_path(@space.code), notice: t('notice.space.update') if format_html?
+    return redirect_to space_path(code: @space.code), notice: t('notice.space.update') if format_html?
 
     set_member_count
     render :show, locals: { notice: t('notice.space.update') }
@@ -75,7 +76,7 @@ class SpacesController < ApplicationAuthController
   # POST /spaces/delete/:code(.json) スペース削除API(処理)
   def destroy
     @space.set_destroy_reserve!
-    return redirect_to space_path(@space.code), notice: t('notice.space.destroy') if format_html?
+    return redirect_to space_path(code: @space.code), notice: t('notice.space.destroy') if format_html?
 
     set_member_count
     render :show, locals: { notice: t('notice.space.destroy') }
@@ -88,7 +89,7 @@ class SpacesController < ApplicationAuthController
   # POST /spaces/undo_delete/:code(.json) スペース削除取り消しAPI(処理)
   def undo_destroy
     @space.set_undo_destroy_reserve!
-    return redirect_to space_path(@space.code), notice: t('notice.space.undo_destroy') if format_html?
+    return redirect_to space_path(code: @space.code), notice: t('notice.space.undo_destroy') if format_html?
 
     set_member_count
     render :show, locals: { notice: t('notice.space.undo_destroy') }
@@ -106,15 +107,15 @@ class SpacesController < ApplicationAuthController
   end
 
   def redirect_space_for_user_destroy_reserved
-    redirect_for_user_destroy_reserved(space_path(@space.code))
+    redirect_for_user_destroy_reserved(space_path(code: @space.code))
   end
 
   def redirect_space_for_space_destroy_reserved
-    redirect_to space_path(@space.code), alert: t('alert.space.destroy_reserved') if @space.destroy_reserved?
+    redirect_to space_path(code: @space.code), alert: t('alert.space.destroy_reserved') if @space.destroy_reserved?
   end
 
   def redirect_space_for_not_space_destroy_reserved
-    redirect_to space_path(@space.code), alert: t('alert.space.not_destroy_reserved') unless @space.destroy_reserved?
+    redirect_to space_path(code: @space.code), alert: t('alert.space.not_destroy_reserved') unless @space.destroy_reserved?
   end
 
   def response_api_for_not_space_destroy_reserved

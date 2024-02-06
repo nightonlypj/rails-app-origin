@@ -10,14 +10,14 @@
       </div>
 <% if @current_member.present? %>
       <div class="col-auto text-end ps-0">
-        <a href="<%= members_path(@space.code) %>" class="btn btn-primary ps-3 pe-1">
-          <i class="fas fa-user-friends fa-lg" data-mdb-toggle="tooltip" data-mdb-placement="bottom" title="メンバー一覧">
+        <a href="<%= members_path(space_code: @space.code) %>" class="btn btn-primary ps-3 pe-1">
+          <i class="fas fa-user-friends fa-lg" data-mdb-toggle="tooltip" data-mdb-placement="bottom" title="<%= t('メンバー一覧') %>">
             <span class="badge rounded-pill badge-notification bg-secondary" style="top: -10px; left: -5px"><%= @member_count > 99 ? '99+' : @member_count %></span>
           </i>
         </a>
 <% if @current_member.power_admin? %>
-        <a href="<%=  edit_space_path(@space.code) %>" class="btn btn-dark">
-          <i class="fas fa-cog" data-mdb-toggle="tooltip" data-mdb-placement="bottom" title="設定変更">
+        <a href="<%=  edit_space_path(code: @space.code) %>" class="btn btn-dark">
+          <i class="fas fa-cog" data-mdb-toggle="tooltip" data-mdb-placement="bottom" title="<%= t('設定変更') %>">
           </i>
         </a>
 <% end %>

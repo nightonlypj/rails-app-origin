@@ -1,4 +1,5 @@
 class InvitationsController < ApplicationAuthController
+  include Utils::CreateUniqueCodeConcern
   before_action :response_not_acceptable_for_not_api, only: :show
   before_action :response_not_acceptable_for_not_html, only: %i[new edit]
   before_action :authenticate_user!
@@ -36,7 +37,7 @@ class InvitationsController < ApplicationAuthController
     @invitation.domains = @domains
     @invitation.ended_at = @invitation.new_ended_at
     @invitation.save!
-    return redirect_to invitations_path(@space.code), notice: t('notice.invitation.create') if format_html?
+    return redirect_to invitations_path(space_code: @space.code), notice: t('notice.invitation.create') if format_html?
 
     render :show, locals: { notice: t('notice.invitation.create') }, status: :created
   end
@@ -57,7 +58,7 @@ class InvitationsController < ApplicationAuthController
       @invitation.destroy_schedule_at  = nil
     end
     @invitation.save!
-    return redirect_to invitations_path(@space.code), notice: t('notice.invitation.update') if format_html?
+    return redirect_to invitations_path(space_code: @space.code), notice: t('notice.invitation.update') if format_html?
 
     render :show, locals: { notice: t('notice.invitation.update') }
   end
@@ -65,7 +66,7 @@ class InvitationsController < ApplicationAuthController
   private
 
   def redirect_invitations_for_user_destroy_reserved
-    redirect_for_user_destroy_reserved(invitations_path(@space.code))
+    redirect_for_user_destroy_reserved(invitations_path(space_code: @space.code))
   end
 
   # Use callbacks to share common setup or constraints between actions.
@@ -81,7 +82,7 @@ class InvitationsController < ApplicationAuthController
 
   def check_email_joined
     return if @invitation.email_joined_at.blank?
-    return redirect_to invitations_path(@space.code), alert: t('alert.invitation.email_joined') if format_html?
+    return redirect_to invitations_path(space_code: @space.code), alert: t('alert.invitation.email_joined') if format_html?
 
     render '/failure', locals: { alert: t('alert.invitation.email_joined') }, status: :unprocessable_entity
   end

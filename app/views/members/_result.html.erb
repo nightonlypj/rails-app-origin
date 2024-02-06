@@ -1,19 +1,20 @@
 <div class="mb-2">
-  <%= flash[:emails].count.to_formatted_s(:delimited) %>名中
+  <%= t(flash[:emails].count == 1 ? '1名中' : '%{total}名中', total: flash[:emails].count.to_formatted_s(:delimited)) %>
   <i class="fas fa-check-circle text-success"></i>
-  招待: <%= flash[:create_user_mails].count.to_formatted_s(:delimited) %>名
+  <%= t('招待') %>: <%= t(flash[:create_user_mails].count == 1 ? '1名' : '%{total}名', total: flash[:create_user_mails].count.to_formatted_s(:delimited)) %>
   <i class="fas fa-info-circle text-info"></i>
-  参加中: <%= flash[:exist_user_mails].count.to_formatted_s(:delimited) %>名
+  <%= t('参加中') %>: <%= t(flash[:exist_user_mails].count == 1 ? '1名' : '%{total}名', total: flash[:exist_user_mails].count.to_formatted_s(:delimited)) %>
   <i class="fas fa-exclamation-triangle text-danger"></i>
-  未登録: <%= (flash[:emails].count - flash[:create_user_mails].count - flash[:exist_user_mails].count).to_formatted_s(:delimited) %>名
+<% count = flash[:emails].count - flash[:create_user_mails].count - flash[:exist_user_mails].count %>
+  <%= t('未登録') %>: <%= t(count == 1 ? '1名' : '%{total}名', total: count.to_formatted_s(:delimited)) %>
 </div>
 
 <div class="table-responsive">
   <table class="table table-sm table-hover">
     <thead class="table-light">
       <tr>
-        <th scope="col" class="text-nowrap" style="width: 25%">メールアドレス</th>
-        <th scope="col" class="text-nowrap">結果</th>
+        <th scope="col" class="text-nowrap" style="width: 25%"><%= t('メールアドレス') %></th>
+        <th scope="col" class="text-nowrap"><%= t('結果') %></th>
       </tr>
     </thead>
     <tbody>
@@ -25,15 +26,15 @@
         <td class="px-1 py-2">
 <% if flash[:create_user_mails].include?(email) %>
           <i class="fas fa-check-circle text-success"></i>
-          招待しました。
+          <%= t('招待しました。') %>
           <i class="fas <%= power_class_name(flash[:power]) %>"></i>
           <%= Member.powers_i18n[flash[:power]] %>
 <% elsif flash[:exist_user_mails].include?(email) %>
           <i class="fas fa-info-circle text-info"></i>
-          既に参加しています。
+          <%= t('既に参加しています。') %>
 <% else %>
           <i class="fas fa-exclamation-triangle text-danger"></i>
-          アカウントが存在しません。登録後に招待してください。
+          <%= t('アカウントが存在しません。登録後に招待してください。') %>
 <% end %>
         </td>
       </tr>

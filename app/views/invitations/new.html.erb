@@ -1,19 +1,19 @@
-<% content_for(:html_title) { '招待URL一覧' } %>
+<% content_for(:html_title) { t('招待URL作成') } %>
 
 <%= render '/users/shared/error_messages', resource: @invitation %>
 
 <ul class="nav nav-tabs mb-2">
   <li class="nav-item">
-    <%= link_to 'スペース', space_path(@space.code), class: 'nav-link' %>
+    <%= link_to t('スペース'), space_path(code: @space.code), class: 'nav-link' %>
   </li>
   <li class="nav-item">
-    <%= link_to 'メンバー一覧', members_path(@space.code), class: 'nav-link' %>
+    <%= link_to t('メンバー一覧'), members_path(space_code: @space.code), class: 'nav-link' %>
   </li>
   <li class="nav-item">
-    <%= link_to '招待URL一覧', invitations_path(@space.code), class: 'nav-link' %>
+    <%= link_to t('招待URL一覧'), invitations_path(space_code: @space.code), class: 'nav-link' %>
   </li>
   <li class="nav-item">
-    <a data-mdb-toggle="tab" class="nav-link active">招待URL作成</a>
+    <a data-mdb-toggle="tab" class="nav-link active"><%= t('招待URL作成') %></a>
   </li>
 </ul>
 

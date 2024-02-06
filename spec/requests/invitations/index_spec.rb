@@ -28,7 +28,7 @@ RSpec.describe 'Invitations', type: :request do
       it 'HTTPステータスが200。対象項目が含まれる' do
         is_expected.to eq(200)
         expect_space_html(response, space)
-        expect(response.body).to include("href=\"#{new_invitation_path(space.code)}\"") # 招待URL作成
+        expect(response.body).to include("href=\"#{new_invitation_path(space_code: space.code)}\"") # 招待URL作成
       end
     end
     shared_examples_for 'ToOK(json/json)' do
@@ -89,7 +89,7 @@ RSpec.describe 'Invitations', type: :request do
       let(:subject_page) { 1 }
       it '存在しないメッセージが含まれる' do
         subject
-        expect(response.body).to include('対象の招待URLが見つかりません。')
+        expect(response.body).to include(I18n.t('対象の%{name}が見つかりません。', name: I18n.t('招待URL')))
       end
     end
     shared_examples_for 'リスト表示' do |page|
@@ -110,7 +110,7 @@ RSpec.describe 'Invitations', type: :request do
             expect(response.body).not_to include(url)
           end
           # ステータス
-          url = "href=\"#{edit_invitation_path(space.code, invitation.code)}\""
+          url = "href=\"#{edit_invitation_path(space_code: space.code, code: invitation.code)}\""
           if invitation.status == :email_joined
             expect(response.body).not_to include(url)
           else

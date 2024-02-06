@@ -1,8 +1,8 @@
 <%= form_with(url: spaces_path, html: { method: :get, novalidate: true, autocomplete: 'on' }, data: { turbo: false }) do |form| %>
   <div class="d-flex align-items-center">
     <div class="form-outline" style="width: 57%; max-width: 400px">
-      <%= form.text_field :text, value: @text, placeholder: '名称や説明を入力', autocomplete: 'on', class: 'form-control input_to_search_btn_enabled' %>
-      <%= form.label :text, '検索', class: 'form-label' %>
+      <%= form.text_field :text, value: @text, placeholder: t('名称や説明を入力'), autocomplete: 'on', class: 'form-control input_to_search_btn_enabled' %>
+      <%= form.label :text, t('検索'), class: 'form-label' %>
     </div>
     <button id="search_btn" type="submit" class="btn btn-primary m-1" disabled>
       <i class="fas fa-search"></i>
@@ -20,7 +20,7 @@
     >
       <i id="option_open" class="fas fa-caret-down fa-lg m-1" style="display: <%= @option ? 'none' : 'block' %>"></i>
       <i id="option_close" class="fas fa-caret-up fa-lg m-1"  style="display: <%= @option ? 'block' : 'none' %>"></i>
-      <span class="d-none d-md-block">検索オプション</span>
+      <span class="d-none d-md-block"><%= t('検索オプション') %></span>
     </button>
 <% end %>
   </div>
@@ -31,32 +31,32 @@
       <div class="col-auto d-flex mt-2">
         <div class="form-check">
           <%= form.check_box :public, checked: @checked[:public], class: 'form-check-input click_to_search_btn_enabled' %>
-          <%= form.label :public, '公開', class: 'form-check-label', for: 'public' %>
+          <%= form.label :public, t('公開'), class: 'form-check-label', for: 'public' %>
         </div>
         <div class="form-check ms-2">
           <%= form.check_box :private, checked: @checked[:private], class: 'form-check-input click_to_search_btn_enabled' %>
-          <%= form.label :private, '非公開', class: 'form-check-label', for: 'private' %>
+          <%= form.label :private, t('非公開'), class: 'form-check-label', for: 'private' %>
         </div>
       </div>
       <div class="col-auto d-flex mt-2">
         <div class="form-check">
           <%= form.check_box :join, checked: @checked[:join], class: 'form-check-input click_to_search_btn_enabled' %>
-          <%= form.label :join, '参加', class: 'form-check-label', for: 'join' %>
+          <%= form.label :join, t('参加'), class: 'form-check-label', for: 'join' %>
         </div>
         <div class="form-check ms-2">
           <%= form.check_box :nojoin, checked: @checked[:nojoin], class: 'form-check-input click_to_search_btn_enabled' %>
-          <%= form.label :nojoin, '未参加', class: 'form-check-label', for: 'nojoin' %>
+          <%= form.label :nojoin, t('未参加'), class: 'form-check-label', for: 'nojoin' %>
         </div>
       </div>
 <% end %>
       <div class="col-auto d-flex mt-2">
         <div class="form-check">
           <%= form.check_box :active, checked: @checked[:active], class: 'form-check-input click_to_search_btn_enabled' %>
-          <%= form.label :active, '有効', class: 'form-check-label', for: 'active' %>
+          <%= form.label :active, t('有効'), class: 'form-check-label', for: 'active' %>
         </div>
         <div class="form-check ms-2">
           <%= form.check_box :destroy, checked: @checked[:destroy], class: 'form-check-input click_to_search_btn_enabled' %>
-          <%= form.label :destroy, '削除予定', class: 'form-check-label', for: 'destroy' %>
+          <%= form.label :destroy, t('削除予定'), class: 'form-check-label', for: 'destroy' %>
         </div>
       </div>
     </div>

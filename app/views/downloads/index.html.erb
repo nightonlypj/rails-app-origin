@@ -1,7 +1,7 @@
-<% content_for(:html_title) { 'ダウンロード結果' } %>
+<% content_for(:html_title) { t('ダウンロード結果') } %>
 
 <div class="card card-body mb-2">
-  <h5 class="card-title mb-3">ダウンロード結果</h5>
+  <h5 class="card-title mb-3"><%= t('ダウンロード結果') %></h5>
   <div class="card-text">
 <% if @downloads.present? %>
     <div class="row">
@@ -11,7 +11,7 @@
       <div class="col-md-7">
         <div class="float-end">
           <a href="<%= downloads_path(target_id: @target_id) %>" class="btn btn-dark">
-            <i class="fas fa-sync" data-mdb-toggle="tooltip" data-mdb-placement="bottom" title="更新"></i>
+            <i class="fas fa-sync" data-mdb-toggle="tooltip" data-mdb-placement="bottom" title="<%= t('更新') %>"></i>
           </a>
         </div>
         <div class="float-end table-responsive">
@@ -24,7 +24,7 @@
 <% if @downloads.blank? %>
     <hr/>
     <article>
-      対象が見つかりません。
+      <%= t('対象が見つかりません。') %>
       <hr/>
     </article>
 <% else %>

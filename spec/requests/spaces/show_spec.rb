@@ -22,14 +22,14 @@ RSpec.describe 'Spaces', type: :request do
         is_expected.to eq(200)
         expect_space_html(response, space, user_power, false, :medium)
 
-        url = "href=\"#{members_path(space.code)}\""
+        url = "href=\"#{members_path(space_code: space.code)}\""
         if user_power.present?
           expect(response.body).to include(url)
         else
           expect(response.body).not_to include(url)
         end
 
-        url = "href=\"#{edit_space_path(space.code)}\""
+        url = "href=\"#{edit_space_path(code: space.code)}\""
         if user_power == :admin
           expect(response.body).to include(url)
         else

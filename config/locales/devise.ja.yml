@@ -137,7 +137,9 @@ ja:
       expired: '有効期限が切れています。最初からやり直してください。'
       not_found: 'ユーザーが見つかりません。'
       not_locked: 'ロックされていません。'
-      not_saved: '入力内容を確認してください。'
+      not_saved:
+        one:   '入力内容を確認してください。'
+        other: '入力内容を確認してください。'
   devise:
     registrations:
       signed_up: 'アカウント登録が完了しました。'

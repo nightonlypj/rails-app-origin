@@ -68,7 +68,7 @@ RSpec.describe 'Infomations', type: :request do
       let(:subject_page) { 1 }
       it '存在しないメッセージが含まれる' do
         subject
-        expect(response.body).to include('お知らせはありません。')
+        expect(response.body).to include(I18n.t('%{name}はありません。', name: I18n.t('お知らせ')))
       end
     end
     shared_examples_for 'リスト表示' do |page|

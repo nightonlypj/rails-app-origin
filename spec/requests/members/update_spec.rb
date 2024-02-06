@@ -47,7 +47,7 @@ RSpec.describe 'Members', type: :request do
 
     shared_examples_for 'ToOK(html/*)' do
       it 'メンバー一覧（対象コード付き）にリダイレクトする' do
-        is_expected.to redirect_to(members_path(space.code, active: member.user.code))
+        is_expected.to redirect_to(members_path(space_code: space.code, active: member.user.code))
         expect(flash[:alert]).to be_nil
         expect(flash[:notice]).to eq(get_locale('notice.member.update'))
       end

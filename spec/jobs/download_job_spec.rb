@@ -170,8 +170,8 @@ RSpec.describe DownloadJob, type: :job do
     end
     context '出力項目がない' do
       let_it_be(:download) { FactoryBot.create(:download, :skip_validate, user:, model: 'member', space:, output_items: '[]') }
-      it_behaves_like 'ToRaise', 'Translation missing: ja.activerecord.errors.messages.record_invalid'
-      it_behaves_like 'NG', 'Translation missing: ja.activerecord.errors.messages.record_invalid'
+      it_behaves_like 'ToRaise', I18n.locale == :ja ? 'バリデーションに失敗しました: 出力項目選択してください。' : 'Validation failed: Output items Please select.'
+      it_behaves_like 'NG', I18n.locale == :ja ? 'バリデーションに失敗しました: 出力項目選択してください。' : 'Validation failed: Output items Please select.'
     end
   end
 end

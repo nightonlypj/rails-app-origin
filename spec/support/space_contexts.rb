@@ -56,9 +56,9 @@ end
 # テスト内容（共通）
 def expect_space_html(response, space, user_power = :admin, use_link = true, image_version = :small)
   expect(response.body).to include(space.image_url(image_version))
-  expect(response.body).to include("href=\"#{space_path(space.code)}\"") if use_link # スペーストップ
+  expect(response.body).to include("href=\"#{space_path(code: space.code)}\"") if use_link # スペーストップ
   expect(response.body).to include(space.name)
-  expect(response.body).to include('非公開') if space.private
+  expect(response.body).to include(I18n.t('非公開')) if space.private
   expect(response.body).to include(I18n.l(space.destroy_schedule_at.to_date)) if space.destroy_reserved?
   expect(response.body).to include(Member.powers_i18n[user_power]) if user_power.present?
 end
@@ -157,7 +157,7 @@ end
 
 shared_examples_for 'ToSpace(html/*)' do |alert, notice|
   it 'スペーストップにリダイレクトする' do
-    is_expected.to redirect_to(space_path(space.code))
+    is_expected.to redirect_to(space_path(code: space.code))
     expect(flash[:alert]).to alert.present? ? eq(get_locale(alert)) : be_nil
     expect(flash[:notice]).to notice.present? ? eq(get_locale(notice)) : be_nil
   end

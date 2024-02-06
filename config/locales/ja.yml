@@ -303,11 +303,11 @@ ja:
       update: 'メンバーの情報を変更しました。'
       destroy: '%{destroy_count}名のメンバーを解除しました。'
       destroy_include_notfound: '%{count}名中%{destroy_count}名のメンバーを解除しました。'
-      destroy_include_myself: '%{count}名中%{destroy_count}名のメンバーを解除しました。（自分は解除できません。他の管理者に依頼してください。）'
+      destroy_include_myself:   '%{count}名中%{destroy_count}名のメンバーを解除しました。（自分は解除できません。他の管理者に依頼してください。）'
     download:
       create: 'ダウンロードファイルの作成を開始しました。'
       status:
-        waiting: 'ダウンロードファイルの作成を開始しました。完了まで暫くお待ちください。'
+        waiting:    'ダウンロードファイルの作成を開始しました。完了まで暫くお待ちください。'
         processing: 'ダウンロードファイルの作成を開始しました。完了まで暫くお待ちください。'
         success: 'ダウンロードファイルの作成が完了しました。ダウンロード結果からダウンロードしてください。'
   mailer:

@@ -43,29 +43,30 @@ RSpec.describe 'Members', type: :request do
         is_expected.to eq(200)
         expect_space_html(response, space)
 
-        expect(response.body).to include("#{emails.count}名中")
-        expect(response.body).to include("招待: #{create_user_mails.count}名")
-        expect(response.body).to include("参加中: #{exist_user_mails.count}名")
-        expect(response.body).to include("未登録: #{emails.count - create_user_mails.count - exist_user_mails.count}名")
+        expect(response.body).to include(I18n.t(emails.count == 1 ? '1名中' : '%{total}名中', total: emails.count))
+        expect(response.body).to include("#{I18n.t('招待')}: #{I18n.t(create_user_mails.count == 1 ? '1名' : '%{total}名', total: create_user_mails.count)}")
+        expect(response.body).to include("#{I18n.t('参加中')}: #{I18n.t(exist_user_mails.count == 1 ? '1名' : '%{total}名', total: exist_user_mails.count)}")
+        count = emails.count - create_user_mails.count - exist_user_mails.count
+        expect(response.body).to include("#{I18n.t('未登録')}: #{I18n.t(count == 1 ? '1名' : '%{total}名', total: count)}")
 
         emails.each do |email|
           expect(response.body).to include(email)
         end
         if create_user_mails.count > 0
-          expect(response.body).to include('招待しました。')
+          expect(response.body).to include(I18n.t('招待しました。'))
           expect(response.body).to include(Member.powers_i18n[:admin])
         else
-          expect(response.body).not_to include('招待しました。')
+          expect(response.body).not_to include(I18n.t('招待しました。'))
         end
         if exist_user_mails.count > 0
-          expect(response.body).to include('既に参加しています。')
+          expect(response.body).to include(I18n.t('既に参加しています。'))
         else
-          expect(response.body).not_to include('既に参加しています。')
+          expect(response.body).not_to include(I18n.t('既に参加しています。'))
         end
         if (emails.count - create_user_mails.count - exist_user_mails.count) > 0
-          expect(response.body).to include('アカウントが存在しません。登録後に招待してください。')
+          expect(response.body).to include(I18n.t('アカウントが存在しません。登録後に招待してください。'))
         else
-          expect(response.body).not_to include('アカウントが存在しません。登録後に招待してください。')
+          expect(response.body).not_to include(I18n.t('アカウントが存在しません。登録後に招待してください。'))
         end
       end
     end

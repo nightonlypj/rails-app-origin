@@ -1,7 +1,7 @@
-<% content_for(:html_title) { 'スペース' } %>
+<% content_for(:html_title) { t('スペース') } %>
 
 <div class="card card-body mb-2">
-  <h5 class="card-title mb-3">スペース</h5>
+  <h5 class="card-title mb-3"><%= t('スペース') %></h5>
   <div class="card-text">
     <%= render 'search' %>
   </div>
@@ -20,7 +20,7 @@
 <% if user_signed_in? %>
           <a href="<%= create_space_path %>" class="btn btn-primary d-flex align-items-center text-nowrap">
             <i class="fas fa-folder-plus fa-lg"></i>
-            <span class="ms-1">スペース作成</span>
+            <span class="ms-1"><%= t('スペース作成') %></span>
           </a>
 <% end %>
         </div>
@@ -31,7 +31,7 @@
 <% if @spaces.blank? %>
     <hr/>
     <article>
-      スペースが見つかりません。
+      <%= t('%{name}が見つかりません。', name: t('スペース')) %>
       <hr/>
     </article>
 <% else %>

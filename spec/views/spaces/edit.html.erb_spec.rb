@@ -5,7 +5,7 @@ RSpec.describe 'spaces/edit', type: :view do
 
   it '対象の送信先と項目が含まれる' do
     render
-    assert_select 'form[action=?][method=?]', update_space_path(@space.code), 'post' do
+    assert_select 'form[action=?][method=?]', update_space_path(code: @space.code), 'post' do
       assert_select 'input[name=?]', 'space[name]'
       assert_select 'textarea[name=?]', 'space[description]'
       assert_select 'input[name=?]', 'space[private]' if Settings.enable_public_space

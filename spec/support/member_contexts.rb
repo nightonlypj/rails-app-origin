@@ -59,7 +59,7 @@ end
 
 shared_examples_for 'ToMembers(html/*)' do |alert, notice|
   it 'メンバー一覧にリダイレクトする' do
-    is_expected.to redirect_to(members_path(space.code))
+    is_expected.to redirect_to(members_path(space_code: space.code))
     expect(flash[:alert]).to alert.present? ? eq(get_locale(alert)) : be_nil
     expect(flash[:notice]).to notice.present? ? eq(get_locale(notice)) : be_nil
   end

@@ -148,18 +148,18 @@
             <span class="badge rounded-pill badge-notification bg-danger" style="top: -10px; left: -5px"><%= current_user.undownloaded_count %></span>
 <% end %>
           </i>
-          <span class="mx-2 my-1">ダウンロード結果</span>
+          <span class="mx-2 my-1"><%= t('ダウンロード結果') %></span>
         </a>
 <% end %>
 <% if user_signed_in? || Settings.enable_public_space %>
         <a href="<%= spaces_path %>" class="btn btn-link d-flex align-items-center link-dark" style="font-size: 1rem">
           <i class="fas fa-folder-open fa-lg"></i>
-          <span class="mx-2 my-1">スペース</span>
+          <span class="mx-2 my-1"><%= t('スペース') %></span>
         </a>
 <% end %>
 <% if user_signed_in? %>
 <% current_user.spaces.active.each do |space| %>
-        <a href="<%= space_path(space.code) %>" class="btn btn-link d-flex align-items-center link-dark">
+        <a href="<%= space_path(code: space.code) %>" class="btn btn-link d-flex align-items-center link-dark">
           <%= image_tag space.image_url(:mini), class: 'rounded-circle' %>
           <span class="text-truncate mx-2 my-1" style="font-size: 0.8rem; text-transform: none"><%= space.name %></span>
         </a>
@@ -180,9 +180,9 @@
 <% if space_destroy_reserved_message? %>
           <aside>
             <p class="note note-warning mb-2">
-              このスペースは<%= l(@space.destroy_schedule_at.to_date) %>以降に削除されます。
+              <%= t('スペース削除情報', date: l(@space.destroy_schedule_at.to_date)) %>
 <% if @current_member&.power_admin? %>
-              <%= link_to '取り消しはこちら', delete_undo_space_path(@space.code) %>
+              <%= link_to t('取り消しはこちら'), delete_undo_space_path(code: @space.code) %>
 <% end %>
             </p>
           </aside>

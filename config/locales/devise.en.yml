@@ -137,7 +137,9 @@ en:
       expired: 'It has expired. Please start over.'
       not_found: 'User not found.'
       not_locked: 'Not locked.'
-      not_saved: 'Please check your entries.'
+      not_saved:
+        one:   'Please check your entries.'
+        other: 'Please check your entries.'
   devise:
     registrations:
       signed_up: 'Registration has been completed.'

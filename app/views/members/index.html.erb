@@ -2,10 +2,10 @@
 
 <ul class="nav nav-tabs mb-2">
   <li class="nav-item">
-    <%= link_to 'スペース', space_path(@space.code), class: 'nav-link' %>
+    <%= link_to t('スペース'), space_path(code: @space.code), class: 'nav-link' %>
   </li>
   <li class="nav-item">
-    <a data-mdb-toggle="tab" class="nav-link active">メンバー一覧</a>
+    <a data-mdb-toggle="tab" class="nav-link active"><%= t('メンバー一覧') %></a>
   </li>
 </ul>
 
@@ -21,13 +21,13 @@
 <% if @current_member.power_admin? %>
       <div class="col-sm-2">
         <div class="float-end d-flex mt-2">
-          <a href="<%= new_member_path(@space.code) %>" class="btn btn-primary text-nowrap">
+          <a href="<%= new_member_path(space_code: @space.code) %>" class="btn btn-primary text-nowrap">
             <i class="fas fa-user-plus fa-lg"></i>
-            <span class="ms-1">メンバー招待</span>
+            <span class="ms-1"><%= t('メンバー招待') %></span>
           </a>
-          <a href="<%= invitations_path(@space.code) %>" class="btn btn-primary text-nowrap ms-1">
+          <a href="<%= invitations_path(space_code: @space.code) %>" class="btn btn-primary text-nowrap ms-1">
             <i class="fas fa-clipboard-check fa-lg"></i>
-            <span class="ms-1">招待URL</span>
+            <span class="ms-1"><%= t('招待URL') %></span>
           </a>
         </div>
       </div>
@@ -41,7 +41,13 @@
 <% if @members.present? %>
     <div class="row">
       <div class="col-md-5 d-flex align-items-center">
-        <%= "#{@members.total_count.to_formatted_s(:delimited)}名" %><%= "中 #{first_page_number(@members)}-#{last_page_number(@members)}名を表示" if @members.total_count > @members.limit_value %>
+<% if @members.total_count == 1 %>
+        <%= t('1名') %>
+<% elsif @members.total_count <= @members.limit_value %>
+        <%= t('%{total}名', total: @members.total_count.to_formatted_s(:delimited)) %>
+<% else %>
+        <%= t('%{total}名中 %{start}-%{end}名を表示', total: @members.total_count.to_formatted_s(:delimited), start: first_page_number(@members), end: last_page_number(@members)) %>
+<% end %>
       </div>
       <div class="col-md-7">
         <div class="d-flex float-end table-responsive">
@@ -49,7 +55,7 @@
 <% if @current_member.power_admin? %>
           <a href="<%= create_download_path(model: :member, space_code: @space.code, search_params: request.query_parameters) %>" class="btn btn-dark d-flex align-items-center text-nowrap click_to_redirect_add_codes">
             <i class="fas fa-download"></i>
-            <span class="d-none d-md-block ms-1">ダウンロード</span>
+            <span class="d-none d-md-block ms-1"><%= t('ダウンロード') %></span>
           </a>
 <% end %>
         </div>
@@ -60,7 +66,7 @@
 <% if @members.blank? %>
     <hr/>
     <article>
-      対象のメンバーが見つかりません。
+      <%= t('対象の%{name}が見つかりません。', name: t('メンバー')) %>
       <hr/>
     </article>
 <% else %>

@@ -48,7 +48,7 @@ RSpec.describe 'Spaces', type: :request do
 
     shared_examples_for 'ToOK(html/*)' do
       it '変更したスペースにリダイレクトする' do
-        is_expected.to redirect_to(space_path(space.code))
+        is_expected.to redirect_to(space_path(code: space.code))
         expect(flash[:alert]).to be_nil
         expect(flash[:notice]).to eq(get_locale('notice.space.update'))
       end

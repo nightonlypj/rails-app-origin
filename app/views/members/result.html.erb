@@ -1,17 +1,17 @@
-<% content_for(:html_title) { 'メンバー招待（結果）' } %>
+<% content_for(:html_title) { t('メンバー招待（結果）') } %>
 
 <ul class="nav nav-tabs mb-2">
   <li class="nav-item">
-    <%= link_to 'スペース', space_path(@space.code), class: 'nav-link' %>
+    <%= link_to t('スペース'), space_path(code: @space.code), class: 'nav-link' %>
   </li>
   <li class="nav-item">
-    <%= link_to 'メンバー一覧', members_path(@space.code), class: 'nav-link' %>
+    <%= link_to t('メンバー一覧'), members_path(space_code: @space.code), class: 'nav-link' %>
   </li>
   <li class="nav-item">
-    <%= link_to 'メンバー招待', new_member_path(@space.code), class: 'nav-link' %>
+    <%= link_to t('メンバー招待'), new_member_path(space_code: @space.code), class: 'nav-link' %>
   </li>
   <li class="nav-item">
-    <a data-mdb-toggle="tab" class="nav-link active">メンバー招待（結果）</a>
+    <a data-mdb-toggle="tab" class="nav-link active"><%= t('メンバー招待（結果）') %></a>
   </li>
 </ul>
 

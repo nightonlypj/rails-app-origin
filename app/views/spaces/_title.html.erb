@@ -1,3 +1,3 @@
 <%= image_tag space.image_url(:small), class: 'rounded-circle' %>
-<%= link_to text_truncate(space.name, 64), space_path(space.code), style: 'color: inherit', target: :_blank, rel: %i[noopener noreferrer] %>
+<%= link_to text_truncate(space.name, 64), space_path(code: space.code), style: 'color: inherit', target: :_blank, rel: %i[noopener noreferrer] %>
 <%= render '/spaces/icon', space: space, current_member: current_member %>

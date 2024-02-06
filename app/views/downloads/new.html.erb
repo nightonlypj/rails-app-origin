@@ -1,18 +1,18 @@
-<% content_for(:html_title) { 'ダウンロード' } %>
+<% content_for(:html_title) { t('ダウンロード') } %>
 
 <%= render '/users/shared/error_messages', resource: @download %>
 
 <ul class="nav nav-tabs mb-2">
 <% if @model == :member %>
   <li class="nav-item">
-    <%= link_to 'スペース', space_path(@space.code), class: 'nav-link' %>
+    <%= link_to t('スペース'), space_path(code: @space.code), class: 'nav-link' %>
   </li>
   <li class="nav-item">
-    <%= link_to 'メンバー一覧', members_path(@space.code), class: 'nav-link' %>
+    <%= link_to t('メンバー一覧'), members_path(space_code: @space.code), class: 'nav-link' %>
   </li>
 <% end %>
   <li class="nav-item">
-    <a data-mdb-toggle="tab" class="nav-link active">ダウンロード</a>
+    <a data-mdb-toggle="tab" class="nav-link active"><%= t('ダウンロード') %></a>
   </li>
 </ul>
 

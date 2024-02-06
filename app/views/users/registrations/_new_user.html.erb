@@ -21,7 +21,7 @@
     <div>
       <div class="form-outline<%= input_size_class_name(resource, :email) %>">
         <%= form.text_field :email_local, autocomplete: 'off', class: "form-control#{validate_class_name(validate_enabled, resource, :email)}" %>
-        <%= form.label :email, class: 'form-label', for: 'user_email_local' %>
+        <%= form.label :email, t('メールアドレス'), class: 'form-label', for: 'user_email_local' %>
         <%= render '/users/shared/field_error_messages', messages: resource.errors[:email] %>
       </div>
     </div>

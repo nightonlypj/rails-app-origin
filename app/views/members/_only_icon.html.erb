@@ -1,1 +1,1 @@
-<i class="fas <%= power_class_name(power) %> ms-1" data-mdb-toggle="tooltip" data-mdb-placement="bottom" title="「<%= Member.powers_i18n[power] %>」のみ表示"></i>
+<i class="fas <%= power_class_name(power) %> ms-1" data-mdb-toggle="tooltip" data-mdb-placement="bottom" title="<%= t('「%{power}」のみ表示', power: Member.powers_i18n[power]) %>"></i>
