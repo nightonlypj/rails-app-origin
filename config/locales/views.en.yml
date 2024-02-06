@@ -39,13 +39,13 @@ en:
 
   ログアウト: 'Logout'
   ログアウト確認メッセージ: 'Log out. Is it OK?'
-  'いいえ（トップページ）': 'No (Top page)'
-  'はい（ログアウト）': 'Yes (Logout)'
+  いいえ（トップページ）: 'No (Top page)'
+  はい（ログアウト）: 'Yes (Logout)'
 
   ユーザー情報: 'User information'
   メール確認メッセージ: 'Please check your email at "%{email}".'
   メール確認補足: 'If it is incorrect or you would like to resend it, please re-enter it.'
-  '(変更する場合のみ)': '(Only when changing)'
+  (変更する場合のみ): '(Only when changing)'
   現在のパスワード: 'Current Password'
   'メールアドレスの変更を受け付けました。': 'Your email address change has been accepted.'
   '下記の新しいメールアドレスにお送りしたメールを確認してください。': 'Please check the email sent to the new email address below.'
@@ -56,7 +56,7 @@ en:
 
   パスワード再設定: 'Resetting a password'
   新しいパスワード: 'New Password'
-  '新しいパスワード(確認)': 'New Password confirmation'
+  新しいパスワード(確認): 'New Password confirmation'
   '下記のリンクをクリックして、パスワードを再設定してください。': 'Please click the link below to reset your password.'
   '下記のURLをクリックして、パスワードを再設定してください。':   'Please click the URL below to reset your password.'
   'パスワード再設定の依頼をしていない場合は、このメールを無視してください。': 'If you have not requested a password reset, please ignore this email.'
@@ -82,5 +82,5 @@ en:
   アカウント削除取り消し: 'Cancel account deletion'
   アカウント削除取り消しメッセージ: 'This account will be deleted after %{destroy_schedule_at}. You can cancel until then.'
   アカウント削除取り消し補足: '(Accepting account deletion requests at %{destroy_requested_at})'
-  取り消し確認メッセージ: 'Are you sure you want to cancel?'
+  アカウント削除取り消し確認メッセージ: 'Are you sure you want to cancel?'
   'アカウント削除の取り消しが完了しました。': 'Account deletion has been canceled.'
