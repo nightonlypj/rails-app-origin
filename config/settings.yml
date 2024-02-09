@@ -3,6 +3,7 @@ api_only_mode: false
 
 # 言語選択
 default_locale: :ja
+# default_locale: :en
 locales:
   en: 'English'
   ja: '日本語'

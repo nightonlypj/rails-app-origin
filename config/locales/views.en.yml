@@ -80,7 +80,7 @@ en:
   'アカウント削除が完了しました。またのご利用をお待ちしております。':   'Account deletion has been completed. We look forward to seeing you again.'
 
   アカウント削除取り消し: 'Cancel account deletion'
-  アカウント削除取り消しメッセージ: 'This account will be deleted after %{destroy_schedule_at}. You can cancel until then.'
-  アカウント削除取り消し補足: '(Accepting account deletion requests at %{destroy_requested_at})'
+  アカウント削除取り消しメッセージ: 'This account will be deleted after %{date}. You can cancel until then.'
+  アカウント削除取り消し補足: '(Accepting account deletion requests at %{date})'
   アカウント削除取り消し確認メッセージ: 'Are you sure you want to cancel?'
   'アカウント削除の取り消しが完了しました。': 'Account deletion has been canceled.'
