@@ -116,7 +116,7 @@
         </div>
         <div class="my-1">
           <%= t('削除予定') %>: <%= l(@invitation.destroy_schedule_at&.to_date, default: 'N/A') %>
-          <%= t('招待URL削除取り消しメッセージ', destroy_requested_at: l(@invitation.destroy_requested_at, default: 'N/A')) %><br>
+          <%= t('招待URL削除取り消しメッセージ', date: l(@invitation.destroy_requested_at, default: 'N/A')) %><br>
         </div>
 <% end %>
     </div>

@@ -9,7 +9,7 @@
 
 <div class="card card-body mb-2">
   <div class="card-text">
-<% if @spaces.present? %>
+<% if @spaces.present? || user_signed_in? %>
     <div class="row">
       <div class="col-md-5 d-flex align-items-center">
         <%= page_entries_info @spaces %>
@@ -31,7 +31,7 @@
 <% if @spaces.blank? %>
     <hr/>
     <article>
-      <%= t('%{name}が見つかりません。', name: t('スペース')) %>
+      <%= t('対象の%{name}が見つかりません。', name: t('スペース')) %>
       <hr/>
     </article>
 <% else %>

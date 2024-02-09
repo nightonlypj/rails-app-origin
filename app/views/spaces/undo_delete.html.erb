@@ -15,9 +15,9 @@
   </h5>
   <div class="card-text mb-3">
     <p>
-      <%= t('スペース削除取り消しメッセージ', destroy_schedule_at: l(@space.destroy_schedule_at.to_date)) %><br>
+      <%= t('スペース削除取り消しメッセージ', date: l(@space.destroy_schedule_at.to_date)) %><br>
 <% if @space.destroy_requested_at.present? %>
-      <%= t('スペース削除取り消し補足', destroy_requested_at: l(@space.destroy_requested_at)) %>
+      <%= t('スペース削除取り消し補足', date: l(@space.destroy_requested_at)) %>
 <% end %>
     </p>
     <%= button_to t('取り消し'), undo_destroy_space_path(code: @space.code), data: { turbo_confirm: t('スペース削除取り消し確認メッセージ') }, method: :post, class: 'btn btn-primary' %>

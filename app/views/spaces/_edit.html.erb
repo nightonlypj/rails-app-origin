@@ -53,7 +53,7 @@
 <% if Settings.enable_public_space %>
   <div class="row">
     <div class="col-md-2 text-md-end mt-1">
-      <%= form.label :private, t('公開・非公開'), class: "form-label" %> <span style="color: red">*</span>
+      <%= form.label :private, t('範囲'), class: "form-label" %> <span style="color: red">*</span>
     </div>
     <div class="col-md-10">
       <div class="<%= input_size_class_name_vertical(validate_enabled, @space, :private) %>">

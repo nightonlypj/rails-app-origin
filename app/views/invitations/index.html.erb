@@ -20,12 +20,10 @@
     <div class="row">
       <div class="col-md-5 d-flex align-items-center">
 <% if @invitations.present? %>
-<% if @invitations.total_count == 1 %>
-        <%= t('1件') %>
-<% elsif @invitations.total_count <= @invitations.limit_value %>
-        <%= t('%{total}件', total: @invitations.total_count.to_formatted_s(:delimited)) %>
-<% else %>
+<% if @invitations.total_pages > 1 %>
         <%= t('%{total}件中 %{start}-%{end}件を表示', total: @invitations.total_count.to_formatted_s(:delimited), start: first_page_number(@invitations), end: last_page_number(@invitations)) %>
+<% else %>
+        <%= t("%{total}件（#{@invitations.total_count <= 1 ? '単数' : '複数'}）", total: @invitations.total_count.to_formatted_s(:delimited)) %>
 <% end %>
 <% end %>
       </div>

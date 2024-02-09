@@ -13,11 +13,17 @@
     </div>
   </h5>
   <div class="card-text overflow-auto" style="max-height: 200px">
+<% if current_user.spaces.active.count == 0 %>
+    <aside>
+      <p class="note note-info mb-2"><%= t('スペースなしメッセージ') %></p>
+    </aside>
+<% else %>
 <% current_user.spaces.active.each do |space| %>
     <a href="<%= space_path(code: space.code) %>" class="btn btn-link d-flex align-items-center link-dark p-2">
       <%= image_tag space.image_url(:mini), class: 'rounded-circle' %>
       <span class="text-truncate mx-2 my-1" style="font-size: 0.8rem; text-transform: none"><%= space.name %></span>
     </a>
+<% end %>
 <% end %>
   </div>
 </div>

@@ -43,11 +43,11 @@ RSpec.describe 'Members', type: :request do
         is_expected.to eq(200)
         expect_space_html(response, space)
 
-        expect(response.body).to include(I18n.t(emails.count == 1 ? '1名中' : '%{total}名中', total: emails.count))
-        expect(response.body).to include("#{I18n.t('招待')}: #{I18n.t(create_user_mails.count == 1 ? '1名' : '%{total}名', total: create_user_mails.count)}")
-        expect(response.body).to include("#{I18n.t('参加中')}: #{I18n.t(exist_user_mails.count == 1 ? '1名' : '%{total}名', total: exist_user_mails.count)}")
-        count = emails.count - create_user_mails.count - exist_user_mails.count
-        expect(response.body).to include("#{I18n.t('未登録')}: #{I18n.t(count == 1 ? '1名' : '%{total}名', total: count)}")
+        expect(response.body).to include(I18n.t("%{total}名中（#{emails.count <= 1 ? '単数' : '複数'}）", total: emails.count))
+        expect(response.body).to include("#{I18n.t('招待')}: #{I18n.t("%{total}名（#{create_user_mails.count <= 1 ? '単数' : '複数'}）", total: create_user_mails.count)}")
+        expect(response.body).to include("#{I18n.t('参加中')}: #{I18n.t("%{total}名（#{exist_user_mails.count <= 1 ? '単数' : '複数'}）", total: exist_user_mails.count)}")
+        notfound_count = emails.count - create_user_mails.count - exist_user_mails.count
+        expect(response.body).to include("#{I18n.t('未登録')}: #{I18n.t("%{total}名（#{notfound_count <= 1 ? '単数' : '複数'}）", total: notfound_count)}")
 
         emails.each do |email|
           expect(response.body).to include(email)

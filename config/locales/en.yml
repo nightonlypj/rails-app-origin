@@ -239,7 +239,7 @@ en:
       target:
         select: 'Selected items'
         search: 'Search'
-        all: 'all'
+        all: 'All'
       format:
         csv: 'CSV'
         tsv: 'TSV'

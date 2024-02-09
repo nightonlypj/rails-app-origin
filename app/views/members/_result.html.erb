@@ -1,12 +1,12 @@
 <div class="mb-2">
-  <%= t(flash[:emails].count == 1 ? '1名中' : '%{total}名中', total: flash[:emails].count.to_formatted_s(:delimited)) %>
+  <%= t("%{total}名中（#{flash[:emails].count <= 1 ? '単数' : '複数'}）", total: flash[:emails].count.to_formatted_s(:delimited)) %>
   <i class="fas fa-check-circle text-success"></i>
-  <%= t('招待') %>: <%= t(flash[:create_user_mails].count == 1 ? '1名' : '%{total}名', total: flash[:create_user_mails].count.to_formatted_s(:delimited)) %>
+  <%= t('招待') %>: <%= t("%{total}名（#{flash[:create_user_mails].count <= 1 ? '単数' : '複数'}）", total: flash[:create_user_mails].count.to_formatted_s(:delimited)) %>
   <i class="fas fa-info-circle text-info"></i>
-  <%= t('参加中') %>: <%= t(flash[:exist_user_mails].count == 1 ? '1名' : '%{total}名', total: flash[:exist_user_mails].count.to_formatted_s(:delimited)) %>
+  <%= t('参加中') %>: <%= t("%{total}名（#{flash[:exist_user_mails].count <= 1 ? '単数' : '複数'}）", total: flash[:exist_user_mails].count.to_formatted_s(:delimited)) %>
   <i class="fas fa-exclamation-triangle text-danger"></i>
-<% count = flash[:emails].count - flash[:create_user_mails].count - flash[:exist_user_mails].count %>
-  <%= t('未登録') %>: <%= t(count == 1 ? '1名' : '%{total}名', total: count.to_formatted_s(:delimited)) %>
+<% notfound_count = flash[:emails].count - flash[:create_user_mails].count - flash[:exist_user_mails].count %>
+  <%= t('未登録') %>: <%= t("%{total}名（#{notfound_count <= 1 ? '単数' : '複数'}）", total: notfound_count.to_formatted_s(:delimited)) %>
 </div>
 
 <div class="table-responsive">

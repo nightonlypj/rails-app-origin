@@ -29,7 +29,8 @@
     <div class="row">
 <% if Settings.enable_public_space %>
       <div class="col-auto d-flex mt-2">
-        <div class="form-check">
+        <div><%= t('範囲') %>:</div>
+        <div class="form-check ms-2">
           <%= form.check_box :public, checked: @checked[:public], class: 'form-check-input click_to_search_btn_enabled' %>
           <%= form.label :public, t('公開'), class: 'form-check-label', for: 'public' %>
         </div>
@@ -39,7 +40,8 @@
         </div>
       </div>
       <div class="col-auto d-flex mt-2">
-        <div class="form-check">
+        <div><%= t('状況') %>:</div>
+        <div class="form-check ms-2">
           <%= form.check_box :join, checked: @checked[:join], class: 'form-check-input click_to_search_btn_enabled' %>
           <%= form.label :join, t('参加'), class: 'form-check-label', for: 'join' %>
         </div>
@@ -50,7 +52,8 @@
       </div>
 <% end %>
       <div class="col-auto d-flex mt-2">
-        <div class="form-check">
+        <div><%= t('状態') %>:</div>
+        <div class="form-check ms-2">
           <%= form.check_box :active, checked: @checked[:active], class: 'form-check-input click_to_search_btn_enabled' %>
           <%= form.label :active, t('有効'), class: 'form-check-label', for: 'active' %>
         </div>

@@ -98,7 +98,7 @@ RSpec.describe 'Spaces', type: :request do
       let(:subject_page) { 1 }
       it '存在しないメッセージが含まれる' do
         subject
-        expect(response.body).to include(I18n.t('%{name}が見つかりません。', name: I18n.t('スペース')))
+        expect(response.body).to include(I18n.t('対象の%{name}が見つかりません。', name: I18n.t('スペース')))
       end
     end
     shared_examples_for 'リスト表示' do |page|
@@ -358,7 +358,7 @@ RSpec.describe 'Spaces', type: :request do
           expect(response_json_spaces.count).to eq(0)
         else
           # HTML
-          expect(response.body).to include(I18n.t('%{name}が見つかりません。', name: I18n.t('スペース')))
+          expect(response.body).to include(I18n.t('対象の%{name}が見つかりません。', name: I18n.t('スペース')))
         end
       end
     end

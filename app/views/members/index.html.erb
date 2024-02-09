@@ -23,7 +23,7 @@
         <div class="float-end d-flex mt-2">
           <a href="<%= new_member_path(space_code: @space.code) %>" class="btn btn-primary text-nowrap">
             <i class="fas fa-user-plus fa-lg"></i>
-            <span class="ms-1"><%= t('メンバー招待') %></span>
+            <span class="ms-1"><%= t('メンバー招待（ボタン）') %></span>
           </a>
           <a href="<%= invitations_path(space_code: @space.code) %>" class="btn btn-primary text-nowrap ms-1">
             <i class="fas fa-clipboard-check fa-lg"></i>
@@ -38,15 +38,14 @@
 
 <div class="card card-body mb-2">
   <div class="card-text">
-<% if @members.present? %>
     <div class="row">
       <div class="col-md-5 d-flex align-items-center">
-<% if @members.total_count == 1 %>
-        <%= t('1名') %>
-<% elsif @members.total_count <= @members.limit_value %>
-        <%= t('%{total}名', total: @members.total_count.to_formatted_s(:delimited)) %>
-<% else %>
+<% if @members.present? %>
+<% if @members.total_pages > 1 %>
         <%= t('%{total}名中 %{start}-%{end}名を表示', total: @members.total_count.to_formatted_s(:delimited), start: first_page_number(@members), end: last_page_number(@members)) %>
+<% else %>
+        <%= t("%{total}名（#{@members.total_count <= 1 ? '単数' : '複数'}）", total: @members.total_count.to_formatted_s(:delimited)) %>
+<% end %>
 <% end %>
       </div>
       <div class="col-md-7">
@@ -61,7 +60,6 @@
         </div>
       </div>
     </div>
-<% end %>
 
 <% if @members.blank? %>
     <hr/>

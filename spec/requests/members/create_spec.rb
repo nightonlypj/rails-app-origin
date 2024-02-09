@@ -80,13 +80,13 @@ RSpec.describe 'Members', type: :request do
 
         expect(response_json_emails[0]['email']).to eq(emails[0])
         expect(response_json_emails[0]['result']).to eq('exist')
-        expect(response_json_emails[0]['result_i18n']).to eq('既に参加しています。')
+        expect(response_json_emails[0]['result_i18n']).to eq(I18n.t('既に参加しています。'))
         expect(response_json_emails[1]['email']).to eq(emails[1])
         expect(response_json_emails[1]['result']).to eq('create')
-        expect(response_json_emails[1]['result_i18n']).to eq('招待しました。')
+        expect(response_json_emails[1]['result_i18n']).to eq(I18n.t('招待しました。'))
         expect(response_json_emails[2]['email']).to eq(emails[2])
         expect(response_json_emails[2]['result']).to eq('notfound')
-        expect(response_json_emails[2]['result_i18n']).to eq('アカウントが存在しません。登録後に招待してください。')
+        expect(response_json_emails[2]['result_i18n']).to eq(I18n.t('アカウントが存在しません。登録後に招待してください。'))
         expect(response_json_emails.count).to eq(3)
 
         expect(response_json['power']).to eq(attributes[:power].to_s)

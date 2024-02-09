@@ -11,14 +11,14 @@
 <% if @current_member.present? %>
       <div class="col-auto text-end ps-0">
         <a href="<%= members_path(space_code: @space.code) %>" class="btn btn-primary ps-3 pe-1">
-          <i class="fas fa-user-friends fa-lg" data-mdb-toggle="tooltip" data-mdb-placement="bottom" title="<%= t('メンバー一覧') %>">
-            <span class="badge rounded-pill badge-notification bg-secondary" style="top: -10px; left: -5px"><%= @member_count > 99 ? '99+' : @member_count %></span>
-          </i>
+          <i class="fas fa-user-friends fa-lg"></i>
+          <%= t('メンバー') %>
+          <span class="badge rounded-pill badge-notification bg-secondary" style="font-size: 0.8rem; top: -14px; left: -2px"><%= @member_count > 99 ? '99+' : @member_count %></span>
         </a>
 <% if @current_member.power_admin? %>
         <a href="<%=  edit_space_path(code: @space.code) %>" class="btn btn-dark">
-          <i class="fas fa-cog" data-mdb-toggle="tooltip" data-mdb-placement="bottom" title="<%= t('設定変更') %>">
-          </i>
+          <i class="fas fa-cog fa-lg"></i>
+          <%= t('設定') %>
         </a>
 <% end %>
       </div>
