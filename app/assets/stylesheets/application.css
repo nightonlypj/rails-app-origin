@@ -14,7 +14,7 @@
  *= require_self
  */
 
- /* NOTE: MDB5 3.1.0 バグ対応 */
+/* NOTE: MDB5 3.1.0 バグ対応 */
 .form-check .form-check-input {
     margin-left: -1.5em !important;
 }

@@ -9,7 +9,7 @@ namespace :holiday do
   require 'nkf'
   require 'csv'
 
-  desc '祝日データ更新（前年の2月に元データが更新される） → tool:create_yamlでseed更新'
+  desc '祝日データ更新（前年の2月に元データが更新される） -> tool:create_yamlでseed更新'
   task(:update, [:dry_run] => :environment) do |task, args|
     args.with_defaults(dry_run: 'true')
     dry_run = (args.dry_run != 'false')
