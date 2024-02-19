@@ -4,10 +4,12 @@ module Application::LocaleConcern
   private
 
   def switch_locale(&)
-    return I18n.with_locale(I18n.default_locale.to_s, &) if Settings.locales.keys.count < 2 || redirect_switch_locale || Rails.env.test?
+    default_locale = I18n.default_locale.to_s
+    return I18n.with_locale(default_locale, &) if Settings.locales.keys.count < 2 || redirect_switch_locale || Rails.env.test?
 
-    locale = params[:locale] || cookies[:locale] || http_accept_language.compatible_language_from(I18n.available_locales).to_s || I18n.default_locale.to_s
-    return redirect_to "/#{locale}#{request.fullpath}" if format_html? && params[:locale].blank? && locale != I18n.default_locale.to_s
+    locale = params[:locale].presence || cookies[:locale].presence
+    locale = locale || http_accept_language.compatible_language_from(I18n.available_locales).to_s.presence || default_locale
+    return redirect_to "/#{locale}#{request.fullpath}" if format_html? && params[:locale].blank? && locale != default_locale
 
     cookies[:locale] = locale if format_html?
     I18n.with_locale(locale, &)
