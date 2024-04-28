@@ -12,7 +12,7 @@ mailer_from:
 exception_notifier:
   email_enabled: true
   email_config:
-    email_prefix: '[WARNING][development]'
+    email_prefix: '[WARNING](development)'
     sender_address: 'noreply@localhost'
     exception_recipients: ['warning']
   slack_enabled: false

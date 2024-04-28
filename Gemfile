@@ -1,7 +1,7 @@
 source 'https://rubygems.org'
 git_source(:github) { |repo| "https://github.com/#{repo}.git" }
 
-ruby '3.2.2'
+ruby '3.3.0'
 
 # Bundle edge Rails instead: gem 'rails', github: 'rails/rails', branch: 'main'
 gem 'rails', '~> 7.0'
@@ -13,13 +13,13 @@ gem 'sprockets-rails'
 # gem 'sqlite3', '~> 1.4'
 
 # Use mysql as the database for Active Record
-gem 'mysql2', '~> 0.5'
+gem 'mysql2'
 
 # Use postgresql as the database for Active Record
-gem 'pg', '~> 1.1'
+# gem 'pg', '~> 1.1'
 
 # Use the Puma web server [https://github.com/puma/puma]
-gem 'puma', '~> 5.0'
+gem 'puma'
 
 # Use JavaScript with ESM import maps [https://github.com/rails/importmap-rails]
 gem 'importmap-rails'
@@ -61,11 +61,11 @@ group :development, :test do
   # Use RSpec
   gem 'rspec-rails'
   # gem 'spring-commands-rspec'
-  gem 'factory_bot_rails', '< 6.3.0' # NOTE: rails s/rspec -> undefined method `config' for nil:NilClass
-  # Use RuboCop
+  gem 'factory_bot_rails'
+  # Use RuboCop
   gem 'rubocop'
   gem 'rubocop-rails'
-  # Use Brakeman
+  # Use Brakeman
   gem 'brakeman'
 end
 gem 'faker' # NOTE: テスト以外でも使えるように
@@ -80,7 +80,7 @@ group :development do
   # Speed up commands on slow machines / big apps [https://github.com/rails/spring]
   # gem 'spring'
 
-  # Use YARD
+  # Use YARD
   gem 'guard-yard'
   gem 'redcarpet'
   gem 'yard'
@@ -92,10 +92,10 @@ group :development do
   gem 'bullet'
   # Use Capistrano
   gem 'capistrano'
-  gem 'capistrano-rvm'
-  gem 'capistrano-rails'
-  gem 'capistrano-bundler'
   gem 'capistrano3-unicorn'
+  gem 'capistrano-bundler'
+  gem 'capistrano-rails'
+  gem 'capistrano-rvm'
 end
 
 group :test do
@@ -112,8 +112,8 @@ group :test do
 end
 
 # Use i18n
-gem 'rails-i18n'
 gem 'http_accept_language'
+gem 'rails-i18n'
 
 # Use Devise
 gem 'devise'
@@ -153,5 +153,5 @@ gem 'exception_notification'
 gem 'slack-notifier'
 
 # Use Delayed::Job
-gem 'delayed_job_active_record'
 gem 'daemons'
+gem 'delayed_job_active_record'

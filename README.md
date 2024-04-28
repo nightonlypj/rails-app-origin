@@ -1,7 +1,7 @@
 # Ruby on Railsベースアプリケーション（Space）
 
 運営元とユーザー同士が作成したスペース上で情報共有する（BtoC向け）  
-(Ruby 3.2.2, Rails 7.0)
+(Ruby 3.3.0, Rails 7.0.8.1)
 
 ## コマンドメモ
 
@@ -128,7 +128,7 @@ $ brew doctor
 Your system is ready to brew.
 
 $ brew -v
-Homebrew 4.1.20
+Homebrew 4.2.14
 ※バージョンは異なっても良い
 ```
 
@@ -174,20 +174,21 @@ rvm 1.29.12 (latest) by Michal Papis, Piotr Kuczynski, Wayne E. Seguin [https://
 https://github.com/rbenv/homebrew-tap/issues/9#issuecomment-1683015411
 ```
 $ brew install openssl@3
+（$ brew upgrade openssl@3）
 
 ※ターミナルを開き直して、
 $ openssl version
-OpenSSL 3.1.4 24 Oct 2023 (Library: OpenSSL 3.1.4 24 Oct 2023)
+OpenSSL 3.2.1 30 Jan 2024 (Library: OpenSSL 3.2.1 30 Jan 2024)
 
-$ rvm install 3.2.2 --with-openssl-dir=$(brew --prefix openssl@3)
-（$ rvm --default use 3.2.2）
+$ rvm install 3.3.0 --with-openssl-dir=$(brew --prefix openssl@3)
+（$ rvm --default use 3.3.0）
 
 $ ruby -v
-ruby 3.2.2 (2023-03-30 revision e51014f9c0) [arm64-darwin22]
+ruby 3.3.0 (2023-12-25 revision 5124f9ac75) [arm64-darwin22]
 
 $ rvm list
-   ruby-3.1.4 [ arm64 ]
-=* ruby-3.2.2 [ arm64 ]
+   ruby-3.2.2 [ arm64 ]
+=* ruby-3.3.0 [ arm64 ]
 ```
 
 ### MariaDB or MySQLインストール
