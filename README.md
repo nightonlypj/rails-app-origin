@@ -1,7 +1,7 @@
 # Ruby on Railsベースアプリケーション
 
 運営元が情報提供して1つのサービスを作る（BtoC向け）  
-(Ruby 3.3.0, Rails 7.0.8.1)
+(Ruby 3.3.2, Rails 7.0.8.4)
 
 ## コマンドメモ
 
@@ -128,7 +128,7 @@ $ brew doctor
 Your system is ready to brew.
 
 $ brew -v
-Homebrew 4.2.14
+Homebrew 4.3.8
 ※バージョンは異なっても良い
 ```
 
@@ -139,7 +139,7 @@ $ brew install imagemagick
 （$ brew upgrade imagemagick）
 
 $ magick -version
-Version: ImageMagick 7.1.1-21 Q16-HDRI aarch64 21667 https://imagemagick.org
+Version: ImageMagick 7.1.1-34 Q16-HDRI aarch64 22301 https://imagemagick.org
 ※バージョンは異なっても良い
 ```
 
@@ -150,7 +150,7 @@ $ brew install graphviz
 （$ brew upgrade graphviz）
 
 $ dot -V
-dot - graphviz version 9.0.0 (20230911.1827)
+dot - graphviz version 12.0.0 (20240704.0754)
 ※バージョンは異なっても良い
 ```
 
@@ -178,17 +178,16 @@ $ brew install openssl@3
 
 ※ターミナルを開き直して、
 $ openssl version
-OpenSSL 3.2.1 30 Jan 2024 (Library: OpenSSL 3.2.1 30 Jan 2024)
+OpenSSL 3.3.1 4 Jun 2024 (Library: OpenSSL 3.3.1 4 Jun 2024)
 
-$ rvm install 3.3.0 --with-openssl-dir=$(brew --prefix openssl@3)
-（$ rvm --default use 3.3.0）
+$ rvm install 3.3.2 --with-openssl-dir=$(brew --prefix openssl@3)
+（$ rvm --default use 3.3.2）
 
 $ ruby -v
-ruby 3.3.0 (2023-12-25 revision 5124f9ac75) [arm64-darwin22]
+ruby 3.3.2 (2024-05-30 revision e5a195edf6) [arm64-darwin22]
 
 $ rvm list
-   ruby-3.2.2 [ arm64 ]
-=* ruby-3.3.0 [ arm64 ]
+=* ruby-3.3.2 [ arm64 ]
 ```
 
 ### MariaDB or MySQLインストール
