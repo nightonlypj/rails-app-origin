@@ -125,6 +125,7 @@ gem 'devise_token_auth'
 gem 'rack-cors'
 
 # Use RailsAdmin
+gem 'cssbundling-rails'
 gem 'rails_admin'
 gem 'rails_admin-i18n'
 
