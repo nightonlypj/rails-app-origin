@@ -85,6 +85,7 @@ $ cp -a config/settings/development.yml,local config/settings/development.yml
 $ docker compose run app rails db:create
 $ docker compose run app rails db:migrate
 $ docker compose run app rails db:seed
+または $ docker compose run app rails db:create db:migrate db:seed
 ```
 
 - http://localhost:3000
