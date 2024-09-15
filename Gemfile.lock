@@ -541,7 +541,7 @@ DEPENDENCIES
   paper_trail
   puma
   rack-cors
-  rails (~> 7.0)
+  rails (~> 7.1)
   rails-erd
   rails-i18n
   rails_admin
@@ -565,7 +565,7 @@ DEPENDENCIES
   yard
 
 RUBY VERSION
-   ruby 3.3.2p78
+   ruby 3.3.4p94
 
 BUNDLED WITH
    2.4.14
