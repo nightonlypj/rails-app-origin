@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2024_02_04_130621) do
+ActiveRecord::Schema[7.1].define(version: 2024_02_04_130621) do
   create_table "admin_users", charset: "utf8mb4", collation: "utf8mb4_general_ci", comment: "管理者", force: :cascade do |t|
     t.string "name", null: false, comment: "氏名"
     t.string "email", default: "", null: false, comment: "メールアドレス"

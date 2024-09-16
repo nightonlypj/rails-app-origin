@@ -1,7 +1,7 @@
 # Ruby on Railsベースアプリケーション（Space）
 
 運営元とユーザー同士が作成したスペース上で情報共有する（BtoC向け）  
-(Ruby 3.3.2, Rails 7.0.8.4)
+(Ruby 3.3.4, Rails 7.1.3.4)
 
 ## コマンドメモ
 
@@ -82,9 +82,13 @@ $ docker compose up
 ```
 $ cp -a config/settings/development.yml,local config/settings/development.yml
 
+※初回のみ /config/credentials.yml.encとmaster.keyが作成される。環境により変えた方が良い。
+$ rails credentials:edit
+
 $ docker compose run app rails db:create
 $ docker compose run app rails db:migrate
 $ docker compose run app rails db:seed
+または $ docker compose run app rails db:create db:migrate db:seed
 ```
 
 - http://localhost:3000
@@ -128,7 +132,7 @@ $ brew doctor
 Your system is ready to brew.
 
 $ brew -v
-Homebrew 4.3.8
+Homebrew 4.3.21
 ※バージョンは異なっても良い
 ```
 
@@ -139,7 +143,7 @@ $ brew install imagemagick
 （$ brew upgrade imagemagick）
 
 $ magick -version
-Version: ImageMagick 7.1.1-34 Q16-HDRI aarch64 22301 https://imagemagick.org
+Version: ImageMagick 7.1.1-38 Q16-HDRI aarch64 22398 https://imagemagick.org
 ※バージョンは異なっても良い
 ```
 
@@ -150,7 +154,7 @@ $ brew install graphviz
 （$ brew upgrade graphviz）
 
 $ dot -V
-dot - graphviz version 12.0.0 (20240704.0754)
+dot - graphviz version 12.1.1 (20240910.0053)
 ※バージョンは異なっても良い
 ```
 
@@ -178,16 +182,16 @@ $ brew install openssl@3
 
 ※ターミナルを開き直して、
 $ openssl version
-OpenSSL 3.3.1 4 Jun 2024 (Library: OpenSSL 3.3.1 4 Jun 2024)
+OpenSSL 3.3.2 3 Sep 2024 (Library: OpenSSL 3.3.2 3 Sep 2024)
 
-$ rvm install 3.3.2 --with-openssl-dir=$(brew --prefix openssl@3)
-（$ rvm --default use 3.3.2）
+$ rvm install 3.3.4 --with-openssl-dir=$(brew --prefix openssl@3)
+（$ rvm --default use 3.3.4）
 
 $ ruby -v
-ruby 3.3.2 (2024-05-30 revision e5a195edf6) [arm64-darwin22]
+ruby 3.3.4 (2024-07-09 revision be1089c8ec) [arm64-darwin22]
 
 $ rvm list
-=* ruby-3.3.2 [ arm64 ]
+=* ruby-3.3.4 [ arm64 ]
 ```
 
 ### MariaDB or MySQLインストール
@@ -324,6 +328,9 @@ $ cp -a config/settings/development.yml,local config/settings/development.yml
 $ bundle install
 （$ bundle update）
 Bundle complete!
+
+※初回のみ /config/credentials.yml.encとmaster.keyが作成される。環境により変えた方が良い。
+$ rails credentials:edit
 
 $ rails db:create
 $ rails db:migrate

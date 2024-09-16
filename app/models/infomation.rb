@@ -6,7 +6,7 @@ class Infomation < ApplicationRecord
   validates :title, presence: true
   validates :started_at, presence: true
   validates :target, presence: true
-  validates :user, presence: true, if: proc { |infomation| infomation.target_user? }
+  validates :user, presence: true, if: -> { target_user? }
 
   scope :by_locale, ->(locale) { where(locale: [nil, locale]) }
   scope :by_target, lambda { |current_user|
