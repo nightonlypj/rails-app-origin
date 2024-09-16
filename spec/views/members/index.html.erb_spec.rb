@@ -20,7 +20,7 @@ RSpec.describe 'members/index', type: :view do
       assert_select 'input[name=?]', 'text'
       assert_select 'button[type=?]', 'submit'
       assert_select 'input[name=?]', 'option'
-      Member.powers.each do |key, _value|
+      Member.powers.each_key do |key|
         assert_select 'input[name=?]', "power[#{key}]"
       end
       assert_select 'input[name=?]', 'active'

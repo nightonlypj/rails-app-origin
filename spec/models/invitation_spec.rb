@@ -280,14 +280,7 @@ RSpec.describe Invitation, type: :model do
     subject { model.validate_domains }
     let(:model) { FactoryBot.build(:invitation, domains:) }
     let_it_be(:valid_domain) { Faker::Internet.domain_name }
-    let_it_be(:valid_domains) do
-      result = []
-      (1..Settings.invitation_domains_max_count).each do |index|
-        result.push("#{index}.#{valid_domain}")
-      end
-
-      result
-    end
+    let_it_be(:valid_domains) { (1..Settings.invitation_domains_max_count).map { |index| "#{index}.#{valid_domain}" } }
     let_it_be(:invalid_domain) { 'aaa' }
 
     # テストケース

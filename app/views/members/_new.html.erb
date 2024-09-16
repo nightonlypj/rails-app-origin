@@ -19,7 +19,7 @@
     </div>
     <div class="col-md-10">
       <div class="<%= input_size_class_name_vertical(validate_enabled, @member, :power) %>">
-<% Member.powers.each do |key, _value| %>
+<% Member.powers.each_key do |key| %>
         <div class="form-check form-check-inline<%= validate_class_name(validate_enabled, @member, :power) %>">
           <%= form.radio_button :power, key, class: "form-check-input#{validate_class_name(validate_enabled, @member, :power)}" %>
           <%= form.label key, Member.powers_i18n[key], class: 'form-check-label', for: "member_power_#{key}" %>

@@ -98,10 +98,7 @@ module MembersConcern
     loop do
       members = base_members.page(page).per(Settings.job_members_limit)
       members.each do |member|
-        data = []
-        output_items.each do |output_item|
-          data.push(get_value(member, output_item))
-        end
+        data = output_items.map { |output_item| get_value(member, output_item) }
         result += data.to_csv(col_sep: @download.col_sep, row_sep: @download.row_sep)
       end
       break if page >= members.total_pages

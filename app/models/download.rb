@@ -9,9 +9,9 @@ class Download < ApplicationRecord
   validates :newline_code, presence: true
   validates :output_items, presence: true
   validates :output_items, text_array: true, allow_blank: true
-  validates :select_items, presence: true, if: proc { |download| download.target_select? }
+  validates :select_items, presence: true, if: -> { target_select? }
   validates :select_items, text_array: true, allow_blank: true
-  validates :search_params, presence: true, if: proc { |download| download.target_search? }
+  validates :search_params, presence: true, if: -> { target_search? }
   validates :search_params, text_hash: true, allow_blank: true
   validate :validate_output_items
 

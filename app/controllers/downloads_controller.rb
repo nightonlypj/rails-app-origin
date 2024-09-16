@@ -7,7 +7,7 @@ class DownloadsController < ApplicationAuthController
   # GET /downloads ダウンロード結果一覧
   # GET /downloads(.json) ダウンロード結果一覧API
   def index
-    @id = (params[:id].to_s =~ /^[0-9]+$/).present? ? params[:id].to_i : nil
+    @id = params[:id].present? ? params[:id].to_i : nil
     @downloads = Download.where(user: current_user).search(@id).order(id: :desc)
                          .page(params[:page]).per(Settings.default_downloads_limit)
 
@@ -131,7 +131,7 @@ class DownloadsController < ApplicationAuthController
   def download_params
     if format_html?
       params[:download][:output_items] = []
-      @items.each do |key, _label|
+      @items.each_key do |key|
         params[:download][:output_items].push(key.to_s) if params[:download]["output_items_#{key}"] == '1'
       end
       params[:download][:select_items] = params[:download][:select_items]&.split(',')

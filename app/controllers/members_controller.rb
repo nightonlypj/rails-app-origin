@@ -34,13 +34,10 @@ class MembersController < ApplicationAuthController
   # POST /members/:space_code/create メンバー招待(処理)
   # POST /members/:space_code/create(.json) メンバー招待API(処理)
   def create
-    insert_datas = []
     users = User.where(email: @emails)
     exist_users = User.joins(:members).where(members: { space: @space, user: users })
     create_users = users - exist_users
-    create_users.each do |user|
-      insert_datas.push(@member.attributes.symbolize_keys.merge(user_id: user.id))
-    end
+    insert_datas = create_users.map { |user| @member.attributes.symbolize_keys.merge(user_id: user.id) }
     Member.insert_all!(insert_datas) if insert_datas.present?
 
     @exist_user_mails = exist_users.pluck(:email)

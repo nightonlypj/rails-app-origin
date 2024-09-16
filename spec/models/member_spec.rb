@@ -26,14 +26,7 @@ RSpec.describe Member, type: :model do
     subject { model.validate_emails }
     let(:model) { FactoryBot.build(:member, emails:) }
     let_it_be(:valid_email) { Faker::Internet.email(name: 'name') }
-    let_it_be(:valid_emails) do
-      result = []
-      (1..Settings.member_emails_max_count).each do |index|
-        result.push(Faker::Internet.email(name: "name#{index}"))
-      end
-
-      result
-    end
+    let_it_be(:valid_emails) { (1..Settings.member_emails_max_count).map { |index| Faker::Internet.email(name: "name#{index}") } }
     let_it_be(:invalid_email) { 'aaa' }
 
     # テストケース
