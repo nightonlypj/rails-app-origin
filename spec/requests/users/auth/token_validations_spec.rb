@@ -32,7 +32,7 @@ RSpec.describe 'Users::Auth::TokenValidations', type: :request do
       let(:accept_headers) { ACCEPT_INC_JSON }
       it 'HTTPステータスが200。対象項目が一致する。認証ヘッダがある' do
         is_expected.to eq(200)
-        # expect(response_json['success']).to eq(true)
+        # expect(response_json['success']).to be(true)
         # expect(response_json['data']['id'].present?).to eq(id_present) # 方針: 廃止
         # expect(response_json['data']['name']).to eq(user.name)
         # expect(response_json['data']['image']).not_to be_nil

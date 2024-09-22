@@ -65,6 +65,7 @@ group :development, :test do
   # Use RuboCop
   gem 'rubocop'
   gem 'rubocop-rails'
+  gem 'rubocop-rspec'
   # Use Brakeman
   gem 'brakeman'
 

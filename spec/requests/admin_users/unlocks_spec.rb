@@ -42,7 +42,7 @@ RSpec.describe 'AdminUsers::Unlocks', type: :request do
     end
     shared_examples_for 'NG' do
       it 'メールが送信されない' do
-        expect { subject }.to change(ActionMailer::Base.deliveries, :count).by(0)
+        expect { subject }.not_to change(ActionMailer::Base.deliveries, :count)
       end
     end
 

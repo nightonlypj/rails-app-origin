@@ -9,7 +9,7 @@ RSpec.configure do |config|
   end
 
   # タスクを毎回実行するようにする
-  config.before(:each) do
+  config.before do
     Rake.application.tasks.each(&:reenable)
   end
 

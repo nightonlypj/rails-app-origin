@@ -9,12 +9,12 @@ class Infomation < ApplicationRecord
   validates :user, presence: true, if: -> { target_user? }
 
   scope :by_locale, ->(locale) { where(locale: [nil, locale]) }
-  scope :by_target, lambda { |current_user|
+  scope :by_target, ->(current_user) {
     where('target = ? OR (target = ? AND user_id = ?)', targets[:all], targets[:user], current_user&.id)
       .where('started_at <= ? AND (ended_at IS NULL OR ended_at >= ?)', Time.current, Time.current)
   }
   scope :by_force, -> { where('force_started_at <= ? AND (force_ended_at IS NULL OR force_ended_at >= ?)', Time.current, Time.current) }
-  scope :by_unread, lambda { |infomation_check_last_started_at|
+  scope :by_unread, ->(infomation_check_last_started_at) {
     where('started_at > ?', infomation_check_last_started_at) if infomation_check_last_started_at.present?
   }
 

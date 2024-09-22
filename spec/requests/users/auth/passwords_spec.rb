@@ -63,7 +63,7 @@ RSpec.describe 'Users::Auth::Passwords', type: :request do
       let(:subject_format) { :json }
       let(:accept_headers) { ACCEPT_INC_JSON }
       it 'メールが送信されない' do
-        expect { subject }.to change(ActionMailer::Base.deliveries, :count).by(0)
+        expect { subject }.not_to change(ActionMailer::Base.deliveries, :count)
       end
     end
 
@@ -255,10 +255,8 @@ RSpec.describe 'Users::Auth::Passwords', type: :request do
   #   ＋Acceptヘッダ: JSONが含まれない, JSONが含まれる
   #   ＋リダイレクトURL: ある, ない, ホワイトリストにない
   describe 'GET #edit' do
-    subject do
-      get edit_user_auth_password_path(format: subject_format, reset_password_token:, redirect_url:),
-          headers: auth_headers.merge(accept_headers)
-    end
+    subject { get edit_user_auth_password_path(format: subject_format, reset_password_token:, redirect_url:), headers: }
+    let(:headers) { auth_headers.merge(accept_headers) }
 
     # テスト内容
     shared_examples_for 'ToOK(html/*)' do
@@ -315,7 +313,7 @@ RSpec.describe 'Users::Auth::Passwords', type: :request do
       # it 'HTTPステータスが422。対象項目が一致する' do
       it 'エラーページにリダイレクトする' do
         # is_expected.to eq(422)
-        # expect(response_json['success']).to eq(false)
+        # expect(response_json['success']).to be(false)
         # expect(response_json['errors']).not_to be_nil
         is_expected.to redirect_to(Settings.reset_password_error_url_not)
       end
@@ -327,7 +325,7 @@ RSpec.describe 'Users::Auth::Passwords', type: :request do
       # it 'HTTPステータスが422。対象項目が一致する' do
       it 'エラーページにリダイレクトする' do
         # is_expected.to eq(422)
-        # expect(response_json['success']).to eq(false)
+        # expect(response_json['success']).to be(false)
         # expect(response_json['errors']).not_to be_nil
         is_expected.to redirect_to(Settings.reset_password_error_url_bad)
       end

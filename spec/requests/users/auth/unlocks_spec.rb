@@ -57,7 +57,7 @@ RSpec.describe 'Users::Auth::Unlocks', type: :request do
       let(:subject_format) { :json }
       let(:accept_headers) { ACCEPT_INC_JSON }
       it 'メールが送信されない' do
-        expect { subject }.to change(ActionMailer::Base.deliveries, :count).by(0)
+        expect { subject }.not_to change(ActionMailer::Base.deliveries, :count)
       end
     end
 
@@ -75,7 +75,7 @@ RSpec.describe 'Users::Auth::Unlocks', type: :request do
       let(:accept_headers) { ACCEPT_INC_JSON }
       it "HTTPステータスが#{code}。対象項目が一致する。認証ヘッダがない" do
         is_expected.to eq(code) # 方針(優先順): 401: ログイン中, 400:パラメータなし, 422: 無効なパラメータ・状態
-        expect(response_json['success']).to eq(false)
+        expect(response_json['success']).to be(false)
         expect_failure_json
         expect_not_exist_auth_header
       end
@@ -233,9 +233,8 @@ RSpec.describe 'Users::Auth::Unlocks', type: :request do
   #   ＋Acceptヘッダ: JSONが含まれない, JSONが含まれる
   #   ＋リダイレクトURL: ある, ない, ホワイトリストにない
   describe 'GET #show' do
-    subject do
-      get user_auth_unlock_path(format: subject_format, unlock_token:, redirect_url: @redirect_url), headers: auth_headers.merge(accept_headers)
-    end
+    subject { get user_auth_unlock_path(format: subject_format, unlock_token:, redirect_url: @redirect_url), headers: }
+    let(:headers) { auth_headers.merge(accept_headers) }
 
     # テスト内容
     let(:current_user) { User.find(send_user.id) }
@@ -303,7 +302,7 @@ RSpec.describe 'Users::Auth::Unlocks', type: :request do
       it '[リダイレクトURLがない]成功ページにリダイレクトする' do
         @redirect_url = nil
         # is_expected.to eq(422)
-        # expect(response_json['success']).to eq(false)
+        # expect(response_json['success']).to be(false)
         # expect(response_json['errors']).not_to be_nil
         # expect(response_json['message']).to be_nil
         is_expected.to redirect_to(Settings.unlock_success_url_not)
@@ -312,7 +311,7 @@ RSpec.describe 'Users::Auth::Unlocks', type: :request do
       it '[リダイレクトURLがホワイトリストにない]成功ページにリダイレクトする' do
         @redirect_url = BAD_SITE_URL
         # is_expected.to eq(422)
-        # expect(response_json['success']).to eq(false)
+        # expect(response_json['success']).to be(false)
         # expect(response_json['errors']).not_to be_nil
         # expect(response_json['message']).to be_nil
         is_expected.to redirect_to(Settings.unlock_success_url_bad)
@@ -331,7 +330,7 @@ RSpec.describe 'Users::Auth::Unlocks', type: :request do
       it '[リダイレクトURLがない]エラーページにリダイレクトする' do
         @redirect_url = nil
         # is_expected.to eq(422)
-        # expect(response_json['success']).to eq(false)
+        # expect(response_json['success']).to be(false)
         # expect(response_json['errors']).not_to be_nil
         # expect(response_json['message']).to be_nil
         is_expected.to redirect_to(Settings.unlock_error_url_not)
@@ -340,7 +339,7 @@ RSpec.describe 'Users::Auth::Unlocks', type: :request do
       it '[リダイレクトURLがホワイトリストにない]エラーページにリダイレクトする' do
         @redirect_url = BAD_SITE_URL
         # is_expected.to eq(422)
-        # expect(response_json['success']).to eq(false)
+        # expect(response_json['success']).to be(false)
         # expect(response_json['errors']).not_to be_nil
         # expect(response_json['message']).to be_nil
         is_expected.to redirect_to(Settings.unlock_error_url_bad)
