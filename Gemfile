@@ -65,8 +65,15 @@ group :development, :test do
   # Use RuboCop
   gem 'rubocop'
   gem 'rubocop-rails'
+  gem 'rubocop-rspec'
   # Use Brakeman
   gem 'brakeman'
+
+  # Use Pry
+  gem 'pry-byebug'
+  gem 'pry-doc'
+  gem 'pry-rails'
+  gem 'pry-stack_explorer'
 end
 gem 'faker' # NOTE: テスト以外でも使えるように
 

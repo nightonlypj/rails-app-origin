@@ -13,8 +13,8 @@ class CreateInfomations < ActiveRecord::Migration[6.0]
 
       t.timestamps
     end
-    add_index :infomations, [:started_at, :id],       name: 'index_infomations1'
-    add_index :infomations, [:started_at, :ended_at], name: 'index_infomations2'
-    add_index :infomations, [:target, :user_id],      name: 'index_infomations3'
+    add_index :infomations, %i[started_at id],       name: 'index_infomations1'
+    add_index :infomations, %i[started_at ended_at], name: 'index_infomations2'
+    add_index :infomations, %i[target user_id],      name: 'index_infomations3'
   end
 end

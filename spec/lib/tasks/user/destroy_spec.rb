@@ -49,9 +49,9 @@ RSpec.describe :user, type: :task do
       it '削除される（スペース除く）' do
         subject
         expect(User.count).to eq(before_user_count - users.count)
-        expect(User.exists?(id: users)).to eq(false)
+        expect(User.exists?(id: users)).to be(false)
         expect(Infomation.count).to eq(before_infomation_count - infomations.count)
-        expect(Infomation.exists?(id: infomations)).to eq(false)
+        expect(Infomation.exists?(id: infomations)).to be(false)
 
         expect(Member.count).to eq(before_member_count - members.count)
         expect(Member.exists?(id: members)).to eq(false)

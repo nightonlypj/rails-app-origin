@@ -5,7 +5,7 @@ RSpec.describe Infomation, type: :model do
   # テストパターン
   #   ない, 正常値
   describe 'validates :label' do
-    let(:model) { FactoryBot.build_stubbed(:infomation, label:) }
+    subject(:model) { FactoryBot.build_stubbed(:infomation, label:) }
 
     # テストケース
     context 'ない' do
@@ -23,7 +23,7 @@ RSpec.describe Infomation, type: :model do
   # テストパターン
   #   ない, ある
   describe 'validates :title' do
-    let(:model) { FactoryBot.build_stubbed(:infomation, title:) }
+    subject(:model) { FactoryBot.build_stubbed(:infomation, title:) }
 
     # テストケース
     context 'ない' do
@@ -41,7 +41,7 @@ RSpec.describe Infomation, type: :model do
   # テストパターン
   #   ない, 正常値,
   describe 'validates :started_at' do
-    let(:model) { FactoryBot.build_stubbed(:infomation, started_at:) }
+    subject(:model) { FactoryBot.build_stubbed(:infomation, started_at:) }
 
     # テストケース
     context 'ない' do
@@ -59,7 +59,7 @@ RSpec.describe Infomation, type: :model do
   # テストパターン
   #   ない, 正常値
   describe 'validates :target' do
-    let(:model) { FactoryBot.build_stubbed(:infomation, target:) }
+    subject(:model) { FactoryBot.build_stubbed(:infomation, target:) }
 
     # テストケース
     context 'ない' do
@@ -78,7 +78,7 @@ RSpec.describe Infomation, type: :model do
   #   対象: 全員, 対象ユーザーのみ
   #   ユーザー: いない, いる
   describe 'validates :user' do
-    let(:model) { FactoryBot.build_stubbed(:infomation, target:, user:) }
+    subject(:model) { FactoryBot.build_stubbed(:infomation, target:, user:) }
     let_it_be(:valid_user) { FactoryBot.create(:user) }
 
     # テストケース

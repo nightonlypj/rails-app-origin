@@ -5,7 +5,7 @@ RSpec.describe Holiday, type: :model do
   # テストパターン
   #   ない, 正常値, 重複
   describe 'validates :date' do
-    let(:model) { FactoryBot.build_stubbed(:holiday, date:, name: 'a') }
+    subject(:model) { FactoryBot.build_stubbed(:holiday, date:, name: 'a') }
 
     # テストケース
     context 'ない' do
@@ -29,7 +29,7 @@ RSpec.describe Holiday, type: :model do
   # テストパターン
   #   ない, ある
   describe 'validates :name' do
-    let(:model) { FactoryBot.build_stubbed(:holiday, name:) }
+    subject(:model) { FactoryBot.build_stubbed(:holiday, name:) }
 
     # テストケース
     context 'ない' do

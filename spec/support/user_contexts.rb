@@ -104,7 +104,7 @@ shared_context 'Authテスト内容' do
   let(:response_json_user)        { response_json['user'] }
   let(:response_json_user_spaces) { response_json_user['spaces'] }
   let(:expect_success_json) do
-    expect(response_json['success']).to eq(true)
+    expect(response_json['success']).to be(true)
     expect(response_json['data']).to be_nil
     if current_user.blank?
       expect(response_json_user).to be_nil
@@ -142,7 +142,7 @@ shared_context 'Authテスト内容' do
     end
   end
   let(:expect_failure_json) do
-    expect(response_json['success']).to eq(false)
+    expect(response_json['success']).to be(false)
     expect(response_json['data']).to be_nil
     expect(response_json_user).to be_nil
   end

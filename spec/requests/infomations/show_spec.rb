@@ -41,7 +41,7 @@ RSpec.describe 'Infomations', type: :request do
       let(:accept_headers) { ACCEPT_INC_JSON }
       it 'HTTPステータスが200。対象項目が一致する' do
         is_expected.to eq(200)
-        expect(response_json['success']).to eq(true)
+        expect(response_json['success']).to be(true)
 
         count = expect_infomation_json(response_json_infomation, infomation, { id: false, body: true })
         expect(response_json_infomation.count).to eq(count)

@@ -14,7 +14,6 @@ RSpec.describe 'Holidays', type: :request do
     subject { get holidays_path(format: subject_format), params:, headers: auth_headers.merge(accept_headers) }
     let_it_be(:start_date) { Time.zone.today.beginning_of_year }
     let_it_be(:end_date)   { Time.zone.today.end_of_year }
-
     before_all { FactoryBot.create(:holiday, date: start_date - 1.day) }
     let_it_be(:holidays) do
       [
@@ -30,7 +29,7 @@ RSpec.describe 'Holidays', type: :request do
       let(:accept_headers) { ACCEPT_INC_JSON }
       it 'HTTPステータスが200。対象項目が一致する' do
         is_expected.to eq(200)
-        expect(response_json['success']).to eq(true)
+        expect(response_json['success']).to be(true)
 
         search_params = { start_date: I18n.l(start_date, format: :json), end_date: I18n.l(end_date, format: :json) }
         expect(response_json['search_params']).to eq(search_params.stringify_keys)
