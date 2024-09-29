@@ -16,6 +16,7 @@ RSpec.describe 'Downloads', type: :request do
   describe 'POST #create' do
     subject { post create_download_path(format: subject_format), params: { download: attributes }, headers: auth_headers.merge(accept_headers) }
     let_it_be(:space) { FactoryBot.create(:space) }
+
     let_it_be(:valid_attributes)   { FactoryBot.attributes_for(:download).except(:requested_at) }
     let_it_be(:invalid_attributes) { valid_attributes.merge(target: nil) }
 
@@ -53,7 +54,7 @@ RSpec.describe 'Downloads', type: :request do
     end
     shared_examples_for 'NG' do
       it 'ダウンロードが作成されない' do
-        expect { subject }.to change(Download, :count).by(0)
+        expect { subject }.not_to change(Download, :count)
       end
     end
 
@@ -69,7 +70,7 @@ RSpec.describe 'Downloads', type: :request do
       let(:accept_headers) { ACCEPT_INC_JSON }
       it 'HTTPステータスが201。対象項目が一致する' do
         is_expected.to eq(201)
-        expect(response_json['success']).to eq(true)
+        expect(response_json['success']).to be(true)
         expect(response_json['notice']).to eq(get_locale('notice.download.create'))
 
         count = expect_download_json(response_json_download, current_download)

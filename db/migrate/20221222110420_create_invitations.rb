@@ -23,6 +23,6 @@ class CreateInvitations < ActiveRecord::Migration[6.1]
     add_index :invitations, :ended_at,            name: 'index_invitations3'
     add_index :invitations, :destroy_schedule_at, name: 'index_invitations4'
     add_index :invitations, :email_joined_at,     name: 'index_invitations5'
-    add_index :invitations, [:created_at, :id],   name: 'index_invitations6'
+    add_index :invitations, %i[created_at id],    name: 'index_invitations6'
   end
 end

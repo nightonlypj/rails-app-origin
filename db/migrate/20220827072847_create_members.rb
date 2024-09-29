@@ -12,12 +12,12 @@ class CreateMembers < ActiveRecord::Migration[6.1]
       t.datetime :invitationed_at, comment: '招待日時'
       t.timestamps
     end
-    add_index :members, [:space_id, :user_id], unique: true, name: 'index_members1'
-    add_index :members, [:space_id, :power, :id],            name: 'index_members2'
-    add_index :members, [:invitationed_user_id, :id],        name: 'index_members3'
-    add_index :members, [:last_updated_user_id, :id],        name: 'index_members4'
-    add_index :members, [:invitationed_at, :id],             name: 'index_members5'
-    add_index :members, [:created_at, :id],                  name: 'index_members6'
-    add_index :members, [:updated_at, :id],                  name: 'index_members7'
+    add_index :members, %i[space_id user_id], unique: true, name: 'index_members1'
+    add_index :members, %i[space_id power id],              name: 'index_members2'
+    add_index :members, %i[invitationed_user_id id],        name: 'index_members3'
+    add_index :members, %i[last_updated_user_id id],        name: 'index_members4'
+    add_index :members, %i[invitationed_at id],             name: 'index_members5'
+    add_index :members, %i[created_at id],                  name: 'index_members6'
+    add_index :members, %i[updated_at id],                  name: 'index_members7'
   end
 end

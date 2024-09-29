@@ -37,7 +37,7 @@ RSpec.describe 'Downloads', type: :request do
       before { user.cache_undownloaded_count = nil } # NOTE: キャッシュクリア
       it 'HTTPステータスが200。対象項目が一致する' do
         is_expected.to eq(200)
-        expect(response_json['success']).to eq(true)
+        expect(response_json['success']).to be(true)
         expect(response_json['search_params']).to eq(default_params.stringify_keys)
 
         expect(response_json_download['total_count']).to eq(downloads.count)

@@ -14,6 +14,7 @@ RSpec.describe 'Spaces', type: :request do
   #   ＋Acceptヘッダ: HTMLが含まれる, JSONが含まれる
   describe 'GET #show' do
     subject { get space_path(code: space.code, format: subject_format), headers: auth_headers.merge(accept_headers) }
+
     let_it_be(:created_user) { FactoryBot.create(:user) }
 
     # テスト内容
@@ -44,7 +45,7 @@ RSpec.describe 'Spaces', type: :request do
       let(:accept_headers) { ACCEPT_INC_JSON }
       it 'HTTPステータスが200。対象項目が一致する' do
         is_expected.to eq(200)
-        expect(response_json['success']).to eq(true)
+        expect(response_json['success']).to be(true)
 
         count = expect_space_json(response_json_space, space, user_power, member_count)
         expect(response_json_space.count).to eq(count)

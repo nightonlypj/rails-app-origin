@@ -15,10 +15,10 @@ RSpec.describe 'Members', type: :request do
   #   ＋Acceptヘッダ: HTMLが含まれる, JSONが含まれる
   describe 'POST #destroy' do
     subject { post destroy_member_path(space_code: space.code, format: subject_format), params:, headers: auth_headers.merge(accept_headers) }
+
     let_it_be(:created_user)  { FactoryBot.create(:user) }
     let_it_be(:destroy_user)  { FactoryBot.create(:user) }
     let_it_be(:member_nojoin) { FactoryBot.create(:member) }
-
     shared_context 'valid_condition' do |format_html|
       let_it_be(:space) { FactoryBot.create(:space, :public, created_user:) }
       let_it_be(:member_destroy) { FactoryBot.create(:member, :admin, space:, user: destroy_user) }
@@ -71,7 +71,7 @@ RSpec.describe 'Members', type: :request do
     end
     shared_examples_for 'NG' do
       it 'メンバーが削除されない' do
-        expect { subject }.to change(Member, :count).by(0)
+        expect { subject }.not_to change(Member, :count)
       end
     end
 
@@ -87,7 +87,7 @@ RSpec.describe 'Members', type: :request do
       let(:accept_headers) { ACCEPT_INC_JSON }
       it 'HTTPステータスが200。対象項目が一致する' do
         is_expected.to eq(200)
-        expect(response_json['success']).to eq(true)
+        expect(response_json['success']).to be(true)
         expect(response_json['notice']).to eq(get_locale("notice.member.#{notice_key}", count: input_count, destroy_count:))
         expect(response_json['count']).to eq(input_count)
         expect(response_json['destroy_count']).to eq(destroy_count)

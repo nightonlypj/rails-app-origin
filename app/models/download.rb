@@ -16,7 +16,7 @@ class Download < ApplicationRecord
   validate :validate_output_items
 
   scope :search, ->(id) { where(id:) if id.present? }
-  scope :destroy_target, lambda {
+  scope :destroy_target, -> {
     schedule_date = Time.current - Settings.download_destroy_schedule_days.days
     where(completed_at: ..schedule_date)
       .or(where(completed_at: nil, requested_at: ..schedule_date))

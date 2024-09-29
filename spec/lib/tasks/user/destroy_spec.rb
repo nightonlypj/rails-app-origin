@@ -54,11 +54,11 @@ RSpec.describe :user, type: :task do
         expect(Infomation.exists?(id: infomations)).to be(false)
 
         expect(Member.count).to eq(before_member_count - members.count)
-        expect(Member.exists?(id: members)).to eq(false)
+        expect(Member.exists?(id: members)).to be(false)
         expect(Download.count).to eq(before_download_count - downloads.count)
-        expect(Download.exists?(id: downloads)).to eq(false)
+        expect(Download.exists?(id: downloads)).to be(false)
         expect(DownloadFile.count).to eq(before_download_file_count - download_files.count)
-        expect(DownloadFile.exists?(id: download_files)).to eq(false)
+        expect(DownloadFile.exists?(id: download_files)).to be(false)
         expect(Space.count).to eq(before_space_count)
       end
     end

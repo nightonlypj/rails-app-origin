@@ -22,7 +22,7 @@ RSpec.describe 'Users::Auth::Registrations', type: :request do
       let(:accept_headers) { ACCEPT_INC_JSON }
       it 'HTTPステータスが200。対象項目が一致する' do
         is_expected.to eq(200)
-        expect(response_json['success']).to eq(true)
+        expect(response_json['success']).to be(true)
 
         if invitation.email.present?
           expect(response_json_invitation['email']).to eq(invitation.email)
@@ -98,12 +98,15 @@ RSpec.describe 'Users::Auth::Registrations', type: :request do
   #   対象: メールアドレス, ドメイン
   #   パラメータのメールアドレス/ドメイン: 招待と一致/含まれる, 不一致/含まれない
   describe 'POST #create' do
-    subject { post create_user_auth_registration_path(code: invitation.code, format: subject_format), params: attributes, headers: auth_headers.merge(accept_headers) }
+    subject { post create_user_auth_registration_path(code: invitation.code, format: subject_format), params: attributes, headers: }
+    let(:headers) { auth_headers.merge(accept_headers) }
+
     let_it_be(:new_user) { FactoryBot.attributes_for(:user, email: 'test@example.com') }
-    let_it_be(:valid_attributes_email)       { { name: new_user[:name], email: new_user[:email], password: new_user[:password], confirm_success_url: FRONT_SITE_URL } }
-    let_it_be(:valid_attributes_email_diff)  { { name: new_user[:name], email: 'test@diff.example.com', password: new_user[:password], confirm_success_url: FRONT_SITE_URL } }
-    let_it_be(:valid_attributes_domain)      { { name: new_user[:name], email_local: 'test', email_domain: 'example.com', password: new_user[:password], confirm_success_url: FRONT_SITE_URL } }
-    let_it_be(:valid_attributes_domain_diff) { { name: new_user[:name], email_local: 'test', email_domain: 'diff.example.com', password: new_user[:password], confirm_success_url: FRONT_SITE_URL } }
+    let_it_be(:base_attributes) { { name: new_user[:name], password: new_user[:password], confirm_success_url: FRONT_SITE_URL } }
+    let_it_be(:valid_attributes_email)       { base_attributes.merge(email: new_user[:email]) }
+    let_it_be(:valid_attributes_email_diff)  { base_attributes.merge(email: 'test@diff.example.com') }
+    let_it_be(:valid_attributes_domain)      { base_attributes.merge(email_local: 'test', email_domain: 'example.com') }
+    let_it_be(:valid_attributes_domain_diff) { base_attributes.merge(email_local: 'test', email_domain: 'diff.example.com') }
     before_all { FactoryBot.create(:invitation, :active, :email, created_user:) } # NOTE: 対象外
 
     include_context '未ログイン処理'
@@ -156,7 +159,7 @@ RSpec.describe 'Users::Auth::Registrations', type: :request do
       let(:subject_format) { :json }
       let(:accept_headers) { ACCEPT_INC_JSON }
       it '作成されない。メールが送信されない' do
-        expect { subject }.to change(User, :count).by(0) && change(ActionMailer::Base.deliveries, :count).by(0) && change(Member, :count).by(0)
+        expect { subject }.not_to change(User, :count) && change(ActionMailer::Base.deliveries, :count) && change(Member, :count)
       end
     end
 

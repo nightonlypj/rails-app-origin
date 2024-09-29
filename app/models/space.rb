@@ -22,7 +22,7 @@ class Space < ApplicationRecord
     errors.add(:name, :taken) if Space.by_target(current_user, checked).where(name:).exists?
   end
 
-  scope :by_target, lambda { |current_user, checked|
+  scope :by_target, ->(current_user, checked) {
     return none if (!checked[:public] && !checked[:private]) || (!checked[:join] && !checked[:nojoin]) || (!checked[:active] && !checked[:destroy])
 
     if checked[:public] && checked[:private] && current_user.present?
@@ -48,7 +48,7 @@ class Space < ApplicationRecord
 
     space.distinct
   }
-  scope :search, lambda { |text|
+  scope :search, ->(text) {
     return if text&.strip.blank?
 
     sql = "name #{search_like} ? OR description #{search_like} ?"

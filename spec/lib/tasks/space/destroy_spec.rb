@@ -46,15 +46,15 @@ RSpec.describe :space, type: :task do
       it '削除される（ユーザー除く）' do
         subject
         expect(Space.count).to eq(before_space_count - spaces.count)
-        expect(Space.exists?(id: spaces)).to eq(false)
+        expect(Space.exists?(id: spaces)).to be(false)
         expect(Member.count).to eq(before_member_count - members.count)
-        expect(Member.exists?(id: members)).to eq(false)
+        expect(Member.exists?(id: members)).to be(false)
         expect(Download.count).to eq(before_download_count - downloads.count)
-        expect(Download.exists?(id: downloads)).to eq(false)
+        expect(Download.exists?(id: downloads)).to be(false)
         expect(DownloadFile.count).to eq(before_download_file_count - download_files.count)
-        expect(DownloadFile.exists?(id: download_files)).to eq(false)
+        expect(DownloadFile.exists?(id: download_files)).to be(false)
         expect(Invitation.count).to eq(before_invitation_count - invitations.count)
-        expect(Invitation.exists?(id: invitations)).to eq(false)
+        expect(Invitation.exists?(id: invitations)).to be(false)
         expect(User.count).to eq(before_user_count)
       end
     end

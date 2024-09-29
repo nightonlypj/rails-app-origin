@@ -14,8 +14,8 @@ RSpec.describe 'Spaces', type: :request do
   #   ＋Acceptヘッダ: HTMLが含まれる, JSONが含まれる
   describe 'POST #destroy' do
     subject { post destroy_space_path(code: space.code, format: subject_format), headers: auth_headers.merge(accept_headers) }
-    let_it_be(:created_user) { FactoryBot.create(:user) }
 
+    let_it_be(:created_user) { FactoryBot.create(:user) }
     shared_context 'valid_condition' do
       let_it_be(:space) { FactoryBot.create(:space, :public, created_user:) }
       before_all { FactoryBot.create(:member, :admin, space:, user:) if user.present? }
@@ -51,7 +51,7 @@ RSpec.describe 'Spaces', type: :request do
       let(:accept_headers) { ACCEPT_INC_JSON }
       it 'HTTPステータスが200。対象項目が一致する' do
         is_expected.to eq(200)
-        expect(response_json['success']).to eq(true)
+        expect(response_json['success']).to be(true)
         expect(response_json['notice']).to eq(get_locale('notice.space.destroy'))
 
         count = expect_space_json(response_json_space, current_space, :admin, 1)

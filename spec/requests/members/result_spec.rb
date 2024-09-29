@@ -13,8 +13,8 @@ RSpec.describe 'Members', type: :request do
   #   ＋Acceptヘッダ: HTMLが含まれる, JSONが含まれる
   describe 'GET #result' do
     subject { get result_member_path(space_code: space.code, format: subject_format), headers: auth_headers.merge(accept_headers) }
-    let_it_be(:created_user) { FactoryBot.create(:user) }
 
+    let_it_be(:created_user) { FactoryBot.create(:user) }
     shared_context 'valid_condition' do
       let_it_be(:space) { FactoryBot.create(:space, :public, created_user:) }
       before_all { FactoryBot.create(:member, space:, user:) if user.present? }
@@ -33,21 +33,21 @@ RSpec.describe 'Members', type: :request do
 
     # テスト内容
     shared_examples_for 'ToOK(html/*)' do
-      let(:power) { :admin }
-      before do
-        allow_any_instance_of(MembersController).to receive(:flash).and_return(
-          { emails:, exist_user_mails:, create_user_mails:, power: }
-        )
-      end
+      before { allow_any_instance_of(MembersController).to receive(:flash).and_return(emails:, exist_user_mails:, create_user_mails:, power: :admin) }
       it 'HTTPステータスが200。対象項目が含まれる' do
         is_expected.to eq(200)
         expect_space_html(response, space)
 
-        expect(response.body).to include(I18n.t("%{total}名中（#{emails.count <= 1 ? '単数' : '複数'}）", total: emails.count))
-        expect(response.body).to include("#{I18n.t('招待')}: #{I18n.t("%{total}名（#{create_user_mails.count <= 1 ? '単数' : '複数'}）", total: create_user_mails.count)}")
-        expect(response.body).to include("#{I18n.t('参加中')}: #{I18n.t("%{total}名（#{exist_user_mails.count <= 1 ? '単数' : '複数'}）", total: exist_user_mails.count)}")
         notfound_count = emails.count - create_user_mails.count - exist_user_mails.count
-        expect(response.body).to include("#{I18n.t('未登録')}: #{I18n.t("%{total}名（#{notfound_count <= 1 ? '単数' : '複数'}）", total: notfound_count)}")
+        expect_texts = [
+          I18n.t("%{total}名中（#{emails.count <= 1 ? '単数' : '複数'}）", total: emails.count),
+          "#{I18n.t('招待')}: #{I18n.t("%{total}名（#{create_user_mails.count <= 1 ? '単数' : '複数'}）", total: create_user_mails.count)}",
+          "#{I18n.t('参加中')}: #{I18n.t("%{total}名（#{exist_user_mails.count <= 1 ? '単数' : '複数'}）", total: exist_user_mails.count)}",
+          "#{I18n.t('未登録')}: #{I18n.t("%{total}名（#{notfound_count <= 1 ? '単数' : '複数'}）", total: notfound_count)}"
+        ]
+        expect_texts.each do |expect_text|
+          expect(response.body).to include(expect_text)
+        end
 
         emails.each do |email|
           expect(response.body).to include(email)

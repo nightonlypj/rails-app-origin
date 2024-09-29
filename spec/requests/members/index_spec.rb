@@ -85,7 +85,7 @@ RSpec.describe 'Members', type: :request do
       let(:accept_headers) { ACCEPT_INC_JSON }
       it 'HTTPステータスが200。対象項目が一致する' do
         is_expected.to eq(200)
-        expect(response_json['success']).to eq(true)
+        expect(response_json['success']).to be(true)
         expect(response_json['search_params']).to eq(default_params.stringify_keys)
 
         expect(response_json_space['code']).to eq(space.code)
@@ -406,6 +406,7 @@ RSpec.describe 'Members', type: :request do
   #   部分一致（大文字・小文字を区別しない）, 不一致: 氏名, メールアドレス（管理者のみ表示）
   describe 'GET #index (.search)' do
     subject { get members_path(space_code: space.code, format: subject_format), params:, headers: auth_headers.merge(accept_headers) }
+
     let_it_be(:space)             { FactoryBot.create(:space, created_user:) }
     let_it_be(:member_all)        { FactoryBot.create(:member, space:, user: FactoryBot.create(:user, name: '氏名(Aaa)')) }
     let_it_be(:member_admin_only) { FactoryBot.create(:member, space:, user: FactoryBot.create(:user, email: '_Aaa@example.com')) }
@@ -480,6 +481,7 @@ RSpec.describe 'Members', type: :request do
   #   権限: 管理者, 投稿者, 閲覧者 の組み合わせ
   describe 'GET #index (.power)' do
     subject { get members_path(space_code: space.code, format: subject_format), params:, headers: auth_headers.merge(accept_headers) }
+
     let_it_be(:space)         { FactoryBot.create(:space, created_user:) }
     let_it_be(:member_reader) { FactoryBot.create(:member, :reader, space:) }
     let_it_be(:member_writer) { FactoryBot.create(:member, :writer, space:) }
@@ -588,6 +590,7 @@ RSpec.describe 'Members', type: :request do
   #   状態: 有効, 削除予定 の組み合わせ
   describe 'GET #index (.by_target)' do
     subject { get members_path(space_code: space.code, format: subject_format), params:, headers: auth_headers.merge(accept_headers) }
+
     let_it_be(:space) { FactoryBot.create(:space, created_user:) }
     let_it_be(:member_destroy_reserved) { FactoryBot.create(:member, space:, user: FactoryBot.create(:user, :destroy_reserved)) }
 
@@ -641,6 +644,7 @@ RSpec.describe 'Members', type: :request do
   #   並び順: ASC, DESC  ※ASCは1つのみ確認
   describe 'GET #index (.order)' do
     subject { get members_path(space_code: space.code, format: :json), params:, headers: auth_headers.merge(ACCEPT_INC_JSON) }
+
     include_context 'APIログイン処理'
     let_it_be(:space) { FactoryBot.create(:space, created_user:) }
     let_it_be(:members) do

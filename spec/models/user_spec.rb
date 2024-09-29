@@ -171,13 +171,11 @@ RSpec.describe User, type: :model do
   #   お知らせ確認最終開始日時: ない, 過去, 現在
   #   お知らせ対象: 0件, 1件（全員）, 1件（自分）, 2件（全員＋自分）
   describe '#infomation_unread_count' do
-    subject do
-      user.cache_infomation_unread_count = nil
-      user.infomation_unread_count
-    end
+    subject { user.infomation_unread_count }
+    before { user.cache_infomation_unread_count = nil }
+    let(:cache) { user.cache_infomation_unread_count }
 
     # テストケース
-    let(:cache) { user.cache_infomation_unread_count }
     shared_examples_for '[*]0件' do
       include_context 'お知らせ一覧作成', 0, 0, 0, 0
       it_behaves_like 'Count', 0
@@ -234,27 +232,26 @@ RSpec.describe User, type: :model do
   # テストパターン
   #   ダウンロード対象: 0件, 1件, 2件
   describe '#undownloaded_count' do
-    subject do
-      current_user.cache_undownloaded_count = nil
-      current_user.undownloaded_count
-    end
-    let_it_be(:current_user) { FactoryBot.create(:user) }
+    subject { user.undownloaded_count }
+    before { user.cache_undownloaded_count = nil }
+    let(:cache) { user.cache_undownloaded_count }
+
+    let_it_be(:user) { FactoryBot.create(:user) }
     before_all do
       FactoryBot.create(:download, :success) # 他人
-      FactoryBot.create(:download, :downloaded, user: current_user) # ダウンロード済み
+      FactoryBot.create(:download, :downloaded, user:) # ダウンロード済み
     end
 
     # テストケース
-    let(:cache) { current_user.cache_undownloaded_count }
     context '0件' do
       it_behaves_like 'Count', 0
     end
     context '1件' do
-      before_all { FactoryBot.create(:download, :success, user: current_user) }
+      before_all { FactoryBot.create(:download, :success, user:) }
       it_behaves_like 'Count', 1
     end
     context '2件' do
-      before_all { FactoryBot.create_list(:download, 2, :success, user: current_user) }
+      before_all { FactoryBot.create_list(:download, 2, :success, user:) }
       it_behaves_like 'Count', 2
     end
   end

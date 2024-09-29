@@ -39,7 +39,7 @@ class Member < ApplicationRecord
     result
   end
 
-  scope :search, lambda { |text, current_member|
+  scope :search, ->(text, current_member) {
     return if text&.strip.blank?
 
     sql = "users.name #{search_like} ?"
@@ -57,13 +57,13 @@ class Member < ApplicationRecord
 
     member
   }
-  scope :by_power, lambda { |power|
+  scope :by_power, ->(power) {
     return none if power.count == 0
     return if power.count >= Member.powers.count
 
     where(power:)
   }
-  scope :by_target, lambda { |checked|
+  scope :by_target, ->(checked) {
     return none if !checked[:active] && !checked[:destroy]
 
     if checked[:active] && !checked[:destroy]

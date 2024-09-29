@@ -58,7 +58,7 @@ RSpec.describe 'Spaces', type: :request do
       let(:accept_headers) { ACCEPT_INC_JSON }
       it 'HTTPステータスが200。対象項目が一致する' do
         is_expected.to eq(200)
-        expect(response_json['success']).to eq(true)
+        expect(response_json['success']).to be(true)
         expect(response_json['search_params']).to eq(default_params.stringify_keys)
 
         expect(response_json_space['total_count']).to eq(spaces.count)
@@ -344,6 +344,7 @@ RSpec.describe 'Spaces', type: :request do
   #   部分一致（大文字・小文字を区別しない）, 不一致: 名称, 説明
   describe 'GET #index (.search)' do
     subject { get spaces_path(format: subject_format), params:, headers: auth_headers.merge(accept_headers) }
+
     let_it_be(:created_user) { FactoryBot.create(:user) }
     let_it_be(:nojoin_space) { FactoryBot.create(:space, :public, name: 'space(Aaa)', description: 'description(Bbb)', created_user:) }
     let_it_be(:join_space)   { FactoryBot.create(:space, :public, name: 'space(Bbb)', description: 'description(Aaa)', created_user:) }

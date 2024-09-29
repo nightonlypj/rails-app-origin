@@ -14,9 +14,9 @@ RSpec.describe 'Members', type: :request do
   #   ＋Acceptヘッダ: HTMLが含まれる, JSONが含まれる
   describe 'GET #show' do
     subject { get member_path(space_code: space.code, user_code: show_user.code, format: subject_format), headers: auth_headers.merge(accept_headers) }
+
     let_it_be(:created_user) { FactoryBot.create(:user) }
     let_it_be(:other_user)   { FactoryBot.create(:user) }
-
     shared_context 'valid_condition' do
       let_it_be(:space)     { FactoryBot.create(:space, :public, created_user:) }
       let_it_be(:show_user) { other_user }
@@ -29,7 +29,7 @@ RSpec.describe 'Members', type: :request do
       let(:accept_headers) { ACCEPT_INC_JSON }
       it 'HTTPステータスが200。対象項目が一致する' do
         is_expected.to eq(200)
-        expect(response_json['success']).to eq(true)
+        expect(response_json['success']).to be(true)
 
         count = expect_member_json(response_json_member, member, user_power)
         expect(response_json_member.count).to eq(count)
