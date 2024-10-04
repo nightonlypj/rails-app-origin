@@ -6,7 +6,7 @@ class InfomationsController < ApplicationAuthController
   # GET /infomations お知らせ一覧
   # GET /infomations(.json) お知らせ一覧API
   def index
-    @infomations = Infomation.by_target(current_user).order(started_at: :desc, id: :desc)
+    @infomations = Infomation.by_locale(I18n.locale).by_target(current_user).order(started_at: :desc, id: :desc)
                              .page(params[:page]).per(Settings.default_infomations_limit)
     update_infomation_check
 
@@ -32,6 +32,7 @@ class InfomationsController < ApplicationAuthController
   # お知らせ確認情報更新
   def update_infomation_check
     return if current_user.blank? || @infomations.blank? || @infomations.current_page != 1
+    return if current_user.infomation_check_last_started_at.present? && current_user.infomation_check_last_started_at >= @infomations.first.started_at
 
     current_user.infomation_check_last_started_at = @infomations.first.started_at
     current_user.save!

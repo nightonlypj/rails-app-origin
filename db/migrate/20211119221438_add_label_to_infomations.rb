@@ -5,6 +5,6 @@ class AddLabelToInfomations < ActiveRecord::Migration[6.1]
     add_column :infomations, :force_started_at, :datetime, comment: '強制表示開始日時'
     add_column :infomations, :force_ended_at,   :datetime, comment: '強制表示終了日時'
 
-    add_index :infomations, [:force_started_at, :force_ended_at], name: 'index_infomations4'
+    add_index :infomations, %i[force_started_at force_ended_at], name: 'index_infomations4'
   end
 end

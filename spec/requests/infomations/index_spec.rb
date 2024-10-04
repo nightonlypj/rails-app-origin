@@ -29,7 +29,7 @@ RSpec.describe 'Infomations', type: :request do
       let(:accept_headers) { ACCEPT_INC_JSON }
       it 'HTTPステータスが200。対象項目が一致する' do
         is_expected.to eq(200)
-        expect(response_json['success']).to eq(true)
+        expect(response_json['success']).to be(true)
 
         expect(response_json_infomation['total_count']).to eq(infomations.count)
         expect(response_json_infomation['current_page']).to eq(subject_page)
@@ -68,7 +68,7 @@ RSpec.describe 'Infomations', type: :request do
       let(:subject_page) { 1 }
       it '存在しないメッセージが含まれる' do
         subject
-        expect(response.body).to include('お知らせはありません。')
+        expect(response.body).to include(I18n.t('%{name}はありません。', name: I18n.t('お知らせ')))
       end
     end
     shared_examples_for 'リスト表示' do |page|

@@ -14,7 +14,7 @@ RSpec.describe DeviseMailer, type: :mailer do
   # 前提条件
   #   未ロック
   describe '#reset_password_instructions' do
-    let(:mail) { DeviseMailer.reset_password_instructions(admin_user, token) }
+    subject(:mail) { described_class.reset_password_instructions(admin_user, token) }
     let(:mail_subject) { 'devise.mailer.reset_password_instructions.admin_user_subject' }
     let_it_be(:admin_user) { FactoryBot.build_stubbed(:admin_user) }
     let(:token) { Devise.token_generator.digest(self, :reset_password_token, SecureRandom.uuid) }
@@ -31,7 +31,7 @@ RSpec.describe DeviseMailer, type: :mailer do
   # 前提条件
   #   ロック中
   describe '#unlock_instructions' do
-    let(:mail) { DeviseMailer.unlock_instructions(admin_user, token) }
+    subject(:mail) { described_class.unlock_instructions(admin_user, token) }
     let(:mail_subject) { 'devise.mailer.unlock_instructions.admin_user_subject' }
     let_it_be(:admin_user) { FactoryBot.build_stubbed(:admin_user, :locked) }
     let(:token) { Devise.token_generator.digest(self, :unlock_token, SecureRandom.uuid) }
@@ -46,7 +46,7 @@ RSpec.describe DeviseMailer, type: :mailer do
 
   # パスワード変更完了のお知らせ
   describe '#password_change' do
-    let(:mail) { DeviseMailer.password_change(admin_user) }
+    subject(:mail) { described_class.password_change(admin_user) }
     let(:mail_subject) { 'devise.mailer.password_change.admin_user_subject' }
     let_it_be(:admin_user) { FactoryBot.build_stubbed(:admin_user) }
 

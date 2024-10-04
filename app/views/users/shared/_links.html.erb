@@ -1,26 +1,24 @@
 <% unless user_signed_in? %>
-<nav>
-  <ul class="mt-2 mb-0">
+<nav class="mt-2 mb-0">
 <% if action != 'sign_in' %>
-    <li><%= link_to 'ログイン', new_user_session_path %></li>
+  <%= link_to t('ログイン'), new_user_session_path %><br>
 <% end %>
 <% if devise_mapping.registerable? && action != 'sign_up' %>
-    <li><%= link_to 'アカウント登録', new_user_registration_path %></li>
+  <%= link_to t('アカウント登録'), new_user_registration_path %><br>
 <% end %>
 <% if devise_mapping.recoverable? && action != 'password' %>
-    <li><%= link_to 'パスワード再設定', new_user_password_path %></li>
+  <%= link_to t('パスワード再設定'), new_user_password_path %><br>
 <% end %>
 <% if devise_mapping.confirmable? && action != 'confirmation' %>
-    <li><%= link_to 'メールアドレス確認', new_user_confirmation_path %></li>
+  <%= link_to t('メールアドレス確認'), new_user_confirmation_path %><br>
 <% end %>
 <% if devise_mapping.lockable? && resource_class.unlock_strategy_enabled?(:email) && action != 'unlocks' %>
-    <li><%= link_to 'アカウントロック解除', new_user_unlock_path %></li>
+  <%= link_to t('アカウントロック解除'), new_user_unlock_path %><br>
 <% end %>
 <% if devise_mapping.omniauthable? %>
 <% resource_class.omniauth_providers.each do |provider| %>
-    <li><%= link_to "Sign in with #{OmniAuth::Utils.camelize(provider)}", omniauth_authorize_path(resource_name, provider) %></li>
+  <%= link_to "Sign in with #{OmniAuth::Utils.camelize(provider)}", omniauth_authorize_path(resource_name, provider) %><br>
 <% end %>
 <% end %>
-  </ul>
 </nav>
 <% end %>

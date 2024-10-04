@@ -14,7 +14,7 @@
  *= require_self
  */
 
- /* NOTE: MDB5 3.1.0 バグ対応 */
+/* NOTE: MDB5 3.1.0 バグ対応 */
 .form-check .form-check-input {
     margin-left: -1.5em !important;
 }
@@ -31,4 +31,13 @@
 .accordion-button:focus {
     /* border-color: #1266f1; */
     border-color: transparent;
+}
+
+.btn {
+    text-transform: none !important; /* NOTE: 大文字表示になる為 */
+    font-weight: 400; /* NOTE: 500から変更 */
+}
+.nav-tabs .nav-link {
+    text-transform: none !important; /* NOTE: 大文字表示になる為 */
+    font-size: 14px; /* NOTE: 12pxから変更 */
 }

@@ -10,7 +10,7 @@ RSpec.describe :all, type: :task do
     # テスト内容
     shared_examples_for 'OK' do
       it '正常終了' do
-        subject
+        expect { subject }.not_to raise_error
       end
     end
 

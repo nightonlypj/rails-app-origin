@@ -14,9 +14,9 @@ RSpec.describe InfomationsController, type: :routing do
       expect(get: '/infomations/1').to route_to('infomations#show', id: '1')
       expect(get: '/infomations/1.json').to route_to('infomations#show', id: '1', format: 'json')
     end
-    it 'routes to #new' do
-      # expect(get: '/infomations/new').not_to be_routable # NOTE: infomations#show
-    end
+    # it 'routes to #new' do
+    #   expect(get: '/infomations/new').not_to be_routable # NOTE: infomations#show
+    # end
     it 'routes to #edit' do
       expect(get: '/infomations/1/edit').not_to be_routable
     end

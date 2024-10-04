@@ -5,9 +5,20 @@ class Users::SessionsController < Devise::SessionsController
   prepend_before_action :response_not_found_for_api_mode_not_api
 
   # GET /users/sign_in ログイン
-  # def new
-  #   super
-  # end
+  def new
+    # NOTE: createでvalidateエラーになると、メッセージがデフォルト言語に書き変わってしまう為
+    if flash[:alert].present? && I18n.locale != I18n.default_locale
+      t('devise.failure', locale: I18n.default_locale).each do |key, message|
+        next if flash[:alert] != message
+
+        flash[:alert] = t("devise.failure.#{key}", locale: I18n.locale)
+        logger.debug("flash[:alert]: #{message} -> #{flash[:alert]}")
+        break
+      end
+    end
+
+    super
+  end
 
   # POST /users/sign_in ログイン(処理)
   # def create

@@ -61,7 +61,7 @@ RSpec.describe 'Users::Auth::Registrations', type: :request do
       let(:subject_format) { :json }
       let(:accept_headers) { ACCEPT_INC_JSON }
       it '作成されない。メールが送信されない' do
-        expect { subject }.to change(User, :count).by(0) && change(ActionMailer::Base.deliveries, :count).by(0)
+        expect { subject }.not_to change(User, :count) && change(ActionMailer::Base.deliveries, :count)
       end
     end
 
@@ -230,7 +230,7 @@ RSpec.describe 'Users::Auth::Registrations', type: :request do
       let(:response_json_user) { response_json['user'] }
       it 'HTTPステータスが200。対象項目が一致する。認証ヘッダがある' do
         is_expected.to eq(200)
-        expect(response_json['success']).to eq(true)
+        expect(response_json['success']).to be(true)
 
         count = expect_user_json(response_json_user, current_user, { email: true })
         expect(response_json_user['provider']).to eq(current_user.provider)
@@ -839,7 +839,7 @@ RSpec.describe 'Users::Auth::Registrations', type: :request do
       let(:subject_format) { :json }
       let(:accept_headers) { ACCEPT_INC_JSON }
       # it '削除されない' do
-      #   expect { subject }.to change(User, :count).by(0)
+      #   expect { subject }.not_to change(User, :count)
       # end
       it '削除依頼日時・削除予定日時が変更されない。メールが送信されない' do
         subject

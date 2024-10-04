@@ -1,7 +1,7 @@
 # Ruby on Railsベースアプリケーション
 
 運営元が情報提供して1つのサービスを作る（BtoC向け）  
-(Ruby 3.2.2, Rails 7.0)
+(Ruby 3.3.4, Rails 7.1.3.4)
 
 ## コマンドメモ
 
@@ -82,9 +82,13 @@ $ docker compose up
 ```
 $ cp -a config/settings/development.yml,local config/settings/development.yml
 
+※初回のみ /config/credentials.yml.encとmaster.keyが作成される。環境により変えた方が良い。
+$ rails credentials:edit
+
 $ docker compose run app rails db:create
 $ docker compose run app rails db:migrate
 $ docker compose run app rails db:seed
+または $ docker compose run app rails db:create db:migrate db:seed
 ```
 
 - http://localhost:3000
@@ -128,7 +132,7 @@ $ brew doctor
 Your system is ready to brew.
 
 $ brew -v
-Homebrew 4.1.20
+Homebrew 4.3.21
 ※バージョンは異なっても良い
 ```
 
@@ -139,7 +143,7 @@ $ brew install imagemagick
 （$ brew upgrade imagemagick）
 
 $ magick -version
-Version: ImageMagick 7.1.1-21 Q16-HDRI aarch64 21667 https://imagemagick.org
+Version: ImageMagick 7.1.1-38 Q16-HDRI aarch64 22398 https://imagemagick.org
 ※バージョンは異なっても良い
 ```
 
@@ -150,7 +154,7 @@ $ brew install graphviz
 （$ brew upgrade graphviz）
 
 $ dot -V
-dot - graphviz version 9.0.0 (20230911.1827)
+dot - graphviz version 12.1.1 (20240910.0053)
 ※バージョンは異なっても良い
 ```
 
@@ -174,20 +178,20 @@ rvm 1.29.12 (latest) by Michal Papis, Piotr Kuczynski, Wayne E. Seguin [https://
 https://github.com/rbenv/homebrew-tap/issues/9#issuecomment-1683015411
 ```
 $ brew install openssl@3
+（$ brew upgrade openssl@3）
 
 ※ターミナルを開き直して、
 $ openssl version
-OpenSSL 3.1.4 24 Oct 2023 (Library: OpenSSL 3.1.4 24 Oct 2023)
+OpenSSL 3.3.2 3 Sep 2024 (Library: OpenSSL 3.3.2 3 Sep 2024)
 
-$ rvm install 3.2.2 --with-openssl-dir=$(brew --prefix openssl@3)
-（$ rvm --default use 3.2.2）
+$ rvm install 3.3.4 --with-openssl-dir=$(brew --prefix openssl@3)
+（$ rvm --default use 3.3.4）
 
 $ ruby -v
-ruby 3.2.2 (2023-03-30 revision e51014f9c0) [arm64-darwin22]
+ruby 3.3.4 (2024-07-09 revision be1089c8ec) [arm64-darwin22]
 
 $ rvm list
-   ruby-3.1.4 [ arm64 ]
-=* ruby-3.2.2 [ arm64 ]
+=* ruby-3.3.4 [ arm64 ]
 ```
 
 ### MariaDB or MySQLインストール
@@ -324,6 +328,9 @@ $ cp -a config/settings/development.yml,local config/settings/development.yml
 $ bundle install
 （$ bundle update）
 Bundle complete!
+
+※初回のみ /config/credentials.yml.encとmaster.keyが作成される。環境により変えた方が良い。
+$ rails credentials:edit
 
 $ rails db:create
 $ rails db:migrate

@@ -1,9 +1,9 @@
 <% content_for(:html_title) { 'ログアウト' } %>
 
 <div class="card card-body mb-2" style="max-width: 640px">
-  <h5 class="card-title mb-3">ログアウトします。よろしいですか？</h5>
+  <h5 class="card-title mb-3"><%= t('ログアウト確認メッセージ') %></h5>
   <div class="card-text d-flex">
-    <%= link_to 'トップページ', root_path, class: 'btn btn-light' %>
-    <%= button_to 'はい（ログアウト）', destroy_user_session_path, method: :post, class: 'btn btn-primary ms-2' %>
+    <%= link_to t('いいえ（トップページ）'), root_path, class: 'btn btn-light' %>
+    <%= button_to t('はい（ログアウト）'), destroy_user_session_path, method: :post, class: 'btn btn-primary ms-2' %>
   </div>
 </div>

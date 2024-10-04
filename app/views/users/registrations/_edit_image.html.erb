@@ -9,6 +9,6 @@
     <%= render '/users/shared/field_error_messages', messages: resource.errors[:image] %>
   </div>
 
-  <%= form.submit 'アップロード', class: "btn btn-primary mb-3" %>
+  <%= form.submit t('アップロード'), class: "btn btn-primary mb-3" %>
 <% end %>
-<%= button_to '画像削除', delete_user_image_registration_path, data: { confirm: '本当に削除しますか？' }, method: :post, class: 'btn btn-warning mb-4', disabled: !current_user.image? %>
+<%= button_to t('画像削除'), delete_user_image_registration_path, data: { turbo_confirm: t('画像削除確認メッセージ') }, method: :post, class: 'btn btn-warning mb-4', disabled: !current_user.image? %>

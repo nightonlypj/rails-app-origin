@@ -30,6 +30,6 @@ class CreateVersions < ActiveRecord::Migration[6.0]
       #
       t.datetime :created_at
     end
-    add_index :versions, [:item_type, :item_id], name: 'index_versions1'
+    add_index :versions, %i[item_type item_id], name: 'index_versions1'
   end
 end

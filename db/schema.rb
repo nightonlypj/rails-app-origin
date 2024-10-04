@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_11_19_025521) do
+ActiveRecord::Schema[7.1].define(version: 2024_02_04_130621) do
   create_table "admin_users", charset: "utf8mb4", collation: "utf8mb4_general_ci", comment: "管理者", force: :cascade do |t|
     t.string "name", null: false, comment: "氏名"
     t.string "email", default: "", null: false, comment: "メールアドレス"
@@ -74,7 +74,9 @@ ActiveRecord::Schema[7.0].define(version: 2023_11_19_025521) do
     t.integer "label", default: 0, null: false, comment: "ラベル"
     t.datetime "force_started_at", precision: nil, comment: "強制表示開始日時"
     t.datetime "force_ended_at", precision: nil, comment: "強制表示終了日時"
+    t.string "locale", comment: "地域"
     t.index ["force_started_at", "force_ended_at"], name: "index_infomations4"
+    t.index ["locale"], name: "index_infomations5"
     t.index ["started_at", "ended_at"], name: "index_infomations2"
     t.index ["started_at", "id"], name: "index_infomations1"
     t.index ["target", "user_id"], name: "index_infomations3"

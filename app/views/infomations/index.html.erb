@@ -1,7 +1,7 @@
-<% content_for(:html_title) { 'お知らせ' } %>
+<% content_for(:html_title) { t('お知らせ') } %>
 
 <div class="card card-body mb-2">
-  <h5 class="card-title mb-3">お知らせ</h5>
+  <h5 class="card-title mb-3"><%= t('お知らせ') %></h5>
   <div class="card-text">
 <% if @infomations.present? %>
     <div class="row">
@@ -19,7 +19,7 @@
     <hr/>
 <% if @infomations.blank? %>
     <article>
-      お知らせはありません。
+      <%= t('%{name}はありません。', name: t('お知らせ')) %>
       <hr/>
     </article>
 <% end %>

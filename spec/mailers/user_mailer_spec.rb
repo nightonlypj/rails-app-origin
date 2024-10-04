@@ -14,7 +14,7 @@ RSpec.describe UserMailer, type: :mailer do
   # 前提条件
   #   削除予約済み
   describe '#destroy_reserved' do
-    let(:mail) { UserMailer.with(user:).destroy_reserved }
+    subject(:mail) { described_class.with(user:).destroy_reserved }
     let(:mail_subject) { 'mailer.user.destroy_reserved.subject' }
     let_it_be(:user) { FactoryBot.create(:user, :destroy_reserved) }
     let(:url) { delete_undo_user_registration_url }
@@ -30,7 +30,7 @@ RSpec.describe UserMailer, type: :mailer do
   # 前提条件
   #   削除予約なし
   describe '#undo_destroy_reserved' do
-    let(:mail) { UserMailer.with(user:).undo_destroy_reserved }
+    subject(:mail) { described_class.with(user:).undo_destroy_reserved }
     let(:mail_subject) { 'mailer.user.undo_destroy_reserved.subject' }
     let_it_be(:user) { FactoryBot.create(:user) }
 
@@ -41,7 +41,7 @@ RSpec.describe UserMailer, type: :mailer do
   # 前提条件
   #   削除予約済み
   describe '#destroy_completed' do
-    let(:mail) { UserMailer.with(user:).destroy_completed }
+    subject(:mail) { described_class.with(user:).destroy_completed }
     let(:mail_subject) { 'mailer.user.destroy_completed.subject' }
     let_it_be(:user) { FactoryBot.create(:user, :destroy_reserved) }
 

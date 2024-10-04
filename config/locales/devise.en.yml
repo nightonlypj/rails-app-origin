@@ -1,0 +1,198 @@
+en:
+  activerecord:
+    models:
+      user: 'User'
+      admin_user: 'Administrator'
+    attributes:
+      user:
+        id: 'ID'
+        provider: 'Authentication method'
+        uid: 'UID'
+        tokens: 'Authentication token'
+        code: 'Code'
+        image: 'Image'
+        name: 'Name'
+        email: 'Email address'
+        password: 'Password'
+        password_confirmation: 'Password(Confirmation)'
+        current_password: 'Current password'
+        reset_password_token: 'Password reset token'
+        reset_password_sent_at: 'Password reset sending datetime'
+        allow_password_change: 'Resetting password'
+        remember_me: 'Stay logged in'
+        remember_created_at: 'Login status start datetime'
+        sign_in_count: 'Number of logins'
+        current_sign_in_at: 'Current login datetime'
+        last_sign_in_at: 'Last login datetime'
+        current_sign_in_ip: 'Current login IP address'
+        last_sign_in_ip: 'Last login IP address'
+        confirmation_token: 'Email address confirmation token'
+        confirmed_at: 'Email address confirmation datetime'
+        confirmation_sent_at: 'Email address confirmation sending datetime'
+        unconfirmed_email: 'Email address waiting for confirmation'
+        failed_attempts: 'Number of consecutive login failures'
+        unlock_token: 'Account unlock token'
+        locked_at: 'Account lock datetime'
+        destroy_requested_at: 'Deletion request datetime'
+        destroy_schedule_at: 'Scheduled deletion datetime'
+        infomation_check_last_started_at: 'Notice confirmation final start datetime'
+        created_at: 'Created datetime'
+        updated_at: 'Updated datetime'
+      admin_user:
+        id: 'ID'
+        name: 'Name'
+        email: 'Email address'
+        password: 'Password'
+        password_confirmation: 'Password(Confirmation)'
+        current_password: 'Current password'
+        reset_password_token: 'Password reset token'
+        reset_password_sent_at: 'Password reset sending datetime'
+        remember_me: 'Stay logged in'
+        remember_created_at: 'Login status start datetime'
+        sign_in_count: 'Number of logins'
+        current_sign_in_at: 'Current login datetime'
+        last_sign_in_at: 'Last login datetime'
+        current_sign_in_ip: 'Current login IP address'
+        last_sign_in_ip: 'Last login IP address'
+        confirmation_token: 'Email address confirmation token'
+        confirmed_at: 'Email address confirmation datetime'
+        confirmation_sent_at: 'Email address confirmation sending datetime'
+        unconfirmed_email: 'Email address waiting for confirmation'
+        failed_attempts: 'Number of consecutive login failures'
+        unlock_token: 'Account unlock token'
+        locked_at: 'Account lock datetime'
+        created_at: 'Created datetime'
+        updated_at: 'Updated datetime'
+    errors:
+      models:
+        user:
+          attributes:
+            code:
+              blank: 'Please contact us or start over.'
+              taken: 'Processing failed. Please wait a while and try again.'
+            name:
+              blank: 'Please enter.'
+              too_short: 'Please enter at least %{count} characters.'
+              too_long: 'Please enter no more than %{count} characters.'
+            image:
+              blank: 'Please select.'
+            email:
+              blank: 'Please enter.'
+              too_short: 'Please enter at least %{count} characters.'
+              too_long: 'Please enter no more than %{count} characters.'
+              invalid: 'Invalid format.'
+              taken: 'Already in use. If you do not know your password, please [Resetting a password].'
+            password:
+              blank: 'Please enter.'
+              too_short: 'Please enter at least %{count} characters.'
+              too_long: 'Please enter no more than %{count} characters.'
+            password_confirmation:
+              confirmation: 'Password does not match.' # '%{attribute}と一致しません。'
+            current_password:
+              blank: 'Please enter.'
+              invalid: 'Password is incorrect.'
+            reset_password_token:
+              blank: 'The URL is incorrect. Please start over.'
+              invalid: 'The URL is incorrect or has expired. Please start over.'
+            confirmation_token:
+              blank: 'The URL is incorrect. Please start over.'
+              invalid: 'The URL is incorrect or has expired. Please start over.'
+            unlock_token:
+              blank: 'The URL is incorrect. Please start over.'
+              invalid: 'The URL is incorrect or has been deleted. Please check if you can log in.'
+        admin_user:
+          attributes:
+            name:
+              blank: 'Please enter.'
+              too_short: 'Please enter at least %{count} characters.'
+              too_long: 'Please enter no more than %{count} characters.'
+            email:
+              blank: 'Please enter.'
+              too_short: 'Please enter at least %{count} characters.'
+              too_long: 'Please enter no more than %{count} characters.'
+              invalid: 'Invalid format.'
+              taken: 'Already in use. If you do not know your password, please [Resetting a password].'
+            password:
+              blank: 'Please enter.'
+              too_short: 'Please enter at least %{count} characters.'
+              too_long: 'Please enter no more than %{count} characters.'
+            password_confirmation:
+              confirmation: 'Password does not match.' # '%{attribute}と一致しません。'
+            current_password:
+              blank: 'Please enter.'
+              invalid: 'Password is incorrect.'
+            reset_password_token:
+              blank: 'The URL is incorrect. Please start over.'
+              invalid: 'The URL is incorrect or has expired. Please start over.'
+            confirmation_token:
+              blank: 'The URL is incorrect. Please start over.'
+              invalid: 'The URL is incorrect or has expired. Please start over.'
+            unlock_token:
+              blank: 'The URL is incorrect. Please start over.'
+              invalid: 'The URL is incorrect or has been deleted. Please check if you can log in.'
+  errors:
+    messages:
+      already_confirmed: 'Your email address has been confirmed.' # NOTE: 「ログインしてください。」は不要（ログイン中の場合もある為）
+      confirmation_period_expired: 'It has expired.'
+      expired: 'It has expired. Please start over.'
+      not_found: 'User not found.'
+      not_locked: 'Not locked.'
+      not_saved:
+        one:   'Please check your entries.'
+        other: 'Please check your entries.'
+  devise:
+    registrations:
+      signed_up: 'Registration has been completed.'
+      signed_up_but_unconfirmed: 'An email has been sent to confirm your email address. Please check your email.'
+      updated: 'User information has been changed.'
+      updated_but_not_signed_in: 'User information has been changed. Please log in again.'
+      update_needs_confirmation: 'Your user information change has been accepted. Please check your email.'
+      destroyed: 'I deleted my account. We look forward to seeing you again.'
+      destroy_reserved: 'Account deletion has been accepted. We look forward to seeing you again.'
+      undo_destroy_reserved: 'Account deletion has been canceled.'
+    confirmations:
+      send_instructions: 'An email to confirm your email address has been sent. Please check your email.'
+      send_paranoid_instructions: 'An email to confirm your email address has been sent. Please check your email.'
+      confirmed: 'Your email address has been confirmed.' # NOTE: 「ログインしてください。」は不要（ログイン中の場合もある為）
+    sessions:
+      signed_in: 'You are now logged.'
+      signed_out: 'Logged out.'
+      already_signed_out: 'You are already logged out.'
+    unlocks:
+      send_instructions: 'We have sent you an email to unlock your account. Please check your email.'
+      send_paranoid_instructions: 'We have sent you an email to unlock your account. Please check your email.'
+      unlocked: 'Account has been unlocked.' # NOTE: 「ログインしてください。」は不要（ログイン中の場合もある為）
+    passwords:
+      no_token: 'The URL is incorrect. Please start over.'
+      send_instructions: 'We have sent you a password reset email. Please check your email.'
+      send_paranoid_instructions: 'We have sent you a password reset email. Please check your email.'
+      updated: 'Password changed.'
+      updated_not_active: 'Password changed.'
+    omniauth_callbacks:
+      failure: 'Authentication with the %{kind} account failed. Reason: (%{reason})'
+      success: 'Authentication with the %{kind} account failed.'
+    failure:
+      already_authenticated: 'You are already logged in.'
+      inactive: 'Your email address has not been verified. If you have not received the email, please click [Confirm email address].'
+      invalid: 'Your email address or password is incorrect.' # '%{authentication_keys}またはパスワードが違います。'
+      last_attempt: 'Note: If you enter incorrectly again, your account will be locked.'
+      send_locked: 'Your account has been locked. Please check your email.' # NOTE: 追加
+      locked: 'Account is locked. If you have not received the email, please [Account unlock].'
+      not_found_in_database: 'Your email address or password is incorrect.' # '%{authentication_keys}またはパスワードが違います。'
+      timeout: 'Session timed out. Please log in again.'
+      unauthenticated: 'Please login.'
+      unconfirmed: 'Email address confirmation is required. If you have not received the email, please do [Confirm email address].'
+    mailer:
+      confirmation_instructions:
+        subject: '%{env_name}[%{app_name}] Request to confirm email address'
+      email_changed:
+        subject: '%{env_name}[%{app_name}] Notice of acceptance of change of email address'
+      reset_password_instructions:
+        subject: '%{env_name}[%{app_name}] Notice on how to reset password'
+        admin_user_subject: '%{env_name}[%{app_name} Admin] Notice on how to reset password'
+      password_change:
+        subject: '%{env_name}[%{app_name}] Notice of completion of password change'
+        admin_user_subject: '%{env_name}[%{app_name} Admin] Notice of completion of password change'
+      unlock_instructions:
+        subject: '%{env_name}[%{app_name}] Account lock notice'
+        admin_user_subject: '%{env_name}[%{app_name} Admin] Account lock notice'

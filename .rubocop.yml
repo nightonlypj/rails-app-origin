@@ -5,23 +5,23 @@ AllCops:
   SuggestExtensions: false
   Exclude:
     - 'bin/*'
-    - 'test/**/*'
     - 'db/schema.rb'
-    - 'db/migrate/*'
     - 'node_modules/**/*'
-    - 'Gemfile'
 
-# C: Style/Documentation: Missing top-level class documentation comment.
-Style/Documentation:
-  Enabled: false
+### Layout
+# https://docs.rubocop.org/rubocop/cops_layout.html
 
-# C: Style/ClassAndModuleChildren: Use nested module/class definitions instead of compact style.
-Style/ClassAndModuleChildren:
-  Enabled: false
+# C: Layout/LineLength: Line is too long.
+Layout/LineLength:
+  Max: 160
 
-# C: Style/AsciiComments: Use only ascii symbols in comments.
-Style/AsciiComments:
-  Enabled: false
+### Metrics
+# https://docs.rubocop.org/rubocop/cops_metrics.html
+
+# C: Metrics/AbcSize: Assignment Branch Condition size for expect_space_json is too high.
+Metrics/AbcSize:
+  Exclude:
+    - 'spec/**/*'
 
 # C: Metrics/BlockLength: Block has too many lines.
 Metrics/BlockLength:
@@ -33,55 +33,171 @@ Metrics/BlockLength:
     - 'lib/tasks/**/*'
     - 'spec/**/*'
 
-# C: Style/FrozenStringLiteralComment: Missing frozen string literal comment.
-Style/FrozenStringLiteralComment:
+# C: Metrics/ClassLength: Class has too many lines.
+Metrics/ClassLength:
   Enabled: false
-
-# C: Layout/LineLength: Line is too long.
-Layout/LineLength:
-  Max: 160
-  Exclude:
-    - 'spec/**/*'
 
 # C: Metrics/MethodLength: Method has too many lines.
 Metrics/MethodLength:
   Max: 30
   Exclude:
+    - 'db/migrate/*'
     - 'spec/**/*'
 
-# C: Metrics/AbcSize: Assignment Branch Condition size for expect_space_json is too high.
-Metrics/AbcSize:
-  Exclude:
-    - 'spec/**/*'
+# C: Metrics/ModuleLength: Module has too many lines.
+Metrics/ModuleLength:
+  Enabled: false
 
 # C: Metrics/ParameterLists: Avoid parameter lists longer than 5 parameters.
 Metrics/ParameterLists:
-  Max: 6
+  Exclude:
+    - 'spec/**/*'
 
-# C: [Correctable] Style/ConditionalAssignment: Use the return of the conditional for variable assignment and comparison.
-Style/ConditionalAssignment:
+### Naming
+# https://docs.rubocop.org/rubocop/cops_naming.html
+
+# C: Naming/AccessorMethodName: Do not prefix writer method names with set_.
+Naming/AccessorMethodName:
   Enabled: false
 
-# C: Style/GuardClause: Use a guard clause (*) instead of wrapping the code inside a conditional expression.
-Style/GuardClause:
+# C: Naming/VariableNumber: Use normalcase for method name numbers.
+Naming/VariableNumber:
+  Exclude:
+    - 'spec/**/*'
+
+### Style
+# https://docs.rubocop.org/rubocop/cops_style.html
+
+# C: Style/AsciiComments: Use only ascii symbols in comments.
+Style/AsciiComments:
   Enabled: false
 
 # C: [Correctable] Style/BlockComments: Do not use block comments.
 Style/BlockComments:
   Enabled: false
 
-# C: Style/OptionalBooleanParameter: Use keyword arguments when defining method with boolean argument.
-Style/OptionalBooleanParameter:
+# C: Style/ClassAndModuleChildren: Use nested module/class definitions instead of compact style.
+Style/ClassAndModuleChildren:
   Enabled: false
 
-# C: Naming/AccessorMethodName: Do not prefix writer method names with set_.
-Naming/AccessorMethodName:
+# C: [Correctable] Style/ConditionalAssignment: Use the return of the conditional for variable assignment and comparison.
+Style/ConditionalAssignment:
+  Enabled: false
+
+# C: Style/Documentation: Missing top-level class documentation comment.
+Style/Documentation:
+  Enabled: false
+
+# C: [Correctable] Style/DoubleNegation: Avoid the use of double negation (!!).
+Style/DoubleNegation:
   Enabled: false
 
 # C: Style/FormatStringToken: Prefer annotated tokens (like %<foo>s) over unannotated tokens (like %s).
 Style/FormatStringToken:
   Enabled: false
 
+# C: Style/FrozenStringLiteralComment: Missing frozen string literal comment.
+Style/FrozenStringLiteralComment:
+  Enabled: false
+
+# C: Style/GuardClause: Use a guard clause (*) instead of wrapping the code inside a conditional expression.
+Style/GuardClause:
+  Enabled: false
+
+# C: [Corrected] Style/IfInsideElse: Convert if nested inside else to elsif.
+Style/IfInsideElse:
+  Enabled: false
+
+# C: [Corrected] Style/Lambda: Use the -> { ... } lambda literal syntax for all lambdas.
+Style/Lambda:
+  EnforcedStyle: literal
+
+# C: [Corrected] Style/NumericLiterals: Use underscores(_) as thousands separator and separate every 3 digits with them.
+Style/NumericLiterals:
+  MinDigits: 7
+
 # C: [Correctable] Style/NumericPredicate: Use xxx.positive?/zero? instead of xxx > 0/== 0.
 Style/NumericPredicate:
+  Enabled: false
+
+# C: Style/OptionalBooleanParameter: Use keyword arguments when defining method with boolean argument.
+Style/OptionalBooleanParameter:
+  Enabled: false
+
+### RSpec
+# https://docs.rubocop.org/rubocop-rspec/cops_rspec.html
+require: rubocop-rspec
+RSpec:
+  Enabled: true
+
+# C: RSpec/ContextWording: Context description should match /^when\b/, /^with\b/, or /^without\b/.
+RSpec/ContextWording:
+  Enabled: false
+
+# C: RSpec/DescribeSymbol: Avoid describing symbols.
+RSpec/DescribeSymbol:
+  Enabled: false
+
+# C: [Correctable] RSpec/EmptyLineAfterExample: Add an empty line after it.
+RSpec/EmptyLineAfterExample:
+  Enabled: false
+
+# C: [Correctable] RSpec/EmptyLineAfterExampleGroup: Add an empty line after shared_examples_for.
+RSpec/EmptyLineAfterExampleGroup:
+  Enabled: false
+
+# C: [Correctable] RSpec/EmptyLineAfterFinalLet: Add an empty line after the last let.
+RSpec/EmptyLineAfterFinalLet:
+  Enabled: false
+
+# C: [Correctable] RSpec/EmptyLineAfterHook: Add an empty line after before.
+RSpec/EmptyLineAfterHook:
+  Enabled: false
+
+# C: [Corrected] RSpec/EmptyLineAfterSubject: Add an empty line after subject.
+RSpec/EmptyLineAfterSubject:
+  Enabled: false
+
+# C: RSpec/ExampleLength: Example has too many lines.
+RSpec/ExampleLength:
+  Enabled: false
+
+# C: RSpec/ExpectInLet: Do not use expect in let
+RSpec/ExpectInLet:
+  Enabled: false
+
+# C: [Corrected] RSpec/ImplicitSubject: Don't use implicit subject.
+RSpec/ImplicitSubject:
+  Enabled: false
+
+# C: RSpec/InstanceVariable: Avoid instance variables - use let, a method call, or a local variable (if possible).
+RSpec/InstanceVariable:
+  Enabled: false
+
+# C: RSpec/MissingExampleGroupArgument: The first argument to context should not be empty.
+RSpec/MissingExampleGroupArgument:
+  Enabled: false
+
+# C: RSpec/MultipleExpectations: Example has too many expectations
+RSpec/MultipleExpectations:
+  Enabled: false
+
+# C: RSpec/MultipleMemoizedHelpers: Example group has too many memoized helpers
+RSpec/MultipleMemoizedHelpers:
+  Enabled: false
+
+# C: RSpec/NestedGroups: Maximum example group nesting exceeded
+RSpec/NestedGroups:
+  Enabled: false
+
+# C: RSpec/RepeatedExampleGroupBody: Repeated context block body on line(s)
+RSpec/RepeatedExampleGroupBody:
+  Enabled: false
+
+# C: RSpec/RepeatedExampleGroupDescription: Repeated context block description on line(s)
+RSpec/RepeatedExampleGroupDescription:
+  Enabled: false
+
+# C: [Correctable] RSpec/ScatteredLet: Group all let/let! blocks in the example group together.
+RSpec/ScatteredLet:
   Enabled: false
