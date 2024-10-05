@@ -1,14 +1,14 @@
-<% content_for(:html_title) { "招待URL一覧: #{text_truncate(@space.name, 64)}" } %>
+<% content_for(:html_title) { "#{t('招待URL一覧')}: #{text_truncate(@space.name, 64)}" } %>
 
 <ul class="nav nav-tabs mb-2">
   <li class="nav-item">
-    <%= link_to 'スペース', space_path(@space.code), class: 'nav-link' %>
+    <%= link_to t('スペース'), space_path(code: @space.code), class: 'nav-link' %>
   </li>
   <li class="nav-item">
-    <%= link_to 'メンバー一覧', members_path(@space.code), class: 'nav-link' %>
+    <%= link_to t('メンバー一覧'), members_path(space_code: @space.code), class: 'nav-link' %>
   </li>
   <li class="nav-item">
-    <a data-mdb-toggle="tab" class="nav-link active">招待URL一覧</a>
+    <a data-mdb-toggle="tab" class="nav-link active"><%= t('招待URL一覧') %></a>
   </li>
 </ul>
 
@@ -20,15 +20,19 @@
     <div class="row">
       <div class="col-md-5 d-flex align-items-center">
 <% if @invitations.present? %>
-        <%= "#{@invitations.total_count.to_formatted_s(:delimited)}件" %><%= "中 #{first_page_number(@invitations)}-#{last_page_number(@invitations)}件を表示" if @invitations.total_count > @invitations.limit_value %>
+<% if @invitations.total_pages > 1 %>
+        <%= t('%{total}件中 %{start}-%{end}件を表示', total: @invitations.total_count.to_formatted_s(:delimited), start: first_page_number(@invitations), end: last_page_number(@invitations)) %>
+<% else %>
+        <%= t("%{total}件（#{@invitations.total_count <= 1 ? '単数' : '複数'}）", total: @invitations.total_count.to_formatted_s(:delimited)) %>
+<% end %>
 <% end %>
       </div>
       <div class="col-md-7">
         <div class="d-flex float-end table-responsive">
           <%= paginate @invitations %>
-          <a href="<%= new_invitation_path(@space.code) %>" class="btn btn-primary text-nowrap">
+          <a href="<%= new_invitation_path(space_code: @space.code) %>" class="btn btn-primary text-nowrap">
             <i class="fas fa-clipboard fa-lg"></i>
-            <span class="ms-1">招待URL作成</span>
+            <span class="ms-1"><%= t('招待URL作成') %></span>
           </a>
         </div>
       </div>
@@ -37,7 +41,7 @@
 <% if @invitations.blank? %>
     <hr/>
     <article>
-      対象の招待URLが見つかりません。
+      <%= t('対象の%{name}が見つかりません。', name: t('招待URL')) %>
       <hr/>
     </article>
 <% else %>

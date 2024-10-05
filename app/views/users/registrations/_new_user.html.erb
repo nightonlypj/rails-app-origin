@@ -2,7 +2,7 @@
 <%= form_with(model: resource, url: create_user_registration_path(code: @code), html: { method: :post, novalidate: true, autocomplete: 'on' }, data: { turbo: false }) do |form| %>
   <div class="form-outline<%= input_size_class_name(resource, :name) %>">
     <%= form.text_field :name, autocomplete: 'name', class: "form-control#{validate_class_name(validate_enabled, resource, :name)}" %>
-    <%= form.label :name, class: 'form-label', for: 'user_name' %>
+    <%= form.label :name, t('氏名'), class: 'form-label', for: 'user_name' %>
     <%= render '/users/shared/field_error_messages', messages: resource.errors[:name] %>
   </div>
 
@@ -13,7 +13,7 @@
 <% else %>
     <%= form.email_field :email, value: @invitation.email, readonly: true, autocomplete: 'off', class: "form-control#{validate_class_name(validate_enabled, resource, :email)}" %>
 <% end %>
-    <%= form.label :email, class: 'form-label', for: 'user_email' %>
+    <%= form.label :email, t('メールアドレス'), class: 'form-label', for: 'user_email' %>
     <%= render '/users/shared/field_error_messages', messages: resource.errors[:email] %>
   </div>
 <% else %>
@@ -21,7 +21,7 @@
     <div>
       <div class="form-outline<%= input_size_class_name(resource, :email) %>">
         <%= form.text_field :email_local, autocomplete: 'off', class: "form-control#{validate_class_name(validate_enabled, resource, :email)}" %>
-        <%= form.label :email, class: 'form-label', for: 'user_email_local' %>
+        <%= form.label :email, t('メールアドレス'), class: 'form-label', for: 'user_email_local' %>
         <%= render '/users/shared/field_error_messages', messages: resource.errors[:email] %>
       </div>
     </div>
@@ -36,15 +36,15 @@
 
   <div class="form-outline<%= input_size_class_name(resource, :password) %>">
     <%= form.password_field :password, autocomplete: 'new-password', class: "form-control#{validate_password_class_name(validate_enabled)}" %>
-    <%= form.label :password, "パスワード#{" [#{@minimum_password_length}文字以上]" if @minimum_password_length}", class: 'form-label', for: 'user_password' %>
+    <%= form.label :password, "#{t('パスワード')}#{' ' + t('[%{length}文字以上]', length: @minimum_password_length) if @minimum_password_length.present?}", class: 'form-label', for: 'user_password' %>
     <%= render '/users/shared/field_error_messages', messages: resource.errors[:password] %>
   </div>
 
   <div class="form-outline<%= input_size_class_name(resource, :password_confirmation) %>">
     <%= form.password_field :password_confirmation, autocomplete: 'new-password', class: "form-control#{validate_password_class_name(validate_enabled)}" %>
-    <%= form.label :password_confirmation, class: 'form-label', for: 'user_password_confirmation' %>
+    <%= form.label :password_confirmation, t('パスワード(確認)'), class: 'form-label', for: 'user_password_confirmation' %>
     <%= render '/users/shared/field_error_messages', messages: resource.errors[:password_confirmation] %>
   </div>
 
-  <%= form.submit '登録', type: 'button', onclick: 'submit()', class: 'btn btn-primary' %>
+  <%= form.submit t('登録'), type: 'button', onclick: 'submit()', class: 'btn btn-primary' %>
 <% end %>

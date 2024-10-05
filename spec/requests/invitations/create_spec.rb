@@ -15,6 +15,7 @@ RSpec.describe 'Invitations', type: :request do
   #   ＋Acceptヘッダ: HTMLが含まれる, JSONが含まれる
   describe 'POST #create' do
     subject { post create_invitation_path(space_code: space.code, format: subject_format), params:, headers: auth_headers.merge(accept_headers) }
+
     let_it_be(:valid_attributes)   { FactoryBot.attributes_for(:invitation, domains: Faker::Internet.domain_name).except(:code) }
     let_it_be(:invalid_attributes) { valid_attributes.merge(domains: nil) }
     let_it_be(:created_user) { FactoryBot.create(:user) }
@@ -47,7 +48,7 @@ RSpec.describe 'Invitations', type: :request do
     end
     shared_examples_for 'NG' do
       it '招待が作成されない' do
-        expect { subject }.to change(Invitation, :count).by(0)
+        expect { subject }.not_to change(Invitation, :count)
       end
     end
 
@@ -60,7 +61,7 @@ RSpec.describe 'Invitations', type: :request do
       let(:invitation_count) { 1 }
       it 'HTTPステータスが201。対象項目が一致する' do
         is_expected.to eq(201)
-        expect(response_json['success']).to eq(true)
+        expect(response_json['success']).to be(true)
         expect(response_json['notice']).to eq(get_locale('notice.invitation.create'))
 
         count = expect_invitation_json(response_json_invitation, current_invitation)

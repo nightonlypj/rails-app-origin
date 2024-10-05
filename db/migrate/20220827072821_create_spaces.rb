@@ -17,7 +17,7 @@ class CreateSpaces < ActiveRecord::Migration[6.1]
     end
     add_index :spaces, :code, unique: true,  name: 'index_spaces1'
     add_index :spaces, :destroy_schedule_at, name: 'index_spaces2'
-    add_index :spaces, [:created_at, :id],   name: 'index_spaces3'
-    add_index :spaces, [:name, :id],         name: 'index_spaces4'
+    add_index :spaces, %i[created_at id],    name: 'index_spaces3'
+    add_index :spaces, %i[name id],          name: 'index_spaces4'
   end
 end

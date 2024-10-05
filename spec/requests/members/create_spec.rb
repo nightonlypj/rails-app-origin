@@ -16,6 +16,7 @@ RSpec.describe 'Members', type: :request do
   #   ＋Acceptヘッダ: HTMLが含まれる, JSONが含まれる
   describe 'POST #create' do
     subject { post create_member_path(space_code: space.code, format: subject_format), params:, headers: auth_headers.merge(accept_headers) }
+
     let_it_be(:exist_user) { FactoryBot.create(:user, email: 'exist@example.com') }
     let_it_be(:new_user)   { FactoryBot.create(:user, email: 'new@example.com') }
     let_it_be(:not_user)   { FactoryBot.build_stubbed(:user, email: 'not@example.com') }
@@ -49,13 +50,13 @@ RSpec.describe 'Members', type: :request do
     end
     shared_examples_for 'NG' do
       it 'メンバーが作成されない' do
-        expect { subject }.to change(Member, :count).by(0)
+        expect { subject }.not_to change(Member, :count)
       end
     end
 
     shared_examples_for 'ToOK(html/*)' do
       it 'メンバー招待（結果）にリダイレクトする' do
-        is_expected.to redirect_to(result_member_path(space.code))
+        is_expected.to redirect_to(result_member_path(space_code: space.code))
         expect(flash[:alert]).to be_nil
         expect(flash[:notice]).to eq(get_locale('notice.member.create'))
         expect(flash[:emails]).to eq(emails)
@@ -69,7 +70,7 @@ RSpec.describe 'Members', type: :request do
       let(:accept_headers) { ACCEPT_INC_JSON }
       it 'HTTPステータスが201。対象項目が一致する' do
         is_expected.to eq(201)
-        expect(response_json['success']).to eq(true)
+        expect(response_json['success']).to be(true)
         expect(response_json['notice']).to eq(get_locale('notice.member.create'))
 
         expect(response_json_email['count']).to eq(emails.count)
@@ -80,13 +81,13 @@ RSpec.describe 'Members', type: :request do
 
         expect(response_json_emails[0]['email']).to eq(emails[0])
         expect(response_json_emails[0]['result']).to eq('exist')
-        expect(response_json_emails[0]['result_i18n']).to eq('既に参加しています。')
+        expect(response_json_emails[0]['result_i18n']).to eq(I18n.t('既に参加しています。'))
         expect(response_json_emails[1]['email']).to eq(emails[1])
         expect(response_json_emails[1]['result']).to eq('create')
-        expect(response_json_emails[1]['result_i18n']).to eq('招待しました。')
+        expect(response_json_emails[1]['result_i18n']).to eq(I18n.t('招待しました。'))
         expect(response_json_emails[2]['email']).to eq(emails[2])
         expect(response_json_emails[2]['result']).to eq('notfound')
-        expect(response_json_emails[2]['result_i18n']).to eq('アカウントが存在しません。登録後に招待してください。')
+        expect(response_json_emails[2]['result_i18n']).to eq(I18n.t('アカウントが存在しません。登録後に招待してください。'))
         expect(response_json_emails.count).to eq(3)
 
         expect(response_json['power']).to eq(attributes[:power].to_s)

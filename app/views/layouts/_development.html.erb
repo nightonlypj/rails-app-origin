@@ -2,5 +2,9 @@
 <ul>
   <li><%= link_to 'LetterOpenerWeb', letter_opener_web_path %></li>
   <li><%= link_to 'ActionMailer Preview', '/rails/mailers' %></li>
+<% if admin %>
+  <li><%= link_to t('app_name'), root_path %></li>
+<% else %>
   <li><%= link_to "#{t('app_name')} Admin", new_admin_user_session_path %></li>
+<% end %>
 </ul>

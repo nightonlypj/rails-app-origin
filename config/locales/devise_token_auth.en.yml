@@ -1,0 +1,57 @@
+en:
+  devise_token_auth:
+    sessions:
+      not_confirmed: 'Email address confirmation is required. If you have not received the email, please click [Confirm email address].' # "'%{email}' に確認用のメールを送信しました。メール内の説明を読み、アカウントの有効化をしてください。"
+      bad_credentials: 'No parameters specified.' # "ログイン用の認証情報が正しくありません。再度お試しください。"
+      # not_supported: "/sign_in に GET はサポートされていません。POST をお使いください。" # NOTE: 未使用(routesなしに変更済み)
+      user_not_found: 'You are already logged out.' # "ユーザーが見つからないか、ログインしていません。"
+      unlock_redirect_url_blank: 'unlock_redirect_url is not specified.' # NOTE: 追加
+      unlock_redirect_url_not_allowed: 'unlock_redirect_url is not allowed.' # NOTE: 追加
+    token_validations:
+      invalid: 'Session timed out. Please log in again.' # "ログイン用の認証情報が正しくありません。"
+    registrations:
+      missing_confirm_success_url: 'confirm_success_url is not specified.' # "'confirm_success_url' パラメータが与えられていません。"
+      redirect_url_not_allowed: 'confirm_success_url is not allowed.' # "'%{redirect_url}' へのリダイレクトは許可されていません。"
+      # email_already_exists: "'%{email}' のアカウントはすでに存在しています。" # NOTE: 未使用
+      account_with_uid_destroyed: 'I deleted my account. We look forward to seeing you again.' # "'%{uid}' のアカウントは削除されました。"
+      # account_to_destroy_not_found: 'ログインしてください。' # NOTE: devise.failure.unauthenticatedに変更 # '削除するアカウントが見つかりません。'
+      # user_not_found: 'ログインしてください。' # NOTE: devise.failure.unauthenticatedに変更 # "ユーザーが見つかりません。"
+      confirm_redirect_url_blank: 'confirm_redirect_url is not specified.' # NOTE: 追加
+      confirm_redirect_url_not_allowed: 'confirm_redirect_url is not allowed.' # NOTE: 追加
+    omniauth:
+      not_allowed_redirect_url: 'redirect_url is not allowed.' # "'%{redirect_url}' へのリダイレクトは許可されていません。"
+    passwords:
+      # missing_email: 'メールアドレスを入力してください。' # NOTE: errors.messages.validate_password_paramsに変更 # "メールアドレスが与えられていません。"
+      missing_redirect_url: 'redirect_url is not specified.' # "リダイレクト URL が与えられていません。"
+      not_allowed_redirect_url: 'redirect_url is not allowed.' # "'%{redirect_url}' へのリダイレクトは許可されていません。"
+      sended: 'We have sent you a password reset email. Please check your email.' # "'%{email}' にパスワードリセットの案内が送信されました。"
+      user_not_found: 'User not found.' # "メールアドレス '%{email}' のユーザーが見つかりません。"
+      password_not_required: 'Please use %{provider} login.' # "このアカウントはパスワードを要求していません。'%{provider}' を利用してログインしてください。"
+      # missing_passwords: 'パスワードまたはパスワード確認を入力してください。' # NOTE: バリデーションとdevise.failure.already_authenticatedに変更 # "'Password', 'Password confirmation' パラメータが与えられていません。"
+      successfully_updated: 'Password changed.' # "パスワードの更新に成功しました。"
+    confirmations: # NOTE: 追加
+      missing_confirm_success_url: 'redirect_url is not specified.' # NOTE: 追加 # "'confirm_success_url' パラメータが与えられていません。"
+      redirect_url_not_allowed: 'redirect_url is not allowed.' # NOTE: 追加 # "'%{redirect_url}' へのリダイレクトは許可されていません。"
+      # missing_email: 'メールアドレスを入力してください。' # NOTE: errors.messages.validate_confirmation_paramsに変更 # "メールアドレスが与えられていません。"
+      sended_paranoid: 'User not found.' # NOTE: user_not_foundで、config.paranoid = trueの場合
+      user_not_found: 'User not found.'
+      sended: 'An email to confirm your email address has been sent. Please check your email.' # "'%{email}' にメールアドレス確認の案内が送信されました。"
+    unlocks: # NOTE: 追加
+      missing_redirect_url: 'redirect_url is not specified.' # "リダイレクト URL が与えられていません。"
+      not_allowed_redirect_url: 'redirect_url is not allowed.' # "'%{redirect_url}' へのリダイレクトは許可されていません。"
+      # missing_email: 'メールアドレスを入力してください。' # NOTE: errors.messages.validate_unlock_paramsに変更 # 'メールアドレスが与えられていません。'
+      sended_paranoid: 'User not found.' # NOTE: user_not_foundで、config.paranoid = trueの場合
+      user_not_found: 'User not found.'
+      sended: 'We have sent you an email to unlock your account. Please check your email.' # "'%{email}' にアカウントロック解除の案内が送信されました。"
+  errors:
+    messages:
+      validate_sign_up_params: 'No parameters specified.' # "リクエストボディに適切なアカウント新規登録データを送信してください。"
+      validate_account_update_params: 'No parameters specified.' # "リクエストボディに適切なアカウント更新のデータを送信してください。"
+      validate_password_params: 'No parameters specified.' # NOTE: 追加
+      validate_confirmation_params: 'No parameters specified.' # NOTE: 追加
+      validate_unlock_params: 'No parameters specified.' # NOTE: 追加
+      not_email: 'Invalid format.' # "は有効ではありません"
+#  devise:
+#    mailer: # NOTE: 画面(JSON)で使用されている
+#      unlock_instructions:
+#        account_lock_msg: 'アカウントがロックされています。メールが届いていない場合は[アカウントロック解除]をしてください。' # NOTE: devise.failure.lockedに変更 # "連続してログインに失敗したため、あなたのアカウントはロックされました。"

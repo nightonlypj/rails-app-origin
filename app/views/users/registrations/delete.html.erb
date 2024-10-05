@@ -1,17 +1,17 @@
 <% content_for(:html_title) { 'アカウント削除' } %>
 
 <div class="card card-body mb-2" style="max-width: 640px">
-  <h5 class="card-title mb-3">アカウント削除</h5>
+  <h5 class="card-title mb-3"><%= t('アカウント削除') %></h5>
   <div class="card-text mb-3">
     <p>
-      アカウントは<%= Settings.user_destroy_schedule_days %>日後に削除されます。それまでは取り消し可能です。<br>
-      削除されるまではログインできますが、一部機能が制限されます。
+      <%= t('アカウント削除メッセージ', days: Settings.user_destroy_schedule_days) %><br>
+      <%= t('アカウント削除補足') %>
     </p>
-    <%= button_to '削除', destroy_user_registration_path, data: { confirm: '本当に削除しますか？' }, method: :post, class: 'btn btn-danger' %>
+    <%= button_to t('削除'), destroy_user_registration_path, data: { turbo_confirm: t('アカウント削除確認メッセージ') }, method: :post, class: 'btn btn-danger' %>
   </div>
   <div class="card-footer pb-0 px-0">
-    <ul class="mt-2 mb-0">
-      <li><%= link_to 'ユーザー情報変更', edit_user_registration_path %></li>
-    </ul>
+    <nav class="mt-2 mb-0">
+      <%= link_to t('ユーザー情報'), edit_user_registration_path %>
+    </nav>
   </div>
 </div>

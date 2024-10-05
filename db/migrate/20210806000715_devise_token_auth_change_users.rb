@@ -16,6 +16,6 @@ class DeviseTokenAuthChangeUsers < ActiveRecord::Migration[6.1]
     ## Tokens
     add_column :users, :tokens, :text, comment: '認証トークン'
 
-    add_index :users, [:uid, :provider], unique: true, name: 'index_users7'
+    add_index :users, %i[uid provider], unique: true, name: 'index_users7'
   end
 end

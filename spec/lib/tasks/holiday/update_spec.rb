@@ -1,7 +1,7 @@
 require 'rake_helper'
 
 RSpec.describe :holiday, type: :task do
-  # 祝日データ更新（前年の2月に元データが更新される） → tool:create_yamlでseed更新
+  # 祝日データ更新（前年の2月に元データが更新される） -> tool:create_yamlでseed更新
   # テストパターン
   #   追加あり, 変更なし, 名称変更あり
   describe 'holiday:update' do

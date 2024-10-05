@@ -15,20 +15,24 @@ shared_context 'スペース一覧作成' do |public_admin_count, public_none_co
     end
 
     # 公開（権限がない）
+    created_at = now - 4.days
     @public_nojoin_spaces = FactoryBot.create_list(:space, public_none_count, :public, description: '公開（未参加）', created_user:,
-                                                                                       last_updated_user: nil, created_at: now - 4.days, updated_at: now - 4.days)
+                                                                                       last_updated_user: nil, created_at:, updated_at: created_at)
 
     # 公開（削除予約済み、削除対象）
+    created_at = now - 3.days
     @public_nojoin_destroy_spaces = [
-      FactoryBot.create(:space, :public, :destroy_reserved, description: '公開（削除予約済み）', created_user:, created_at: now - 3.days, updated_at: now - 3.days),
-      FactoryBot.create(:space, :public, :destroy_targeted, description: '公開（削除対象）', created_user:, created_at: now - 3.days, updated_at: now - 3.days)
+      FactoryBot.create(:space, :public, :destroy_reserved, description: '公開（削除予約済み）', created_user:, created_at:, updated_at: created_at),
+      FactoryBot.create(:space, :public, :destroy_targeted, description: '公開（削除対象）', created_user:, created_at:, updated_at: created_at)
     ]
 
     # 非公開（権限が管理者）
     @private_spaces = []
     if private_admin_count > 0
+      created_at = now - 2.days
+      updated_at = now - 1.day
       spaces = FactoryBot.create_list(:space, private_admin_count, :private, description: '非公開（管理者）', created_user_id: destroy_user.id,
-                                                                             last_updated_user_id: destroy_user.id, created_at: now - 2.days, updated_at: now - 1.day)
+                                                                             last_updated_user_id: destroy_user.id, created_at:, updated_at:)
       spaces.each do |space|
         FactoryBot.create(:member, :admin, space:, user:)
         @members[space.id] = 'admin'
@@ -38,8 +42,9 @@ shared_context 'スペース一覧作成' do |public_admin_count, public_none_co
 
     # 非公開（権限が閲覧者）
     if private_reader_count > 0
+      created_at = now - 1.day
       spaces = FactoryBot.create_list(:space, private_reader_count, :private, description: '非公開（閲覧者）', created_user:,
-                                                                              last_updated_user: nil, created_at: now - 1.day, updated_at: now - 1.day)
+                                                                              last_updated_user: nil, created_at:, updated_at: created_at)
       spaces.each do |space|
         FactoryBot.create(:member, :reader, space:, user:)
         @members[space.id] = 'reader'
@@ -56,9 +61,9 @@ end
 # テスト内容（共通）
 def expect_space_html(response, space, user_power = :admin, use_link = true, image_version = :small)
   expect(response.body).to include(space.image_url(image_version))
-  expect(response.body).to include("href=\"#{space_path(space.code)}\"") if use_link # スペーストップ
+  expect(response.body).to include("href=\"#{space_path(code: space.code)}\"") if use_link # スペーストップ
   expect(response.body).to include(space.name)
-  expect(response.body).to include('非公開') if space.private
+  expect(response.body).to include(I18n.t('非公開')) if space.private
   expect(response.body).to include(I18n.l(space.destroy_schedule_at.to_date)) if space.destroy_reserved?
   expect(response.body).to include(Member.powers_i18n[user_power]) if user_power.present?
 end
@@ -157,7 +162,7 @@ end
 
 shared_examples_for 'ToSpace(html/*)' do |alert, notice|
   it 'スペーストップにリダイレクトする' do
-    is_expected.to redirect_to(space_path(space.code))
+    is_expected.to redirect_to(space_path(code: space.code))
     expect(flash[:alert]).to alert.present? ? eq(get_locale(alert)) : be_nil
     expect(flash[:notice]).to notice.present? ? eq(get_locale(notice)) : be_nil
   end

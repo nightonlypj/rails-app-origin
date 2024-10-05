@@ -59,7 +59,7 @@ RSpec.describe 'Users::Auth::Confirmations', type: :request do
       let(:subject_format) { :json }
       let(:accept_headers) { ACCEPT_INC_JSON }
       it 'メールが送信されない' do
-        expect { subject }.to change(ActionMailer::Base.deliveries, :count).by(0)
+        expect { subject }.not_to change(ActionMailer::Base.deliveries, :count)
       end
     end
 
@@ -190,10 +190,8 @@ RSpec.describe 'Users::Auth::Confirmations', type: :request do
   #   ＋Acceptヘッダ: JSONが含まれない, JSONが含まれる
   #   ＋リダイレクトURL: ある, ない, ホワイトリストにない
   describe 'GET #show' do
-    subject do
-      headers = auth_headers.merge(accept_headers)
-      get user_auth_confirmation_path(format: subject_format, confirmation_token:, redirect_url: @redirect_url), headers:
-    end
+    subject { get user_auth_confirmation_path(format: subject_format, confirmation_token:, redirect_url: @redirect_url), headers: }
+    let(:headers) { auth_headers.merge(accept_headers) }
 
     # テスト内容
     let(:current_user) { User.find(send_user.id) }

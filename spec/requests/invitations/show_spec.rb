@@ -14,8 +14,8 @@ RSpec.describe 'Invitations', type: :request do
   #   ＋Acceptヘッダ: HTMLが含まれる, JSONが含まれる
   describe 'GET #show' do
     subject { get invitation_path(space_code: space.code, code: invitation.code, format: subject_format), headers: auth_headers.merge(accept_headers) }
-    let_it_be(:created_user) { FactoryBot.create(:user) }
 
+    let_it_be(:created_user) { FactoryBot.create(:user) }
     shared_context 'valid_condition' do
       let_it_be(:space) { FactoryBot.create(:space, :public, created_user:) }
       let_it_be(:invitation) { FactoryBot.create(:invitation, :active, space:, created_user:) }
@@ -27,7 +27,7 @@ RSpec.describe 'Invitations', type: :request do
       let(:accept_headers) { ACCEPT_INC_JSON }
       it 'HTTPステータスが200。対象項目が一致する' do
         is_expected.to eq(200)
-        expect(response_json['success']).to eq(true)
+        expect(response_json['success']).to be(true)
 
         count = expect_invitation_json(response_json_invitation, invitation)
         ## 招待削除の猶予期間

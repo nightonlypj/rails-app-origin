@@ -13,8 +13,8 @@ RSpec.describe 'Invitations', type: :request do
   #   ＋Acceptヘッダ: HTMLが含まれる, JSONが含まれる
   describe 'GET #edit' do
     subject { get edit_invitation_path(space_code: space.code, code: invitation.code, format: subject_format), headers: auth_headers.merge(accept_headers) }
-    let_it_be(:created_user) { FactoryBot.create(:user) }
 
+    let_it_be(:created_user) { FactoryBot.create(:user) }
     shared_context 'valid_condition' do
       let_it_be(:space) { FactoryBot.create(:space, :public, created_user:) }
       before_all { FactoryBot.create(:member, space:, user:) if user.present? }

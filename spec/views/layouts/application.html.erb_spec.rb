@@ -34,11 +34,11 @@ RSpec.describe 'layouts/application', type: :view do
 
       [@public_spaces[0], @private_spaces[0], @private_spaces[1]].each do |space| # 参加スペース
         expect(rendered).to include(space.name)
-        expect(rendered).to include("\"#{space_path(space.code)}\"")
+        expect(rendered).to include("\"#{space_path(code: space.code)}\"")
       end
       [@public_nojoin_spaces[0]] + @public_nojoin_destroy_spaces + @private_nojoin_spaces.each do |space| # 未参加スペース
         expect(rendered).not_to include(space.name)
-        expect(rendered).not_to include("\"#{space_path(space.code)}\"")
+        expect(rendered).not_to include("\"#{space_path(code: space.code)}\"")
       end
     end
   end

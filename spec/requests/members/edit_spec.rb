@@ -13,9 +13,9 @@ RSpec.describe 'Members', type: :request do
   #   ＋Acceptヘッダ: HTMLが含まれる, JSONが含まれる
   describe 'GET #edit' do
     subject { get edit_member_path(space_code: space.code, user_code: show_user.code, format: subject_format), headers: auth_headers.merge(accept_headers) }
+
     let_it_be(:created_user) { FactoryBot.create(:user) }
     let_it_be(:other_user)   { FactoryBot.create(:user) }
-
     shared_context 'valid_condition' do
       let_it_be(:space)     { FactoryBot.create(:space, :public, created_user:) }
       let_it_be(:show_user) { other_user }

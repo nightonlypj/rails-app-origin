@@ -15,12 +15,13 @@ RSpec.describe 'Members', type: :request do
   #   ＋URLの拡張子: ない, .json
   #   ＋Acceptヘッダ: HTMLが含まれる, JSONが含まれる
   describe 'POST #update' do
-    subject { post update_member_path(space_code: space.code, user_code: show_user.code, format: subject_format), params:, headers: auth_headers.merge(accept_headers) }
+    subject { post update_member_path(space_code: space.code, user_code: show_user.code, format: subject_format), params:, headers: }
+    let(:headers) { auth_headers.merge(accept_headers) }
+
     let_it_be(:valid_attributes)   { FactoryBot.attributes_for(:member) }
     let_it_be(:invalid_attributes) { valid_attributes.merge(power: nil) }
     let_it_be(:created_user) { FactoryBot.create(:user) }
     let_it_be(:other_user)   { FactoryBot.create(:user) }
-
     shared_context 'valid_condition' do
       let_it_be(:space) { FactoryBot.create(:space, :public, created_user:) }
       let_it_be(:member_myself) { FactoryBot.create(:member, space:, user:) if user.present? }
@@ -47,7 +48,7 @@ RSpec.describe 'Members', type: :request do
 
     shared_examples_for 'ToOK(html/*)' do
       it 'メンバー一覧（対象コード付き）にリダイレクトする' do
-        is_expected.to redirect_to(members_path(space.code, active: member.user.code))
+        is_expected.to redirect_to(members_path(space_code: space.code, active: member.user.code))
         expect(flash[:alert]).to be_nil
         expect(flash[:notice]).to eq(get_locale('notice.member.update'))
       end
@@ -57,7 +58,7 @@ RSpec.describe 'Members', type: :request do
       let(:accept_headers) { ACCEPT_INC_JSON }
       it 'HTTPステータスが200。対象項目が一致する' do
         is_expected.to eq(200)
-        expect(response_json['success']).to eq(true)
+        expect(response_json['success']).to be(true)
         expect(response_json['notice']).to eq(get_locale('notice.member.update'))
 
         count = expect_member_json(response_json_member, current_member, user_power)

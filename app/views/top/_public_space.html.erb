@@ -3,13 +3,13 @@
   <h5 class="card-title mb-3">
     <div class="row">
       <div class="col d-flex align-items-center">
-        <%= Settings.enable_public_space ? '新しい' : '' %>公開スペース
+        <%= Settings.enable_public_space ? t('新しい公開スペース') : t('公開スペース') %>
       </div>
 <% if Settings.enable_public_space %>
       <div class="col-auto text-end ps-0">
         <a href="<%= spaces_path %>" class="btn btn-primary text-nowrap me-2">
           <i class="fas fa-search fa-lg"></i>
-          <span class="ms-1">探す</span>
+          <span class="ms-1"><%= t('探す') %></span>
         </a>
       </div>
 <% end %>
@@ -17,7 +17,7 @@
   </h6>
   <div class="card-text overflow-auto" style="max-height: 200px">
 <% @public_spaces.each do |space| %>
-    <a href="<%= space_path(space.code) %>" class="btn btn-link d-flex align-items-center link-dark p-2">
+    <a href="<%= space_path(code: space.code) %>" class="btn btn-link d-flex align-items-center link-dark p-2">
       <%= image_tag space.image_url(:mini), class: 'rounded-circle' %>
       <span class="text-truncate mx-2 my-1" style="font-size: 0.8rem; text-transform: none"><%= space.name %></span>
     </a>

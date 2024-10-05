@@ -1,9 +1,9 @@
 <% if space.private %>
-  <i class="fas fa-lock ms-1" data-mdb-toggle="tooltip" data-mdb-placement="bottom" title="非公開"></i>
+  <i class="fas fa-lock ms-1" data-mdb-toggle="tooltip" data-mdb-placement="bottom" title="<%= t('非公開') %>"></i>
 <% end %>
 <% if current_member.present? %>
-  <i class="fas <%= power_class_name(current_member.power) %> ms-1" data-mdb-toggle="tooltip" data-mdb-placement="bottom" title="あなたは「<%= current_member.power_i18n %>」です。"></i>
+  <i class="fas <%= power_class_name(current_member.power) %> ms-1" data-mdb-toggle="tooltip" data-mdb-placement="bottom" title="<%= t('あなたは%{power}です。', power: current_member.power_i18n) %>"></i>
 <% end %>
 <% if space.destroy_reserved? %>
-  <i class="fas fa-trash-alt ms-1" data-mdb-toggle="tooltip" data-mdb-placement="bottom" title="<%= l(space.destroy_schedule_at.to_date) %>以降に削除される予定です。"></i>
+  <i class="fas fa-trash-alt ms-1" data-mdb-toggle="tooltip" data-mdb-placement="bottom" title="<%= t('%{date}以降に削除される予定です。', date: l(space.destroy_schedule_at.to_date)) %>"></i>
 <% end %>

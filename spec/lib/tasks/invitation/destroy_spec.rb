@@ -22,16 +22,14 @@ RSpec.describe :invitation, type: :task do
         [nil, before_date, after_date].each do |email_joined_at|
           next if ended_at == before_date || email_joined_at == before_date # NOTE: 終了日時か参加日時が、現在日時＋設定日数以前だったら削除対象
 
-          FactoryBot.create(:invitation, space:, created_user:,
-                                         destroy_schedule_at:, ended_at:, email_joined_at:)
+          FactoryBot.create(:invitation, space:, created_user:, destroy_schedule_at:, ended_at:, email_joined_at:)
         end
       end
 
       destroy_schedule_at = Time.current + 1.minute # 削除予定日時が未来 -> 全て削除対象外
       [nil, before_date, after_date].each do |ended_at|
         [nil, before_date, after_date].each do |email_joined_at|
-          FactoryBot.create(:invitation, space:, created_user:,
-                                         destroy_schedule_at:, ended_at:, email_joined_at:)
+          FactoryBot.create(:invitation, space:, created_user:, destroy_schedule_at:, ended_at:, email_joined_at:)
         end
       end
     end
@@ -68,7 +66,7 @@ RSpec.describe :invitation, type: :task do
       it '削除される（ユーザー・スペース除く）' do
         subject
         expect(Invitation.count).to eq(before_invitation_count - invitations.count)
-        expect(Invitation.exists?(id: invitations)).to eq(false)
+        expect(Invitation.exists?(id: invitations)).to be(false)
         expect(User.count).to eq(before_user_count)
         expect(Space.count).to eq(before_space_count)
       end

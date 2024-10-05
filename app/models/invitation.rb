@@ -43,7 +43,7 @@ class Invitation < ApplicationRecord
     result
   end
 
-  scope :destroy_target, lambda {
+  scope :destroy_target, -> {
     schedule_date = Time.current - Settings.invitation_destroy_schedule_days.days
     where(destroy_schedule_at: ..Time.current)
       .or(where(destroy_schedule_at: nil, ended_at: ..schedule_date))

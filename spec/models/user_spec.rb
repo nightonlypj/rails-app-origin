@@ -13,7 +13,7 @@ RSpec.describe User, type: :model do
   # テストパターン
   #   ない, 正常値, 重複
   describe 'validates :code' do
-    let(:model) { FactoryBot.build_stubbed(:user, code:) }
+    subject(:model) { FactoryBot.build_stubbed(:user, code:) }
     let(:valid_code) { Digest::MD5.hexdigest(SecureRandom.uuid) }
 
     # テストケース
@@ -38,7 +38,7 @@ RSpec.describe User, type: :model do
   # テストパターン
   #   ない, 最小文字数より少ない, 最小文字数と同じ, 最大文字数と同じ, 最大文字数より多い
   describe 'validates :name' do
-    let(:model) { FactoryBot.build_stubbed(:user, name:) }
+    subject(:model) { FactoryBot.build_stubbed(:user, name:) }
 
     # テストケース
     context 'ない' do
@@ -91,11 +91,11 @@ RSpec.describe User, type: :model do
     subject { user.set_destroy_reserve! }
     let(:user) { FactoryBot.create(:user) }
 
-    let(:current_user) { User.find(user.id) }
+    let(:current_user) { described_class.find(user.id) }
     let!(:start_time) { Time.current.floor }
     let!(:start_time_schedule) { Time.current.floor + Settings.user_destroy_schedule_days.days }
     it '削除依頼日時が現在日時、削除予定日時が現在日時＋設定日数に変更され、保存される' do
-      is_expected.to eq(true)
+      is_expected.to be(true)
       expect(current_user.destroy_requested_at).to be_between(start_time, Time.current)
       expect(current_user.destroy_schedule_at).to be_between(start_time_schedule, Time.current + Settings.user_destroy_schedule_days.days)
     end
@@ -108,9 +108,9 @@ RSpec.describe User, type: :model do
     subject { user.set_undo_destroy_reserve! }
     let(:user) { FactoryBot.create(:user, :destroy_reserved) }
 
-    let(:current_user) { User.find(user.id) }
+    let(:current_user) { described_class.find(user.id) }
     it '削除依頼日時・削除予定日時がなしに変更される' do
-      is_expected.to eq(true)
+      is_expected.to be(true)
       expect(user.destroy_requested_at).to be_nil
       expect(user.destroy_schedule_at).to be_nil
     end
@@ -171,13 +171,11 @@ RSpec.describe User, type: :model do
   #   お知らせ確認最終開始日時: ない, 過去, 現在
   #   お知らせ対象: 0件, 1件（全員）, 1件（自分）, 2件（全員＋自分）
   describe '#infomation_unread_count' do
-    subject do
-      user.cache_infomation_unread_count = nil
-      user.infomation_unread_count
-    end
+    subject { user.infomation_unread_count }
+    before { user.cache_infomation_unread_count = nil }
+    let(:cache) { user.cache_infomation_unread_count }
 
     # テストケース
-    let(:cache) { user.cache_infomation_unread_count }
     shared_examples_for '[*]0件' do
       include_context 'お知らせ一覧作成', 0, 0, 0, 0
       it_behaves_like 'Count', 0
@@ -234,27 +232,26 @@ RSpec.describe User, type: :model do
   # テストパターン
   #   ダウンロード対象: 0件, 1件, 2件
   describe '#undownloaded_count' do
-    subject do
-      current_user.cache_undownloaded_count = nil
-      current_user.undownloaded_count
-    end
-    let_it_be(:current_user) { FactoryBot.create(:user) }
+    subject { user.undownloaded_count }
+    before { user.cache_undownloaded_count = nil }
+    let(:cache) { user.cache_undownloaded_count }
+
+    let_it_be(:user) { FactoryBot.create(:user) }
     before_all do
       FactoryBot.create(:download, :success) # 他人
-      FactoryBot.create(:download, :downloaded, user: current_user) # ダウンロード済み
+      FactoryBot.create(:download, :downloaded, user:) # ダウンロード済み
     end
 
     # テストケース
-    let(:cache) { current_user.cache_undownloaded_count }
     context '0件' do
       it_behaves_like 'Count', 0
     end
     context '1件' do
-      before_all { FactoryBot.create(:download, :success, user: current_user) }
+      before_all { FactoryBot.create(:download, :success, user:) }
       it_behaves_like 'Count', 1
     end
     context '2件' do
-      before_all { FactoryBot.create_list(:download, 2, :success, user: current_user) }
+      before_all { FactoryBot.create_list(:download, 2, :success, user:) }
       it_behaves_like 'Count', 2
     end
   end

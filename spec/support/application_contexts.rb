@@ -12,7 +12,7 @@ ACCEPT_INC_CSV  = { 'accept' => 'text/csv,application/json,text/plain,*/*' }.fre
 
 # メールタイトルを返却
 def get_subject(key, args = {})
-  I18n.t(key, app_name: I18n.t('app_name'), env_name: Settings.env_name || '', **args)
+  I18n.t(key, app_name: I18n.t('app_name'), env_name: I18n.t("env_name.#{Settings.server_env}"), **args)
 end
 
 # テスト内容（共通）

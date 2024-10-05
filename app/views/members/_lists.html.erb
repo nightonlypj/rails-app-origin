@@ -1,40 +1,40 @@
 <div class="table-responsive">
-<%= form_with(url: @current_member.power_admin? ? destroy_member_path(@space.code) : '/', html: { method: :post, novalidate: true, autocomplete: 'off' }, data: { turbo: false }) do |form| %>
+<%= form_with(url: @current_member.power_admin? ? destroy_member_path(space_code: @space.code) : '/', html: { method: :post, novalidate: true, autocomplete: 'off' }, data: { turbo: true }) do |form| %>
   <table class="table table-sm table-hover table_members">
     <thead class="table-light">
       <tr>
 <% if @current_member.power_admin? %>
         <th scope="col" class="ps-2 pe-0 pt-0 pb-1">
-          <button id="delete_btn" type="submit" class="btn btn-light btn-floating" data-confirm="選択したメンバーを解除しますか？" disabled>
-            <i class="fas fa-trash" data-mdb-toggle="tooltip" data-mdb-placement="bottom" title="メンバー解除"></i>
+          <button id="delete_btn" type="submit" class="btn btn-light btn-floating" data-turbo-confirm="<%= t('メンバー解除確認メッセージ') %>" disabled>
+            <i class="fas fa-trash" data-mdb-toggle="tooltip" data-mdb-placement="bottom" title="<%= t('メンバー解除') %>"></i>
           </button>
         </th>
 <% end %>
-        <th scope="col" class="text-nowrap">メンバー</th>
+        <th scope="col" class="text-nowrap"><%= t('メンバー') %></th>
 <% if @current_member.power_admin? %>
         <th scope="col" class="text-nowrap">
-          メールアドレス
+          <%= t('メールアドレス') %>
           <%= render 'only_icon', power: :admin %>
         </th>
 <% end %>
-        <th scope="col" class="text-nowrap">権限</th>
+        <th scope="col" class="text-nowrap"><%= t('権限') %></th>
 <% if @current_member.power_admin? %>
         <th scope="col" class="text-nowrap">
-          招待者
+          <%= t('招待者') %>
           <%= render 'only_icon', power: :admin %>
         </th>
 <% end %>
         <th scope="col" class="text-nowrap">
-          招待日時
+          <%= t('招待日時') %>
           <i class="fas fa-sort-down"></i>
         </th>
 <% if @current_member.power_admin? %>
         <th scope="col" class="text-nowrap">
-          更新者
+          <%= t('更新者') %>
           <%= render 'only_icon', power: :admin %>
         </th>
         <th scope="col" class="text-nowrap">
-          更新日時
+          <%= t('更新日時') %>
           <%= render 'only_icon', power: :admin %>
         </th>
 <% end %>
@@ -45,7 +45,7 @@
 <% if !@current_member.power_admin? || member == @current_member %>
       <tr class="align-middle">
 <% else %>
-      <tr class="align-middle<%= ' row_active' if member.user.code == params[:active] %> dblclick_to_link" href="<%= edit_member_path(@space.code, member.user.code) %>">
+      <tr class="align-middle<%= ' row_active' if member.user.code == params[:active] %> dblclick_to_link" href="<%= edit_member_path(space_code: @space.code, user_code: member.user.code) %>">
 <% end %>
 <% if @current_member.power_admin? %>
         <%# (メンバー解除) %>
@@ -70,7 +70,7 @@
         <%# 権限 %>
         <td class="text-nowrap px-1 py-2">
 <% if @current_member.power_admin? && member != @current_member %>
-          <a href="<%= edit_member_path(@space.code, member.user.code) %>">
+          <a href="<%= edit_member_path(space_code: @space.code, user_code: member.user.code) %>">
 <% end %>
             <i class="fas <%= power_class_name(member.power) %> text-body"></i>
             <%= member.power_i18n %>

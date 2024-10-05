@@ -16,11 +16,11 @@ RSpec.describe 'members/index', type: :view do
 
   it '対象の送信先と項目が含まれる' do
     render
-    assert_select 'form[action=?][method=?]', members_path(@space.code), 'get' do
+    assert_select 'form[action=?][method=?]', members_path(space_code: @space.code), 'get' do
       assert_select 'input[name=?]', 'text'
       assert_select 'button[type=?]', 'submit'
       assert_select 'input[name=?]', 'option'
-      Member.powers.each do |key, _value|
+      Member.powers.each_key do |key|
         assert_select 'input[name=?]', "power[#{key}]"
       end
       assert_select 'input[name=?]', 'active'

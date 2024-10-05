@@ -8,7 +8,7 @@ RSpec.describe 'invitations/new', type: :view do
 
   it '対象の送信先と項目が含まれる' do
     render
-    assert_select 'form[action=?][method=?]', create_invitation_path(@space.code), 'post' do
+    assert_select 'form[action=?][method=?]', create_invitation_path(space_code: @space.code), 'post' do
       assert_select 'textarea[name=?]', 'invitation[domains]'
       assert_select 'input[name=?]', 'invitation[power]'
       assert_select 'input[name=?]', 'invitation[ended_date]'

@@ -1,13 +1,13 @@
 <% validate_enabled = @member.errors.any? %>
-<%= form_with(model: @member, url: create_member_path(@space.code), html: { method: :post, novalidate: true, autocomplete: 'on' }, data: { turbo: false }) do |form| %>
+<%= form_with(model: @member, url: create_member_path(space_code: @space.code), html: { method: :post, novalidate: true, autocomplete: 'on' }, data: { turbo: false }) do |form| %>
   <div class="row">
     <div class="col-md-2 text-md-end">
-      <%= form.label :emails, 'メンバー', class: "form-label" %> <span style="color: red">*</span>
+      <%= form.label :emails, t('メンバー'), class: "form-label" %> <span style="color: red">*</span>
     </div>
     <div class="col-md-10">
       <div class="form-outline<%= input_size_class_name(@member, :emails) %>">
         <%= form.text_area :emails, rows: 5, class: "form-control#{validate_class_name(validate_enabled, @member, :emails)}" %>
-        <%= form.label :emails, class: 'form-label', for: 'member_emails' %>
+        <%= form.label :emails, t('メールアドレス'), class: 'form-label', for: 'member_emails' %>
         <%= render '/users/shared/field_error_messages', messages: @member.errors[:emails] %>
       </div>
     </div>
@@ -15,11 +15,11 @@
 
   <div class="row">
     <div class="col-md-2 text-md-end">
-      <%= form.label :power, class: "form-label" %> <span style="color: red">*</span>
+      <%= form.label :power, t('権限'), class: "form-label" %> <span style="color: red">*</span>
     </div>
     <div class="col-md-10">
       <div class="<%= input_size_class_name_vertical(validate_enabled, @member, :power) %>">
-<% Member.powers.each do |key, _value| %>
+<% Member.powers.each_key do |key| %>
         <div class="form-check form-check-inline<%= validate_class_name(validate_enabled, @member, :power) %>">
           <%= form.radio_button :power, key, class: "form-check-input#{validate_class_name(validate_enabled, @member, :power)}" %>
           <%= form.label key, Member.powers_i18n[key], class: 'form-check-label', for: "member_power_#{key}" %>
@@ -33,7 +33,7 @@
   <div class="row">
     <div class="col-md-2"></div>
     <div class="col-md-10">
-      <%= form.submit '招待', type: 'button', onclick: 'submit()', class: 'btn btn-primary' %>
+      <%= form.submit t('招待'), type: 'button', onclick: 'submit()', class: 'btn btn-primary' %>
     </div>
   </div>
 <% end %>

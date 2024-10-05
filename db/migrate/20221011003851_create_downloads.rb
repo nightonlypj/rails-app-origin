@@ -21,7 +21,7 @@ class CreateDownloads < ActiveRecord::Migration[6.1]
 
       t.timestamps
     end
-    add_index :downloads, [:user_id, :requested_at], name: 'index_downloads1'
-    add_index :downloads, :completed_at,             name: 'index_downloads2'
+    add_index :downloads, %i[user_id requested_at], name: 'index_downloads1'
+    add_index :downloads, :completed_at,            name: 'index_downloads2'
   end
 end

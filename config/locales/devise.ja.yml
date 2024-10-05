@@ -19,7 +19,7 @@ ja:
         reset_password_token: 'パスワードリセットトークン'
         reset_password_sent_at: 'パスワードリセット送信日時'
         allow_password_change: 'パスワード再設定中'
-        remember_me: 'ログイン状態を維持する'
+        remember_me: 'ログイン状態を維持'
         remember_created_at: 'ログイン状態維持開始日時'
         sign_in_count: 'ログイン回数'
         current_sign_in_at: '現在のログイン日時'
@@ -47,7 +47,7 @@ ja:
         current_password: '現在のパスワード'
         reset_password_token: 'パスワードリセットトークン'
         reset_password_sent_at: 'パスワードリセット送信日時'
-        remember_me: 'ログイン状態を維持する'
+        remember_me: 'ログイン状態を維持'
         remember_created_at: 'ログイン状態維持開始日時'
         sign_in_count: 'ログイン回数'
         current_sign_in_at: '現在のログイン日時'
@@ -138,7 +138,7 @@ ja:
       not_found: 'ユーザーが見つかりません。'
       not_locked: 'ロックされていません。'
       not_saved:
-        one: '入力内容を確認してください。'
+        one:   '入力内容を確認してください。'
         other: '入力内容を確認してください。'
   devise:
     registrations:

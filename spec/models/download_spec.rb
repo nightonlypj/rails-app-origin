@@ -7,7 +7,7 @@ RSpec.describe Download, type: :model do
   # テストパターン
   #   ない, 正常値
   describe 'validates :target' do
-    let(:model) { FactoryBot.build_stubbed(:download, target:) }
+    subject(:model) { FactoryBot.build_stubbed(:download, target:) }
 
     # テストケース
     context 'ない' do
@@ -25,7 +25,7 @@ RSpec.describe Download, type: :model do
   # テストパターン
   #   ない, 正常値
   describe 'validates :format' do
-    let(:model) { FactoryBot.build_stubbed(:download, format:) }
+    subject(:model) { FactoryBot.build_stubbed(:download, format:) }
 
     # テストケース
     context 'ない' do
@@ -43,7 +43,7 @@ RSpec.describe Download, type: :model do
   # テストパターン
   #   ない, 正常値
   describe 'validates :char_code' do
-    let(:model) { FactoryBot.build_stubbed(:download, char_code:) }
+    subject(:model) { FactoryBot.build_stubbed(:download, char_code:) }
 
     # テストケース
     context 'ない' do
@@ -61,7 +61,7 @@ RSpec.describe Download, type: :model do
   # テストパターン
   #   ない, 正常値
   describe 'validates :newline_code' do
-    let(:model) { FactoryBot.build_stubbed(:download, newline_code:) }
+    subject(:model) { FactoryBot.build_stubbed(:download, newline_code:) }
 
     # テストケース
     context 'ない' do
@@ -79,7 +79,7 @@ RSpec.describe Download, type: :model do
   # テストパターン
   #   ない, 正常値, 文字列, 文字列（ハッシュ）, 存在しない値を含む
   describe 'validates :output_items' do
-    let(:model) { FactoryBot.build_stubbed(:download, output_items:) }
+    subject(:model) { FactoryBot.build_stubbed(:download, output_items:) }
 
     # テストケース
     context 'ない' do
@@ -110,7 +110,7 @@ RSpec.describe Download, type: :model do
 
   # 選択項目
   describe 'validates :select_items' do
-    let(:model) { FactoryBot.build_stubbed(:download, target:, select_items:) }
+    subject(:model) { FactoryBot.build_stubbed(:download, target:, select_items:) }
 
     # テストケース
     shared_examples_for 'ない' do |valid|
@@ -153,7 +153,7 @@ RSpec.describe Download, type: :model do
   # テストパターン
   #   ない, 正常値, 文字列, 文字列（配列）
   describe 'validates :search_params' do
-    let(:model) { FactoryBot.build_stubbed(:download, target:, search_params:) }
+    subject(:model) { FactoryBot.build_stubbed(:download, target:, search_params:) }
 
     # テストケース
     shared_examples_for 'ない' do |valid|

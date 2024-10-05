@@ -1,0 +1,320 @@
+en:
+  app_name: 'RailsAppOrigin'
+  sub_title: ': base application'
+  env_name:
+    development: ' [Development]'
+    test: ' [Test]'
+    staging: ' [Staging]'
+    production: ''
+  my_name: 'My name'
+  my_url: 'https://example.com'
+  activerecord:
+    models:
+      holiday: 'Holiday'
+      infomation: 'Infomation'
+      space: 'Space'
+      invitation: 'Invitation'
+      member: 'Member'
+      download: 'Download'
+      download_file: 'Download file'
+    attributes:
+      holiday:
+        id: 'ID'
+        date: 'Date'
+        name: 'Name'
+      infomation:
+        id: 'ID'
+        locale: 'locale'
+        label: 'Label'
+        title: 'Title'
+        summary: 'Summary'
+        body: 'Body'
+        started_at: 'Start datetime'
+        ended_at: 'End datetime'
+        force_started_at: 'Forced display start datetime'
+        force_ended_at: 'Forced display start datetime'
+        target: 'Target'
+        user: 'User'
+        created_at: 'Created datetime'
+        updated_at: 'Updated datetime'
+      space:
+        id: 'ID'
+        code: 'Code'
+        image: 'Image'
+        name: 'Name'
+        description: 'Description'
+        private: 'Private'
+        destroy_requested_at: 'Deletion request datetime'
+        destroy_schedule_at: 'Scheduled deletion datetime'
+        created_user: 'Created user'
+        last_updated_user: 'Last updated user'
+        created_at: 'Created datetime'
+        updated_at: 'Updated datetime'
+      invitation:
+        id: 'ID'
+        code: 'Code'
+        space: 'Space'
+        email: 'Email address'
+        domains: 'Domain'
+        power: 'Power'
+        memo: 'Memo'
+        ended_at: 'End datetime'
+        destroy_requested_at: 'Deletion request datetime'
+        destroy_schedule_at: 'Scheduled deletion datetime'
+        email_joined_at: 'Participation datetime'
+        created_user: 'Created user'
+        last_updated_user: 'Last updated user'
+        created_at: 'Created datetime'
+        updated_at: 'Updated datetime'
+        ended_date: 'Deadline (Date)'
+        ended_time: 'Deadline (Hours)'
+        ended_zone: 'Deadline (Time zone)'
+      member:
+        id: 'ID'
+        space: 'Space'
+        user: 'User'
+        power: 'Power'
+        invitationed_user: 'Invitationed user'
+        last_updated_user: 'Last updated user'
+        invitationed_at: 'Invitation datetime'
+        created_at: 'Created datetime'
+        updated_at: 'Updated datetime'
+        emails: 'Email address'
+      download:
+        id: 'ID'
+        user: 'User'
+        status: 'Status'
+        requested_at: 'Request datetime'
+        completed_at: 'Completion datetime'
+        error_message: 'Error message'
+        last_downloaded_at: 'Last download datetime'
+        model: 'Model'
+        space: 'Space'
+        target: 'Target'
+        format: 'Format'
+        char_code: 'Character code'
+        newline_code: 'New line code'
+        output_items: 'Output items'
+        search_params: 'Search parameters'
+        select_items: 'Selected items'
+        created_at: 'Created datetime'
+        updated_at: 'Updated datetime'
+      download_file:
+        id: 'ID'
+        download: 'Download'
+        body: 'Body'
+        created_at: 'Created datetime'
+        updated_at: 'Updated datetime'
+    errors:
+      models:
+        holiday:
+          attributes:
+            date:
+              blank: 'Please enter.'
+              taken: 'Same date exists.'
+            name:
+              blank: 'Please enter.'
+        infomation:
+          attributes:
+            locale:
+              inclusion: 'Please select.'
+            label:
+              blank: 'Please select.'
+            title:
+              blank: 'Please enter.'
+            started_at:
+              blank: 'Please enter.'
+            target:
+              blank: 'Please select.'
+            user:
+              blank: 'Please select.'
+        space:
+          attributes:
+            code:
+              blank: 'Please contact us or start over.'
+              taken: 'Processing failed. Please wait a while and try again.'
+            name:
+              blank: 'Please enter.'
+              too_short: 'Please enter at least %{count} characters.'
+              too_long: 'Please enter no more than %{count} characters.'
+              taken: 'A space with the same name exists.'
+            private:
+              inclusion: 'Please select.'
+            description:
+              too_long: 'Please enter no more than %{count} characters.'
+        invitation:
+          attributes:
+            code:
+              blank: 'Please contact us or start over.'
+              taken: 'Processing failed. Please wait a while and try again.'
+            domains:
+              blank: 'Please enter.'
+              max_count: 'The maximum number of items (%{count} items) has been exceeded.'
+              invalid: 'Invalid format. (%{domain})'
+            power:
+              blank: 'Please select.'
+            memo:
+              too_long: 'Please enter no more than %{count} characters.'
+            ended_date:
+              invalid: 'Invalid format.'
+              notfound: 'Date does not exist.'
+              before: 'Please enter a future date.'
+            ended_time:
+              blank: 'Please enter.'
+              invalid: 'Invalid format.'
+              before: 'Please enter a future time.'
+            ended_zone:
+              invalid: 'Invalid format.'
+        member:
+          attributes:
+            power:
+              blank: 'Please select.'
+            emails:
+              blank: 'Please enter.'
+              max_count: 'The maximum number of items (%{count} items) has been exceeded.'
+              invalid: 'Invalid format. (%{email})'
+        download:
+          attributes:
+            target:
+              blank: 'Please select.'
+            format:
+              blank: 'Please select.'
+            char_code:
+              blank: 'Please select.'
+            newline_code:
+              blank: 'Please select.'
+            output_items:
+              blank: 'Please select.'
+              invalid: 'Invalid format.'
+              not_exist: 'Value does not exist. (%{key})'
+            select_items:
+              blank: 'Please select.'
+              invalid: 'Invalid format.'
+            search_params:
+              blank: 'Please select.'
+              invalid: 'Invalid format.'
+  items:
+    member:
+      user.name: 'Member'
+      user.email: 'Email address'
+      power: 'Power'
+      invitationed_user.name: 'Invitationed user'
+      invitationed_at: 'Invitation datetime'
+      last_updated_user.name: 'Last updated user'
+      last_updated_at: 'Last updated datetime'
+  enums:
+    infomation:
+      label:
+        not: ''
+        maintenance: 'Maintenance'
+        hindrance: 'Hindrance'
+        update: 'Update'
+        other: 'Other'
+      target:
+        all: 'Everyone'
+        user: 'Target users only'
+    invitation:
+      power:
+        admin: 'Administrator'
+        writer: 'Writer'
+        reader: 'Reader'
+      status:
+        active: 'Active'
+        expired: 'Expired'
+        deleted: 'Deleted'
+        email_joined: 'Participated'
+    member:
+      power:
+        admin: 'Administrator'
+        writer: 'Writer'
+        reader: 'Reader'
+    download:
+      status:
+        waiting: 'Waiting'
+        processing: 'Processing'
+        success: 'Success'
+        failure: 'Failure'
+      model:
+        member: 'Member'
+      target:
+        select: 'Selected items'
+        search: 'Search'
+        all: 'All'
+      format:
+        csv: 'CSV'
+        tsv: 'TSV'
+      char_code:
+        sjis: 'Shift_JIS'
+        eucjp: 'EUC-JP'
+        utf8: 'UTF-8'
+      newline_code:
+        crlf: 'CR+LF'
+        lf: 'LF'
+        cr: 'CR'
+  errors:
+    messages:
+      param:
+        blank: 'No value.'
+        not_exist: 'Value does not exist.'
+      infomation:
+        ended: 'The publication period has ended.'
+  alert:
+    page:
+      notfound: 'Page Not Found.'
+    user:
+      destroy_reserved: 'This operation is not possible because your account is scheduled to be deleted.'
+      not_destroy_reserved: 'It has already been canceled or the account has not been deleted.'
+      forbidden: 'You do not have access privileges.'
+      destroy:
+        params_blank: 'No parameters specified.'
+        undo_delete_url_blank: 'No undo_delete_url specified.'
+        undo_delete_url_not_allowed: 'No undo_delete_url specified.'
+    space:
+      destroy_reserved: 'This operation cannot be performed because the space is scheduled to be deleted.'
+      not_destroy_reserved: 'It has already been canceled or the space has not been deleted.'
+    invitation:
+      email_joined: 'You cannot perform this operation because you have already participated.'
+      notfound: 'The invitation URL does not exist or has expired. Please check with the publisher.'
+    member:
+      destroy:
+        codes:
+          blank: 'No cancellation target specified.'
+          myself: 'I cannot cancel it myself. Please ask another administrator.'
+          notfound: 'Unable to find release target.'
+    download:
+      notfound: 'File not found.'
+      status:
+        failure: 'Failed to create download file. Please contact us or try again.'
+  notice:
+    user:
+      image_update: 'The image has been changed.'
+      image_destroy: 'The image has been deleted.'
+    space:
+      create: 'I created a space.'
+      update: 'I changed the space settings.'
+      destroy: 'Space deletion accepted.'
+      undo_destroy: 'Space deletion has been canceled.'
+    invitation:
+      create: 'I have created an invitation URL.'
+      update: 'The invitation URL settings have been changed.'
+      copy_success: 'Copied to clipboard.'
+    member:
+      create: 'Member invitation processing has been completed. Check the results.'
+      update: 'Member information has been changed.'
+      destroy: 'Destroyed %{destroy_count} members.'
+      destroy_include_notfound: '%{destroy_count} of %{count} members have been canceled.'
+      destroy_include_myself:   '%{destroy_count} of %{count} members have been canceled. (You cannot cancel it yourself. Please ask another administrator.)'
+    download:
+      create: 'We have started creating the download file.'
+      status:
+        waiting:    'We have started creating the download file. Please wait for a while until it is completed.'
+        processing: 'We have started creating the download file. Please wait for a while until it is completed.'
+        success: 'Creation of the download file is complete. Please download from the download results.'
+  mailer:
+    user:
+      destroy_reserved:
+        subject: '%{env_name}[%{app_name}] Notice of acceptance of account deletion'
+      undo_destroy_reserved:
+        subject: '%{env_name}[%{app_name}] Notice of completion of account deletion cancellation'
+      destroy_completed:
+        subject: '%{env_name}[%{app_name}] Notice of completion of account deletion'

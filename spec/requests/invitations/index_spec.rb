@@ -21,6 +21,7 @@ RSpec.describe 'Invitations', type: :request do
   #   ＋Acceptヘッダ: HTMLが含まれる, JSONが含まれる
   describe 'GET #index' do
     subject { get invitations_path(space_code: space.code, page: subject_page, format: subject_format), headers: auth_headers.merge(accept_headers) }
+
     let_it_be(:created_user) { FactoryBot.create(:user) }
 
     # テスト内容
@@ -28,7 +29,7 @@ RSpec.describe 'Invitations', type: :request do
       it 'HTTPステータスが200。対象項目が含まれる' do
         is_expected.to eq(200)
         expect_space_html(response, space)
-        expect(response.body).to include("href=\"#{new_invitation_path(space.code)}\"") # 招待URL作成
+        expect(response.body).to include("href=\"#{new_invitation_path(space_code: space.code)}\"") # 招待URL作成
       end
     end
     shared_examples_for 'ToOK(json/json)' do
@@ -36,7 +37,7 @@ RSpec.describe 'Invitations', type: :request do
       let(:accept_headers) { ACCEPT_INC_JSON }
       it 'HTTPステータスが200。対象項目が一致する' do
         is_expected.to eq(200)
-        expect(response_json['success']).to eq(true)
+        expect(response_json['success']).to be(true)
 
         expect(response_json_space['code']).to eq(space.code)
         expect_image_json(response_json_space, space)
@@ -89,7 +90,7 @@ RSpec.describe 'Invitations', type: :request do
       let(:subject_page) { 1 }
       it '存在しないメッセージが含まれる' do
         subject
-        expect(response.body).to include('対象の招待URLが見つかりません。')
+        expect(response.body).to include(I18n.t('対象の%{name}が見つかりません。', name: I18n.t('招待URL')))
       end
     end
     shared_examples_for 'リスト表示' do |page|
@@ -110,7 +111,7 @@ RSpec.describe 'Invitations', type: :request do
             expect(response.body).not_to include(url)
           end
           # ステータス
-          url = "href=\"#{edit_invitation_path(space.code, invitation.code)}\""
+          url = "href=\"#{edit_invitation_path(space_code: space.code, code: invitation.code)}\""
           if invitation.status == :email_joined
             expect(response.body).not_to include(url)
           else

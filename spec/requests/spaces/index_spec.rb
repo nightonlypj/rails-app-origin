@@ -58,7 +58,7 @@ RSpec.describe 'Spaces', type: :request do
       let(:accept_headers) { ACCEPT_INC_JSON }
       it 'HTTPステータスが200。対象項目が一致する' do
         is_expected.to eq(200)
-        expect(response_json['success']).to eq(true)
+        expect(response_json['success']).to be(true)
         expect(response_json['search_params']).to eq(default_params.stringify_keys)
 
         expect(response_json_space['total_count']).to eq(spaces.count)
@@ -98,7 +98,7 @@ RSpec.describe 'Spaces', type: :request do
       let(:subject_page) { 1 }
       it '存在しないメッセージが含まれる' do
         subject
-        expect(response.body).to include('スペースが見つかりません。')
+        expect(response.body).to include(I18n.t('対象の%{name}が見つかりません。', name: I18n.t('スペース')))
       end
     end
     shared_examples_for 'リスト表示' do |page|
@@ -117,7 +117,7 @@ RSpec.describe 'Spaces', type: :request do
           # 説明
           expect(response.body).to include(space.description)
           # (アクション)
-          url = "href=\"#{members_path(space.code)}\""
+          url = "href=\"#{members_path(space_code: space.code)}\""
           if @members[space.id].present?
             expect(response.body).to include(Member.powers_i18n[@members[space.id]])
             expect(response.body).to include(url)
@@ -344,6 +344,7 @@ RSpec.describe 'Spaces', type: :request do
   #   部分一致（大文字・小文字を区別しない）, 不一致: 名称, 説明
   describe 'GET #index (.search)' do
     subject { get spaces_path(format: subject_format), params:, headers: auth_headers.merge(accept_headers) }
+
     let_it_be(:created_user) { FactoryBot.create(:user) }
     let_it_be(:nojoin_space) { FactoryBot.create(:space, :public, name: 'space(Aaa)', description: 'description(Bbb)', created_user:) }
     let_it_be(:join_space)   { FactoryBot.create(:space, :public, name: 'space(Bbb)', description: 'description(Aaa)', created_user:) }
@@ -358,7 +359,7 @@ RSpec.describe 'Spaces', type: :request do
           expect(response_json_spaces.count).to eq(0)
         else
           # HTML
-          expect(response.body).to include('スペースが見つかりません。')
+          expect(response.body).to include(I18n.t('対象の%{name}が見つかりません。', name: I18n.t('スペース')))
         end
       end
     end

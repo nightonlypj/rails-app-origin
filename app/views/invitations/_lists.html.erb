@@ -3,25 +3,25 @@
   <table class="table table-sm table-hover table_invitations">
     <thead class="table-light">
       <tr>
-        <th scope="col" class="text-nowrap">招待URL</th>
-        <th scope="col" class="text-nowrap">ステータス</th>
-        <th scope="col" class="text-nowrap">メールアドレス</th>
-        <th scope="col" class="text-nowrap">権限</th>
-        <th scope="col" class="text-nowrap">期限</th>
-        <th scope="col" class="text-nowrap">メモ</th>
-        <th scope="col" class="text-nowrap">作成者</th>
+        <th scope="col" class="text-nowrap"><%= t('招待URL') %></th>
+        <th scope="col" class="text-nowrap"><%= t('ステータス') %></th>
+        <th scope="col" class="text-nowrap"><%= t('メールアドレス') %></th>
+        <th scope="col" class="text-nowrap"><%= t('権限') %></th>
+        <th scope="col" class="text-nowrap"><%= t('期限') %></th>
+        <th scope="col" class="text-nowrap"><%= t('メモ') %></th>
+        <th scope="col" class="text-nowrap"><%= t('作成者') %></th>
         <th scope="col" class="text-nowrap">
-          作成日時
+          <%= t('作成日時') %>
           <i class="fas fa-sort-down"></i>
         </th>
-        <th scope="col" class="text-nowrap">更新者</th>
-        <th scope="col" class="text-nowrap">更新日時</th>
+        <th scope="col" class="text-nowrap"><%= t('更新者') %></th>
+        <th scope="col" class="text-nowrap"><%= t('更新日時') %></th>
       </tr>
     </thead>
     <tbody>
 <% @invitations.each do |invitation| %>
 <% if invitation.status != :email_joined %>
-      <tr class="align-middle <%= invitation.status == :active ? 'row_active' : 'row_inactive' %> dblclick_to_link" href="<%= edit_invitation_path(@space.code, invitation.code) %>">
+      <tr class="align-middle <%= invitation.status == :active ? 'row_active' : 'row_inactive' %> dblclick_to_link" href="<%= edit_invitation_path(space_code: @space.code, code: invitation.code) %>">
 <% else %>
       <tr class="align-middle row_inactive">
 <% end %>
@@ -29,7 +29,7 @@
 <% if invitation.status == :active %>
         <td class="text-center ps-2 pe-1 py-2">
           <button type="submit" class="btn btn-light btn-floating click_to_copy_clipboard" text="<%= "#{request.base_url}#{new_user_registration_path}?code=#{invitation.code}" %>">
-            <i class="far fa-copy fa-lg" data-mdb-toggle="tooltip" data-mdb-placement="bottom" title="クリップボードにコピー"></i>
+            <i class="far fa-copy fa-lg" data-mdb-toggle="tooltip" data-mdb-placement="bottom" title="<%= t('クリップボードにコピー') %>"></i>
           </button>
 <% else %>
         <td class="ps-2 pe-1 py-2">
@@ -38,7 +38,7 @@
         <%# ステータス %>
         <td class="text-nowrap ps-2 pe-1 py-2">
 <% if invitation.status != :email_joined %>
-          <a href="<%= edit_invitation_path(@space.code, invitation.code) %>">
+          <a href="<%= edit_invitation_path(space_code: @space.code, code: invitation.code) %>">
 <% end %>
 <% if invitation.status == :active %>
             <i class="fas fa-check-circle text-success"></i>
@@ -69,7 +69,7 @@
         </td>
         <%# 期限 %>
         <td class="text-center ps-1 pe-2 py-2">
-          <%= l(invitation.ended_at, default: 'なし') %>
+          <%= l(invitation.ended_at, default: t('なし')) %>
         </td>
         <%# メモ %>
         <td class="ps-2 pe-1 py-2">

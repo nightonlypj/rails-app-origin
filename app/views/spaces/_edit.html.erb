@@ -1,8 +1,8 @@
 <% validate_enabled = @space.errors.any? %>
-<%= form_with(model: @space, url: update_space_path(@space.code), html: { method: :post, novalidate: true, autocomplete: 'on' }, data: { turbo: false }) do |form| %>
+<%= form_with(model: @space, url: update_space_path(code: @space.code), html: { method: :post, novalidate: true, autocomplete: 'on' }, data: { turbo: false }) do |form| %>
   <div class="row">
     <div class="col-md-2 text-md-end mt-1">
-      <%= form.label :created_at, '作成', class: "form-label" %>
+      <%= form.label :created_at, t('作成情報'), class: "form-label" %>
     </div>
     <div class="col-md-10">
       <%= l(@space.created_at) %>
@@ -15,7 +15,7 @@
 <% if @space.last_updated_at.present? || @space.last_updated_user.present? %>
   <div class="row">
     <div class="col-md-2 text-md-end mt-1">
-      <%= form.label :last_updated_at, '更新', class: "form-label" %>
+      <%= form.label :last_updated_at, t('更新情報'), class: "form-label" %>
     </div>
     <div class="col-md-10 mb-2">
       <%= l(@space.last_updated_at, default: 'N/A') %>
@@ -28,11 +28,11 @@
 
   <div class="row">
     <div class="col-md-2 text-md-end mt-1">
-      <%= form.label :name, '名称', class: "form-label" %> <span style="color: red">*</span>
+      <%= form.label :name, t('名称'), class: "form-label" %> <span style="color: red">*</span>
     </div>
     <div class="col-md-10">
       <div class="<%= input_size_class_name(@space, :name) %>">
-        <%= form.text_field :name, placeholder: 'スペース名を入力', autocomplete: 'off', class: "form-control#{validate_class_name(validate_enabled, @space, :name)}" %>
+        <%= form.text_field :name, placeholder: t('スペース名を入力'), autocomplete: 'off', class: "form-control#{validate_class_name(validate_enabled, @space, :name)}" %>
         <%= render '/users/shared/field_error_messages', messages:  @space.errors[:name] %>
       </div>
     </div>
@@ -40,11 +40,11 @@
 
   <div class="row">
     <div class="col-md-2 text-md-end mt-1">
-      <%= form.label :description, '説明', class: "form-label" %>
+      <%= form.label :description, t('説明'), class: "form-label" %>
     </div>
     <div class="col-md-10">
       <div class="<%= input_size_class_name(@space, :description) %>">
-        <%= form.text_area :description, placeholder: 'スペースの説明を入力', rows: 5, class: "form-control#{validate_class_name(validate_enabled, @space, :description)}" %>
+        <%= form.text_area :description, placeholder: t('スペースの説明を入力'), rows: 5, class: "form-control#{validate_class_name(validate_enabled, @space, :description)}" %>
         <%= render '/users/shared/field_error_messages', messages: @space.errors[:description] %>
       </div>
     </div>
@@ -53,17 +53,17 @@
 <% if Settings.enable_public_space %>
   <div class="row">
     <div class="col-md-2 text-md-end mt-1">
-      <%= form.label :private, '表示', class: "form-label" %> <span style="color: red">*</span>
+      <%= form.label :private, t('範囲'), class: "form-label" %> <span style="color: red">*</span>
     </div>
     <div class="col-md-10">
       <div class="<%= input_size_class_name_vertical(validate_enabled, @space, :private) %>">
         <div class="form-check form-check-inline<%= validate_class_name(validate_enabled, @space, :private) %>">
           <%= form.radio_button :private, false, class: "form-check-input#{validate_class_name(validate_enabled, @space, :private)}" %>
-          <%= form.label false, '誰でも表示できる（公開）', class: 'form-check-label', for: "space_private_false" %>
+          <%= form.label false, t('誰でも表示できる（公開）'), class: 'form-check-label', for: "space_private_false" %>
         </div>
         <div class="form-check form-check-inline<%= validate_class_name(validate_enabled, @space, :private) %>">
           <%= form.radio_button :private, true, class: "form-check-input#{validate_class_name(validate_enabled, @space, :private)}" %>
-          <%= form.label true, 'メンバーのみ表示できる（非公開）', class: 'form-check-label', for: "space_private_true" %>
+          <%= form.label true, t('メンバーのみ表示できる（非公開）'), class: 'form-check-label', for: "space_private_true" %>
         </div>
         <%= render '/users/shared/field_error_messages', messages: @space.errors[:private] %>
       </div>
@@ -73,7 +73,7 @@
 
   <div class="row">
     <div class="col-md-2 text-md-end mt-3">
-      <%= form.label :image, '画像', class: "form-label" %>
+      <%= form.label :image, t('画像'), class: "form-label" %>
     </div>
     <div class="col-md-10">
       <div class="d-flex align-items-center pb-1">
@@ -81,7 +81,7 @@
 <% if @space.image? %>
         <div class="form-check ms-3 mb-0">
           <%= form.check_box :image_delete, class: 'form-check-input' %>
-          <%= form.label :image_delete, '削除（初期画像に戻す）', class: 'form-check-label', for: 'space_image_delete' %>
+          <%= form.label :image_delete, t('削除（初期画像に戻す）'), class: 'form-check-label', for: 'space_image_delete' %>
         </div>
 <% end %>
       </div>
@@ -95,7 +95,7 @@
   <div class="row">
     <div class="col-md-2"></div>
     <div class="col-md-10">
-      <%= form.submit '変更', type: 'button', onclick: 'submit()', class: 'btn btn-primary' %>
+      <%= form.submit t('変更'), type: 'button', onclick: 'submit()', class: 'btn btn-primary' %>
     </div>
   </div>
 <% end %>

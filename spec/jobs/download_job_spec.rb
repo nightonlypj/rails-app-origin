@@ -157,21 +157,21 @@ RSpec.describe DownloadJob, type: :job do
         it_behaves_like 'ToRaise', 'space not found.'
         it_behaves_like 'NG', 'space not found.'
       end
-      context 'modelが存在しない' do
-        # let_it_be(:download) { FactoryBot.create(:download, :skip_validate, user: user, model: 'xxx') } # NOTE: 'xxx' is not a valid model
-        # it_behaves_like 'ToRaise', 'model not found.(xxx)'
-        # it_behaves_like 'NG', 'model not found.(xxx)'
-      end
-      context 'modelがない' do
-        # let_it_be(:download) { FactoryBot.create(:download, :skip_validate, user: user, model: nil) } # NOTE: ActiveRecord::NotNullViolation
-        # it_behaves_like 'ToRaise', 'model not found.()'
-        # it_behaves_like 'NG', 'model not found.()'
-      end
+      # context 'modelが存在しない' do
+      #   let_it_be(:download) { FactoryBot.create(:download, :skip_validate, user: user, model: 'xxx') } # NOTE: 'xxx' is not a valid model
+      #   it_behaves_like 'ToRaise', 'model not found.(xxx)'
+      #   it_behaves_like 'NG', 'model not found.(xxx)'
+      # end
+      # context 'modelがない' do
+      #   let_it_be(:download) { FactoryBot.create(:download, :skip_validate, user: user, model: nil) } # NOTE: ActiveRecord::NotNullViolation
+      #   it_behaves_like 'ToRaise', 'model not found.()'
+      #   it_behaves_like 'NG', 'model not found.()'
+      # end
     end
     context '出力項目がない' do
       let_it_be(:download) { FactoryBot.create(:download, :skip_validate, user:, model: 'member', space:, output_items: '[]') }
-      it_behaves_like 'ToRaise', 'Translation missing: ja.activerecord.errors.messages.record_invalid'
-      it_behaves_like 'NG', 'Translation missing: ja.activerecord.errors.messages.record_invalid'
+      it_behaves_like 'ToRaise', I18n.locale == :ja ? 'バリデーションに失敗しました: 出力項目選択してください。' : 'Validation failed: Output items Please select.'
+      it_behaves_like 'NG', I18n.locale == :ja ? 'バリデーションに失敗しました: 出力項目選択してください。' : 'Validation failed: Output items Please select.'
     end
   end
 end

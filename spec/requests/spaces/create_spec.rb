@@ -14,6 +14,7 @@ RSpec.describe 'Spaces', type: :request do
   #   ＋Acceptヘッダ: HTMLが含まれる, JSONが含まれる
   describe 'POST #create' do
     subject { post create_space_path(format: subject_format), params:, headers: auth_headers.merge(accept_headers) }
+
     let_it_be(:valid_attributes)   { FactoryBot.attributes_for(:space).except(:code) }
     let_it_be(:exist_attributes)   { valid_attributes.merge(name: FactoryBot.create(:space, :public).name) }
     let_it_be(:invalid_attributes) { valid_attributes.merge(name: nil) }
@@ -43,13 +44,13 @@ RSpec.describe 'Spaces', type: :request do
     end
     shared_examples_for 'NG' do
       it 'スペースとメンバーが作成されない' do
-        expect { subject }.to change(Space, :count).by(0) && change(Member, :count).by(0)
+        expect { subject }.not_to change(Space, :count) && change(Member, :count)
       end
     end
 
     shared_examples_for 'ToOK(html/*)' do
       it '作成したスペースにリダイレクトする' do
-        is_expected.to redirect_to(space_path(current_space.code))
+        is_expected.to redirect_to(space_path(code: current_space.code))
         expect(flash[:alert]).to be_nil
         expect(flash[:notice]).to eq(get_locale('notice.space.create'))
       end
@@ -59,7 +60,7 @@ RSpec.describe 'Spaces', type: :request do
       let(:accept_headers) { ACCEPT_INC_JSON }
       it 'HTTPステータスが201。対象項目が一致する' do
         is_expected.to eq(201)
-        expect(response_json['success']).to eq(true)
+        expect(response_json['success']).to be(true)
         expect(response_json['notice']).to eq(get_locale('notice.space.create'))
 
         count = expect_space_json(response_json_space, current_space, :admin, 1)

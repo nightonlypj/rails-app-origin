@@ -28,7 +28,7 @@ RSpec.describe 'top/index', type: :view do
       end
       @public_spaces.each do |space| # 公開スペース
         expect(rendered).to include(space.name)
-        expect(rendered).to include("\"#{space_path(space.code)}\"")
+        expect(rendered).to include("\"#{space_path(code: space.code)}\"")
       end
     end
   end

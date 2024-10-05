@@ -11,7 +11,7 @@ RSpec.describe 'invitations/edit', type: :view do
   shared_examples_for '表示' do |delete, undo_delete|
     it '対象の送信先と項目が含まれる' do
       render
-      assert_select 'form[action=?][method=?]', update_invitation_path(@space.code, @invitation.code), 'post' do
+      assert_select 'form[action=?][method=?]', update_invitation_path(space_code: @space.code, code: @invitation.code), 'post' do
         assert_select 'input[name=?]', 'invitation[ended_date]'
         assert_select 'input[name=?]', 'invitation[ended_time]'
         assert_select 'input[name=?]', 'invitation[memo]'

@@ -98,7 +98,7 @@ RSpec.describe 'Users::Auth::Sessions', type: :request do
       let(:subject_format) { :json }
       let(:accept_headers) { ACCEPT_INC_JSON }
       it 'メールが送信されない' do
-        expect { subject }.to change(ActionMailer::Base.deliveries, :count).by(0)
+        expect { subject }.not_to change(ActionMailer::Base.deliveries, :count)
       end
     end
 

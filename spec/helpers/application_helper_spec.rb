@@ -7,10 +7,7 @@ RSpec.describe ApplicationHelper, type: :helper do
   #   false: スペース詳細
   describe 'enable_javascript_search?' do
     subject { helper.enable_javascript_search? }
-    before do
-      allow(helper).to receive(:controller_name).and_return(controller_name)
-      allow(helper).to receive(:action_name).and_return(action_name)
-    end
+    before { allow(helper).to receive_messages(controller_name:, action_name:) }
 
     # テストケース
     context 'スペース一覧' do
@@ -36,10 +33,7 @@ RSpec.describe ApplicationHelper, type: :helper do
   #   false: アカウント削除, ログイン
   describe 'show_user_accordion?' do
     subject { helper.show_user_accordion? }
-    before do
-      allow(helper).to receive(:controller_name).and_return(controller_name)
-      allow(helper).to receive(:action_name).and_return(action_name)
-    end
+    before { allow(helper).to receive_messages(controller_name:, action_name:) }
 
     # テストケース
     context 'ユーザー情報変更' do
@@ -70,11 +64,7 @@ RSpec.describe ApplicationHelper, type: :helper do
   #   トップページ, アカウント削除取り消し
   describe 'user_destroy_reserved_message?' do
     subject { helper.user_destroy_reserved_message? }
-    before do
-      allow(helper).to receive(:current_user).and_return(current_user)
-      allow(helper).to receive(:controller_name).and_return(controller_name)
-      allow(helper).to receive(:action_name).and_return(action_name)
-    end
+    before { allow(helper).to receive_messages(current_user:, controller_name:, action_name:) }
 
     # テストケース
     shared_examples_for '[なし]トップページ' do
@@ -118,8 +108,7 @@ RSpec.describe ApplicationHelper, type: :helper do
     subject { helper.space_destroy_reserved_message? }
     before do
       @space = space
-      allow(helper).to receive(:controller_name).and_return(controller_name)
-      allow(helper).to receive(:action_name).and_return(action_name)
+      allow(helper).to receive_messages(controller_name:, action_name:)
     end
 
     # テストケース
@@ -182,10 +171,7 @@ RSpec.describe ApplicationHelper, type: :helper do
   #   メールアドレス変更: なし, あり, 期限切れ
   describe 'user_valid_confirmation_token?' do
     subject { helper.user_valid_confirmation_token? }
-    before do
-      allow(helper).to receive(:devise_mapping).and_return(Devise.mappings[:user])
-      allow(helper).to receive(:current_user).and_return(current_user)
-    end
+    before { allow(helper).to receive_messages(devise_mapping: Devise.mappings[:user], current_user:) }
 
     # テストケース
     context 'メールアドレス変更なし' do
@@ -378,11 +364,9 @@ RSpec.describe ApplicationHelper, type: :helper do
   # テストパターン
   #   0件, 2件, 3件2頁
   describe 'first_page_number' do
-    subject do
-      FactoryBot.create_list(:user, count)
-      models = User.page(page).per(2)
-      helper.first_page_number(models)
-    end
+    subject { helper.first_page_number(models) }
+    before { FactoryBot.create_list(:user, count) }
+    let(:models) { User.page(page).per(2) }
 
     # テストケース
     context '0件' do
@@ -408,11 +392,9 @@ RSpec.describe ApplicationHelper, type: :helper do
   # テストパターン
   #   0件, 2件, 3件2頁
   describe 'last_page_number' do
-    subject do
-      FactoryBot.create_list(:user, count)
-      models = User.page(page).per(2)
-      helper.last_page_number(models)
-    end
+    subject { helper.last_page_number(models) }
+    before { FactoryBot.create_list(:user, count) }
+    let(:models) { User.page(page).per(2) }
 
     # テストケース
     context '0件' do

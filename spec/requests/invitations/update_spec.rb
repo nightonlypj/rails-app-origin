@@ -17,7 +17,9 @@ RSpec.describe 'Invitations', type: :request do
   #   ＋URLの拡張子: ない, .json
   #   ＋Acceptヘッダ: HTMLが含まれる, JSONが含まれる
   describe 'POST #update' do
-    subject { post update_invitation_path(space_code: space.code, code: invitation.code, format: subject_format), params:, headers: auth_headers.merge(accept_headers) }
+    subject { post update_invitation_path(space_code: space.code, code: invitation.code, format: subject_format), params:, headers: }
+    let(:headers) { auth_headers.merge(accept_headers) }
+
     let_it_be(:valid_attributes)   { { memo: 'メモ', ended_date: '9999-12-31', ended_time: '23:59', ended_zone: '+09:00' } }
     let_it_be(:invalid_attributes) { valid_attributes.merge(ended_time: nil) }
     let_it_be(:created_user) { FactoryBot.create(:user) }
@@ -67,7 +69,7 @@ RSpec.describe 'Invitations', type: :request do
       let(:accept_headers) { ACCEPT_INC_JSON }
       it 'HTTPステータスが200。対象項目が一致する' do
         is_expected.to eq(200)
-        expect(response_json['success']).to eq(true)
+        expect(response_json['success']).to be(true)
         expect(response_json['notice']).to eq(get_locale('notice.invitation.update'))
 
         count = expect_invitation_json(response_json_invitation, current_invitation)

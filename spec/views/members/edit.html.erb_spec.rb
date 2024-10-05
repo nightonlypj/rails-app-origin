@@ -10,7 +10,7 @@ RSpec.describe 'members/edit', type: :view do
 
   it '対象の送信先と項目が含まれる' do
     render
-    assert_select 'form[action=?][method=?]', update_member_path(@space.code, @member.user.code), 'post' do
+    assert_select 'form[action=?][method=?]', update_member_path(space_code: @space.code, user_code: @member.user.code), 'post' do
       assert_select 'input[name=?]', 'member[power]'
       assert_select 'input[type=?]', 'button'
     end
