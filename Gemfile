@@ -60,7 +60,6 @@ group :development, :test do
 
   # Use RSpec
   gem 'rspec-rails'
-  # gem 'spring-commands-rspec'
   gem 'factory_bot_rails'
   # Use RuboCop
   gem 'rubocop'
@@ -83,9 +82,6 @@ group :development do
 
   # Add speed badges [https://github.com/MiniProfiler/rack-mini-profiler]
   # gem 'rack-mini-profiler'
-
-  # Speed up commands on slow machines / big apps [https://github.com/rails/spring]
-  # gem 'spring'
 
   # Use YARD
   gem 'guard-yard'
