@@ -22,6 +22,13 @@ Bundler/OrderedGems:
 Layout/LineLength:
   Max: 160
 
+### Lint
+# https://docs.rubocop.org/rubocop/cops_lint.html
+
+# W: Lint/NonLocalExitFromIterator: Non-local exit from iterator, without return value. next, break, Array#find, Array#any?, etc. is preferred.
+Lint/NonLocalExitFromIterator:
+ Enabled: false
+
 ### Metrics
 # https://docs.rubocop.org/rubocop/cops_metrics.html
 
@@ -203,6 +210,10 @@ RSpec/NamedSubject:
 
 # C: RSpec/NestedGroups: Maximum example group nesting exceeded
 RSpec/NestedGroups:
+  Enabled: false
+
+# C: [Correctable] RSpec/ReceiveMessages: Use receive_messages instead of multiple stubs on lines [?].
+RSpec/ReceiveMessages:
   Enabled: false
 
 # C: RSpec/RepeatedExampleGroupBody: Repeated context block body on line(s)

@@ -1,7 +1,7 @@
 # Ruby on Railsベースアプリケーション
 
 運営元が情報提供して1つのサービスを作る（BtoC向け）  
-(Ruby 3.3.4, Rails 7.1.3.4)
+(Ruby 3.3.6, Rails 7.2.2.1)
 
 ## コマンドメモ
 
@@ -58,8 +58,13 @@ docker push public.ecr.aws/h7c3l0m6/rails-app-origin_webapp:latest
 
 ### Dockerインストール
 
-Docker Desktop for Macをダウンロードして、普通にインストール  
-https://hub.docker.com/editions/community/docker-ce-desktop-mac/
+下記のいずれかをダウンロードして、普通にインストール  
+
+#### Docker Desktop
+https://docs.docker.com/desktop/
+
+#### OrbStack
+https://orbstack.dev/download
 
 ### コンテナ作成＆起動
 
@@ -132,7 +137,7 @@ $ brew doctor
 Your system is ready to brew.
 
 $ brew -v
-Homebrew 4.3.21
+Homebrew 4.4.10
 ※バージョンは異なっても良い
 ```
 
@@ -143,7 +148,7 @@ $ brew install imagemagick
 （$ brew upgrade imagemagick）
 
 $ magick -version
-Version: ImageMagick 7.1.1-38 Q16-HDRI aarch64 22398 https://imagemagick.org
+Version: ImageMagick 7.1.1-41 Q16-HDRI aarch64 22504 https://imagemagick.org
 ※バージョンは異なっても良い
 ```
 
@@ -154,7 +159,7 @@ $ brew install graphviz
 （$ brew upgrade graphviz）
 
 $ dot -V
-dot - graphviz version 12.1.1 (20240910.0053)
+dot - graphviz version 12.2.0 (20241103.1931)
 ※バージョンは異なっても良い
 ```
 
@@ -182,16 +187,16 @@ $ brew install openssl@3
 
 ※ターミナルを開き直して、
 $ openssl version
-OpenSSL 3.3.2 3 Sep 2024 (Library: OpenSSL 3.3.2 3 Sep 2024)
+OpenSSL 3.4.0 22 Oct 2024 (Library: OpenSSL 3.4.0 22 Oct 2024)
 
-$ rvm install 3.3.4 --with-openssl-dir=$(brew --prefix openssl@3)
-（$ rvm --default use 3.3.4）
+$ rvm install 3.3.6 --with-openssl-dir=$(brew --prefix openssl@3)
+（$ rvm --default use 3.3.6）
 
 $ ruby -v
-ruby 3.3.4 (2024-07-09 revision be1089c8ec) [arm64-darwin22]
+ruby 3.3.6 (2024-11-05 revision 75015d4c1f) [arm64-darwin22]
 
 $ rvm list
-=* ruby-3.3.4 [ arm64 ]
+=* ruby-3.3.6 [ arm64 ]
 ```
 
 ### MariaDB or MySQLインストール
