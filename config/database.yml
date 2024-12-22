@@ -35,7 +35,7 @@ default: &default
   username: root
   password: xyz789
   host: 127.0.0.1
-#  host: db
+  # host: db
 
 # PostgreSQL. Versions 9.3 and up are supported.
 #
@@ -66,12 +66,12 @@ default-pg: &default-pg
   username: postgres
   password: xyz789
   host: 127.0.0.1
-#  host: db
-#  host: pg
+  # host: db
+  # host: pg
 
 development:
   <<: *default
-#  database: db/development.sqlite3
+  # database: db/development.sqlite3
   database: rails_app_development
 
 # Warning: The database defined as "test" will be erased and
@@ -79,7 +79,7 @@ development:
 # Do not set this db to the same as development or production.
 test:
   <<: *default
-#  database: db/test.sqlite3
+  # database: db/test.sqlite3
   database: rails_app_test
   # username: rails_app_test
 
@@ -104,5 +104,5 @@ test:
 #
 production:
   <<: *default
-#  database: db/production.sqlite3
+  # database: db/production.sqlite3
   url: <%= ENV['DATABASE_URL'] %>

@@ -1,10 +1,10 @@
 source 'https://rubygems.org'
 git_source(:github) { |repo| "https://github.com/#{repo}.git" }
 
-ruby '3.3.4'
+ruby '3.3.6'
 
 # Bundle edge Rails instead: gem 'rails', github: 'rails/rails', branch: 'main'
-gem 'rails', '~> 7.1'
+gem 'rails', '~> 7.2'
 
 # The original asset pipeline for Rails [https://github.com/rails/sprockets-rails]
 gem 'sprockets-rails'
@@ -60,7 +60,6 @@ group :development, :test do
 
   # Use RSpec
   gem 'rspec-rails'
-  # gem 'spring-commands-rspec'
   gem 'factory_bot_rails'
   # Use RuboCop
   gem 'rubocop'
@@ -83,9 +82,6 @@ group :development do
 
   # Add speed badges [https://github.com/MiniProfiler/rack-mini-profiler]
   # gem 'rack-mini-profiler'
-
-  # Speed up commands on slow machines / big apps [https://github.com/rails/spring]
-  # gem 'spring'
 
   # Use YARD
   gem 'guard-yard'
