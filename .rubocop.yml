@@ -8,12 +8,26 @@ AllCops:
     - 'db/schema.rb'
     - 'node_modules/**/*'
 
+### Bundler
+# https://docs.rubocop.org/rubocop/cops_bundler.html
+
+# C: [Correctable] Bundler/OrderedGems: Gems should be sorted in an alphabetical order within their section of the Gemfile.
+Bundler/OrderedGems:
+  Enabled: false
+
 ### Layout
 # https://docs.rubocop.org/rubocop/cops_layout.html
 
 # C: Layout/LineLength: Line is too long.
 Layout/LineLength:
   Max: 160
+
+### Lint
+# https://docs.rubocop.org/rubocop/cops_lint.html
+
+# W: Lint/NonLocalExitFromIterator: Non-local exit from iterator, without return value. next, break, Array#find, Array#any?, etc. is preferred.
+Lint/NonLocalExitFromIterator:
+ Enabled: false
 
 ### Metrics
 # https://docs.rubocop.org/rubocop/cops_metrics.html
@@ -170,6 +184,10 @@ RSpec/ExpectInLet:
 RSpec/ImplicitSubject:
   Enabled: false
 
+# C: RSpec/IndexedLet: This let statement uses ? in its name. Please give it a meaningful name.
+RSpec/IndexedLet:
+  Enabled: false
+
 # C: RSpec/InstanceVariable: Avoid instance variables - use let, a method call, or a local variable (if possible).
 RSpec/InstanceVariable:
   Enabled: false
@@ -186,8 +204,16 @@ RSpec/MultipleExpectations:
 RSpec/MultipleMemoizedHelpers:
   Enabled: false
 
+# C: RSpec/NamedSubject: Name your test subject if you need to reference it explicitly.
+RSpec/NamedSubject:
+  Enabled: false
+
 # C: RSpec/NestedGroups: Maximum example group nesting exceeded
 RSpec/NestedGroups:
+  Enabled: false
+
+# C: [Correctable] RSpec/ReceiveMessages: Use receive_messages instead of multiple stubs on lines [?].
+RSpec/ReceiveMessages:
   Enabled: false
 
 # C: RSpec/RepeatedExampleGroupBody: Repeated context block body on line(s)
@@ -200,4 +226,8 @@ RSpec/RepeatedExampleGroupDescription:
 
 # C: [Correctable] RSpec/ScatteredLet: Group all let/let! blocks in the example group together.
 RSpec/ScatteredLet:
+  Enabled: false
+
+# C: [Correctable] RSpec/ScatteredSetup: Do not define multiple before hooks in the same example group (also defined on lines ?).
+RSpec/ScatteredSetup:
   Enabled: false

@@ -1,5 +1,5 @@
 # https://hub.docker.com/_/openjdk
-FROM openjdk:24-jdk-slim
+FROM openjdk:25-jdk-slim
 RUN apt-get update -qq && apt-get install -y graphviz make
 
 WORKDIR /workdir/schemaspy
