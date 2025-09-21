@@ -3,6 +3,7 @@
 class Users::Auth::ConfirmationsController < DeviseTokenAuth::ConfirmationsController
   include DeviseTokenAuth::Concerns::SetUserByToken
   include Devise::ConfirmationsConcern
+
   skip_before_action :verify_authenticity_token
   prepend_before_action :response_not_acceptable_for_not_api, only: :create
   prepend_before_action :response_not_acceptable_for_not_html, only: :show
@@ -64,7 +65,7 @@ class Users::Auth::ConfirmationsController < DeviseTokenAuth::ConfirmationsContr
 
   # 確認済み・不要かを返却
   def already_confirmed?(resource)
-    resource&.confirmed_at&.present? && (resource.confirmation_sent_at.blank? || resource.confirmed_at > resource.confirmation_sent_at)
+    resource&.confirmed_at.present? && (resource.confirmation_sent_at.blank? || resource.confirmed_at > resource.confirmation_sent_at)
   end
 
   protected

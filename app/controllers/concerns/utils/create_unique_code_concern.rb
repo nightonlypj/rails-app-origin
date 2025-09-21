@@ -13,9 +13,9 @@ module Utils::CreateUniqueCodeConcern
       return code if model.where(key => code).blank?
 
       if try_count < 10
-        logger.warn("[WARN](#{try_count})Not unique code(#{code}): #{logger_message}")
+        logger.warn "[WARN](#{try_count})Not unique code(#{code}): #{logger_message}"
       elsif try_count >= 10
-        logger.error("[ERROR](#{try_count})Not unique code(#{code}): #{logger_message}")
+        logger.error "[ERROR](#{try_count})Not unique code(#{code}): #{logger_message}"
         return code
       end
       try_count += 1

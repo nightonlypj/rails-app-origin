@@ -10,13 +10,13 @@ namespace :holiday do
   require 'csv'
 
   desc '祝日データ更新（前年の2月に元データが更新される） -> tool:create_yamlでseed更新'
-  task(:update, [:dry_run] => :environment) do |task, args|
+  task :update, [:dry_run] => :environment do |task, args|
     args.with_defaults(dry_run: 'true')
-    dry_run = (args.dry_run != 'false')
+    dry_run = (args[:dry_run] != 'false')
 
     logger = new_logger(task.name)
-    logger.info("=== START #{task.name} ===")
-    logger.info("dry_run: #{dry_run}")
+    logger.info "=== START #{task.name} ==="
+    logger.info "dry_run: #{dry_run}"
 
     datas = {}
     body = OpenURI.open_uri(HOLIDAY_CSV_URL).read
@@ -46,7 +46,7 @@ namespace :holiday do
       end
     end
 
-    logger.info("Complete! ... Total count: #{datas.count}, insert: #{insert_datas.count}, update: #{update_datas.count}")
-    logger.info("=== END #{task.name} ===")
+    logger.info "Complete! ... Total count: #{datas.count}, insert: #{insert_datas.count}, update: #{update_datas.count}"
+    logger.info "=== END #{task.name} ==="
   end
 end

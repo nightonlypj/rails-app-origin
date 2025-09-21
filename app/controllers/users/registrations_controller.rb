@@ -3,6 +3,7 @@
 class Users::RegistrationsController < Devise::RegistrationsController
   include Users::RegistrationsConcern
   include Utils::CreateUniqueCodeConcern
+
   before_action :redirect_for_user_destroy_reserved, only: %i[edit update image_update image_destroy delete destroy]
   before_action :redirect_for_not_user_destroy_reserved, only: %i[undo_delete undo_destroy]
   before_action :configure_sign_up_params, only: :create
@@ -18,7 +19,7 @@ class Users::RegistrationsController < Devise::RegistrationsController
   # POST /users/sign_up アカウント登録(処理)
   def create
     params[:user][:code] = create_unique_code(User, 'code', "Users::RegistrationsController.create #{params[:user]}")
-    ActiveRecord::Base.transaction do
+    ApplicationRecord.transaction do
       super
       flash[:alert] = resource.errors[:code].first if resource.errors[:code].present?
       resource.send_confirmation_instructions if resource.errors.blank? # NOTE: devise_token_auth導入後、送信されなくなった為

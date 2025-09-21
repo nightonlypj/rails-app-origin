@@ -1,7 +1,7 @@
 require 'rails_helper'
 
 RSpec.describe 'Users::Auth::TokenValidations', type: :request do
-  let(:response_json) { JSON.parse(response.body) }
+  let(:response_json) { response.parsed_body }
 
   # テスト内容（共通）
   shared_examples_for 'ToMsg' do |error_msg, alert, notice|

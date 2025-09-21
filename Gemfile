@@ -1,22 +1,22 @@
 source 'https://rubygems.org'
 git_source(:github) { |repo| "https://github.com/#{repo}.git" }
 
-ruby '3.3.6'
+ruby '3.4.3'
 
-# Bundle edge Rails instead: gem 'rails', github: 'rails/rails', branch: 'main'
-gem 'rails', '~> 7.2'
+# Bundle edge Rails instead: gem "rails", github: "rails/rails", branch: "main"
+gem 'rails', '~> 7.2.0'
 
 # The original asset pipeline for Rails [https://github.com/rails/sprockets-rails]
 gem 'sprockets-rails'
 
 # Use sqlite3 as the database for Active Record
-# gem 'sqlite3', '~> 1.4'
+gem 'sqlite3'
 
 # Use mysql as the database for Active Record
 gem 'mysql2'
 
 # Use postgresql as the database for Active Record
-# gem 'pg', '~> 1.1'
+gem 'pg'
 
 # Use the Puma web server [https://github.com/puma/puma]
 gem 'puma'
@@ -34,16 +34,16 @@ gem 'stimulus-rails'
 gem 'jbuilder'
 
 # Use Redis adapter to run Action Cable in production
-# gem 'redis', '~> 4.0'
+# gem 'redis'
 
 # Use Kredis to get higher-level data types in Redis [https://github.com/rails/kredis]
 # gem 'kredis'
 
 # Use Active Model has_secure_password [https://guides.rubyonrails.org/active_model_basics.html#securepassword]
-# gem 'bcrypt', '~> 3.1.7'
+# gem 'bcrypt'
 
 # Windows does not include zoneinfo files, so bundle the tzinfo-data gem
-gem 'tzinfo-data', platforms: %i[mingw mswin x64_mingw jruby]
+gem 'tzinfo-data', platforms: %i[windows jruby]
 
 # Reduces boot times through caching; required in config/boot.rb
 gem 'bootsnap', require: false
@@ -52,21 +52,84 @@ gem 'bootsnap', require: false
 gem 'sassc-rails'
 
 # Use Active Storage variants [https://guides.rubyonrails.org/active_storage_overview.html#transforming-images]
-# gem 'image_processing', '~> 1.2'
+# gem 'image_processing'
+
+# Use dotenv
+gem 'dotenv-rails'
+
+# Use i18n
+gem 'rails-i18n'
+gem 'http_accept_language'
+
+# Use Devise
+gem 'devise'
+gem 'devise-i18n'
+gem 'email_validator'
+
+# Use Devise Token Auth
+gem 'devise_token_auth'
+gem 'rack-cors'
+
+# Use RailsAdmin
+gem 'rails_admin'
+gem 'rails_admin-i18n'
+gem 'cssbundling-rails'
+
+# Use PaperTrail
+gem 'paper_trail'
+
+# Use Config
+gem 'config'
+
+# Use NKF # NOTE: Dockerのjobの起動に失敗する為
+gem 'nkf'
+
+# Use kaminari
+gem 'kaminari'
+gem 'kaminari-i18n'
+
+# Use CarrierWave
+gem 'carrierwave'
+gem 'mini_magick'
+
+# Use EnumHelp
+gem 'enum_help'
+
+# Use Unicorn
+gem 'unicorn'
+
+# Use Exception Notification
+gem 'exception_notification'
+gem 'slack-notifier'
+
+# Use Delayed::Job
+gem 'delayed_job_active_record'
+gem 'daemons'
+
+# Use Faker # NOTE: テスト以外でも使えるように
+gem 'faker'
+gem 'faker-japanese'
 
 group :development, :test do
   # See https://guides.rubyonrails.org/debugging_rails_applications.html#debugging-with-the-debug-gem
-  gem 'debug', platforms: %i[mri mingw x64_mingw]
+  gem 'debug', platforms: %i[mri windows], require: 'debug/prelude'
 
   # Use RSpec
   gem 'rspec-rails'
   gem 'factory_bot_rails'
+  gem 'super_diff'
+
   # Use RuboCop
   gem 'rubocop'
   gem 'rubocop-rails'
   gem 'rubocop-rspec'
+  gem 'rubocop-performance'
+
   # Use Brakeman
   gem 'brakeman'
+
+  # Use Bullet
+  gem 'bullet'
 
   # Use Pry
   gem 'pry-byebug'
@@ -74,7 +137,6 @@ group :development, :test do
   gem 'pry-rails'
   gem 'pry-stack_explorer'
 end
-gem 'faker' # NOTE: テスト以外でも使えるように
 
 group :development do
   # Use console on exceptions pages [https://github.com/rails/web-console]
@@ -84,15 +146,20 @@ group :development do
   # gem 'rack-mini-profiler'
 
   # Use YARD
+  gem 'yard'
   gem 'guard-yard'
   gem 'redcarpet'
-  gem 'yard'
+
   # Use LetterOpenerWeb
   gem 'letter_opener_web'
+
   # Use Rails ERD
   gem 'rails-erd'
-  # Use Bullet
-  gem 'bullet'
+
+  # Use Better Errors
+  gem 'better_errors'
+  gem 'binding_of_caller'
+
   # Use Capistrano
   gem 'capistrano'
   gem 'capistrano3-unicorn'
@@ -108,54 +175,10 @@ group :test do
 
   # Use SimpleCov
   gem 'simplecov'
-  # Use Ruby Tests Profiling Toolbox
-  gem 'test-prof'
+
   # Use WebMock
   gem 'webmock'
+
+  # Use Ruby Tests Profiling Toolbox
+  gem 'test-prof'
 end
-
-# Use i18n
-gem 'http_accept_language'
-gem 'rails-i18n'
-
-# Use Devise
-gem 'devise'
-gem 'devise-i18n'
-gem 'email_validator'
-
-# Use Devise Token Auth
-gem 'devise_token_auth'
-gem 'rack-cors'
-
-# Use RailsAdmin
-gem 'cssbundling-rails'
-gem 'rails_admin'
-gem 'rails_admin-i18n'
-
-# Use PaperTrail
-gem 'paper_trail'
-
-# Use Config
-gem 'config'
-
-# Use kaminari
-gem 'kaminari'
-gem 'kaminari-i18n'
-
-# Use CarrierWave/MiniMagick
-gem 'carrierwave'
-gem 'mini_magick'
-
-# Use EnumHelp
-gem 'enum_help'
-
-# Use Unicorn
-gem 'unicorn'
-
-# Use Exception Notification
-gem 'exception_notification'
-gem 'slack-notifier'
-
-# Use Delayed::Job
-gem 'daemons'
-gem 'delayed_job_active_record'

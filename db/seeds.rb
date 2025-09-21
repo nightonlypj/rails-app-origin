@@ -114,7 +114,7 @@ end
 total_insert_count = 0
 total_update_count = 0
 total_delete_count = 0
-File.open("#{Rails.root}/db/seeds.yml") do |seed_body|
+File.open(Rails.root.join('db/seeds.yml')) do |seed_body|
   YAML.safe_load(seed_body).each do |seed|
     if seed['env'][Rails.env] != true
       p "== file: #{seed['file']} ... Skip"
@@ -122,7 +122,7 @@ File.open("#{Rails.root}/db/seeds.yml") do |seed_body|
     end
 
     p "== file: #{seed['file']}"
-    File.open("#{Rails.root}/db/#{seed['file']}") do |file_body|
+    File.open(Rails.root.join("db/#{seed['file']}")) do |file_body|
       yaml = YAML.safe_load(file_body)
       @model = seed['model'].constantize
       @contents = yaml.index_by { |content| content[@model.primary_key] }
@@ -131,13 +131,11 @@ File.open("#{Rails.root}/db/seeds.yml") do |seed_body|
       @ids = @contents.keys
       p "count: #{@contents.count}, model: #{@model}"
 
-      option = seed['option'].present? ? seed['option'] : {}
+      option = seed['option'].presence || {}
       insert_count = seed['insert'] == true ? insert_contents(option['bulk_insert'] == true) : nil
       update_count = seed['update'] == true ? update_contents(option['bulk_update'] == true, option['exclude_update_column']) : nil
       delete_count = seed['delete'] == true ? delete_contents(option['destroy'] == true) : nil
-      p "insert: #{insert_count.present? ? insert_count : '-'}, " \
-        "update: #{update_count.present? ? update_count : '-'}, " \
-        "delete: #{delete_count.present? ? delete_count : '-'}"
+      p "insert: #{insert_count.presence || '-'}, update: #{update_count.presence || '-'}, delete: #{delete_count.presence || '-'}"
 
       total_insert_count += insert_count if insert_count.present?
       total_update_count += update_count if update_count.present?

@@ -4,6 +4,7 @@ class Users::Auth::RegistrationsController < DeviseTokenAuth::RegistrationsContr
   include DeviseTokenAuth::Concerns::SetUserByToken
   include Users::RegistrationsConcern
   include Utils::CreateUniqueCodeConcern
+
   skip_before_action :verify_authenticity_token
   before_action :response_api_for_user_destroy_reserved, only: %i[update image_update image_destroy destroy]
   before_action :response_api_for_not_user_destroy_reserved, only: :undo_destroy
@@ -18,7 +19,7 @@ class Users::Auth::RegistrationsController < DeviseTokenAuth::RegistrationsContr
   # POST /users/auth/sign_up(.json) アカウント登録API(処理)
   def create
     params[:code] = create_unique_code(User, 'code', "Users::RegistrationsController.create #{params}")
-    ActiveRecord::Base.transaction do # NOTE: エラーでROLLBACKされなかった為
+    ApplicationRecord.transaction do # NOTE: エラーでROLLBACKされなかった為
       super
     end
   end

@@ -1,3 +1,8 @@
+plugins:
+ - rubocop-rails
+ - rubocop-rspec
+ - rubocop-performance
+
 inherit_from: .rubocop_todo.yml
 
 AllCops:
@@ -7,6 +12,7 @@ AllCops:
     - 'bin/*'
     - 'db/schema.rb'
     - 'node_modules/**/*'
+    - 'vendor/**/*'
 
 ### Bundler
 # https://docs.rubocop.org/rubocop/cops_bundler.html
@@ -21,29 +27,40 @@ Bundler/OrderedGems:
 # C: Layout/LineLength: Line is too long.
 Layout/LineLength:
   Max: 160
+  Exclude:
+    - 'db/**/*'
+    - 'spec/factories/**/*'
+
+# C: [Correctable] Layout/MultilineMethodCallIndentation: Use 2 (not ?) spaces for indenting an expression in an assignment spanning multiple lines.
+Layout/MultilineMethodCallIndentation:
+  EnforcedStyle: indented
 
 ### Lint
 # https://docs.rubocop.org/rubocop/cops_lint.html
 
 # W: Lint/NonLocalExitFromIterator: Non-local exit from iterator, without return value. next, break, Array#find, Array#any?, etc. is preferred.
 Lint/NonLocalExitFromIterator:
- Enabled: false
+  Enabled: false
 
 ### Metrics
 # https://docs.rubocop.org/rubocop/cops_metrics.html
 
-# C: Metrics/AbcSize: Assignment Branch Condition size for expect_space_json is too high.
+# C: Metrics/AbcSize: Assignment Branch Condition size for xxx is too high.
 Metrics/AbcSize:
+  Max: 80 # NOTE: 生産性を優先して、緩めに設定
   Exclude:
+    - 'db/**/*'
     - 'spec/**/*'
 
 # C: Metrics/BlockLength: Block has too many lines.
 Metrics/BlockLength:
+  Max: 30
   Exclude:
     - 'app/views/**/*.jbuilder'
     - 'config/environments/*'
     - 'config/routes.rb'
     - 'config/routes/*'
+    - 'db/**/*'
     - 'lib/tasks/**/*'
     - 'spec/**/*'
 
@@ -51,11 +68,15 @@ Metrics/BlockLength:
 Metrics/ClassLength:
   Enabled: false
 
+# C: Metrics/CyclomaticComplexity: Cyclomatic complexity for xxx is too high.
+Metrics/CyclomaticComplexity:
+  Max: 10
+
 # C: Metrics/MethodLength: Method has too many lines.
 Metrics/MethodLength:
-  Max: 30
+  Max: 40
   Exclude:
-    - 'db/migrate/*'
+    - 'db/**/*'
     - 'spec/**/*'
 
 # C: Metrics/ModuleLength: Module has too many lines.
@@ -67,16 +88,21 @@ Metrics/ParameterLists:
   Exclude:
     - 'spec/**/*'
 
+# C: Metrics/PerceivedComplexity: Perceived complexity for xxx is too high.
+Metrics/PerceivedComplexity:
+  Max: 20 # NOTE: 生産性を優先して、緩めに設定
+
 ### Naming
 # https://docs.rubocop.org/rubocop/cops_naming.html
 
-# C: Naming/AccessorMethodName: Do not prefix writer method names with set_.
+# C: Naming/AccessorMethodName: Do not prefix writer method names with get_/set_.
 Naming/AccessorMethodName:
   Enabled: false
 
-# C: Naming/VariableNumber: Use normalcase for method name numbers.
+# C: Naming/VariableNumber: Use normalcase for symbol numbers.
 Naming/VariableNumber:
   Exclude:
+    - 'db/**/*'
     - 'spec/**/*'
 
 ### Style
@@ -118,15 +144,15 @@ Style/FrozenStringLiteralComment:
 Style/GuardClause:
   Enabled: false
 
-# C: [Corrected] Style/IfInsideElse: Convert if nested inside else to elsif.
+# C: [Correctable] Style/IfInsideElse: Convert if nested inside else to elsif.
 Style/IfInsideElse:
   Enabled: false
 
-# C: [Corrected] Style/Lambda: Use the -> { ... } lambda literal syntax for all lambdas.
+# C: [Correctable] Style/Lambda: Use the lambda method for multiline lambdas.
 Style/Lambda:
   EnforcedStyle: literal
 
-# C: [Corrected] Style/NumericLiterals: Use underscores(_) as thousands separator and separate every 3 digits with them.
+# C: [Correctable] Style/NumericLiterals: Use underscores(_) as thousands separator and separate every 3 digits with them.
 Style/NumericLiterals:
   MinDigits: 7
 
@@ -138,9 +164,59 @@ Style/NumericPredicate:
 Style/OptionalBooleanParameter:
   Enabled: false
 
+# C: Style/SafeNavigationChainLength: Avoid safe navigation chains longer than 2 calls.
+Style/SafeNavigationChainLength:
+  Enabled: false # NOTE: Pendingだけど有効になる為
+
+### Rails
+# https://docs.rubocop.org/rubocop-rails/cops_rails.html
+
+# C: [Correctable] Rails/ActionOrder: Action xxx should appear before xxx.
+Rails/ActionOrder:
+  Enabled: false # NOTE: Pendingだけど有効になる為
+
+# C: Rails/BulkChangeTable: You can use change_table :xxx, bulk: true to combine alter queries.
+Rails/BulkChangeTable:
+  Enabled: false
+
+# C: Rails/HasManyOrHasOneDependent: Specify a :dependent option.
+Rails/HasManyOrHasOneDependent:
+  Enabled: false
+
+# C: Rails/I18nLocaleTexts: Move locale texts to the locale files in the config/locales directory.
+Rails/I18nLocaleTexts:
+  Enabled: false
+
+# C: Rails/LexicallyScopedActionFilter: xxx is not explicitly defined on the class.
+Rails/LexicallyScopedActionFilter:
+  Enabled: false
+
+# C: [Correctable] Rails/NegateInclude: Use .exclude? and remove the negation part.
+Rails/NegateInclude:
+  Enabled: false # NOTE: Pendingだけど有効になる為
+
+# C: [Correctable] Rails/Output: Do not write to stdout. Use Rails's logger if you want to log.
+Rails/Output:
+  Enabled: false
+
+# C: [Correctable] Rails/RedundantActiveRecordAllMethod: Redundant all detected.
+Rails/RedundantActiveRecordAllMethod:
+  Enabled: false # NOTE: Pendingだけど有効になる為
+
+# C: [Correctable] Rails/RootPathnameMethods: Rails.root is a Pathname, so you can use xxx.
+Rails/RootPathnameMethods:
+  Enabled: false # NOTE: Pendingだけど有効になる為
+
+# C: Rails/SkipsModelValidations: Avoid using xxx because it skips validations.
+Rails/SkipsModelValidations:
+  Enabled: false
+
+# C: Rails/ThreeStateBooleanColumn: Boolean columns should always have a default value and a NOT NULL constraint.
+Rails/ThreeStateBooleanColumn:
+  Enabled: false # NOTE: Pendingだけど有効になる為
+
 ### RSpec
 # https://docs.rubocop.org/rubocop-rspec/cops_rspec.html
-require: rubocop-rspec
 RSpec:
   Enabled: true
 
@@ -168,7 +244,7 @@ RSpec/EmptyLineAfterFinalLet:
 RSpec/EmptyLineAfterHook:
   Enabled: false
 
-# C: [Corrected] RSpec/EmptyLineAfterSubject: Add an empty line after subject.
+# C: [Correctable] RSpec/EmptyLineAfterSubject: Add an empty line after subject.
 RSpec/EmptyLineAfterSubject:
   Enabled: false
 
@@ -180,7 +256,7 @@ RSpec/ExampleLength:
 RSpec/ExpectInLet:
   Enabled: false
 
-# C: [Corrected] RSpec/ImplicitSubject: Don't use implicit subject.
+# C: [Correctable] RSpec/ImplicitSubject: Don't use implicit subject.
 RSpec/ImplicitSubject:
   Enabled: false
 
@@ -231,3 +307,6 @@ RSpec/ScatteredLet:
 # C: [Correctable] RSpec/ScatteredSetup: Do not define multiple before hooks in the same example group (also defined on lines ?).
 RSpec/ScatteredSetup:
   Enabled: false
+
+### Performance
+# https://docs.rubocop.org/rubocop-performance/cops_performance.html

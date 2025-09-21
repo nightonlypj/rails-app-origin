@@ -1,7 +1,7 @@
 require 'rails_helper'
 
 RSpec.describe 'Infomations', type: :request do
-  let(:response_json) { JSON.parse(response.body) }
+  let(:response_json) { response.parsed_body }
   let(:response_json_infomation)  { response_json['infomation'] }
   let(:response_json_infomations) { response_json['infomations'] }
 

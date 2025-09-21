@@ -1,5 +1,6 @@
 class InfomationsController < ApplicationAuthController
   include InfomationsConcern
+
   before_action :response_not_acceptable_for_not_api, only: :important
   before_action :set_important_infomations, only: :important
 
@@ -7,7 +8,7 @@ class InfomationsController < ApplicationAuthController
   # GET /infomations(.json) お知らせ一覧API
   def index
     @infomations = Infomation.by_locale(I18n.locale).by_target(current_user).order(started_at: :desc, id: :desc)
-                             .page(params[:page]).per(Settings.default_infomations_limit)
+      .page(params[:page]).per(Settings.default_infomations_limit)
     update_infomation_check
 
     if format_html? && @infomations.current_page > [@infomations.total_pages, 1].max

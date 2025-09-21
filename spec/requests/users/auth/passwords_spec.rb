@@ -1,7 +1,7 @@
 require 'rails_helper'
 
 RSpec.describe 'Users::Auth::Passwords', type: :request do
-  let(:response_json) { JSON.parse(response.body) }
+  let(:response_json) { response.parsed_body }
 
   # テスト内容（共通）
   shared_examples_for 'ToMsg' do |error_class, errors_count, error_msg, message, alert, notice|
@@ -176,7 +176,8 @@ RSpec.describe 'Users::Auth::Passwords', type: :request do
       # it_behaves_like 'ToNG', 404
       it_behaves_like 'ToNG', 422
       # it_behaves_like 'ToMsg', Array, 1, 'devise_token_auth.passwords.user_not_found', nil, nil, nil
-      it_behaves_like 'ToMsg', Hash, 2, 'devise_token_auth.passwords.user_not_found', nil, 'errors.messages.not_saved.one', nil
+      it_behaves_like 'ToMsg', ActiveSupport::HashWithIndifferentAccess, 2, 'devise_token_auth.passwords.user_not_found', nil,
+                      'errors.messages.not_saved.one', nil
     end
     shared_examples_for '[APIログイン中]無効なパラメータ' do
       let(:params) { invalid_attributes }
@@ -595,7 +596,7 @@ RSpec.describe 'Users::Auth::Passwords', type: :request do
       it_behaves_like 'ToNG', 422, false, false, false
       # it_behaves_like 'ToMsg', Array, 1, 'devise_token_auth.passwords.missing_passwords', nil, nil, nil
       error_msg = 'activerecord.errors.models.user.attributes.password.blank'
-      it_behaves_like 'ToMsg', Hash, 2, error_msg, nil, 'errors.messages.not_saved.one', nil
+      it_behaves_like 'ToMsg', ActiveSupport::HashWithIndifferentAccess, 2, error_msg, nil, 'errors.messages.not_saved.one', nil
     end
     shared_examples_for '[APIログイン中][期限内/期限切れ]無効なパラメータ（パスワードがない）' do
       let(:params) { invalid_attributes }
@@ -642,7 +643,7 @@ RSpec.describe 'Users::Auth::Passwords', type: :request do
       it_behaves_like 'ToNG', 422, false, false, false
       # it_behaves_like 'ToMsg', Array, 1, 'devise_token_auth.passwords.missing_passwords', nil, nil, nil
       error_msg = 'activerecord.errors.models.user.attributes.password_confirmation.confirmation'
-      it_behaves_like 'ToMsg', Hash, 2, error_msg, nil, 'errors.messages.not_saved.one', nil
+      it_behaves_like 'ToMsg', ActiveSupport::HashWithIndifferentAccess, 2, error_msg, nil, 'errors.messages.not_saved.one', nil
     end
     shared_examples_for '[APIログイン中][期限内/期限切れ]無効なパラメータ（パスワード確認がない）' do
       let(:params) { invalid_attributes_confirm }

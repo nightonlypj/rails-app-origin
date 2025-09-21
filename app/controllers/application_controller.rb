@@ -1,6 +1,7 @@
 class ApplicationController < ActionController::Base
   include Application::LocaleConcern
   include Application::ResponseConcern
+
   around_action :switch_locale
   before_action :prepare_exception_notifier
   after_action :update_response_uid_header

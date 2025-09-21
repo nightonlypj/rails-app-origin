@@ -35,7 +35,7 @@ module Application::ResponseConcern
   end
 
   def target_accept_header
-    ",#{request.headers[:ACCEPT]&.gsub(' ', '')},"
+    ",#{request.headers[:ACCEPT]&.delete(' ')},"
   end
 
   # acceptヘッダが空か、HTMLが含まれる（ワイルドカード可）かを返却

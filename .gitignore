@@ -19,40 +19,51 @@
 
 # Ignore pidfiles, but keep the directory.
 /tmp/pids/*
-!/tmp/pids/
 !/tmp/pids/.keep
 
 # Ignore uploaded files in development.
 /storage/*
 !/storage/.keep
 /tmp/storage/*
-!/tmp/storage/
 !/tmp/storage/.keep
-
-/public/assets
 
 # Ignore master key for decrypting credentials and more.
 /config/master.key
 
-/node_modules
-
+# Misc
+.DS_Store
 desktop.ini
 Thumbs.db
-.DS_Store
-.idea/**/workspace.xml
-.idea/**/tasks.xml
-/nbproject/private
+.fleet/
+.idea/
+nbproject/
+
+# Local env files
+.env*
+!.env.example
+
+/node_modules/
+/yarn-error.log
+yarn-debug.log*
+.yarn-integrity
+
+/public/assets
+/app/assets/builds/*
+
+/coverage*
+
+/schemaspy/analysis/*
+!/schemaspy/analysis/.keep
+
 /doc/*
 !/doc/.keep
 
 /.yardoc
 /db/erd.pdf
-/schemaspy/analysis/*
-!/schemaspy/analysis/.keep
-/coverage*
-
-config/settings/development.yml
 
 /public/uploads/*
 !/public/uploads/.keep
+
+# NOTE: 環境で切り替える為
 /public/robots.txt
+config/settings/development.yml

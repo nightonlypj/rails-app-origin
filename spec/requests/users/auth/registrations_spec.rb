@@ -1,7 +1,7 @@
 require 'rails_helper'
 
 RSpec.describe 'Users::Auth::Registrations', type: :request do
-  let(:response_json) { JSON.parse(response.body) }
+  let(:response_json) { response.parsed_body }
 
   # テスト内容（共通）
   shared_examples_for 'ToMsg' do |error_class, errors_count, error_msg, message, alert, notice|
@@ -142,15 +142,16 @@ RSpec.describe 'Users::Auth::Registrations', type: :request do
       it_behaves_like 'NG'
       # it_behaves_like 'ToNG', 422, 'error', nil, true
       it_behaves_like 'ToNG', 422, nil, false, false
-      # it_behaves_like 'ToMsg', Hash, 2, 'activerecord.errors.models.user.attributes.email.taken', nil, nil, nil
-      it_behaves_like 'ToMsg', Hash, 2, 'activerecord.errors.models.user.attributes.email.taken', nil, 'errors.messages.not_saved.one', nil
+      # it_behaves_like 'ToMsg', ActiveSupport::HashWithIndifferentAccess, 2, 'activerecord.errors.models.user.attributes.email.taken', nil, nil, nil
+      it_behaves_like 'ToMsg', ActiveSupport::HashWithIndifferentAccess, 2, 'activerecord.errors.models.user.attributes.email.taken', nil,
+                      'errors.messages.not_saved.one', nil
     end
     shared_examples_for '[APIログイン中]無効なパラメータ' do
       let(:params) { invalid_attributes }
       it_behaves_like 'NG'
       # it_behaves_like 'ToNG', 422, 'error', nil, true
       it_behaves_like 'ToNG', 401, nil, false, false
-      # it_behaves_like 'ToMsg', Hash, 2, 'activerecord.errors.models.user.attributes.email.taken', nil, nil, nil
+      # it_behaves_like 'ToMsg', ActiveSupport::HashWithIndifferentAccess, 2, 'activerecord.errors.models.user.attributes.email.taken', nil, nil, nil
       it_behaves_like 'ToMsg', NilClass, 0, nil, nil, 'devise.failure.already_authenticated', nil
     end
     shared_examples_for '[未ログイン/ログイン中]URLがない' do
@@ -241,7 +242,7 @@ RSpec.describe 'Users::Auth::Registrations', type: :request do
         expect(response_json_user['current_sign_in_ip']).to eq(current_user.current_sign_in_ip)
         expect(response_json_user['last_sign_in_ip']).to eq(current_user.last_sign_in_ip)
         ## Confirmable
-        expect(response_json_user['unconfirmed_email']).to eq(current_user.unconfirmed_email.present? ? current_user.unconfirmed_email : nil)
+        expect(response_json_user['unconfirmed_email']).to eq(current_user.unconfirmed_email.presence)
         ## 作成日時
         expect(response_json_user['created_at']).to eq(I18n.l(current_user.created_at, format: :json))
         expect(response_json_user.count).to eq(count + 8)
@@ -471,7 +472,8 @@ RSpec.describe 'Users::Auth::Registrations', type: :request do
       # it_behaves_like 'ToOK', 'success', nil, true
       it_behaves_like 'ToNG', 422, nil, false
       # it_behaves_like 'ToMsg', NilClass, 0, nil, nil, nil, nil
-      it_behaves_like 'ToMsg', Hash, 2, 'activerecord.errors.models.user.attributes.email.taken', nil, 'errors.messages.not_saved.one', nil
+      it_behaves_like 'ToMsg', ActiveSupport::HashWithIndifferentAccess, 2, 'activerecord.errors.models.user.attributes.email.taken', nil,
+                      'errors.messages.not_saved.one', nil
     end
     shared_examples_for '[削除予約済み]無効なパラメータ' do
       let(:params) { invalid_attributes.merge(password_confirmation: invalid_attributes[:password], current_password: user.password) }
@@ -487,8 +489,9 @@ RSpec.describe 'Users::Auth::Registrations', type: :request do
       it_behaves_like 'NG'
       # it_behaves_like 'ToNG', 422, 'error', nil
       it_behaves_like 'ToNG', 422, nil, false
-      # it_behaves_like 'ToMsg', Hash, 2, 'activerecord.errors.models.user.attributes.current_password.blank', nil, nil, nil
-      it_behaves_like 'ToMsg', Hash, 2, 'activerecord.errors.models.user.attributes.current_password.blank', nil, 'errors.messages.not_saved.one', nil
+      # it_behaves_like 'ToMsg', ActiveSupport::HashWithIndifferentAccess, 2, 'activerecord.errors.models.user.attributes.current_password.blank', nil, nil, nil
+      it_behaves_like 'ToMsg', ActiveSupport::HashWithIndifferentAccess, 2, 'activerecord.errors.models.user.attributes.current_password.blank', nil,
+                      'errors.messages.not_saved.one', nil
     end
     shared_examples_for '[削除予約済み]現在のパスワードがない' do
       let(:params) { valid_attributes.merge(password_confirmation: valid_attributes[:password], current_password: nil) }
@@ -682,7 +685,8 @@ RSpec.describe 'Users::Auth::Registrations', type: :request do
       let(:params) { invalid_attributes }
       it_behaves_like 'NG'
       it_behaves_like 'ToNG', 422
-      it_behaves_like 'ToMsg', Hash, 2, 'activerecord.errors.models.user.attributes.image.blank', nil, 'errors.messages.not_saved.one', nil
+      it_behaves_like 'ToMsg', ActiveSupport::HashWithIndifferentAccess, 2, 'activerecord.errors.models.user.attributes.image.blank', nil,
+                      'errors.messages.not_saved.one', nil
     end
     shared_examples_for '[削除予約済み]無効なパラメータ' do
       let(:params) { invalid_attributes }

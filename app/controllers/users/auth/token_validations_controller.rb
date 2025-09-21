@@ -2,6 +2,7 @@
 
 class Users::Auth::TokenValidationsController < DeviseTokenAuth::TokenValidationsController
   include DeviseTokenAuth::Concerns::SetUserByToken
+
   skip_before_action :verify_authenticity_token
   prepend_before_action :response_not_acceptable_for_not_api
   prepend_before_action :update_request_uid_header

@@ -1,5 +1,6 @@
 class TopController < ApplicationController
   include InfomationsConcern
+
   before_action :response_not_found_for_api_mode_not_api, unless: :development?
   before_action :response_not_acceptable_for_not_html
   before_action :render_development_for_api_mode, if: :development?
