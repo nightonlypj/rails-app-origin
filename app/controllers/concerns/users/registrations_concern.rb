@@ -40,7 +40,7 @@ module Users::RegistrationsConcern
         invitation_ids.push(@invitation.id)
       else
         # URLで招待
-        invitationed_user = @invitation.last_updated_user.present? ? @invitation.last_updated_user : @invitation.created_user
+        invitationed_user = @invitation.last_updated_user.presence || @invitation.created_user
         insert_datas.push(member.attributes.symbolize_keys.merge(space_id: @invitation.space_id, power: @invitation.power,
                                                                  invitationed_user_id: invitationed_user.id, invitationed_at: now))
       end

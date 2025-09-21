@@ -177,7 +177,7 @@
             </p>
           </aside>
 <% end %>
-<% if space_destroy_reserved_message? %>
+<% if space_destroy_reserved_message?(@space) %>
           <aside>
             <p class="note note-warning mb-2">
               <%= t('スペース削除情報', date: l(@space.destroy_schedule_at.to_date)) %>

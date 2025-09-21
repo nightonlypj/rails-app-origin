@@ -1,6 +1,6 @@
 FactoryBot.define do
   factory :download do
-    requested_at { Time.current - 2.hours }
+    requested_at { 2.hours.ago }
     # status       { :waiting }
     model        { :member }
     target       { :all }
@@ -19,17 +19,17 @@ FactoryBot.define do
     end
     trait :success do
       status       { :success }
-      completed_at { Time.current - 1.hour }
+      completed_at { 1.hour.ago }
     end
     trait :failure do
       status        { :failure }
       error_message { 'エラー内容' }
-      completed_at  { Time.current - 1.hour }
+      completed_at  { 1.hour.ago }
     end
 
     trait :downloaded do
       status             { :success }
-      completed_at       { Time.current - 1.hour }
+      completed_at       { 1.hour.ago }
       last_downloaded_at { Time.current }
     end
   end

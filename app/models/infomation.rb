@@ -19,19 +19,19 @@ class Infomation < ApplicationRecord
   }
 
   # ラベル
-  enum label: {
+  enum :label, {
     not: 0,         # （なし）
     maintenance: 1, # メンテナンス
     hindrance: 2,   # 障害
     update: 3,      # アップデート
     other: 9        # その他
-  }, _prefix: true
+  }, prefix: true
 
   # 対象
-  enum target: {
+  enum :target, {
     all: 1, # 全員
     user: 2 # 対象ユーザーのみ
-  }, _prefix: true
+  }, prefix: true
 
   # 表示対象かを返却
   def display_target?(current_user)

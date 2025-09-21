@@ -1,7 +1,7 @@
 require 'rails_helper'
 
 RSpec.describe 'Members', type: :request do
-  let(:response_json) { JSON.parse(response.body) }
+  let(:response_json) { response.parsed_body }
 
   # POST /members/:space_code/delete メンバー削除(処理)
   # POST /members/:space_code/delete(.json) メンバー削除API(処理)

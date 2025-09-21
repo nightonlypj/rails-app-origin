@@ -20,15 +20,31 @@
 # Any libraries that use a connection pool or another resource pool should
 # be configured to provide at least as many connections as the number of
 # threads. This includes Active Record's `pool` parameter in `database.yml`.
-threads_count = ENV.fetch('RAILS_MAX_THREADS', 3)
-threads threads_count, threads_count
+### START ###
+# threads_count = ENV.fetch('RAILS_MAX_THREADS', 3)
+# threads threads_count, threads_count
+threads ENV.fetch('RAILS_MIN_THREADS', 3), ENV.fetch('RAILS_MAX_THREADS', 3) # MEMO: 増やすとスループットが向上するが、レイテンシは低下する
+workers ENV.fetch('WEB_CONCURRENCY', 1) unless RUBY_PLATFORM.include?('darwin') # NOTE: vCPUと揃える。メモリ使用量が増える。macOSではエラーになる事がある為、設定しない
+### END ###
 
 # Specifies the `port` that Puma will listen on to receive requests; default is 3000.
-port ENV.fetch('PORT', 3000)
+### START ###
+# port ENV.fetch('PORT', 3000)
+puma_port = ENV.fetch('PUMA_PORT', nil)
+puma_bind = ENV.fetch('PUMA_BIND', nil) # サンプル: 'unix:///workdir/tmp/sockets/puma.sock'
+if puma_bind.nil? || puma_bind.empty? # NOTE: Railsの記法は使えない為 # rubocop:disable Rails/Blank
+  port(puma_port.nil? || puma_port.empty? ? 3000 : puma_port.to_i) # rubocop:disable Rails/Blank
+else
+  bind puma_bind
+end
+### END ###
 
 # Allow puma to be restarted by `bin/rails restart` command.
 plugin :tmp_restart
 
 # Specify the PID file. Defaults to tmp/pids/server.pid in development.
 # In other environments, only set the PID file if requested.
-pidfile ENV['PIDFILE'] if ENV['PIDFILE']
+### START ###
+# pidfile ENV['PIDFILE'] if ENV['PIDFILE']
+pidfile ENV.fetch('PIDFILE', 'tmp/pids/puma.pid')
+### END ###

@@ -23,44 +23,44 @@ class Download < ApplicationRecord
   }
 
   # ステータス
-  enum status: {
+  enum :status, {
     waiting: 0,    # 処理待ち
     processing: 1, # 処理中
     success: 7,    # 成功
     failure: 9     # 失敗
-  }, _prefix: true
+  }, prefix: true
 
   # モデル
-  enum model: {
+  enum :model, {
     member: 1 # メンバー
-  }, _prefix: true
+  }, prefix: true
 
   # 対象
-  enum target: {
+  enum :target, {
     select: 1, # 選択項目
     search: 2, # 検索
     all: 3 # 全て
-  }, _prefix: true
+  }, prefix: true
 
   # 形式
-  enum format: {
+  enum :format, {
     csv: 1, # CSV
     tsv: 2  # TSV
-  }, _prefix: true
+  }, prefix: true
 
   # 文字コード
-  enum char_code: {
+  enum :char_code, {
     sjis: 1,  # Shift_JIS
     eucjp: 2, # EUC-JP
     utf8: 3   # UTF-8
-  }, _prefix: true
+  }, prefix: true
 
   # 改行コード
-  enum newline_code: {
+  enum :newline_code, {
     crlf: 1, # CR+LF
     lf: 2,   # LF
     cr: 3    # CR
-  }, _prefix: true
+  }, prefix: true
 
   # 区切り文字
   def col_sep

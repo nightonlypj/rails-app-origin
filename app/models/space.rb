@@ -19,7 +19,7 @@ class Space < ApplicationRecord
   # 名称（ユニーク）
   def validate_name_uniqueness(current_user)
     checked = { public: true, private: true, join: true, nojoin: true, active: true, destroy: false } # NOTE: 検索オプションと同じ
-    errors.add(:name, :taken) if Space.by_target(current_user, checked).where(name:).exists?
+    errors.add(:name, :taken) if Space.by_target(current_user, checked).exists?(name:)
   end
 
   scope :by_target, ->(current_user, checked) {

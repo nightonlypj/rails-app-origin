@@ -3,6 +3,7 @@
 class Users::RegistrationsController < Devise::RegistrationsController
   include Users::RegistrationsConcern
   include Utils::CreateUniqueCodeConcern
+
   before_action :redirect_for_user_destroy_reserved, only: %i[edit update image_update image_destroy delete destroy]
   before_action :redirect_for_not_user_destroy_reserved, only: %i[undo_delete undo_destroy]
   before_action :set_invitation, only: %i[new create]
@@ -20,7 +21,7 @@ class Users::RegistrationsController < Devise::RegistrationsController
   def create
     params[:user][:code] = create_unique_code(User, 'code', "Users::RegistrationsController.create #{params[:user]}")
     params[:user][:email] = get_email(params[:user]) if @invitation.present?
-    ActiveRecord::Base.transaction do
+    ApplicationRecord.transaction do
       super
       flash[:alert] = resource.errors[:code].first if resource.errors[:code].present?
       if resource.errors.blank?

@@ -32,7 +32,7 @@ class Invitation < ApplicationRecord
       return
     end
     if result.count > max_count
-      errors.add(:domains, :max_count, count: max_count.to_formatted_s(:delimited))
+      errors.add(:domains, :max_count, count: max_count.to_fs(:delimited))
       return
     end
     if invalid_domain.present?
@@ -51,11 +51,11 @@ class Invitation < ApplicationRecord
   }
 
   # 権限
-  enum power: {
+  enum :power, {
     admin: 1,  # 管理者
     writer: 2, # 投稿者
     reader: 3  # 閲覧者
-  }, _prefix: true
+  }, prefix: true
 
   # ステータス
   def status
@@ -86,7 +86,7 @@ class Invitation < ApplicationRecord
   def validate_ended_date
     return if ended_date.blank?
 
-    result, @year, @month, @day = */^(\d+)-(\d+)-(\d+)$/.match(ended_date.gsub(%r{/}, '-'))
+    result, @year, @month, @day = */^(\d+)-(\d+)-(\d+)$/.match(ended_date.tr('/', '-'))
     result, @year, @month, @day = */^(\d{4})(\d{2})(\d{2})$/.match(ended_date) if result.blank?
     return errors.add(:ended_date, :invalid) if result.blank? || !(0..9999).cover?(@year.to_i) || !(1..12).cover?(@month.to_i) || !(1..31).cover?(@day.to_i)
 

@@ -1,7 +1,7 @@
 require 'rails_helper'
 
 RSpec.describe 'Spaces', type: :request do
-  let(:response_json) { JSON.parse(response.body) }
+  let(:response_json) { response.parsed_body }
   let(:response_json_space)  { response_json['space'] }
   let(:response_json_spaces) { response_json['spaces'] }
   let(:default_params) { { text: nil, public: 1, private: 1, join: 1, nojoin: 1, active: 1, destroy: 0 } }

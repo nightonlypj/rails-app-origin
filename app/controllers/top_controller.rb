@@ -1,5 +1,6 @@
 class TopController < ApplicationController
   include InfomationsConcern
+
   before_action :response_not_found_for_api_mode_not_api, unless: :development?
   before_action :response_not_acceptable_for_not_html
   before_action :render_development_for_api_mode, if: :development?
@@ -8,7 +9,7 @@ class TopController < ApplicationController
   # GET / トップページ
   def index
     @public_spaces = Space.where(private: false).active.order(created_at: :desc, id: :desc)
-                          .limit(Settings.default_spaces_limit)
+      .limit(Settings.default_spaces_limit)
   end
 
   private

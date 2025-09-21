@@ -3,7 +3,7 @@ require 'rails_helper'
 RSpec.describe 'Users::Auth::Registrations', type: :request do
   let_it_be(:created_user) { FactoryBot.create(:user) }
   let_it_be(:space) { FactoryBot.create(:space, created_user:) }
-  let(:response_json) { JSON.parse(response.body) }
+  let(:response_json) { response.parsed_body }
   let(:response_json_invitation) { response_json['invitation'] }
 
   # GET /users/auth/invitation(.json) 招待情報取得API

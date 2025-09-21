@@ -1,7 +1,7 @@
 require 'rails_helper'
 
 RSpec.describe 'Infomations', type: :request do
-  let(:response_json) { JSON.parse(response.body) }
+  let(:response_json) { response.parsed_body }
   let(:response_json_infomation) { response_json['infomation'] }
 
   # GET /infomations/:id お知らせ詳細
@@ -33,7 +33,7 @@ RSpec.describe 'Infomations', type: :request do
         expect(response.body).to include(infomation.title)
         expect(response.body).to include(I18n.l(infomation.started_at.to_date))
         # 本文, サマリー
-        expect(response.body).to include(infomation.body.present? ? infomation.body : infomation.summary)
+        expect(response.body).to include(infomation.body.presence || infomation.summary)
       end
     end
     shared_examples_for 'ToOK(json/json)' do
@@ -52,37 +52,37 @@ RSpec.describe 'Infomations', type: :request do
 
     # テストケース
     shared_examples_for '[*][全員][過去]終了日時が過去' do
-      let_it_be(:ended_at) { Time.current - 1.day }
+      let_it_be(:ended_at) { 1.day.ago }
       include_context 'お知らせ作成'
       it_behaves_like 'ToNG(html)', Settings.api_only_mode ? 406 : 404
       it_behaves_like 'ToNG(json)', 404, nil, 'errors.messages.infomation.ended'
     end
     shared_examples_for '[ログイン中/削除予約済み][自分][過去]終了日時が過去' do
-      let_it_be(:ended_at) { Time.current - 1.day }
+      let_it_be(:ended_at) { 1.day.ago }
       include_context 'お知らせ作成'
       it_behaves_like 'ToNG(html)', Settings.api_only_mode ? 406 : 404
       it_behaves_like 'ToNG(json)', 404 # NOTE: APIは未ログイン扱いの為、他人
     end
     shared_examples_for '[APIログイン中/削除予約済み][自分][過去]終了日時が過去' do
-      let_it_be(:ended_at) { Time.current - 1.day }
+      let_it_be(:ended_at) { 1.day.ago }
       include_context 'お知らせ作成'
       it_behaves_like 'ToNG(html)', Settings.api_only_mode ? 406 : 404
       it_behaves_like 'ToNG(json)', 404, nil, 'errors.messages.infomation.ended'
     end
     shared_examples_for '[*][他人][過去]終了日時が過去' do
-      let_it_be(:ended_at) { Time.current - 1.day }
+      let_it_be(:ended_at) { 1.day.ago }
       include_context 'お知らせ作成'
       it_behaves_like 'ToNG(html)', Settings.api_only_mode ? 406 : 404
       it_behaves_like 'ToNG(json)', 404
     end
     shared_examples_for '[*][*][未来]終了日時が過去' do # NOTE: 不整合
-      let_it_be(:ended_at) { Time.current - 1.day }
+      let_it_be(:ended_at) { 1.day.ago }
       include_context 'お知らせ作成'
       it_behaves_like 'ToNG(html)', Settings.api_only_mode ? 406 : 404
       it_behaves_like 'ToNG(json)', 404
     end
     shared_examples_for '[*][全員][過去]終了日時が未来' do
-      let_it_be(:ended_at) { Time.current + 1.day }
+      let_it_be(:ended_at) { 1.day.from_now }
       context '本文がある' do
         include_context 'お知らせ作成'
         if Settings.api_only_mode
@@ -103,7 +103,7 @@ RSpec.describe 'Infomations', type: :request do
       end
     end
     shared_examples_for '[ログイン中/削除予約済み][自分][過去]終了日時が未来' do
-      let_it_be(:ended_at) { Time.current + 1.day }
+      let_it_be(:ended_at) { 1.day.from_now }
       include_context 'お知らせ作成'
       if Settings.api_only_mode
         it_behaves_like 'ToNG(html)', 406
@@ -113,7 +113,7 @@ RSpec.describe 'Infomations', type: :request do
       it_behaves_like 'ToNG(json)', 404 # NOTE: APIは未ログイン扱いの為、他人
     end
     shared_examples_for '[APIログイン中/削除予約済み][自分][過去]終了日時が未来' do
-      let_it_be(:ended_at) { Time.current + 1.day }
+      let_it_be(:ended_at) { 1.day.from_now }
       include_context 'お知らせ作成'
       if Settings.api_only_mode
         it_behaves_like 'ToNG(html)', 406
@@ -123,13 +123,13 @@ RSpec.describe 'Infomations', type: :request do
       it_behaves_like 'ToOK(json)'
     end
     shared_examples_for '[*][他人][過去]終了日時が未来' do
-      let_it_be(:ended_at) { Time.current + 1.day }
+      let_it_be(:ended_at) { 1.day.from_now }
       include_context 'お知らせ作成'
       it_behaves_like 'ToNG(html)', Settings.api_only_mode ? 406 : 404
       it_behaves_like 'ToNG(json)', 404
     end
     shared_examples_for '[*][*][未来]終了日時が未来' do
-      let_it_be(:ended_at) { Time.current + 1.day }
+      let_it_be(:ended_at) { 1.day.from_now }
       include_context 'お知らせ作成'
       it_behaves_like 'ToNG(html)', Settings.api_only_mode ? 406 : 404
       it_behaves_like 'ToNG(json)', 404
@@ -178,31 +178,31 @@ RSpec.describe 'Infomations', type: :request do
     end
 
     shared_examples_for '[*][全員]開始日時が過去' do
-      let_it_be(:started_at) { Time.current - 1.day }
+      let_it_be(:started_at) { 1.day.ago }
       it_behaves_like '[*][全員][過去]終了日時が過去'
       it_behaves_like '[*][全員][過去]終了日時が未来'
       it_behaves_like '[*][全員][過去]終了日時がない'
     end
     shared_examples_for '[ログイン中/削除予約済み][自分]開始日時が過去' do
-      let_it_be(:started_at) { Time.current - 1.day }
+      let_it_be(:started_at) { 1.day.ago }
       it_behaves_like '[ログイン中/削除予約済み][自分][過去]終了日時が過去'
       it_behaves_like '[ログイン中/削除予約済み][自分][過去]終了日時が未来'
       it_behaves_like '[ログイン中/削除予約済み][自分][過去]終了日時がない'
     end
     shared_examples_for '[APIログイン中/削除予約済み][自分]開始日時が過去' do
-      let_it_be(:started_at) { Time.current - 1.day }
+      let_it_be(:started_at) { 1.day.ago }
       it_behaves_like '[APIログイン中/削除予約済み][自分][過去]終了日時が過去'
       it_behaves_like '[APIログイン中/削除予約済み][自分][過去]終了日時が未来'
       it_behaves_like '[APIログイン中/削除予約済み][自分][過去]終了日時がない'
     end
     shared_examples_for '[*][他人]開始日時が過去' do
-      let_it_be(:started_at) { Time.current - 1.day }
+      let_it_be(:started_at) { 1.day.ago }
       it_behaves_like '[*][他人][過去]終了日時が過去'
       it_behaves_like '[*][他人][過去]終了日時が未来'
       it_behaves_like '[*][他人][過去]終了日時がない'
     end
     shared_examples_for '[*][*]開始日時が未来' do
-      let_it_be(:started_at) { Time.current + 1.day }
+      let_it_be(:started_at) { 1.day.from_now }
       it_behaves_like '[*][*][未来]終了日時が過去'
       it_behaves_like '[*][*][未来]終了日時が未来'
       it_behaves_like '[*][*][未来]終了日時がない'

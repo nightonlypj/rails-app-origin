@@ -23,12 +23,12 @@ FactoryBot.define do
       # email_joined_at { nil }
     end
     trait :expired do
-      ended_at { Time.current - 1.minute }
+      ended_at { 1.minute.ago }
       # destroy_requested_at { nil }
       # destroy_schedule_at  { nil }
     end
     trait :deleted do
-      destroy_requested_at { Time.current - 1.minute }
+      destroy_requested_at { 1.minute.ago }
       destroy_schedule_at  { destroy_requested_at + Settings.space_destroy_schedule_days.days }
       # email_joined_at { nil }
     end

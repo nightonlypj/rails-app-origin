@@ -1,7 +1,7 @@
 require 'rails_helper'
 
 RSpec.describe 'Members', type: :request do
-  let(:response_json) { JSON.parse(response.body) }
+  let(:response_json) { response.parsed_body }
   let(:response_json_email)  { response_json['email'] }
   let(:response_json_emails) { response_json['emails'] }
 

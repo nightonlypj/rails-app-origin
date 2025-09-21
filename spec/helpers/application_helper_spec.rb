@@ -105,11 +105,8 @@ RSpec.describe ApplicationHelper, type: :helper do
   #   削除予約: ない, ある
   #   トップページ, スペース一覧, スペーストップ, スペース削除取り消し, メンバー一覧
   describe 'space_destroy_reserved_message?' do
-    subject { helper.space_destroy_reserved_message? }
-    before do
-      @space = space
-      allow(helper).to receive_messages(controller_name:, action_name:)
-    end
+    subject { helper.space_destroy_reserved_message?(space) }
+    before { allow(helper).to receive_messages(controller_name:, action_name:) }
 
     # テストケース
     shared_examples_for '[*]トップページ' do

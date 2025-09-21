@@ -1,7 +1,7 @@
 require 'rails_helper'
 
 RSpec.describe 'Invitations', type: :request do
-  let(:response_json) { JSON.parse(response.body) }
+  let(:response_json) { response.parsed_body }
   let(:response_json_invitation) { response_json['invitation'] }
 
   # GET /invitations/:space_code/detail/:code(.json) 招待URL詳細API

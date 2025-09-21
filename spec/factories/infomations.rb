@@ -4,8 +4,8 @@ FactoryBot.define do
     sequence(:title) { |n| "infomation(#{n})" }
     summary          { "#{title}の要約" }
     body             { "#{title}の本文" }
-    started_at       { Time.current - 1.hour }
-    ended_at         { Time.current + 3.hour }
+    started_at       { 1.hour.ago }
+    ended_at         { 3.hours.from_now }
     target           { :all }
 
     # 全員
@@ -26,17 +26,17 @@ FactoryBot.define do
 
     # 終了済み
     trait :finished do
-      ended_at { Time.current - 1.second }
+      ended_at { 1.second.ago }
     end
 
     # 予約（終了あり）
     trait :reserve do
-      started_at { Time.current + 1.hour }
+      started_at { 1.hour.from_now }
     end
 
     # 予約（終了なし）
     trait :reserve_forever do
-      started_at { Time.current + 1.hour }
+      started_at { 1.hour.from_now }
       ended_at { nil }
     end
 
@@ -44,7 +44,7 @@ FactoryBot.define do
     trait :important do
       label            { :maintenance }
       force_started_at { Time.current }
-      force_ended_at   { Time.current + 2.hour }
+      force_ended_at   { 2.hours.from_now }
     end
 
     # 大切なお知らせ: 終了なし
@@ -56,17 +56,17 @@ FactoryBot.define do
 
     # 大切なお知らせ: 終了済み
     trait :force_finished do
-      force_ended_at { Time.current - 1.second }
+      force_ended_at { 1.second.ago }
     end
 
     # 大切なお知らせ: 予約（終了あり）
     trait :force_reserve do
-      force_started_at { Time.current + 1.hour }
+      force_started_at { 1.hour.from_now }
     end
 
     # 大切なお知らせ: 予約（終了なし）
     trait :force_reserve_forever do
-      force_started_at { Time.current + 1.hour }
+      force_started_at { 1.hour.from_now }
       force_ended_at   { nil }
     end
   end

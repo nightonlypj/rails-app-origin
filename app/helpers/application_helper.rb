@@ -17,8 +17,8 @@ module ApplicationHelper
   end
 
   # スペース削除予約メッセージを表示するかを返却
-  def space_destroy_reserved_message?
-    return false unless @space&.destroy_reserved?
+  def space_destroy_reserved_message?(space)
+    return false unless space&.destroy_reserved?
 
     case controller_name
     when 'spaces'
@@ -74,11 +74,11 @@ module ApplicationHelper
 
   # ページの最初の番号を返却
   def first_page_number(models)
-    ((models.limit_value * (models.current_page - 1)) + 1).to_formatted_s(:delimited)
+    ((models.limit_value * (models.current_page - 1)) + 1).to_fs(:delimited)
   end
 
   # ページの最後の番号を返却
   def last_page_number(models)
-    [models.current_page * models.limit_value, models.total_count].min.to_formatted_s(:delimited)
+    [models.current_page * models.limit_value, models.total_count].min.to_fs(:delimited)
   end
 end

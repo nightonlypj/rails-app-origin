@@ -1,15 +1,17 @@
+<% if ENV['DB_ADAPTER'] == 'sqlite3' %>
 # SQLite. Versions 3.8.0 and up are supported.
 #   gem install sqlite3
 #
 #   Ensure the SQLite 3 gem is defined in your Gemfile
 #   gem 'sqlite3'
 #
-#default: &default
-default-sqlite3: &default-sqlite3
+default: &default
   adapter: sqlite3
-  pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
+  # pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
+  pool: <%= ENV.fetch('RAILS_MAX_THREADS', 3).to_i * ENV.fetch('WEB_CONCURRENCY', 1).to_i %>
   timeout: 5000
 
+<% elsif ENV['DB_ADAPTER'] == 'mysql2' %>
 # MySQL. Versions 5.5.8 and up are supported.
 #
 # Install the MySQL driver
@@ -22,21 +24,19 @@ default-sqlite3: &default-sqlite3
 #   https://dev.mysql.com/doc/refman/5.7/en/password-hashing.html
 #
 default: &default
-#default-mysql: &default-mysql
   adapter: mysql2
   # encoding: utf8
   # collation: utf8_general_ci
   encoding: utf8mb4 # NOTE: MySQL 5.7.7以降でないとmigrateに失敗する
   collation: utf8mb4_general_ci
-  pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
-  # username: rails_app
-  # password: abc123
-  # host: localhost
-  username: root
-  password: xyz789
-  host: 127.0.0.1
-  # host: db
+  # pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
+  pool: <%= ENV.fetch('RAILS_MAX_THREADS', 3).to_i * ENV.fetch('WEB_CONCURRENCY', 1).to_i %>
+  username: <%= ENV.fetch('MYSQL_USER', 'root') %>
+  password: <%= ENV['MYSQL_PASSWORD'] %>
+  host: <%= ENV['MYSQL_HOST'] %>
+  port: <%= ENV.fetch('MYSQL_PORT', 3306) %>
 
+<% elsif ENV['DB_ADAPTER'] == 'postgresql' %>
 # PostgreSQL. Versions 9.3 and up are supported.
 #
 # Install the pg driver:
@@ -53,26 +53,23 @@ default: &default
 # Configure Using Gemfile
 # gem 'pg'
 #
-#default: &default
-default-pg: &default-pg
+default: &default
   adapter: postgresql
   encoding: unicode
   # For details on connection pooling, see Rails configuration guide
   # https://guides.rubyonrails.org/configuring.html#database-pooling
-  pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
-  # username: rails_app
-  # password: abc123
-  # host: localhost
-  username: postgres
-  password: xyz789
-  host: 127.0.0.1
-  # host: db
-  # host: pg
+  # pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
+  pool: <%= ENV.fetch('RAILS_MAX_THREADS', 3).to_i * ENV.fetch('WEB_CONCURRENCY', 1).to_i %>
+  username: <%= ENV.fetch('POSTGRES_USER', 'postgres') %>
+  password: <%= ENV['POSTGRES_PASSWORD'] %>
+  host: <%= ENV['POSTGRES_HOST'] %>
+  port: <%= ENV.fetch('POSTGRES_PORT', 5432) %>
+<% end %>
 
 development:
   <<: *default
   # database: db/development.sqlite3
-  database: rails_app_development
+  database: <%= ENV['DB_NAME_DEVELOPMENT'] %>
 
 # Warning: The database defined as "test" will be erased and
 # re-generated from your development database when you run "rake".
@@ -80,8 +77,7 @@ development:
 test:
   <<: *default
   # database: db/test.sqlite3
-  database: rails_app_test
-  # username: rails_app_test
+  database: <%= ENV['DB_NAME_TEST'] %>
 
 # As with config/credentials.yml, you never want to store sensitive information,
 # like your database password, in your source code. If your source code is

@@ -1,5 +1,6 @@
 class ApplicationAuthController < ApplicationController
   include DeviseTokenAuth::Concerns::SetUserByToken
+
   skip_before_action :verify_authenticity_token, unless: :format_html?
   before_action :response_not_acceptable_for_api_mode_not_api
   before_action :standard_devise_support

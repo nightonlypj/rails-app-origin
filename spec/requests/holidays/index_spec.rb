@@ -1,7 +1,7 @@
 require 'rails_helper'
 
 RSpec.describe 'Holidays', type: :request do
-  let(:response_json) { JSON.parse(response.body) }
+  let(:response_json) { response.parsed_body }
   let(:response_json_holidays) { response_json['holidays'] }
 
   # GET /holidays(.json) 祝日一覧API

@@ -2,9 +2,6 @@ require 'active_support/core_ext/integer/time'
 
 Rails.application.configure do
   # Settings specified here will take precedence over those in config/application.rb.
-  ### START ###
-  config.hosts.clear
-  ### END ###
 
   # In the development environment your application's code is reloaded any time
   # it changes. This slows down response time but is perfect for development
@@ -51,7 +48,11 @@ Rails.application.configure do
   ### END ###
 
   # Print deprecation notices to the Rails logger.
-  config.active_support.deprecation = :log
+  ### START ###
+  # config.active_support.deprecation = :log
+  config.active_support.deprecation = :raise # NOTE: DEPRECATION WARNINGをエラーにする
+  config.raise_on_warning = true
+  ### END ###
 
   # Raise exceptions for disallowed deprecations.
   config.active_support.disallowed_deprecation = :raise
@@ -87,6 +88,15 @@ Rails.application.configure do
   # config.generators.apply_rubocop_autocorrect_after_generate!
 
   ### START ###
-  config.raise_on_warning = true
+  config.hosts.clear # NOTE: 全てのホストを許可する
+
+  config.after_initialize do
+    Bullet.enable        = true
+    Bullet.alert         = false # 追加
+    Bullet.bullet_logger = true
+    Bullet.console       = true
+    Bullet.rails_logger  = true
+    Bullet.add_footer    = true
+  end
   ### END ###
 end

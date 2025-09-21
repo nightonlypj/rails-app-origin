@@ -26,10 +26,7 @@ Rails.application.configure do
   # Show full error reports and disable caching.
   config.consider_all_requests_local = true
   config.action_controller.perform_caching = false
-  ### START ###
-  # config.cache_store = :null_store
-  config.cache_store = :memory_store
-  ### END ###
+  config.cache_store = :null_store
 
   # Render exception templates for rescuable exceptions and raise for other exceptions.
   config.action_dispatch.show_exceptions = :rescuable
@@ -57,7 +54,11 @@ Rails.application.configure do
   ### END ###
 
   # Print deprecation notices to the stderr.
-  config.active_support.deprecation = :stderr
+  ### START ###
+  # config.active_support.deprecation = :stderr
+  config.active_support.deprecation = :raise # NOTE: DEPRECATION WARNINGをエラーにする
+  config.raise_on_warning = true
+  ### END ###
 
   # Raise exceptions for disallowed deprecations.
   config.active_support.disallowed_deprecation = :raise
@@ -76,6 +77,12 @@ Rails.application.configure do
 
   ### START ###
   config.log_level = ENV['CI'].present? ? :fatal : :info
-  config.raise_on_warning = true
+
+  config.after_initialize do
+    # Bullet.enable        = true
+    Bullet.enable        = false
+    Bullet.bullet_logger = true
+    Bullet.raise         = true # raise an error if n+1 query occurs
+  end
   ### END ###
 end

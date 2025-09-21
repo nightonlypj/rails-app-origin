@@ -87,15 +87,15 @@ RSpec.describe Invitation, type: :model do
         it_behaves_like 'Valid'
       end
       context 'YYYY-MM-DD' do
-        let(:ended_date) { (Time.current + 1.day).strftime('%Y-%m-%d') }
+        let(:ended_date) { 1.day.from_now.strftime('%Y-%m-%d') }
         it_behaves_like 'Valid'
       end
       context 'YYYY/MM/DD' do
-        let(:ended_date) { (Time.current + 1.day).strftime('%Y/%m/%d') }
+        let(:ended_date) { 1.day.from_now.strftime('%Y/%m/%d') }
         it_behaves_like 'Valid'
       end
       context 'YYYYMMDD' do
-        let(:ended_date) { (Time.current + 1.day).strftime('%Y%m%d') }
+        let(:ended_date) { 1.day.from_now.strftime('%Y%m%d') }
         it_behaves_like 'Valid'
       end
       context '存在しない日付（1/0）' do
@@ -109,7 +109,7 @@ RSpec.describe Invitation, type: :model do
         it_behaves_like 'InValid'
       end
       context '過去日' do
-        let(:ended_date) { (Time.current - 1.day).strftime('%Y/%m/%d') }
+        let(:ended_date) { 1.day.ago.strftime('%Y/%m/%d') }
         let(:messages) { { ended_date: [get_locale('activerecord.errors.models.invitation.attributes.ended_date.before')] } }
         it_behaves_like 'InValid'
       end
@@ -120,12 +120,12 @@ RSpec.describe Invitation, type: :model do
         it_behaves_like 'Valid'
       end
       context '過去に変更' do
-        let(:ended_date) { (Time.current - 1.day).strftime('%Y-%m-%d') }
+        let(:ended_date) { 1.day.ago.strftime('%Y-%m-%d') }
         let(:messages) { { ended_date: [get_locale('activerecord.errors.models.invitation.attributes.ended_date.before')] } }
         it_behaves_like 'InValid'
       end
       context '未来に変更' do
-        let(:ended_date) { (Time.current + 1.day).strftime('%Y-%m-%d') }
+        let(:ended_date) { 1.day.from_now.strftime('%Y-%m-%d') }
         it_behaves_like 'Valid'
       end
     end
@@ -135,11 +135,11 @@ RSpec.describe Invitation, type: :model do
       it_behaves_like '終了日時がない'
     end
     context '終了日時が過去' do
-      let(:ended_at) { (Time.current - 1.month).end_of_day.floor }
+      let(:ended_at) { 1.month.ago.end_of_day.floor }
       it_behaves_like '終了日時が過去/未来'
     end
     context '終了日時が未来' do
-      let(:ended_at) { (Time.current + 1.month).end_of_day.floor }
+      let(:ended_at) { 1.month.from_now.end_of_day.floor }
       it_behaves_like '終了日時が過去/未来'
     end
   end
@@ -228,11 +228,11 @@ RSpec.describe Invitation, type: :model do
       it_behaves_like '終了日時がない'
     end
     context '終了日時が過去' do
-      let(:ended_at) { (Time.current - 1.month).end_of_day.floor }
+      let(:ended_at) { 1.month.ago.end_of_day.floor }
       it_behaves_like '終了日時が過去/未来'
     end
     context '終了日時が未来' do
-      let(:ended_at) { (Time.current + 1.month).end_of_day.floor }
+      let(:ended_at) { 1.month.from_now.end_of_day.floor }
       it_behaves_like '終了日時が過去/未来'
     end
   end
@@ -350,11 +350,11 @@ RSpec.describe Invitation, type: :model do
       let(:email_joined_at)     { nil }
       let(:destroy_schedule_at) { nil }
       context '終了日時が過去' do
-        let(:ended_at) { Time.current - 1.day }
+        let(:ended_at) { 1.day.ago }
         it_behaves_like 'Value', :expired
       end
       context '終了日時が未来' do
-        let(:ended_at) { Time.current + 1.day }
+        let(:ended_at) { 1.day.from_now }
         it_behaves_like 'Value', :active
       end
       context '終了日時がない' do
@@ -380,7 +380,7 @@ RSpec.describe Invitation, type: :model do
     end
     context 'ステータスがexpired' do
       let(:destroy_schedule_at) { nil }
-      let(:ended_at)            { Time.current - 1.day }
+      let(:ended_at)            { 1.day.ago }
       let(:email_joined_at)     { nil }
       it_behaves_like 'Value_i18n', 'enums.invitation.status.expired'
     end
@@ -442,7 +442,7 @@ RSpec.describe Invitation, type: :model do
       it_behaves_like 'Value', nil, 'nil'
     end
     context '更新日時が作成日時以降' do
-      let(:invitation) { FactoryBot.create(:invitation, created_at: Time.current - 1.hour, updated_at: Time.current, space:, created_user:) }
+      let(:invitation) { FactoryBot.create(:invitation, created_at: 1.hour.ago, updated_at: Time.current, space:, created_user:) }
       it '更新日時' do
         is_expected.to eq(invitation.updated_at)
       end

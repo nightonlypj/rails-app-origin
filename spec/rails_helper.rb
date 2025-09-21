@@ -12,12 +12,12 @@ require 'rspec/rails'
 require 'webmock/rspec'
 # Add additional requires below this line. Rails is not loaded until this point!
 
-# Use Devise
-require 'devise'
-
 # Use Ruby Tests Profiling Toolbox
 require 'test_prof/recipes/rspec/let_it_be'
 require 'test_prof/recipes/rspec/before_all'
+
+# Use SuperDiff
+require 'super_diff/rspec-rails'
 
 # Requires supporting ruby files with custom matchers and macros, etc, in
 # spec/support/ and its subdirectories. Files matching `spec/**/*_spec.rb` are
@@ -32,7 +32,7 @@ require 'test_prof/recipes/rspec/before_all'
 # directory. Alternatively, in the individual `*_spec.rb` files, manually
 # require only the support files necessary.
 #
-Dir[Rails.root.join('spec', 'support', '**', '*.rb')].each { |f| require f }
+Dir[Rails.root.join('spec/support/**/*.rb')].each { |f| require f }
 
 # Checks for pending migrations and applies them before tests are run.
 # If you are not using ActiveRecord, you can remove these lines.

@@ -15,7 +15,7 @@ RSpec.describe :space, type: :task do
     let_it_be(:user) { FactoryBot.create(:user) }
     before_all do
       FactoryBot.create(:space, created_user: user, destroy_schedule_at: nil)
-      space = FactoryBot.create(:space, created_user: user, destroy_schedule_at: Time.current + 1.minute)
+      space = FactoryBot.create(:space, created_user: user, destroy_schedule_at: 1.minute.from_now)
       FactoryBot.create(:member, space:, user:)
       download = FactoryBot.create(:download, user:, space:)
       FactoryBot.create(:download_file, download:)
@@ -25,8 +25,8 @@ RSpec.describe :space, type: :task do
     shared_context '削除対象作成' do
       let_it_be(:spaces) do
         [
-          FactoryBot.create(:space, created_user: user, destroy_schedule_at: Time.current - 2.minute),
-          FactoryBot.create(:space, created_user: user, destroy_schedule_at: Time.current - 1.minute)
+          FactoryBot.create(:space, created_user: user, destroy_schedule_at: 2.minutes.ago),
+          FactoryBot.create(:space, created_user: user, destroy_schedule_at: 1.minute.ago)
         ]
       end
       let_it_be(:members) { FactoryBot.create_list(:member, 1, space: spaces[1], user:) }

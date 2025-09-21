@@ -28,7 +28,7 @@ class Member < ApplicationRecord
       return
     end
     if result.count > max_count
-      errors.add(:emails, :max_count, count: max_count.to_formatted_s(:delimited))
+      errors.add(:emails, :max_count, count: max_count.to_fs(:delimited))
       return
     end
     if invalid_email.present?
@@ -58,7 +58,7 @@ class Member < ApplicationRecord
     member
   }
   scope :by_power, ->(power) {
-    return none if power.count == 0
+    return none if power.none?
     return if power.count >= Member.powers.count
 
     where(power:)
@@ -77,11 +77,11 @@ class Member < ApplicationRecord
 
   # 権限
   POWER_WRITER_UP = %i[admin writer].freeze
-  enum power: {
+  enum :power, {
     admin: 1,  # 管理者
     writer: 2, # 投稿者
     reader: 3  # 閲覧者
-  }, _prefix: true
+  }, prefix: true
 
   # 最終更新日時
   def last_updated_at

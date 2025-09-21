@@ -1,8 +1,6 @@
 module MembersConcern
   extend ActiveSupport::Concern
 
-  private
-
   SORT_COLUMN = {
     'user.name' => 'users.name',
     'user.email' => 'users.email',
@@ -12,6 +10,8 @@ module MembersConcern
     'last_updated_user.name' => 'last_updated_users_members.name',
     'last_updated_at' => 'members.updated_at'
   }.freeze
+
+  private
 
   def get_value(member, output_item)
     case output_item
@@ -79,12 +79,12 @@ module MembersConcern
 
   def members_select(codes)
     Member.where(space: @space).includes(:user).where(user: { code: codes }).eager_load(:user, :invitationed_user, :last_updated_user)
-          .order(SORT_COLUMN[@sort] + (@desc ? ' DESC' : ''), id: :desc)
+      .order(Arel.sql("#{SORT_COLUMN.fetch(@sort)} #{'DESC' if @desc}"), id: :desc)
   end
 
   def members_search
     Member.where(space: @space).search(@text, @current_member).by_power(@powers).by_target(@checked).eager_load(:user, :invitationed_user, :last_updated_user)
-          .order(SORT_COLUMN[@sort] + (@desc ? ' DESC' : ''), id: :desc)
+      .order(Arel.sql("#{SORT_COLUMN.fetch(@sort)} #{'DESC' if @desc}"), id: :desc)
   end
 
   # ダウンロードファイルのデータ作成

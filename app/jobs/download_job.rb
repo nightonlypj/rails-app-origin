@@ -1,11 +1,12 @@
 class DownloadJob < ApplicationJob
   include MembersConcern
+
   queue_as :default
   rescue_from StandardError, with: :status_failure
 
   # ダウンロードファイル作成
   def perform(download_id)
-    logger.info("=== START #{self.class.name}.#{__method__}(#{download_id}) ===")
+    logger.info "=== START #{self.class.name}.#{__method__}(#{download_id}) ==="
     @download = Download.find(download_id)
 
     ActiveRecord::Base.connection_pool.with_connection do
@@ -20,7 +21,7 @@ class DownloadJob < ApplicationJob
       @download.save!
     end
 
-    logger.info("=== END #{self.class.name}.#{__method__}(#{download_id}) ===")
+    logger.info "=== END #{self.class.name}.#{__method__}(#{download_id}) ==="
   end
 
   # ステータスを失敗に変更 # NOTE: テストの為、publicに記載
@@ -30,7 +31,7 @@ class DownloadJob < ApplicationJob
 
     if @download.present?
       @download.attributes = { status: :failure, error_message: error&.message, completed_at: Time.current }
-      logger.warn("[WARN]Failed save: download.id = #{@download.id}, error_message = #{error&.message}") unless @download.save(validate: false)
+      logger.warn "[WARN]Failed save: download.id = #{@download.id}, error_message = #{error&.message}" unless @download.save(validate: false)
     end
   end
 

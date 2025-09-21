@@ -26,7 +26,7 @@ RSpec.describe :invitation, type: :task do
         end
       end
 
-      destroy_schedule_at = Time.current + 1.minute # 削除予定日時が未来 -> 全て削除対象外
+      destroy_schedule_at = 1.minute.from_now # 削除予定日時が未来 -> 全て削除対象外
       [nil, before_date, after_date].each do |ended_at|
         [nil, before_date, after_date].each do |email_joined_at|
           FactoryBot.create(:invitation, space:, created_user:, destroy_schedule_at:, ended_at:, email_joined_at:)
@@ -47,7 +47,7 @@ RSpec.describe :invitation, type: :task do
           end
         end
 
-        destroy_schedule_at = Time.current - 1.minute # 削除予定日時が過去 -> 全て削除対象
+        destroy_schedule_at = 1.minute.ago # 削除予定日時が過去 -> 全て削除対象
         [nil, before_date, after_date].each do |ended_at|
           [nil, before_date, after_date].each do |email_joined_at|
             result.push(FactoryBot.create(:invitation, space:, created_user:, destroy_schedule_at:, ended_at:, email_joined_at:))

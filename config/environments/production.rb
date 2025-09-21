@@ -2,11 +2,6 @@ require 'active_support/core_ext/integer/time'
 
 Rails.application.configure do
   # Settings specified here will take precedence over those in config/application.rb.
-  ### START ###
-  config.hosts << Settings.base_domain
-  # NOTE: [ActionDispatch::HostAuthorization::DefaultResponseApp] Blocked hosts
-  config.host_authorization = { exclude: ->(request) { %w[/_check /health_check].include?(request.path) } }
-  ### END ###
 
   # Code is not reloaded between requests.
   config.enable_reloading = false
@@ -54,19 +49,19 @@ Rails.application.configure do
   # config.assume_ssl = true
 
   # Force all access to the app over SSL, use Strict-Transport-Security, and use secure cookies.
-  ### START ###
-  # config.force_ssl = true
-  config.force_ssl = false
-  ### END ###
+  config.force_ssl = true
 
   # Skip http-to-https redirect for the default health check endpoint.
   # config.ssl_options = { redirect: { exclude: ->(request) { request.path == "/up" } } }
+  ### START ###
+  config.ssl_options = { redirect: { exclude: ->(request) { Settings.health_check_paths.include?(request.path) } } }
+  ### END ###
 
   # Log to STDOUT by default
   if ENV['RAILS_LOG_TO_STDOUT'].present? ### START ###
     config.logger = ActiveSupport::Logger.new($stdout)
-                                         .tap  { |logger| logger.formatter = Logger::Formatter.new }
-                                         .then { |logger| ActiveSupport::TaggedLogging.new(logger) }
+      .tap  { |logger| logger.formatter = Logger::Formatter.new }
+      .then { |logger| ActiveSupport::TaggedLogging.new(logger) }
   end
 
   # Prepend all log lines with the following tags.
@@ -103,7 +98,10 @@ Rails.application.configure do
   config.i18n.fallbacks = true
 
   # Don't log any deprecations.
-  config.active_support.report_deprecations = false
+  ### START ###
+  # config.active_support.report_deprecations = false
+  config.active_support.report_deprecations = true
+  ### END ###
 
   # Do not dump schema after migrations.
   config.active_record.dump_schema_after_migration = false
@@ -118,4 +116,8 @@ Rails.application.configure do
   # ]
   # Skip DNS rebinding protection for the default health check endpoint.
   # config.host_authorization = { exclude: ->(request) { request.path == "/up" } }
+  ### START ###
+  config.hosts << Settings.base_domain # NOTE: LB経由の場合は不要
+  config.host_authorization = { exclude: ->(request) { Settings.health_check_paths.include?(request.path) } }
+  ### END ###
 end

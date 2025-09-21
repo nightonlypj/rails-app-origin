@@ -1,7 +1,7 @@
 require 'rails_helper'
 
 RSpec.describe 'Members', type: :request do
-  let(:response_json) { JSON.parse(response.body) }
+  let(:response_json) { response.parsed_body }
   let(:response_json_space)   { response_json['space'] }
   let(:response_json_member)  { response_json['member'] }
   let(:response_json_members) { response_json['members'] }
@@ -23,7 +23,8 @@ RSpec.describe 'Members', type: :request do
           expect(response_json_members[members.count - index - 1]['user']['name']).to eq(member.user.name)
         end
 
-        input_params = params.to_h { |key, value| [key, %i[text power sort].include?(key) ? value : value.to_i] }
+        string_keys = %i[text power sort]
+        input_params = params.to_h { |key, value| [key, string_keys.include?(key) ? value : value.to_i] }
         expect(response_json['search_params']).to eq(default_params.merge(input_params).stringify_keys)
       else
         # HTML
@@ -38,7 +39,8 @@ RSpec.describe 'Members', type: :request do
       is_expected.to eq(200)
       expect(response_json_members.count).to eq(members.count)
 
-      input_params = params.to_h { |key, value| [key, %i[text power sort].include?(key) ? value : value.to_i] }
+      string_keys = %i[text power sort]
+      input_params = params.to_h { |key, value| [key, string_keys.include?(key) ? value : value.to_i] }
       expect(response_json['search_params']).to eq(default_params.merge(input_params).stringify_keys)
     end
   end

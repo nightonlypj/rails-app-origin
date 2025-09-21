@@ -1,7 +1,7 @@
 require 'rails_helper'
 
 RSpec.describe 'Invitations', type: :request do
-  let(:response_json) { response.body.present? ? JSON.parse(response.body) : {} }
+  let(:response_json) { response.body.present? ? response.parsed_body : {} }
 
   # GET /invitations/:space_code/update/:code 招待URL設定変更
   # テストパターン

@@ -1,5 +1,6 @@
 class SpacesController < ApplicationAuthController
   include Utils::CreateUniqueCodeConcern
+
   before_action :response_not_acceptable_for_not_html, only: %i[new edit delete undo_delete]
   before_action :authenticate_user!, only: %i[new create edit update delete destroy undo_delete undo_destroy]
   before_action :redirect_spaces_for_user_destroy_reserved, only: %i[new create], if: :format_html?
@@ -19,8 +20,8 @@ class SpacesController < ApplicationAuthController
   # GET /spaces スペース一覧
   # GET /spaces(.json) スペース一覧API
   def index
-    @spaces = Space.by_target(current_user, @checked).search(@text).order(created_at: :desc, id: :desc)
-                   .page(params[:page]).per(Settings.default_spaces_limit)
+    @spaces = Space.by_target(current_user, @checked).search(@text).order(created_at: :desc, id: :desc).distinct(false)
+      .page(params[:page]).per(Settings.default_spaces_limit)
     @members = []
     if current_user.present?
       members = Member.where(space_id: @spaces.ids, user: current_user)
@@ -45,7 +46,7 @@ class SpacesController < ApplicationAuthController
   # POST /spaces/create スペース作成(処理)
   # POST /spaces/create(.json) スペース作成API(処理)
   def create
-    ActiveRecord::Base.transaction do
+    ApplicationRecord.transaction do
       @space.save!
       @current_member = Member.create!(space: @space, user: current_user, power: :admin)
     end

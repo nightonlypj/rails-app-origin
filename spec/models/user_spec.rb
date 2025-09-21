@@ -213,7 +213,7 @@ RSpec.describe User, type: :model do
       it_behaves_like '[ない/過去]2件（全員＋自分）'
     end
     context 'お知らせ確認最終開始日時が過去' do
-      let_it_be(:user) { FactoryBot.create(:user, infomation_check_last_started_at: Time.current - 1.month) }
+      let_it_be(:user) { FactoryBot.create(:user, infomation_check_last_started_at: 1.month.ago) }
       it_behaves_like '[*]0件'
       it_behaves_like '[ない/過去]1件（全員）'
       it_behaves_like '[ない/過去]1件（自分）'

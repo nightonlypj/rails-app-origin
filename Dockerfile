@@ -1,20 +1,62 @@
 # https://hub.docker.com/_/ruby
-FROM ruby:3.3.6-alpine
-RUN apk update && apk add --no-cache --update build-base tzdata bash python3 imagemagick graphviz ttf-freefont gcompat
-# RUN apk add --no-cache --update sqlite-libs sqlite-dev
-RUN apk add --no-cache --update mysql-dev mysql-client
-# RUN apk add --no-cache --update postgresql-dev postgresql-client
+FROM ruby:3.4.3-alpine
+RUN apk add --no-cache \
+    tzdata \
+    build-base \
+    yaml-dev \
+    linux-headers \
+    # SQLite
+    sqlite-dev \
+    sqlite-libs \
+    # MySQL
+    mysql-dev \
+    mysql-client \
+    # PostgreSQL
+    postgresql-dev \
+    postgresql-client \
+    # 実行時に必要
+    bash \
+    shared-mime-info \
+    imagemagick \
+    imagemagick-dev \
+    graphviz \
+    ttf-freefont \
+    # 以降はdevelopmentのみ
+    yarn \
+    musl-locales \
+    musl-locales-lang \
+    coreutils \
+    busybox-extras \
+    git \
+    curl \
+    vim
 
 WORKDIR /workdir
-ENV LANG="ja_JP.UTF-8"
+ENV TZ='Asia/Tokyo'
+
+# developmentのみ
+ENV LANG='ja_JP.UTF-8'
+ENV LC_ALL='ja_JP.UTF-8'
 
 COPY Gemfile Gemfile.lock ./
-RUN bundle install --no-cache
+RUN gem install bundler -v 2.7.2 && \
+    bundle install -j4 --retry=3
 
-# Add a script to be executed every time the container starts.
-COPY entrypoint.sh /usr/bin/
-RUN chmod +x /usr/bin/entrypoint.sh
-ENTRYPOINT ["entrypoint.sh"]
+# developmentのみ
+COPY package.json yarn.lock ./
+RUN yarn install
 
-# Configure the main process to run when running the image
-CMD ["rails", "server", "-b", "0.0.0.0"]
+# developmentは不要
+# COPY . .
+
+# developmentのみ
+RUN echo -e "\
+export LS_OPTIONS='--color=auto'\n\
+eval \"\$(dircolors -b)\"\n\
+alias ls='ls \$LS_OPTIONS'\n\
+alias ll='ls -lF'\n\
+alias l='ls -lAF'\n\
+alias rm='rm -i'\n\
+alias cp='cp -i'\n\
+alias mv='mv -i'\
+" >> ~/.bashrc

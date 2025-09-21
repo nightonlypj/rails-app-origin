@@ -2,6 +2,7 @@
 
 class AdminUsers::PasswordsController < Devise::PasswordsController
   include Devise::PasswordsConcern
+
   layout 'admin_users'
 
   # GET /admin/password/reset パスワード再設定[メール送信]

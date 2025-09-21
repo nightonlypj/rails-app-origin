@@ -1,5 +1,6 @@
 class MembersController < ApplicationAuthController
   include MembersConcern
+
   before_action :response_not_acceptable_for_not_api, only: :show
   before_action :response_not_acceptable_for_not_html, only: %i[new result edit]
   before_action :authenticate_user!
@@ -85,7 +86,7 @@ class MembersController < ApplicationAuthController
       key = 'destroy'
     end
     @destroy_count = @members.count
-    notice = t("notice.member.#{key}", count: @codes.count.to_formatted_s(:delimited), destroy_count: @destroy_count.to_formatted_s(:delimited))
+    notice = t("notice.member.#{key}", count: @codes.count.to_fs(:delimited), destroy_count: @destroy_count.to_fs(:delimited))
 
     @members.destroy_all
     return redirect_to members_path(space_code: @space.code), notice: notice if format_html?
@@ -125,7 +126,7 @@ class MembersController < ApplicationAuthController
     if params[:codes].instance_of?(Array)
       @codes = params[:codes].compact_blank.uniq
     elsif params[:codes].present?
-      @codes = params[:codes].to_unsafe_h.map { |code, value| code if value == '1' }.compact.uniq
+      @codes = params[:codes].to_unsafe_h.filter_map { |code, value| code if value == '1' }.uniq
     else
       @codes = []
     end
@@ -135,7 +136,7 @@ class MembersController < ApplicationAuthController
   def validate_params_destroy
     alert = nil
     alert = 'alert.member.destroy.codes.blank' if @codes.blank?
-    alert = 'alert.member.destroy.codes.myself' if @codes.count == 1 && @include_myself
+    alert = 'alert.member.destroy.codes.myself' if @codes.one? && @include_myself
     if alert.blank?
       delete_codes = @include_myself ? @codes.reject { |key| key == @current_member.user.code } : @codes
       @members = Member.where(space: @space).joins(:user).where(user: { code: delete_codes }).order(:id)

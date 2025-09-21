@@ -1,7 +1,7 @@
 require 'rails_helper'
 
 RSpec.describe 'Members', type: :request do
-  let(:response_json) { response.body.present? ? JSON.parse(response.body) : {} }
+  let(:response_json) { response.body.present? ? response.parsed_body : {} }
 
   # GET /members/:space_code/result メンバー招待（結果）
   # テストパターン
@@ -52,13 +52,13 @@ RSpec.describe 'Members', type: :request do
         emails.each do |email|
           expect(response.body).to include(email)
         end
-        if create_user_mails.count > 0
+        if create_user_mails.any?
           expect(response.body).to include(I18n.t('招待しました。'))
           expect(response.body).to include(Member.powers_i18n[:admin])
         else
           expect(response.body).not_to include(I18n.t('招待しました。'))
         end
-        if exist_user_mails.count > 0
+        if exist_user_mails.any?
           expect(response.body).to include(I18n.t('既に参加しています。'))
         else
           expect(response.body).not_to include(I18n.t('既に参加しています。'))

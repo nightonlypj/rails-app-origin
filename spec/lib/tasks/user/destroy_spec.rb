@@ -14,7 +14,7 @@ RSpec.describe :user, type: :task do
     subject { Rake.application['user:destroy'].invoke(dry_run) }
     before_all do
       FactoryBot.create(:user, destroy_schedule_at: nil)
-      user = FactoryBot.create(:user, destroy_schedule_at: Time.current + 1.minute)
+      user = FactoryBot.create(:user, destroy_schedule_at: 1.minute.from_now)
       FactoryBot.create(:infomation, :user, user:)
 
       space = FactoryBot.create(:space, created_user: user)
@@ -26,8 +26,8 @@ RSpec.describe :user, type: :task do
     shared_context '削除対象作成' do
       let_it_be(:users) do
         [
-          FactoryBot.create(:user, destroy_schedule_at: Time.current - 2.minutes),
-          FactoryBot.create(:user, destroy_schedule_at: Time.current - 1.minute)
+          FactoryBot.create(:user, destroy_schedule_at: 2.minutes.ago),
+          FactoryBot.create(:user, destroy_schedule_at: 1.minute.ago)
         ]
       end
       let_it_be(:infomations) { FactoryBot.create_list(:infomation, 1, :user, user: users[1]) }

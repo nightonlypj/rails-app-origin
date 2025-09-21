@@ -66,7 +66,7 @@ end
 def get_locale(key, **)
   result = I18n.t(key, **)
   # :nocov:
-  raise if /translation missing:/.match(result)
+  raise if result.include?('translation missing:')
 
   # :nocov:
   result

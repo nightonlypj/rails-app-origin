@@ -4,6 +4,7 @@ class Users::Auth::RegistrationsController < DeviseTokenAuth::RegistrationsContr
   include DeviseTokenAuth::Concerns::SetUserByToken
   include Users::RegistrationsConcern
   include Utils::CreateUniqueCodeConcern
+
   skip_before_action :verify_authenticity_token
   before_action :response_api_for_user_destroy_reserved, only: %i[update image_update image_destroy destroy]
   before_action :response_api_for_not_user_destroy_reserved, only: :undo_destroy
@@ -27,7 +28,7 @@ class Users::Auth::RegistrationsController < DeviseTokenAuth::RegistrationsContr
   def create
     params[:code] = create_unique_code(User, 'code', "Users::RegistrationsController.create #{params}")
     params[:email] = get_email(params) if @invitation.present?
-    ActiveRecord::Base.transaction do # NOTE: エラーでROLLBACKされなかった為
+    ApplicationRecord.transaction do # NOTE: エラーでROLLBACKされなかった為
       super
       create_invitation_members(@resource) if @resource.errors.blank?
     end

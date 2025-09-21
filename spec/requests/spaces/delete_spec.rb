@@ -1,7 +1,7 @@
 require 'rails_helper'
 
 RSpec.describe 'Spaces', type: :request do
-  let(:response_json) { response.body.present? ? JSON.parse(response.body) : {} }
+  let(:response_json) { response.body.present? ? response.parsed_body : {} }
 
   # GET /spaces/delete/:code スペース削除
   # テストパターン

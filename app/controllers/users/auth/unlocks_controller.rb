@@ -2,6 +2,7 @@
 
 class Users::Auth::UnlocksController < DeviseTokenAuth::UnlocksController
   include DeviseTokenAuth::Concerns::SetUserByToken
+
   skip_before_action :verify_authenticity_token
   before_action :validate_redirect_url_param, only: %i[create show] # NOTE: 追加
   prepend_before_action :response_already_authenticated, only: :create, if: :user_signed_in?
