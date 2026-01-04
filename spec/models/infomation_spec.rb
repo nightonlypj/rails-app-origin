@@ -116,20 +116,20 @@ RSpec.describe Infomation, type: :model do
     let_it_be(:other_user) { FactoryBot.create(:user) }
 
     # テストケース
-    shared_examples_for '[*]対象が全員' do
+    shared_examples '[*]対象が全員' do
       let_it_be(:infomation) { FactoryBot.create(:infomation, :all) }
       it_behaves_like 'Value', true
     end
-    shared_examples_for '[ログイン中/削除予約済み]対象が自分' do
+    shared_examples '[ログイン中/削除予約済み]対象が自分' do
       let_it_be(:infomation) { FactoryBot.create(:infomation, :user, user:) }
       it_behaves_like 'Value', true
     end
-    shared_examples_for '[*]対象が他人' do
+    shared_examples '[*]対象が他人' do
       let_it_be(:infomation) { FactoryBot.create(:infomation, :user, user: other_user) }
       it_behaves_like 'Value', false
     end
 
-    shared_examples_for '[ログイン中/削除予約済み]' do
+    shared_examples '[ログイン中/削除予約済み]' do
       it_behaves_like '[*]対象が全員'
       it_behaves_like '[ログイン中/削除予約済み]対象が自分'
       it_behaves_like '[*]対象が他人'

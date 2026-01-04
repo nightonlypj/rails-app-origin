@@ -25,7 +25,7 @@ RSpec.describe 'Infomations', type: :request do
     end
 
     # テスト内容
-    shared_examples_for 'ToOK(html/*)' do
+    shared_examples 'ToOK(html/*)' do
       it 'HTTPステータスが200。対象項目が含まれる' do
         is_expected.to eq(200)
         # タイトル
@@ -36,7 +36,7 @@ RSpec.describe 'Infomations', type: :request do
         expect(response.body).to include(infomation.body.presence || infomation.summary)
       end
     end
-    shared_examples_for 'ToOK(json/json)' do
+    shared_examples 'ToOK(json/json)' do
       let(:subject_format) { :json }
       let(:accept_headers) { ACCEPT_INC_JSON }
       it 'HTTPステータスが200。対象項目が一致する' do
@@ -51,37 +51,37 @@ RSpec.describe 'Infomations', type: :request do
     end
 
     # テストケース
-    shared_examples_for '[*][全員][過去]終了日時が過去' do
+    shared_examples '[*][全員][過去]終了日時が過去' do
       let_it_be(:ended_at) { 1.day.ago }
       include_context 'お知らせ作成'
       it_behaves_like 'ToNG(html)', Settings.api_only_mode ? 406 : 404
       it_behaves_like 'ToNG(json)', 404, nil, 'errors.messages.infomation.ended'
     end
-    shared_examples_for '[ログイン中/削除予約済み][自分][過去]終了日時が過去' do
+    shared_examples '[ログイン中/削除予約済み][自分][過去]終了日時が過去' do
       let_it_be(:ended_at) { 1.day.ago }
       include_context 'お知らせ作成'
       it_behaves_like 'ToNG(html)', Settings.api_only_mode ? 406 : 404
       it_behaves_like 'ToNG(json)', 404 # NOTE: APIは未ログイン扱いの為、他人
     end
-    shared_examples_for '[APIログイン中/削除予約済み][自分][過去]終了日時が過去' do
+    shared_examples '[APIログイン中/削除予約済み][自分][過去]終了日時が過去' do
       let_it_be(:ended_at) { 1.day.ago }
       include_context 'お知らせ作成'
       it_behaves_like 'ToNG(html)', Settings.api_only_mode ? 406 : 404
       it_behaves_like 'ToNG(json)', 404, nil, 'errors.messages.infomation.ended'
     end
-    shared_examples_for '[*][他人][過去]終了日時が過去' do
+    shared_examples '[*][他人][過去]終了日時が過去' do
       let_it_be(:ended_at) { 1.day.ago }
       include_context 'お知らせ作成'
       it_behaves_like 'ToNG(html)', Settings.api_only_mode ? 406 : 404
       it_behaves_like 'ToNG(json)', 404
     end
-    shared_examples_for '[*][*][未来]終了日時が過去' do # NOTE: 不整合
+    shared_examples '[*][*][未来]終了日時が過去' do # NOTE: 不整合
       let_it_be(:ended_at) { 1.day.ago }
       include_context 'お知らせ作成'
       it_behaves_like 'ToNG(html)', Settings.api_only_mode ? 406 : 404
       it_behaves_like 'ToNG(json)', 404
     end
-    shared_examples_for '[*][全員][過去]終了日時が未来' do
+    shared_examples '[*][全員][過去]終了日時が未来' do
       let_it_be(:ended_at) { 1.day.from_now }
       context '本文がある' do
         include_context 'お知らせ作成'
@@ -102,7 +102,7 @@ RSpec.describe 'Infomations', type: :request do
         it_behaves_like 'ToOK(json)'
       end
     end
-    shared_examples_for '[ログイン中/削除予約済み][自分][過去]終了日時が未来' do
+    shared_examples '[ログイン中/削除予約済み][自分][過去]終了日時が未来' do
       let_it_be(:ended_at) { 1.day.from_now }
       include_context 'お知らせ作成'
       if Settings.api_only_mode
@@ -112,7 +112,7 @@ RSpec.describe 'Infomations', type: :request do
       end
       it_behaves_like 'ToNG(json)', 404 # NOTE: APIは未ログイン扱いの為、他人
     end
-    shared_examples_for '[APIログイン中/削除予約済み][自分][過去]終了日時が未来' do
+    shared_examples '[APIログイン中/削除予約済み][自分][過去]終了日時が未来' do
       let_it_be(:ended_at) { 1.day.from_now }
       include_context 'お知らせ作成'
       if Settings.api_only_mode
@@ -122,19 +122,19 @@ RSpec.describe 'Infomations', type: :request do
       end
       it_behaves_like 'ToOK(json)'
     end
-    shared_examples_for '[*][他人][過去]終了日時が未来' do
+    shared_examples '[*][他人][過去]終了日時が未来' do
       let_it_be(:ended_at) { 1.day.from_now }
       include_context 'お知らせ作成'
       it_behaves_like 'ToNG(html)', Settings.api_only_mode ? 406 : 404
       it_behaves_like 'ToNG(json)', 404
     end
-    shared_examples_for '[*][*][未来]終了日時が未来' do
+    shared_examples '[*][*][未来]終了日時が未来' do
       let_it_be(:ended_at) { 1.day.from_now }
       include_context 'お知らせ作成'
       it_behaves_like 'ToNG(html)', Settings.api_only_mode ? 406 : 404
       it_behaves_like 'ToNG(json)', 404
     end
-    shared_examples_for '[*][全員][過去]終了日時がない' do
+    shared_examples '[*][全員][過去]終了日時がない' do
       let_it_be(:ended_at) { nil }
       include_context 'お知らせ作成'
       if Settings.api_only_mode
@@ -144,7 +144,7 @@ RSpec.describe 'Infomations', type: :request do
       end
       it_behaves_like 'ToOK(json)'
     end
-    shared_examples_for '[ログイン中/削除予約済み][自分][過去]終了日時がない' do
+    shared_examples '[ログイン中/削除予約済み][自分][過去]終了日時がない' do
       let_it_be(:ended_at) { nil }
       include_context 'お知らせ作成'
       if Settings.api_only_mode
@@ -154,7 +154,7 @@ RSpec.describe 'Infomations', type: :request do
       end
       it_behaves_like 'ToNG(json)', 404 # NOTE: APIは未ログイン扱いの為、他人
     end
-    shared_examples_for '[APIログイン中/削除予約済み][自分][過去]終了日時がない' do
+    shared_examples '[APIログイン中/削除予約済み][自分][過去]終了日時がない' do
       let_it_be(:ended_at) { nil }
       include_context 'お知らせ作成'
       if Settings.api_only_mode
@@ -164,81 +164,81 @@ RSpec.describe 'Infomations', type: :request do
       end
       it_behaves_like 'ToOK(json)'
     end
-    shared_examples_for '[*][他人][過去]終了日時がない' do
+    shared_examples '[*][他人][過去]終了日時がない' do
       let_it_be(:ended_at) { nil }
       include_context 'お知らせ作成'
       it_behaves_like 'ToNG(html)', Settings.api_only_mode ? 406 : 404
       it_behaves_like 'ToNG(json)', 404
     end
-    shared_examples_for '[*][*][未来]終了日時がない' do
+    shared_examples '[*][*][未来]終了日時がない' do
       let_it_be(:ended_at) { nil }
       include_context 'お知らせ作成'
       it_behaves_like 'ToNG(html)', Settings.api_only_mode ? 406 : 404
       it_behaves_like 'ToNG(json)', 404
     end
 
-    shared_examples_for '[*][全員]開始日時が過去' do
+    shared_examples '[*][全員]開始日時が過去' do
       let_it_be(:started_at) { 1.day.ago }
       it_behaves_like '[*][全員][過去]終了日時が過去'
       it_behaves_like '[*][全員][過去]終了日時が未来'
       it_behaves_like '[*][全員][過去]終了日時がない'
     end
-    shared_examples_for '[ログイン中/削除予約済み][自分]開始日時が過去' do
+    shared_examples '[ログイン中/削除予約済み][自分]開始日時が過去' do
       let_it_be(:started_at) { 1.day.ago }
       it_behaves_like '[ログイン中/削除予約済み][自分][過去]終了日時が過去'
       it_behaves_like '[ログイン中/削除予約済み][自分][過去]終了日時が未来'
       it_behaves_like '[ログイン中/削除予約済み][自分][過去]終了日時がない'
     end
-    shared_examples_for '[APIログイン中/削除予約済み][自分]開始日時が過去' do
+    shared_examples '[APIログイン中/削除予約済み][自分]開始日時が過去' do
       let_it_be(:started_at) { 1.day.ago }
       it_behaves_like '[APIログイン中/削除予約済み][自分][過去]終了日時が過去'
       it_behaves_like '[APIログイン中/削除予約済み][自分][過去]終了日時が未来'
       it_behaves_like '[APIログイン中/削除予約済み][自分][過去]終了日時がない'
     end
-    shared_examples_for '[*][他人]開始日時が過去' do
+    shared_examples '[*][他人]開始日時が過去' do
       let_it_be(:started_at) { 1.day.ago }
       it_behaves_like '[*][他人][過去]終了日時が過去'
       it_behaves_like '[*][他人][過去]終了日時が未来'
       it_behaves_like '[*][他人][過去]終了日時がない'
     end
-    shared_examples_for '[*][*]開始日時が未来' do
+    shared_examples '[*][*]開始日時が未来' do
       let_it_be(:started_at) { 1.day.from_now }
       it_behaves_like '[*][*][未来]終了日時が過去'
       it_behaves_like '[*][*][未来]終了日時が未来'
       it_behaves_like '[*][*][未来]終了日時がない'
     end
 
-    shared_examples_for '[*]対象が全員' do
+    shared_examples '[*]対象が全員' do
       let_it_be(:target)  { :all }
       let_it_be(:user_id) { nil }
       it_behaves_like '[*][全員]開始日時が過去'
       it_behaves_like '[*][*]開始日時が未来'
     end
-    shared_examples_for '[ログイン中/削除予約済み]対象が自分' do
+    shared_examples '[ログイン中/削除予約済み]対象が自分' do
       let_it_be(:target)  { :user }
       let_it_be(:user_id) { user.id }
       it_behaves_like '[ログイン中/削除予約済み][自分]開始日時が過去'
       it_behaves_like '[*][*]開始日時が未来'
     end
-    shared_examples_for '[APIログイン中/削除予約済み]対象が自分' do
+    shared_examples '[APIログイン中/削除予約済み]対象が自分' do
       let_it_be(:target)  { :user }
       let_it_be(:user_id) { user.id }
       it_behaves_like '[APIログイン中/削除予約済み][自分]開始日時が過去'
       it_behaves_like '[*][*]開始日時が未来'
     end
-    shared_examples_for '[*]対象が他人' do
+    shared_examples '[*]対象が他人' do
       let_it_be(:target)  { :user }
       let_it_be(:user_id) { FactoryBot.create(:user).id }
       it_behaves_like '[*][他人]開始日時が過去'
       it_behaves_like '[*][*]開始日時が未来'
     end
 
-    shared_examples_for '[ログイン中/削除予約済み]' do
+    shared_examples '[ログイン中/削除予約済み]' do
       it_behaves_like '[*]対象が全員'
       it_behaves_like '[ログイン中/削除予約済み]対象が自分'
       it_behaves_like '[*]対象が他人'
     end
-    shared_examples_for '[APIログイン中/削除予約済み]' do
+    shared_examples '[APIログイン中/削除予約済み]' do
       it_behaves_like '[*]対象が全員'
       it_behaves_like '[APIログイン中/削除予約済み]対象が自分'
       it_behaves_like '[*]対象が他人'

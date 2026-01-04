@@ -15,7 +15,7 @@
           "type": "controller",
           "class": "InfomationsController",
           "method": "show",
-          "line": 28,
+          "line": 29,
           "file": "app/controllers/infomations_controller.rb",
           "rendered": {
             "name": "infomations/show",
@@ -49,7 +49,7 @@
           "type": "controller",
           "class": "InfomationsController",
           "method": "show",
-          "line": 28,
+          "line": 29,
           "file": "app/controllers/infomations_controller.rb",
           "rendered": {
             "name": "infomations/show",
@@ -75,7 +75,7 @@
       "check_name": "Redirect",
       "message": "Possible unprotected redirect",
       "file": "app/controllers/users/auth/unlocks_controller.rb",
-      "line": 62,
+      "line": 63,
       "link": "https://brakemanscanner.org/docs/warning_types/redirect/",
       "code": "redirect_to(DeviseTokenAuth::Url.generate(params.fetch(:redirect_url, Settings.default_unlock_success_url), :unlock => true, :notice => t(\"devise.unlocks.unlocked\")), :allow_other_host => true)",
       "render_path": null,
@@ -92,6 +92,5 @@
       "note": ""
     }
   ],
-  "updated": "2023-12-02 07:49:54 +0900",
-  "brakeman_version": "6.0.1"
+  "brakeman_version": "7.1.1"
 }

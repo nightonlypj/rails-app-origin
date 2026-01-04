@@ -33,7 +33,7 @@
   </div>
 
   <div class="form-outline<%= input_size_class_name(resource, :current_password) %>">
-    <%= form.password_field :current_password, autocomplete: 'new-password', class: "form-control#{validate_password_class_name(validate_enabled)}" %>
+    <%= form.password_field :current_password, autocomplete: 'current-password', class: "form-control#{validate_password_class_name(validate_enabled)}" %>
     <%= form.label :current_password, t('現在のパスワード'), class: 'form-label', for: 'user_current_password' %>
     <%= render '/users/shared/field_error_messages', messages: resource.errors[:current_password] %>
   </div>

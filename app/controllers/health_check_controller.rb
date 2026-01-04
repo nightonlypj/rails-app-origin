@@ -1,6 +1,10 @@
 class HealthCheckController < ApplicationController
-  layout false
+  # GET /_health ヘルスチェック
+  def index
+    ActiveRecord::Base.connection.execute('SELECT 1') if %w[all db].include?(params[:target])
 
-  # GET /health_check ヘルスチェック
-  def index; end
+    render plain: 'OK'
+  rescue ActiveRecord::ActiveRecordError => e
+    render plain: e.class, status: :service_unavailable
+  end
 end

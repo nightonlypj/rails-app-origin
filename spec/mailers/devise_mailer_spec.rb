@@ -4,7 +4,7 @@ RSpec.describe DeviseMailer, type: :mailer do
   let(:client_config) { 'default' }
 
   # テスト内容（共通）
-  shared_examples_for 'Header' do
+  shared_examples 'Header' do
     it 'タイトル・送信者のメールアドレスが設定と、宛先がユーザーのメールアドレスと一致する' do
       expect(mail.subject).to eq(get_subject(mail_subject))
       expect(mail.from).to eq([Settings.mailer_from.email])
@@ -24,14 +24,14 @@ RSpec.describe DeviseMailer, type: :mailer do
     let(:token) { Devise.token_generator.digest(self, :confirmation_token, SecureRandom.uuid) }
 
     # テスト内容
-    shared_examples_for 'Body' do
+    shared_examples 'Body' do
       let(:url) { user_confirmation_url(confirmation_token: token) }
       it 'メールアドレス確認のURL（リダイレクトURLなし）が含まれる' do
         expect(mail.html_part.body).to include("\"#{url}\"")
         expect(mail.text_part.body).to include(url)
       end
     end
-    shared_examples_for 'Body(API)' do
+    shared_examples 'Body(API)' do
       let(:url) { user_auth_confirmation_url(config: client_config, confirmation_token: token, redirect_url:) }
       let(:encode_url) { "#{user_auth_confirmation_url}?#{URI.encode_www_form(config: client_config, confirmation_token: token, redirect_url:)}" }
       it 'メールアドレス確認のURL（リダイレクトURLあり）が含まれる' do
@@ -65,14 +65,14 @@ RSpec.describe DeviseMailer, type: :mailer do
     let(:token) { Devise.token_generator.digest(self, :reset_password_token, SecureRandom.uuid) }
 
     # テスト内容
-    shared_examples_for 'Body' do
+    shared_examples 'Body' do
       let(:url) { edit_user_password_url(reset_password_token: token) }
       it 'パスワード再設定のURL（リダイレクトURLなし）が含まれる' do
         expect(mail.html_part.body).to include("\"#{url}\"")
         expect(mail.text_part.body).to include(url)
       end
     end
-    shared_examples_for 'Body(API)' do
+    shared_examples 'Body(API)' do
       let(:url) { edit_user_auth_password_url(config: client_config, redirect_url:, reset_password_token: token) }
       let(:encode_url) do
         "#{edit_user_auth_password_url}?#{URI.encode_www_form(config: client_config, redirect_url:, reset_password_token: token)}"
@@ -108,14 +108,14 @@ RSpec.describe DeviseMailer, type: :mailer do
     let(:token) { Devise.token_generator.digest(self, :unlock_token, SecureRandom.uuid) }
 
     # テスト内容
-    shared_examples_for 'Body' do
+    shared_examples 'Body' do
       let(:url) { user_unlock_url(unlock_token: token) }
       it 'アカウントロック解除のURL（リダイレクトURLなし）が含まれる' do
         expect(mail.html_part.body).to include("\"#{url}\"")
         expect(mail.text_part.body).to include(url)
       end
     end
-    shared_examples_for 'Body(API)' do
+    shared_examples 'Body(API)' do
       let(:url)        { user_auth_unlock_url(config: client_config, redirect_url:, unlock_token: token) }
       let(:encode_url) { "#{user_auth_unlock_url}?#{URI.encode_www_form(config: client_config, redirect_url:, unlock_token: token)}" }
       it 'アカウントロック解除のURL（リダイレクトURLあり）が含まれる' do

@@ -41,17 +41,17 @@ RSpec.describe ApplicationHelper, type: :helper do
     before { allow(helper).to receive_messages(current_user:, controller_name:, action_name:) }
 
     # テストケース
-    shared_examples_for '[なし]トップページ' do
+    shared_examples '[なし]トップページ' do
       let(:controller_name) { 'top' }
       let(:action_name)     { 'index' }
       it_behaves_like 'Value', false
     end
-    shared_examples_for '[あり]トップページ' do
+    shared_examples '[あり]トップページ' do
       let(:controller_name) { 'top' }
       let(:action_name)     { 'index' }
       it_behaves_like 'Value', true
     end
-    shared_examples_for '[*]アカウント削除取り消し' do
+    shared_examples '[*]アカウント削除取り消し' do
       let(:controller_name) { 'registrations' }
       let(:action_name)     { 'undo_delete' }
       it_behaves_like 'Value', false

@@ -6,7 +6,7 @@ RSpec.describe 'users/confirmations/new', type: :view do
   before_all { @resource = User.new }
 
   # テスト内容
-  shared_examples_for '入力項目' do
+  shared_examples '入力項目' do
     it '対象の送信先と項目が含まれる' do
       render
       assert_select 'form[action=?][method=?]', create_user_confirmation_path, 'post' do
@@ -16,7 +16,7 @@ RSpec.describe 'users/confirmations/new', type: :view do
     end
   end
 
-  shared_examples_for '未ログイン表示' do
+  shared_examples '未ログイン表示' do
     it '対象のパスが含まれる' do
       render
       expect(rendered).to include("href=\"#{new_user_session_path}\"") # ログイン
@@ -29,7 +29,7 @@ RSpec.describe 'users/confirmations/new', type: :view do
       expect(rendered).not_to include("href=\"#{new_user_confirmation_path}\"") # メールアドレス確認
     end
   end
-  shared_examples_for 'ログイン中表示' do
+  shared_examples 'ログイン中表示' do
     it '対象のパスが含まれない' do
       render
       expect(rendered).not_to include("href=\"#{new_user_session_path}\"") # ログイン

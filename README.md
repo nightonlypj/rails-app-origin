@@ -5,6 +5,8 @@
 
 ## 環境構築手順（Dockerの場合） ※構築は早いが、動作は遅い
 
+Ruby/Rails/Gemのバージョンアップや追加に向いている（環境依存が少ない）
+
 ### Dockerインストール
 
 #### Docker Desktop
@@ -23,16 +25,14 @@ https://orbstack.dev/download
 # MYSQL_HOST=127.0.0.1
 # POSTGRES_HOST=127.0.0.1
 
-# Docker
+# docker
 MYSQL_HOST=mysql
 POSTGRES_HOST=pg
 ```
 
 ```bash
-$ cp -a config/settings/development.yml,local config/settings/development.yml
-
 # dockerをビルドして起動（Ctrl-Cで強制終了。-dは[make down]で終了）
-$ make up-all（または up-all-d）
+$ make up（または up-all, up-d, up-all-d）
 
 # データベース・初期データ作成・更新
 $ make db
@@ -53,6 +53,8 @@ $ make up-base（または up-base-d）
 ```
 
 ## 環境構築手順（Macの場合） ※構築は手間だが、動作は早い
+
+通常の開発に向いている（開発効率が良い）
 
 ### Homebrewインストール
 
@@ -80,7 +82,7 @@ $ brew doctor
 Your system is ready to brew.
 
 $ brew -v
-Homebrew 4.6.9
+Homebrew 5.0.4
 # バージョンは異なっても良い
 ```
 
@@ -91,7 +93,7 @@ $ brew install imagemagick
 （$ brew upgrade imagemagick）
 
 $ magick -version
-Version: ImageMagick 7.1.2-3 Q16-HDRI aarch64 23340 https://imagemagick.org
+Version: ImageMagick 7.1.2-9 Q16-HDRI aarch64 23451 https://imagemagick.org
 # バージョンは異なっても良い
 ```
 
@@ -102,7 +104,7 @@ $ brew install graphviz
 （$ brew upgrade graphviz）
 
 $ dot -V
-dot - graphviz version 13.1.2 (20250808.2320)
+dot - graphviz version 14.0.5 (20251129.0259)
 # バージョンは異なっても良い
 ```
 
@@ -113,7 +115,7 @@ $ brew install --cask font-freefont
 （$ brew upgrade --cask font-freefont）
 
 $ brew info --cask font-freefont
-Installed using the formulae.brew.sh API on 2025-09-14 at 19:19:42
+==> font-freefont: 20120503
 # バージョンは異なっても良い
 ```
 
@@ -148,7 +150,7 @@ $ brew install openssl@3
 $ source ~/.bash_profile
 
 $ openssl version
-OpenSSL 3.5.2 5 Aug 2025 (Library: OpenSSL 3.5.2 5 Aug 2025)
+OpenSSL 3.6.0 1 Oct 2025 (Library: OpenSSL 3.6.0 1 Oct 2025)
 ```
 ```bash
 # Rubyインストール
@@ -219,7 +221,7 @@ password = xyz789
 ```bash
 $ mysql
 # MariaDBの場合
-Server version: 12.0.2-MariaDB Homebrew
+Server version: 12.1.2-MariaDB Homebrew
 # MySQLの場合
 Server version: 9.4.0 Homebrew
 # バージョンは異なっても良いが、本番と同じが理想
@@ -301,7 +303,6 @@ $ brew uninstall postgresql@17
 
 ```bash
 $ cp -a .env.example .env
-$ cp -a config/settings/development.yml,local config/settings/development.yml
 
 # Gemインストール
 gem install bundler -v 2.7.2
@@ -329,7 +330,7 @@ $ make j（または jobs）
 
 ```bash
 # Schemaspy実行
-$ make ssd-mysql（または schemaspy-docker-mysql, ssd-pg, schemaspy-docker-pg, ssd-sqlite, schemaspy-docker-sqlite）
+$ make ssd-mysql（または schemaspy-docker-mysql, ssd-mariadb, schemaspy-docker-mariadb, ssd-pg, schemaspy-docker-pg, ssd-sqlite, schemaspy-docker-sqlite）
 ```
 
 #### localで実行
@@ -359,7 +360,7 @@ $ java -version
 openjdk version "24.0.2" 2025-07-15
 
 # Schemaspy実行
-$ make ss-mariadb（または schemaspy-mariadb, ss-mysql, schemaspy-mysql, ss-pg, schemaspy-pg, ss-sqlite, schemaspy-sqlite）
+$ make ss-mysql（または schemaspy-mysql, ss-mariadb, schemaspy-mariadb, ss-pg, schemaspy-pg, ss-sqlite, schemaspy-sqlite）
 ```
 
 ## 使い方
@@ -383,7 +384,7 @@ $ make db
 $ make reset
 
 # Gemインストール
-$ make bundle
+$ make install（または bundle）
 ```
 
 ### 起動
@@ -412,6 +413,9 @@ $ make l（または lint, rubocop）
 
 # RSpec実行（パラメータでファイル名指定可）
 $ make rspec
+
+# RSpec実行（失敗のみ）
+$ make rspec-fail
 
 # Brakeman実行
 $ make b（または brakeman）
@@ -446,21 +450,20 @@ worker_rlimit_nofile 65536;
 
 events {
     worker_connections  1024;
-### START ###
-    accept_mutex_delay 100ms;
-    multi_accept on;
-### END ###
 
 http {
 ### START ###
     server_names_hash_bucket_size 64;
     server_tokens off;
-    add_header X-Frame-Options SAMEORIGIN;
-    add_header X-XSS-Protection "1; mode=block";
-    add_header X-Content-Type-Options nosniff;
+    add_header X-Frame-Options "SAMEORIGIN" always;
+    add_header X-Content-Type-Options "nosniff" always;
     client_max_body_size 64m;
     gzip on;
-    gzip_types text/plain text/css text/javascript application/javascript application/x-javascript application/json text/xml application/xml application/xml+rss;
+    gzip_vary on;
+    gzip_proxied no-cache no-store private expired auth;
+    gzip_comp_level 5;
+    gzip_min_length 1024;
+    gzip_types text/plain text/css application/json application/javascript text/xml application/xml application/xml+rss;
 ### END ###
 
     #tcp_nopush     on;
@@ -506,6 +509,8 @@ server {
         proxy_set_header    X-Real-IP           $remote_addr;
         proxy_redirect      off;
         proxy_pass          http://127.0.0.1:3000;
+
+        proxy_hide_header   X-Runtime;
     }
 }
 ### END ###
@@ -520,10 +525,14 @@ nginx: configuration file /opt/homebrew/etc/nginx/nginx.conf test is successful
 
 $ brew services start nginx
 ```
+.envを変更
 ```bash
-$ cp -a config/settings/development.yml,dev config/settings/development.yml
-overwrite config/settings/development.yml? (y/n [n]) y
-
+# BASE_DOMAIN=localhost:3000
+# BASE_IMAGE_URL=http://localhost:3000
+BASE_DOMAIN=localhost
+BASE_IMAGE_URL=http://localhost
+```
+```bash
 # Railsサーバー起動
 $ make s
 

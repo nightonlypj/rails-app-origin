@@ -4,7 +4,7 @@ RSpec.describe 'layouts/application', type: :view do
   next if Settings.api_only_mode
 
   # テスト内容
-  shared_examples_for '未ログイン表示' do
+  shared_examples '未ログイン表示' do
     it '対象のパスが含まれる' do
       render
       expect(rendered).to include("\"#{new_user_session_path}\"") # ログイン
@@ -17,7 +17,7 @@ RSpec.describe 'layouts/application', type: :view do
       expect(rendered).not_to include("\"#{destroy_user_session_path}\"") # ログアウト
     end
   end
-  shared_examples_for 'ログイン中表示' do
+  shared_examples 'ログイン中表示' do
     it '対象のパスが含まれない' do
       render
       expect(rendered).not_to include("\"#{new_user_session_path}\"") # ログイン
@@ -31,13 +31,13 @@ RSpec.describe 'layouts/application', type: :view do
     end
   end
 
-  shared_examples_for '削除予約表示' do
+  shared_examples '削除予約表示' do
     it 'アカウント削除取り消しのパスが含まれる' do
       render
       expect(rendered).to include("\"#{delete_undo_user_registration_path}\"")
     end
   end
-  shared_examples_for '削除予約非表示' do
+  shared_examples '削除予約非表示' do
     it 'アカウント削除取り消しのパスが含まれない' do
       render
       expect(rendered).not_to include("\"#{delete_undo_user_registration_path}\"")

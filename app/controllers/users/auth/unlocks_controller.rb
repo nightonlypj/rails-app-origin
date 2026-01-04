@@ -21,7 +21,7 @@ class Users::Auth::UnlocksController < DeviseTokenAuth::UnlocksController
 
     # NOTE: 未ロックの場合はエラーにする
     if @resource.present? && !@resource.access_locked?
-      return render '/failure', locals: { alert: t('errors.messages.not_locked') }, status: :unprocessable_entity
+      return render '/failure', locals: { alert: t('errors.messages.not_locked') }, status: :unprocessable_content
     end
 
     if @resource
@@ -75,11 +75,11 @@ class Users::Auth::UnlocksController < DeviseTokenAuth::UnlocksController
   end
 
   def render_create_error_missing_redirect_url
-    render '/failure', locals: { alert: t('devise_token_auth.unlocks.missing_redirect_url') }, status: :unprocessable_entity
+    render '/failure', locals: { alert: t('devise_token_auth.unlocks.missing_redirect_url') }, status: :unprocessable_content
   end
 
   def render_error_not_allowed_redirect_url
-    render '/failure', locals: { alert: t('devise_token_auth.unlocks.not_allowed_redirect_url') }, status: :unprocessable_entity
+    render '/failure', locals: { alert: t('devise_token_auth.unlocks.not_allowed_redirect_url') }, status: :unprocessable_content
   end
 
   def render_create_error_missing_email
@@ -94,7 +94,7 @@ class Users::Auth::UnlocksController < DeviseTokenAuth::UnlocksController
 
   def render_create_error(errors)
     # render json: { success: false, errors: errors }, status: 400
-    render '/failure', locals: { errors: }, status: :unprocessable_entity
+    render '/failure', locals: { errors: }, status: :unprocessable_content
   end
 
   def render_show_error
@@ -111,13 +111,13 @@ class Users::Auth::UnlocksController < DeviseTokenAuth::UnlocksController
     if Devise.paranoid
       # :nocov:
       # render_error(404, I18n.t('devise_token_auth.unlocks.sended_paranoid'))
-      render '/failure', locals: { alert: t('devise_token_auth.unlocks.sended_paranoid') }, status: :unprocessable_entity
+      render '/failure', locals: { alert: t('devise_token_auth.unlocks.sended_paranoid') }, status: :unprocessable_content
       # :nocov:
     else
       # render_error(404, I18n.t('devise_token_auth.unlocks.user_not_found', email: @email))
       errors = { email: t('devise_token_auth.unlocks.user_not_found') }
       errors[:full_messages] = ["#{t('activerecord.attributes.user.email')} #{errors[:email]}"]
-      render '/failure', locals: { errors:, alert: t('errors.messages.not_saved.one') }, status: :unprocessable_entity
+      render '/failure', locals: { errors:, alert: t('errors.messages.not_saved.one') }, status: :unprocessable_content
     end
   end
 end

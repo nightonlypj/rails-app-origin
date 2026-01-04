@@ -46,6 +46,7 @@ nbproject/
 /yarn-error.log
 yarn-debug.log*
 .yarn-integrity
+npm-debug.log*
 
 /public/assets
 /app/assets/builds/*
@@ -66,4 +67,3 @@ yarn-debug.log*
 
 # NOTE: 環境で切り替える為
 /public/robots.txt
-config/settings/development.yml

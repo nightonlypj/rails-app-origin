@@ -4,7 +4,7 @@ RSpec.describe 'Users::Auth::TokenValidations', type: :request do
   let(:response_json) { response.parsed_body }
 
   # テスト内容（共通）
-  shared_examples_for 'ToMsg' do |error_msg, alert, notice|
+  shared_examples 'ToMsg' do |error_msg, alert, notice|
     let(:subject_format) { :json }
     let(:accept_headers) { ACCEPT_INC_JSON }
     it '対象のメッセージと一致する' do
@@ -27,7 +27,7 @@ RSpec.describe 'Users::Auth::TokenValidations', type: :request do
     let(:current_user) { user }
     include_context 'Authテスト内容'
 
-    shared_examples_for 'ToOK(json/json)' do # |id_present|
+    shared_examples 'ToOK(json/json)' do # |id_present|
       let(:subject_format) { :json }
       let(:accept_headers) { ACCEPT_INC_JSON }
       it 'HTTPステータスが200。対象項目が一致する。認証ヘッダがある' do
@@ -40,7 +40,7 @@ RSpec.describe 'Users::Auth::TokenValidations', type: :request do
         expect_exist_auth_header
       end
     end
-    shared_examples_for 'ToNG(json/json)' do |code|
+    shared_examples 'ToNG(json/json)' do |code|
       let(:subject_format) { :json }
       let(:accept_headers) { ACCEPT_INC_JSON }
       it "HTTPステータスが#{code}。対象項目が一致する。認証ヘッダがない" do
@@ -50,13 +50,13 @@ RSpec.describe 'Users::Auth::TokenValidations', type: :request do
       end
     end
 
-    shared_examples_for 'ToOK' do # |id_present|
+    shared_examples 'ToOK' do # |id_present|
       it_behaves_like 'ToNG(html/html)', 406
       it_behaves_like 'ToNG(html/json)', 406
       it_behaves_like 'ToNG(json/html)', 406
       it_behaves_like 'ToOK(json/json)' # , id_present
     end
-    shared_examples_for 'ToNG' do |code|
+    shared_examples 'ToNG' do |code|
       it_behaves_like 'ToNG(html/html)', 406
       it_behaves_like 'ToNG(html/json)', 406
       it_behaves_like 'ToNG(json/html)', 406
@@ -64,7 +64,7 @@ RSpec.describe 'Users::Auth::TokenValidations', type: :request do
     end
 
     # テストケース
-    shared_examples_for '[未ログイン/ログイン中]' do
+    shared_examples '[未ログイン/ログイン中]' do
       it_behaves_like 'ToNG', 401
       # it_behaves_like 'ToMsg', 'devise_token_auth.token_validations.invalid', nil, nil
       it_behaves_like 'ToMsg', nil, 'devise_token_auth.token_validations.invalid', nil

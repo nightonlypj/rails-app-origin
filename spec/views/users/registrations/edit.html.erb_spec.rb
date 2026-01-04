@@ -4,7 +4,7 @@ RSpec.describe 'users/registrations/edit', type: :view do
   next if Settings.api_only_mode
 
   # テスト内容
-  shared_examples_for '入力項目' do
+  shared_examples '入力項目' do
     it '対象の送信先と項目が含まれる' do
       render
       assert_select 'form[action=?][method=?]', update_user_registration_path, 'post' do
@@ -25,13 +25,13 @@ RSpec.describe 'users/registrations/edit', type: :view do
     end
   end
 
-  shared_examples_for 'メール確認済み表示' do
+  shared_examples 'メール確認済み表示' do
     it '対象のパスが含まれる' do
       render
       expect(rendered).to include("href=\"#{delete_user_registration_path}\"") # アカウント削除
     end
   end
-  shared_examples_for 'メールアドレス変更中表示' do
+  shared_examples 'メールアドレス変更中表示' do
     it '対象のパスが含まれる' do
       render
       expect(rendered).to include(@resource.unconfirmed_email) # 確認待ちメールアドレス

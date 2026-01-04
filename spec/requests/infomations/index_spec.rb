@@ -19,12 +19,12 @@ RSpec.describe 'Infomations', type: :request do
     subject { get infomations_path(page: subject_page, format: subject_format), headers: auth_headers.merge(accept_headers) }
 
     # テスト内容
-    shared_examples_for 'ToOK(html/*)' do
+    shared_examples 'ToOK(html/*)' do
       it 'HTTPステータスが200' do
         is_expected.to eq(200)
       end
     end
-    shared_examples_for 'ToOK(json/json)' do
+    shared_examples 'ToOK(json/json)' do
       let(:subject_format) { :json }
       let(:accept_headers) { ACCEPT_INC_JSON }
       it 'HTTPステータスが200。対象項目が一致する' do
@@ -41,7 +41,7 @@ RSpec.describe 'Infomations', type: :request do
       end
     end
 
-    shared_examples_for 'ページネーション表示' do |page, link_page|
+    shared_examples 'ページネーション表示' do |page, link_page|
       let(:subject_format) { nil }
       let(:accept_headers) { ACCEPT_INC_HTML }
       let(:subject_page) { page }
@@ -51,7 +51,7 @@ RSpec.describe 'Infomations', type: :request do
         expect(response.body).to include("\"#{infomations_path(page: url_page)}\"")
       end
     end
-    shared_examples_for 'ページネーション非表示' do |page, link_page|
+    shared_examples 'ページネーション非表示' do |page, link_page|
       let(:subject_format) { nil }
       let(:accept_headers) { ACCEPT_INC_HTML }
       let(:subject_page) { page }
@@ -62,7 +62,7 @@ RSpec.describe 'Infomations', type: :request do
       end
     end
 
-    shared_examples_for 'リスト表示（0件）' do
+    shared_examples 'リスト表示（0件）' do
       let(:subject_format) { nil }
       let(:accept_headers) { ACCEPT_INC_HTML }
       let(:subject_page) { 1 }
@@ -71,7 +71,7 @@ RSpec.describe 'Infomations', type: :request do
         expect(response.body).to include(I18n.t('%{name}はありません。', name: I18n.t('お知らせ')))
       end
     end
-    shared_examples_for 'リスト表示' do |page|
+    shared_examples 'リスト表示' do |page|
       let(:subject_format) { nil }
       let(:accept_headers) { ACCEPT_INC_HTML }
       let(:subject_page) { page }
@@ -98,7 +98,7 @@ RSpec.describe 'Infomations', type: :request do
         end
       end
     end
-    shared_examples_for 'リスト表示(json)' do |page|
+    shared_examples 'リスト表示(json)' do |page|
       let(:subject_format) { :json }
       let(:accept_headers) { ACCEPT_INC_JSON }
       let(:subject_page) { page }
@@ -116,7 +116,7 @@ RSpec.describe 'Infomations', type: :request do
       end
     end
 
-    shared_examples_for 'リダイレクト' do |page, redirect_page|
+    shared_examples 'リダイレクト' do |page, redirect_page|
       let(:subject_format) { nil }
       let(:accept_headers) { ACCEPT_INC_HTML }
       let(:subject_page) { page }
@@ -125,7 +125,7 @@ RSpec.describe 'Infomations', type: :request do
         is_expected.to redirect_to(infomations_path(page: url_page))
       end
     end
-    shared_examples_for 'リダイレクト(json)' do |page|
+    shared_examples 'リダイレクト(json)' do |page|
       let(:subject_format) { :json }
       let(:accept_headers) { ACCEPT_INC_JSON }
       let(:subject_page) { page }
@@ -135,7 +135,7 @@ RSpec.describe 'Infomations', type: :request do
     end
 
     # テストケース
-    shared_examples_for '[*]お知らせがない' do
+    shared_examples '[*]お知らせがない' do
       include_context 'お知らせ一覧作成', 0, 0, 0, 0
       if Settings.api_only_mode
         it_behaves_like 'ToNG(html)', 406
@@ -149,8 +149,8 @@ RSpec.describe 'Infomations', type: :request do
       it_behaves_like 'リスト表示(json)', 1
       it_behaves_like 'リダイレクト(json)', 2
     end
-    shared_examples_for '[未ログイン]お知らせが最大表示数と同じ' do
-      count = Settings.test_infomations_count
+    shared_examples '[未ログイン]お知らせが最大表示数と同じ' do
+      count = Settings.test_infomations_count # rubocop:disable RSpec/LeakyLocalVariable
       include_context 'お知らせ一覧作成', count.all_forever + count.user_forever, count.all_future + count.user_future, 0, 0
       if Settings.api_only_mode
         it_behaves_like 'ToNG(html)', 406
@@ -164,8 +164,8 @@ RSpec.describe 'Infomations', type: :request do
       it_behaves_like 'リスト表示(json)', 1
       it_behaves_like 'リダイレクト(json)', 2
     end
-    shared_examples_for '[ログイン中/削除予約済み]お知らせが最大表示数と同じ' do
-      count = Settings.test_infomations_count
+    shared_examples '[ログイン中/削除予約済み]お知らせが最大表示数と同じ' do
+      count = Settings.test_infomations_count # rubocop:disable RSpec/LeakyLocalVariable
       include_context 'お知らせ一覧作成', count.all_forever, count.all_future, count.user_forever, count.user_future
       if Settings.api_only_mode
         it_behaves_like 'ToNG(html)', 406
@@ -179,8 +179,8 @@ RSpec.describe 'Infomations', type: :request do
       it_behaves_like 'リスト表示(json)', 1
       it_behaves_like 'リダイレクト(json)', 2
     end
-    shared_examples_for '[APIログイン中/削除予約済み]お知らせが最大表示数と同じ' do
-      count = Settings.test_infomations_count
+    shared_examples '[APIログイン中/削除予約済み]お知らせが最大表示数と同じ' do
+      count = Settings.test_infomations_count # rubocop:disable RSpec/LeakyLocalVariable
       include_context 'お知らせ一覧作成', count.all_forever, count.all_future, count.user_forever, count.user_future
       if Settings.api_only_mode
         it_behaves_like 'ToNG(html)', 406
@@ -194,8 +194,8 @@ RSpec.describe 'Infomations', type: :request do
       it_behaves_like 'リスト表示(json)', 1
       it_behaves_like 'リダイレクト(json)', 2
     end
-    shared_examples_for '[未ログイン]お知らせが最大表示数より多い' do
-      count = Settings.test_infomations_count
+    shared_examples '[未ログイン]お知らせが最大表示数より多い' do
+      count = Settings.test_infomations_count # rubocop:disable RSpec/LeakyLocalVariable
       include_context 'お知らせ一覧作成', count.all_forever + count.user_forever, count.all_future + count.user_future + 1, 0, 0
       if Settings.api_only_mode
         it_behaves_like 'ToNG(html)', 406
@@ -214,8 +214,8 @@ RSpec.describe 'Infomations', type: :request do
       it_behaves_like 'リスト表示(json)', 2
       it_behaves_like 'リダイレクト(json)', 3
     end
-    shared_examples_for '[ログイン中/削除予約済み]お知らせが最大表示数より多い' do
-      count = Settings.test_infomations_count
+    shared_examples '[ログイン中/削除予約済み]お知らせが最大表示数より多い' do
+      count = Settings.test_infomations_count # rubocop:disable RSpec/LeakyLocalVariable
       include_context 'お知らせ一覧作成', count.all_forever, count.all_future, count.user_forever, count.user_future + 1
       if Settings.api_only_mode
         it_behaves_like 'ToNG(html)', 406
@@ -234,8 +234,8 @@ RSpec.describe 'Infomations', type: :request do
       # it_behaves_like 'リスト表示(json)', 2
       # it_behaves_like 'リダイレクト(json)', 3
     end
-    shared_examples_for '[APIログイン中/削除予約済み]お知らせが最大表示数より多い' do
-      count = Settings.test_infomations_count
+    shared_examples '[APIログイン中/削除予約済み]お知らせが最大表示数より多い' do
+      count = Settings.test_infomations_count # rubocop:disable RSpec/LeakyLocalVariable
       include_context 'お知らせ一覧作成', count.all_forever, count.all_future, count.user_forever, count.user_future + 1
       if Settings.api_only_mode
         it_behaves_like 'ToNG(html)', 406
@@ -255,13 +255,13 @@ RSpec.describe 'Infomations', type: :request do
       it_behaves_like 'リダイレクト(json)', 3
     end
 
-    shared_examples_for '[ログイン中/削除予約済み]' do
+    shared_examples '[ログイン中/削除予約済み]' do
       let(:infomations) { @all_infomations } # NOTE: APIは未ログイン扱いの為、全員のしか見れない
       it_behaves_like '[*]お知らせがない'
       it_behaves_like '[ログイン中/削除予約済み]お知らせが最大表示数と同じ'
       it_behaves_like '[ログイン中/削除予約済み]お知らせが最大表示数より多い'
     end
-    shared_examples_for '[APIログイン中/削除予約済み]' do
+    shared_examples '[APIログイン中/削除予約済み]' do
       let(:infomations) { @user_infomations }
       it_behaves_like '[*]お知らせがない'
       it_behaves_like '[APIログイン中/削除予約済み]お知らせが最大表示数と同じ'
