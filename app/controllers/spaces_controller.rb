@@ -120,7 +120,7 @@ class SpacesController < ApplicationAuthController
   end
 
   def response_api_for_not_space_destroy_reserved
-    render '/failure', locals: { alert: t('alert.space.not_destroy_reserved') }, status: :unprocessable_entity unless @space.destroy_reserved?
+    render '/failure', locals: { alert: t('alert.space.not_destroy_reserved') }, status: :unprocessable_content unless @space.destroy_reserved?
   end
 
   def set_member_count
@@ -146,9 +146,9 @@ class SpacesController < ApplicationAuthController
     @space.valid?
     @space.validate_name_uniqueness(current_user) if @space.errors[:name].blank?
     return unless @space.errors.any?
-    return render :new, status: :unprocessable_entity if format_html?
+    return render :new, status: :unprocessable_content if format_html?
 
-    render '/failure', locals: { errors: @space.errors, alert: t('errors.messages.not_saved.other') }, status: :unprocessable_entity
+    render '/failure', locals: { errors: @space.errors, alert: t('errors.messages.not_saved.other') }, status: :unprocessable_content
   end
 
   def validate_params_update
@@ -156,9 +156,9 @@ class SpacesController < ApplicationAuthController
     @space.valid?
     @space.validate_name_uniqueness(current_user) if @space.errors[:name].blank? && @space.name_changed?
     return unless @space.errors.any?
-    return render :edit, status: :unprocessable_entity if format_html?
+    return render :edit, status: :unprocessable_content if format_html?
 
-    render '/failure', locals: { errors: @space.errors, alert: t('errors.messages.not_saved.other') }, status: :unprocessable_entity
+    render '/failure', locals: { errors: @space.errors, alert: t('errors.messages.not_saved.other') }, status: :unprocessable_content
   end
 
   # Only allow a list of trusted parameters through.
@@ -176,9 +176,9 @@ class SpacesController < ApplicationAuthController
     params[:space][:description] = params[:space][:description]&.gsub(/\R/, "\n") # NOTE: 改行コードを統一
 
     if target == :create
-      params.require(:space).permit(:name, :description, :private, :image)
+      params.expect(space: %i[name description private image])
     else
-      params.require(:space).permit(:name, :description, :private, :image, :image_delete)
+      params.expect(space: %i[name description private image image_delete])
     end
   end
 end

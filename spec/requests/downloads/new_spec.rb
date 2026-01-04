@@ -20,7 +20,7 @@ RSpec.describe 'Downloads', type: :request do
     end
 
     # テスト内容
-    shared_examples_for 'ToOK(html/*)' do
+    shared_examples 'ToOK(html/*)' do
       it 'HTTPステータスが200' do
         is_expected.to eq(200)
       end
@@ -35,53 +35,53 @@ RSpec.describe 'Downloads', type: :request do
       next
     end
 
-    shared_examples_for '[ログイン中/削除予約済み][member]権限がある' do |power|
+    shared_examples '[ログイン中/削除予約済み][member]権限がある' do |power|
       before_all { FactoryBot.create(:member, power, space:, user:) }
       it_behaves_like 'ToOK(html)'
       it_behaves_like 'ToNG(json)', 406
     end
-    shared_examples_for '[ログイン中/削除予約済み][member]権限がない' do |power|
+    shared_examples '[ログイン中/削除予約済み][member]権限がない' do |power|
       before_all { FactoryBot.create(:member, power, space:, user:) if power.present? }
       it_behaves_like 'ToNG(html)', 403
       it_behaves_like 'ToNG(json)', 406
     end
 
-    shared_examples_for '[ログイン中/削除予約済み]modelがmember（spaceが存在する）' do
+    shared_examples '[ログイン中/削除予約済み]modelがmember（spaceが存在する）' do
       let(:params) { { model: 'member', space_code: space.code } }
       it_behaves_like '[ログイン中/削除予約済み][member]権限がある', :admin
       it_behaves_like '[ログイン中/削除予約済み][member]権限がない', :writer
       it_behaves_like '[ログイン中/削除予約済み][member]権限がない', :reader
       it_behaves_like '[ログイン中/削除予約済み][member]権限がない', nil
     end
-    shared_examples_for '[ログイン中/削除予約済み]modelがmember（spaceが存在しない）' do
+    shared_examples '[ログイン中/削除予約済み]modelがmember（spaceが存在しない）' do
       let(:params) { { model: 'member', space_code: FactoryBot.build_stubbed(:space).code } }
       it_behaves_like 'ToNG(html)', 404
       it_behaves_like 'ToNG(json)', 406
     end
-    shared_examples_for '[ログイン中/削除予約済み]modelがmember（spaceがない）' do
+    shared_examples '[ログイン中/削除予約済み]modelがmember（spaceがない）' do
       let(:params) { { model: 'member', space_code: nil } }
       it_behaves_like 'ToNG(html)', 404
       it_behaves_like 'ToNG(json)', 406
     end
-    shared_examples_for '[ログイン中/削除予約済み]modelが存在しない' do
+    shared_examples '[ログイン中/削除予約済み]modelが存在しない' do
       let(:params) { { model: 'xxx' } }
       it_behaves_like 'ToNG(html)', 404
       it_behaves_like 'ToNG(json)', 406
     end
-    shared_examples_for '[ログイン中/削除予約済み]modelがない' do
+    shared_examples '[ログイン中/削除予約済み]modelがない' do
       let(:params) { { model: nil } }
       it_behaves_like 'ToNG(html)', 404
       it_behaves_like 'ToNG(json)', 406
     end
 
-    shared_examples_for '[ログイン中/削除予約済み]' do
+    shared_examples '[ログイン中/削除予約済み]' do
       it_behaves_like '[ログイン中/削除予約済み]modelがmember（spaceが存在する）'
       it_behaves_like '[ログイン中/削除予約済み]modelがmember（spaceが存在しない）'
       it_behaves_like '[ログイン中/削除予約済み]modelがmember（spaceがない）'
       it_behaves_like '[ログイン中/削除予約済み]modelが存在しない'
       it_behaves_like '[ログイン中/削除予約済み]modelがない'
     end
-    shared_examples_for '[APIログイン中/削除予約済み]' do
+    shared_examples '[APIログイン中/削除予約済み]' do
       include_context 'valid_condition'
       it_behaves_like 'ToOK(html)' # NOTE: HTMLもログイン状態になる
       it_behaves_like 'ToNG(json)', 406

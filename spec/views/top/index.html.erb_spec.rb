@@ -2,20 +2,20 @@ require 'rails_helper'
 
 RSpec.describe 'top/index', type: :view do
   # テスト内容
-  shared_examples_for '未ログイン表示' do
+  shared_examples '未ログイン表示' do
     it '対象のパスが含まれない' do
       render
       expect(rendered).not_to include("\"#{create_space_path}\"") # スペース作成
     end
   end
-  shared_examples_for 'ログイン中表示' do
+  shared_examples 'ログイン中表示' do
     it '対象のパスが含まれる' do
       render
       expect(rendered).to include("\"#{create_space_path}\"") # スペース作成
     end
   end
 
-  shared_examples_for '公開スペースあり' do
+  shared_examples '公開スペースあり' do
     before_all do
       @public_spaces = FactoryBot.create_list(:space, 2, :public)
     end
@@ -32,7 +32,7 @@ RSpec.describe 'top/index', type: :view do
       end
     end
   end
-  shared_examples_for '公開スペースなし' do
+  shared_examples '公開スペースなし' do
     it '対象のパスが含まれない' do
       render
       expect(rendered).not_to include("\"#{spaces_path}\"") # スペース一覧

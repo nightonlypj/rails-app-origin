@@ -138,46 +138,46 @@ def expect_space_json(response_json_space, space, user_power, member_count)
   result
 end
 
-shared_examples_for 'ToSpaces(html/*)' do |alert, notice|
+shared_examples 'ToSpaces(html/*)' do |alert, notice|
   it 'スペース一覧にリダイレクトする' do
     is_expected.to redirect_to(spaces_path)
     expect(flash[:alert]).to alert.present? ? eq(get_locale(alert)) : be_nil
     expect(flash[:notice]).to notice.present? ? eq(get_locale(notice)) : be_nil
   end
 end
-shared_examples_for 'ToSpaces(html/html)' do |alert, notice|
+shared_examples 'ToSpaces(html/html)' do |alert, notice|
   let(:subject_format) { nil }
   let(:accept_headers) { ACCEPT_INC_HTML }
   it_behaves_like 'ToSpaces(html/*)', alert, notice
 end
-shared_examples_for 'ToSpaces(html/json)' do |alert, notice|
+shared_examples 'ToSpaces(html/json)' do |alert, notice|
   let(:subject_format) { nil }
   let(:accept_headers) { ACCEPT_INC_JSON }
   it_behaves_like 'ToSpaces(html/*)', alert, notice
 end
-shared_examples_for 'ToSpaces(html)' do |alert = nil, notice = nil|
+shared_examples 'ToSpaces(html)' do |alert = nil, notice = nil|
   it_behaves_like 'ToSpaces(html/html)', alert, notice
   it_behaves_like 'ToSpaces(html/json)', alert, notice
 end
 
-shared_examples_for 'ToSpace(html/*)' do |alert, notice|
+shared_examples 'ToSpace(html/*)' do |alert, notice|
   it 'スペーストップにリダイレクトする' do
     is_expected.to redirect_to(space_path(code: space.code))
     expect(flash[:alert]).to alert.present? ? eq(get_locale(alert)) : be_nil
     expect(flash[:notice]).to notice.present? ? eq(get_locale(notice)) : be_nil
   end
 end
-shared_examples_for 'ToSpace(html/html)' do |alert, notice|
+shared_examples 'ToSpace(html/html)' do |alert, notice|
   let(:subject_format) { nil }
   let(:accept_headers) { ACCEPT_INC_HTML }
   it_behaves_like 'ToSpace(html/*)', alert, notice
 end
-shared_examples_for 'ToSpace(html/json)' do |alert, notice|
+shared_examples 'ToSpace(html/json)' do |alert, notice|
   let(:subject_format) { nil }
   let(:accept_headers) { ACCEPT_INC_JSON }
   it_behaves_like 'ToSpace(html/*)', alert, notice
 end
-shared_examples_for 'ToSpace(html)' do |alert = nil, notice = nil|
+shared_examples 'ToSpace(html)' do |alert = nil, notice = nil|
   it_behaves_like 'ToSpace(html/html)', alert, notice
   it_behaves_like 'ToSpace(html/json)', alert, notice
 end

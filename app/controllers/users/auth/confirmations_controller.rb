@@ -13,15 +13,15 @@ class Users::Auth::ConfirmationsController < DeviseTokenAuth::ConfirmationsContr
   def create
     return render '/failure', locals: { alert: t('errors.messages.validate_confirmation_params') }, status: :bad_request if request.request_parameters.blank?
     if params[:redirect_url].blank?
-      return render '/failure', locals: { alert: t('devise_token_auth.confirmations.missing_confirm_success_url') }, status: :unprocessable_entity
+      return render '/failure', locals: { alert: t('devise_token_auth.confirmations.missing_confirm_success_url') }, status: :unprocessable_content
     end
     if blacklisted_redirect_url?(params[:redirect_url])
-      return render '/failure', locals: { alert: t('devise_token_auth.confirmations.redirect_url_not_allowed') }, status: :unprocessable_entity
+      return render '/failure', locals: { alert: t('devise_token_auth.confirmations.redirect_url_not_allowed') }, status: :unprocessable_content
     end
 
     # NOTE: 確認済み・不要の場合はエラーにする
     resource = params[:email].present? ? resource_class.find_by(email: params[:email]) : nil
-    return render '/failure', locals: { alert: t('errors.messages.already_confirmed') }, status: :unprocessable_entity if already_confirmed?(resource)
+    return render '/failure', locals: { alert: t('errors.messages.already_confirmed') }, status: :unprocessable_content if already_confirmed?(resource)
 
     super
   end
@@ -85,13 +85,13 @@ class Users::Auth::ConfirmationsController < DeviseTokenAuth::ConfirmationsContr
     if Devise.paranoid
       # :nocov:
       # render_error(404, I18n.t('devise_token_auth.confirmations.sended_paranoid'))
-      render '/failure', locals: { alert: t('devise_token_auth.confirmations.sended_paranoid') }, status: :unprocessable_entity
+      render '/failure', locals: { alert: t('devise_token_auth.confirmations.sended_paranoid') }, status: :unprocessable_content
       # :nocov:
     else
       # render_error(404, I18n.t('devise_token_auth.confirmations.user_not_found', email: @email))
       errors = { email: t('devise_token_auth.confirmations.user_not_found') }
       errors[:full_messages] = ["#{t('activerecord.attributes.user.email')} #{errors[:email]}"]
-      render '/failure', locals: { errors:, alert: t('errors.messages.not_saved.one') }, status: :unprocessable_entity
+      render '/failure', locals: { errors:, alert: t('errors.messages.not_saved.one') }, status: :unprocessable_content
     end
   end
 end

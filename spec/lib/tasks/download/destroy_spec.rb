@@ -35,7 +35,7 @@ RSpec.describe :download, type: :task do
     end
 
     # テスト内容
-    shared_examples_for 'OK' do
+    shared_examples 'OK' do
       let!(:before_download_count)      { Download.count }
       let!(:before_download_file_count) { DownloadFile.count }
       let!(:before_user_count)          { User.count }
@@ -50,7 +50,7 @@ RSpec.describe :download, type: :task do
         expect(Space.count).to eq(before_space_count)
       end
     end
-    shared_examples_for 'NG' do
+    shared_examples 'NG' do
       let!(:before_download_count)      { Download.count }
       let!(:before_download_file_count) { DownloadFile.count }
       let!(:before_user_count)          { User.count }
@@ -65,19 +65,19 @@ RSpec.describe :download, type: :task do
     end
 
     # テストケース
-    shared_examples_for '[ない]ドライランtrue' do
+    shared_examples '[ない]ドライランtrue' do
       let(:dry_run) { 'true' }
       it_behaves_like 'NG'
     end
-    shared_examples_for '[ある]ドライランtrue' do
+    shared_examples '[ある]ドライランtrue' do
       let(:dry_run) { 'true' }
       it_behaves_like 'NG'
     end
-    shared_examples_for '[ない]ドライランfalse' do
+    shared_examples '[ない]ドライランfalse' do
       let(:dry_run) { 'false' }
       it_behaves_like 'NG'
     end
-    shared_examples_for '[ある]ドライランfalse' do
+    shared_examples '[ある]ドライランfalse' do
       let(:dry_run) { 'false' }
       it_behaves_like 'OK'
     end

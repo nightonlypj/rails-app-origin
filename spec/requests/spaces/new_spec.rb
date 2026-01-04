@@ -12,7 +12,7 @@ RSpec.describe 'Spaces', type: :request do
     subject { get new_space_path(format: subject_format), headers: auth_headers.merge(accept_headers) }
 
     # テスト内容
-    shared_examples_for 'ToOK(html/*)' do
+    shared_examples 'ToOK(html/*)' do
       it 'HTTPステータスが200' do
         is_expected.to eq(200)
       end

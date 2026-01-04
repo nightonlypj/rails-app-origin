@@ -4,7 +4,7 @@ RSpec.describe 'Users::Auth::Unlocks', type: :request do
   let(:response_json) { response.parsed_body }
 
   # テスト内容（共通）
-  shared_examples_for 'ToMsg' do |error_class, errors_count, error_msg, message, alert, notice|
+  shared_examples 'ToMsg' do |error_class, errors_count, error_msg, message, alert, notice|
     let(:subject_format) { :json }
     let(:accept_headers) { ACCEPT_INC_JSON }
     it '対象のメッセージと一致する' do
@@ -38,7 +38,7 @@ RSpec.describe 'Users::Auth::Unlocks', type: :request do
     let(:current_user) { nil }
     include_context 'Authテスト内容'
 
-    shared_examples_for 'OK' do
+    shared_examples 'OK' do
       let(:subject_format) { :json }
       let(:accept_headers) { ACCEPT_INC_JSON }
       let(:url)       { "http://#{Settings.base_domain}#{user_auth_unlock_path}" }
@@ -53,7 +53,7 @@ RSpec.describe 'Users::Auth::Unlocks', type: :request do
         expect(ActionMailer::Base.deliveries[0].text_part.body).to include(url_param)
       end
     end
-    shared_examples_for 'NG' do
+    shared_examples 'NG' do
       let(:subject_format) { :json }
       let(:accept_headers) { ACCEPT_INC_JSON }
       it 'メールが送信されない' do
@@ -61,7 +61,7 @@ RSpec.describe 'Users::Auth::Unlocks', type: :request do
       end
     end
 
-    shared_examples_for 'ToOK(json/json)' do
+    shared_examples 'ToOK(json/json)' do
       let(:subject_format) { :json }
       let(:accept_headers) { ACCEPT_INC_JSON }
       it 'HTTPステータスが200。対象項目が一致する。認証ヘッダがない' do
@@ -70,7 +70,7 @@ RSpec.describe 'Users::Auth::Unlocks', type: :request do
         expect_not_exist_auth_header
       end
     end
-    shared_examples_for 'ToNG(json/json)' do |code|
+    shared_examples 'ToNG(json/json)' do |code|
       let(:subject_format) { :json }
       let(:accept_headers) { ACCEPT_INC_JSON }
       it "HTTPステータスが#{code}。対象項目が一致する。認証ヘッダがない" do
@@ -81,13 +81,13 @@ RSpec.describe 'Users::Auth::Unlocks', type: :request do
       end
     end
 
-    shared_examples_for 'ToOK' do
+    shared_examples 'ToOK' do
       it_behaves_like 'ToNG(html/html)', 406
       it_behaves_like 'ToNG(html/json)', 406
       it_behaves_like 'ToNG(json/html)', 406
       it_behaves_like 'ToOK(json/json)'
     end
-    shared_examples_for 'ToNG' do |code|
+    shared_examples 'ToNG' do |code|
       it_behaves_like 'ToNG(html/html)', 406
       it_behaves_like 'ToNG(html/json)', 406
       it_behaves_like 'ToNG(json/html)', 406
@@ -95,7 +95,7 @@ RSpec.describe 'Users::Auth::Unlocks', type: :request do
     end
 
     # テストケース
-    shared_examples_for '[未ログイン/ログイン中]パラメータなし' do
+    shared_examples '[未ログイン/ログイン中]パラメータなし' do
       let(:params) { nil }
       it_behaves_like 'NG'
       # it_behaves_like 'ToNG', 422
@@ -103,7 +103,7 @@ RSpec.describe 'Users::Auth::Unlocks', type: :request do
       # it_behaves_like 'ToMsg', Array, 1, 'devise_token_auth.unlocks.not_allowed_redirect_url', nil, nil, nil
       it_behaves_like 'ToMsg', NilClass, 0, nil, nil, 'errors.messages.validate_unlock_params', nil
     end
-    shared_examples_for '[APIログイン中]パラメータなし' do
+    shared_examples '[APIログイン中]パラメータなし' do
       let(:params) { nil }
       it_behaves_like 'NG'
       # it_behaves_like 'ToNG', 422
@@ -111,7 +111,7 @@ RSpec.describe 'Users::Auth::Unlocks', type: :request do
       # it_behaves_like 'ToMsg', Array, 1, 'devise_token_auth.unlocks.not_allowed_redirect_url', nil, nil, nil
       it_behaves_like 'ToMsg', NilClass, 0, nil, nil, 'devise.failure.already_authenticated', nil
     end
-    shared_examples_for '[未ログイン/ログイン中]有効なパラメータ（ロック中）' do
+    shared_examples '[未ログイン/ログイン中]有効なパラメータ（ロック中）' do
       let(:send_user) { send_user_locked }
       let(:params) { valid_attributes }
       it_behaves_like 'OK'
@@ -119,7 +119,7 @@ RSpec.describe 'Users::Auth::Unlocks', type: :request do
       # it_behaves_like 'ToMsg', NilClass, 0, nil, 'devise_token_auth.unlocks.sended', nil, nil
       it_behaves_like 'ToMsg', NilClass, 0, nil, nil, nil, 'devise_token_auth.unlocks.sended'
     end
-    shared_examples_for '[APIログイン中]有効なパラメータ（ロック中）' do
+    shared_examples '[APIログイン中]有効なパラメータ（ロック中）' do
       let(:send_user) { send_user_locked }
       let(:params) { valid_attributes }
       # it_behaves_like 'OK'
@@ -129,7 +129,7 @@ RSpec.describe 'Users::Auth::Unlocks', type: :request do
       # it_behaves_like 'ToMsg', NilClass, 0, nil, 'devise_token_auth.unlocks.sended', nil, nil
       it_behaves_like 'ToMsg', NilClass, 0, nil, nil, 'devise.failure.already_authenticated', nil
     end
-    shared_examples_for '[未ログイン/ログイン中]有効なパラメータ（未ロック）' do
+    shared_examples '[未ログイン/ログイン中]有効なパラメータ（未ロック）' do
       let(:send_user) { send_user_unlocked }
       let(:params) { valid_attributes }
       # it_behaves_like 'OK'
@@ -139,7 +139,7 @@ RSpec.describe 'Users::Auth::Unlocks', type: :request do
       # it_behaves_like 'ToMsg', NilClass, 0, nil, 'devise_token_auth.unlocks.sended', nil, nil
       it_behaves_like 'ToMsg', NilClass, 0, nil, nil, 'errors.messages.not_locked', nil
     end
-    shared_examples_for '[APIログイン中]有効なパラメータ（未ロック）' do
+    shared_examples '[APIログイン中]有効なパラメータ（未ロック）' do
       let(:send_user) { send_user_unlocked }
       let(:params) { valid_attributes }
       # it_behaves_like 'OK'
@@ -149,7 +149,7 @@ RSpec.describe 'Users::Auth::Unlocks', type: :request do
       # it_behaves_like 'ToMsg', NilClass, 0, nil, 'devise_token_auth.unlocks.sended', nil, nil
       it_behaves_like 'ToMsg', NilClass, 0, nil, nil, 'devise.failure.already_authenticated', nil
     end
-    shared_examples_for '[未ログイン/ログイン中]無効なパラメータ' do
+    shared_examples '[未ログイン/ログイン中]無効なパラメータ' do
       let(:params) { invalid_attributes }
       it_behaves_like 'NG'
       # it_behaves_like 'ToNG', 404
@@ -158,7 +158,7 @@ RSpec.describe 'Users::Auth::Unlocks', type: :request do
       it_behaves_like 'ToMsg', ActiveSupport::HashWithIndifferentAccess, 2, 'devise_token_auth.unlocks.user_not_found', nil,
                       'errors.messages.not_saved.one', nil
     end
-    shared_examples_for '[APIログイン中]無効なパラメータ' do
+    shared_examples '[APIログイン中]無効なパラメータ' do
       let(:params) { invalid_attributes }
       it_behaves_like 'NG'
       # it_behaves_like 'ToNG', 404
@@ -166,7 +166,7 @@ RSpec.describe 'Users::Auth::Unlocks', type: :request do
       # it_behaves_like 'ToMsg', Array, 1, 'devise_token_auth.unlocks.user_not_found', nil, nil, nil
       it_behaves_like 'ToMsg', NilClass, 0, nil, nil, 'devise.failure.already_authenticated', nil
     end
-    shared_examples_for '[未ログイン/ログイン中]URLがない' do
+    shared_examples '[未ログイン/ログイン中]URLがない' do
       let(:params) { invalid_attributes_nil }
       it_behaves_like 'NG'
       # it_behaves_like 'ToNG', 401
@@ -174,21 +174,21 @@ RSpec.describe 'Users::Auth::Unlocks', type: :request do
       # it_behaves_like 'ToMsg', Array, 1, 'devise_token_auth.unlocks.missing_redirect_url', nil, nil, nil
       it_behaves_like 'ToMsg', NilClass, 0, nil, nil, 'devise_token_auth.unlocks.missing_redirect_url', nil
     end
-    shared_examples_for '[APIログイン中]URLがない' do
+    shared_examples '[APIログイン中]URLがない' do
       let(:params) { invalid_attributes_nil }
       it_behaves_like 'NG'
       it_behaves_like 'ToNG', 401
       # it_behaves_like 'ToMsg', Array, 1, 'devise_token_auth.unlocks.missing_redirect_url', nil, nil, nil
       it_behaves_like 'ToMsg', NilClass, 0, nil, nil, 'devise.failure.already_authenticated', nil
     end
-    shared_examples_for '[未ログイン/ログイン中]URLがホワイトリストにない' do
+    shared_examples '[未ログイン/ログイン中]URLがホワイトリストにない' do
       let(:params) { invalid_attributes_bad }
       it_behaves_like 'NG'
       it_behaves_like 'ToNG', 422
       # it_behaves_like 'ToMsg', Array, 1, 'devise_token_auth.unlocks.not_allowed_redirect_url', nil, nil, nil
       it_behaves_like 'ToMsg', NilClass, 0, nil, nil, 'devise_token_auth.unlocks.not_allowed_redirect_url', nil
     end
-    shared_examples_for '[APIログイン中]URLがホワイトリストにない' do
+    shared_examples '[APIログイン中]URLがホワイトリストにない' do
       let(:params) { invalid_attributes_bad }
       it_behaves_like 'NG'
       # it_behaves_like 'ToNG', 422
@@ -197,7 +197,7 @@ RSpec.describe 'Users::Auth::Unlocks', type: :request do
       it_behaves_like 'ToMsg', NilClass, 0, nil, nil, 'devise.failure.already_authenticated', nil
     end
 
-    shared_examples_for '[未ログイン/ログイン中]' do
+    shared_examples '[未ログイン/ログイン中]' do
       it_behaves_like '[未ログイン/ログイン中]パラメータなし'
       it_behaves_like '[未ログイン/ログイン中]有効なパラメータ（ロック中）'
       it_behaves_like '[未ログイン/ログイン中]有効なパラメータ（未ロック）'
@@ -239,7 +239,7 @@ RSpec.describe 'Users::Auth::Unlocks', type: :request do
 
     # テスト内容
     let(:current_user) { User.find(send_user.id) }
-    shared_examples_for 'OK' do
+    shared_examples 'OK' do
       let(:subject_format) { nil }
       let(:accept_headers) { ACCEPT_INC_HTML }
       it '[リダイレクトURLがある]アカウントロック日時がなしに回数が0に変更される' do
@@ -267,7 +267,7 @@ RSpec.describe 'Users::Auth::Unlocks', type: :request do
         expect(current_user.failed_attempts).to eq(0)
       end
     end
-    shared_examples_for 'NG' do
+    shared_examples 'NG' do
       let(:subject_format) { nil }
       let(:accept_headers) { ACCEPT_INC_HTML }
       it '[リダイレクトURLがある]アカウントロック日時・回数が変更されない' do
@@ -290,7 +290,7 @@ RSpec.describe 'Users::Auth::Unlocks', type: :request do
       end
     end
 
-    shared_examples_for 'ToOK(html/*)' do
+    shared_examples 'ToOK(html/*)' do
       let(:subject_format) { nil }
       it '[リダイレクトURLがある]指定URL（成功パラメータ）にリダイレクトする' do
         @redirect_url = FRONT_SITE_URL
@@ -318,7 +318,7 @@ RSpec.describe 'Users::Auth::Unlocks', type: :request do
         is_expected.to redirect_to(Settings.unlock_success_url_bad)
       end
     end
-    shared_examples_for 'ToNG(html/*)' do
+    shared_examples 'ToNG(html/*)' do
       let(:subject_format) { nil }
       it '[リダイレクトURLがある]指定URL（失敗パラメータ）にリダイレクトする' do
         @redirect_url = FRONT_SITE_URL
@@ -346,7 +346,7 @@ RSpec.describe 'Users::Auth::Unlocks', type: :request do
         is_expected.to redirect_to(Settings.unlock_error_url_bad)
       end
     end
-    shared_examples_for 'ToNG(json/json)' do |code|
+    shared_examples 'ToNG(json/json)' do |code|
       let(:subject_format) { :json }
       let(:accept_headers) { ACCEPT_INC_JSON }
       it "HTTPステータスが#{code}" do
@@ -354,24 +354,24 @@ RSpec.describe 'Users::Auth::Unlocks', type: :request do
       end
     end
 
-    shared_examples_for 'ToNG(html/html)' do
+    shared_examples 'ToNG(html/html)' do
       let(:subject_format) { nil }
       let(:accept_headers) { ACCEPT_INC_HTML }
       it_behaves_like 'ToNG(html/*)'
     end
-    shared_examples_for 'ToNG(html/json)' do
+    shared_examples 'ToNG(html/json)' do
       let(:subject_format) { nil }
       let(:accept_headers) { ACCEPT_INC_JSON }
       it_behaves_like 'ToNG(html/*)'
     end
 
-    shared_examples_for 'ToOK' do
+    shared_examples 'ToOK' do
       it_behaves_like 'ToOK(html/html)'
       it_behaves_like 'ToOK(html/json)'
       it_behaves_like 'ToNG(json/html)', 406
       it_behaves_like 'ToNG(json/json)', 406
     end
-    shared_examples_for 'ToNG' do
+    shared_examples 'ToNG' do
       it_behaves_like 'ToNG(html/html)'
       it_behaves_like 'ToNG(html/json)'
       it_behaves_like 'ToNG(json/html)', 406
@@ -379,7 +379,7 @@ RSpec.describe 'Users::Auth::Unlocks', type: :request do
     end
 
     # テストケース
-    shared_examples_for '[*][存在する]ロック日時がない（未ロック）' do
+    shared_examples '[*][存在する]ロック日時がない（未ロック）' do
       let(:alert)  { nil }
       # let(:notice) { nil }
       let(:notice) { 'devise.unlocks.unlocked' } # NOTE: 既に解除済み
@@ -387,28 +387,28 @@ RSpec.describe 'Users::Auth::Unlocks', type: :request do
       it_behaves_like 'NG'
       it_behaves_like 'ToOK'
     end
-    shared_examples_for '[*][存在しない]ロック日時がない（未ロック）' do
+    shared_examples '[*][存在しない]ロック日時がない（未ロック）' do
       # let(:alert)  { nil } # NOTE: ActionController::RoutingError: Not Found
       let(:alert)  { 'activerecord.errors.models.user.attributes.unlock_token.invalid' }
       let(:notice) { nil }
       # it_behaves_like 'NG' # NOTE: トークンが存在しない為、ロック日時がない
       it_behaves_like 'ToNG'
     end
-    shared_examples_for '[*][ない/空]ロック日時がない（未ロック）' do
+    shared_examples '[*][ない/空]ロック日時がない（未ロック）' do
       # let(:alert)  { nil } # NOTE: ActionController::RoutingError: Not Found
       let(:alert)  { 'activerecord.errors.models.user.attributes.unlock_token.blank' }
       let(:notice) { nil }
       # it_behaves_like 'NG' # NOTE: トークンが存在しない為、ロック日時がない
       it_behaves_like 'ToNG'
     end
-    shared_examples_for '[*][存在する]ロック日時が期限内（ロック中）' do
+    shared_examples '[*][存在する]ロック日時が期限内（ロック中）' do
       let(:alert)  { nil }
       let(:notice) { 'devise.unlocks.unlocked' } # NOTE: 解除されても良さそう
       include_context 'アカウントロック解除トークン作成', true
       it_behaves_like 'OK'
       it_behaves_like 'ToOK'
     end
-    shared_examples_for '[*][存在する]ロック日時が期限切れ（未ロック）' do
+    shared_examples '[*][存在する]ロック日時が期限切れ（未ロック）' do
       let(:alert)  { nil }
       let(:notice) { 'devise.unlocks.unlocked' }
       include_context 'アカウントロック解除トークン作成', true, true
@@ -416,31 +416,31 @@ RSpec.describe 'Users::Auth::Unlocks', type: :request do
       it_behaves_like 'ToOK'
     end
 
-    shared_examples_for '[*]トークンが存在する' do
+    shared_examples '[*]トークンが存在する' do
       it_behaves_like '[*][存在する]ロック日時がない（未ロック）'
       it_behaves_like '[*][存在する]ロック日時が期限内（ロック中）'
       it_behaves_like '[*][存在する]ロック日時が期限切れ（未ロック）'
     end
-    shared_examples_for '[*]トークンが存在しない' do
+    shared_examples '[*]トークンが存在しない' do
       let(:unlock_token) { NOT_TOKEN }
       it_behaves_like '[*][存在しない]ロック日時がない（未ロック）'
       # it_behaves_like '[*][存在しない]ロック日時が期限内（ロック中）' # NOTE: トークンが存在しない為、ロック日時がない
       # it_behaves_like '[*][存在しない]ロック日時が期限切れ（未ロック）' # NOTE: トークンが存在しない為、ロック日時がない
     end
-    shared_examples_for '[*]トークンがない' do
+    shared_examples '[*]トークンがない' do
       let(:unlock_token) { nil }
       it_behaves_like '[*][ない/空]ロック日時がない（未ロック）'
       # it_behaves_like '[*][ない]ロック日時が期限内（ロック中）' # NOTE: トークンが存在しない為、ロック日時がない
       # it_behaves_like '[*][ない]ロック日時が期限切れ（未ロック）' # NOTE: トークンが存在しない為、ロック日時がない
     end
-    shared_examples_for '[*]トークンが空' do
+    shared_examples '[*]トークンが空' do
       let(:unlock_token) { '' }
       it_behaves_like '[*][ない/空]ロック日時がない（未ロック）'
       # it_behaves_like '[*][空]ロック日時が期限内（ロック中）' # NOTE: トークンが存在しない為、ロック日時がない
       # it_behaves_like '[*][空]ロック日時が期限切れ（未ロック）' # NOTE: トークンが存在しない為、ロック日時がない
     end
 
-    shared_examples_for '[*]' do
+    shared_examples '[*]' do
       it_behaves_like '[*]トークンが存在する'
       it_behaves_like '[*]トークンが存在しない'
       it_behaves_like '[*]トークンがない'

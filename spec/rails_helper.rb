@@ -73,10 +73,46 @@ RSpec.configure do |config|
   # arbitrary gems may also be filtered via:
   # config.filter_gems_from_backtrace("gem name")
 
+  config.include Rails.application.routes.url_helpers
+  config.include ActiveSupport::Testing::TimeHelpers
+  config.include FactoryBot::Syntax::Methods
+
   # Use Devise
   config.include Devise::Test::IntegrationHelpers, type: :request
   config.include Devise::Test::ControllerHelpers, type: :view
 
-  config.include FactoryBot::Syntax::Methods
-  config.include ActiveSupport::Testing::TimeHelpers
+  # NOTE: created_at/updated_atを過去にして、テストの信頼性を向上させる
+  config.before(:suite) do
+    FactoryBot.factories.each do |factory|
+      definition = factory.instance_variable_get(:@definition)
+      definition.after(:build) do |record|
+        record.created_at = FactoryBotHelper.make_created_at if record.has_attribute?(:created_at) && record.created_at.blank?
+        record.updated_at = FactoryBotHelper.make_updated_at(record.created_at) if record.has_attribute?(:updated_at) && record.updated_at.blank?
+      end
+    end
+  end
+end
+
+module FactoryBotHelper
+  class << self
+    def make_created_at
+      @base_time = base_time + 1.second
+    end
+
+    def make_updated_at(created_at)
+      return created_at if created_at > max_time
+
+      Faker::Time.between(from: created_at, to: max_time)
+    end
+
+    private
+
+    def base_time
+      @base_time ||= 1.year.ago
+    end
+
+    def max_time
+      @max_time ||= 1.hour.ago
+    end
+  end
 end

@@ -1,5 +1,6 @@
-FROM nginx:1.27.5-alpine
-RUN apk add --no-cache gettext
+# https://hub.docker.com/_/nginx
+FROM nginx:1.29.3-alpine-slim
+RUN apk add --no-cache curl gettext
 
 COPY ecs/web/nginx/nginx.conf.template /etc/nginx/
 COPY ecs/web/nginx/conf.d/default.conf.template /etc/nginx/conf.d/

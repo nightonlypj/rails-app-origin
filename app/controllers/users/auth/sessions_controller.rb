@@ -12,10 +12,10 @@ class Users::Auth::SessionsController < DeviseTokenAuth::SessionsController
   def create
     return render '/failure', locals: { alert: t('devise_token_auth.sessions.bad_credentials') }, status: :bad_request if request.request_parameters.blank?
     if params[:unlock_redirect_url].blank?
-      return render '/failure', locals: { alert: t('devise_token_auth.sessions.unlock_redirect_url_blank') }, status: :unprocessable_entity
+      return render '/failure', locals: { alert: t('devise_token_auth.sessions.unlock_redirect_url_blank') }, status: :unprocessable_content
     end
     if blacklisted_redirect_url?(params[:unlock_redirect_url])
-      return render '/failure', locals: { alert: t('devise_token_auth.sessions.unlock_redirect_url_not_allowed') }, status: :unprocessable_entity
+      return render '/failure', locals: { alert: t('devise_token_auth.sessions.unlock_redirect_url_not_allowed') }, status: :unprocessable_content
     end
     return render_create_error_bad_credentials if params[:email].blank? || params[:password].blank?
 
@@ -56,24 +56,24 @@ class Users::Auth::SessionsController < DeviseTokenAuth::SessionsController
 
   def render_create_error_not_confirmed
     # render_error(401, I18n.t('devise_token_auth.sessions.not_confirmed', email: @resource.email))
-    render '/failure', locals: { alert: t('devise.failure.unconfirmed') }, status: :unprocessable_entity
+    render '/failure', locals: { alert: t('devise.failure.unconfirmed') }, status: :unprocessable_content
   end
 
   def render_create_error_account_locked
     # render_error(401, I18n.t('devise.mailer.unlock_instructions.account_lock_msg'))
-    render '/failure', locals: { alert: t('devise.failure.locked') }, status: :unprocessable_entity
+    render '/failure', locals: { alert: t('devise.failure.locked') }, status: :unprocessable_content
   end
 
   def render_create_error_bad_credentials
     # render_error(401, I18n.t('devise_token_auth.sessions.bad_credentials'))
     if @resource.blank?
-      render '/failure', locals: { alert: t('devise.failure.not_found_in_database') }, status: :unprocessable_entity
+      render '/failure', locals: { alert: t('devise.failure.not_found_in_database') }, status: :unprocessable_content
     elsif @resource.access_locked?
-      render '/failure', locals: { alert: t('devise.failure.send_locked') }, status: :unprocessable_entity
+      render '/failure', locals: { alert: t('devise.failure.send_locked') }, status: :unprocessable_content
     elsif Devise.lock_strategy == :failed_attempts && @resource.failed_attempts == Devise.maximum_attempts - 1
-      render '/failure', locals: { alert: t('devise.failure.last_attempt') }, status: :unprocessable_entity
+      render '/failure', locals: { alert: t('devise.failure.last_attempt') }, status: :unprocessable_content
     else
-      render '/failure', locals: { alert: t('devise.failure.invalid') }, status: :unprocessable_entity
+      render '/failure', locals: { alert: t('devise.failure.invalid') }, status: :unprocessable_content
     end
   end
 

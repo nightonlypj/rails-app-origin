@@ -17,7 +17,7 @@ RSpec.describe 'Users::Auth::Registrations', type: :request do
     subject { get invitation_user_auth_registration_path(code: invitation&.code, format: subject_format), headers: auth_headers.merge(accept_headers) }
 
     # テスト内容
-    shared_examples_for 'ToOK(json/json)' do
+    shared_examples 'ToOK(json/json)' do
       let(:subject_format) { :json }
       let(:accept_headers) { ACCEPT_INC_JSON }
       it 'HTTPステータスが200。対象項目が一致する' do
@@ -38,33 +38,33 @@ RSpec.describe 'Users::Auth::Registrations', type: :request do
     end
 
     # テストケース
-    shared_examples_for '[未ログイン/ログイン中][有効]対象がメールアドレス' do
+    shared_examples '[未ログイン/ログイン中][有効]対象がメールアドレス' do
       let_it_be(:invitation) { FactoryBot.create(:invitation, :active, :email, space:, created_user:) }
       it_behaves_like 'ToNG(html)', 406
       it_behaves_like 'ToOK(json)'
     end
-    shared_examples_for '[未ログイン/ログイン中][有効]対象がドメイン' do
+    shared_examples '[未ログイン/ログイン中][有効]対象がドメイン' do
       let_it_be(:invitation) { FactoryBot.create(:invitation, :active, :domains, space:, created_user:) }
       it_behaves_like 'ToNG(html)', 406
       it_behaves_like 'ToOK(json)'
     end
 
-    shared_examples_for '[未ログイン/ログイン中]招待コードが有効' do
+    shared_examples '[未ログイン/ログイン中]招待コードが有効' do
       it_behaves_like '[未ログイン/ログイン中][有効]対象がメールアドレス'
       it_behaves_like '[未ログイン/ログイン中][有効]対象がドメイン'
     end
-    shared_examples_for '[未ログイン/ログイン中]招待コードが無効' do |status|
+    shared_examples '[未ログイン/ログイン中]招待コードが無効' do |status|
       let_it_be(:invitation) { FactoryBot.create(:invitation, status, :email, space:, created_user:) if status.present? }
       it_behaves_like 'ToNG(html)', 406
       it_behaves_like 'ToNG(json)', 404, nil, 'alert.invitation.notfound'
     end
-    shared_examples_for '[未ログイン/ログイン中]招待コードが存在しない' do
+    shared_examples '[未ログイン/ログイン中]招待コードが存在しない' do
       let_it_be(:invitation) { FactoryBot.build_stubbed(:invitation) }
       it_behaves_like 'ToNG(html)', 406
       it_behaves_like 'ToNG(json)', 404, nil, 'alert.invitation.notfound'
     end
 
-    shared_examples_for '[未ログイン/ログイン中]' do
+    shared_examples '[未ログイン/ログイン中]' do
       it_behaves_like '[未ログイン/ログイン中]招待コードが有効'
       it_behaves_like '[未ログイン/ログイン中]招待コードが無効', :expired
       it_behaves_like '[未ログイン/ログイン中]招待コードが無効', :deleted
@@ -117,10 +117,10 @@ RSpec.describe 'Users::Auth::Registrations', type: :request do
     let(:current_invitations) { Invitation.where(id: invitation_ids).order(:id) }
 
     # テスト内容
-    shared_examples_for 'OK' do
+    shared_examples 'OK' do
       let(:subject_format) { :json }
       let(:accept_headers) { ACCEPT_INC_JSON }
-      let!(:start_time) { Time.current.floor }
+      let!(:start_time) { Time.current }
       let(:url)       { "http://#{Settings.base_domain}#{user_auth_confirmation_path}" }
       let(:url_param) { "redirect_url=#{URI.encode_www_form_component(attributes[:confirm_success_url])}" }
       it 'ユーザーが作成・対象項目が設定される。メールが送信される' do
@@ -143,19 +143,23 @@ RSpec.describe 'Users::Auth::Registrations', type: :request do
             expect(current_members[index].user).to eq(current_user)
             expect(current_members[index].power).to eq(item.power)
             expect(current_members[index].invitationed_user).to eq(item.created_user)
-            expect(current_members[index].invitationed_at).to item.email.present? ? eq(item.created_at.floor) : be_between(start_time, Time.current)
+            if item.email.present?
+              expect(current_members[index].invitationed_at).to be_between(item.created_at.floor, item.created_at)
+            else
+              expect(current_members[index].invitationed_at).to be_between(start_time.floor, Time.current.ceil)
+            end
           end
 
           # 招待
           current_invitations.each do |current_invitation|
-            expect(current_invitation.email_joined_at).to be_between(start_time, Time.current)
+            expect(current_invitation.email_joined_at).to be_between(start_time.floor, Time.current.ceil)
             expect(current_invitation.last_updated_user_id).to be_nil
-            expect(current_invitation.updated_at).to be_between(start_time, Time.current)
+            expect(current_invitation.updated_at).to be_between(start_time.floor, Time.current.ceil)
           end
         end.to change(User, :count).by(1)
       end
     end
-    shared_examples_for 'NG' do
+    shared_examples 'NG' do
       let(:subject_format) { :json }
       let(:accept_headers) { ACCEPT_INC_JSON }
       it '作成されない。メールが送信されない' do
@@ -163,7 +167,7 @@ RSpec.describe 'Users::Auth::Registrations', type: :request do
       end
     end
 
-    shared_examples_for 'ToOK(json/json)' do
+    shared_examples 'ToOK(json/json)' do
       let(:subject_format) { :json }
       let(:accept_headers) { ACCEPT_INC_JSON }
       it 'HTTPステータスが200。対象項目が一致する。認証ヘッダがない' do
@@ -174,7 +178,7 @@ RSpec.describe 'Users::Auth::Registrations', type: :request do
     end
 
     # テストケース
-    shared_examples_for '[有効][*][メールアドレス]パラメータのメールアドレスが招待と一致' do
+    shared_examples '[有効][*][メールアドレス]パラメータのメールアドレスが招待と一致' do
       let(:attributes)  { valid_attributes_email }
       let(:email)       { attributes[:email] }
       let(:invitations)    { [invitation, other_invitation].compact }
@@ -182,7 +186,7 @@ RSpec.describe 'Users::Auth::Registrations', type: :request do
       it_behaves_like 'OK'
       it_behaves_like 'ToOK(json/json)'
     end
-    shared_examples_for '[有効][*][メールアドレス]パラメータのメールアドレスが招待と不一致' do
+    shared_examples '[有効][*][メールアドレス]パラメータのメールアドレスが招待と不一致' do
       let(:attributes)  { valid_attributes_email_diff }
       let(:email)       { new_user[:email] } # NOTE: パラメータのメールアドレスは無視する
       let(:invitations)    { [invitation, other_invitation].compact }
@@ -190,7 +194,7 @@ RSpec.describe 'Users::Auth::Registrations', type: :request do
       it_behaves_like 'OK'
       it_behaves_like 'ToOK(json/json)'
     end
-    shared_examples_for '[有効][*][ドメイン]パラメータのドメインが招待に含まれる' do
+    shared_examples '[有効][*][ドメイン]パラメータのドメインが招待に含まれる' do
       let(:attributes)  { valid_attributes_domain }
       let(:email)       { "#{attributes[:email_local]}@#{attributes[:email_domain]}" }
       let(:invitations)    { [invitation, other_invitation].compact }
@@ -198,20 +202,22 @@ RSpec.describe 'Users::Auth::Registrations', type: :request do
       it_behaves_like 'OK'
       it_behaves_like 'ToOK(json/json)'
     end
-    shared_examples_for '[有効][*][ドメイン]パラメータのドメインが招待に含まれない' do
+    shared_examples '[有効][*][ドメイン]パラメータのドメインが招待に含まれない' do
       let(:attributes) { valid_attributes_domain_diff }
+      # rubocop:disable RSpec/LeakyLocalVariable
       message = get_locale('activerecord.errors.models.user.attributes.email.invalid')
       space = I18n.locale == :ja ? '' : ' '
+      # rubocop:enable RSpec/LeakyLocalVariable
       it_behaves_like 'NG'
       it_behaves_like 'ToNG(json/json)', 422, { email: [message], full_messages: ["#{User.human_attribute_name(:email)}#{space}#{message}"] }
     end
 
-    shared_examples_for '[有効][*]対象がメールアドレス' do
+    shared_examples '[有効][*]対象がメールアドレス' do
       let_it_be(:invitation) { FactoryBot.create(:invitation, :active, email: new_user[:email], domains: nil, space:, created_user:) }
       it_behaves_like '[有効][*][メールアドレス]パラメータのメールアドレスが招待と一致'
       it_behaves_like '[有効][*][メールアドレス]パラメータのメールアドレスが招待と不一致'
     end
-    shared_examples_for '[有効][*]対象がドメイン' do
+    shared_examples '[有効][*]対象がドメイン' do
       let_it_be(:invitation) do
         domains = ['example.org', valid_attributes_domain[:email_domain]].to_s
         FactoryBot.create(:invitation, :active, email: nil, domains:, space:, created_user:)
@@ -220,17 +226,17 @@ RSpec.describe 'Users::Auth::Registrations', type: :request do
       it_behaves_like '[有効][*][ドメイン]パラメータのドメインが招待に含まれない'
     end
 
-    shared_examples_for '[有効]他のスペースでの招待なし' do
+    shared_examples '[有効]他のスペースでの招待なし' do
       let_it_be(:other_invitation) { nil }
       it_behaves_like '[有効][*]対象がメールアドレス'
       it_behaves_like '[有効][*]対象がドメイン'
     end
-    shared_examples_for '[有効]他のスペースでの招待あり' do
+    shared_examples '[有効]他のスペースでの招待あり' do
       let_it_be(:other_invitation) { FactoryBot.create(:invitation, :active, email: new_user[:email], domains: nil, created_user:) }
       it_behaves_like '[有効][*]対象がメールアドレス'
       it_behaves_like '[有効][*]対象がドメイン'
     end
-    shared_examples_for '[無効]' do |status|
+    shared_examples '[無効]' do |status|
       let(:attributes) { valid_attributes_email }
       let_it_be(:invitation) { FactoryBot.create(:invitation, status, email: new_user[:email], domains: nil, space:, created_user:) }
       it_behaves_like 'NG'

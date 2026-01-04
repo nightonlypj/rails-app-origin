@@ -11,13 +11,18 @@ class ImageUploader < CarrierWave::Uploader::Base
   # This is a sensible default for uploaders that are meant to be mounted:
   def store_dir
     # :nocov:
+    ### START ###
+    # "uploads/#{model.class.to_s.underscore}/#{mounted_as}/#{model.id}"
     "#{"#{cache_dir}/" if Rails.env.test?}uploads/#{model.class.to_s.underscore}/#{mounted_as}/#{model.id}"
+    ### END ###
     # :nocov:
   end
 
+  ### START ###
   def cache_dir
     "/tmp/#{Settings.base_domain}"
   end
+  ### END ###
 
   # Provide a default URL as a default if there hasn't been a file uploaded:
   # def default_url(*args)
@@ -35,6 +40,10 @@ class ImageUploader < CarrierWave::Uploader::Base
   # end
 
   # Create different versions of your uploaded files:
+  # version :thumb do
+  #   process resize_to_fit: [50, 50]
+  # end
+  ### START ###
   BASE_WIDTH = 16
   BASE_HEIGHT = 16
   version :mini do
@@ -52,23 +61,33 @@ class ImageUploader < CarrierWave::Uploader::Base
   version :xlarge do
     process resize_and_pad: [BASE_WIDTH * 16, BASE_HEIGHT * 16]
   end
+  ### END ###
 
-  # Add a white list of extensions which are allowed to be uploaded.
+  # Add an allowlist of extensions which are allowed to be uploaded.
   # For images you might use something like this:
+  # def extension_allowlist
+  #   %w(jpg jpeg gif png)
+  # end
+  ### START ###
   def extension_allowlist
     %w[jpg jpeg gif png]
   end
 
   def content_type_allowlist
-    [%r{image/}]
+    %w[image/jpeg image/gif image/png]
   end
 
   def size_range
     1..(20.megabytes)
   end
+  ### END ###
 
   # Override the filename of the uploaded files:
   # Avoid using model.id or version_name here, see uploader/store.rb for details.
+  # def filename
+  #   "something.jpg" if original_filename
+  # end
+  ### START ###
   def filename
     "#{secure_token}.#{file.extension}"
   end
@@ -77,6 +96,7 @@ class ImageUploader < CarrierWave::Uploader::Base
 
   def secure_token
     var = :"@#{mounted_as}_secure_token"
-    model.instance_variable_get(var) or model.instance_variable_set(var, Digest::MD5.hexdigest(SecureRandom.uuid))
+    model.instance_variable_get(var) or model.instance_variable_set(var, SecureRandom.uuid.delete('-'))
   end
+  ### END ###
 end

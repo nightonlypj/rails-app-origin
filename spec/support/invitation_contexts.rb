@@ -68,24 +68,24 @@ def expect_invitation_json(response_json_invitation, invitation)
   result
 end
 
-shared_examples_for 'ToInvitations(html/*)' do |alert, notice|
+shared_examples 'ToInvitations(html/*)' do |alert, notice|
   it '招待URL一覧にリダイレクトする' do
     is_expected.to redirect_to(invitations_path(space_code: space.code))
     expect(flash[:alert]).to alert.present? ? eq(get_locale(alert)) : be_nil
     expect(flash[:notice]).to notice.present? ? eq(get_locale(notice)) : be_nil
   end
 end
-shared_examples_for 'ToInvitations(html/html)' do |alert, notice|
+shared_examples 'ToInvitations(html/html)' do |alert, notice|
   let(:subject_format) { nil }
   let(:accept_headers) { ACCEPT_INC_HTML }
   it_behaves_like 'ToInvitations(html/*)', alert, notice
 end
-shared_examples_for 'ToInvitations(html/json)' do |alert, notice|
+shared_examples 'ToInvitations(html/json)' do |alert, notice|
   let(:subject_format) { nil }
   let(:accept_headers) { ACCEPT_INC_JSON }
   it_behaves_like 'ToInvitations(html/*)', alert, notice
 end
-shared_examples_for 'ToInvitations(html)' do |alert = nil, notice = nil|
+shared_examples 'ToInvitations(html)' do |alert = nil, notice = nil|
   it_behaves_like 'ToInvitations(html/html)', alert, notice
   it_behaves_like 'ToInvitations(html/json)', alert, notice
 end

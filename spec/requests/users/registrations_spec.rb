@@ -2,7 +2,7 @@ require 'rails_helper'
 
 RSpec.describe 'Users::Registrations', type: :request do
   # テスト内容（共通）
-  shared_examples_for 'ToEdit' do |alert, notice|
+  shared_examples 'ToEdit' do |alert, notice|
     it 'ユーザー情報変更にリダイレクトする' do
       is_expected.to redirect_to(edit_user_registration_path)
       expect(flash[:alert]).to alert.present? ? eq(get_locale(alert)) : be_nil
@@ -44,7 +44,7 @@ RSpec.describe 'Users::Registrations', type: :request do
 
     # テスト内容
     let(:current_user) { User.last }
-    shared_examples_for 'OK' do
+    shared_examples 'OK' do
       let(:url) { "http://#{Settings.base_domain}#{user_confirmation_path}" }
       it 'ユーザーが作成・対象項目が設定される。メールが送信される' do
         expect do
@@ -59,7 +59,7 @@ RSpec.describe 'Users::Registrations', type: :request do
         end.to change(User, :count).by(1)
       end
     end
-    shared_examples_for 'NG' do
+    shared_examples 'NG' do
       it '作成されない。メールが送信されない' do
         expect { subject }.not_to change(User, :count) && change(ActionMailer::Base.deliveries, :count)
       end
@@ -73,22 +73,22 @@ RSpec.describe 'Users::Registrations', type: :request do
       next
     end
 
-    shared_examples_for '[未ログイン]有効なパラメータ' do
+    shared_examples '[未ログイン]有効なパラメータ' do
       let(:attributes) { valid_attributes }
       it_behaves_like 'OK'
       it_behaves_like 'ToLogin', nil, 'devise.registrations.signed_up_but_unconfirmed'
     end
-    shared_examples_for '[ログイン中]有効なパラメータ' do
+    shared_examples '[ログイン中]有効なパラメータ' do
       let(:attributes) { valid_attributes }
       it_behaves_like 'NG'
       it_behaves_like 'ToTop', 'devise.failure.already_authenticated', nil
     end
-    shared_examples_for '[未ログイン]無効なパラメータ' do
+    shared_examples '[未ログイン]無効なパラメータ' do
       let(:attributes) { invalid_attributes }
       it_behaves_like 'NG'
       it_behaves_like 'ToError', 'activerecord.errors.models.user.attributes.email.taken'
     end
-    shared_examples_for '[ログイン中]無効なパラメータ' do
+    shared_examples '[ログイン中]無効なパラメータ' do
       let(:attributes) { invalid_attributes }
       it_behaves_like 'NG'
       it_behaves_like 'ToTop', 'devise.failure.already_authenticated', nil
@@ -149,7 +149,7 @@ RSpec.describe 'Users::Registrations', type: :request do
 
     # テスト内容
     let(:current_user) { User.find(user.id) }
-    shared_examples_for 'OK' do |change_email|
+    shared_examples 'OK' do |change_email|
       let(:url) { "http://#{Settings.base_domain}#{user_confirmation_path}" }
       it '対象項目が変更される。メールが送信される' do
         subject
@@ -167,7 +167,7 @@ RSpec.describe 'Users::Registrations', type: :request do
         end
       end
     end
-    shared_examples_for 'NG' do
+    shared_examples 'NG' do
       it '対象項目が変更されない。メールが送信されない' do
         subject
         expect(current_user.unconfirmed_email).to eq(user.unconfirmed_email) # 確認待ちメールアドレス
@@ -187,60 +187,60 @@ RSpec.describe 'Users::Registrations', type: :request do
       next
     end
 
-    shared_examples_for '[ログイン中]有効なパラメータ（変更なし）' do
+    shared_examples '[ログイン中]有効なパラメータ（変更なし）' do
       let(:attributes) { nochange_attributes.merge(current_password: user.password) }
       it_behaves_like 'OK', false
       it_behaves_like 'ToTop', nil, 'devise.registrations.updated'
     end
-    shared_examples_for '[削除予約済み]有効なパラメータ（変更なし）' do
+    shared_examples '[削除予約済み]有効なパラメータ（変更なし）' do
       let(:attributes) { nochange_attributes.merge(current_password: user.password) }
       it_behaves_like 'NG'
       it_behaves_like 'ToTop', 'alert.user.destroy_reserved', nil
     end
-    shared_examples_for '[未ログイン]有効なパラメータ（変更あり）' do
+    shared_examples '[未ログイン]有効なパラメータ（変更あり）' do
       let(:attributes) { valid_attributes }
       # it_behaves_like 'NG' # NOTE: 未ログインの為、対象がない
       it_behaves_like 'ToLogin', 'devise.failure.unauthenticated', nil
     end
-    shared_examples_for '[ログイン中]有効なパラメータ（変更あり）' do
+    shared_examples '[ログイン中]有効なパラメータ（変更あり）' do
       let(:attributes) { valid_attributes.merge(current_password: user.password) }
       it_behaves_like 'OK', true
       it_behaves_like 'ToTop', nil, 'devise.registrations.update_needs_confirmation'
     end
-    shared_examples_for '[削除予約済み]有効なパラメータ（変更あり）' do
+    shared_examples '[削除予約済み]有効なパラメータ（変更あり）' do
       let(:attributes) { valid_attributes.merge(current_password: user.password) }
       it_behaves_like 'NG'
       it_behaves_like 'ToTop', 'alert.user.destroy_reserved', nil
     end
-    shared_examples_for '[未ログイン]無効なパラメータ' do
+    shared_examples '[未ログイン]無効なパラメータ' do
       let(:attributes) { invalid_attributes }
       # it_behaves_like 'NG' # NOTE: 未ログインの為、対象がない
       it_behaves_like 'ToLogin', 'devise.failure.unauthenticated', nil
     end
-    shared_examples_for '[ログイン中]無効なパラメータ' do
+    shared_examples '[ログイン中]無効なパラメータ' do
       let(:attributes) { invalid_attributes.merge(current_password: user.password) }
       # it_behaves_like 'OK', true
       it_behaves_like 'NG'
       # it_behaves_like 'ToTop', nil, 'devise.registrations.update_needs_confirmation'
       it_behaves_like 'ToError', 'activerecord.errors.models.user.attributes.email.taken'
     end
-    shared_examples_for '[削除予約済み]無効なパラメータ' do
+    shared_examples '[削除予約済み]無効なパラメータ' do
       let(:attributes) { invalid_attributes.merge(current_password: user.password) }
       it_behaves_like 'NG'
       it_behaves_like 'ToTop', 'alert.user.destroy_reserved', nil
     end
-    shared_examples_for '[ログイン中]現在のパスワードがない' do
+    shared_examples '[ログイン中]現在のパスワードがない' do
       let(:attributes) { valid_attributes }
       it_behaves_like 'NG'
       it_behaves_like 'ToError', 'activerecord.errors.models.user.attributes.current_password.blank'
     end
-    shared_examples_for '[削除予約済み]現在のパスワードがない' do
+    shared_examples '[削除予約済み]現在のパスワードがない' do
       let(:attributes) { valid_attributes }
       it_behaves_like 'NG'
       it_behaves_like 'ToTop', 'alert.user.destroy_reserved', nil
     end
 
-    shared_examples_for '[ログイン中]' do
+    shared_examples '[ログイン中]' do
       it_behaves_like '[ログイン中]有効なパラメータ（変更なし）'
       it_behaves_like '[ログイン中]有効なパラメータ（変更あり）'
       it_behaves_like '[ログイン中]無効なパラメータ'
@@ -281,13 +281,13 @@ RSpec.describe 'Users::Registrations', type: :request do
 
     # テスト内容
     let(:current_user) { User.find(user.id) }
-    shared_examples_for 'OK' do
+    shared_examples 'OK' do
       it '画像が変更される' do
         subject
         expect(current_user.image.url).not_to eq(user.image.url)
       end
     end
-    shared_examples_for 'NG' do
+    shared_examples 'NG' do
       it '画像が変更されない' do
         subject
         expect(current_user.image.url).to eq(user.image.url)
@@ -303,32 +303,32 @@ RSpec.describe 'Users::Registrations', type: :request do
       next
     end
 
-    shared_examples_for '[未ログイン]有効なパラメータ' do
+    shared_examples '[未ログイン]有効なパラメータ' do
       let(:attributes) { valid_attributes }
       # it_behaves_like 'NG' # NOTE: 未ログインの為、対象がない
       it_behaves_like 'ToLogin', 'devise.failure.unauthenticated', nil
     end
-    shared_examples_for '[ログイン中]有効なパラメータ' do
+    shared_examples '[ログイン中]有効なパラメータ' do
       let(:attributes) { valid_attributes }
       it_behaves_like 'OK'
       it_behaves_like 'ToEdit', nil, 'notice.user.image_update'
     end
-    shared_examples_for '[削除予約済み]有効なパラメータ' do
+    shared_examples '[削除予約済み]有効なパラメータ' do
       let(:attributes) { valid_attributes }
       it_behaves_like 'NG'
       it_behaves_like 'ToTop', 'alert.user.destroy_reserved', nil
     end
-    shared_examples_for '[未ログイン]無効なパラメータ' do
+    shared_examples '[未ログイン]無効なパラメータ' do
       let(:attributes) { invalid_attributes }
       # it_behaves_like 'NG' # NOTE: 未ログインの為、対象がない
       it_behaves_like 'ToLogin', 'devise.failure.unauthenticated', nil
     end
-    shared_examples_for '[ログイン中]無効なパラメータ' do
+    shared_examples '[ログイン中]無効なパラメータ' do
       let(:attributes) { invalid_attributes }
       it_behaves_like 'NG'
       it_behaves_like 'ToError', 'activerecord.errors.models.user.attributes.image.blank'
     end
-    shared_examples_for '[削除予約済み]無効なパラメータ' do
+    shared_examples '[削除予約済み]無効なパラメータ' do
       let(:attributes) { invalid_attributes }
       it_behaves_like 'NG'
       it_behaves_like 'ToTop', 'alert.user.destroy_reserved', nil
@@ -358,13 +358,13 @@ RSpec.describe 'Users::Registrations', type: :request do
 
     # テスト内容
     let(:current_user) { User.find(user.id) }
-    shared_examples_for 'OK' do
+    shared_examples 'OK' do
       it '画像が削除される' do
         subject
         expect(current_user.image.url).to be_nil
       end
     end
-    shared_examples_for 'NG' do
+    shared_examples 'NG' do
       it '画像が変更されない' do
         subject
         expect(current_user.image.url).to eq(user.image.url)
@@ -429,25 +429,25 @@ RSpec.describe 'Users::Registrations', type: :request do
 
     # テスト内容
     let(:current_user) { User.find(user.id) }
-    shared_examples_for 'OK' do
-      let!(:start_time) { Time.current.floor }
+    shared_examples 'OK' do
+      let!(:start_time) { Time.current }
       let(:url) { "http://#{Settings.base_domain}#{delete_undo_user_registration_path}" }
       it "削除依頼日時が現在日時に、削除予定日時が#{Settings.user_destroy_schedule_days}日後に変更される。メールが送信される" do
         subject
-        expect(current_user.destroy_requested_at).to be_between(start_time, Time.current)
-        expect(current_user.destroy_schedule_at).to be_between(start_time + Settings.user_destroy_schedule_days.days,
-                                                               Time.current + Settings.user_destroy_schedule_days.days)
+        expect(current_user.destroy_requested_at).to be_between(start_time.floor, Time.current.ceil)
+        expect(current_user.destroy_schedule_at).to be_between(start_time.floor + Settings.user_destroy_schedule_days.days,
+                                                               Time.current.ceil + Settings.user_destroy_schedule_days.days)
         expect(ActionMailer::Base.deliveries.count).to eq(1)
         expect(ActionMailer::Base.deliveries[0].subject).to eq(get_subject('mailer.user.destroy_reserved.subject')) # アカウント削除受け付けのお知らせ
         expect(ActionMailer::Base.deliveries[0].html_part.body).to include(url)
         expect(ActionMailer::Base.deliveries[0].text_part.body).to include(url)
       end
     end
-    shared_examples_for 'NG' do
+    shared_examples 'NG' do
       it '削除依頼日時・削除予定日時が変更されない。メールが送信されない' do
         subject
-        expect(current_user.destroy_requested_at).to eq(user.destroy_requested_at)
-        expect(current_user.destroy_schedule_at).to eq(user.destroy_schedule_at)
+        expect(current_user.destroy_requested_at&.floor).to eq(user.destroy_requested_at&.floor)
+        expect(current_user.destroy_schedule_at&.floor).to eq(user.destroy_schedule_at&.floor)
         expect(ActionMailer::Base.deliveries.count).to eq(0)
       end
     end
@@ -513,7 +513,7 @@ RSpec.describe 'Users::Registrations', type: :request do
 
     # テスト内容
     let(:current_user) { User.find(user.id) }
-    shared_examples_for 'OK' do
+    shared_examples 'OK' do
       it '削除依頼日時・削除予定日時がなしに変更される。メールが送信される' do
         subject
         expect(current_user.destroy_requested_at).to be_nil
@@ -522,11 +522,11 @@ RSpec.describe 'Users::Registrations', type: :request do
         expect(ActionMailer::Base.deliveries[0].subject).to eq(get_subject('mailer.user.undo_destroy_reserved.subject')) # アカウント削除取り消し完了のお知らせ
       end
     end
-    shared_examples_for 'NG' do
+    shared_examples 'NG' do
       it '削除依頼日時・削除予定日時が変更されない。メールが送信されない' do
         subject
-        expect(current_user.destroy_requested_at).to eq(user.destroy_requested_at)
-        expect(current_user.destroy_schedule_at).to eq(user.destroy_schedule_at)
+        expect(current_user.destroy_requested_at&.floor).to eq(user.destroy_requested_at&.floor)
+        expect(current_user.destroy_schedule_at&.floor).to eq(user.destroy_schedule_at&.floor)
         expect(ActionMailer::Base.deliveries.count).to eq(0)
       end
     end

@@ -57,24 +57,24 @@ def expect_member_json(response_json_member, member, user_power)
   result
 end
 
-shared_examples_for 'ToMembers(html/*)' do |alert, notice|
+shared_examples 'ToMembers(html/*)' do |alert, notice|
   it 'メンバー一覧にリダイレクトする' do
     is_expected.to redirect_to(members_path(space_code: space.code))
     expect(flash[:alert]).to alert.present? ? eq(get_locale(alert)) : be_nil
     expect(flash[:notice]).to notice.present? ? eq(get_locale(notice)) : be_nil
   end
 end
-shared_examples_for 'ToMembers(html/html)' do |alert, notice|
+shared_examples 'ToMembers(html/html)' do |alert, notice|
   let(:subject_format) { nil }
   let(:accept_headers) { ACCEPT_INC_HTML }
   it_behaves_like 'ToMembers(html/*)', alert, notice
 end
-shared_examples_for 'ToMembers(html/json)' do |alert, notice|
+shared_examples 'ToMembers(html/json)' do |alert, notice|
   let(:subject_format) { nil }
   let(:accept_headers) { ACCEPT_INC_JSON }
   it_behaves_like 'ToMembers(html/*)', alert, notice
 end
-shared_examples_for 'ToMembers(html)' do |alert = nil, notice = nil|
+shared_examples 'ToMembers(html)' do |alert = nil, notice = nil|
   it_behaves_like 'ToMembers(html/html)', alert, notice
   it_behaves_like 'ToMembers(html/json)', alert, notice
 end

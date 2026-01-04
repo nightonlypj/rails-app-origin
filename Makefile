@@ -25,28 +25,30 @@ define RUN_CMD
 	$(1)
 endef
 
-.PHONY: up-all
-up-all:
+.PHONY: up up-all
+up:
 	$(call CHECK_OUTSIDE_DOCKER)
 	docker compose up --build
+up-all: up
 
-.PHONY: up-all-d
-up-all-d:
+.PHONY: up-d up-all-d
+up-d:
 	$(call CHECK_OUTSIDE_DOCKER)
 	docker compose up -d --build
+up-all-d: up-d
 
 .PHONY: up-base
 up-base:
 	$(call CHECK_OUTSIDE_DOCKER)
-	docker compose up mysql pg schemaspy --build
+	docker compose up mysql mariadb pg schemaspy --build
 
 .PHONY: up-base-d
 up-base-d:
 	$(call CHECK_OUTSIDE_DOCKER)
-	docker compose up mysql pg schemaspy -d --build
+	docker compose up mysql mariadb pg schemaspy -d --build
 
 .PHONY: down
-down: ## dockerを停止します（通常終了）
+down:
 	$(call CHECK_OUTSIDE_DOCKER)
 	docker compose down
 
@@ -60,10 +62,11 @@ bash-new:
 	$(call CHECK_OUTSIDE_DOCKER)
 	docker compose run --rm app bash
 
-.PHONY: bundle
+.PHONY: bundle install
 bundle:
 	@CMD="bundle install -j4 --retry=3"; \
-	if $(IS_IN_DOCKER); then $(call RUN_CMD,$$CMD); else $(call RUN_CMD,docker compose run --rm app $$CMD); fi
+	if $(IS_IN_DOCKER) || ! $(IS_APP_RUNNING); then $(call RUN_CMD,$$CMD); else $(call RUN_CMD,docker compose exec app $$CMD); fi
+install: bundle
 
 .PHONY: db
 db:
@@ -148,7 +151,12 @@ l: rubocop
 rspec:
 	@CMD="bundle exec rspec $(wordlist 2, $(words $(MAKECMDGOALS)), $(MAKECMDGOALS))"; \
 	if $(IS_IN_DOCKER) || ! $(IS_APP_RUNNING); then $(call RUN_CMD,$$CMD); else $(call RUN_CMD,docker compose exec app $$CMD); fi
-	if [ $(words $(MAKECMDGOALS)) -eq 1 ]; then open coverage/index.html; fi
+	@if [ $(words $(MAKECMDGOALS)) -eq 1 ]; then $(call RUN_CMD,open coverage/index.html); fi
+
+.PHONY: rspec-fail
+rspec-fail:
+	@CMD="bundle exec rspec --only-failures"; \
+	if $(IS_IN_DOCKER) || ! $(IS_APP_RUNNING); then $(call RUN_CMD,$$CMD); else $(call RUN_CMD,docker compose exec app $$CMD); fi
 
 .PHONY: brakeman b
 brakeman:
@@ -186,12 +194,6 @@ schemaspy-docker-sqlite:
 	$(MAKE) -C schemaspy docker-sqlite
 ssd-sqlite: schemaspy-docker-sqlite
 
-.PHONY: schemaspy-mariadb ss-mariadb
-schemaspy-mariadb:
-	$(call CHECK_OUTSIDE_DOCKER)
-	$(MAKE) -C schemaspy mariadb
-ss-mariadb: schemaspy-mariadb
-
 .PHONY: schemaspy-mysql ss-mysql
 schemaspy-mysql:
 	$(call CHECK_OUTSIDE_DOCKER)
@@ -203,6 +205,18 @@ schemaspy-docker-mysql:
 	$(call CHECK_OUTSIDE_DOCKER)
 	$(MAKE) -C schemaspy docker-mysql
 ssd-mysql: schemaspy-docker-mysql
+
+.PHONY: schemaspy-mariadb ss-mariadb
+schemaspy-mariadb:
+	$(call CHECK_OUTSIDE_DOCKER)
+	$(MAKE) -C schemaspy mariadb
+ss-mariadb: schemaspy-mariadb
+
+.PHONY: schemaspy-docker-mariadb ssd-mariadb
+schemaspy-docker-mariadb:
+	$(call CHECK_OUTSIDE_DOCKER)
+	$(MAKE) -C schemaspy docker-mariadb
+ssd-mariadb: schemaspy-docker-mariadb
 
 .PHONY: schemaspy-pg ss-pg
 schemaspy-pg:

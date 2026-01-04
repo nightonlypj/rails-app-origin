@@ -4,20 +4,20 @@ Rails.application.routes.draw do
   # Defines the root path route ("/")
   # root "articles#index"
 
-  draw :downloads
-  draw :members
-  draw :invitations
-  draw :spaces
-  draw :holidays
-  draw :infomations
-  draw :admin
-  draw :users
-  scope '(:locale)', locale: /#{I18n.available_locales.map(&:to_s).join('|')}/ do
-    root 'top#index'
-  end
-  get 'health_check', to: 'health_check#index', as: 'health_check'
-
   # :nocov:
   mount LetterOpenerWeb::Engine => '/letter_opener' if Rails.env.development?
   # :nocov:
+  get '_health', to: 'health_check#index', as: 'health_check'
+  scope '(:locale)', locale: /#{I18n.available_locales.map(&:to_s).join('|')}/ do
+    root 'top#index'
+  end
+
+  draw :admin
+  draw :downloads
+  draw :holidays
+  draw :infomations
+  draw :invitations
+  draw :members
+  draw :spaces
+  draw :users
 end

@@ -204,7 +204,7 @@
 
     <footer id="footer" class="bg-light" style="min-width: 300px">
       <div class="d-flex justify-content-center p-3">
-        <span class="d-none d-sm-block">Copyright&nbsp;</span><span class="text-truncate">&copy; <%= link_to t('my_name'), t('my_url'), target: :_blank, rel: %i[noopener noreferrer] %> All Rights Reserved.</span>
+        <span class="d-none d-sm-block">Copyright&nbsp;</span><span class="text-truncate">&copy; <%= link_to t('my_name'), t('my_url'), target: :_blank, rel: 'noopener noreferrer' %> All Rights Reserved.</span>
       </div>
       <%= render '/layouts/development', admin: false if Rails.env.development? %>
     </footer>

@@ -7,7 +7,7 @@ class DownloadsController < ApplicationAuthController
   # GET /downloads ダウンロード結果一覧
   # GET /downloads(.json) ダウンロード結果一覧API
   def index
-    @id = params[:id].present? ? params[:id].to_i : nil
+    @id = params[:id].presence&.to_i
     @downloads = Download.where(user: current_user).search(@id).order(id: :desc)
       .page(params[:page]).per(Settings.default_downloads_limit)
 
@@ -47,9 +47,9 @@ class DownloadsController < ApplicationAuthController
   def create
     @download = Download.new(download_params.merge(model: @model, space: @space, user: current_user, requested_at: Time.current))
     unless @download.save
-      return render :new, status: :unprocessable_entity if format_html?
+      return render :new, status: :unprocessable_content if format_html?
 
-      return render '/failure', locals: { errors: @download.errors, alert: t('errors.messages.not_saved.other') }, status: :unprocessable_entity
+      return render '/failure', locals: { errors: @download.errors, alert: t('errors.messages.not_saved.other') }, status: :unprocessable_content
     end
 
     DownloadJob.perform_later(@download.id)
@@ -63,7 +63,7 @@ class DownloadsController < ApplicationAuthController
   def set_flash_index
     @alert = nil
     @notice = nil
-    @target_id = params[:target_id].present? ? params[:target_id].to_i : nil
+    @target_id = params[:target_id].presence&.to_i
     return if @target_id.blank?
 
     @download = nil
@@ -148,6 +148,6 @@ class DownloadsController < ApplicationAuthController
     params[:download][:select_items] = params[:download][:select_items].to_s if params[:download][:select_items].present?
     params[:download][:search_params] = params[:download][:search_params].to_s if params[:download][:search_params].present?
 
-    params.require(:download).permit(:target, :format, :char_code, :newline_code, :output_items, :search_params, :select_items)
+    params.expect(download: %i[target format char_code newline_code output_items search_params select_items])
   end
 end

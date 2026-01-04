@@ -113,21 +113,21 @@ RSpec.describe Download, type: :model do
     subject(:model) { FactoryBot.build_stubbed(:download, target:, select_items:) }
 
     # テストケース
-    shared_examples_for 'ない' do |valid|
+    shared_examples 'ない' do |valid|
       let(:select_items) { nil }
       let(:messages) { { select_items: [get_locale('activerecord.errors.models.download.attributes.select_items.blank')] } }
       it_behaves_like valid ? 'Valid' : 'InValid'
     end
-    shared_examples_for '正常値' do
+    shared_examples '正常値' do
       let(:select_items) { '["code000000000000000000001", "code000000000000000000002"]' }
       it_behaves_like 'Valid'
     end
-    shared_examples_for '文字列' do
+    shared_examples '文字列' do
       let(:select_items) { 'code000000000000000000001,code000000000000000000002' }
       let(:messages) { { select_items: [get_locale('activerecord.errors.models.download.attributes.select_items.invalid')] } }
       it_behaves_like 'InValid'
     end
-    shared_examples_for '文字列（ハッシュ）' do
+    shared_examples '文字列（ハッシュ）' do
       let(:select_items) { '{"text"=>"aaa"}' }
       let(:messages) { { select_items: [get_locale('activerecord.errors.models.download.attributes.select_items.invalid')] } }
       it_behaves_like 'InValid'
@@ -156,21 +156,21 @@ RSpec.describe Download, type: :model do
     subject(:model) { FactoryBot.build_stubbed(:download, target:, search_params:) }
 
     # テストケース
-    shared_examples_for 'ない' do |valid|
+    shared_examples 'ない' do |valid|
       let(:search_params) { nil }
       let(:messages) { { search_params: [get_locale('activerecord.errors.models.download.attributes.search_params.blank')] } }
       it_behaves_like valid ? 'Valid' : 'InValid'
     end
-    shared_examples_for '正常値' do
+    shared_examples '正常値' do
       let(:search_params) { '{"text"=>"aaa"}' }
       it_behaves_like 'Valid'
     end
-    shared_examples_for '文字列' do
+    shared_examples '文字列' do
       let(:search_params) { 'aaa' }
       let(:messages) { { search_params: [get_locale('activerecord.errors.models.download.attributes.search_params.invalid')] } }
       it_behaves_like 'InValid'
     end
-    shared_examples_for '文字列（配列）' do
+    shared_examples '文字列（配列）' do
       let(:search_params) { '["code000000000000000000001", "code000000000000000000002"]' }
       let(:messages) { { search_params: [get_locale('activerecord.errors.models.download.attributes.search_params.invalid')] } }
       it_behaves_like 'InValid'

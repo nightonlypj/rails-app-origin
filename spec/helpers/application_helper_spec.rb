@@ -67,17 +67,17 @@ RSpec.describe ApplicationHelper, type: :helper do
     before { allow(helper).to receive_messages(current_user:, controller_name:, action_name:) }
 
     # テストケース
-    shared_examples_for '[なし]トップページ' do
+    shared_examples '[なし]トップページ' do
       let(:controller_name) { 'top' }
       let(:action_name)     { 'index' }
       it_behaves_like 'Value', false
     end
-    shared_examples_for '[あり]トップページ' do
+    shared_examples '[あり]トップページ' do
       let(:controller_name) { 'top' }
       let(:action_name)     { 'index' }
       it_behaves_like 'Value', true
     end
-    shared_examples_for '[*]アカウント削除取り消し' do
+    shared_examples '[*]アカウント削除取り消し' do
       let(:controller_name) { 'registrations' }
       let(:action_name)     { 'undo_delete' }
       it_behaves_like 'Value', false
@@ -109,37 +109,37 @@ RSpec.describe ApplicationHelper, type: :helper do
     before { allow(helper).to receive_messages(controller_name:, action_name:) }
 
     # テストケース
-    shared_examples_for '[*]トップページ' do
+    shared_examples '[*]トップページ' do
       let(:controller_name) { 'top' }
       let(:action_name)     { 'index' }
       it_behaves_like 'Value', false
     end
-    shared_examples_for '[*]スペース一覧' do
+    shared_examples '[*]スペース一覧' do
       let(:controller_name) { 'spaces' }
       let(:action_name)     { 'index' }
       it_behaves_like 'Value', false
     end
-    shared_examples_for '[ない]スペーストップ' do
+    shared_examples '[ない]スペーストップ' do
       let(:controller_name) { 'spaces' }
       let(:action_name)     { 'show' }
       it_behaves_like 'Value', false
     end
-    shared_examples_for '[ある]スペーストップ' do
+    shared_examples '[ある]スペーストップ' do
       let(:controller_name) { 'spaces' }
       let(:action_name)     { 'show' }
       it_behaves_like 'Value', true
     end
-    shared_examples_for '[*]スペース削除取り消し' do
+    shared_examples '[*]スペース削除取り消し' do
       let(:controller_name) { 'spaces' }
       let(:action_name)     { 'undo_delete' }
       it_behaves_like 'Value', false
     end
-    shared_examples_for '[ない]メンバー一覧' do
+    shared_examples '[ない]メンバー一覧' do
       let(:controller_name) { 'members' }
       let(:action_name)     { 'show' }
       it_behaves_like 'Value', false
     end
-    shared_examples_for '[ある]メンバー一覧' do
+    shared_examples '[ある]メンバー一覧' do
       let(:controller_name) { 'members' }
       let(:action_name)     { 'show' }
       it_behaves_like 'Value', true

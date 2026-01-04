@@ -38,7 +38,7 @@ class MembersController < ApplicationAuthController
     users = User.where(email: @emails)
     exist_users = User.joins(:members).where(members: { space: @space, user: users })
     create_users = users - exist_users
-    insert_datas = create_users.map { |user| @member.attributes.symbolize_keys.merge(user_id: user.id) }
+    insert_datas = create_users.map { |user| @member.attributes.symbolize_keys.merge(user_id: user.id).except(:id) }
     Member.insert_all!(insert_datas) if insert_datas.present?
 
     @exist_user_mails = exist_users.pluck(:email)
@@ -66,9 +66,9 @@ class MembersController < ApplicationAuthController
   # POST /members/:space_code/update/:user_code(.json) メンバー情報変更API(処理)
   def update
     unless @member.update(member_params(:update).merge(last_updated_user: current_user))
-      return render :edit, status: :unprocessable_entity if format_html?
+      return render :edit, status: :unprocessable_content if format_html?
 
-      return render '/failure', locals: { errors: @member.errors, alert: t('errors.messages.not_saved.other') }, status: :unprocessable_entity
+      return render '/failure', locals: { errors: @member.errors, alert: t('errors.messages.not_saved.other') }, status: :unprocessable_content
     end
     return redirect_to members_path(space_code: @space.code, active: @member.user.code), notice: t('notice.member.update') if format_html?
 
@@ -117,9 +117,9 @@ class MembersController < ApplicationAuthController
     @member.valid?
     @emails = @member.validate_emails
     return unless @member.errors.any?
-    return render :new, status: :unprocessable_entity if format_html?
+    return render :new, status: :unprocessable_content if format_html?
 
-    render '/failure', locals: { errors: @member.errors, alert: t('errors.messages.not_saved.other') }, status: :unprocessable_entity
+    render '/failure', locals: { errors: @member.errors, alert: t('errors.messages.not_saved.other') }, status: :unprocessable_content
   end
 
   def set_params_destroy
@@ -145,7 +145,7 @@ class MembersController < ApplicationAuthController
     return if alert.blank?
     return redirect_to members_path, alert: t(alert) if format_html?
 
-    render '/failure', locals: { alert: t(alert) }, status: :unprocessable_entity
+    render '/failure', locals: { alert: t(alert) }, status: :unprocessable_content
   end
 
   # Only allow a list of trusted parameters through.
@@ -154,9 +154,9 @@ class MembersController < ApplicationAuthController
     params[:member][:power] = nil if Member.powers[params[:member][:power]].blank? # NOTE: ArgumentError対策
 
     if target == :create
-      params.require(:member).permit(:emails, :power)
+      params.expect(member: %i[emails power])
     else
-      params.require(:member).permit(:power)
+      params.expect(member: [:power])
     end
   end
 end

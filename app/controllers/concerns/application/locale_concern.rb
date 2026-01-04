@@ -32,7 +32,7 @@ module Application::LocaleConcern
     query = Rack::Utils.parse_nested_query(uri.query)
     query.delete('switch_locale')
     query.delete('locale')
-    uri.query = query.blank? ? nil : query.to_param # NOTE: 存在しない場合も区切りの?が入る為
+    uri.query = query.presence&.to_param # NOTE: 存在しない場合も区切りの?が入る為
     return false if uri.to_s == request.fullpath # NOTE: 念の為、リダイレクトループしないようにしておく
 
     cookies[:locale] = new_locale # NOTE: パスにlocaleが含まれない場合、以前の言語になる為

@@ -55,7 +55,7 @@ class Users::RegistrationsController < Devise::RegistrationsController
     end
 
     @user = User.find(resource.id)
-    if @user.update(params.require(:user).permit(:image))
+    if @user.update(params.expect(user: [:image]))
       redirect_to edit_user_registration_path, notice: t('notice.user.image_update')
     else
       render :edit

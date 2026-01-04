@@ -1,6 +1,7 @@
 debug: false
 server_env: <%= ENV['SERVER_ENV'].presence || 'production' %> # production or staging
 base_domain: <%= ENV['BASE_DOMAIN'] %> # example.com
+cors_origins: <%= ENV['CORS_ORIGINS'].presence || "'https://#{ENV['BASE_DOMAIN']}'" %> # https://example.com
 base_image_url: <%= ENV['BASE_IMAGE_URL'].presence || "'https://#{ENV['BASE_DOMAIN']}'" %> # https://example.com
 redirect_whitelist: <%= eval(ENV['REDIRECT_WHITELIST'].presence || '[]') %> # ['https://front.example.com/*']
 default_confirm_success_url: <%= ENV['DEFAULT_CONFIRM_SUCCESS_URL'] %> # null

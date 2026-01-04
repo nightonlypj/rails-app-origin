@@ -1,6 +1,6 @@
 FactoryBot.define do
   factory :user do
-    code               { Digest::MD5.hexdigest(SecureRandom.uuid).to_i(16).to_s(36).rjust(25, '0') }
+    code               { Utils::UniqueCodeGenerator.base36_uuid }
     sequence(:name)    { |n| "user(#{n})" }
     email              { Faker::Internet.email(name: "#{name}#{Faker::Number.hexadecimal(digits: 3)}") }
     password           { Faker::Internet.password(min_length: 8) }

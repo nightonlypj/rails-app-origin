@@ -205,7 +205,9 @@ Rails/NegateInclude:
 
 # C: [Correctable] Rails/Output: Do not write to stdout. Use Rails's logger if you want to log.
 Rails/Output:
-  Enabled: false
+  Exclude:
+    - 'config/unicorn.rb'
+    - 'db/seeds.rb'
 
 # C: [Correctable] Rails/RedundantActiveRecordAllMethod: Redundant all detected.
 Rails/RedundantActiveRecordAllMethod:
@@ -240,7 +242,7 @@ RSpec/DescribeSymbol:
 RSpec/EmptyLineAfterExample:
   Enabled: false
 
-# C: [Correctable] RSpec/EmptyLineAfterExampleGroup: Add an empty line after shared_examples_for.
+# C: [Correctable] RSpec/EmptyLineAfterExampleGroup: Add an empty line after shared_examples.
 RSpec/EmptyLineAfterExampleGroup:
   Enabled: false
 

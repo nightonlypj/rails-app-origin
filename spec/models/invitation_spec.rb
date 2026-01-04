@@ -9,7 +9,7 @@ RSpec.describe Invitation, type: :model do
   #   ない, 正常値, 重複
   describe 'validates :code' do
     subject(:model) { FactoryBot.build_stubbed(:invitation, code:) }
-    let(:valid_code) { Digest::MD5.hexdigest(SecureRandom.uuid) }
+    let(:valid_code) { Utils::UniqueCodeGenerator.base36_uuid }
 
     # テストケース
     context 'ない' do
@@ -81,7 +81,7 @@ RSpec.describe Invitation, type: :model do
     subject(:model) { FactoryBot.build_stubbed(:invitation, ended_at:, ended_date:, ended_time: '23:59') }
 
     # テストケース
-    shared_examples_for '終了日時がない' do
+    shared_examples '終了日時がない' do
       context 'ない' do
         let(:ended_date) { nil }
         it_behaves_like 'Valid'
@@ -114,7 +114,7 @@ RSpec.describe Invitation, type: :model do
         it_behaves_like 'InValid'
       end
     end
-    shared_examples_for '終了日時が過去/未来' do
+    shared_examples '終了日時が過去/未来' do
       context '変更なし' do
         let(:ended_date) { ended_at.strftime('%Y-%m-%d') }
         it_behaves_like 'Valid'
@@ -156,14 +156,14 @@ RSpec.describe Invitation, type: :model do
     subject(:model) { FactoryBot.build_stubbed(:invitation, ended_at:, ended_date:, ended_time:) }
 
     # テスト内容
-    shared_examples_for 'Valid(12:00)' do
+    shared_examples 'Valid(12:00)' do
       it '保存できる' do
         travel_to(Time.current.beginning_of_day + 12.hours) do
           expect(model).to be_valid
         end
       end
     end
-    shared_examples_for 'InValid(12:00)' do
+    shared_examples 'InValid(12:00)' do
       it '保存できない。エラーメッセージが一致する' do
         travel_to(Time.current.beginning_of_day + 12.hours) do
           expect(model).to be_invalid
@@ -173,7 +173,7 @@ RSpec.describe Invitation, type: :model do
     end
 
     # テストケース
-    shared_examples_for '終了日時がない' do
+    shared_examples '終了日時がない' do
       let(:ended_date) { Time.current.strftime('%Y-%m-%d') }
       context 'ない' do
         let(:ended_time) { nil }
@@ -204,7 +204,7 @@ RSpec.describe Invitation, type: :model do
         it_behaves_like 'InValid(12:00)'
       end
     end
-    shared_examples_for '終了日時が過去/未来' do
+    shared_examples '終了日時が過去/未来' do
       context '変更なし' do
         let(:ended_date) { ended_at.strftime('%Y-%m-%d') }
         let(:ended_time) { ended_at.strftime('%H:%M') }
@@ -246,7 +246,7 @@ RSpec.describe Invitation, type: :model do
     subject(:model) { FactoryBot.build_stubbed(:invitation, ended_date: '9999-12-31', ended_time: '23:59', ended_zone:) }
 
     # テスト内容
-    shared_examples_for 'OK' do |new_ended_at|
+    shared_examples 'OK' do |new_ended_at|
       it '保存でき、終了日時が一致する' do
         expect(model).to be_valid
         expect(model.new_ended_at).to eq(new_ended_at)
@@ -406,7 +406,7 @@ RSpec.describe Invitation, type: :model do
     let(:invitation) { FactoryBot.create(:invitation, domains:, space:, created_user:) }
 
     # テスト内容
-    shared_examples_for 'Value' do |text|
+    shared_examples 'Value' do |text|
       it "#{text}が返却される" do
         is_expected.to eq(value)
       end
@@ -435,14 +435,15 @@ RSpec.describe Invitation, type: :model do
   #   更新日時: 作成日時と同じ, 作成日時以降
   describe '#last_updated_at' do
     subject { invitation.last_updated_at }
+    let(:created_at) { 1.day.ago }
 
     # テストケース
     context '更新日時が作成日時と同じ' do
-      let(:invitation) { FactoryBot.create(:invitation, space:, created_user:) }
+      let(:invitation) { FactoryBot.create(:invitation, space:, created_user:, created_at:, updated_at: created_at) }
       it_behaves_like 'Value', nil, 'nil'
     end
     context '更新日時が作成日時以降' do
-      let(:invitation) { FactoryBot.create(:invitation, created_at: 1.hour.ago, updated_at: Time.current, space:, created_user:) }
+      let(:invitation) { FactoryBot.create(:invitation, created_at:, updated_at: Time.current, space:, created_user:) }
       it '更新日時' do
         is_expected.to eq(invitation.updated_at)
       end

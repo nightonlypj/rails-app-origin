@@ -8,7 +8,7 @@ RSpec.describe :all, type: :task do
     subject { Rake.application['all:destroy'].invoke(dry_run) }
 
     # テスト内容
-    shared_examples_for 'OK' do
+    shared_examples 'OK' do
       it '正常終了' do
         expect { subject }.not_to raise_error
       end

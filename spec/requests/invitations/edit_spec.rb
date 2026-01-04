@@ -22,7 +22,7 @@ RSpec.describe 'Invitations', type: :request do
     end
 
     # テスト内容
-    shared_examples_for 'ToOK(html/*)' do
+    shared_examples 'ToOK(html/*)' do
       it 'HTTPステータスが200。対象項目が含まれる' do
         is_expected.to eq(200)
         expect_space_html(response, space)
@@ -38,23 +38,23 @@ RSpec.describe 'Invitations', type: :request do
       next
     end
 
-    shared_examples_for '[ログイン中/削除予約済み][*][ある]招待コードが存在する' do |status|
+    shared_examples '[ログイン中/削除予約済み][*][ある]招待コードが存在する' do |status|
       let_it_be(:invitation) { FactoryBot.create(:invitation, status, space:, created_user:) }
       it_behaves_like 'ToOK(html)'
       it_behaves_like 'ToNG(json)', 406
     end
-    shared_examples_for '[ログイン中/削除予約済み][*][ある]招待コードが参加済み' do
+    shared_examples '[ログイン中/削除予約済み][*][ある]招待コードが参加済み' do
       let_it_be(:invitation) { FactoryBot.create(:invitation, :email_joined, space:, created_user:) }
       it_behaves_like 'ToInvitations(html)', 'alert.invitation.email_joined'
       it_behaves_like 'ToNG(json)', 406
     end
-    shared_examples_for '[ログイン中/削除予約済み][*][ある]招待コードが存在しない' do
+    shared_examples '[ログイン中/削除予約済み][*][ある]招待コードが存在しない' do
       let_it_be(:invitation) { FactoryBot.build_stubbed(:invitation) }
       it_behaves_like 'ToNG(html)', 404
       it_behaves_like 'ToNG(json)', 406
     end
 
-    shared_examples_for '[ログイン中][*]権限がある' do |power|
+    shared_examples '[ログイン中][*]権限がある' do |power|
       before_all { FactoryBot.create(:member, power, space:, user:) }
       it_behaves_like '[ログイン中/削除予約済み][*][ある]招待コードが存在する', :active
       it_behaves_like '[ログイン中/削除予約済み][*][ある]招待コードが存在する', :expired
@@ -62,27 +62,27 @@ RSpec.describe 'Invitations', type: :request do
       it_behaves_like '[ログイン中/削除予約済み][*][ある]招待コードが参加済み'
       it_behaves_like '[ログイン中/削除予約済み][*][ある]招待コードが存在しない'
     end
-    shared_examples_for '[ログイン中][*]権限がない' do |power|
+    shared_examples '[ログイン中][*]権限がない' do |power|
       before_all { FactoryBot.create(:member, power, space:, user:) if power.present? }
       let_it_be(:invitation) { FactoryBot.create(:invitation, :active, space:, created_user:) }
       it_behaves_like 'ToNG(html)', 403
       it_behaves_like 'ToNG(json)', 406
     end
 
-    shared_examples_for '[ログイン中]スペースが存在しない' do
+    shared_examples '[ログイン中]スペースが存在しない' do
       let_it_be(:space) { FactoryBot.build_stubbed(:space) }
       let_it_be(:invitation) { FactoryBot.build_stubbed(:invitation) }
       it_behaves_like 'ToNG(html)', 404
       it_behaves_like 'ToNG(json)', 406
     end
-    shared_examples_for '[ログイン中]スペースが公開' do
+    shared_examples '[ログイン中]スペースが公開' do
       let_it_be(:space) { FactoryBot.create(:space, :public, created_user:) }
       it_behaves_like '[ログイン中][*]権限がある', :admin
       it_behaves_like '[ログイン中][*]権限がない', :writer
       it_behaves_like '[ログイン中][*]権限がない', :reader
       it_behaves_like '[ログイン中][*]権限がない', nil
     end
-    shared_examples_for '[ログイン中]スペースが非公開' do
+    shared_examples '[ログイン中]スペースが非公開' do
       let_it_be(:space) { FactoryBot.create(:space, :private, created_user:) }
       it_behaves_like '[ログイン中][*]権限がある', :admin
       it_behaves_like '[ログイン中][*]権限がない', :writer

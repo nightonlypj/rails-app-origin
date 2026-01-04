@@ -15,7 +15,7 @@ RSpec.describe 'Users::Registrations', type: :request do
     subject { get new_user_registration_path(code: invitation.code) }
 
     # テストケース
-    shared_examples_for '[無効]' do |status|
+    shared_examples '[無効]' do |status|
       let_it_be(:invitation) { FactoryBot.create(:invitation, status, space:, created_user:) }
       it_behaves_like 'ToNG(html/html)', 404, [get_locale('alert.invitation.notfound')]
     end
@@ -62,8 +62,8 @@ RSpec.describe 'Users::Registrations', type: :request do
     let(:current_user)        { User.last }
     let(:current_members)     { Member.order(:id) }
     let(:current_invitations) { Invitation.where(id: invitation_ids).order(:id) }
-    shared_examples_for 'OK' do
-      let!(:start_time) { Time.current.floor }
+    shared_examples 'OK' do
+      let!(:start_time) { Time.current }
       let(:url) { "http://#{Settings.base_domain}#{user_confirmation_path}" }
       it 'ユーザーが作成・対象項目が設定される。メールが送信される' do
         expect do
@@ -83,26 +83,30 @@ RSpec.describe 'Users::Registrations', type: :request do
             expect(current_members[index].user).to eq(current_user)
             expect(current_members[index].power).to eq(item.power)
             expect(current_members[index].invitationed_user).to eq(item.created_user)
-            expect(current_members[index].invitationed_at).to item.email.present? ? eq(item.created_at.floor) : be_between(start_time, Time.current)
+            if item.email.present?
+              expect(current_members[index].invitationed_at).to be_between(item.created_at.floor, item.created_at)
+            else
+              expect(current_members[index].invitationed_at).to be_between(start_time.floor, Time.current.ceil)
+            end
           end
 
           # 招待
           current_invitations.each do |current_invitation|
-            expect(current_invitation.email_joined_at).to be_between(start_time, Time.current)
+            expect(current_invitation.email_joined_at).to be_between(start_time.floor, Time.current.ceil)
             expect(current_invitation.last_updated_user_id).to be_nil
-            expect(current_invitation.updated_at).to be_between(start_time, Time.current)
+            expect(current_invitation.updated_at).to be_between(start_time.floor, Time.current.ceil)
           end
         end.to change(User, :count).by(1)
       end
     end
-    shared_examples_for 'NG' do
+    shared_examples 'NG' do
       it '作成されない。メールが送信されない' do
         expect { subject }.not_to change(User, :count) && change(ActionMailer::Base.deliveries, :count) && change(Member, :count)
       end
     end
 
     # テストケース
-    shared_examples_for '[有効][*][メールアドレス]パラメータのメールアドレスが招待と一致' do
+    shared_examples '[有効][*][メールアドレス]パラメータのメールアドレスが招待と一致' do
       let(:attributes)  { valid_attributes_email }
       let(:email)       { attributes[:email] }
       let(:invitations)    { [invitation, other_invitation].compact }
@@ -110,7 +114,7 @@ RSpec.describe 'Users::Registrations', type: :request do
       it_behaves_like 'OK'
       it_behaves_like 'ToLogin', nil, 'devise.registrations.signed_up_but_unconfirmed'
     end
-    shared_examples_for '[有効][*][メールアドレス]パラメータのメールアドレスが招待と不一致' do
+    shared_examples '[有効][*][メールアドレス]パラメータのメールアドレスが招待と不一致' do
       let(:attributes)  { valid_attributes_email_diff }
       let(:email)       { new_user[:email] } # NOTE: パラメータのメールアドレスは無視する
       let(:invitations)    { [invitation, other_invitation].compact }
@@ -118,7 +122,7 @@ RSpec.describe 'Users::Registrations', type: :request do
       it_behaves_like 'OK'
       it_behaves_like 'ToLogin', nil, 'devise.registrations.signed_up_but_unconfirmed'
     end
-    shared_examples_for '[有効][*][ドメイン]パラメータのドメインが招待に含まれる' do
+    shared_examples '[有効][*][ドメイン]パラメータのドメインが招待に含まれる' do
       let(:attributes)  { valid_attributes_domain }
       let(:email)       { "#{attributes[:email_local]}@#{attributes[:email_domain]}" }
       let(:invitations)    { [invitation, other_invitation].compact }
@@ -126,18 +130,18 @@ RSpec.describe 'Users::Registrations', type: :request do
       it_behaves_like 'OK'
       it_behaves_like 'ToLogin', nil, 'devise.registrations.signed_up_but_unconfirmed'
     end
-    shared_examples_for '[有効][*][ドメイン]パラメータのドメインが招待に含まれない' do
+    shared_examples '[有効][*][ドメイン]パラメータのドメインが招待に含まれない' do
       let(:attributes) { valid_attributes_domain_diff }
       it_behaves_like 'NG'
       it_behaves_like 'ToError', 'activerecord.errors.models.user.attributes.email.invalid'
     end
 
-    shared_examples_for '[有効][*]対象がメールアドレス' do
+    shared_examples '[有効][*]対象がメールアドレス' do
       let_it_be(:invitation) { FactoryBot.create(:invitation, :active, email: new_user[:email], domains: nil, space:, created_user:) }
       it_behaves_like '[有効][*][メールアドレス]パラメータのメールアドレスが招待と一致'
       it_behaves_like '[有効][*][メールアドレス]パラメータのメールアドレスが招待と不一致'
     end
-    shared_examples_for '[有効][*]対象がドメイン' do
+    shared_examples '[有効][*]対象がドメイン' do
       let_it_be(:invitation) do
         domains = ['example.org', valid_attributes_domain[:email_domain]].to_s
         FactoryBot.create(:invitation, :active, email: nil, domains:, space:, created_user:)
@@ -146,17 +150,17 @@ RSpec.describe 'Users::Registrations', type: :request do
       it_behaves_like '[有効][*][ドメイン]パラメータのドメインが招待に含まれない'
     end
 
-    shared_examples_for '[有効]他のスペースでの招待なし' do
+    shared_examples '[有効]他のスペースでの招待なし' do
       let_it_be(:other_invitation) { nil }
       it_behaves_like '[有効][*]対象がメールアドレス'
       it_behaves_like '[有効][*]対象がドメイン'
     end
-    shared_examples_for '[有効]他のスペースでの招待あり' do
+    shared_examples '[有効]他のスペースでの招待あり' do
       let_it_be(:other_invitation) { FactoryBot.create(:invitation, :active, email: new_user[:email], domains: nil, created_user:) }
       it_behaves_like '[有効][*]対象がメールアドレス'
       it_behaves_like '[有効][*]対象がドメイン'
     end
-    shared_examples_for '[無効]' do |status|
+    shared_examples '[無効]' do |status|
       let(:attributes) { valid_attributes_email }
       let_it_be(:invitation) { FactoryBot.create(:invitation, status, email: new_user[:email], domains: nil, space:, created_user:) }
       it_behaves_like 'NG'

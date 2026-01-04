@@ -13,7 +13,7 @@ RSpec.describe 'Top', type: :request do
     subject { get root_path(format: subject_format), headers: auth_headers.merge(accept_headers) }
 
     # テスト内容
-    shared_examples_for 'ToOK(html/*)' do
+    shared_examples 'ToOK(html/*)' do
       it 'HTTPステータスが200。対象項目が含まれる' do
         is_expected.to eq(200)
         (1..@user_important_infomations.count).each do |no|
@@ -35,20 +35,20 @@ RSpec.describe 'Top', type: :request do
     end
 
     # テストケース
-    shared_examples_for '[*]大切なお知らせがない' do
+    shared_examples '[*]大切なお知らせがない' do
       include_context '大切なお知らせ一覧作成', 0, 0, 0, 0
       it_behaves_like 'ToOK(html)'
     end
-    shared_examples_for '[未ログイン]大切なお知らせがある' do
+    shared_examples '[未ログイン]大切なお知らせがある' do
       include_context '大切なお知らせ一覧作成', 1, 1, 0, 0
       it_behaves_like 'ToOK(html)'
     end
-    shared_examples_for '[ログイン中/削除予約済み]大切なお知らせがある' do
+    shared_examples '[ログイン中/削除予約済み]大切なお知らせがある' do
       include_context '大切なお知らせ一覧作成', 1, 1, 1, 1
       it_behaves_like 'ToOK(html)'
     end
 
-    shared_examples_for '[ログイン中/削除予約済み]' do
+    shared_examples '[ログイン中/削除予約済み]' do
       if Settings.api_only_mode
         it_behaves_like 'ToNG(html)', 404
       else
@@ -58,7 +58,7 @@ RSpec.describe 'Top', type: :request do
       end
       it_behaves_like 'ToNG(json)', 406
     end
-    shared_examples_for '[APIログイン中/削除予約済み]' do
+    shared_examples '[APIログイン中/削除予約済み]' do
       if Settings.api_only_mode
         it_behaves_like 'ToNG(html)', 404
       else

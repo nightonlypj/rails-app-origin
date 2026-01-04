@@ -1,6 +1,6 @@
 FactoryBot.define do
   factory :invitation do
-    code            { Digest::MD5.hexdigest(SecureRandom.uuid).to_i(16).to_s(36).rjust(25, '0') }
+    code            { Utils::UniqueCodeGenerator.base36_uuid }
     domains         { [Faker::Internet.domain_name].to_s }
     power           { :admin }
     sequence(:memo) { |n| "memo(#{n})" }

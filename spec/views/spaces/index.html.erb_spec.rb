@@ -16,7 +16,7 @@ RSpec.describe 'spaces/index', type: :view do
   end
 
   # テスト内容
-  shared_examples_for '入力項目' do |signed_in|
+  shared_examples '入力項目' do |signed_in|
     it '対象の送信先と項目が含まれる' do
       render
       assert_select 'form[action=?][method=?]', spaces_path, 'get' do

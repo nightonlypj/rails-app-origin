@@ -32,7 +32,7 @@ RSpec.describe 'Members', type: :request do
     end
 
     # テスト内容
-    shared_examples_for 'ToOK(html/*)' do
+    shared_examples 'ToOK(html/*)' do
       before { allow_any_instance_of(MembersController).to receive(:flash).and_return(emails:, exist_user_mails:, create_user_mails:, power: :admin) }
       it 'HTTPステータスが200。対象項目が含まれる' do
         is_expected.to eq(200)
@@ -80,46 +80,46 @@ RSpec.describe 'Members', type: :request do
       next
     end
 
-    shared_examples_for '[ログイン中][*][ある]flashがある（3件）' do
+    shared_examples '[ログイン中][*][ある]flashがある（3件）' do
       include_context 'set_flash_data'
       it_behaves_like 'ToOK(html)'
       it_behaves_like 'ToNG(json)', 406
     end
-    shared_examples_for '[ログイン中][*][ある]flashがある（0件）' do
+    shared_examples '[ログイン中][*][ある]flashがある（0件）' do
       include_context 'set_flash_data_blank'
       it_behaves_like 'ToOK(html)'
       it_behaves_like 'ToNG(json)', 406
     end
-    shared_examples_for '[ログイン中][*][ある]flashがない' do
+    shared_examples '[ログイン中][*][ある]flashがない' do
       it_behaves_like 'ToMembers(html)'
       it_behaves_like 'ToNG(json)', 406
     end
 
-    shared_examples_for '[ログイン中][*]権限がある' do |power|
+    shared_examples '[ログイン中][*]権限がある' do |power|
       before_all { FactoryBot.create(:member, power, space:, user:) }
       it_behaves_like '[ログイン中][*][ある]flashがある（3件）'
       it_behaves_like '[ログイン中][*][ある]flashがある（0件）'
       it_behaves_like '[ログイン中][*][ある]flashがない'
     end
-    shared_examples_for '[ログイン中][*]権限がない' do |power|
+    shared_examples '[ログイン中][*]権限がない' do |power|
       before_all { FactoryBot.create(:member, power, space:, user:) if power.present? }
       it_behaves_like 'ToNG(html)', 403
       it_behaves_like 'ToNG(json)', 406
     end
 
-    shared_examples_for '[ログイン中]スペースが存在しない' do
+    shared_examples '[ログイン中]スペースが存在しない' do
       let_it_be(:space) { FactoryBot.build_stubbed(:space) }
       it_behaves_like 'ToNG(html)', 404
       it_behaves_like 'ToNG(json)', 406
     end
-    shared_examples_for '[ログイン中]スペースが公開' do
+    shared_examples '[ログイン中]スペースが公開' do
       let_it_be(:space) { FactoryBot.create(:space, :public, created_user:) }
       it_behaves_like '[ログイン中][*]権限がある', :admin
       it_behaves_like '[ログイン中][*]権限がない', :writer
       it_behaves_like '[ログイン中][*]権限がない', :reader
       it_behaves_like '[ログイン中][*]権限がない', nil
     end
-    shared_examples_for '[ログイン中]スペースが非公開' do
+    shared_examples '[ログイン中]スペースが非公開' do
       let_it_be(:space) { FactoryBot.create(:space, :private, created_user:) }
       it_behaves_like '[ログイン中][*]権限がある', :admin
       it_behaves_like '[ログイン中][*]権限がない', :writer

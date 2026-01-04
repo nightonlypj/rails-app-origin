@@ -22,7 +22,7 @@ RSpec.describe :holiday, type: :task do
       )
     end
     let(:current_holidays) { Holiday.all.order(:id) }
-    shared_examples_for 'OK' do
+    shared_examples 'OK' do
       it '追加または変更される' do
         subject
         expect(Holiday.count).to eq(expect_holidays.count)
@@ -32,7 +32,7 @@ RSpec.describe :holiday, type: :task do
         end
       end
     end
-    shared_examples_for 'NG' do
+    shared_examples 'NG' do
       it '追加・変更されない' do
         subject
         expect(Holiday.count).to eq(holidays.count)
@@ -41,11 +41,11 @@ RSpec.describe :holiday, type: :task do
     end
 
     # テストケース
-    shared_examples_for '[*]ドライランtrue' do
+    shared_examples '[*]ドライランtrue' do
       let(:dry_run) { 'true' }
       it_behaves_like 'NG'
     end
-    shared_examples_for '[*]ドライランfalse' do
+    shared_examples '[*]ドライランfalse' do
       let(:dry_run) { 'false' }
       it_behaves_like 'OK'
     end

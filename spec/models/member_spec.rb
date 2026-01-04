@@ -79,10 +79,10 @@ RSpec.describe Member, type: :model do
     let(:member) { FactoryBot.create(:member, space:, user:, invitationed_at:, created_at:, updated_at:) }
     let_it_be(:user)  { FactoryBot.create(:user) }
     let_it_be(:space) { FactoryBot.create(:space, created_user: user) }
-    let(:now) { Time.current.floor }
+    let(:now) { Time.current }
 
     # テスト内容
-    shared_examples_for 'updated_at' do
+    shared_examples 'updated_at' do
       it '更新日時' do
         is_expected.to eq(member.updated_at)
       end

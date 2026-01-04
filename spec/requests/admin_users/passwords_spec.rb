@@ -2,7 +2,7 @@ require 'rails_helper'
 
 RSpec.describe 'AdminUsers::Passwords', type: :request do
   # テスト内容（共通）
-  shared_examples_for 'ToNew' do |alert, notice|
+  shared_examples 'ToNew' do |alert, notice|
     it 'パスワード再設定[メール送信]にリダイレクトする' do
       is_expected.to redirect_to(new_admin_user_password_path)
       expect(flash[:alert]).to alert.present? ? eq(get_locale(alert)) : be_nil
@@ -39,7 +39,7 @@ RSpec.describe 'AdminUsers::Passwords', type: :request do
     let(:invalid_attributes) { { email: not_admin_user[:email] } }
 
     # テスト内容
-    shared_examples_for 'OK' do
+    shared_examples 'OK' do
       let(:url) { "http://#{Settings.base_domain}#{edit_admin_user_password_path}" }
       it 'メールが送信される' do
         subject
@@ -49,43 +49,43 @@ RSpec.describe 'AdminUsers::Passwords', type: :request do
         expect(ActionMailer::Base.deliveries[0].text_part.body).to include(url)
       end
     end
-    shared_examples_for 'NG' do
+    shared_examples 'NG' do
       it 'メールが送信されない' do
         expect { subject }.not_to change(ActionMailer::Base.deliveries, :count)
       end
     end
 
     # テストケース
-    shared_examples_for '[未ログイン]有効なパラメータ（未ロック）' do
+    shared_examples '[未ログイン]有効なパラメータ（未ロック）' do
       let(:send_admin_user) { send_admin_user_unlocked }
       let(:attributes)      { valid_attributes }
       it_behaves_like 'OK'
       it_behaves_like 'ToAdminLogin', nil, 'devise.passwords.send_instructions'
     end
-    shared_examples_for '[ログイン中]有効なパラメータ（未ロック）' do
+    shared_examples '[ログイン中]有効なパラメータ（未ロック）' do
       let(:send_admin_user) { send_admin_user_unlocked }
       let(:attributes)      { valid_attributes }
       it_behaves_like 'NG'
       it_behaves_like 'ToAdmin', 'devise.failure.already_authenticated', nil
     end
-    shared_examples_for '[未ログイン]有効なパラメータ（ロック中）' do # NOTE: ロック中も出来ても良さそう
+    shared_examples '[未ログイン]有効なパラメータ（ロック中）' do # NOTE: ロック中も出来ても良さそう
       let(:send_admin_user) { send_admin_user_locked }
       let(:attributes)      { valid_attributes }
       it_behaves_like 'OK'
       it_behaves_like 'ToAdminLogin', nil, 'devise.passwords.send_instructions'
     end
-    shared_examples_for '[ログイン中]有効なパラメータ（ロック中）' do
+    shared_examples '[ログイン中]有効なパラメータ（ロック中）' do
       let(:send_admin_user) { send_admin_user_locked }
       let(:attributes)      { valid_attributes }
       it_behaves_like 'NG'
       it_behaves_like 'ToAdmin', 'devise.failure.already_authenticated', nil
     end
-    shared_examples_for '[未ログイン]無効なパラメータ' do
+    shared_examples '[未ログイン]無効なパラメータ' do
       let(:attributes) { invalid_attributes }
       it_behaves_like 'NG'
       it_behaves_like 'ToError', 'errors.messages.not_found'
     end
-    shared_examples_for '[ログイン中]無効なパラメータ' do
+    shared_examples '[ログイン中]無効なパラメータ' do
       let(:attributes) { invalid_attributes }
       it_behaves_like 'NG'
       it_behaves_like 'ToAdmin', 'devise.failure.already_authenticated', nil
@@ -112,43 +112,43 @@ RSpec.describe 'AdminUsers::Passwords', type: :request do
     subject { get edit_admin_user_password_path(reset_password_token:) }
 
     # テストケース
-    shared_examples_for '[未ログイン]トークンが期限内（未ロック）' do
+    shared_examples '[未ログイン]トークンが期限内（未ロック）' do
       include_context 'パスワードリセットトークン作成（管理者）', true
       it_behaves_like 'ToOK[status]'
     end
-    shared_examples_for '[ログイン中]トークンが期限内（未ロック）' do
+    shared_examples '[ログイン中]トークンが期限内（未ロック）' do
       include_context 'パスワードリセットトークン作成（管理者）', true
       it_behaves_like 'ToAdmin', 'devise.failure.already_authenticated', nil
     end
-    shared_examples_for '[未ログイン]トークンが期限内（ロック中）' do # NOTE: ロック中も出来ても良さそう
+    shared_examples '[未ログイン]トークンが期限内（ロック中）' do # NOTE: ロック中も出来ても良さそう
       include_context 'パスワードリセットトークン作成（管理者）', true, true
       it_behaves_like 'ToOK[status]'
     end
-    shared_examples_for '[ログイン中]トークンが期限内（ロック中）' do
+    shared_examples '[ログイン中]トークンが期限内（ロック中）' do
       include_context 'パスワードリセットトークン作成（管理者）', true, true
       it_behaves_like 'ToAdmin', 'devise.failure.already_authenticated', nil
     end
-    shared_examples_for '[未ログイン]トークンが期限切れ' do
+    shared_examples '[未ログイン]トークンが期限切れ' do
       include_context 'パスワードリセットトークン作成（管理者）', false
       it_behaves_like 'ToNew', 'activerecord.errors.models.admin_user.attributes.reset_password_token.invalid', nil
     end
-    shared_examples_for '[ログイン中]トークンが期限切れ' do
+    shared_examples '[ログイン中]トークンが期限切れ' do
       include_context 'パスワードリセットトークン作成（管理者）', false
       it_behaves_like 'ToAdmin', 'devise.failure.already_authenticated', nil
     end
-    shared_examples_for '[未ログイン]トークンが存在しない' do
+    shared_examples '[未ログイン]トークンが存在しない' do
       let(:reset_password_token) { NOT_TOKEN }
       it_behaves_like 'ToNew', 'activerecord.errors.models.admin_user.attributes.reset_password_token.invalid', nil
     end
-    shared_examples_for '[ログイン中]トークンが存在しない' do
+    shared_examples '[ログイン中]トークンが存在しない' do
       let(:reset_password_token) { NOT_TOKEN }
       it_behaves_like 'ToAdmin', 'devise.failure.already_authenticated', nil
     end
-    shared_examples_for '[未ログイン]トークンがない' do
+    shared_examples '[未ログイン]トークンがない' do
       let(:reset_password_token) { nil }
       it_behaves_like 'ToAdminLogin', 'devise.passwords.no_token', nil
     end
-    shared_examples_for '[ログイン中]トークンがない' do
+    shared_examples '[ログイン中]トークンがない' do
       let(:reset_password_token) { nil }
       it_behaves_like 'ToAdmin', 'devise.failure.already_authenticated', nil
     end
@@ -183,7 +183,7 @@ RSpec.describe 'AdminUsers::Passwords', type: :request do
 
     # テスト内容
     let(:current_admin_user) { AdminUser.find(send_admin_user.id) }
-    shared_examples_for 'OK' do
+    shared_examples 'OK' do
       it 'パスワードリセット送信日時がなしに変更される。メールが送信される' do
         subject
         expect(current_admin_user.reset_password_sent_at).to be_nil
@@ -192,113 +192,113 @@ RSpec.describe 'AdminUsers::Passwords', type: :request do
         expect(ActionMailer::Base.deliveries[0].subject).to eq(get_subject('devise.mailer.password_change.admin_user_subject')) # パスワード変更完了のお知らせ
       end
     end
-    shared_examples_for 'NG' do
+    shared_examples 'NG' do
       it 'パスワードリセット送信日時が変更されない。メールが送信されない' do
         subject
-        expect(current_admin_user.reset_password_sent_at).to eq(send_admin_user.reset_password_sent_at)
+        expect(current_admin_user.reset_password_sent_at.floor).to eq(send_admin_user.reset_password_sent_at.floor)
 
         expect(ActionMailer::Base.deliveries.count).to eq(0)
       end
     end
 
     # テストケース
-    shared_examples_for '[未ログイン][期限内]有効なパラメータ' do
+    shared_examples '[未ログイン][期限内]有効なパラメータ' do
       let(:attributes) { valid_attributes }
       it_behaves_like 'OK'
       it_behaves_like 'ToAdmin', nil, 'devise.passwords.updated'
     end
-    shared_examples_for '[ログイン中][期限内/期限切れ]有効なパラメータ' do
+    shared_examples '[ログイン中][期限内/期限切れ]有効なパラメータ' do
       let(:attributes) { valid_attributes }
       it_behaves_like 'NG'
       it_behaves_like 'ToAdmin', 'devise.failure.already_authenticated', nil
     end
-    shared_examples_for '[未ログイン][期限切れ]有効なパラメータ' do
+    shared_examples '[未ログイン][期限切れ]有効なパラメータ' do
       let(:attributes) { valid_attributes }
       it_behaves_like 'NG'
       it_behaves_like 'ToNew', 'activerecord.errors.models.admin_user.attributes.reset_password_token.invalid', nil
     end
-    shared_examples_for '[未ログイン][存在しない]有効なパラメータ' do
+    shared_examples '[未ログイン][存在しない]有効なパラメータ' do
       let(:attributes) { valid_attributes }
       # it_behaves_like 'NG' # NOTE: トークンが存在しない為、送信日時がない
       it_behaves_like 'ToNew', 'activerecord.errors.models.admin_user.attributes.reset_password_token.invalid', nil
     end
-    shared_examples_for '[ログイン中][存在しない]有効なパラメータ' do
+    shared_examples '[ログイン中][存在しない]有効なパラメータ' do
       let(:attributes) { valid_attributes }
       # it_behaves_like 'NG' # NOTE: トークンが存在しない為、送信日時がない
       it_behaves_like 'ToAdmin', 'devise.failure.already_authenticated', nil
     end
-    shared_examples_for '[未ログイン][期限内]無効なパラメータ' do
+    shared_examples '[未ログイン][期限内]無効なパラメータ' do
       let(:attributes) { invalid_attributes }
       it_behaves_like 'NG'
       it_behaves_like 'ToError', 'activerecord.errors.models.admin_user.attributes.password.blank'
     end
-    shared_examples_for '[ログイン中][期限内/期限切れ]無効なパラメータ' do
+    shared_examples '[ログイン中][期限内/期限切れ]無効なパラメータ' do
       let(:attributes) { invalid_attributes }
       it_behaves_like 'NG'
       it_behaves_like 'ToAdmin', 'devise.failure.already_authenticated', nil
     end
-    shared_examples_for '[未ログイン][期限切れ]無効なパラメータ' do
+    shared_examples '[未ログイン][期限切れ]無効なパラメータ' do
       let(:attributes) { invalid_attributes }
       it_behaves_like 'NG'
       it_behaves_like 'ToNew', 'activerecord.errors.models.admin_user.attributes.reset_password_token.invalid', nil
     end
-    shared_examples_for '[未ログイン][存在しない]無効なパラメータ' do
+    shared_examples '[未ログイン][存在しない]無効なパラメータ' do
       let(:attributes) { invalid_attributes }
       # it_behaves_like 'NG' # NOTE: トークンが存在しない為、送信日時がない
       it_behaves_like 'ToNew', 'activerecord.errors.models.admin_user.attributes.reset_password_token.invalid', nil
     end
-    shared_examples_for '[ログイン中][存在しない]無効なパラメータ' do
+    shared_examples '[ログイン中][存在しない]無効なパラメータ' do
       let(:attributes) { invalid_attributes }
       # it_behaves_like 'NG' # NOTE: トークンが存在しない為、送信日時がない
       it_behaves_like 'ToAdmin', 'devise.failure.already_authenticated', nil
     end
 
-    shared_examples_for '[未ログイン]トークンが期限内（未ロック）' do
+    shared_examples '[未ログイン]トークンが期限内（未ロック）' do
       include_context 'パスワードリセットトークン作成（管理者）', true
       it_behaves_like '[未ログイン][期限内]有効なパラメータ'
       it_behaves_like '[未ログイン][期限内]無効なパラメータ'
     end
-    shared_examples_for '[ログイン中]トークンが期限内（未ロック）' do
+    shared_examples '[ログイン中]トークンが期限内（未ロック）' do
       include_context 'パスワードリセットトークン作成（管理者）', true
       it_behaves_like '[ログイン中][期限内/期限切れ]有効なパラメータ'
       it_behaves_like '[ログイン中][期限内/期限切れ]無効なパラメータ'
     end
-    shared_examples_for '[未ログイン]トークンが期限内（ロック中）' do
+    shared_examples '[未ログイン]トークンが期限内（ロック中）' do
       include_context 'パスワードリセットトークン作成（管理者）', true, true
       it_behaves_like '[未ログイン][期限内]有効なパラメータ' # NOTE: ロック中も出来ても良さそう
       it_behaves_like '[未ログイン][期限内]無効なパラメータ'
     end
-    shared_examples_for '[ログイン中]トークンが期限内（ロック中）' do
+    shared_examples '[ログイン中]トークンが期限内（ロック中）' do
       include_context 'パスワードリセットトークン作成（管理者）', true, true
       it_behaves_like '[ログイン中][期限内/期限切れ]有効なパラメータ'
       it_behaves_like '[ログイン中][期限内/期限切れ]無効なパラメータ'
     end
-    shared_examples_for '[未ログイン]トークンが期限切れ' do
+    shared_examples '[未ログイン]トークンが期限切れ' do
       include_context 'パスワードリセットトークン作成（管理者）', false
       it_behaves_like '[未ログイン][期限切れ]有効なパラメータ'
       it_behaves_like '[未ログイン][期限切れ]無効なパラメータ'
     end
-    shared_examples_for '[ログイン中]トークンが期限切れ' do
+    shared_examples '[ログイン中]トークンが期限切れ' do
       include_context 'パスワードリセットトークン作成（管理者）', false
       it_behaves_like '[ログイン中][期限内/期限切れ]有効なパラメータ'
       it_behaves_like '[ログイン中][期限内/期限切れ]無効なパラメータ'
     end
-    shared_examples_for '[未ログイン]トークンが存在しない' do
+    shared_examples '[未ログイン]トークンが存在しない' do
       let(:reset_password_token) { NOT_TOKEN }
       it_behaves_like '[未ログイン][存在しない]有効なパラメータ'
       it_behaves_like '[未ログイン][存在しない]無効なパラメータ'
     end
-    shared_examples_for '[ログイン中]トークンが存在しない' do
+    shared_examples '[ログイン中]トークンが存在しない' do
       let(:reset_password_token) { NOT_TOKEN }
       it_behaves_like '[ログイン中][存在しない]有効なパラメータ'
       it_behaves_like '[ログイン中][存在しない]無効なパラメータ'
     end
-    shared_examples_for '[未ログイン]トークンがない' do
+    shared_examples '[未ログイン]トークンがない' do
       let(:reset_password_token) { nil }
       it_behaves_like '[未ログイン][存在しない]有効なパラメータ'
       it_behaves_like '[未ログイン][存在しない]無効なパラメータ'
     end
-    shared_examples_for '[ログイン中]トークンがない' do
+    shared_examples '[ログイン中]トークンがない' do
       let(:reset_password_token) { nil }
       it_behaves_like '[ログイン中][存在しない]有効なパラメータ'
       it_behaves_like '[ログイン中][存在しない]無効なパラメータ'

@@ -21,7 +21,7 @@ reset_password_error_url_not: '/auth/reset_password_error.html?not'
 reset_password_error_url_bad: '/auth/reset_password_error.html?bad'
 
 # ヘルスチェックのパス
-health_check_paths: [/_check, /health_check]
+health_check_paths: [/_check, /_health]
 
 ## ユーザー
 # メールアドレス確認URLの有効期限（単位：時間）

@@ -24,7 +24,7 @@ RSpec.describe 'Holidays', type: :request do
     before_all { FactoryBot.create(:holiday, date: end_date + 1.day) }
 
     # テスト内容
-    shared_examples_for 'ToOK(json/json)' do
+    shared_examples 'ToOK(json/json)' do
       let(:subject_format) { :json }
       let(:accept_headers) { ACCEPT_INC_JSON }
       it 'HTTPステータスが200。対象項目が一致する' do
@@ -45,23 +45,23 @@ RSpec.describe 'Holidays', type: :request do
     end
 
     # テストケース
-    shared_examples_for 'パラメータなし' do
+    shared_examples 'パラメータなし' do
       let(:params) { nil }
       it_behaves_like 'ToNG(html)', 406
       it_behaves_like 'ToOK(json)'
     end
-    shared_examples_for '有効なパラメータ' do
+    shared_examples '有効なパラメータ' do
       let(:params) { { start_date:, end_date: } }
       it_behaves_like 'ToNG(html)', 406
       it_behaves_like 'ToOK(json)'
     end
-    shared_examples_for '無効なパラメータ' do
+    shared_examples '無効なパラメータ' do
       let(:params) { { start_date: '', end_date: 'x' } }
       it_behaves_like 'ToNG(html)', 406
       it_behaves_like 'ToOK(json)'
     end
 
-    shared_examples_for 'OK' do
+    shared_examples 'OK' do
       it_behaves_like 'パラメータなし'
       it_behaves_like '有効なパラメータ'
       it_behaves_like '無効なパラメータ'

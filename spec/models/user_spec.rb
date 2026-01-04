@@ -2,7 +2,7 @@ require 'rails_helper'
 
 RSpec.describe User, type: :model do
   # テスト内容（共通）
-  shared_examples_for 'Count' do |count|
+  shared_examples 'Count' do |count|
     it "#{count}が返却され、キャッシュされる" do
       is_expected.to eq(count)
       expect(cache).to eq(count)
@@ -14,7 +14,7 @@ RSpec.describe User, type: :model do
   #   ない, 正常値, 重複
   describe 'validates :code' do
     subject(:model) { FactoryBot.build_stubbed(:user, code:) }
-    let(:valid_code) { Digest::MD5.hexdigest(SecureRandom.uuid) }
+    let(:valid_code) { Utils::UniqueCodeGenerator.base36_uuid }
 
     # テストケース
     context 'ない' do
@@ -92,12 +92,12 @@ RSpec.describe User, type: :model do
     let(:user) { FactoryBot.create(:user) }
 
     let(:current_user) { described_class.find(user.id) }
-    let!(:start_time) { Time.current.floor }
-    let!(:start_time_schedule) { Time.current.floor + Settings.user_destroy_schedule_days.days }
+    let!(:start_time) { Time.current }
     it '削除依頼日時が現在日時、削除予定日時が現在日時＋設定日数に変更され、保存される' do
       is_expected.to be(true)
-      expect(current_user.destroy_requested_at).to be_between(start_time, Time.current)
-      expect(current_user.destroy_schedule_at).to be_between(start_time_schedule, Time.current + Settings.user_destroy_schedule_days.days)
+      expect(current_user.destroy_requested_at).to be_between(start_time.floor, Time.current.ceil)
+      expect(current_user.destroy_schedule_at).to be_between(start_time.floor + Settings.user_destroy_schedule_days.days,
+                                                             Time.current.ceil + Settings.user_destroy_schedule_days.days)
     end
   end
 
@@ -124,20 +124,20 @@ RSpec.describe User, type: :model do
     subject { user.image_url(version) }
 
     # テスト内容
-    shared_examples_for 'OK' do |version|
+    shared_examples 'OK' do |version|
       let(:version) { version }
       it 'デフォルトではないURL' do
         is_expected.not_to be_blank
         is_expected.not_to include('_noimage.jpg')
       end
     end
-    shared_examples_for 'Def' do |version|
+    shared_examples 'Def' do |version|
       let(:version) { version }
       it 'デフォルトのURL' do
         is_expected.to include('_noimage.jpg')
       end
     end
-    shared_examples_for 'Not' do |version|
+    shared_examples 'Not' do |version|
       let(:version) { version }
       it 'URLが返却されない' do
         is_expected.to be_blank
@@ -176,31 +176,31 @@ RSpec.describe User, type: :model do
     let(:cache) { user.cache_infomation_unread_count }
 
     # テストケース
-    shared_examples_for '[*]0件' do
+    shared_examples '[*]0件' do
       include_context 'お知らせ一覧作成', 0, 0, 0, 0
       it_behaves_like 'Count', 0
     end
-    shared_examples_for '[ない/過去]1件（全員）' do
+    shared_examples '[ない/過去]1件（全員）' do
       include_context 'お知らせ一覧作成', 1, 0, 0, 0
       it_behaves_like 'Count', 1
     end
-    shared_examples_for '[現在]1件（全員）' do
+    shared_examples '[現在]1件（全員）' do
       include_context 'お知らせ一覧作成', 1, 0, 0, 0
       it_behaves_like 'Count', 0
     end
-    shared_examples_for '[ない/過去]1件（自分）' do
+    shared_examples '[ない/過去]1件（自分）' do
       include_context 'お知らせ一覧作成', 0, 0, 1, 0
       it_behaves_like 'Count', 1
     end
-    shared_examples_for '[現在]1件（自分）' do
+    shared_examples '[現在]1件（自分）' do
       include_context 'お知らせ一覧作成', 0, 0, 1, 0
       it_behaves_like 'Count', 0
     end
-    shared_examples_for '[ない/過去]2件（全員＋自分）' do
+    shared_examples '[ない/過去]2件（全員＋自分）' do
       include_context 'お知らせ一覧作成', 0, 1, 0, 1
       it_behaves_like 'Count', 2
     end
-    shared_examples_for '[現在]2件（全員＋自分）' do
+    shared_examples '[現在]2件（全員＋自分）' do
       include_context 'お知らせ一覧作成', 0, 1, 0, 1
       it_behaves_like 'Count', 0
     end

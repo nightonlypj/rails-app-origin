@@ -8,7 +8,7 @@ RSpec.describe 'Admin', type: :request do
     subject { get rails_admin_path }
 
     # テストケース
-    shared_examples_for '[未ログイン/ログイン中/削除予約済み]' do
+    shared_examples '[未ログイン/ログイン中/削除予約済み]' do
       it_behaves_like 'ToAdminLogin', 'devise.failure.unauthenticated', nil
     end
 

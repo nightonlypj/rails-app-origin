@@ -87,7 +87,7 @@ module Application::ResponseConcern
 
   # ユーザーが削除予約済みの場合、JSONでメッセージを返却
   def response_api_for_user_destroy_reserved
-    render '/failure', locals: { alert: t('alert.user.destroy_reserved') }, status: :unprocessable_entity if current_user&.destroy_reserved?
+    render '/failure', locals: { alert: t('alert.user.destroy_reserved') }, status: :unprocessable_content if current_user&.destroy_reserved?
   end
 
   # ユーザーが削除予約済みでない場合、リダイレクトしてメッセージを表示
@@ -97,11 +97,11 @@ module Application::ResponseConcern
 
   # ユーザーが削除予約済みでない場合、JSONでメッセージを返却
   def response_api_for_not_user_destroy_reserved
-    render '/failure', locals: { alert: t('alert.user.not_destroy_reserved') }, status: :unprocessable_entity unless current_user&.destroy_reserved?
+    render '/failure', locals: { alert: t('alert.user.not_destroy_reserved') }, status: :unprocessable_content unless current_user&.destroy_reserved?
   end
 
   # スペースが削除予約済みの場合、JSONでメッセージを返却
   def response_api_for_space_destroy_reserved
-    render '/failure', locals: { alert: t('alert.space.destroy_reserved') }, status: :unprocessable_entity if @space.destroy_reserved?
+    render '/failure', locals: { alert: t('alert.space.destroy_reserved') }, status: :unprocessable_content if @space.destroy_reserved?
   end
 end

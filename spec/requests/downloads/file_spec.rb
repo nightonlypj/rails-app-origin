@@ -27,7 +27,7 @@ RSpec.describe 'Downloads', type: :request do
     end
 
     # テスト内容
-    shared_examples_for 'ToOK(html/*)' do
+    shared_examples 'ToOK(html/*)' do
       it 'HTTPステータスが200。対象項目が含まれる' do
         is_expected.to eq(200)
         filename = "#{download.model}_#{I18n.l(download.requested_at, format: :file)}.#{download.format}"
@@ -35,19 +35,19 @@ RSpec.describe 'Downloads', type: :request do
         expect(response.body).to eq(download_file.body)
       end
     end
-    shared_examples_for 'ToOK(json/json)' do
+    shared_examples 'ToOK(json/json)' do
       let(:subject_format) { :json }
       let(:accept_headers) { ACCEPT_INC_JSON }
       it_behaves_like 'ToOK(html/*)'
     end
-    shared_examples_for 'ToOK(csv/*)' do |format|
+    shared_examples 'ToOK(csv/*)' do |format|
       let(:subject_format) { format }
       let(:accept_headers) { ACCEPT_INC_CSV }
       it_behaves_like 'ToOK(html/*)'
     end
 
     # テストケース
-    shared_examples_for '[ログイン中/削除予約済み][成功][ログインユーザー]権限がある' do |power|
+    shared_examples '[ログイン中/削除予約済み][成功][ログインユーザー]権限がある' do |power|
       before_all { FactoryBot.create(:member, power, space:, user:) }
       if Settings.api_only_mode
         it_behaves_like 'ToNG(html)', 406
@@ -57,7 +57,7 @@ RSpec.describe 'Downloads', type: :request do
       it_behaves_like 'ToNG(json)', 401 # NOTE: APIは未ログイン扱い
       it_behaves_like 'ToNG(csv)', 401
     end
-    shared_examples_for '[APIログイン中/削除予約済み][成功][ログインユーザー]権限がある' do |power|
+    shared_examples '[APIログイン中/削除予約済み][成功][ログインユーザー]権限がある' do |power|
       before_all { FactoryBot.create(:member, power, space:, user:) }
       if Settings.api_only_mode
         it_behaves_like 'ToNG(html)', 406
@@ -67,51 +67,51 @@ RSpec.describe 'Downloads', type: :request do
       it_behaves_like 'ToOK(json)'
       it_behaves_like 'ToOK(csv)'
     end
-    shared_examples_for '[ログイン中/削除予約済み][成功][ログインユーザー]権限がない' do |power|
+    shared_examples '[ログイン中/削除予約済み][成功][ログインユーザー]権限がない' do |power|
       before_all { FactoryBot.create(:member, power, space:, user:) if power.present? }
       it_behaves_like 'ToNG(html)', Settings.api_only_mode ? 406 : 403
       it_behaves_like 'ToNG(json)', 401 # NOTE: APIは未ログイン扱い
       it_behaves_like 'ToNG(csv)', 401
     end
-    shared_examples_for '[APIログイン中/削除予約済み][成功][ログインユーザー]権限がない' do |power|
+    shared_examples '[APIログイン中/削除予約済み][成功][ログインユーザー]権限がない' do |power|
       before_all { FactoryBot.create(:member, power, space:, user:) if power.present? }
       it_behaves_like 'ToNG(html)', Settings.api_only_mode ? 406 : 403 # NOTE: HTMLもログイン状態になる
       it_behaves_like 'ToNG(json)', 403
       it_behaves_like 'ToNG(csv)', 403
     end
-    shared_examples_for '[ログイン中/削除予約済み][成功][その他ユーザー]権限がない' do
+    shared_examples '[ログイン中/削除予約済み][成功][その他ユーザー]権限がない' do
       it_behaves_like 'ToNG(html)', Settings.api_only_mode ? 406 : 404
       it_behaves_like 'ToNG(json)', 401 # NOTE: APIは未ログイン扱い
       it_behaves_like 'ToNG(csv)', 401
     end
-    shared_examples_for '[APIログイン中/削除予約済み][成功][その他ユーザー]権限がない' do
+    shared_examples '[APIログイン中/削除予約済み][成功][その他ユーザー]権限がない' do
       it_behaves_like 'ToNG(html)', Settings.api_only_mode ? 406 : 404
       it_behaves_like 'ToNG(json)', 404, nil, 'alert.download.notfound'
       it_behaves_like 'ToNG(csv)', 404, nil, 'alert.download.notfound'
     end
 
-    shared_examples_for '[ログイン中/削除予約済み][成功]依頼ユーザーがログインユーザー' do |status|
+    shared_examples '[ログイン中/削除予約済み][成功]依頼ユーザーがログインユーザー' do |status|
       include_context 'user_condition', status
       it_behaves_like '[ログイン中/削除予約済み][成功][ログインユーザー]権限がある', :admin
       it_behaves_like '[ログイン中/削除予約済み][成功][ログインユーザー]権限がない', :writer
       it_behaves_like '[ログイン中/削除予約済み][成功][ログインユーザー]権限がない', :reader
       it_behaves_like '[ログイン中/削除予約済み][成功][ログインユーザー]権限がない', nil
     end
-    shared_examples_for '[APIログイン中/削除予約済み][成功]依頼ユーザーがログインユーザー' do |status|
+    shared_examples '[APIログイン中/削除予約済み][成功]依頼ユーザーがログインユーザー' do |status|
       include_context 'user_condition', status
       it_behaves_like '[APIログイン中/削除予約済み][成功][ログインユーザー]権限がある', :admin
       it_behaves_like '[APIログイン中/削除予約済み][成功][ログインユーザー]権限がない', :writer
       it_behaves_like '[APIログイン中/削除予約済み][成功][ログインユーザー]権限がない', :reader
       it_behaves_like '[APIログイン中/削除予約済み][成功][ログインユーザー]権限がない', nil
     end
-    shared_examples_for '[ログイン中/削除予約済み][成功]依頼ユーザーがその他ユーザー' do |status|
+    shared_examples '[ログイン中/削除予約済み][成功]依頼ユーザーがその他ユーザー' do |status|
       include_context 'other_user_condition', status
       # it_behaves_like '[ログイン中/削除予約済み][成功][その他ユーザー]権限がある', :admin # NOTE: その他ユーザーの場合は権限がない
       # it_behaves_like '[ログイン中/削除予約済み][成功][その他ユーザー]権限がない', :writer
       # it_behaves_like '[ログイン中/削除予約済み][成功][その他ユーザー]権限がない', :reader
       it_behaves_like '[ログイン中/削除予約済み][成功][その他ユーザー]権限がない'
     end
-    shared_examples_for '[APIログイン中/削除予約済み][成功]依頼ユーザーがその他ユーザー' do |status|
+    shared_examples '[APIログイン中/削除予約済み][成功]依頼ユーザーがその他ユーザー' do |status|
       include_context 'other_user_condition', status
       # it_behaves_like '[APIログイン中/削除予約済み][成功][その他ユーザー]権限がある', :admin # NOTE: その他ユーザーの場合は権限がない
       # it_behaves_like '[APIログイン中/削除予約済み][成功][その他ユーザー]権限がない', :writer
@@ -119,15 +119,15 @@ RSpec.describe 'Downloads', type: :request do
       it_behaves_like '[APIログイン中/削除予約済み][成功][その他ユーザー]権限がない'
     end
 
-    shared_examples_for '[ログイン中/削除予約済み]IDが存在する（状態が成功）' do |status|
+    shared_examples '[ログイン中/削除予約済み]IDが存在する（状態が成功）' do |status|
       it_behaves_like '[ログイン中/削除予約済み][成功]依頼ユーザーがログインユーザー', status
       it_behaves_like '[ログイン中/削除予約済み][成功]依頼ユーザーがその他ユーザー', status
     end
-    shared_examples_for '[APIログイン中/削除予約済み]IDが存在する（状態が成功）' do |status|
+    shared_examples '[APIログイン中/削除予約済み]IDが存在する（状態が成功）' do |status|
       it_behaves_like '[APIログイン中/削除予約済み][成功]依頼ユーザーがログインユーザー', status
       it_behaves_like '[APIログイン中/削除予約済み][成功]依頼ユーザーがその他ユーザー', status
     end
-    shared_examples_for '[ログイン中/削除予約済み]IDが存在する（状態が成功以外）' do |status|
+    shared_examples '[ログイン中/削除予約済み]IDが存在する（状態が成功以外）' do |status|
       include_context 'user_condition', status
       before_all { FactoryBot.create(:member, space:, user:) }
       if Settings.api_only_mode
@@ -138,7 +138,7 @@ RSpec.describe 'Downloads', type: :request do
       it_behaves_like 'ToNG(json)', 401 # NOTE: APIは未ログイン扱い
       it_behaves_like 'ToNG(csv)', 401
     end
-    shared_examples_for '[APIログイン中/削除予約済み]IDが存在する（状態が成功以外）' do |status|
+    shared_examples '[APIログイン中/削除予約済み]IDが存在する（状態が成功以外）' do |status|
       include_context 'user_condition', status
       before_all { FactoryBot.create(:member, space:, user:) }
       if Settings.api_only_mode
@@ -149,27 +149,27 @@ RSpec.describe 'Downloads', type: :request do
       it_behaves_like 'ToOK(json)'
       it_behaves_like 'ToOK(csv)'
     end
-    shared_examples_for '[ログイン中/削除予約済み]IDが存在しない' do
+    shared_examples '[ログイン中/削除予約済み]IDが存在しない' do
       let_it_be(:download) { FactoryBot.build_stubbed(:download) }
       it_behaves_like 'ToNG(html)', Settings.api_only_mode ? 406 : 404
       it_behaves_like 'ToNG(json)', 401 # NOTE: APIは未ログイン扱い
       it_behaves_like 'ToNG(csv)', 401
     end
-    shared_examples_for '[APIログイン中/削除予約済み]IDが存在しない' do
+    shared_examples '[APIログイン中/削除予約済み]IDが存在しない' do
       let_it_be(:download) { FactoryBot.build_stubbed(:download) }
       it_behaves_like 'ToNG(html)', Settings.api_only_mode ? 406 : 404
       it_behaves_like 'ToNG(json)', 404, nil, 'alert.download.notfound'
       it_behaves_like 'ToNG(csv)', 404, nil, 'alert.download.notfound'
     end
 
-    shared_examples_for '[ログイン中/削除予約済み]' do
+    shared_examples '[ログイン中/削除予約済み]' do
       it_behaves_like '[ログイン中/削除予約済み]IDが存在する（状態が成功）', :success
       it_behaves_like '[ログイン中/削除予約済み]IDが存在する（状態が成功以外）', :waiting
       it_behaves_like '[ログイン中/削除予約済み]IDが存在する（状態が成功以外）', :processing
       it_behaves_like '[ログイン中/削除予約済み]IDが存在する（状態が成功以外）', :failure
       it_behaves_like '[ログイン中/削除予約済み]IDが存在しない'
     end
-    shared_examples_for '[APIログイン中/削除予約済み]' do
+    shared_examples '[APIログイン中/削除予約済み]' do
       it_behaves_like '[APIログイン中/削除予約済み]IDが存在する（状態が成功）', :success
       it_behaves_like '[APIログイン中/削除予約済み]IDが存在する（状態が成功以外）', :waiting
       it_behaves_like '[APIログイン中/削除予約済み]IDが存在する（状態が成功以外）', :processing

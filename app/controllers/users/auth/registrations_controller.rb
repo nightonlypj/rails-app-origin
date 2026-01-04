@@ -42,17 +42,17 @@ class Users::Auth::RegistrationsController < DeviseTokenAuth::RegistrationsContr
   # POST /users/auth/update(.json) ユーザー情報変更API(処理)
   def update
     if params[:confirm_redirect_url].blank?
-      return render '/failure', locals: { alert: t('devise_token_auth.registrations.confirm_redirect_url_blank') }, status: :unprocessable_entity
+      return render '/failure', locals: { alert: t('devise_token_auth.registrations.confirm_redirect_url_blank') }, status: :unprocessable_content
     end
     if blacklisted_redirect_url?(params[:confirm_redirect_url])
-      return render '/failure', locals: { alert: t('devise_token_auth.registrations.confirm_redirect_url_not_allowed') }, status: :unprocessable_entity
+      return render '/failure', locals: { alert: t('devise_token_auth.registrations.confirm_redirect_url_not_allowed') }, status: :unprocessable_content
     end
 
     # NOTE: 存在するメールアドレスの場合はエラーにする
     if @resource.present? && @resource.email != params[:email] && User.find_by(email: params[:email]).present?
       errors = { email: t('activerecord.errors.models.user.attributes.email.taken') }
       errors[:full_messages] = ["#{t('activerecord.attributes.user.email')} #{errors[:email]}"]
-      return render '/failure', locals: { errors:, alert: t('errors.messages.not_saved.one') }, status: :unprocessable_entity
+      return render '/failure', locals: { errors:, alert: t('errors.messages.not_saved.one') }, status: :unprocessable_content
     end
 
     params[:password_confirmation] = '' if params[:password_confirmation].nil? # NOTE: nilだとチェックされずに保存される為
@@ -67,7 +67,7 @@ class Users::Auth::RegistrationsController < DeviseTokenAuth::RegistrationsContr
     if params[:image].blank? || params[:image].class != ActionDispatch::Http::UploadedFile
       errors = { image: t('activerecord.errors.models.user.attributes.image.blank') }
       errors[:full_messages] = ["#{t('activerecord.attributes.user.image')} #{errors[:image]}"]
-      return render '/failure', locals: { errors:, alert: t('errors.messages.not_saved.one') }, status: :unprocessable_entity
+      return render '/failure', locals: { errors:, alert: t('errors.messages.not_saved.one') }, status: :unprocessable_content
     end
 
     @user = User.find(@resource.id)
@@ -75,7 +75,7 @@ class Users::Auth::RegistrationsController < DeviseTokenAuth::RegistrationsContr
       update_auth_header # NOTE: 成功時のみ認証情報を返す
       render '/users/auth/success', locals: { notice: t('notice.user.image_update') }
     else
-      render '/failure', locals: { errors: @user.errors, alert: t('errors.messages.not_saved.one') }, status: :unprocessable_entity
+      render '/failure', locals: { errors: @user.errors, alert: t('errors.messages.not_saved.one') }, status: :unprocessable_content
     end
   end
 
@@ -90,9 +90,12 @@ class Users::Auth::RegistrationsController < DeviseTokenAuth::RegistrationsContr
   # POST /users/auth/delete(.json) アカウント削除API(処理)
   def destroy
     return render '/failure', locals: { alert: t('alert.user.destroy.params_blank') }, status: :bad_request if request.request_parameters.blank?
-    return render '/failure', locals: { alert: t('alert.user.destroy.undo_delete_url_blank') }, status: :unprocessable_entity if params[:undo_delete_url].blank?
+
+    if params[:undo_delete_url].blank?
+      return render '/failure', locals: { alert: t('alert.user.destroy.undo_delete_url_blank') }, status: :unprocessable_content
+    end
     if blacklisted_redirect_url?(params[:undo_delete_url])
-      return render '/failure', locals: { alert: t('alert.user.destroy.undo_delete_url_not_allowed') }, status: :unprocessable_entity
+      return render '/failure', locals: { alert: t('alert.user.destroy.undo_delete_url_not_allowed') }, status: :unprocessable_content
     end
 
     if @resource
@@ -119,13 +122,13 @@ class Users::Auth::RegistrationsController < DeviseTokenAuth::RegistrationsContr
 
   def render_create_error_missing_confirm_success_url
     # render_error(422, I18n.t('devise_token_auth.registrations.missing_confirm_success_url'), { status: 'error', data: resource_data })
-    render '/failure', locals: { alert: t('devise_token_auth.registrations.missing_confirm_success_url') }, status: :unprocessable_entity
+    render '/failure', locals: { alert: t('devise_token_auth.registrations.missing_confirm_success_url') }, status: :unprocessable_content
   end
 
   def render_create_error_redirect_url_not_allowed
     # alert = t('devise_token_auth.registrations.redirect_url_not_allowed', redirect_url: @redirect_url)
     # render_error(422, alert, { status: 'error', data: resource_data })
-    render '/failure', locals: { alert: t('devise_token_auth.registrations.redirect_url_not_allowed') }, status: :unprocessable_entity
+    render '/failure', locals: { alert: t('devise_token_auth.registrations.redirect_url_not_allowed') }, status: :unprocessable_content
   end
 
   def render_create_success
@@ -135,7 +138,7 @@ class Users::Auth::RegistrationsController < DeviseTokenAuth::RegistrationsContr
 
   def render_create_error
     # render json: { status: 'error', data: resource_data, errors: resource_errors }, status: 422
-    render '/failure', locals: { errors: resource_errors, alert: t('errors.messages.not_saved.one') }, status: :unprocessable_entity
+    render '/failure', locals: { errors: resource_errors, alert: t('errors.messages.not_saved.one') }, status: :unprocessable_content
   end
 
   def render_update_success
@@ -148,7 +151,7 @@ class Users::Auth::RegistrationsController < DeviseTokenAuth::RegistrationsContr
 
   def render_update_error
     # render json: { status: 'error', errors: resource_errors }, status: 422
-    render '/failure', locals: { errors: resource_errors, alert: t('errors.messages.not_saved.one') }, status: :unprocessable_entity
+    render '/failure', locals: { errors: resource_errors, alert: t('errors.messages.not_saved.one') }, status: :unprocessable_content
   end
 
   # NOTE: 未使用
@@ -164,7 +167,7 @@ class Users::Auth::RegistrationsController < DeviseTokenAuth::RegistrationsContr
 
   def render_destroy_error
     # render_error(404, I18n.t('devise_token_auth.registrations.account_to_destroy_not_found'), status: 'error')
-    render '/failure', locals: { alert: t('devise.failure.unauthenticated') }, status: :unprocessable_entity
+    render '/failure', locals: { alert: t('devise.failure.unauthenticated') }, status: :unprocessable_content
   end
 
   private
