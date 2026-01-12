@@ -324,12 +324,12 @@ $ make j（または jobs）
 - http://localhost:3000/admin
   - メールアドレスとパスワードは、`db/seed/admin_users.yml`参照
 
-### Schemaspy
+### SchemaSpy
 
 #### Dockerで実行
 
 ```bash
-# Schemaspy実行
+# SchemaSpy実行
 $ make ssd-mysql（または schemaspy-docker-mysql, ssd-mariadb, schemaspy-docker-mariadb, ssd-pg, schemaspy-docker-pg, ssd-sqlite, schemaspy-docker-sqlite）
 ```
 
@@ -359,7 +359,7 @@ $ source ~/.bash_profile
 $ java -version
 openjdk version "24.0.2" 2025-07-15
 
-# Schemaspy実行
+# SchemaSpy実行
 $ make ss-mysql（または schemaspy-mysql, ss-mariadb, schemaspy-mariadb, ss-pg, schemaspy-pg, ss-sqlite, schemaspy-sqlite）
 ```
 
@@ -463,7 +463,7 @@ http {
     gzip_proxied no-cache no-store private expired auth;
     gzip_comp_level 5;
     gzip_min_length 1024;
-    gzip_types text/plain text/css application/json application/javascript text/xml application/xml application/xml+rss;
+    gzip_types text/plain text/css application/json application/javascript text/xml application/xml application/xml+rss image/svg+xml;
 ### END ###
 
     #tcp_nopush     on;

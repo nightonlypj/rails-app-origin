@@ -36,34 +36,45 @@ desktop.ini
 Thumbs.db
 .fleet/
 .idea/
+.vscode/
 nbproject/
+*.orig
 
 # Local env files
 .env*
 !.env.example
+!.env.development
+!.env.test
 
+# Node dependencies
 /node_modules/
 /yarn-error.log
 yarn-debug.log*
 .yarn-integrity
 npm-debug.log*
 
+# Assets
 /public/assets
 /app/assets/builds/*
+!/app/assets/builds/.keep
 
-/coverage*
-
-/schemaspy/analysis/*
-!/schemaspy/analysis/.keep
-
-/doc/*
-!/doc/.keep
-
-/.yardoc
-/db/erd.pdf
-
+# Upload
 /public/uploads/*
 !/public/uploads/.keep
+
+# Test
+/coverage*
+capybara-*.html
+capybara-*.png
+.byebug_history
+
+# Document
+/doc/*
+!/doc/.keep
+/.yardoc
+/db/erd.pdf
+/schemaspy/analysis/*
+!/schemaspy/analysis/.keep
 
 # NOTE: 環境で切り替える為
 /public/robots.txt

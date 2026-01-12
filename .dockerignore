@@ -3,7 +3,6 @@
 .env*
 .git/
 .yardoc
-app/assets/builds/
 config/master.key
 coverage/
 cron/
@@ -15,9 +14,8 @@ doc/
 log/
 node_modules/
 public/assets/
-public/packs/
-public/packs-test/
 public/uploads/
 schemaspy/
 storage/
 tmp/
+*.orig
