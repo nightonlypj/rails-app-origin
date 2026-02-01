@@ -11,6 +11,10 @@ set :robots_txt, 'robots.txt,disallow'
 # server "db.example.com", user: "deploy", roles: %w{db}
 server 'test-servername_railsapp', roles: %w[app db web job]
 
+set :default_env, {
+  'RAILS_ENV' => 'production'
+}
+
 # role-based syntax
 # ==================
 

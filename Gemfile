@@ -97,6 +97,7 @@ gem 'enum_help'
 
 # Use Unicorn
 gem 'unicorn'
+gem 'rack', '< 3' # NOTE: Unicorn未対応 -> app error: undefined method '=~' for an instance of Array (NoMethodError)
 
 # Use Exception Notification
 gem 'exception_notification'
@@ -168,6 +169,8 @@ group :development do
   gem 'capistrano-bundler'
   gem 'capistrano-rails'
   gem 'capistrano-rvm'
+  gem 'ed25519'
+  gem 'bcrypt_pbkdf'
 end
 
 group :test do

@@ -29,7 +29,8 @@ RUN apk add --no-cache \
     busybox-extras \
     bash \
     git \
-    vim
+    vim \
+    openssh-client
 
 WORKDIR /workdir
 ENV TZ='Asia/Tokyo'

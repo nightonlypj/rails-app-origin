@@ -40,6 +40,7 @@ services:
       - .:/workdir:cached
       - bundle_ruby_3.4:/usr/local/bundle
       - node_modules:/workdir/node_modules
+      - ~/.ssh:/root/.ssh
     ports:
       - 3000:3000
     depends_on:
@@ -77,6 +78,7 @@ services:
     volumes:
       - .:/workdir
       - bundle_ruby_3.4:/usr/local/bundle
+      - ~/.ssh:/root/.ssh
     depends_on:
       - app
       - mysql
