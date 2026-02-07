@@ -144,6 +144,10 @@ Style/FrozenStringLiteralComment:
 Style/GuardClause:
   Enabled: false
 
+# C: [Correctable] Style/HashSyntax: Omit the hash value.
+Style/HashSyntax:
+  EnforcedShorthandSyntax: always
+
 # C: [Correctable] Style/IfInsideElse: Convert if nested inside else to elsif.
 Style/IfInsideElse:
   Enabled: false

@@ -8,7 +8,7 @@ RSpec.describe :user, type: :task do
   #     ＋お知らせ: ない, ある
   #   ドライラン: true, false
   describe 'user:destroy' do
-    subject { Rake.application['user:destroy'].invoke(dry_run) }
+    subject { Rake.application['user:destroy'].execute('dry_run' => dry_run) }
     before_all do
       FactoryBot.create(:user, destroy_schedule_at: nil)
       user = FactoryBot.create(:user, destroy_schedule_at: 1.minute.from_now)

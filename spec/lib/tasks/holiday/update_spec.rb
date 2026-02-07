@@ -5,7 +5,7 @@ RSpec.describe :holiday, type: :task do
   # テストパターン
   #   追加あり, 変更なし, 名称変更あり
   describe 'holiday:update' do
-    subject { Rake.application['holiday:update'].invoke(dry_run) }
+    subject { Rake.application['holiday:update'].execute('dry_run' => dry_run) }
     let_it_be(:year) { Time.current.year }
     let_it_be(:holidays) do
       [

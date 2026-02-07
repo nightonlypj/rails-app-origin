@@ -18,7 +18,7 @@ def insert_contents(bulk_insert)
   insert_datas = []
   datas = @model.where(@model.primary_key => @ids)
   data = @model.new
-  now = Time.current
+  start_time = Time.current
 
   (@ids - datas.ids).each do |id|
     content = @contents[id]
@@ -28,8 +28,8 @@ def insert_contents(bulk_insert)
       next
     end
 
-    content['created_at'] = now if content['created_at'].blank?
-    content['updated_at'] = now if content['updated_at'].blank?
+    content['created_at'] = start_time if content['created_at'].blank?
+    content['updated_at'] = start_time if content['updated_at'].blank?
     insert_datas.push(data.attributes.merge(content))
     next if insert_datas.count < BULK_MAX_COUNT
 
@@ -65,7 +65,7 @@ def update_contents(bulk_update, exclude_update_column)
   update_datas = []
   datas = @model.where(@model.primary_key => @ids)
   new_model = @model.new
-  now = Time.current
+  start_time = Time.current
 
   datas.find_each do |data|
     content = @contents[data[@model.primary_key]]
@@ -76,13 +76,13 @@ def update_contents(bulk_update, exclude_update_column)
     unless bulk_update
       data.assign_attributes(content)
       data.save!(validate: false)
-      count += 1 if data.updated_at > now
+      count += 1 if data.updated_at > start_time
       next
     end
 
     next unless data_changed?(content, data, new_model)
 
-    content['updated_at'] = now if content['updated_at'].blank?
+    content['updated_at'] = start_time if content['updated_at'].blank?
     update_datas.push(data.attributes.merge(content))
     next if update_datas.count < BULK_MAX_COUNT
 
