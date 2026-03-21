@@ -1,5 +1,5 @@
 Rails.application.routes.draw do
-  scope '(:locale)', locale: /#{I18n.available_locales.map(&:to_s).join('|')}/ do
+  scope '(:locale)', locale: /#{I18n.available_locales.join('|')}/ do
     devise_for :users, skip: :all
     devise_scope :user do
       get  'users/sign_up',             to: 'users/registrations#new',           as: 'new_user_registration'

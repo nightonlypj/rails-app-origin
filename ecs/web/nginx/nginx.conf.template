@@ -35,7 +35,7 @@ http {
                       '"$http_user_agent" $request_time "$host"';
 
 #    access_log  /var/log/nginx/access.log  main;
-    access_log  /dev/stdout  addhost;
+    access_log  /dev/stdout  main;
 ### END ###
 
     sendfile        on;

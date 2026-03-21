@@ -8,7 +8,7 @@ Rails.application.routes.draw do
   mount LetterOpenerWeb::Engine => '/letter_opener' if Rails.env.development?
   # :nocov:
   get '_health', to: 'health_check#index', as: 'health_check'
-  scope '(:locale)', locale: /#{I18n.available_locales.map(&:to_s).join('|')}/ do
+  scope '(:locale)', locale: /#{I18n.available_locales.join('|')}/ do
     root 'top#index'
   end
 

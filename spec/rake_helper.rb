@@ -20,7 +20,7 @@ RSpec.configure do |config|
       FileUtils.rm_rf(store_dir, secure: true)
     else
       # :nocov:
-      p "[Skip]rm -rf #{store_dir}"
+      p "[Skip]rm -rf #{store_dir}" # rubocop:disable RSpec/Output
       # :nocov:
     end
   end
