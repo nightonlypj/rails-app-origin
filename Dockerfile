@@ -1,5 +1,5 @@
 # https://hub.docker.com/_/ruby
-FROM ruby:3.4.3-alpine
+FROM ruby:3.4.9-alpine
 RUN apk add --no-cache \
     tzdata \
     build-base \

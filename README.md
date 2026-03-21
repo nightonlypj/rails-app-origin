@@ -1,7 +1,7 @@
 # Ruby on Railsベースアプリケーション
 
 運営元が情報提供して1つのサービスを作る（BtoC向け）  
-(Ruby 3.4.3, Rails 7.2.2.2)
+(Ruby 3.4.9, Rails 8.1.2)
 
 ## 環境構築手順（Dockerの場合） ※構築は早いが、動作は遅い
 
@@ -56,7 +56,8 @@ $ make up-base（または up-base-d）
 
 通常の開発に向いている（開発効率が良い）
 
-### Homebrewインストール
+### Homebrewインスト
+ル
 
 ```bash
 $ ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
@@ -82,7 +83,7 @@ $ brew doctor
 Your system is ready to brew.
 
 $ brew -v
-Homebrew 5.0.4
+Homebrew 5.1.0
 # バージョンは異なっても良い
 ```
 
@@ -93,7 +94,7 @@ $ brew install imagemagick
 （$ brew upgrade imagemagick）
 
 $ magick -version
-Version: ImageMagick 7.1.2-9 Q16-HDRI aarch64 23451 https://imagemagick.org
+Version: ImageMagick 7.1.2-17 Q16-HDRI aarch64 23794 https://imagemagick.org
 # バージョンは異なっても良い
 ```
 
@@ -104,7 +105,7 @@ $ brew install graphviz
 （$ brew upgrade graphviz）
 
 $ dot -V
-dot - graphviz version 14.0.5 (20251129.0259)
+dot - graphviz version 14.1.3 (20260303.0454)
 # バージョンは異なっても良い
 ```
 
@@ -115,7 +116,7 @@ $ brew install --cask font-freefont
 （$ brew upgrade --cask font-freefont）
 
 $ brew info --cask font-freefont
-==> font-freefont: 20120503
+==> font-freefont ✔: 20120503
 # バージョンは異なっても良い
 ```
 
@@ -150,18 +151,18 @@ $ brew install openssl@3
 $ source ~/.bash_profile
 
 $ openssl version
-OpenSSL 3.6.0 1 Oct 2025 (Library: OpenSSL 3.6.0 1 Oct 2025)
+OpenSSL 3.6.1 27 Jan 2026 (Library: OpenSSL 3.6.1 27 Jan 2026)
 ```
 ```bash
 # Rubyインストール
-$ rvm install 3.4.3 --with-openssl-dir=$(brew --prefix openssl@3)
-（$ rvm --default use 3.4.3）
+$ rvm install 3.4.9 --with-openssl-dir=$(brew --prefix openssl@3)
+（$ rvm --default use 3.4.9）
 
 $ ruby -v
-ruby 3.4.3 (2025-04-14 revision d0b7e5b6a0) +PRISM [arm64-darwin22]
+ruby 3.4.9 (2026-03-11 revision 76cca827ab) +PRISM [arm64-darwin24]
 
 $ rvm list
-=* ruby-3.4.3 [ arm64 ]
+=* ruby-3.4.9 [ arm64 ]
 ```
 
 ### MariaDB or MySQLインストール

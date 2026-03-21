@@ -1,4 +1,4 @@
-FROM ruby:3.4.3-alpine AS builder
+FROM ruby:3.4.9-alpine AS builder
 RUN apk add --no-cache \
     build-base \
     yaml-dev \
@@ -18,7 +18,7 @@ RUN gem install bundler -v 2.7.2 && \
 
 COPY . .
 
-FROM ruby:3.4.3-alpine
+FROM ruby:3.4.9-alpine
 RUN apk add --no-cache \
     tzdata \
     # MySQL/MariaDB
