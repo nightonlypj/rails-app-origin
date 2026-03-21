@@ -10,12 +10,16 @@ class Infomation < ApplicationRecord
 
   scope :by_locale, ->(locale) { where(locale: [nil, locale]) }
   scope :by_target, ->(current_user) {
-    where('target = ? OR (target = ? AND user_id = ?)', targets[:all], targets[:user], current_user&.id)
-      .where('started_at <= ? AND (ended_at IS NULL OR ended_at >= ?)', Time.current, Time.current)
+    start_time = Time.current
+    where("#{table_name}.target = ? OR (#{table_name}.target = ? AND #{table_name}.user_id = ?)", targets[:all], targets[:user], current_user&.id)
+      .where("#{table_name}.started_at <= ? AND (#{table_name}.ended_at IS NULL OR #{table_name}.ended_at >= ?)", start_time, start_time)
   }
-  scope :by_force, -> { where('force_started_at <= ? AND (force_ended_at IS NULL OR force_ended_at >= ?)', Time.current, Time.current) }
-  scope :by_unread, ->(infomation_check_last_started_at) {
-    where('started_at > ?', infomation_check_last_started_at) if infomation_check_last_started_at.present?
+  scope :by_force, -> {
+    start_time = Time.current
+    where("#{table_name}.force_started_at <= ? AND (#{table_name}.force_ended_at IS NULL OR #{table_name}.force_ended_at >= ?)", start_time, start_time)
+  }
+  scope :by_unread, ->(check_last_started_at) {
+    where("#{table_name}.started_at > ?", check_last_started_at) if check_last_started_at.present?
   }
 
   # ラベル

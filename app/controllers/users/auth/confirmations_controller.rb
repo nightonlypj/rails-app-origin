@@ -9,7 +9,7 @@ class Users::Auth::ConfirmationsController < DeviseTokenAuth::ConfirmationsContr
   prepend_before_action :response_not_acceptable_for_not_html, only: :show
   prepend_before_action :update_request_uid_header
 
-  # POST /users/auth/confirmation(.json) メールアドレス確認API[メール再送](処理)
+  # メールアドレス確認API[メール再送](処理)
   def create
     return render '/failure', locals: { alert: t('errors.messages.validate_confirmation_params') }, status: :bad_request if request.request_parameters.blank?
     if params[:redirect_url].blank?
@@ -26,7 +26,7 @@ class Users::Auth::ConfirmationsController < DeviseTokenAuth::ConfirmationsContr
     super
   end
 
-  # GET /users/auth/confirmation メールアドレス確認(処理)
+  # メールアドレス確認(処理)
   def show
     @resource = resource_class.confirm_by_token(resource_params[:confirmation_token])
     if @resource.errors.empty?
@@ -58,6 +58,7 @@ class Users::Auth::ConfirmationsController < DeviseTokenAuth::ConfirmationsContr
 
       redirect_header_options = { account_confirmation_success: false, alert: t('activerecord.errors.models.user.attributes.confirmation_token.invalid') }
     end
+
     redirect_to DeviseTokenAuth::Url.generate(redirect_url, redirect_header_options), allow_other_host: true
   end
 
@@ -91,6 +92,7 @@ class Users::Auth::ConfirmationsController < DeviseTokenAuth::ConfirmationsContr
       # render_error(404, I18n.t('devise_token_auth.confirmations.user_not_found', email: @email))
       errors = { email: t('devise_token_auth.confirmations.user_not_found') }
       errors[:full_messages] = ["#{t('activerecord.attributes.user.email')} #{errors[:email]}"]
+
       render '/failure', locals: { errors:, alert: t('errors.messages.not_saved.one') }, status: :unprocessable_content
     end
   end

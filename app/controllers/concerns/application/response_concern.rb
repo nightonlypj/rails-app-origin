@@ -34,15 +34,13 @@ module Application::ResponseConcern
     !(%r{,application/json[,;]} =~ target_accept_header).nil?
   end
 
-  def target_accept_header
-    ",#{request.headers['ACCEPT']&.tr(' ', '')},"
-  end
-
   # acceptヘッダが空か、HTMLが含まれる（ワイルドカード可）かを返却
   def accept_header_html?
-    request.headers['ACCEPT'].blank? ||
-      !(%r{,text/html[,;]} =~ target_accept_header).nil? ||
-      !(%r{,\*/\*[,;]} =~ target_accept_header).nil?
+    request.headers['ACCEPT'].blank? || !(%r{,text/html[,;]} =~ target_accept_header).nil? || !(%r{,\*/\*[,;]} =~ target_accept_header).nil?
+  end
+
+  def target_accept_header
+    ",#{request.headers['ACCEPT']&.tr(' ', '')},"
   end
 
   # APIのみモードでAPIリクエストでない場合、存在しない(404)を返却

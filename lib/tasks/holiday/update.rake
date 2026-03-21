@@ -43,10 +43,10 @@ namespace :holiday do
         end
       end
 
-      unless dry_run
-        Holiday.insert_all!(insert_datas) if insert_datas.present?
-        Holiday.upsert_all(update_datas) if update_datas.present?
-      end
+      next if dry_run
+
+      Holiday.insert_all!(insert_datas) if insert_datas.present?
+      Holiday.upsert_all(update_datas) if update_datas.present?
     end
 
     logger.info "=== END #{task.name} (Total count: #{datas_count}, insert: #{insert_datas.count}, update: #{update_datas.count}) ==="

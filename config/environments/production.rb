@@ -44,10 +44,9 @@ Rails.application.configure do
 
   # Log to STDOUT with the current request id as a default log tag.
   config.log_tags = [:request_id]
-
   ### START ###
-  # config.logger   = ActiveSupport::TaggedLogging.logger($stdout)
-  config.logger = ActiveSupport::TaggedLogging.logger($stdout) if ENV['RAILS_LOG_TO_STDOUT'].present?
+  # config.logger   = ActiveSupport::TaggedLogging.logger(STDOUT)
+  config.logger = ActiveSupport::TaggedLogging.logger(STDOUT) if ENV['RAILS_LOG_TO_STDOUT'].present? # rubocop:disable Style/GlobalStdStream
   ### END ###
 
   # Change to "debug" to log everything (including potentially personally-identifiable information!).
@@ -73,6 +72,9 @@ Rails.application.configure do
   # Ignore bad email addresses and do not raise email delivery errors.
   # Set this to true and configure the email server for immediate delivery to raise delivery errors.
   # config.action_mailer.raise_delivery_errors = false
+  ### START ###
+  config.action_mailer.raise_delivery_errors = true
+  ### END ###
 
   # Set host to be used by links generated in mailer templates.
   ### START ###

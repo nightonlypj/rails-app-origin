@@ -37,6 +37,7 @@ module Application::LocaleConcern
 
     cookies[:locale] = new_locale # NOTE: パスにlocaleが含まれない場合、以前の言語になる為
     redirect_to uri.to_s
+
     true
   end
 

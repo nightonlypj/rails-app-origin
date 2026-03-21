@@ -13,7 +13,7 @@
       <%= render 'edit_image' %>
     </div>
     <div class="col-md-8 card-text">
-      <%= render 'edit_user' %>
+      <%= render 'edit_user', minimum_password_length: @minimum_password_length %>
     </div>
   </div>
   <div class="row">

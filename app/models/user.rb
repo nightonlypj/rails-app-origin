@@ -50,7 +50,8 @@ class User < ApplicationRecord
     when :xlarge
       image? ? image.xlarge.url : "/images/user/#{version}_noimage.jpg"
     else
-      logger.warn "[WARN]Not found: User.image_url(#{version})"
+      logger.warn "[WARNING]Not found: User.image_url(#{version})"
+
       ''
     end
   end
@@ -61,6 +62,5 @@ class User < ApplicationRecord
     return @cache_infomation_unread_count if @cache_infomation_unread_count.present?
 
     @cache_infomation_unread_count = Infomation.by_locale(I18n.locale).by_target(self).by_unread(infomation_check_last_started_at).count
-    @cache_infomation_unread_count
   end
 end

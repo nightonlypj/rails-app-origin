@@ -6,7 +6,7 @@ class TopController < ApplicationController
   before_action :render_development_for_api_mode, if: :development?
   before_action :set_important_infomations, unless: :api_only_mode?
 
-  # GET / トップページ
+  # トップページ
   def index; end
 
   private

@@ -6,6 +6,7 @@ module Devise::ConfirmationsConcern
   # メールアドレス確認済みかを返却
   def already_confirmed?(token)
     resource = resource_class.find_by(confirmation_token: token)
+
     resource&.confirmed_at.present? && resource&.confirmation_sent_at.present? && (resource.confirmed_at > resource.confirmation_sent_at)
   end
 
@@ -16,6 +17,7 @@ module Devise::ConfirmationsConcern
 
     # :nocov:
     resource = resource_class.find_by(confirmation_token: token)
+
     resource&.confirmation_sent_at.present? && (Time.now.utc <= resource.confirmation_sent_at.utc + resource_class.confirm_within)
   end
 end

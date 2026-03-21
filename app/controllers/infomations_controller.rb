@@ -4,11 +4,11 @@ class InfomationsController < ApplicationAuthController
   before_action :response_not_acceptable_for_not_api, only: :important
   before_action :set_important_infomations, only: :important
 
-  # GET /infomations お知らせ一覧
-  # GET /infomations(.json) お知らせ一覧API
+  # お知らせ一覧・API
   def index
     @infomations = Infomation.by_locale(I18n.locale).by_target(current_user).order(started_at: :desc, id: :desc)
       .page(params[:page]).per(Settings.default_infomations_limit)
+
     update_infomation_check
 
     if format_html? && @infomations.current_page > [@infomations.total_pages, 1].max
@@ -16,11 +16,10 @@ class InfomationsController < ApplicationAuthController
     end
   end
 
-  # GET /infomations/important(.json) 大切なお知らせ一覧API
+  # 大切なお知らせ一覧API
   def important; end
 
-  # GET /infomations/:id お知らせ詳細
-  # GET /infomations/:id(.json) お知らせ詳細API
+  # お知らせ詳細・API
   def show
     @infomation = Infomation.find_by(id: params[:id])
     return response_not_found if @infomation.blank? || !@infomation.display_target?(current_user) || @infomation.started_at > Time.current

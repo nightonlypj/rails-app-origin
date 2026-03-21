@@ -8,7 +8,7 @@ class Users::Auth::SessionsController < DeviseTokenAuth::SessionsController
   prepend_before_action :response_not_acceptable_for_not_api
   prepend_before_action :update_request_uid_header
 
-  # POST /users/auth/sign_in(.json) ログインAPI(処理)
+  # ログインAPI(処理)
   def create
     return render '/failure', locals: { alert: t('devise_token_auth.sessions.bad_credentials') }, status: :bad_request if request.request_parameters.blank?
     if params[:unlock_redirect_url].blank?
@@ -22,7 +22,7 @@ class Users::Auth::SessionsController < DeviseTokenAuth::SessionsController
     super
   end
 
-  # POST /users/auth/sign_out(.json) ログアウトAPI(処理)
+  # ログアウトAPI(処理)
   def destroy
     return render '/failure', locals: { alert: t('devise.sessions.already_signed_out') }, status: :unauthorized unless user_signed_in?
 
@@ -34,6 +34,7 @@ class Users::Auth::SessionsController < DeviseTokenAuth::SessionsController
   def find_resource(field, value)
     super
     @resource.redirect_url = params[:unlock_redirect_url] if @resource.present? && params[:unlock_redirect_url].present?
+
     @resource
   end
 
