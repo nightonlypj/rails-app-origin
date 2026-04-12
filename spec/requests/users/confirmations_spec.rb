@@ -10,7 +10,7 @@ RSpec.describe 'Users::Confirmations', type: :request do
     end
   end
 
-  # GET /users/confirmation/resend メールアドレス確認[メール再送]
+  # メールアドレス確認[メール再送]
   # テストパターン
   #   未ログイン, ログイン中（メール確認済み, メールアドレス変更中）
   describe 'GET #new' do
@@ -35,7 +35,7 @@ RSpec.describe 'Users::Confirmations', type: :request do
     end
   end
 
-  # POST /users/confirmation/resend メールアドレス確認[メール再送](処理)
+  # メールアドレス確認[メール再送](処理)
   # テストパターン
   #   未ログイン, ログイン中
   #   有効なパラメータ（メール未確認, メール確認済み, メールアドレス変更中）, 無効なパラメータ
@@ -54,7 +54,7 @@ RSpec.describe 'Users::Confirmations', type: :request do
       it 'メールが送信される' do
         subject
         expect(ActionMailer::Base.deliveries.count).to eq(1)
-        expect(ActionMailer::Base.deliveries[0].subject).to eq(get_subject('devise.mailer.confirmation_instructions.subject')) # メールアドレス確認のお願い
+        expect(ActionMailer::Base.deliveries[0].subject).to eq(build_mail_subject('devise.mailer.confirmation_instructions.subject')) # メールアドレス確認のお願い
         expect(ActionMailer::Base.deliveries[0].html_part.body).to include(url)
         expect(ActionMailer::Base.deliveries[0].text_part.body).to include(url)
       end
@@ -114,7 +114,7 @@ RSpec.describe 'Users::Confirmations', type: :request do
     end
   end
 
-  # GET /users/confirmation メールアドレス確認(処理)
+  # メールアドレス確認(処理)
   # テストパターン
   #   未ログイン, ログイン中
   #   トークン: 期限内, 期限切れ, 存在しない, ない

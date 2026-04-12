@@ -105,17 +105,17 @@ module FactoryBotHelper
     def make_updated_at(created_at)
       return created_at if created_at > max_time
 
-      Faker::Time.between(from: created_at, to: max_time)
+      Faker::Time.between(from: created_at, to: max_time).floor
     end
 
     private
 
     def base_time
-      @base_time ||= 1.year.ago
+      @base_time ||= 1.year.ago.floor
     end
 
     def max_time
-      @max_time ||= 1.hour.ago
+      @max_time ||= 1.hour.ago.floor
     end
   end
 end

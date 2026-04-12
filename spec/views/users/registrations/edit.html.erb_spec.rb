@@ -3,7 +3,6 @@ require 'rails_helper'
 RSpec.describe 'users/registrations/edit', type: :view do
   next if Settings.api_only_mode
 
-  # テスト内容
   shared_examples '入力項目' do
     it '対象の送信先と項目が含まれる' do
       render
@@ -34,21 +33,22 @@ RSpec.describe 'users/registrations/edit', type: :view do
   shared_examples 'メールアドレス変更中表示' do
     it '対象のパスが含まれる' do
       render
-      expect(rendered).to include(@resource.unconfirmed_email) # 確認待ちメールアドレス
+      expect(rendered).to include(user.unconfirmed_email) # 確認待ちメールアドレス
       expect(rendered).to include("href=\"#{delete_user_registration_path}\"") # アカウント削除
     end
   end
 
-  # テストケース
   context 'ログイン中（メール確認済み）' do
     include_context 'ログイン処理'
-    before_all { @resource = user }
+    before { assign(:resource, user) }
+
     it_behaves_like '入力項目'
     it_behaves_like 'メール確認済み表示'
   end
   context 'ログイン中（メールアドレス変更中）' do
     include_context 'ログイン処理', :email_changed
-    before_all { @resource = user }
+    before { assign(:resource, user) }
+
     it_behaves_like '入力項目'
     it_behaves_like 'メールアドレス変更中表示'
   end

@@ -1,4 +1,4 @@
-# Preview all emails at http://localhost:3000/rails/mailers/user_devise_mailer
+# Preview all emails at /rails/mailers/user_devise_mailer
 class UserDeviseMailerPreview < ActionMailer::Preview
   # メールアドレス確認のお願い
   def confirmation_instructions(redirect_url = nil)

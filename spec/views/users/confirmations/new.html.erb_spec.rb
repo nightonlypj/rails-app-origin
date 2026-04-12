@@ -3,9 +3,8 @@ require 'rails_helper'
 RSpec.describe 'users/confirmations/new', type: :view do
   next if Settings.api_only_mode
 
-  before_all { @resource = User.new }
+  before { assign(:resource, User.new) }
 
-  # テスト内容
   shared_examples '入力項目' do
     it '対象の送信先と項目が含まれる' do
       render
@@ -40,18 +39,19 @@ RSpec.describe 'users/confirmations/new', type: :view do
     end
   end
 
-  # テストケース
   context '未ログイン' do
     it_behaves_like '入力項目'
     it_behaves_like '未ログイン表示'
   end
   context 'ログイン中（メール確認済み）' do
     include_context 'ログイン処理'
+
     it_behaves_like '入力項目'
     it_behaves_like 'ログイン中表示'
   end
   context 'ログイン中（メールアドレス変更中）' do
     include_context 'ログイン処理', :email_changed
+
     it_behaves_like '入力項目'
     it_behaves_like 'ログイン中表示'
   end

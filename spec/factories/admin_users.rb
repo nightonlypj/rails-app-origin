@@ -1,9 +1,9 @@
 FactoryBot.define do
   factory :admin_user do
-    sequence(:name) { |n| "admin(#{n})" }
-    email           { Faker::Internet.email(name: "#{name}#{Faker::Number.hexadecimal(digits: 3)}") }
-    password        { Faker::Internet.password(min_length: 8) }
-    confirmed_at    { '0000-01-01 00:00:00+0000' }
+    name             { Faker::Japanese::Name.name.truncate(Settings.user_name_maximum) }
+    sequence(:email) { |n| Faker::Internet.email(name: "admin#{n}") }
+    password         { Faker::Internet.password(min_length: Devise.password_length.min) }
+    confirmed_at     { Faker::Date.backward(days: 365) }
 
     # ロック中
     trait :locked do
@@ -12,17 +12,17 @@ FactoryBot.define do
       failed_attempts { Devise.maximum_attempts }
     end
 
-    # ロック前
+    # ロック前（残り1回）
     trait :before_lock1 do
       failed_attempts { Devise.maximum_attempts - 1 }
     end
 
-    # ロック前の前
+    # ロック前（残り2回）
     trait :before_lock2 do
       failed_attempts { Devise.maximum_attempts - 2 }
     end
 
-    # ロック前の前の前
+    # ロック前（残り3回）
     trait :before_lock3 do
       failed_attempts { Devise.maximum_attempts - 3 }
     end

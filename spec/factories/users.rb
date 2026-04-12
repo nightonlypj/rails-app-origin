@@ -1,11 +1,11 @@
 FactoryBot.define do
   factory :user do
     code               { Utils::UniqueCodeGenerator.base36_uuid }
-    sequence(:name)    { |n| "user(#{n})" }
-    email              { Faker::Internet.email(name: "#{name}#{Faker::Number.hexadecimal(digits: 3)}") }
-    password           { Faker::Internet.password(min_length: 8) }
-    confirmed_at       { '0000-01-01 00:00:00+0000' }
-    sign_in_count      { 1 }
+    name               { Faker::Japanese::Name.name.truncate(Settings.user_name_maximum) }
+    sequence(:email)   { |n| Faker::Internet.email(name: "user#{n}") }
+    password           { Faker::Internet.password(min_length: Devise.password_length.min) }
+    confirmed_at       { Faker::Date.backward(days: 365) }
+    sign_in_count      { Faker::Number.between(from: 1, to: 1_000) }
     current_sign_in_at { Time.now.utc - 1.hour }
     last_sign_in_at    { Time.now.utc - 2.hours }
     current_sign_in_ip { Faker::Internet.ip_v4_address }
@@ -18,17 +18,17 @@ FactoryBot.define do
       failed_attempts { Devise.maximum_attempts }
     end
 
-    # ロック前
+    # ロック前（残り1回）
     trait :before_lock1 do
       failed_attempts { Devise.maximum_attempts - 1 }
     end
 
-    # ロック前の前
+    # ロック前（残り2回）
     trait :before_lock2 do
       failed_attempts { Devise.maximum_attempts - 2 }
     end
 
-    # ロック前の前の前
+    # ロック前（残り3回）
     trait :before_lock3 do
       failed_attempts { Devise.maximum_attempts - 3 }
     end
@@ -56,13 +56,13 @@ FactoryBot.define do
 
     # 削除予約済み
     trait :destroy_reserved do
-      destroy_requested_at { 1.minute.ago }
+      destroy_requested_at { Faker::Time.backward(days: Settings.user_destroy_schedule_days.days) }
       destroy_schedule_at  { destroy_requested_at + Settings.user_destroy_schedule_days.days }
     end
 
     # 削除対象
     trait :destroy_targeted do
-      destroy_requested_at { 1.minute.ago - Settings.user_destroy_schedule_days.days }
+      destroy_requested_at { Faker::Time.between(from: 1.year.ago, to: Settings.user_destroy_schedule_days.days.ago - 1.second) }
       destroy_schedule_at  { destroy_requested_at + Settings.user_destroy_schedule_days.days }
     end
   end

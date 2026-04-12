@@ -15,7 +15,7 @@ RSpec.describe 'Users::Auth::TokenValidations', type: :request do
     end
   end
 
-  # GET /users/auth/validate_token(.json) トークン検証API(処理)
+  # トークン検証API(処理)
   # テストパターン
   #   未ログイン, ログイン中, APIログイン中
   #   ＋URLの拡張子: .json, ない

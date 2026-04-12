@@ -258,24 +258,12 @@ RSpec/EmptyLineAfterSubject:
 RSpec/ExampleLength:
   Enabled: false
 
-# C: RSpec/ExpectInLet: Do not use expect in let
-RSpec/ExpectInLet:
-  Enabled: false
-
 # C: [Correctable] RSpec/ImplicitSubject: Don't use implicit subject.
 RSpec/ImplicitSubject:
   Enabled: false
 
 # C: RSpec/IndexedLet: This let statement uses ? in its name. Please give it a meaningful name.
 RSpec/IndexedLet:
-  Enabled: false
-
-# C: RSpec/InstanceVariable: Avoid instance variables - use let, a method call, or a local variable (if possible).
-RSpec/InstanceVariable:
-  Enabled: false
-
-# C: RSpec/MissingExampleGroupArgument: The first argument to context should not be empty.
-RSpec/MissingExampleGroupArgument:
   Enabled: false
 
 # C: RSpec/MultipleExpectations: Example has too many expectations
@@ -296,14 +284,6 @@ RSpec/NestedGroups:
 
 # C: [Correctable] RSpec/ReceiveMessages: Use receive_messages instead of multiple stubs on lines [?].
 RSpec/ReceiveMessages:
-  Enabled: false
-
-# C: RSpec/RepeatedExampleGroupBody: Repeated context block body on line(s)
-RSpec/RepeatedExampleGroupBody:
-  Enabled: false
-
-# C: RSpec/RepeatedExampleGroupDescription: Repeated context block description on line(s)
-RSpec/RepeatedExampleGroupDescription:
   Enabled: false
 
 # C: [Correctable] RSpec/ScatteredLet: Group all let/let! blocks in the example group together.

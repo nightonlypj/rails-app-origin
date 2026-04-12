@@ -1,7 +1,7 @@
 require 'rails_helper'
 
 RSpec.describe 'Users::Sessions', type: :request do
-  # GET /users/sign_in ログイン
+  # ログイン
   # テストパターン
   #   未ログイン, ログイン中, ログイン中（削除予約済み）
   describe 'GET #new' do
@@ -26,7 +26,7 @@ RSpec.describe 'Users::Sessions', type: :request do
     end
   end
 
-  # POST /users/sign_in ログイン(処理)
+  # ログイン(処理)
   # テストパターン
   #   未ログイン, ログイン中, ログイン中（削除予約済み）
   #   有効なパラメータ（未ロック, ロック中, メール未確認, メールアドレス変更中, 削除予約済み）, 無効なパラメータ（存在しない, ロック前, ロック前の前, ロック前の前の前）
@@ -51,7 +51,7 @@ RSpec.describe 'Users::Sessions', type: :request do
       it 'メールが送信される' do
         subject
         expect(ActionMailer::Base.deliveries.count).to eq(1)
-        expect(ActionMailer::Base.deliveries[0].subject).to eq(get_subject('devise.mailer.unlock_instructions.subject')) # アカウントロックのお知らせ
+        expect(ActionMailer::Base.deliveries[0].subject).to eq(build_mail_subject('devise.mailer.unlock_instructions.subject')) # アカウントロックのお知らせ
         expect(ActionMailer::Base.deliveries[0].html_part.body).to include(url)
         expect(ActionMailer::Base.deliveries[0].text_part.body).to include(url)
       end
@@ -211,7 +211,7 @@ RSpec.describe 'Users::Sessions', type: :request do
     end
   end
 
-  # GET /users/sign_out ログアウト
+  # ログアウト
   # テストパターン
   #   未ログイン, ログイン中, ログイン中（削除予約済み）
   describe 'GET #delete' do
@@ -237,7 +237,7 @@ RSpec.describe 'Users::Sessions', type: :request do
     end
   end
 
-  # POST /users/sign_out ログアウト(処理)
+  # ログアウト(処理)
   # テストパターン
   #   未ログイン, ログイン中, ログイン中（削除予約済み）
   describe 'POST #destroy' do

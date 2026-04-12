@@ -7,21 +7,21 @@ RSpec.describe :all, type: :task do
   describe 'all:destroy' do
     subject { Rake.application['all:destroy'].execute('dry_run' => dry_run) }
 
-    # テスト内容
-    shared_examples 'OK' do
-      it '正常終了' do
+    shared_examples '正常終了' do
+      it 'エラーが発生しない' do
         expect { subject }.not_to raise_error
       end
     end
 
-    # テストケース
-    context 'ドライランtrue' do
+    context 'ドライランがtrue' do
       let(:dry_run) { 'true' }
-      it_behaves_like 'OK'
+
+      it_behaves_like '正常終了'
     end
-    context 'ドライランfalse' do
+    context 'ドライランがfalse' do
       let(:dry_run) { 'false' }
-      it_behaves_like 'OK'
+
+      it_behaves_like '正常終了'
     end
   end
 end
