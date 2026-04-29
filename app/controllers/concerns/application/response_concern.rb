@@ -8,7 +8,7 @@ module Application::ResponseConcern
     return if request.headers['uid'].blank?
 
     user = User.find_by(id: request.headers['uid'].to_i(36) - (36**2))
-    request.headers['uid'] = user&.uid
+    request.headers['uid'] = user&.uid || ''
   end
 
   # レスポンスのuidヘッダをuidから[id+36**2](36進数)に変更
@@ -16,7 +16,7 @@ module Application::ResponseConcern
     return if response.headers['uid'].blank?
 
     user = User.find_by(uid: response.headers['uid'])
-    response.headers['uid'] = user.present? ? (user.id + (36**2)).to_s(36) : nil
+    response.headers['uid'] = user.present? ? (user.id + (36**2)).to_s(36) : ''
   end
 
   # URLの拡張子がHTMLか、acceptヘッダに含まれるかを返却
@@ -34,15 +34,13 @@ module Application::ResponseConcern
     !(%r{,application/json[,;]} =~ target_accept_header).nil?
   end
 
-  def target_accept_header
-    ",#{request.headers[:ACCEPT]&.delete(' ')},"
-  end
-
   # acceptヘッダが空か、HTMLが含まれる（ワイルドカード可）かを返却
   def accept_header_html?
-    request.headers[:ACCEPT].blank? ||
-      !(%r{,text/html[,;]} =~ target_accept_header).nil? ||
-      !(%r{,\*/\*[,;]} =~ target_accept_header).nil?
+    request.headers['ACCEPT'].blank? || !(%r{,text/html[,;]} =~ target_accept_header).nil? || !(%r{,\*/\*[,;]} =~ target_accept_header).nil?
+  end
+
+  def target_accept_header
+    ",#{request.headers['ACCEPT']&.tr(' ', '')},"
   end
 
   # APIのみモードでAPIリクエストでない場合、存在しない(404)を返却

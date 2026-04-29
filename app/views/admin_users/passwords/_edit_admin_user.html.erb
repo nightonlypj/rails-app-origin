@@ -1,10 +1,11 @@
+<%# locals: (minimum_password_length:) %>
 <% validate_enabled = resource.errors.any? %>
 <%= form_with(model: resource, url: update_admin_user_password_path(reset_password_token: params[:reset_password_token]), html: { method: :put, novalidate: true, autocomplete: 'off' }, data: { turbo: false }) do |form| %>
   <%= form.hidden_field :reset_password_token %>
 
   <div class="form-outline<%= input_size_class_name(resource, :password) %>">
     <%= form.password_field :password, autocomplete: 'new-password', class: "form-control#{validate_class_name(validate_enabled, resource, :password, :password_confirmation)}" %>
-    <%= form.label :password, "#{t('新しいパスワード')}#{' ' + t('[%{length}文字以上]', length: @minimum_password_length) if @minimum_password_length.present?}", class: 'form-label', for: 'admin_user_password' %>
+    <%= form.label :password, "#{t('新しいパスワード')}#{' ' + t('[%{length}文字以上]', length: minimum_password_length) if minimum_password_length.present?}", class: 'form-label', for: 'admin_user_password' %>
     <%= render '/admin_users/shared/field_error_messages', messages: resource.errors[:password] %>
   </div>
 

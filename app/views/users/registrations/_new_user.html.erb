@@ -1,3 +1,4 @@
+<%# locals: (minimum_password_length:) %>
 <% validate_enabled = resource.errors.any? %>
 <%= form_with(model: resource, url: create_user_registration_path, html: { method: :post, novalidate: true, autocomplete: 'on' }, data: { turbo: false }) do |form| %>
   <div class="form-outline<%= input_size_class_name(resource, :name) %>">
@@ -14,7 +15,7 @@
 
   <div class="form-outline<%= input_size_class_name(resource, :password) %>">
     <%= form.password_field :password, autocomplete: 'new-password', class: "form-control#{validate_password_class_name(validate_enabled)}" %>
-    <%= form.label :password, "#{t('パスワード')}#{' ' + t('[%{length}文字以上]', length: @minimum_password_length) if @minimum_password_length.present?}", class: 'form-label', for: 'user_password' %>
+    <%= form.label :password, "#{t('パスワード')}#{' ' + t('[%{length}文字以上]', length: minimum_password_length) if minimum_password_length.present?}", class: 'form-label', for: 'user_password' %>
     <%= render '/users/shared/field_error_messages', messages: resource.errors[:password] %>
   </div>
 

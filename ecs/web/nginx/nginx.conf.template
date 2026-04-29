@@ -35,7 +35,7 @@ http {
                       '"$http_user_agent" $request_time "$host"';
 
 #    access_log  /var/log/nginx/access.log  main;
-    access_log  /dev/stdout  addhost;
+    access_log  /dev/stdout  main;
 ### END ###
 
     sendfile        on;
@@ -59,7 +59,7 @@ http {
     gzip_proxied no-cache no-store private expired auth;
     gzip_comp_level 5;
     gzip_min_length 1024;
-    gzip_types text/plain text/css application/json application/javascript text/xml application/xml application/xml+rss;
+    gzip_types text/plain text/css application/json application/javascript text/xml application/xml application/xml+rss image/svg+xml;
 ### END ###
 
     include /etc/nginx/conf.d/*.conf;

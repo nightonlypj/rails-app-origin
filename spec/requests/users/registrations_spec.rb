@@ -10,7 +10,7 @@ RSpec.describe 'Users::Registrations', type: :request do
     end
   end
 
-  # GET /users/sign_up アカウント登録
+  # アカウント登録
   # テストパターン
   #   未ログイン, ログイン中
   describe 'GET #new' do
@@ -31,7 +31,7 @@ RSpec.describe 'Users::Registrations', type: :request do
     end
   end
 
-  # POST /users/sign_up アカウント登録(処理)
+  # アカウント登録(処理)
   # テストパターン
   #   未ログイン, ログイン中
   #   有効なパラメータ, 無効なパラメータ
@@ -53,7 +53,7 @@ RSpec.describe 'Users::Registrations', type: :request do
           expect(current_user.name).to eq(attributes[:name])
 
           expect(ActionMailer::Base.deliveries.count).to eq(1)
-          expect(ActionMailer::Base.deliveries[0].subject).to eq(get_subject('devise.mailer.confirmation_instructions.subject')) # メールアドレス確認のお願い
+          expect(ActionMailer::Base.deliveries[0].subject).to eq(build_mail_subject('devise.mailer.confirmation_instructions.subject')) # メールアドレス確認のお願い
           expect(ActionMailer::Base.deliveries[0].html_part.body).to include(url)
           expect(ActionMailer::Base.deliveries[0].text_part.body).to include(url)
         end.to change(User, :count).by(1)
@@ -105,7 +105,7 @@ RSpec.describe 'Users::Registrations', type: :request do
     end
   end
 
-  # GET /users/update ユーザー情報変更
+  # ユーザー情報変更
   # テストパターン
   #   未ログイン, ログイン中, ログイン中（メールアドレス変更中, 削除予約済み）
   describe 'GET #edit' do
@@ -135,7 +135,7 @@ RSpec.describe 'Users::Registrations', type: :request do
     end
   end
 
-  # PUT /users/update ユーザー情報変更(処理)
+  # ユーザー情報変更(処理)
   # テストパターン
   #   未ログイン, ログイン中, ログイン中（メールアドレス変更中, 削除予約済み）
   #   有効なパラメータ（変更なし, あり）, 無効なパラメータ, 現在のパスワードがない
@@ -158,10 +158,10 @@ RSpec.describe 'Users::Registrations', type: :request do
         expect(current_user.image.url).to eq(user.image.url) # 画像 # NOTE: 変更されない
 
         expect(ActionMailer::Base.deliveries.count).to eq(change_email ? 3 : 1)
-        expect(ActionMailer::Base.deliveries[0].subject).to eq(get_subject('devise.mailer.email_changed.subject')) if change_email # メールアドレス変更受け付けのお知らせ
-        expect(ActionMailer::Base.deliveries[change_email ? 1 : 0].subject).to eq(get_subject('devise.mailer.password_change.subject')) # パスワード変更完了のお知らせ
+        expect(ActionMailer::Base.deliveries[0].subject).to eq(build_mail_subject('devise.mailer.email_changed.subject')) if change_email # メールアドレス変更受け付けのお知らせ
+        expect(ActionMailer::Base.deliveries[change_email ? 1 : 0].subject).to eq(build_mail_subject('devise.mailer.password_change.subject')) # パスワード変更完了のお知らせ
         if change_email
-          expect(ActionMailer::Base.deliveries[2].subject).to eq(get_subject('devise.mailer.confirmation_instructions.subject')) # メールアドレス確認のお願い
+          expect(ActionMailer::Base.deliveries[2].subject).to eq(build_mail_subject('devise.mailer.confirmation_instructions.subject')) # メールアドレス確認のお願い
           expect(ActionMailer::Base.deliveries[2].html_part.body).to include(url)
           expect(ActionMailer::Base.deliveries[2].text_part.body).to include(url)
         end
@@ -270,7 +270,7 @@ RSpec.describe 'Users::Registrations', type: :request do
     end
   end
 
-  # POST /users/image/update ユーザー画像変更(処理)
+  # ユーザー画像変更(処理)
   # テストパターン
   #   未ログイン, ログイン中, ログイン中（削除予約済み）
   #   有効なパラメータ, 無効なパラメータ
@@ -350,7 +350,7 @@ RSpec.describe 'Users::Registrations', type: :request do
     end
   end
 
-  # POST /users/image/destroy ユーザー画像削除(処理)
+  # ユーザー画像削除(処理)
   # テストパターン
   #   未ログイン, ログイン中, ログイン中（削除予約済み）
   describe 'POST #image_destroy' do
@@ -395,7 +395,7 @@ RSpec.describe 'Users::Registrations', type: :request do
     end
   end
 
-  # GET /users/delete アカウント削除
+  # アカウント削除
   # テストパターン
   #   未ログイン, ログイン中, ログイン中（削除予約済み）
   describe 'GET #delete' do
@@ -421,7 +421,7 @@ RSpec.describe 'Users::Registrations', type: :request do
     end
   end
 
-  # POST /users/delete アカウント削除(処理)
+  # アカウント削除(処理)
   # テストパターン
   #   未ログイン, ログイン中, ログイン中（削除予約済み）
   describe 'POST #destroy' do
@@ -438,7 +438,7 @@ RSpec.describe 'Users::Registrations', type: :request do
         expect(current_user.destroy_schedule_at).to be_between(start_time.floor + Settings.user_destroy_schedule_days.days,
                                                                Time.current.ceil + Settings.user_destroy_schedule_days.days)
         expect(ActionMailer::Base.deliveries.count).to eq(1)
-        expect(ActionMailer::Base.deliveries[0].subject).to eq(get_subject('mailer.user.destroy_reserved.subject')) # アカウント削除受け付けのお知らせ
+        expect(ActionMailer::Base.deliveries[0].subject).to eq(build_mail_subject('mailer.user.destroy_reserved.subject')) # アカウント削除受け付けのお知らせ
         expect(ActionMailer::Base.deliveries[0].html_part.body).to include(url)
         expect(ActionMailer::Base.deliveries[0].text_part.body).to include(url)
       end
@@ -464,6 +464,7 @@ RSpec.describe 'Users::Registrations', type: :request do
       # it_behaves_like 'NG' # NOTE: 未ログインの為、対象がない
       it_behaves_like 'ToLogin', 'devise.failure.unauthenticated', nil
     end
+    # rubocop:disable RSpec/RepeatedExampleGroupDescription
     context 'ログイン中' do
       include_context 'ログイン処理'
       it_behaves_like 'OK'
@@ -472,6 +473,7 @@ RSpec.describe 'Users::Registrations', type: :request do
       include_context 'ログイン処理'
       it_behaves_like 'ToLogin', nil, 'devise.registrations.destroy_reserved'
     end
+    # rubocop:enable RSpec/RepeatedExampleGroupDescription
     context 'ログイン中（削除予約済み）' do
       include_context 'ログイン処理', :destroy_reserved
       it_behaves_like 'NG'
@@ -479,7 +481,7 @@ RSpec.describe 'Users::Registrations', type: :request do
     end
   end
 
-  # GET /users/undo_delete アカウント削除取り消し
+  # アカウント削除取り消し
   # テストパターン
   #   未ログイン, ログイン中, ログイン中（削除予約済み）
   describe 'GET #undo_delete' do
@@ -505,7 +507,7 @@ RSpec.describe 'Users::Registrations', type: :request do
     end
   end
 
-  # POST /users/undo_delete アカウント削除取り消し(処理)
+  # アカウント削除取り消し(処理)
   # テストパターン
   #   未ログイン, ログイン中, ログイン中（削除予約済み）
   describe 'POST #undo_destroy' do
@@ -519,7 +521,7 @@ RSpec.describe 'Users::Registrations', type: :request do
         expect(current_user.destroy_requested_at).to be_nil
         expect(current_user.destroy_schedule_at).to be_nil
         expect(ActionMailer::Base.deliveries.count).to eq(1)
-        expect(ActionMailer::Base.deliveries[0].subject).to eq(get_subject('mailer.user.undo_destroy_reserved.subject')) # アカウント削除取り消し完了のお知らせ
+        expect(ActionMailer::Base.deliveries[0].subject).to eq(build_mail_subject('mailer.user.undo_destroy_reserved.subject')) # アカウント削除取り消し完了のお知らせ
       end
     end
     shared_examples 'NG' do
@@ -548,6 +550,7 @@ RSpec.describe 'Users::Registrations', type: :request do
       it_behaves_like 'NG'
       it_behaves_like 'ToTop', 'alert.user.not_destroy_reserved', nil
     end
+    # rubocop:disable RSpec/RepeatedExampleGroupDescription
     context 'ログイン中（削除予約済み）' do
       include_context 'ログイン処理', :destroy_reserved
       it_behaves_like 'OK'
@@ -556,5 +559,6 @@ RSpec.describe 'Users::Registrations', type: :request do
       include_context 'ログイン処理', :destroy_reserved
       it_behaves_like 'ToTop', nil, 'devise.registrations.undo_destroy_reserved'
     end
+    # rubocop:enable RSpec/RepeatedExampleGroupDescription
   end
 end

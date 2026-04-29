@@ -23,7 +23,7 @@
       <hr/>
     </article>
 <% end %>
-    <%= render 'lists' %>
+    <%= render 'lists', infomations: @infomations %>
 
     <div class="d-flex justify-content-center table-responsive">
       <%= paginate @infomations %>

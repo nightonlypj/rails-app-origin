@@ -1,73 +1,66 @@
 FactoryBot.define do
   factory :infomation do
-    label            { :not }
-    sequence(:title) { |n| "infomation(#{n})" }
-    summary          { "#{title}の要約" }
-    body             { "#{title}の本文" }
-    started_at       { 1.hour.ago }
-    ended_at         { 3.hours.from_now }
+    locale           { [*Settings.locales.keys, nil].sample }
+    label            { Infomation.labels.keys.sample }
+    sequence(:title) { |n| "お知らせ(#{n})" }
+    summary          { Faker::Lorem.sentence }
+    body             { [Faker::Lorem.paragraphs.join("\n"), nil].sample }
+    started_at       { Faker::Time.between(from: 1.year.ago, to: 1.minute.ago) }
+    ended_at         { [Faker::Time.between(from: 1.hour.from_now, to: 1.year.from_now), nil].sample }
     target           { :all }
+    # force_started_at { nil }
+    # force_ended_at   { nil }
 
-    # 全員
+    # 地域
+    trait :all_locale do
+      locale { nil }
+    end
+    trait :my_locale do
+      locale { I18n.locale }
+    end
+    trait :other_locale do
+      locale { (Settings.locales.keys - [I18n.locale]).sample }
+    end
+
+    # 対象
     trait :all do
       # target { :all }
     end
-
-    # 対象ユーザーのみ
     trait :user do
       target { :user }
+      association :user
     end
 
-    # 終了なし
-    trait :forever do
-      label    { :hindrance }
-      ended_at { nil }
+    # 表示期間
+    trait :period_inside do
+      # started_at { Faker::Time.between(from: 1.year.ago, to: 1.minute.ago) }
+      # ended_at   { [Faker::Time.between(from: 1.hour.from_now, to: 1.year.from_now), nil].sample }
+    end
+    trait :period_finished do
+      # started_at { Faker::Time.between(from: 1.year.ago, to: 1.minute.ago) }
+      ended_at   { Faker::Time.between(from: started_at, to: 1.second.ago) }
+    end
+    trait :period_before do
+      started_at { Faker::Time.between(from: 1.hour.from_now, to: 1.year.from_now) }
+      ended_at   { [Faker::Time.between(from: started_at, to: 1.year.from_now), nil].sample }
     end
 
-    # 終了済み
-    trait :finished do
-      ended_at { 1.second.ago }
+    # 強制表示期間
+    trait :force_period_not_set do
+      # force_started_at { nil }
+      # force_ended_at   { nil }
     end
-
-    # 予約（終了あり）
-    trait :reserve do
-      started_at { 1.hour.from_now }
+    trait :force_period_inside do
+      force_started_at { Faker::Time.between(from: started_at, to: 1.minute.ago) }
+      force_ended_at   { Faker::Time.between(from: 1.hour.from_now, to: ended_at || 1.year.from_now) }
     end
-
-    # 予約（終了なし）
-    trait :reserve_forever do
-      started_at { 1.hour.from_now }
-      ended_at { nil }
+    trait :force_period_finished do
+      force_started_at { Faker::Time.between(from: started_at, to: 1.minute.ago) }
+      force_ended_at   { Faker::Time.between(from: force_started_at, to: 1.second.ago) }
     end
-
-    # 大切なお知らせ
-    trait :important do
-      label            { :maintenance }
-      force_started_at { Time.current }
-      force_ended_at   { 2.hours.from_now }
-    end
-
-    # 大切なお知らせ: 終了なし
-    trait :force_forever do
-      label          { :other }
-      ended_at       { nil }
-      force_ended_at { nil }
-    end
-
-    # 大切なお知らせ: 終了済み
-    trait :force_finished do
-      force_ended_at { 1.second.ago }
-    end
-
-    # 大切なお知らせ: 予約（終了あり）
-    trait :force_reserve do
-      force_started_at { 1.hour.from_now }
-    end
-
-    # 大切なお知らせ: 予約（終了なし）
-    trait :force_reserve_forever do
-      force_started_at { 1.hour.from_now }
-      force_ended_at   { nil }
+    trait :force_period_before do
+      force_started_at { Faker::Time.between(from: 1.hour.from_now, to: 1.year.from_now) }
+      force_ended_at   { Faker::Time.between(from: force_started_at, to: ended_at || 1.year.from_now) }
     end
   end
 end

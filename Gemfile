@@ -1,10 +1,10 @@
 source 'https://rubygems.org'
 git_source(:github) { |repo| "https://github.com/#{repo}.git" }
 
-ruby '3.4.3'
+ruby '3.4.9'
 
 # Bundle edge Rails instead: gem "rails", github: "rails/rails", branch: "main"
-gem 'rails', '~> 8.0.0'
+gem 'rails', '~> 8.1.0'
 
 # The original asset pipeline for Rails [https://github.com/rails/sprockets-rails]
 gem 'sprockets-rails'
@@ -97,6 +97,7 @@ gem 'enum_help'
 
 # Use Unicorn
 gem 'unicorn'
+gem 'rack', '< 3' # NOTE: Unicorn未対応 -> app error: undefined method '=~' for an instance of Array (NoMethodError)
 
 # Use Exception Notification
 gem 'exception_notification'
@@ -168,6 +169,8 @@ group :development do
   gem 'capistrano-bundler'
   gem 'capistrano-rails'
   gem 'capistrano-rvm'
+  gem 'ed25519'
+  gem 'bcrypt_pbkdf'
 end
 
 group :test do

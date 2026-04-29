@@ -1,7 +1,8 @@
+<%# locals: (infomations:) %>
 <div class="card card-body">
   <h5 class="card-title mb-3"><%= t('大切なお知らせ') %></h5>
   <div class="card-text">
-<% @infomations.each do |infomation| %>
+<% infomations.each do |infomation| %>
     <article class="mb-1">
       <%= render '/infomations/label', infomation: infomation %>
       <span>

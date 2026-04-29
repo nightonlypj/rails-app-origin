@@ -8,11 +8,6 @@ RSpec.configure do |config|
     Rails.application.load_tasks
   end
 
-  # タスクを毎回実行するようにする
-  config.before do
-    Rake.application.tasks.each(&:reenable)
-  end
-
   # ImageUploaderで作成したファイルをディレクトリごと削除
   config.after(:suite) do
     store_dir = User.new.image.store_dir
@@ -20,7 +15,7 @@ RSpec.configure do |config|
       FileUtils.rm_rf(store_dir, secure: true)
     else
       # :nocov:
-      p "[Skip]rm -rf #{store_dir}"
+      p "[Skip]rm -rf #{store_dir}" # rubocop:disable RSpec/Output
       # :nocov:
     end
   end

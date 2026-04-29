@@ -3,17 +3,17 @@
 class Users::UnlocksController < Devise::UnlocksController
   prepend_before_action :response_not_found_for_api_mode_not_api
 
-  # GET /users/unlock/resend アカウントロック解除[メール再送]
+  # アカウントロック解除[メール再送]
   # def new
   #   super
   # end
 
-  # POST /users/unlock/resend アカウントロック解除[メール再送](処理)
+  # アカウントロック解除[メール再送](処理)
   # def create
   #   super
   # end
 
-  # GET /users/unlock アカウントロック解除(処理)
+  # アカウントロック解除(処理)
   # def show
   #   super
   # end

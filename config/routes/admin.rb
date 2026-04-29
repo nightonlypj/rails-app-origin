@@ -1,5 +1,5 @@
 Rails.application.routes.draw do
-  scope '(:locale)', locale: /#{I18n.available_locales.map(&:to_s).join('|')}/ do
+  scope '(:locale)', locale: /#{I18n.available_locales.join('|')}/ do
     devise_for :admin_users, skip: :all
     devise_scope :admin_user do
       get    'admin/sign_in',        to: 'admin_users/sessions#new',     as: 'new_admin_user_session'

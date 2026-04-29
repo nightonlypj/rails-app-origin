@@ -25,10 +25,16 @@ Rails.application.configure do
   config.active_storage.service = :local
 
   # Assume all access to the app is happening through a SSL-terminating reverse proxy.
+  # config.assume_ssl = true
+  ### START ###
   config.assume_ssl = true
+  ### END ###
 
   # Force all access to the app over SSL, use Strict-Transport-Security, and use secure cookies.
+  # config.force_ssl = true
+  ### START ###
   config.force_ssl = true
+  ### END ###
 
   # Skip http-to-https redirect for the default health check endpoint.
   # config.ssl_options = { redirect: { exclude: ->(request) { request.path == "/up" } } }
@@ -38,13 +44,12 @@ Rails.application.configure do
 
   # Log to STDOUT with the current request id as a default log tag.
   config.log_tags = [:request_id]
-
   ### START ###
-  # config.logger   = ActiveSupport::TaggedLogging.logger($stdout)
-  config.logger = ActiveSupport::TaggedLogging.logger($stdout) if ENV['RAILS_LOG_TO_STDOUT'].present?
+  # config.logger   = ActiveSupport::TaggedLogging.logger(STDOUT)
+  config.logger = ActiveSupport::TaggedLogging.logger(STDOUT) if ENV['RAILS_LOG_TO_STDOUT'].present? # rubocop:disable Style/GlobalStdStream
   ### END ###
 
-  # Change to "debug" to log everything (including potentially personally-identifiable information!)
+  # Change to "debug" to log everything (including potentially personally-identifiable information!).
   config.log_level = ENV.fetch('RAILS_LOG_LEVEL', 'info')
 
   # Prevent health checks from clogging up the logs.
@@ -67,6 +72,9 @@ Rails.application.configure do
   # Ignore bad email addresses and do not raise email delivery errors.
   # Set this to true and configure the email server for immediate delivery to raise delivery errors.
   # config.action_mailer.raise_delivery_errors = false
+  ### START ###
+  config.action_mailer.raise_delivery_errors = true
+  ### END ###
 
   # Set host to be used by links generated in mailer templates.
   ### START ###
@@ -76,7 +84,7 @@ Rails.application.configure do
   config.action_mailer.smtp_settings = ENV['SMTP_SETTINGS'].present? ? eval(ENV['SMTP_SETTINGS']) : nil # rubocop:disable Security/Eval
   ### END ###
 
-  # Specify outgoing SMTP server. Remember to add smtp/* credentials via rails credentials:edit.
+  # Specify outgoing SMTP server. Remember to add smtp/* credentials via bin/rails credentials:edit.
   # config.action_mailer.smtp_settings = {
   #   user_name: Rails.application.credentials.dig(:smtp, :user_name),
   #   password: Rails.application.credentials.dig(:smtp, :password),

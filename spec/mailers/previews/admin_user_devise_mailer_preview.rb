@@ -1,4 +1,4 @@
-# Preview all emails at http://localhost:3000/rails/mailers/admin_user_devise_mailer
+# Preview all emails at /rails/mailers/admin_user_devise_mailer
 class AdminUserDeviseMailerPreview < ActionMailer::Preview
   # パスワード再設定方法のお知らせ
   def reset_password_instructions

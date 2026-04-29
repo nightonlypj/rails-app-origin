@@ -18,7 +18,7 @@ RSpec.describe 'Users::Auth::Registrations', type: :request do
     end
   end
 
-  # POST /users/auth/sign_up(.json) アカウント登録API(処理)
+  # アカウント登録API(処理)
   # テストパターン
   #   未ログイン, ログイン中, APIログイン中
   #   パラメータなし, 有効なパラメータ, 無効なパラメータ, URLがない, URLがホワイトリストにない
@@ -49,7 +49,7 @@ RSpec.describe 'Users::Auth::Registrations', type: :request do
           expect(current_user.name).to eq(params[:name])
 
           expect(ActionMailer::Base.deliveries.count).to eq(1)
-          expect(ActionMailer::Base.deliveries[0].subject).to eq(get_subject('devise.mailer.confirmation_instructions.subject')) # メールアドレス確認のお願い
+          expect(ActionMailer::Base.deliveries[0].subject).to eq(build_mail_subject('devise.mailer.confirmation_instructions.subject')) # メールアドレス確認のお願い
           expect(ActionMailer::Base.deliveries[0].html_part.body).to include(url)
           expect(ActionMailer::Base.deliveries[0].text_part.body).to include(url)
           expect(ActionMailer::Base.deliveries[0].html_part.body).to include(url_param)
@@ -200,7 +200,7 @@ RSpec.describe 'Users::Auth::Registrations', type: :request do
       it_behaves_like '[未ログイン/ログイン中]'
     end
     context 'ログイン中' do
-      include_context '未ログイン処理'
+      include_context 'ログイン処理'
       it_behaves_like '[未ログイン/ログイン中]'
     end
     context 'APIログイン中' do
@@ -213,7 +213,7 @@ RSpec.describe 'Users::Auth::Registrations', type: :request do
     end
   end
 
-  # GET /users/auth/detail(.json) ユーザー情報詳細API
+  # ユーザー情報詳細API
   # テストパターン
   #   未ログイン, ログイン中, APIログイン中, APIログイン中（削除予約済み）
   #   ＋URLの拡張子: .json, ない
@@ -302,7 +302,7 @@ RSpec.describe 'Users::Auth::Registrations', type: :request do
     end
   end
 
-  # POST /users/auth/update(.json) ユーザー情報変更API(処理)
+  # ユーザー情報変更API(処理)
   # テストパターン
   #   未ログイン, ログイン中, APIログイン中, APIログイン中（削除予約済み）
   #   パラメータなし, 有効なパラメータ（変更なし, あり）, 無効なパラメータ, 現在のパスワードがない, URLがない, URLがホワイトリストにない
@@ -334,10 +334,10 @@ RSpec.describe 'Users::Auth::Registrations', type: :request do
         expect(current_user.image.url).to eq(user.image.url) # 画像 # NOTE: 変更されない
 
         expect(ActionMailer::Base.deliveries.count).to eq(change_email ? 3 : 1)
-        expect(ActionMailer::Base.deliveries[0].subject).to eq(get_subject('devise.mailer.email_changed.subject')) if change_email # メールアドレス変更受け付けのお知らせ
-        expect(ActionMailer::Base.deliveries[change_email ? 1 : 0].subject).to eq(get_subject('devise.mailer.password_change.subject')) # パスワード変更完了のお知らせ
+        expect(ActionMailer::Base.deliveries[0].subject).to eq(build_mail_subject('devise.mailer.email_changed.subject')) if change_email # メールアドレス変更受け付けのお知らせ
+        expect(ActionMailer::Base.deliveries[change_email ? 1 : 0].subject).to eq(build_mail_subject('devise.mailer.password_change.subject')) # パスワード変更完了のお知らせ
         if change_email
-          expect(ActionMailer::Base.deliveries[2].subject).to eq(get_subject('devise.mailer.confirmation_instructions.subject')) # メールアドレス確認のお願い
+          expect(ActionMailer::Base.deliveries[2].subject).to eq(build_mail_subject('devise.mailer.confirmation_instructions.subject')) # メールアドレス確認のお願い
           expect(ActionMailer::Base.deliveries[2].html_part.body).to include(url)
           expect(ActionMailer::Base.deliveries[2].text_part.body).to include(url)
           expect(ActionMailer::Base.deliveries[2].html_part.body).to include(url_param)
@@ -592,7 +592,7 @@ RSpec.describe 'Users::Auth::Registrations', type: :request do
     end
   end
 
-  # POST /users/auth/image/update(.json) ユーザー画像変更API(処理)
+  # ユーザー画像変更API(処理)
   # テストパターン
   #   未ログイン, ログイン中, APIログイン中, APIログイン中（削除予約済み）
   #   有効なパラメータ, 無効なパラメータ
@@ -717,7 +717,7 @@ RSpec.describe 'Users::Auth::Registrations', type: :request do
     end
   end
 
-  # POST /users/auth/image/delete(.json) ユーザー画像削除API(処理)
+  # ユーザー画像削除API(処理)
   # テストパターン
   #   未ログイン, ログイン中, APIログイン中, APIログイン中（削除予約済み）
   #   ＋URLの拡張子: .json, ない
@@ -805,7 +805,7 @@ RSpec.describe 'Users::Auth::Registrations', type: :request do
     end
   end
 
-  # POST /users/auth/delete(.json) アカウント削除API(処理)
+  # アカウント削除API(処理)
   # テストパターン
   #   未ログイン, ログイン中, APIログイン中, APIログイン中（削除予約済み）
   #   パラメータなし, 有効なパラメータ, URLがない, URLがホワイトリストにない
@@ -834,7 +834,7 @@ RSpec.describe 'Users::Auth::Registrations', type: :request do
         expect(current_user.destroy_schedule_at).to be_between(start_time.floor + Settings.user_destroy_schedule_days.days,
                                                                Time.current.ceil + Settings.user_destroy_schedule_days.days)
         expect(ActionMailer::Base.deliveries.count).to eq(1)
-        expect(ActionMailer::Base.deliveries[0].subject).to eq(get_subject('mailer.user.destroy_reserved.subject')) # アカウント削除受け付けのお知らせ
+        expect(ActionMailer::Base.deliveries[0].subject).to eq(build_mail_subject('mailer.user.destroy_reserved.subject')) # アカウント削除受け付けのお知らせ
         expect(ActionMailer::Base.deliveries[0].html_part.body).to include(params[:undo_delete_url])
         expect(ActionMailer::Base.deliveries[0].text_part.body).to include(params[:undo_delete_url])
       end
@@ -1027,7 +1027,7 @@ RSpec.describe 'Users::Auth::Registrations', type: :request do
     end
   end
 
-  # POST /users/auth/undo_delete(.json) アカウント削除取り消しAPI(処理)
+  # アカウント削除取り消しAPI(処理)
   # テストパターン
   #   未ログイン, ログイン中, APIログイン中, APIログイン中（削除予約済み）
   #   ＋URLの拡張子: .json, ない
@@ -1047,7 +1047,7 @@ RSpec.describe 'Users::Auth::Registrations', type: :request do
         expect(current_user.destroy_requested_at).to be_nil
         expect(current_user.destroy_schedule_at).to be_nil
         expect(ActionMailer::Base.deliveries.count).to eq(1)
-        expect(ActionMailer::Base.deliveries[0].subject).to eq(get_subject('mailer.user.undo_destroy_reserved.subject')) # アカウント削除取り消し完了のお知らせ
+        expect(ActionMailer::Base.deliveries[0].subject).to eq(build_mail_subject('mailer.user.undo_destroy_reserved.subject')) # アカウント削除取り消し完了のお知らせ
       end
     end
     shared_examples 'NG' do

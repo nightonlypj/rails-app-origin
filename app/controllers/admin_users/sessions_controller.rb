@@ -5,17 +5,17 @@ class AdminUsers::SessionsController < Devise::SessionsController
 
   # before_action :configure_sign_in_params, only: :create
 
-  # GET /admin/sign_in ログイン
+  # ログイン
   # def new
   #   super
   # end
 
-  # POST /admin/sign_in ログイン(処理)
+  # ログイン(処理)
   # def create
   #   super
   # end
 
-  # POST(GET,DELETE) /admin/sign_out ログアウト(処理)
+  # ログアウト(処理)
   # def destroy
   #   super
   # end

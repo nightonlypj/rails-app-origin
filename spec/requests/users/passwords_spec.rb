@@ -10,7 +10,7 @@ RSpec.describe 'Users::Passwords', type: :request do
     end
   end
 
-  # GET /users/password/reset パスワード再設定[メール送信]
+  # パスワード再設定[メール送信]
   # テストパターン
   #   未ログイン, ログイン中
   describe 'GET #new' do
@@ -31,7 +31,7 @@ RSpec.describe 'Users::Passwords', type: :request do
     end
   end
 
-  # POST /users/password/reset パスワード再設定[メール送信](処理)
+  # パスワード再設定[メール送信](処理)
   # テストパターン
   #   未ログイン, ログイン中
   #   有効なパラメータ（未ロック, ロック中, メール未確認, メールアドレス変更中）, 無効なパラメータ
@@ -51,7 +51,7 @@ RSpec.describe 'Users::Passwords', type: :request do
       it 'メールが送信される' do
         subject
         expect(ActionMailer::Base.deliveries.count).to eq(1)
-        expect(ActionMailer::Base.deliveries[0].subject).to eq(get_subject('devise.mailer.reset_password_instructions.subject')) # パスワード再設定方法のお知らせ
+        expect(ActionMailer::Base.deliveries[0].subject).to eq(build_mail_subject('devise.mailer.reset_password_instructions.subject')) # パスワード再設定方法のお知らせ
         expect(ActionMailer::Base.deliveries[0].html_part.body).to include(url)
         expect(ActionMailer::Base.deliveries[0].text_part.body).to include(url)
       end
@@ -148,7 +148,7 @@ RSpec.describe 'Users::Passwords', type: :request do
     end
   end
 
-  # GET /users/password パスワード再設定
+  # パスワード再設定
   # テストパターン
   #   未ログイン, ログイン中
   #   トークン: 期限内（未ロック, ロック中, メール未確認, メールアドレス変更中）, 期限切れ, 存在しない, ない
@@ -240,7 +240,7 @@ RSpec.describe 'Users::Passwords', type: :request do
     end
   end
 
-  # PUT /users/password パスワード再設定(処理)
+  # パスワード再設定(処理)
   # テストパターン
   #   未ログイン, ログイン中
   #   トークン: 期限内（未ロック, ロック中, メール未確認, メールアドレス変更中）, 期限切れ, 存在しない, ない
@@ -263,7 +263,7 @@ RSpec.describe 'Users::Passwords', type: :request do
         expect(current_user.failed_attempts).to eq(0)
 
         expect(ActionMailer::Base.deliveries.count).to eq(1)
-        expect(ActionMailer::Base.deliveries[0].subject).to eq(get_subject('devise.mailer.password_change.subject')) # パスワード変更完了のお知らせ
+        expect(ActionMailer::Base.deliveries[0].subject).to eq(build_mail_subject('devise.mailer.password_change.subject')) # パスワード変更完了のお知らせ
       end
     end
     shared_examples 'NG' do

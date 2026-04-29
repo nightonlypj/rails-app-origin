@@ -9,7 +9,7 @@ Bundler.require(*Rails.groups)
 module RailsApp
   class Application < Rails::Application
     # Initialize configuration defaults for originally generated Rails version.
-    config.load_defaults 8.0
+    config.load_defaults 8.1
 
     # Please, add to the `ignore` list any other `lib` subdirectories that do
     # not contain `.rb` files, or that should not be reloaded or eager loaded.
@@ -31,8 +31,8 @@ module RailsApp
     config.action_view.field_error_proc = proc { |html_tag, _instance| html_tag }
     config.active_job.queue_adapter = :delayed_job
 
-    # NOTE: Devise Token Authが対応していない為 -> ActionController::Redirecting::UnsafeRedirectError
-    config.action_controller.raise_on_open_redirects = false
+    # NOTE: Devise Token Authが対応していない為 -> ActionController::Redirecting::OpenRedirectError
+    config.action_controller.action_on_open_redirect = :log
     ### END ###
   end
 end

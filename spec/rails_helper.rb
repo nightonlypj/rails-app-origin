@@ -19,6 +19,9 @@ require 'test_prof/recipes/rspec/before_all'
 # Use SuperDiff
 require 'super_diff/rspec-rails'
 
+# Use Matchers
+RSpec::Matchers.define_negated_matcher :not_change, :change
+
 # Requires supporting ruby files with custom matchers and macros, etc, in
 # spec/support/ and its subdirectories. Files matching `spec/**/*_spec.rb` are
 # run as spec files by default. This means that files in spec/support that end
@@ -40,7 +43,7 @@ begin
   ActiveRecord::Migration.maintain_test_schema!
 rescue ActiveRecord::PendingMigrationError => e
   # :nocov:
-  puts e.to_s.strip
+  puts e.to_s.strip # rubocop:disable RSpec/Output
   exit 1
   # :nocov:
 end
@@ -102,17 +105,17 @@ module FactoryBotHelper
     def make_updated_at(created_at)
       return created_at if created_at > max_time
 
-      Faker::Time.between(from: created_at, to: max_time)
+      Faker::Time.between(from: created_at, to: max_time).floor
     end
 
     private
 
     def base_time
-      @base_time ||= 1.year.ago
+      @base_time ||= 1.year.ago.floor
     end
 
     def max_time
-      @max_time ||= 1.hour.ago
+      @max_time ||= 1.hour.ago.floor
     end
   end
 end

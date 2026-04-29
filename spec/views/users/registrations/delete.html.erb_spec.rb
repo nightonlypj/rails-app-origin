@@ -4,19 +4,16 @@ RSpec.describe 'users/registrations/delete', type: :view do
   next if Settings.api_only_mode
 
   include_context 'ログイン処理'
-  before_all { @resource = user }
 
-  context do
-    it '対象の送信先と項目が含まれる' do
-      render
-      assert_select 'form[action=?][method=?]', destroy_user_registration_path, 'post' do
-        assert_select 'button[type=?]', 'submit'
-      end
+  it '対象の送信先と項目が含まれる' do
+    render
+    assert_select 'form[action=?][method=?]', destroy_user_registration_path, 'post' do
+      assert_select 'button[type=?]', 'submit'
     end
+  end
 
-    it '対象のパスが含まれる' do
-      render
-      expect(rendered).to include("href=\"#{edit_user_registration_path}\"") # ユーザー情報変更
-    end
+  it '対象のパスが含まれる' do
+    render
+    expect(rendered).to include("href=\"#{edit_user_registration_path}\"") # ユーザー情報変更
   end
 end

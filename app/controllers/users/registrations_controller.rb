@@ -11,27 +11,28 @@ class Users::RegistrationsController < Devise::RegistrationsController
   prepend_before_action :authenticate_scope!, only: %i[edit update image_update image_destroy delete destroy undo_delete undo_destroy]
   prepend_before_action :response_not_found_for_api_mode_not_api
 
-  # GET /users/sign_up アカウント登録
+  # アカウント登録
   # def new
   #   super
   # end
 
-  # POST /users/sign_up アカウント登録(処理)
+  # アカウント登録(処理)
   def create
     params[:user][:code] = create_unique_code(User, 'code', "Users::RegistrationsController.create #{params[:user]}")
     ApplicationRecord.transaction do
       super
+
       flash[:alert] = resource.errors[:code].first if resource.errors[:code].present?
       resource.send_confirmation_instructions if resource.errors.blank? # NOTE: devise_token_auth導入後、送信されなくなった為
     end
   end
 
-  # GET /users/update ユーザー情報変更
+  # ユーザー情報変更
   # def edit
   #   super
   # end
 
-  # PUT /users/update ユーザー情報変更(処理)
+  # ユーザー情報変更(処理)
   def update
     # NOTE: 存在するメールアドレスの場合はエラーにする
     if resource.email != params[:user][:email] && User.find_by(email: params[:user][:email]).present?
@@ -42,7 +43,7 @@ class Users::RegistrationsController < Devise::RegistrationsController
     super
   end
 
-  # POST /users/image/update ユーザー画像変更(処理)
+  # ユーザー画像変更(処理)
   def image_update
     if params.blank? || params[:user].blank?
       resource.errors.add(:image, :blank)
@@ -57,18 +58,19 @@ class Users::RegistrationsController < Devise::RegistrationsController
     end
   end
 
-  # POST /users/image/destroy ユーザー画像削除(処理)
+  # ユーザー画像削除(処理)
   def image_destroy
     @user = User.find(resource.id)
     @user.remove_image!
     @user.save!
+
     redirect_to edit_user_registration_path, notice: t('notice.user.image_destroy')
   end
 
-  # GET /users/delete アカウント削除
+  # アカウント削除
   def delete; end
 
-  # POST /users/delete アカウント削除(処理)
+  # アカウント削除(処理)
   def destroy
     # resource.destroy
     resource.set_destroy_reserve!
@@ -79,18 +81,20 @@ class Users::RegistrationsController < Devise::RegistrationsController
     # :nocov:
     set_flash_message! :notice, :destroy_reserved
     yield resource if block_given?
+
     respond_with_navigational(resource) { redirect_to after_sign_out_path_for(resource_name) }
   end
 
-  # GET /users/undo_delete アカウント削除取り消し
+  # アカウント削除取り消し
   def undo_delete; end
 
-  # POST /users/undo_delete アカウント削除取り消し(処理)
+  # アカウント削除取り消し(処理)
   def undo_destroy
     resource.set_undo_destroy_reserve!
     UserMailer.with(user: resource).undo_destroy_reserved.deliver_now
 
     set_flash_message! :notice, :undo_destroy_reserved
+
     redirect_to root_path
   end
 

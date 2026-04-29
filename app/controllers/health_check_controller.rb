@@ -1,5 +1,5 @@
 class HealthCheckController < ApplicationController
-  # GET /_health ヘルスチェック
+  # ヘルスチェック
   def index
     ActiveRecord::Base.connection.execute('SELECT 1') if %w[all db].include?(params[:target])
 

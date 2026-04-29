@@ -11,8 +11,7 @@ shared_context 'パスワードリセットトークン作成（管理者）' do
   let_it_be(:locked_at)            { locked ? Time.now.utc - 1.minute : nil }
   let_it_be(:failed_attempts)      { locked ? Devise.maximum_attempts : 0 }
   let_it_be(:send_admin_user) do
-    FactoryBot.create(:admin_user, reset_password_token: digest_token, reset_password_sent_at: sent_at,
-                                   unlock_token:, locked_at:, failed_attempts:)
+    FactoryBot.create(:admin_user, reset_password_token: digest_token, reset_password_sent_at: sent_at, unlock_token:, locked_at:, failed_attempts:)
   end
 end
 

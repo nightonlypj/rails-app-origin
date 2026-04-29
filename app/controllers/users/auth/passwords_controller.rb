@@ -11,7 +11,7 @@ class Users::Auth::PasswordsController < DeviseTokenAuth::PasswordsController
   prepend_before_action :update_request_uid_header
   skip_after_action :update_auth_header, only: :update
 
-  # POST /users/auth/password(.json) パスワード再設定API[メール送信](処理)
+  # パスワード再設定API[メール送信](処理)
   def create
     return render_create_error_missing_email if request.request_parameters.blank?
     return render_create_error_missing_redirect_url unless @redirect_url
@@ -20,7 +20,7 @@ class Users::Auth::PasswordsController < DeviseTokenAuth::PasswordsController
     super
   end
 
-  # GET /users/auth/password パスワード再設定
+  # パスワード再設定
   def edit
     return redirect_to Settings.reset_password_error_url_not, allow_other_host: true if @redirect_url.blank?
     return redirect_to Settings.reset_password_error_url_bad, allow_other_host: true if blacklisted_redirect_url?(@redirect_url)
@@ -28,7 +28,7 @@ class Users::Auth::PasswordsController < DeviseTokenAuth::PasswordsController
     super
   end
 
-  # POST /users/auth/password/update(.json) パスワード再設定API(処理)
+  # パスワード再設定API(処理)
   def update
     return render_create_error_missing_email if request.request_parameters.blank?
 
@@ -75,8 +75,8 @@ class Users::Auth::PasswordsController < DeviseTokenAuth::PasswordsController
   def render_edit_error
     # raise ActionController::RoutingError, 'Not Found'
     alert = t("activerecord.errors.models.user.attributes.reset_password_token.#{resource_params[:reset_password_token].blank? ? 'blank' : 'invalid'}")
-    redirect_header_options = { reset_password: false, alert: }
-    redirect_to DeviseTokenAuth::Url.generate(@redirect_url, redirect_header_options), allow_other_host: true
+
+    redirect_to DeviseTokenAuth::Url.generate(@redirect_url, { reset_password: false, alert: }), allow_other_host: true
   end
 
   def render_update_error_unauthorized
@@ -100,6 +100,7 @@ class Users::Auth::PasswordsController < DeviseTokenAuth::PasswordsController
       errors = { password_confirmation: t('activerecord.errors.models.user.attributes.password_confirmation.confirmation') }
       errors[:full_messages] = ["#{t('activerecord.attributes.user.password_confirmation')} #{errors[:password_confirmation]}"]
     end
+
     render '/failure', locals: { errors:, alert: t('errors.messages.not_saved.one') }, status: :unprocessable_content
   end
 
@@ -110,8 +111,10 @@ class Users::Auth::PasswordsController < DeviseTokenAuth::PasswordsController
     # NOTE: ロック中の場合は解除する
     @resource.update!(locked_at: nil, failed_attempts: 0) if @resource.locked_at.present?
 
-    alert = @resource.unconfirmed_email.present? ? t('devise.failure.unconfirmed') : nil
-    render '/users/auth/success', locals: { alert:, notice: t('devise_token_auth.passwords.successfully_updated') }
+    render '/users/auth/success', locals: {
+      alert: @resource.unconfirmed_email.present? ? t('devise.failure.unconfirmed') : nil,
+      notice: t('devise_token_auth.passwords.successfully_updated')
+    }
   end
 
   def render_update_error
@@ -131,6 +134,7 @@ class Users::Auth::PasswordsController < DeviseTokenAuth::PasswordsController
       # render_error(404, I18n.t('devise_token_auth.passwords.user_not_found', email: @email))
       errors = { email: t('devise_token_auth.passwords.user_not_found') }
       errors[:full_messages] = ["#{t('activerecord.attributes.user.email')} #{errors[:email]}"]
+
       render '/failure', locals: { errors:, alert: t('errors.messages.not_saved.one') }, status: :unprocessable_content
     end
   end

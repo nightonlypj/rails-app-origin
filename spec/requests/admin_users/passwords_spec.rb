@@ -10,7 +10,7 @@ RSpec.describe 'AdminUsers::Passwords', type: :request do
     end
   end
 
-  # GET /admin/password/reset パスワード再設定[メール送信]
+  # パスワード再設定[メール送信]
   # テストパターン
   #   未ログイン, ログイン中
   describe 'GET #new' do
@@ -26,7 +26,7 @@ RSpec.describe 'AdminUsers::Passwords', type: :request do
     end
   end
 
-  # POST /admin/password/reset パスワード再設定[メール送信](処理)
+  # パスワード再設定[メール送信](処理)
   # テストパターン
   #   未ログイン, ログイン中
   #   有効なパラメータ（未ロック, ロック中）, 無効なパラメータ
@@ -44,7 +44,8 @@ RSpec.describe 'AdminUsers::Passwords', type: :request do
       it 'メールが送信される' do
         subject
         expect(ActionMailer::Base.deliveries.count).to eq(1)
-        expect(ActionMailer::Base.deliveries[0].subject).to eq(get_subject('devise.mailer.reset_password_instructions.admin_user_subject')) # パスワード再設定方法のお知らせ
+        # パスワード再設定方法のお知らせ
+        expect(ActionMailer::Base.deliveries[0].subject).to eq(build_mail_subject('devise.mailer.reset_password_instructions.admin_user_subject'))
         expect(ActionMailer::Base.deliveries[0].html_part.body).to include(url)
         expect(ActionMailer::Base.deliveries[0].text_part.body).to include(url)
       end
@@ -104,7 +105,7 @@ RSpec.describe 'AdminUsers::Passwords', type: :request do
     end
   end
 
-  # GET /admin/password パスワード再設定
+  # パスワード再設定
   # テストパターン
   #   未ログイン, ログイン中
   #   トークン: 期限内（未ロック, ロック中）, 期限切れ, 存在しない, ない
@@ -170,7 +171,7 @@ RSpec.describe 'AdminUsers::Passwords', type: :request do
     end
   end
 
-  # PUT /admin/password パスワード再設定(処理)
+  # パスワード再設定(処理)
   # テストパターン
   #   未ログイン, ログイン中
   #   トークン: 期限内（未ロック, ロック中）, 期限切れ, 存在しない, ない
@@ -189,7 +190,7 @@ RSpec.describe 'AdminUsers::Passwords', type: :request do
         expect(current_admin_user.reset_password_sent_at).to be_nil
 
         expect(ActionMailer::Base.deliveries.count).to eq(1)
-        expect(ActionMailer::Base.deliveries[0].subject).to eq(get_subject('devise.mailer.password_change.admin_user_subject')) # パスワード変更完了のお知らせ
+        expect(ActionMailer::Base.deliveries[0].subject).to eq(build_mail_subject('devise.mailer.password_change.admin_user_subject')) # パスワード変更完了のお知らせ
       end
     end
     shared_examples 'NG' do

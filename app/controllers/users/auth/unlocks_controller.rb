@@ -10,7 +10,7 @@ class Users::Auth::UnlocksController < DeviseTokenAuth::UnlocksController
   prepend_before_action :response_not_acceptable_for_not_html, only: :show
   prepend_before_action :update_request_uid_header
 
-  # POST /users/auth/unlock(.json) アカウントロック解除API[メール再送](処理)
+  # アカウントロック解除API[メール再送](処理)
   def create
     return render_create_error_missing_email if request.request_parameters.blank?
     return render_create_error_missing_redirect_url unless @redirect_url
@@ -44,7 +44,7 @@ class Users::Auth::UnlocksController < DeviseTokenAuth::UnlocksController
     end
   end
 
-  # GET /users/auth/unlock アカウントロック解除(処理)
+  # アカウントロック解除(処理)
   def show
     @resource = resource_class.unlock_access_by_token(params[:unlock_token])
 
@@ -59,6 +59,7 @@ class Users::Auth::UnlocksController < DeviseTokenAuth::UnlocksController
       # redirect_header_options = { unlock: true }
       redirect_header_options = { unlock: true, notice: t('devise.unlocks.unlocked') }
       # redirect_headers = build_redirect_headers(token.token, token.client, redirect_header_options)
+
       # redirect_to(@resource.build_auth_url(after_unlock_path_for(@resource), redirect_headers))
       redirect_to DeviseTokenAuth::Url.generate(@redirect_url, redirect_header_options), allow_other_host: true
     else
@@ -103,8 +104,8 @@ class Users::Auth::UnlocksController < DeviseTokenAuth::UnlocksController
     return redirect_to Settings.unlock_error_url_bad, allow_other_host: true if blacklisted_redirect_url?(@redirect_url)
 
     alert = t("activerecord.errors.models.user.attributes.unlock_token.#{params[:unlock_token].blank? ? 'blank' : 'invalid'}")
-    redirect_header_options = { unlock: false, alert: }
-    redirect_to DeviseTokenAuth::Url.generate(@redirect_url, redirect_header_options), allow_other_host: true
+
+    redirect_to DeviseTokenAuth::Url.generate(@redirect_url, { unlock: false, alert: }), allow_other_host: true
   end
 
   def render_not_found_error
@@ -117,6 +118,7 @@ class Users::Auth::UnlocksController < DeviseTokenAuth::UnlocksController
       # render_error(404, I18n.t('devise_token_auth.unlocks.user_not_found', email: @email))
       errors = { email: t('devise_token_auth.unlocks.user_not_found') }
       errors[:full_messages] = ["#{t('activerecord.attributes.user.email')} #{errors[:email]}"]
+
       render '/failure', locals: { errors:, alert: t('errors.messages.not_saved.one') }, status: :unprocessable_content
     end
   end

@@ -7,20 +7,22 @@ RSpec.describe Holiday, type: :model do
   describe 'validates :date' do
     subject(:model) { FactoryBot.build_stubbed(:holiday, date:, name: 'a') }
 
-    # テストケース
     context 'ない' do
       let(:date) { nil }
       let(:messages) { { date: [get_locale('activerecord.errors.models.holiday.attributes.date.blank')] } }
+
       it_behaves_like 'InValid'
     end
     context '正常値' do
       let(:date) { Time.zone.today }
+
       it_behaves_like 'Valid'
     end
     context '重複' do
       before { FactoryBot.create(:holiday, date:) }
       let(:date) { Time.zone.today }
       let(:messages) { { date: [get_locale('activerecord.errors.models.holiday.attributes.date.taken')] } }
+
       it_behaves_like 'InValid'
     end
   end
@@ -31,14 +33,15 @@ RSpec.describe Holiday, type: :model do
   describe 'validates :name' do
     subject(:model) { FactoryBot.build_stubbed(:holiday, name:) }
 
-    # テストケース
     context 'ない' do
       let(:name) { nil }
       let(:messages) { { name: [get_locale('activerecord.errors.models.holiday.attributes.name.blank')] } }
+
       it_behaves_like 'InValid'
     end
     context 'ある' do
       let(:name) { 'a' }
+
       it_behaves_like 'Valid'
     end
   end

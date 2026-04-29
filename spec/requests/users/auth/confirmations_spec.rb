@@ -19,7 +19,7 @@ RSpec.describe 'Users::Auth::Confirmations', type: :request do
     end
   end
 
-  # POST /users/auth/confirmation(.json) メールアドレス確認API[メール再送](処理)
+  # メールアドレス確認API[メール再送](処理)
   # テストパターン
   #   未ログイン, ログイン中, APIログイン中
   #   パラメータなし, 有効なパラメータ（メール未確認, メール確認済み, メールアドレス変更中）, 無効なパラメータ, URLがない, URLがホワイトリストにない
@@ -48,7 +48,7 @@ RSpec.describe 'Users::Auth::Confirmations', type: :request do
       it 'メールが送信される' do
         subject
         expect(ActionMailer::Base.deliveries.count).to eq(1)
-        expect(ActionMailer::Base.deliveries[0].subject).to eq(get_subject('devise.mailer.confirmation_instructions.subject')) # メールアドレス確認のお願い
+        expect(ActionMailer::Base.deliveries[0].subject).to eq(build_mail_subject('devise.mailer.confirmation_instructions.subject')) # メールアドレス確認のお願い
         expect(ActionMailer::Base.deliveries[0].html_part.body).to include(url)
         expect(ActionMailer::Base.deliveries[0].text_part.body).to include(url)
         expect(ActionMailer::Base.deliveries[0].html_part.body).to include(url_param)
@@ -182,7 +182,7 @@ RSpec.describe 'Users::Auth::Confirmations', type: :request do
     end
   end
 
-  # GET /users/auth/confirmation メールアドレス確認(処理)
+  # メールアドレス確認(処理)
   # テストパターン
   #   未ログイン, ログイン中, APIログイン中
   #   トークン: 期限内, 期限切れ, 存在しない, ない, 空
@@ -191,7 +191,9 @@ RSpec.describe 'Users::Auth::Confirmations', type: :request do
   #   ＋Acceptヘッダ: JSONが含まれない, JSONが含まれる
   #   ＋リダイレクトURL: ある, ない, ホワイトリストにない
   describe 'GET #show' do
+    # rubocop:disable RSpec/InstanceVariable
     subject { get user_auth_confirmation_path(format: subject_format, confirmation_token:, redirect_url: @redirect_url), headers: }
+    # rubocop:enable RSpec/InstanceVariable
     let(:headers) { auth_headers.merge(accept_headers) }
 
     # テスト内容

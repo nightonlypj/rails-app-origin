@@ -1,4 +1,5 @@
 shared_context '未ログイン処理' do
+  let_it_be(:user) { nil }
   let(:auth_headers) { {} }
 end
 shared_context 'ログイン処理' do |trait = nil, use_image = false|
@@ -21,7 +22,7 @@ end
 
 shared_context 'ユーザー作成' do |trait, use_image|
   let_it_be(:image) { use_image ? fixture_file_upload(TEST_IMAGE_FILE, TEST_IMAGE_TYPE) : nil }
-  let_it_be(:user)  { FactoryBot.create(:user, trait, image:) }
+  let_it_be(:user) { FactoryBot.create(:user, trait, image:) }
 end
 
 shared_context 'パスワードリセットトークン作成' do |valid, locked = false, unconfirmed = false, change_email = false|
@@ -36,10 +37,12 @@ shared_context 'パスワードリセットトークン作成' do |valid, locked
   let_it_be(:confirmed_at)         { unconfirmed ? nil : '0000-01-01 00:00:00+0000' }
   let_it_be(:unconfirmed_email)    { change_email ? Faker::Internet.email : nil }
   let_it_be(:send_user) do
-    FactoryBot.create(:user, reset_password_token: digest_token, reset_password_sent_at: sent_at,
-                             unlock_token:, locked_at:, failed_attempts:,
-                             confirmation_token:, confirmation_sent_at:, confirmed_at:,
-                             unconfirmed_email:)
+    FactoryBot.create(
+      :user,
+      reset_password_token: digest_token, reset_password_sent_at: sent_at,
+      unlock_token:, locked_at:, failed_attempts:,
+      confirmation_token:, confirmation_sent_at:, confirmed_at:, unconfirmed_email:
+    )
   end
 end
 
@@ -48,10 +51,7 @@ shared_context 'メールアドレス確認トークン作成' do |confirmed, be
   let_it_be(:set_confirmed_at)   { confirmation_sent_at + (before ? -1.minute : 1.minute) }
   let_it_be(:confirmed_at)       { confirmed ? set_confirmed_at : nil }
   let_it_be(:unconfirmed_email)  { confirmed && before ? Faker::Internet.email : nil }
-  let_it_be(:send_user) do
-    FactoryBot.create(:user, confirmation_token:, confirmation_sent_at:,
-                             confirmed_at:, unconfirmed_email:)
-  end
+  let_it_be(:send_user) { FactoryBot.create(:user, confirmation_token:, confirmation_sent_at:, confirmed_at:, unconfirmed_email:) }
 end
 
 shared_context 'アカウントロック解除トークン作成' do |locked, expired = false|
@@ -61,6 +61,30 @@ shared_context 'アカウントロック解除トークン作成' do |locked, ex
   let_it_be(:locked_at)       { locked ? locked_time : nil }
   let_it_be(:failed_attempts) { locked ? Devise.maximum_attempts : 0 }
   let_it_be(:send_user)       { FactoryBot.create(:user, unlock_token: digest_token, locked_at:, failed_attempts:) }
+end
+
+def expect_user_response(user, use_email:)
+  return {} if user.blank?
+
+  result = {
+    code: user.code,
+    upload_image: user.image?,
+    image_url: {
+      mini: "#{Settings.base_image_url}#{user.image_url(:mini)}",
+      small: "#{Settings.base_image_url}#{user.image_url(:small)}",
+      medium: "#{Settings.base_image_url}#{user.image_url(:medium)}",
+      large: "#{Settings.base_image_url}#{user.image_url(:large)}",
+      xlarge: "#{Settings.base_image_url}#{user.image_url(:xlarge)}"
+    },
+    name: user.name
+  }
+  result[:email] = user.email if use_email
+
+  {
+    **result,
+    destroy_requested_at: I18n.l(user.destroy_requested_at, format: :json, default: nil),
+    destroy_schedule_at: I18n.l(user.destroy_schedule_at, format: :json, default: nil)
+  }
 end
 
 # テスト内容（共通）
@@ -99,6 +123,7 @@ shared_examples 'ToLogin' do |alert, notice|
   end
 end
 
+# rubocop:disable RSpec/ExpectInLet
 shared_context 'Authテスト内容' do
   let(:response_json_user) { response_json['user'] }
   let(:expect_success_json) do
@@ -135,3 +160,4 @@ shared_context 'Authテスト内容' do
     expect(response.header['expiry']).to be_nil
   end
 end
+# rubocop:enable RSpec/ExpectInLet

@@ -23,7 +23,7 @@ RSpec.describe 'Users::Auth::Passwords', type: :request do
     end
   end
 
-  # POST /users/auth/password(.json) パスワード再設定API[メール送信](処理)
+  # パスワード再設定API[メール送信](処理)
   # テストパターン
   #   未ログイン, ログイン中, APIログイン中
   #   パラメータなし, 有効なパラメータ（未ロック, ロック中, メール未確認）, 無効なパラメータ, URLがない, URLがホワイトリストにない
@@ -52,7 +52,7 @@ RSpec.describe 'Users::Auth::Passwords', type: :request do
       it 'メールが送信される' do
         subject
         expect(ActionMailer::Base.deliveries.count).to eq(1)
-        expect(ActionMailer::Base.deliveries[0].subject).to eq(get_subject('devise.mailer.reset_password_instructions.subject')) # パスワード再設定方法のお知らせ
+        expect(ActionMailer::Base.deliveries[0].subject).to eq(build_mail_subject('devise.mailer.reset_password_instructions.subject')) # パスワード再設定方法のお知らせ
         expect(ActionMailer::Base.deliveries[0].html_part.body).to include(url)
         expect(ActionMailer::Base.deliveries[0].text_part.body).to include(url)
         expect(ActionMailer::Base.deliveries[0].html_part.body).to include(url_param)
@@ -248,7 +248,7 @@ RSpec.describe 'Users::Auth::Passwords', type: :request do
     end
   end
 
-  # GET /users/auth/password パスワード再設定
+  # パスワード再設定
   # テストパターン
   #   未ログイン, ログイン中, APIログイン中
   #   トークン: 期限内（未ロック, ロック中, メール未確認）, 期限切れ, 存在しない, ない, 空
@@ -412,7 +412,7 @@ RSpec.describe 'Users::Auth::Passwords', type: :request do
     end
   end
 
-  # POST /users/auth/password/update(.json) パスワード再設定API(処理)
+  # パスワード再設定API(処理)
   # テストパターン
   #   未ログイン, ログイン中, APIログイン中
   #   トークン: 期限内（未ロック, ロック中, メール未確認, メールアドレス変更中）, 期限切れ, 存在しない, ない, 空
@@ -444,7 +444,7 @@ RSpec.describe 'Users::Auth::Passwords', type: :request do
         expect(current_user.failed_attempts).to eq(0)
 
         expect(ActionMailer::Base.deliveries.count).to eq(1)
-        expect(ActionMailer::Base.deliveries[0].subject).to eq(get_subject('devise.mailer.password_change.subject')) # パスワード変更完了のお知らせ
+        expect(ActionMailer::Base.deliveries[0].subject).to eq(build_mail_subject('devise.mailer.password_change.subject')) # パスワード変更完了のお知らせ
       end
     end
     shared_examples 'NG' do

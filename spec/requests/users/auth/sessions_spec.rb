@@ -15,7 +15,7 @@ RSpec.describe 'Users::Auth::Sessions', type: :request do
     end
   end
 
-  # POST /users/auth/sign_in(.json) ログインAPI(処理)
+  # ログインAPI(処理)
   # テストパターン
   #   未ログイン, ログイン中, APIログイン中, APIログイン中（削除予約済み）
   #   パラメータなし, 有効なパラメータ（未ロック, ロック中, メール未確認, メールアドレス変更中, 削除予約済み）, 無効なパラメータ（存在しない, ロック前, ロック前の前, ロック前の前の前）, URLがない, URLがホワイトリストにない
@@ -86,7 +86,7 @@ RSpec.describe 'Users::Auth::Sessions', type: :request do
       it 'メールが送信される' do
         subject
         expect(ActionMailer::Base.deliveries.count).to eq(1)
-        expect(ActionMailer::Base.deliveries[0].subject).to eq(get_subject('devise.mailer.unlock_instructions.subject')) # アカウントロックのお知らせ
+        expect(ActionMailer::Base.deliveries[0].subject).to eq(build_mail_subject('devise.mailer.unlock_instructions.subject')) # アカウントロックのお知らせ
         expect(ActionMailer::Base.deliveries[0].html_part.body).to include(url)
         expect(ActionMailer::Base.deliveries[0].text_part.body).to include(url)
         expect(ActionMailer::Base.deliveries[0].html_part.body).to include(url_param)
@@ -318,7 +318,7 @@ RSpec.describe 'Users::Auth::Sessions', type: :request do
     end
   end
 
-  # POST /users/auth/sign_out(.json) ログアウトAPI(処理)
+  # ログアウトAPI(処理)
   # テストパターン
   #   未ログイン, ログイン中, APIログイン中, APIログイン中（削除予約済み）
   #   ＋URLの拡張子: .json, ない

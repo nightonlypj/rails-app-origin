@@ -27,7 +27,7 @@ class User < ApplicationRecord
 
   # 削除予約
   def set_destroy_reserve!
-    update!(destroy_requested_at: Time.current, destroy_schedule_at: Time.current + Settings.user_destroy_schedule_days.days)
+    update!(destroy_requested_at: Time.current, destroy_schedule_at: Settings.user_destroy_schedule_days.days.from_now)
   end
 
   # 削除予約取り消し
@@ -50,7 +50,8 @@ class User < ApplicationRecord
     when :xlarge
       image? ? image.xlarge.url : "/images/user/#{version}_noimage.jpg"
     else
-      logger.warn "[WARN]Not found: User.image_url(#{version})"
+      logger.warn "[WARNING]Not found: User.image_url(#{version})"
+
       ''
     end
   end
@@ -61,6 +62,5 @@ class User < ApplicationRecord
     return @cache_infomation_unread_count if @cache_infomation_unread_count.present?
 
     @cache_infomation_unread_count = Infomation.by_locale(I18n.locale).by_target(self).by_unread(infomation_check_last_started_at).count
-    @cache_infomation_unread_count
   end
 end

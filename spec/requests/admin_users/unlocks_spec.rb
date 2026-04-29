@@ -1,7 +1,7 @@
 require 'rails_helper'
 
 RSpec.describe 'AdminUsers::Unlocks', type: :request do
-  # GET /admin/unlock/resend アカウントロック解除[メール再送]
+  # アカウントロック解除[メール再送]
   # テストパターン
   #   未ログイン, ログイン中
   describe 'GET #new' do
@@ -17,7 +17,7 @@ RSpec.describe 'AdminUsers::Unlocks', type: :request do
     end
   end
 
-  # POST /admin/unlock/resend アカウントロック解除[メール再送](処理)
+  # アカウントロック解除[メール再送](処理)
   # テストパターン
   #   未ログイン, ログイン中
   #   有効なパラメータ（ロック中, 未ロック）, 無効なパラメータ
@@ -35,7 +35,7 @@ RSpec.describe 'AdminUsers::Unlocks', type: :request do
       it 'メールが送信される' do
         subject
         expect(ActionMailer::Base.deliveries.count).to eq(1)
-        expect(ActionMailer::Base.deliveries[0].subject).to eq(get_subject('devise.mailer.unlock_instructions.admin_user_subject')) # アカウントロックのお知らせ
+        expect(ActionMailer::Base.deliveries[0].subject).to eq(build_mail_subject('devise.mailer.unlock_instructions.admin_user_subject')) # アカウントロックのお知らせ
         expect(ActionMailer::Base.deliveries[0].html_part.body).to include(url)
         expect(ActionMailer::Base.deliveries[0].text_part.body).to include(url)
       end
@@ -95,7 +95,7 @@ RSpec.describe 'AdminUsers::Unlocks', type: :request do
     end
   end
 
-  # GET /admin/unlock アカウントロック解除(処理)
+  # アカウントロック解除(処理)
   # テストパターン
   #   未ログイン, ログイン中
   #   トークン: 存在する, 存在しない, ない

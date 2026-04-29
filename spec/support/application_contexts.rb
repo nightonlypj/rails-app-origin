@@ -9,12 +9,10 @@ BAD_SITE_URL   = 'http://badsite.com/'.freeze
 ACCEPT_INC_HTML = { 'accept' => 'text/html,application/xhtml+xml,application/xml,*/*' }.freeze
 ACCEPT_INC_JSON = { 'accept' => 'application/json,text/plain,*/*' }.freeze
 
-# メールタイトルを返却
-def get_subject(key, args = {})
+def build_mail_subject(key, args = {})
   I18n.t(key, app_name: I18n.t('app_name'), env_name: I18n.t("env_name.#{Settings.server_env}"), **args)
 end
 
-# テスト内容（共通）
 shared_examples 'Valid' do
   it '保存できる' do
     expect(model).to be_valid
@@ -26,6 +24,7 @@ shared_examples 'InValid' do
     expect(model.errors.messages).to eq(messages)
   end
 end
+
 shared_examples 'Errors' do
   it 'エラーメッセージが一致する' do
     subject
@@ -50,6 +49,13 @@ shared_examples 'Value_i18n' do |value|
   end
 end
 
+shared_examples 'Array' do |text|
+  it "#{text}が返却される" do
+    is_expected.to match_array(included_values)
+  end
+end
+
+# テスト内容（共通）
 def expect_image_json(response_json_model, model)
   expect(response_json_model['upload_image']).to eq(model.image?)
 
@@ -71,12 +77,6 @@ def get_locale(key, **)
   result
 end
 
-shared_examples 'ToRaise' do |message|
-  it '例外が発生する' do
-    expect { subject }.to raise_error(message)
-  end
-end
-
 shared_examples 'ToOK[status]' do
   it 'HTTPステータスが200' do
     is_expected.to eq(200)
@@ -89,43 +89,6 @@ shared_examples 'ToError' do |error_msg|
   end
 end
 
-# :nocov:
-shared_examples 'OK' do
-  raise '各Specに作成してください。'
-end
-shared_examples 'NG' do
-  raise '各Specに作成してください。'
-end
-# :nocov:
-shared_examples 'OK(html)' do
-  let(:subject_format) { nil }
-  let(:accept_headers) { ACCEPT_INC_HTML }
-  it_behaves_like 'OK'
-end
-shared_examples 'NG(html)' do
-  let(:subject_format) { nil }
-  let(:accept_headers) { ACCEPT_INC_HTML }
-  it_behaves_like 'NG'
-end
-shared_examples 'OK(json)' do
-  let(:subject_format) { :json }
-  let(:accept_headers) { ACCEPT_INC_JSON }
-  it_behaves_like 'OK'
-end
-shared_examples 'NG(json)' do
-  let(:subject_format) { :json }
-  let(:accept_headers) { ACCEPT_INC_JSON }
-  it_behaves_like 'NG'
-end
-
-# :nocov:
-shared_examples 'ToOK(html/*)' do
-  raise '各Specに作成してください。'
-end
-shared_examples 'ToOK(json/json)' do
-  raise '各Specに作成してください。'
-end
-# :nocov:
 shared_examples 'ToOK(html/html)' do
   let(:subject_format) { nil }
   let(:accept_headers) { ACCEPT_INC_HTML }
@@ -217,27 +180,4 @@ shared_examples 'ToNG(json)' do |code, errors = nil, alert = nil, notice = nil|
   let(:subject_page) { 1 }
   it_behaves_like 'ToNG(json/html)', 406
   it_behaves_like 'ToNG(json/json)', code, errors, alert, notice
-end
-
-shared_examples 'ToLogin(html/*)' do
-  it 'ログインにリダイレクトする' do
-    is_expected.to redirect_to(new_user_session_path)
-    expect(flash[:alert]).to eq(get_locale('devise.failure.unauthenticated'))
-    expect(flash[:notice]).to be_nil
-  end
-end
-shared_examples 'ToLogin(html/html)' do
-  let(:subject_format) { nil }
-  let(:accept_headers) { ACCEPT_INC_HTML }
-  it_behaves_like 'ToLogin(html/*)'
-end
-shared_examples 'ToLogin(html/json)' do
-  let(:subject_format) { nil }
-  let(:accept_headers) { ACCEPT_INC_JSON }
-  it_behaves_like 'ToLogin(html/*)'
-end
-shared_examples 'ToLogin(html)' do
-  let(:subject_page) { 1 }
-  it_behaves_like 'ToLogin(html/html)'
-  it_behaves_like 'ToLogin(html/json)'
 end
